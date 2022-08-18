@@ -1,0 +1,33 @@
+{
+    "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true,
+    "jest/globals": true
+    },
+    "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb-base"
+    ],
+    "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "parserOptions": {
+        "parser": "@babel/eslint-parser",
+        "requireConfigFile": false,
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module" // Allows for the use of imports
+    },
+    "plugins": ["jsx-a11y", "react", "jest"],
+    "rules": {}
+}
