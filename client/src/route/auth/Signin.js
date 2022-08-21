@@ -45,15 +45,11 @@ const theme = createTheme();
 export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
     window.location.href = '/dashboard';
   };
 
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -139,5 +135,6 @@ export default function SignIn() {
         <Footer />
       </Container>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }

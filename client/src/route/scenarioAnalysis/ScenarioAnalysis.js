@@ -13,6 +13,7 @@ const mdTheme = createTheme();
 
 function SAnalysisContent() {
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -47,9 +48,10 @@ function SAnalysisContent() {
         </Box>
       </Box>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }
 
 export default function ScenarioAnalysis() {
-  return <SAnalysisContent />;
+  return <SAnalysisContent />; /* jshint ignore:line */
 }

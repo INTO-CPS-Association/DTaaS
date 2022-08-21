@@ -13,6 +13,7 @@ const mdTheme = createTheme();
 
 function DTContent() {
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -47,9 +48,10 @@ function DTContent() {
         </Box>
       </Box>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }
 
 export default function DigitalTwins() {
-  return <DTContent />;
+  return <DTContent />; /* jshint ignore:line */
 }

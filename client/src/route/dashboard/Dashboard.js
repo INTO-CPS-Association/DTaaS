@@ -17,6 +17,7 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -56,9 +57,10 @@ function DashboardContent() {
         </Box>
       </Box>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }
 
 export default function Dashboard() {
-  return <DashboardContent />;
+  return <DashboardContent />; /* jshint ignore:line */
 }

@@ -16,7 +16,8 @@ const tolinkStyle = {
 };
 
 const MenuItems = (
-  <React.Fragment>
+    /* jshint ignore:start */
+    <React.Fragment>
     <ListItemButton>
       <ListItemIcon>
         <DashboardIcon />
@@ -48,6 +49,7 @@ const MenuItems = (
         <Link to="/history" style={tolinkStyle}>History</Link>
     </ListItemButton>
   </React.Fragment>
+  /* jshint ignore:end */
 );
 
 export default MenuItems;

@@ -31,6 +31,7 @@ export default function Chart() {
   const theme = useTheme();
 
   return (
+    /* jshint ignore:start */
     <React.Fragment>
       <Title>Observed Output</Title>
       <ResponsiveContainer>
@@ -75,5 +76,6 @@ export default function Chart() {
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>
+    /* jshint ignore:end */
   );
 }

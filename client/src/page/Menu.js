@@ -81,6 +81,7 @@ export default function DTaaSMenu() {
   };
 
   return (
+    /* jshint ignore:start */
     <React.Fragment>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
@@ -162,5 +163,6 @@ export default function DTaaSMenu() {
           </List>
         </Drawer>
     </React.Fragment>
+    /* jshint ignore:end */
   );
 }

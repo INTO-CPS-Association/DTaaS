@@ -5,6 +5,7 @@ import Link from '@mui/material/Link';
 
 function Copyright(props) {
   return (
+    /* jshint ignore:start */
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://into-cps.org/" target="_blank" rel="noreferrer">
@@ -13,19 +14,22 @@ function Copyright(props) {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
+    /* jshint ignore:end */
   );
 }
 
 function RenderFooter() {
   return (
+    /* jshint ignore:start */
     <React.Fragment>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Copyright sx={{ pt: 4 }} />
           </Container>
     </React.Fragment>
+    /* jshint ignore:end */
   );
 }
 
 export default function Footer() {
-  return <RenderFooter />;
+  return <RenderFooter />; /* jshint ignore:line */
 }

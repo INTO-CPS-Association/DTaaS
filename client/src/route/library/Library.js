@@ -13,6 +13,7 @@ const mdTheme = createTheme();
 
 function LibraryContent() {
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -47,9 +48,10 @@ function LibraryContent() {
         </Box>
       </Box>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }
 
 export default function Library() {
-  return <LibraryContent />;
+  return <LibraryContent />; /* jshint ignore:line */
 }

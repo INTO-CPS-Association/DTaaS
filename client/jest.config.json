@@ -2,6 +2,9 @@
     "transform": {
         "^.+\\.js$": "babel-jest"
     },
+    "transformIgnorePatterns": [
+        "/node_modules/(?![d3-shape|recharts]).+\\.js$"
+    ],
     "collectCoverage": true,
     "collectCoverageFrom": [
         "src/**/*.js"

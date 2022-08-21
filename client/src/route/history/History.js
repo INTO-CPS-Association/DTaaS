@@ -14,6 +14,7 @@ const mdTheme = createTheme();
 
 function HistoryContent() {
   return (
+    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -46,9 +47,10 @@ function HistoryContent() {
         </Box>
       </Box>
     </ThemeProvider>
+    /* jshint ignore:end */
   );
 }
 
 export default function DTHistory() {
-  return <HistoryContent />;
+  return <HistoryContent />; /* jshint ignore:line */
 }

@@ -11,6 +11,7 @@ function TabPanel(props) {
   } = props;
 
   return (
+    /* jshint ignore:start */
     <div
       role="tabpanel"
       hidden={value !== index}
@@ -24,6 +25,7 @@ function TabPanel(props) {
         </Box>
       )}
     </div>
+    /* jshint ignore:end */
   );
 }
 
@@ -48,6 +50,7 @@ export default function AccountTabs() {
   };
 
   return (
+    /* jshint ignore:start */
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -62,5 +65,6 @@ export default function AccountTabs() {
         Account settings - private to a user
       </TabPanel>
     </Box>
+    /* jshint ignore:end */
   );
 }

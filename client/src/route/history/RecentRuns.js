@@ -36,6 +36,7 @@ function preventDefault(event) {
 
 export default function RecentRuns() {
   return (
+    /* jshint ignore:start */
     <React.Fragment>
       <Title>Recent Runs</Title>
       <Table size="small">
@@ -58,5 +59,6 @@ export default function RecentRuns() {
         See more
       </Link>
     </React.Fragment>
+    /* jshint ignore:end */
   );
 }

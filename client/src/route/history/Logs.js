@@ -9,6 +9,7 @@ function preventDefault(event) {
 
 function LogContents() {
   return (
+    /* jshint ignore:start */
     <React.Fragment>
     <Title>Logs</Title>
     <Typography variant="body1" gutterBottom>
@@ -21,9 +22,10 @@ function LogContents() {
         See more
   </Link>
   </React.Fragment>
+  /* jshint ignore:end */
   );
 }
 
 export default function Logs() {
-  return <LogContents />;
+  return <LogContents />; /* jshint ignore:line */
 }
