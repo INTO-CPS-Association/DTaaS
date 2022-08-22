@@ -106,3 +106,7 @@ dist
 # Babel compiled output
 dist-server/
 build/
+
+# Test reports
+coverage/
+playwright-report/

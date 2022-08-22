@@ -15,13 +15,13 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn syntax     #perform linting and static analysis
 yarn build      #build the react app into build/ directory
-yarn test       #test the application
 
 #one of the environments; specify only one; "dev" used the REACT_APP_ENV is not set
 export REACT_APP_ENV= "dev | test | prod"   
 yarn configapp
 
 yarn start      #start the application
+yarn test       #do 'yarn start' in another terminal before testing the application
 yarn clean      #clean the directory of temporary files
 ```
 

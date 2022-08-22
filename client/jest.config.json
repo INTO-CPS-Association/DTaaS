@@ -15,6 +15,7 @@
         "node_modules",
         "build"
     ],
+    "modulePathIgnorePatterns": ["test/e2e"],
     "coverageDirectory": "<rootDir>/coverage/",
     "coverageThreshold": {
         "global": {
