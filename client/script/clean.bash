@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -rf build node_modules coverage
+rm -rf build/ node_modules/ coverage/ playwright-report/

@@ -29,5 +29,7 @@
         "sourceType": "module" // Allows for the use of imports
     },
     "plugins": ["jsx-a11y", "react", "jest"],
-    "rules": {}
+    "rules": {
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    }
 }
