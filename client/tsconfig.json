@@ -3,7 +3,7 @@
         "noImplicitAny": false, //raise error on any type
         "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
         "sourceMap": true, //generate .map files
-        "target": "es5", //target es5
+        "target": "es6", //target es6
         "jsx":"react", //use react
         "types": ["react","node"], //use react and node types
         "module": "esnext", //use esnext modules
