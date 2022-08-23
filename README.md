@@ -1,4 +1,5 @@
 # Motivation
+
 Website for Digital Twin as a Service (DTaaS) software.
 
 This is a mono repo containing code for both the client (web browser) and server code.
@@ -6,11 +7,14 @@ This is a mono repo containing code for both the client (web browser) and server
 ## Helpful Commands
 
 ### Install the Environment
-```
+
+```bash
 bash script/install.bash
 ```
+
 ### for Client app
-```
+
+```bash
 cd client
 yarn install    #install the nodejs dependencies
 yarn syntax     #perform linting and static analysis
@@ -26,8 +30,11 @@ yarn clean      #clean the directory of temporary files
 ```
 
 ### for server app
-```
-cd server
+
+The server apps shall be a set of microservices.
+
+```bash
+cd server/<microservice-folder>
 yarn install    #install the nodejs dependencies
 yarn syntax     #perform linting and static analysis
 yarn build      #compile ES6 files into ES5 javascript files and copy all JS files into build/ directory

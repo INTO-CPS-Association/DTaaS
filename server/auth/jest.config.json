@@ -1,10 +1,11 @@
 {
+    "preset": "ts-jest",
     "transform": {
-        "^.+\\.js$": "babel-jest"
+        "^.+\\.[tj]s$": "babel-jest"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-        "src/**/*.js"
+        "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
         "node_modules",
@@ -19,7 +20,11 @@
             "statements": 50
         }
     },
+    "globals": {
+        "SERVER_HOSTNAME": "localhost",
+        "SERVER_PORT": 3510
+    },
     "verbose": true,
-    "testRegex": "/test/.*\\.[jt]sx?$"
+    "testRegex": "/test/.*\\.[jt]s$"
 }
 
