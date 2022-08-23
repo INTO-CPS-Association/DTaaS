@@ -1,14 +1,14 @@
 {
     "env": {
-    "browser": true,
-    "es6": true,
-    "jest": true,
-    "jest/globals": true
+        "browser": true,
+        "es6": true,
+        "jest": true,
+        "jest/globals": true
     },
     "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "airbnb-base"
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "airbnb-base"
     ],
     "globals": {
     "Atomics": "readonly",
@@ -16,18 +16,31 @@
     },
     "settings": {
         "react": {
+            "pragma": "React",
             "version": "detect"
+        },
+        "import/resolver": {
+            "node": {
+                "paths": ["src"],
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
         }
     },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "parser": "@babel/eslint-parser",
         "requireConfigFile": false,
         "ecmaFeatures": {
             "jsx": true
         },
-        "ecmaVersion": 2018,
-        "sourceType": "module" // Allows for the use of imports
+        "ecmaVersion": 11,
+        "sourceType": "module", // Allows for the use of imports
+        "project": "./tsconfig.json"
     },
-    "plugins": ["jsx-a11y", "react", "jest"],
-    "rules": {}
+    "plugins": ["jsx-a11y", "react", "jest","@typescript-eslint"],
+    "rules": {
+        "no-console": "error",
+        "import/first": "error",
+        "react/prop-types": "off",  
+        "linebreak-style": 0 // disable linter linebreak rule, to allow for both unix and windows developement
+    }
 }
