@@ -1,0 +1,44 @@
+{
+    "env": {
+        "es2022": true,
+        "jest": true,
+        "jest/globals": true
+    },
+    "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": ["src"],
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
+    },
+    "parser": "@typescript-eslint/parser",
+    "overrides": [
+        {
+          "files": ["*.ts", "*.tsx"], // Your TypeScript files extension
+          "extends": [
+            "plugin:@typescript-eslint/recommended",
+            "plugin:@typescript-eslint/recommended-requiring-type-checking", 
+            "airbnb-base",
+            "airbnb-typescript/base"
+          ],
+          "parserOptions": {
+            "requireConfigFile": false,
+            "ecmaVersion": 11,
+            "sourceType": "module",
+            "project": ["./tsconfig.json"]
+          }
+        }
+      ],
+    "plugins": ["jest","@typescript-eslint"],
+    "rules": {
+        "no-console": "error",
+        "import/first": "error",
+        "react/prop-types": "off",  
+        "linebreak-style": 0 // disable linter linebreak rule, to allow for both unix and windows developement
+    }
+}
