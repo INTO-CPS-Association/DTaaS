@@ -22,7 +22,8 @@ import Footer from '../../page/Footer';
 
 // const drawerWidth = 240;
 
-// TODO: The following style should be moved!
+// TODO: The following style should be moved
+// TODO: Transform to ts?
 
 // const AppBar = styled(MuiAppBar, {
 //   shouldForwardProp: (prop) => prop !== 'open',
