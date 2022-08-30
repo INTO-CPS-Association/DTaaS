@@ -18,36 +18,46 @@ const tolinkStyle = {
 const MenuItems = (
     /* jshint ignore:start */
     <React.Fragment>
-    <ListItemButton>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <Link to="/dashboard" style={tolinkStyle}>Dashboard</Link>
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <ExtensionIcon />
-      </ListItemIcon>
-      <Link to="/library" style={tolinkStyle}>Library</Link>
-    </ListItemButton>
+    <Link to="/dashboard" style={tolinkStyle}>
+      <ListItemButton>
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        Dashboard
+      </ListItemButton>
+    </Link>
+    <Link to="/library" style={tolinkStyle}>
+      <ListItemButton>
+        <ListItemIcon>
+          <ExtensionIcon />
+        </ListItemIcon>
+        Library
+      </ListItemButton>
+    </Link>
+    <Link to="/digitaltwins" style={tolinkStyle}>
     <ListItemButton>
       <ListItemIcon>
         <PeopleIcon />
       </ListItemIcon>
-        <Link to="/digitaltwins" style={tolinkStyle}>Digital Twins</Link>
+        Digital Twins
     </ListItemButton>
+    </Link>
+    <Link to="/sanalysis" style={tolinkStyle}>
     <ListItemButton>
       <ListItemIcon>
         <QuestionMarkIcon />
       </ListItemIcon>
-        <Link to="/sanalysis" style={tolinkStyle}>Scenario Analysis</Link>
+        Scenario Analysis
     </ListItemButton>
+    </Link>
+    <Link to="/history" style={tolinkStyle}>
     <ListItemButton>
       <ListItemIcon>
         <HistoryIcon />
       </ListItemIcon>
-        <Link to="/history" style={tolinkStyle}>History</Link>
+        History
     </ListItemButton>
+  </Link>
   </React.Fragment>
   /* jshint ignore:end */
 );
