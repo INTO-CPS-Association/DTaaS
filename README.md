@@ -4,15 +4,15 @@ Website for Digital Twin as a Service (DTaaS) software.
 
 This is a mono repo containing code for both the client (web browser) and server code.
 
-## Helpful Commands
-
-### Install the Environment
+## Install the Environment
 
 ```bash
 bash script/install.bash
 ```
 
-### for Client app
+---
+
+## For Client app (serves React Website)
 
 ```bash
 cd client
@@ -29,7 +29,23 @@ yarn test       #do 'yarn start' in another terminal before testing the applicat
 yarn clean      #clean the directory of temporary files
 ```
 
-### for server app
+---
+
+## Infrastructure Components
+
+The application requires the following open-source components.
+
+1. Traefik
+1. InfluxDB
+1. Grafana
+
+See each of the directories to launch the respective docker services.
+
+**TODO**: docker-compose file for all the infrastructure components.
+
+---
+
+## For server apps
 
 The server apps shall be a set of microservices.
 
