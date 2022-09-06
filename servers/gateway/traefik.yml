@@ -1,0 +1,29 @@
+entryPoints:
+  web:
+    address: ":80"                           # Create the HTTPS entrypoint on port 80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: ":443"                           # Create the HTTPS entrypoint on port 443
+          
+providers:
+  providersThrottleDuration: 2s
+
+  # File provider for connecting things that are outside of docker / defining middleware
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+# Enable traefik ui
+api:
+  dashboard: true
+  insecure: true
+
+# Log level INFO|DEBUG|ERROR
+log:
+  level: DEBUG
+
