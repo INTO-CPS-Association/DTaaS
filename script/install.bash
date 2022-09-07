@@ -14,3 +14,5 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 /usr/bin/dockerd-rootless-setuptool.sh install
 
+# Install playwright tool for integration tests on browsers
+sudo npx playwright install-deps
