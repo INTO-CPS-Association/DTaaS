@@ -28,6 +28,13 @@ http:
       service: grafana
       tls: true
 
+    dashboard:
+      entryPoints:
+        - websecure
+      rule: 'Host(`gateway.localhost`)'
+      service: api@internal
+      tls: true
+
   services:
     dtaas:
       loadBalancer:

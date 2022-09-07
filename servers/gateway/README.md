@@ -17,12 +17,7 @@ Copy the following certificates from `ssl/` top-level directory to `certs`.
 cd client
 yarn start # if required build the application first
 
-# Optional Steps
-# start the InfluxDB server. From top-level
-cd servers/data-layer/influx1.8
-docker run -d --network=host \                   
-      -v $PWD/influxdb:/var/lib/influxdb \
-      influxdb:1.8
+docker run -d --name=grafana --network=host grafana/grafana
 
 # Run traefik reverse proxy. From top-level
 cd servers/gateway
