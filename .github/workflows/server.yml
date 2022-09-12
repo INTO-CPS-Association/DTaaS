@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
       - name: Run the linting checks
         continue-on-error: true
