@@ -25,7 +25,7 @@ export REACT_APP_ENV= "dev | test | prod"
 yarn configapp
 
 yarn start      #start the application
-yarn test       #do 'yarn start' in another terminal before testing the application
+yarn test       #UI testing of the application
 yarn clean      #clean the directory of temporary files
 ```
 
