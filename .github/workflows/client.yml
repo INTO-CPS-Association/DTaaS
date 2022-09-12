@@ -1,0 +1,44 @@
+name: Make quality checks on the client react SPA application
+
+on: 
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    continue-on-error: true    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
+
+      - name: Run the linting checks
+        continue-on-error: true
+        run: |
+          cd client/
+          yarn install
+          yarn syntax
+
+      - name: Build the React SPA website
+        continue-on-error: true
+        run: |
+          cd client/
+          yarn install
+          yarn build
+
+      - name: Run client unit and integration tests
+        continue-on-error: true
+        run: |
+          cd client/
+          yarn install
+          yarn test

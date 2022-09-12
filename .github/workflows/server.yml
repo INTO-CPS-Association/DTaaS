@@ -1,8 +1,7 @@
-name: Run tests
+name: Check the server microservices
+
 on: 
   push:
-    branches:
-      - master
   pull_request:
     branches:
       - main
@@ -16,27 +15,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set cache 
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
       - name: Setup node 
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
-      - name: Run client tests
+      - name: Run the linting checks
         continue-on-error: true
         run: |
-          cd client/
+          cd servers/auth
           yarn install
-          yarn jest test
+          yarn syntax
 
-      - name: Run server tests
+      - name: Run authentication server unit tests
         continue-on-error: true
         run: |
-          cd server/auth/
+          cd servers/auth/
           yarn install
-          yarn jest test
+          yarn test
