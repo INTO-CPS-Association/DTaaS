@@ -1,0 +1,21 @@
+entryPoints:
+  http:
+    address: :80
+
+providers:
+  providersThrottleDuration: 2s
+
+  # File provider for connecting things that are outside of docker / defining middleware
+  file:
+    filename: /etc/traefik/dynamic/fileConfig.yml
+    watch: true
+
+# Enable traefik ui
+api:
+  dashboard: true
+  insecure: true
+
+# Log level INFO|DEBUG|ERROR
+log:
+  level: DEBUG
+

@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+
+# vi: set ft=ruby :
+
+require 'json'
+boxes = JSON.parse(File.read('boxes.json'))
+
+Vagrant.configure(2) do |config|
+
+  boxes.each do |opts|
+    config.vm.define opts["name"] do |node|
+      node.vm.box = "dtaas-base-box"
+      node.vm.hostname = opts["hostname"]
+      node.vm.network "public_network", :bridge => 'ens10f3', :mac => opts["mac"]
+
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = 6096
+        vb.cpus = 3
+        vb.name = opts["name"]
+      end
+
+      node.ssh.private_key_path = "vagrant"
+      node.vm.provision "shell", path: "provision.sh"
+    end
+  end
+
+end
+

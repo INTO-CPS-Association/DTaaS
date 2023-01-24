@@ -1,9 +1,10 @@
 #!/bin/bash
+# Installs necessary packages to create the docker environment for 
+# executing the DTaaS application
+
 apt-get update -y
 apt-get upgrade -y
 
-
-# Install docker for containers and microservices
 # https://docs.docker.com/engine/install/ubuntu/
 apt-get install -y \
     ca-certificates \
@@ -29,9 +30,13 @@ docker run hello-world
 systemctl enable docker.service
 systemctl enable containerd.service
 
+# get the required docker images
+docker pull grafana/grafana
+docker pull traefik:v2.5
+docker pull influxdb:1.8
+docker pull influxdb:2.4
+docker pull telegraf
 
-
-# Install nodejs environment
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
@@ -40,21 +45,17 @@ apt-get update -y
 apt-get install -y yarn
 npm install -g serve
 
-# Install openssl for certificate generation
-apt-get install -y wget openssl
-
-
-# Install jupter toolchain
-sudo apt install -y python3-pip
+apt install -y python3-pip
 sudo -H pip install jupyterlab
 
-# Install playwright tool for integration tests on browsers
-sudo npx playwright install-deps
+# Install minimal Kubernetes cluster
+snap install microk8s --classic
+usermod -a -G microk8s vagrant
+chown -f -R vagrant ~/.kube
+newgrp microk8s
 
-#!/bin/bash
+cat /vagrant/vagrant.pub >> /home/vagrant/.ssh/authorized_keys
+mkdir -p /root/.ssh
+cat /vagrant/vagrant.pub >> /root/.ssh/authorized_keys
 
-
-#-------------
-echo "\n\n Install jupyter toolchain"
-sudo apt install -y python3-pip
-sudo -H pip install jupyterlab
+echo "vagrant ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

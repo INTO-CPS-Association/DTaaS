@@ -1,0 +1,7 @@
+#ipython_notebook::before{
+ content:"The Digital Twin as a Service"
+}
+
+#ipython_notebook img{
+ display:none;
+}

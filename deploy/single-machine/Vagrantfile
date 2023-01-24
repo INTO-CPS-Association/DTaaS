@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "dtaas-base-box"
+
+  # gateway node - hosts traefik, dns and static client website
+  config.vm.define "dtaas-single-machine" do |gateway|
+    gateway.vm.hostname = "sandbox.cps.digit.au.dk" 
+    gateway.vm.network "public_network", :bridge => 'ens10f3', :mac => "02163ee0bf12"
+
+
+    gateway.vm.provider "virtualbox" do |vb|
+      vb.name = "gateway"
+      vb.memory = 16384
+      vb.cpus = 8
+    end
+
+    # remove the incorrect default gateway
+    config.vm.provision "shell",
+    inline: "ip route del default via 10.0.2.2 dev enp0s3"
+
+    gateway.ssh.private_key_path = "vagrant"
+    gateway.vm.provision "shell", path: "single-machine.sh"
+  end
+
+end
+
