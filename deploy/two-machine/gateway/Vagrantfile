@@ -1,0 +1,12 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "sandbox.cps.digit.au.dk" 
+  config.vm.network "public_network", :bridge => 'ens10f3', :mac => "02163ee0bf12"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 16384
+    vb.cpus = 8
+  end
+
+  config.vm.provision "shell", path: "provision.sh"
+end

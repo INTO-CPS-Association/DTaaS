@@ -1,0 +1,49 @@
+http:
+  routers:
+    dtaas:
+      entryPoints:
+        - http
+      rule: 'Host(`worker3.lab.cps.digit.au.dk`)'
+      middlewares:
+        - basic-auth
+      service: dtaas
+
+    user1:
+      entryPoints:
+        - http
+      rule: 'Host(`worker3.lab.cps.digit.au.dk`) && PathPrefix(`/user/1`)'
+      middlewares:
+        - basic-auth
+      service: user1
+
+    user2:
+      entryPoints:
+        - http
+      rule: 'Host(`worker3.lab.cps.digit.au.dk`) && PathPrefix(`/user/2`)'
+      middlewares:
+        - basic-auth
+      service: user2
+
+
+  # Middleware: Basic authentication
+  middlewares:
+    basic-auth:
+      basicAuth:
+        usersFile: "/etc/traefik/auth"
+
+
+  services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:4000"
+
+    user1:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8090"
+
+    user2:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8092"
