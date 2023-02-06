@@ -3,14 +3,15 @@
  */
 import { test } from '@jest/globals';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
 import DigitalTwins from '../src/route/digitaltwins/DigitalTwins';
+import * as ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
 
 test('renders without crashing', () => {
   const div = document.createElement('div');
 
-  /* jshint ignore:start */
-  ReactDOM.render(<DigitalTwins />, div);
-  /* jshint ignore:end */
+  ReactDOM.render(<BrowserRouter><DigitalTwins/></BrowserRouter>, div);
 });
+
