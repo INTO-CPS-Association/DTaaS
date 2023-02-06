@@ -11,7 +11,7 @@ import {
 import Title from '../../page/Title';
 
 // Generate Sales Data
-function createData(time, amount) {
+function createData(time: string, amount: number | undefined) {
   return { time, amount };
 }
 
