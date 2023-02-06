@@ -98,15 +98,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [anchorElUser,
+    setAnchorElUser] = React.useState<EventTarget & HTMLButtonElement | null>(null);
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
   // TODO: Fix the user, ones authentication is implemented
-  const handleOpenUserMenu = (event: any) => {
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
