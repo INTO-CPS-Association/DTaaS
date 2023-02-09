@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "noImplicitAny": false, //raise error on any type
+        "noImplicitAny": true, //raise error on any type
         "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
         "sourceMap": true, //generate .map files
         "target": "es6", //target es6

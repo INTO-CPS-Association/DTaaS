@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Title from '../../page/Title';
 
 // Generate Data of Past DT Runs
-function createData(id, date, name) {
+function createData(id: number, date: string, name: string) {
   return {
     id,
     date,
@@ -30,7 +30,7 @@ const rows = [
   ),
 ];
 
-function preventDefault(event) {
+function preventDefault(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
   event.preventDefault();
 }
 
