@@ -1,11 +1,11 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 
-interface TitleProps {
-  children: React.ReactNode;
+interface TitleProps{
+  children: React.ReactNode
 }
 
-const Title: React.FC<TitleProps> = (props: TitleProps) => {
+function Title(props: TitleProps) {
   return (
     /* jshint ignore:start */
     <Typography component="h2" variant="h6" color="primary" gutterBottom>
