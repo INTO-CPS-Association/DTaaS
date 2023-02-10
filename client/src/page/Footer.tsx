@@ -8,45 +8,33 @@ interface Props {
   sx: SxProps<Theme>;
 }
 
-const Copyright = (props: Props) => {
-  return (
-    /* jshint ignore:start */
-    <Typography
-      variant='body2'
-      color='text.secondary'
-      align='center'
-      {...props}
+const Copyright = (props: Props) => (
+  /* jshint ignore:start */
+  <Typography variant='body2' color='text.secondary' align='center' {...props}>
+    {'Copyright © '}
+    <Link
+      color='inherit'
+      href='https://into-cps.org/'
+      target='_blank'
+      rel='noreferrer'
     >
-      {'Copyright © '}
-      <Link
-        color='inherit'
-        href='https://into-cps.org/'
-        target='_blank'
-        rel='noreferrer'
-      >
-        The INTO-CPS Association
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-    /* jshint ignore:end */
-  );
-};
+      The INTO-CPS Association
+    </Link>{' '}
+    {new Date().getFullYear()}
+    {'.'}
+  </Typography>
+  /* jshint ignore:end */
+);
 
-const RenderFooter = () => {
-  return (
-    /* jshint ignore:start */
-    <React.Fragment>
-      <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
-        <Copyright sx={{ pt: 4 }} />
-      </Container>
-    </React.Fragment>
-    /* jshint ignore:end */
-  );
-};
+const RenderFooter = () => (
+  /* jshint ignore:start */
+  <React.Fragment>
+    <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
+      <Copyright sx={{ pt: 4 }} />
+    </Container>
+  </React.Fragment>
+  /* jshint ignore:end */
+);
 
-const Footer = () => {
-  return <RenderFooter />; /* jshint ignore:line */
-};
-
+const Footer = () => <RenderFooter />; /* jshint ignore:line */
 export default Footer;

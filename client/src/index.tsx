@@ -27,6 +27,6 @@ root.render(
         <Route path='account' element={<Account />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
   /* jshint ignore:end */
 );
