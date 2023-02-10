@@ -170,7 +170,7 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List>
-          {MenuItems}
+          <MenuItems/>
         </List>
       </Drawer>
     </Box>
