@@ -15,7 +15,7 @@ const tolinkStyle = {
   fontWeight: "bold",
 };
 
-const MenuItems = () => (
+const MenuItems: React.FC = () => (
   /* jshint ignore:start */
   <React.Fragment>
     <Link to="/dashboard" style={tolinkStyle}>
