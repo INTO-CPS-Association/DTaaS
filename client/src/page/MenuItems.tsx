@@ -15,9 +15,9 @@ const tolinkStyle = {
   fontWeight: 'bold',
 };
 
-const MenuItems: React.FC = () => (
-  /* jshint ignore:start */
-  <React.Fragment>
+function MenuItems() {
+  return (
+  <>
     <Link to='/dashboard' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
@@ -58,8 +58,8 @@ const MenuItems: React.FC = () => (
         History
       </ListItemButton>
     </Link>
-  </React.Fragment>
-  /* jshint ignore:end */
-);
+  </>
+  );
+}
 
 export default MenuItems;

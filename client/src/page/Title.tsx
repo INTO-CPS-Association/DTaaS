@@ -1,16 +1,16 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
 
-interface TitleProps {
+interface OwnProps {
   children: React.ReactNode;
 }
 
-const Title = (props: TitleProps) => (
-  /* jshint ignore:start */
-  <Typography component="h2" variant="h6" color="primary" gutterBottom>
-    {props.children}
-  </Typography>
-  /* jshint ignore:end */
-);
+function Title(props: OwnProps) {
+  return (
+    <Typography component='h2' variant='h6' color='primary' gutterBottom>
+      {props.children}
+    </Typography>
+  );
+}
 
 export default Title;

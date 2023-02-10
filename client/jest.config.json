@@ -29,6 +29,9 @@
         "window.ENV.SERVER_PORT": 3500
     },
     "verbose": true,
-    "testRegex": "/test/.*\\.[jt]sx?$"
+    "testRegex": "/test/.*\\.[jt]sx?$",
+    "modulePaths": [
+        "<rootDir>/src/"
+      ]
 }
 

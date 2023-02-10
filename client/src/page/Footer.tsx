@@ -4,37 +4,46 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { SxProps, Theme } from '@mui/material/styles';
 
-interface Props {
+interface OwnProps {
   sx: SxProps<Theme>;
 }
 
-const Copyright = (props: Props) => (
-  /* jshint ignore:start */
-  <Typography variant='body2' color='text.secondary' align='center' {...props}>
-    {'Copyright © '}
-    <Link
-      color='inherit'
-      href='https://into-cps.org/'
-      target='_blank'
-      rel='noreferrer'
+function Copyright(props: OwnProps) {
+  return (
+    <Typography
+      variant='body2'
+      color='text.secondary'
+      align='center'
+      {...props}
     >
-      The INTO-CPS Association
-    </Link>{' '}
-    {new Date().getFullYear()}
-    {'.'}
-  </Typography>
-  /* jshint ignore:end */
-);
+      {'Copyright © '}
+      <Link
+        color='inherit'
+        href='https://into-cps.org/'
+        target='_blank'
+        rel='noreferrer'
+      >
+        The INTO-CPS Association
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
-const RenderFooter = () => (
-  /* jshint ignore:start */
-  <React.Fragment>
-    <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
-      <Copyright sx={{ pt: 4 }} />
-    </Container>
-  </React.Fragment>
-  /* jshint ignore:end */
-);
+function RenderFooter() {
+  return (
+    <>
+      <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
+        <Copyright sx={{ pt: 4 }} />
+      </Container>
+    </>
+  );
+}
+
+function Footer() {
+  return <RenderFooter />;
+}
 
 const Footer = () => <RenderFooter />; /* jshint ignore:line */
 export default Footer;

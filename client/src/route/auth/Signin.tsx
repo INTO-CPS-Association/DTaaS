@@ -17,7 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Footer from '../../page/Footer';
 
 // const drawerWidth = 240;
@@ -43,16 +43,15 @@ import Footer from '../../page/Footer';
 //   }),
 // }));
 
-const theme = createTheme();
+const theme: Theme = createTheme();
 
-const SignIn: React.FC = () => {
+function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     window.location.href = '/dashboard';
   };
 
   return (
-    /* jshint ignore:start */
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
@@ -142,8 +141,7 @@ const SignIn: React.FC = () => {
         <Footer />
       </Container>
     </ThemeProvider>
-    /* jshint ignore:end */
   );
-};
+}
 
 export default SignIn;

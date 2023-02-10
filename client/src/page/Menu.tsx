@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import {
+  styled, useTheme, Theme, CSSObject,
+} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -91,12 +93,11 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function MiniDrawer() {
+function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [anchorElUser, setAnchorElUser] = React.useState<
-    (EventTarget & HTMLButtonElement) | null
-  >(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<(EventTarget
+    & HTMLButtonElement) | null>(null);
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -180,3 +181,5 @@ export default function MiniDrawer() {
     </Box>
   );
 }
+
+export default MiniDrawer;

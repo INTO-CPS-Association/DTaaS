@@ -14,8 +14,7 @@ import Account from './route/auth/Account';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
-  /* jshint ignore:start */
-  <React.StrictMode>
+  <>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<SignIn />} />
@@ -27,6 +26,5 @@ root.render(
         <Route path='account' element={<Account />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>,
-  /* jshint ignore:end */
+  </>,
 );

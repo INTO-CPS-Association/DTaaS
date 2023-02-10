@@ -3,14 +3,15 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Title from '../../page/Title';
 
-function preventDefault(event) {
+function preventDefault(
+  event:React.MouseEvent<HTMLAnchorElement> & React.MouseEvent<HTMLSpanElement>,
+) {
   event.preventDefault();
 }
 
 function LogContents() {
   return (
-    /* jshint ignore:start */
-    <React.Fragment>
+    <>
       <Title>Logs</Title>
       <Typography variant='body1' gutterBottom>
         body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
@@ -21,11 +22,10 @@ function LogContents() {
       <Link color='primary' href='#' onClick={preventDefault} sx={{ mt: 3 }}>
         See more
       </Link>
-    </React.Fragment>
-    /* jshint ignore:end */
+    </>
   );
 }
 
 export default function Logs() {
-  return <LogContents />; /* jshint ignore:line */
+  return <LogContents />;
 }
