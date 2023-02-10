@@ -173,7 +173,9 @@ export default function MiniDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>{MenuItems}</List>
+        <List>
+          <MenuItems />
+        </List>
       </Drawer>
     </Box>
   );
