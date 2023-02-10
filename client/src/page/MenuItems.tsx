@@ -1,24 +1,24 @@
-import * as React from "react";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ExtensionIcon from "@mui/icons-material/Extension";
-import PeopleIcon from "@mui/icons-material/People";
-import HistoryIcon from "@mui/icons-material/History";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import { Link } from "react-router-dom";
+import * as React from 'react';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import PeopleIcon from '@mui/icons-material/People';
+import HistoryIcon from '@mui/icons-material/History';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import { Link } from 'react-router-dom';
 
 const tolinkStyle = {
-  margin: "0px 0px 0px",
-  textDecoration: "none",
-  color: "rgb(25, 118, 210)",
-  fontWeight: "bold",
+  margin: '0px 0px 0px',
+  textDecoration: 'none',
+  color: 'rgb(25, 118, 210)',
+  fontWeight: 'bold',
 };
 
 const MenuItems: React.FC = () => (
   /* jshint ignore:start */
   <React.Fragment>
-    <Link to="/dashboard" style={tolinkStyle}>
+    <Link to='/dashboard' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
           <DashboardIcon />
@@ -26,7 +26,7 @@ const MenuItems: React.FC = () => (
         Dashboard
       </ListItemButton>
     </Link>
-    <Link to="/library" style={tolinkStyle}>
+    <Link to='/library' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
           <ExtensionIcon />
@@ -34,7 +34,7 @@ const MenuItems: React.FC = () => (
         Library
       </ListItemButton>
     </Link>
-    <Link to="/digitaltwins" style={tolinkStyle}>
+    <Link to='/digitaltwins' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
           <PeopleIcon />
@@ -42,7 +42,7 @@ const MenuItems: React.FC = () => (
         Digital Twins
       </ListItemButton>
     </Link>
-    <Link to="/sanalysis" style={tolinkStyle}>
+    <Link to='/sanalysis' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
           <QuestionMarkIcon />
@@ -50,7 +50,7 @@ const MenuItems: React.FC = () => (
         Scenario Analysis
       </ListItemButton>
     </Link>
-    <Link to="/history" style={tolinkStyle}>
+    <Link to='/history' style={tolinkStyle}>
       <ListItemButton>
         <ListItemIcon>
           <HistoryIcon />

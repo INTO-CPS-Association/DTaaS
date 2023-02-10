@@ -19,7 +19,7 @@ function HistoryContent() {
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
         <Box
-          component="main"
+          component='main'
           sx={{
             flexGrow: 1,
             height: '100vh',
@@ -27,7 +27,7 @@ function HistoryContent() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Past Runs */}
               <Grid item xs={12}>

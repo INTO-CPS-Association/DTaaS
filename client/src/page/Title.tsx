@@ -1,5 +1,5 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
+import * as React from 'react';
+import Typography from '@mui/material/Typography';
 
 interface TitleProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface TitleProps {
 const Title = (props: TitleProps) => {
   return (
     /* jshint ignore:start */
-    <Typography component="h2" variant="h6" color="primary" gutterBottom>
+    <Typography component='h2' variant='h6' color='primary' gutterBottom>
       {props.children}
     </Typography>
     /* jshint ignore:end */

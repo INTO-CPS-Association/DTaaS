@@ -1,11 +1,7 @@
 import '@fontsource/roboto';
 
 import React from 'react';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import Dashboard from './route/dashboard/Dashboard';
 import Library from './route/library/Library';
@@ -22,15 +18,15 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SignIn />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="library" element={<Library />} />
-        <Route path="digitaltwins" element={<DigitalTwins />} />
-        <Route path="sanalysis" element={<ScenarioAnalysis />} />
-        <Route path="history" element={<DTHistory />} />
-        <Route path="account" element={<Account />} />
+        <Route path='/' element={<SignIn />} />
+        <Route path='dashboard' element={<Dashboard />} />
+        <Route path='library' element={<Library />} />
+        <Route path='digitaltwins' element={<DigitalTwins />} />
+        <Route path='sanalysis' element={<ScenarioAnalysis />} />
+        <Route path='history' element={<DTHistory />} />
+        <Route path='account' element={<Account />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
   /* jshint ignore:end */
 );

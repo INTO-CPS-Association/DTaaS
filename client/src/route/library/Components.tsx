@@ -9,14 +9,12 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 function TabPanel(props) {
-  const {
-    children, value, index, ...other
-  } = props;
+  const { children, value, index, ...other } = props;
 
   return (
     /* jshint ignore:start */
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
@@ -56,29 +54,33 @@ export default function LibComponents() {
     /* jshint ignore:start */
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Functions" {...a11yProps(0)} />
-          <Tab label="Models" {...a11yProps(1)} />
-          <Tab label="Tools" {...a11yProps(2)} />
-          <Tab label="Data" {...a11yProps(3)} />
-          <Tab label="Digital Twins" {...a11yProps(4)} />
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label='basic tabs example'
+        >
+          <Tab label='Functions' {...a11yProps(0)} />
+          <Tab label='Models' {...a11yProps(1)} />
+          <Tab label='Tools' {...a11yProps(2)} />
+          <Tab label='Data' {...a11yProps(3)} />
+          <Tab label='Digital Twins' {...a11yProps(4)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        A selection of functions useful for composition of digital twins.
-        The functions for data processing and analysis scripts can be placed here.
+        A selection of functions useful for composition of digital twins. The
+        functions for data processing and analysis scripts can be placed here.
       </TabPanel>
       <TabPanel value={value} index={1}>
-          Digital twin models
+        Digital twin models
       </TabPanel>
       <TabPanel value={value} index={2}>
-          Digital twin execution software
+        Digital twin execution software
       </TabPanel>
       <TabPanel value={value} index={3}>
-          Data sources for execution of digital twins
+        Data sources for execution of digital twins
       </TabPanel>
       <TabPanel value={value} index={4}>
-          Ready to use digital twins
+        Ready to use digital twins
       </TabPanel>
     </Box>
     /* jshint ignore:end */
