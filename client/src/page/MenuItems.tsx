@@ -17,48 +17,48 @@ const tolinkStyle = {
 
 function MenuItems() {
   return (
-  <>
-    <Link to='/dashboard' style={tolinkStyle}>
-      <ListItemButton>
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        Dashboard
-      </ListItemButton>
-    </Link>
-    <Link to='/library' style={tolinkStyle}>
-      <ListItemButton>
-        <ListItemIcon>
-          <ExtensionIcon />
-        </ListItemIcon>
-        Library
-      </ListItemButton>
-    </Link>
-    <Link to='/digitaltwins' style={tolinkStyle}>
-      <ListItemButton>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        Digital Twins
-      </ListItemButton>
-    </Link>
-    <Link to='/sanalysis' style={tolinkStyle}>
-      <ListItemButton>
-        <ListItemIcon>
-          <QuestionMarkIcon />
-        </ListItemIcon>
-        Scenario Analysis
-      </ListItemButton>
-    </Link>
-    <Link to='/history' style={tolinkStyle}>
-      <ListItemButton>
-        <ListItemIcon>
-          <HistoryIcon />
-        </ListItemIcon>
-        History
-      </ListItemButton>
-    </Link>
-  </>
+    <>
+      <Link to="/dashboard" style={tolinkStyle}>
+        <ListItemButton>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          Dashboard
+        </ListItemButton>
+      </Link>
+      <Link to="/library" style={tolinkStyle}>
+        <ListItemButton>
+          <ListItemIcon>
+            <ExtensionIcon />
+          </ListItemIcon>
+          Library
+        </ListItemButton>
+      </Link>
+      <Link to="/digitaltwins" style={tolinkStyle}>
+        <ListItemButton>
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          Digital Twins
+        </ListItemButton>
+      </Link>
+      <Link to="/sanalysis" style={tolinkStyle}>
+        <ListItemButton>
+          <ListItemIcon>
+            <QuestionMarkIcon />
+          </ListItemIcon>
+          Scenario Analysis
+        </ListItemButton>
+      </Link>
+      <Link to="/history" style={tolinkStyle}>
+        <ListItemButton>
+          <ListItemIcon>
+            <HistoryIcon />
+          </ListItemIcon>
+          History
+        </ListItemButton>
+      </Link>
+    </>
   );
 }
 

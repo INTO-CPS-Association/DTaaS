@@ -1,8 +1,8 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
-import { SxProps, Theme } from "@mui/material/styles";
+import * as React from 'react';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import { SxProps, Theme } from '@mui/material/styles';
 
 interface OwnProps {
   sx: SxProps<Theme>;
@@ -16,7 +16,7 @@ function Copyright(props: OwnProps) {
       align="center"
       {...props}
     >
-      {"Copyright © "}
+      {'Copyright © '}
       <Link
         color="inherit"
         href="https://into-cps.org/"
@@ -24,9 +24,9 @@ function Copyright(props: OwnProps) {
         rel="noreferrer"
       >
         The INTO-CPS Association
-      </Link>{" "}
+      </Link>{' '}
       {new Date().getFullYear()}
-      {"."}
+      {'.'}
     </Typography>
   );
 }

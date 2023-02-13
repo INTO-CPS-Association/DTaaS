@@ -17,13 +17,13 @@ root.render(
   <>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<SignIn />} />
-        <Route path='dashboard' element={<Dashboard />} />
-        <Route path='library' element={<Library />} />
-        <Route path='digitaltwins' element={<DigitalTwins />} />
-        <Route path='sanalysis' element={<ScenarioAnalysis />} />
-        <Route path='history' element={<DTHistory />} />
-        <Route path='account' element={<Account />} />
+        <Route path="/" element={<SignIn />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="library" element={<Library />} />
+        <Route path="digitaltwins" element={<DigitalTwins />} />
+        <Route path="sanalysis" element={<ScenarioAnalysis />} />
+        <Route path="history" element={<DTHistory />} />
+        <Route path="account" element={<Account />} />
       </Routes>
     </BrowserRouter>
   </>,

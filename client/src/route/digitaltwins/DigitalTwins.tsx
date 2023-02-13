@@ -18,7 +18,7 @@ function DTContent() {
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
         <Box
-          component='main'
+          component="main"
           sx={{
             flexGrow: 1,
             height: '100vh',
@@ -26,7 +26,7 @@ function DTContent() {
           }}
         >
           <Toolbar />
-          <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Components */}
               <Grid item xs={12} md={8} lg={9}>

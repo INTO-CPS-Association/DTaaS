@@ -1,11 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
 
-interface OwnProps{
-    children: React.ReactNode,
-    index: number,
-    value: number,
-  }
+interface OwnProps {
+  children: React.ReactNode;
+  index: number;
+  value: number;
+}
 
 function TabPanel(props: OwnProps) {
   const {
@@ -29,7 +29,7 @@ function TabPanel(props: OwnProps) {
   );
 }
 
-function a11yProps(index:number) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,

@@ -16,8 +16,10 @@ function createData(id: number, date: string, name: string) {
   };
 }
 
-function preventDefault(event: React.MouseEvent<HTMLAnchorElement>
-  & React.MouseEvent<HTMLSpanElement>) {
+function preventDefault(
+  event: React.MouseEvent<HTMLAnchorElement> &
+    React.MouseEvent<HTMLSpanElement>,
+) {
   event.preventDefault();
 }
 
@@ -31,7 +33,7 @@ function RecentRuns() {
   return (
     <>
       <Title>Recent Runs</Title>
-      <Table size='small'>
+      <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
@@ -47,7 +49,7 @@ function RecentRuns() {
           ))}
         </TableBody>
       </Table>
-      <Link color='primary' href='#' onClick={preventDefault} sx={{ mt: 3 }}>
+      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
         See more
       </Link>
     </>
