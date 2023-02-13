@@ -7,7 +7,10 @@ import TabPanel, { a11yProps } from 'components/TabPanel';
 function AccountTabs() {
   const [value, setValue] = React.useState<number>(0);
 
-  const handleChange = (event: React.SyntheticEvent<Element, Event>, newValue: number) => {
+  const handleChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    newValue: number,
+  ) => {
     setValue(newValue);
   };
 

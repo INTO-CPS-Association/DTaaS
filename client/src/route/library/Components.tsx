@@ -10,7 +10,10 @@ import TabPanel, { a11yProps } from 'components/TabPanel';
 function LibComponents() {
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event:React.SyntheticEvent<Element, Event>, newValue:number) => {
+  const handleChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    newValue: number,
+  ) => {
     setValue(newValue);
   };
 
@@ -20,13 +23,13 @@ function LibComponents() {
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label='basic tabs example'
+          aria-label="basic tabs example"
         >
-          <Tab label='Functions' {...a11yProps(0)} />
-          <Tab label='Models' {...a11yProps(1)} />
-          <Tab label='Tools' {...a11yProps(2)} />
-          <Tab label='Data' {...a11yProps(3)} />
-          <Tab label='Digital Twins' {...a11yProps(4)} />
+          <Tab label="Functions" {...a11yProps(0)} />
+          <Tab label="Models" {...a11yProps(1)} />
+          <Tab label="Tools" {...a11yProps(2)} />
+          <Tab label="Data" {...a11yProps(3)} />
+          <Tab label="Digital Twins" {...a11yProps(4)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>

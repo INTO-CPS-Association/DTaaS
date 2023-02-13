@@ -41,7 +41,9 @@
         "react/prop-types": "off",  
         "linebreak-style": 0, // disable linter linebreak rule, to allow for both unix and windows developement
         "import/no-unresolved": "off",  // Whatever IDE will pass an error if if the module is not found, so no reason for this..
-        "import/extensions": "off"      // That includes the production build.. We use linter for code checking / clean code optimization..
+        "import/extensions": "off",      // That includes the production build.. We use linter for code checking / clean code optimization..
+        "no-use-before-define": "off",
+        "indent": ["error", 2]
     },
     "overrides": [
         {
