@@ -5,7 +5,7 @@ import Link from '@mui/material/Link';
 import { SxProps, Theme } from '@mui/material/styles';
 
 interface OwnProps {
-  sx: SxProps<Theme>;
+  sx?: SxProps<Theme>;
 }
 
 function Copyright(props: OwnProps) {
@@ -31,11 +31,34 @@ function Copyright(props: OwnProps) {
   );
 }
 
+function Acknowledgements(props: OwnProps) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {'Thanks to Material-UI for the '}
+      <Link
+        color="inherit"
+        href="https://github.com/mui/material-ui/tree/v5.11.9/docs/data/material/getting-started/templates/dashboard"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {'Dashboard template'}
+      </Link>
+      {', which was the basis for our React app.'}
+    </Typography>
+  );
+}
+
 function RenderFooter() {
   return (
     <>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Copyright sx={{ pt: 4 }} />
+        <Acknowledgements sx={{ pt: 4 }} />
       </Container>
     </>
   );
