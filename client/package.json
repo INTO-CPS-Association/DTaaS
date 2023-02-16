@@ -14,12 +14,16 @@
     "build": "script/build.bash",
     "configapp": "script/config.bash",
     "start": "script/start.bash",
+    "dev": "react-scripts start",
     "clean": "script/clean.bash"
   },
   "eslintConfig": {
     "extends": [
       "react-app"
     ]
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "dependencies": {
     "@emotion/react": "^11.10.0",

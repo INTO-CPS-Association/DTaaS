@@ -13,7 +13,7 @@
         "removeComments": true, //remove comments from build
         "noImplicitReturns": true, //raise error on implicit returns
         "noUnusedLocals": true, //raise error on unused locals
-        "noUnusedParameters": true, //raise no error on unused parameters
+        "noUnusedParameters": false, //raise no error on unused parameters
         "strict": true, //enable all strict type-checking options
         "outDir": "dist", //output directory
         "baseUrl": "src", //base url for imports
