@@ -8,7 +8,7 @@ const config = {
   timeout: 30000,
   globalTimeout: 600000,
   testDir: './test/e2e',
-  testMatch: /.*\.ts/,
+  testMatch: /.*\test\.ts/,
   reporter: [['html'], ['list']],
   use: {
     baseURL: 'http://localhost:4000',
