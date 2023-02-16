@@ -35,7 +35,7 @@
     },
     "plugins": ["jsx-a11y", "react", "jest"],
     "rules": {
-        // "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
         "no-console": "error",
         "import/first": "error",
         "react/prop-types": "off",  
