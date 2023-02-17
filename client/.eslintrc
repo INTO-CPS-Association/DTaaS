@@ -1,67 +1,68 @@
 {
-    "env": {
+  "env": {
     "browser": true,
     "es6": true,
     "jest": true,
     "jest/globals": true
-    },
-    "extends": [
+  },
+  "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "airbnb-base"
-    ],
-    "globals": {
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
     },
-    "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"]
+      }
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "parser": "@babel/eslint-parser",
+    "requireConfigFile": false,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module" // Allows for the use of imports
+  },
+  "plugins": ["jsx-a11y", "react", "jest", "@typescript-eslint"],
+  "rules": {
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "no-console": "error",
+    "import/first": "error",
+    "react/prop-types": "off",
+    "linebreak-style": 0, // disable linter linebreak rule, to allow for both unix and windows developement
+    "import/no-unresolved": "off", // Whatever IDE will pass an error if if the module is not found, so no reason for this..
+    "import/extensions": "off", // That includes the production build.. We use linter for code checking / clean code optimization..
+    "no-use-before-define": "off"
+  },
+  "root": true,
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "settings": {
         "react": {
-            "version": "detect"
-        },
-        "import/resolver": {
-            "node": {
-                "extensions": [".js", ".jsx"]
-            }
+          "pragma": "React",
+          "version": "detect"
         }
-    },
-    "parserOptions": {
-        "parser": "@babel/eslint-parser",
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
         "requireConfigFile": false,
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module" // Allows for the use of imports
-    },
-    "plugins": ["jsx-a11y", "react", "jest"],
-    "rules": {
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-        "no-console": "error",
-        "import/first": "error",
-        "react/prop-types": "off",  
-        "linebreak-style": 0, // disable linter linebreak rule, to allow for both unix and windows developement
-        "import/no-unresolved": "off",  // Whatever IDE will pass an error if if the module is not found, so no reason for this..
-        "import/extensions": "off",      // That includes the production build.. We use linter for code checking / clean code optimization..
-        "no-use-before-define": "off",
-        "indent": ["error", 2]
-    },
-    "overrides": [
-        {
-            "files": ["*.ts","*.tsx"],
-            "settings": {
-                "react": {
-                    "pragma": "React",
-                    "version": "detect"
-                }
-            },
-            "parser": "@typescript-eslint/parser",
-            "parserOptions": {
-                "requireConfigFile": false,
-                "project": ["./tsconfig.json"]
-            },
-            "plugins":[
-                "@typescript-eslint"
-            ]
-        }
-    ]
+        "project": ["./tsconfig.json"]
+      },
+      "plugins": ["@typescript-eslint"]
+    }
+  ]
 }
