@@ -1,11 +1,7 @@
 import '@fontsource/roboto';
 
 import React from 'react';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import Dashboard from './route/dashboard/Dashboard';
 import Library from './route/library/Library';
@@ -15,10 +11,10 @@ import DTHistory from './route/history/History';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
 root.render(
-  /* jshint ignore:start */
-  <React.StrictMode>
+  <>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SignIn />} />
@@ -30,6 +26,5 @@ root.render(
         <Route path="account" element={<Account />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>,
-  /* jshint ignore:end */
+  </>,
 );

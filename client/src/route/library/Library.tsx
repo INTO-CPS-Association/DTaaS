@@ -1,20 +1,18 @@
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import RecentRuns from './RecentRuns';
 import Footer from '../../page/Footer';
 import DTaaSMenu from '../../page/Menu';
-import Logs from './Logs';
+import LibComponents from './Components';
 
-const mdTheme = createTheme();
+const mdTheme: Theme = createTheme();
 
-function HistoryContent() {
+function LibraryContent() {
   return (
-    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -29,28 +27,29 @@ function HistoryContent() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {/* Past Runs */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <RecentRuns />
-                </Paper>
-              </Grid>
-              {/* Logs */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Logs />
+              {/* Components */}
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <LibComponents />
                 </Paper>
               </Grid>
             </Grid>
+
             <Footer />
           </Container>
         </Box>
       </Box>
     </ThemeProvider>
-    /* jshint ignore:end */
   );
 }
 
-export default function DTHistory() {
-  return <HistoryContent />; /* jshint ignore:line */
+export default function Library() {
+  return <LibraryContent />;
 }

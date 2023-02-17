@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
@@ -9,11 +9,10 @@ import Footer from '../../page/Footer';
 import DTaaSMenu from '../../page/Menu';
 import Workflows from './Workflows';
 
-const mdTheme = createTheme();
+const mdTheme: Theme = createTheme();
 
 function SAnalysisContent() {
   return (
-    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -27,20 +26,20 @@ function SAnalysisContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={3}>
-            {/* Components */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: 240,
-                }}
-              >
-                <Workflows />
-              </Paper>
-            </Grid>
+            <Grid container spacing={3}>
+              {/* Components */}
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <Workflows />
+                </Paper>
+              </Grid>
             </Grid>
 
             <Footer />
@@ -48,10 +47,9 @@ function SAnalysisContent() {
         </Box>
       </Box>
     </ThemeProvider>
-    /* jshint ignore:end */
   );
 }
 
 export default function ScenarioAnalysis() {
-  return <SAnalysisContent />; /* jshint ignore:line */
+  return <SAnalysisContent />;
 }

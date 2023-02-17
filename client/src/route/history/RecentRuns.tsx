@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Title from '../../page/Title';
 
 // Generate Data of Past DT Runs
-function createData(id, date, name) {
+function createData(id: number, date: string, name: string) {
   return {
     id,
     date,
@@ -16,28 +16,22 @@ function createData(id, date, name) {
   };
 }
 
-const rows = [
-  createData(
-    0,
-    '16 Mar, 2022',
-    'Agrointelli Factory',
-  ),
-  createData(1, '10 May, 2022', 'Mass Spring Dampner'),
-  createData(
-    2,
-    '16 August, 2022',
-    'Electroingenium Rotary Dryer',
-  ),
-];
-
-function preventDefault(event) {
+function preventDefault(
+  event: React.MouseEvent<HTMLAnchorElement> &
+    React.MouseEvent<HTMLSpanElement>,
+) {
   event.preventDefault();
 }
 
-export default function RecentRuns() {
+const rows = [
+  createData(0, '16 Mar, 2022', 'Agrointelli Factory'),
+  createData(1, '10 May, 2022', 'Mass Spring Dampner'),
+  createData(2, '16 August, 2022', 'Electroingenium Rotary Dryer'),
+];
+
+function RecentRuns() {
   return (
-    /* jshint ignore:start */
-    <React.Fragment>
+    <>
       <Title>Recent Runs</Title>
       <Table size="small">
         <TableHead>
@@ -58,7 +52,8 @@ export default function RecentRuns() {
       <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
         See more
       </Link>
-    </React.Fragment>
-    /* jshint ignore:end */
+    </>
   );
 }
+
+export default RecentRuns;

@@ -1,19 +1,19 @@
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import RecentRuns from './RecentRuns';
 import Footer from '../../page/Footer';
 import DTaaSMenu from '../../page/Menu';
-import Workflows from './Workflows';
+import Logs from './Logs';
 
-const mdTheme = createTheme();
+const mdTheme: Theme = createTheme();
 
-function DTContent() {
+function HistoryContent() {
   return (
-    /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <DTaaSMenu />
@@ -27,31 +27,28 @@ function DTContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={3}>
-            {/* Components */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: 240,
-                }}
-              >
-                <Workflows />
-              </Paper>
+            <Grid container spacing={3}>
+              {/* Past Runs */}
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                  <RecentRuns />
+                </Paper>
+              </Grid>
+              {/* Logs */}
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                  <Logs />
+                </Paper>
+              </Grid>
             </Grid>
-            </Grid>
-
             <Footer />
           </Container>
         </Box>
       </Box>
     </ThemeProvider>
-    /* jshint ignore:end */
   );
 }
 
-export default function DigitalTwins() {
-  return <DTContent />; /* jshint ignore:line */
+export default function DTHistory() {
+  return <HistoryContent />;
 }

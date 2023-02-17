@@ -7,26 +7,25 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Footer from '../../page/Footer';
 import DTaaSMenu from '../../page/Menu';
-import LibComponents from './Components';
+import AccountTabs from './AccountTabs';
 
 const mdTheme = createTheme();
 
-function LibraryContent() {
-  return (
-    /* jshint ignore:start */
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <DTaaSMenu />
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+const DTContent: React.FC = () => (
+  /* jshint ignore:start */
+  <ThemeProvider theme={mdTheme}>
+    <Box sx={{ display: 'flex' }}>
+      <DTaaSMenu />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          height: '100vh',
+          overflow: 'auto',
+        }}
+      >
+        <Toolbar />
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Grid container spacing={3}>
             {/* Components */}
             <Grid item xs={12} md={8} lg={9}>
@@ -38,20 +37,17 @@ function LibraryContent() {
                   height: 240,
                 }}
               >
-                <LibComponents />
+                <AccountTabs />
               </Paper>
             </Grid>
-            </Grid>
-
-            <Footer />
-          </Container>
-        </Box>
+          </Grid>
+          <Footer />
+        </Container>
       </Box>
-    </ThemeProvider>
-    /* jshint ignore:end */
-  );
-}
+    </Box>
+  </ThemeProvider>
+  /* jshint ignore:end */
+);
 
-export default function Library() {
-  return <LibraryContent />; /* jshint ignore:line */
-}
+const DigitalTwins: React.FC = () => <DTContent />; /* jshint ignore:line */
+export default DigitalTwins;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import {
   LineChart,
   Line,
@@ -11,7 +11,7 @@ import {
 import Title from '../../page/Title';
 
 // Generate Sales Data
-function createData(time, amount) {
+function createData(time: string, amount: number | undefined) {
   return { time, amount };
 }
 
@@ -27,12 +27,11 @@ const data = [
   createData('24:00', undefined),
 ];
 
-export default function Chart() {
-  const theme = useTheme();
+function Chart() {
+  const theme: Theme = useTheme();
 
   return (
-    /* jshint ignore:start */
-    <React.Fragment>
+    <>
       <Title>Observed Output</Title>
       <ResponsiveContainer>
         <LineChart
@@ -48,8 +47,7 @@ export default function Chart() {
             dataKey="time"
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
-          >
-          </XAxis>
+          ></XAxis>
           <YAxis
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
@@ -75,7 +73,8 @@ export default function Chart() {
           />
         </LineChart>
       </ResponsiveContainer>
-    </React.Fragment>
-    /* jshint ignore:end */
+    </>
   );
 }
+
+export default Chart;

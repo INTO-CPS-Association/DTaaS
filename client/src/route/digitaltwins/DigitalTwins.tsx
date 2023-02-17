@@ -1,21 +1,17 @@
-/*
-source: https://github.com/mui/material-ui/tree/v5.10.0/docs/data/material/getting-started/templates/dashboard
-*/
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Chart from '../history/Chart';
-import RecentRuns from '../history/RecentRuns';
 import Footer from '../../page/Footer';
 import DTaaSMenu from '../../page/Menu';
+import Workflows from './Workflows';
 
-const mdTheme = createTheme();
+const mdTheme: Theme = createTheme();
 
-function DashboardContent() {
+function DTContent() {
   return (
     /* jshint ignore:start */
     <ThemeProvider theme={mdTheme}>
@@ -32,7 +28,7 @@ function DashboardContent() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {/* Chart */}
+              {/* Components */}
               <Grid item xs={12} md={8} lg={9}>
                 <Paper
                   sx={{
@@ -42,16 +38,11 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Chart />
-                </Paper>
-              </Grid>
-              {/* Past Runs */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <RecentRuns />
+                  <Workflows />
                 </Paper>
               </Grid>
             </Grid>
+
             <Footer />
           </Container>
         </Box>
@@ -61,6 +52,6 @@ function DashboardContent() {
   );
 }
 
-export default function Dashboard() {
-  return <DashboardContent />; /* jshint ignore:line */
+export default function DigitalTwins() {
+  return <DTContent />; /* jshint ignore:line */
 }
