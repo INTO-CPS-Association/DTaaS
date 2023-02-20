@@ -1,6 +1,6 @@
 name: Check the server microservices
 
-on: 
+on:
   push:
   pull_request:
   workflow_dispatch:
@@ -8,28 +8,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    continue-on-error: true    
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup node 
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
 
       - name: Run the linting checks
         continue-on-error: true
         run: |
-          cd servers/auth
+          cd servers/lib
           yarn install
           yarn syntax
 
       - name: Run authentication server unit tests
         continue-on-error: true
         run: |
-          cd servers/auth/
+          cd servers/lib/
           yarn install
           yarn test

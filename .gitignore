@@ -113,3 +113,6 @@ build/
 # Test reports
 coverage/
 playwright-report/
+servers/.DS_Store
+data/.DS_Store
+**/.DS_Store
