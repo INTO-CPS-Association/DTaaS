@@ -1,0 +1,51 @@
+{
+  "name": "auth-ms",
+  "version": "0.1.0",
+  "description": "microservice for authentication",
+  "main": "index.js",
+  "author": "prasadtalasila <prasad.talasila@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "script/test.bash",
+    "syntax": "script/syntax.bash",
+    "build": "script/build.bash",
+    "start": "script/start.bash",
+    "clean": "script/clean.bash"
+  },
+  "dependencies": {
+    "@nestjs/apollo": "^10.2.0",
+    "@nestjs/cli": "^9.2.0",
+    "@nestjs/graphql": "^10.2.0",
+    "@nestjs/mapped-types": "^1.2.2",
+    "apollo-server-express": "^3.11.1",
+    "dotenv": "^16.0.1",
+    "env-var": "^7.1.1",
+    "glob": "^8.1.0",
+    "graphql": "^16.6.0",
+    "typescript": "^4.7.4",
+    "winston": "^3.8.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.18.10",
+    "@babel/eslint-parser": "^7.18.9",
+    "@babel/plugin-transform-typescript": "^7.18.12",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/glob": "^8.0.1",
+    "@types/jest": "^28.1.7",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "babel-jest": "^28.1.3",
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.8.2",
+    "jest": "^28.1.3",
+    "jshint": "^2.13.5",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.8"
+  }
+}
