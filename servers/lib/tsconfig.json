@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": false, //raise error on any type
+        "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
+        "sourceMap": true, //generate .map files
+        "target": "es5", //target es5
+        "types": ["node", "jest"], //use react and node types
+        "module": "esnext", //use esnext modules
+        "moduleResolution": "node", //use node module resolution strategy node
+        "experimentalDecorators": true, //allow experimental decorators for es7
+        "declaration": false, //don't generate declaration '.d.ts' files
+        "removeComments": true, //remove comments from build
+        "noImplicitReturns": true, //raise error on implicit returns
+        "noUnusedLocals": true, //raise error on unused locals
+        "noUnusedParameters": false, //raise no error on unused parameters
+        "strict": true, //enable all strict type-checking options
+        "outDir": "dist", //output directory
+        "baseUrl": "src", //base url for imports
+        "typeRoots": ["node_modules/@types", //use node_modules/@types for type definitions
+        ],
+        "strictNullChecks": true, //enable strict null checks
+
+
+        "allowJs": true, //allow javascript files for now until we convert everything to typescript
+    },
+    "exclude": [
+        "**/node_modules/*",
+        "babel.config.js",
+        "dist"
+    ]
+}
