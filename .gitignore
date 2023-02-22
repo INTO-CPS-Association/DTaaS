@@ -111,3 +111,4 @@ build/
 coverage/
 playwright-report/
 servers/.DS_Store
+**/.DS_Store
