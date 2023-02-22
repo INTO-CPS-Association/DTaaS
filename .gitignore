@@ -110,3 +110,4 @@ build/
 # Test reports
 coverage/
 playwright-report/
+servers/.DS_Store
