@@ -45,8 +45,9 @@ function Workflows() {
     },
   ];
 
+  // TODO: Make this grow to fit the parent container.
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', height: '100%' }} className="BoxContainer">
       <TabComponent tabs={tabs} />
     </Box>
   );
