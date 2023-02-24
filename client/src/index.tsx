@@ -11,7 +11,7 @@ import DTHistory from './route/history/History';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
-const root = ReactDOM.createRoot(document.getElementById('root')!);
+const root = ReactDOM.createRoot(document.body);
 
 root.render(
   <>

@@ -7,24 +7,37 @@ import { useState, SyntheticEvent } from 'react';
 import Iframe from 'components/Iframe';
 
 function Workflows() {
-  const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
+  const [activeTab, setSelectedTabIndex] = useState<number>(0);
 
+  // TODO: Make interface for this. Set index as key.
   const tabs = [
-    { label: 'Create', index: 0 },
-    { label: 'Execute', index: 1 },
-    { label: 'Analyze', index: 2 },
+    {
+      label: 'Create',
+      index: 0,
+      body: 'Create digital twins from available library components. The text and graphical configuration of digital twins happen here.',
+    },
+    {
+      label: 'Execute',
+      index: 1,
+      body: 'Execute the digital twins with the DTaaS performing the automated deployment and execution. Potential realtime interactions must be possible. There should be an accordion of DT summary, Visualization, Output, Logs.',
+    },
+    {
+      label: 'Analyze',
+      index: 2,
+      body: 'Execution summary, output data in text and graphical formats',
+    },
   ];
 
-  // TODO: URL should depend on the selected tab
-  const jupyterURL = 'https://jupyterlite.github.io/demo/repl/index.html?kernel=javascript&toolbar=0'
-    .concat(
-      selectedTabIndex.toString(),
+  // TODO: URL should depend on the selected tab. Get from .env
+  const jupyterURL =
+    'https://jupyterlite.github.io/demo/repl/index.html?kernel=javascript&toolbar='.concat(
+      activeTab.toString()
     );
 
-  const handleChange = (
-    event: SyntheticEvent<Element, Event>,
-    newValue: number,
-  ) => {
+  const handleTabChange = (
+    _event: SyntheticEvent<Element, Event>,
+    newValue: number
+  ): void => {
     setSelectedTabIndex(newValue);
   };
 
@@ -32,31 +45,25 @@ function Workflows() {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
-          value={selectedTabIndex}
-          onChange={handleChange}
+          value={activeTab}
+          onChange={handleTabChange}
           aria-label="basic tabs example"
         >
-          <Tab label={tabs[0].label} {...a11yProps(0)} />
-          <Tab label={tabs[1].label} {...a11yProps(1)} />
-          <Tab label={tabs[2].label} {...a11yProps(2)} />
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.index}
+              label={tab.label}
+              {...a11yProps(tab.index)}
+            />
+          ))}
         </Tabs>
       </Box>
-      <TabPanel value={selectedTabIndex} index={0}>
-        Create digital twins from available library components. The text and
-        graphical configuration of digital twins happen here.
-        <Iframe data={tabs[0]} url={jupyterURL} />
-      </TabPanel>
-      <TabPanel value={selectedTabIndex} index={1}>
-        Execute the digital twins with the DTaaS performing the automated
-        deployment and execution. Potential realtime interactions must be
-        possible. There should be an accordion of DT summary, Visualization,
-        Output, Logs.
-        <Iframe data={tabs[1]} url={jupyterURL} />
-      </TabPanel>
-      <TabPanel value={selectedTabIndex} index={2}>
-        Execution summary, output data in text and graphical formats
-        <Iframe data={tabs[2]} url={jupyterURL} />
-      </TabPanel>
+      {tabs.map((tab) => (
+        <TabPanel key={tab.index} value={activeTab} index={tab.index}>
+          {tab.body}
+          <Iframe data={tab} url={jupyterURL} />
+        </TabPanel>
+      ))}
     </Box>
   );
 }
