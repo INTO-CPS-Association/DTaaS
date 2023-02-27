@@ -5,8 +5,8 @@ import TabComponent, { TabData } from 'components/tab/TabComponent';
 
 function Workflows() {
   // TODO: URL should depend on the selected tab. Get from .env
-  const jupyterURL =
-    'https://jupyterlite.github.io/demo/repl/index.html?kernel=javascript&toolbar=';
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const jupyterURL = process.env.REACT_APP_JUPYTER_URL!;
 
   const tabs: TabData[] = [
     {
