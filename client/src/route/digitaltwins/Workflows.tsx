@@ -11,12 +11,13 @@ function Workflows() {
   const tabs: TabData[] = [
     {
       index: 0 as TabData['index'],
+      fullsize: true,
       label: 'Create',
       body: (
         </* TODO: Add grow property here */> 
           Create digital twins from available library components. The text and
           graphical configuration of digital twins happen here.
-          <Iframe url={jupyterURL} />
+          <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
         </>
       ),
     },
@@ -29,7 +30,6 @@ function Workflows() {
           deployment and execution. Potential realtime interactions must be
           possible. There should be an accordion of DT summary, Visualization,
           Output, Logs.
-          <Iframe url={jupyterURL} />
         </>
       ),
     },
@@ -39,16 +39,12 @@ function Workflows() {
       body: (
         <>
           Execution summary, output data in text and graphical formats.
-          <Iframe url={jupyterURL} />
         </>
       ),
     },
   ];
 
-  // TODO: Make this grow to fit the parent container.
-  return <TabComponent tabs={tabs} />;
-  /* <Box sx={{ width: '100%', height: '100%', flexGrow: 1 }} className="BoxContainer"> */
-  /* </Box> */
+  return <TabComponent tabs={tabs}/>;
 }
 
 export default Workflows;

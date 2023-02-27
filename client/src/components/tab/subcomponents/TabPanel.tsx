@@ -5,27 +5,39 @@ interface OwnProps {
   children: React.ReactNode;
   index: number;
   value: number;
+  fullsize?: boolean;
 }
 
 function TabPanel(props: OwnProps) {
-  const {
-    children, value, index, ...other
-  } = props;
+  const { children, value, index, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
-      hidden={value !== index}
+      display={value === index ? 'block' : 'none'}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
+      sx={{
+        p: 2,
+        ...(props.fullsize
+          ? { display: 'flex', flexDirection: 'column', flexGrow: 1 }
+          : { minHeight: '100%' }),
+      }}
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
+        <Typography
+          {...props}
+          sx={
+            props.fullsize
+              ? { display: 'flex', flexDirection: 'column', flexGrow: 1 }
+              : { minHeight: '100%' }
+          }
+        >
+          {children}
+        </Typography>
       )}
-    </div>
+    </Box>
   );
 }
 

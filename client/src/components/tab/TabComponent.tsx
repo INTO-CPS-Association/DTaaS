@@ -2,6 +2,7 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import TabPanel, { a11yProps } from 'components/tab/subcomponents/TabPanel';
 import { useState, SyntheticEvent } from 'react';
 
@@ -11,9 +12,10 @@ export interface TabData {
   index: TabDataIndex;
   label: string;
   body: JSX.Element;
+  fullsize?: boolean;
 }
 
-function TabComponent(props: { tabs: TabData[] }) {
+function TabComponent(props: { tabs: TabData[];}) {
   const [activeTab, setSelectedTabIndex] = useState<number>(0);
 
   const handleTabChange = (
@@ -24,7 +26,14 @@ function TabComponent(props: { tabs: TabData[] }) {
   };
 
   return (
-    <div className='HejMedDig'>
+    <Paper
+      sx={{
+        p: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        ...(props.tabs[activeTab].fullsize === true && { minHeight: '100%' }),
+      }}
+    >
       <Box
         sx={{
           borderBottom: 1,
@@ -38,19 +47,30 @@ function TabComponent(props: { tabs: TabData[] }) {
           sx={{
             display: 'flex',
             flexDirection: 'colum',
-            flexGrow: 1,}}
+            flexGrow: 1,
+          }}
         >
           {props.tabs.map((tab) => (
-            <Tab key={tab.index} label={tab.label} {...a11yProps(tab.index)} sx={{flexGrow: 1}} />
+            <Tab
+              key={tab.index}
+              label={tab.label}
+              {...a11yProps(tab.index)}
+              sx={{ flexGrow: 1 }}
+            />
           ))}
         </Tabs>
       </Box>
       {props.tabs.map((tab) => (
-        <TabPanel key={tab.index} value={activeTab} index={tab.index}>
+        <TabPanel
+          key={tab.index}
+          value={activeTab}
+          index={tab.index}
+          fullsize={tab.fullsize}
+        >
           {tab.body}
         </TabPanel>
       ))}
-    </div>
+    </Paper>
   );
 }
 

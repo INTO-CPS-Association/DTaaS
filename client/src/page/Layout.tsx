@@ -25,7 +25,7 @@ function Layout(props: { children: React.ReactNode }) {
         >
           {/* Toolbar is the space between the menu and the content */}
           <Toolbar />{' '}
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }} className="content">
             <Grid container spacing={3} sx={{ minHeight: '100%' }}>
               {props.children}
             </Grid>
