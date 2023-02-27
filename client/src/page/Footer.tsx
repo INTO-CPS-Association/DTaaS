@@ -56,9 +56,9 @@ function Acknowledgements(props: OwnProps) {
 function RenderFooter() {
   return (
     <>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Copyright sx={{ pt: 4 }} />
-        <Acknowledgements sx={{ pt: 4 }} />
+      <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
+        <Copyright sx={{ pt: 2 }} />
+        <Acknowledgements sx={{ pt: 1 }} />
       </Container>
     </>
   );

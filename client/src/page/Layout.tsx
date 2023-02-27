@@ -19,13 +19,19 @@ function Layout(props: { children: React.ReactNode }) {
           sx={{
             minHeight: '100vh',
             overflow: 'auto',
-            display: 'grid',
-            gridTemplateRows: 'auto 1fr auto',
+            display: 'flex',
+            flexDirection: 'column',
+            flexGrow: 1,
+            // gridTemplateRows: 'auto 1fr auto',
           }}
         >
           {/* Toolbar is the space between the menu and the content */}
           <Toolbar />{' '}
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }} className="content">
+          <Container
+            maxWidth="lg"
+            sx={{ mt: 4, mb: 2, flexGrow: 1 }}
+            className="content"
+          >
             <Grid container spacing={3} sx={{ minHeight: '100%' }}>
               {props.children}
             </Grid>

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Iframe from 'components/Iframe';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 
-// TODO: URL should depend on the selected tab. Get from .env
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const jupyterURL = process.env.REACT_APP_JUPYTER_URL!;
 
@@ -12,7 +11,7 @@ const tabs: TabData[] = [
     fullsize: true,
     label: 'Create',
     body: (
-      </* TODO: Add grow property here */>
+      <>
         Create digital twins from available library components. The text and
         graphical configuration of digital twins happen here.
         <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
