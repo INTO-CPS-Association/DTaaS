@@ -2,54 +2,43 @@
 src: https://mui.com/material-ui/react-tabs/
 */
 import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import TabPanel, { a11yProps } from 'components/tab/subcomponents/TabPanel';
+import TabComponent, { TabData } from 'components/tab/TabComponent';
 
-function LibComponents() {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (
-    event: React.SyntheticEvent<Element, Event>,
-    newValue: number,
-  ) => {
-    setValue(newValue);
-  };
-
-  return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          <Tab label="Functions" {...a11yProps(0)} />
-          <Tab label="Models" {...a11yProps(1)} />
-          <Tab label="Tools" {...a11yProps(2)} />
-          <Tab label="Data" {...a11yProps(3)} />
-          <Tab label="Digital Twins" {...a11yProps(4)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
+const tabs: TabData[] = [
+  {
+    index: 0 as TabData['index'],
+    label: 'Functions',
+    body: (
+      <>
         A selection of functions useful for composition of digital twins. The
         functions for data processing and analysis scripts can be placed here.
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Digital twin models
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        Digital twin execution software
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        Data sources for execution of digital twins
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        Ready to use digital twins
-      </TabPanel>
-    </Box>
-  );
+      </>
+    ),
+  },
+  {
+    index: 1 as TabData['index'],
+    label: 'Models',
+    body: <>Digital twin models.</>,
+  },
+  {
+    index: 2 as TabData['index'],
+    label: 'Tools',
+    body: <>Digital twin execution software.</>,
+  },
+  {
+    index: 3 as TabData['index'],
+    label: 'Data',
+    body: <>Data sources for execution of digital twins.</>,
+  },
+  {
+    index: 4 as TabData['index'],
+    label: 'Digital Twins',
+    body: <>Ready to use digital twins.</>,
+  },
+];
+
+function LibComponents() {
+  return <TabComponent tabs={tabs} />;
 }
 
 export default LibComponents;

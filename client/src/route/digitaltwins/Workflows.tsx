@@ -1,50 +1,45 @@
 import * as React from 'react';
-// import Box from '@mui/material/Box';
 import Iframe from 'components/Iframe';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 
+// TODO: URL should depend on the selected tab. Get from .env
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const jupyterURL = process.env.REACT_APP_JUPYTER_URL!;
+
+const tabs: TabData[] = [
+  {
+    index: 0 as TabData['index'],
+    fullsize: true,
+    label: 'Create',
+    body: (
+      </* TODO: Add grow property here */>
+        Create digital twins from available library components. The text and
+        graphical configuration of digital twins happen here.
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
+      </>
+    ),
+  },
+  {
+    index: 1 as TabData['index'],
+    label: 'Execute',
+    body: (
+      <>
+        Execute the digital twins with the DTaaS performing the automated
+        deployment and execution. Potential realtime interactions must be
+        possible. There should be an accordion of DT summary, Visualization,
+        Output, Logs.
+      </>
+    ),
+  },
+  {
+    index: 2 as TabData['index'],
+    label: 'Analyze',
+    body: <>Execution summary, output data in text and graphical formats.</>,
+  },
+];
+
 function Workflows() {
-  // TODO: URL should depend on the selected tab. Get from .env
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const jupyterURL = process.env.REACT_APP_JUPYTER_URL!;
-
-  const tabs: TabData[] = [
-    {
-      index: 0 as TabData['index'],
-      fullsize: true,
-      label: 'Create',
-      body: (
-        <> 
-          Create digital twins from available library components. The text and
-          graphical configuration of digital twins happen here.
-          <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
-        </>
-      ),
-    },
-    {
-      index: 1 as TabData['index'],
-      label: 'Execute',
-      body: (
-        <>
-          Execute the digital twins with the DTaaS performing the automated
-          deployment and execution. Potential realtime interactions must be
-          possible. There should be an accordion of DT summary, Visualization,
-          Output, Logs.
-        </>
-      ),
-    },
-    {
-      index: 2 as TabData['index'],
-      label: 'Analyze',
-      body: (
-        <>
-          Execution summary, output data in text and graphical formats.
-        </>
-      ),
-    },
-  ];
-
-  return <TabComponent tabs={tabs}/>;
+  return <TabComponent tabs={tabs} />;
 }
 
 export default Workflows;
