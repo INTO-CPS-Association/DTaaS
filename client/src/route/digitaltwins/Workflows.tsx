@@ -14,7 +14,7 @@ function Workflows() {
       fullsize: true,
       label: 'Create',
       body: (
-        </* TODO: Add grow property here */> 
+        <> 
           Create digital twins from available library components. The text and
           graphical configuration of digital twins happen here.
           <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />

@@ -1,42 +1,37 @@
 import { Box, Typography } from '@mui/material';
+import { TabData } from 'components/tab/TabComponent';
 import React from 'react';
 
-interface OwnProps {
-  children: React.ReactNode;
-  index: number;
-  value: number;
-  fullsize?: boolean;
+interface TabPanelProps {
+  children: TabData;
+  active?: boolean;
 }
 
-function TabPanel(props: OwnProps) {
-  const { children, value, index, ...other } = props;
-
+function TabPanel(props: TabPanelProps) {
+  const { children: tab, active } = props;
+  
   return (
     <Box
       role="tabpanel"
-      display={value === index ? 'block' : 'none'}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      display={active ? 'block' : 'none'}
+      id={`simple-tabpanel-${tab.index}`}
+      aria-labelledby={`simple-tab-${tab.index}`}
       sx={{
         p: 2,
-        ...(props.fullsize
+        ...(tab.fullsize && active
           ? { display: 'flex', flexDirection: 'column', flexGrow: 1 }
           : { minHeight: '100%' }),
       }}
-      {...other}
     >
-      {value === index && (
-        <Typography
-          {...props}
-          sx={
-            props.fullsize
-              ? { display: 'flex', flexDirection: 'column', flexGrow: 1 }
-              : { minHeight: '100%' }
-          }
-        >
-          {children}
-        </Typography>
-      )}
+      <Typography
+        sx={
+          tab.fullsize && active
+            ? { display: 'flex', flexDirection: 'column', flexGrow: 1 }
+            : { minHeight: '100%' }
+        }
+      >
+        {tab.body}
+      </Typography>
     </Box>
   );
 }

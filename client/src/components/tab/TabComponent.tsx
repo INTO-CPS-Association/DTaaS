@@ -63,11 +63,9 @@ function TabComponent(props: { tabs: TabData[];}) {
       {props.tabs.map((tab) => (
         <TabPanel
           key={tab.index}
-          value={activeTab}
-          index={tab.index}
-          fullsize={tab.fullsize}
+          active={activeTab === tab.index}
         >
-          {tab.body}
+          {tab}
         </TabPanel>
       ))}
     </Paper>
