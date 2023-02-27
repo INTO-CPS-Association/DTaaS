@@ -8,20 +8,17 @@ import LibComponents from './Components';
 function LibraryContent() {
   return (
     <Layout>
-      <Grid container spacing={3}>
-        {/* Components */}
-        <Grid item xs={12} md={8} lg={9}>
-          <Paper
-            sx={{
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              height: 240,
-            }}
-          >
-            <LibComponents />
-          </Paper>
-        </Grid>
+      <Grid item xs={12} md={8} lg={9}>
+        <Paper
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            height: 240,
+          }}
+        >
+          <LibComponents />
+        </Paper>
       </Grid>
     </Layout>
   );

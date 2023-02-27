@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Iframe from 'components/Iframe';
-import TabComponent, { TabData } from 'components/tab/Tab';
+import TabComponent, { TabData } from 'components/tab/TabComponent';
 
 function Workflows() {
   // TODO: URL should depend on the selected tab. Get from .env
@@ -13,7 +13,7 @@ function Workflows() {
       index: 0 as TabData['index'],
       label: 'Create',
       body: (
-        <>
+        </* TODO: Add grow property here */> 
           Create digital twins from available library components. The text and
           graphical configuration of digital twins happen here.
           <Iframe url={jupyterURL} />
@@ -46,11 +46,9 @@ function Workflows() {
   ];
 
   // TODO: Make this grow to fit the parent container.
-  return (
-    <Box sx={{ width: '100%', height: '100%' }} className="BoxContainer">
-      <TabComponent tabs={tabs} />
-    </Box>
-  );
+  return <TabComponent tabs={tabs} />;
+  /* <Box sx={{ width: '100%', height: '100%', flexGrow: 1 }} className="BoxContainer"> */
+  /* </Box> */
 }
 
 export default Workflows;

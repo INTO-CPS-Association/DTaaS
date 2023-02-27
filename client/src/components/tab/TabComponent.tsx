@@ -24,15 +24,24 @@ function TabComponent(props: { tabs: TabData[] }) {
   };
 
   return (
-    <>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+    <div className='HejMedDig'>
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           aria-label="basic tabs example"
+          sx={{
+            display: 'flex',
+            flexDirection: 'colum',
+            flexGrow: 1,}}
         >
           {props.tabs.map((tab) => (
-            <Tab key={tab.index} label={tab.label} {...a11yProps(tab.index)} />
+            <Tab key={tab.index} label={tab.label} {...a11yProps(tab.index)} sx={{flexGrow: 1}} />
           ))}
         </Tabs>
       </Box>
@@ -41,8 +50,8 @@ function TabComponent(props: { tabs: TabData[] }) {
           {tab.body}
         </TabPanel>
       ))}
-    </>
+    </div>
   );
-};
+}
 
 export default TabComponent;
