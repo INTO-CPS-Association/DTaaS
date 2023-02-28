@@ -2,8 +2,7 @@ import * as React from 'react';
 import Iframe from 'components/Iframe';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const jupyterURL = process.env.REACT_APP_URL_DT!;
+const jupyterURL = process.env.REACT_APP_URL_DT;
 
 const tabs: TabData[] = [
   {
@@ -14,7 +13,7 @@ const tabs: TabData[] = [
       <>
         Create digital twins from available library components. The text and
         graphical configuration of digital twins happen here.
-        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL || 'google.com'} fullsize={true} />
       </>
     ),
   },
