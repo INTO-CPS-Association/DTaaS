@@ -3,7 +3,7 @@ import Iframe from 'components/Iframe';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const jupyterURL = process.env.REACT_APP_JUPYTER_URL!;
+const jupyterURL = process.env.REACT_APP_URL_DT!;
 
 const tabs: TabData[] = [
   {
