@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {
-  styled, useTheme, Theme, CSSObject,
-} from '@mui/material/styles';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -96,8 +94,9 @@ const Drawer = styled(MuiDrawer, {
 function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [anchorElUser, setAnchorElUser] = React.useState<(EventTarget & HTMLButtonElement) | null
-    >(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<
+    (EventTarget & HTMLButtonElement) | null
+  >(null);
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -153,10 +152,14 @@ function MiniDrawer() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem component={Link} to="/account">
+              <MenuItem
+                component={Link}
+                to="/account"
+                onClick={handleCloseUserMenu}
+              >
                 Account
               </MenuItem>
-              <MenuItem component={Link} to="/">
+              <MenuItem component={Link} to="/" onClick={handleCloseUserMenu}>
                 Logout
               </MenuItem>
             </Menu>
