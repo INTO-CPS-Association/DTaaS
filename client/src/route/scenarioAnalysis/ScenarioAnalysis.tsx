@@ -5,7 +5,7 @@ import Workflows from './Workflows';
 function SAnalysisContent() {
   return (
     <>
-      <Grid item xs={12} md={8} lg={9}>
+      <Grid item xs={12} md={12} lg={12}>
         <Workflows />
       </Grid>
     </>

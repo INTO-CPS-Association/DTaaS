@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import AccountTabs from './AccountTabs';
 
 const DTContent: React.FC = () => (
-  <Grid item xs={12} md={8} lg={9}>
+  <Grid item xs={12} md={12} lg={12}>
     <AccountTabs />
   </Grid>
 );
