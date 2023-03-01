@@ -13,43 +13,45 @@ import Toolbar from '@mui/material/Toolbar';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
+import AppBar from '@mui/material/AppBar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 import Footer from '../../page/Footer';
 
-const drawerWidth = 240;
+// const drawerWidth = 240;
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
+// TODO: The following style should be moved
+// TODO: Transform to ts?
 
-const theme = createTheme();
+// const AppBar = styled(MuiAppBar, {
+//   shouldForwardProp: (prop) => prop !== 'open',
+// })(({ theme, open }) => ({
+//   zIndex: theme.zIndex.drawer + 1,
+//   transition: theme.transitions.create(['width', 'margin'], {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.leavingScreen,
+//   }),
+//   ...(open && {
+//     marginLeft: drawerWidth,
+//     width: `calc(100% - ${drawerWidth}px)`,
+//     transition: theme.transitions.create(['width', 'margin'], {
+//       easing: theme.transitions.easing.sharp,
+//       duration: theme.transitions.duration.enteringScreen,
+//     }),
+//   }),
+// }));
 
-export default function SignIn() {
-  const handleSubmit = (event) => {
+const theme: Theme = createTheme();
+
+function SignIn() {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     window.location.href = '/dashboard';
   };
 
   return (
-    /* jshint ignore:start */
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -63,29 +65,33 @@ export default function SignIn() {
         >
           <AppBar position="absolute">
             <Toolbar
-                sx={{
-                  pr: '24px', // keep right padding when drawer closed
-                }}
+              sx={{
+                pr: '24px', // keep right padding when drawer closed
+              }}
             >
-                <Typography
+              <Typography
                 component="h1"
                 variant="h6"
                 color="inherit"
                 noWrap
                 sx={{ flexGrow: 1 }}
-                >
+              >
                 The Digital Twin as a Service
-                </Typography>
+              </Typography>
             </Toolbar>
           </AppBar>
-
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -135,6 +141,7 @@ export default function SignIn() {
         <Footer />
       </Container>
     </ThemeProvider>
-    /* jshint ignore:end */
   );
 }
+
+export default SignIn;

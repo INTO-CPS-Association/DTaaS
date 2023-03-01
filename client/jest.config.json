@@ -1,13 +1,15 @@
 {
+    "preset": "ts-jest",
     "transform": {
-        "^.+\\.js$": "babel-jest"
+        "^.+\\.jsx?$": "babel-jest",
+        "^.+\\.tsx?$": "ts-jest"
     },
     "transformIgnorePatterns": [
         "/node_modules/(?![d3-shape|recharts]).+\\.js$"
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
-        "src/**/*.js"
+        "src/**/*.[jt]sx?"
     ],
     "coveragePathIgnorePatterns": [
         "node_modules",
@@ -28,6 +30,9 @@
         "window.ENV.SERVER_PORT": 3500
     },
     "verbose": true,
-    "testRegex": "/test/.*\\.[jt]sx?$"
+    "testRegex": "/test/.*\\.[jt]sx?$",
+    "modulePaths": [
+        "<rootDir>/src/"
+      ]
 }
 

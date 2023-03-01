@@ -2,13 +2,13 @@
 // @ts-check
 // src: https://playwright.dev/docs/api/class-testconfig
 
-const { devices } = require('@playwright/test');
+import { devices } from '@playwright/test';
 
 const config = {
   timeout: 30000,
   globalTimeout: 600000,
   testDir: './test/e2e',
-  testMatch: /.*\.js/,
+  testMatch: /.*\.test\.ts/,
   reporter: [['html'], ['list']],
   use: {
     baseURL: 'http://localhost:4000',
@@ -25,4 +25,4 @@ const config = {
   ],
 };
 
-module.exports = config;
+export default config;
