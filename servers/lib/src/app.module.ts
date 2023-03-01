@@ -1,6 +1,5 @@
+import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
-import { FilesService } from './files/files.service';
-import { FilesResolver } from './files/files.resolver';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -8,6 +7,9 @@ import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -17,6 +19,6 @@ import { FilesModule } from './files/files.module';
     FilesModule,
   ],
   controllers:[],
-  providers: [FilesService, FilesResolver],
+  providers: [],
 })
 export class AppModule {}

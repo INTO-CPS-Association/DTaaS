@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FilesResolver } from './files.resolver';
+import { FilesResolver } from '../src/files/files.resolver';
 
 describe('FilesResolver', () => {
   let resolver: FilesResolver;
