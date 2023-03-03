@@ -7,17 +7,26 @@ import { join } from 'path';
 export class FilesService {
   constructor(
     private configService: ConfigService
-  ) {
-    const dataPath = this.configService.get('PATH')
-    // ensuring that the ENV variable is set correctly, else, error is thrown
-    if (!dataPath) {
-      throw new Error('DATA_PATH environment variable not set')
-    }
-  }
+  ) {}
 
   getFilesInDirectory(path: string) {
-    const dataPath = this.configService.get('DATA_PATH');
-    const fullpath = join(dataPath,path)
+    const dataPath = this.configService.get('LOCAL_PATH');
+    const fullpath = join(dataPath,path);
     return fs.readdirSync(fullpath);
+
   }
 }
+
+
+
+/*
+getFilesInDirectory(path: string) {
+    const mode = this.configService.get('MODE');
+    if (mode == process.env.local)
+    {
+      const dataPath = this.configService.get('LOCAL_PATH');
+      const fullpath = join(dataPath,path);
+      return fs.readdirSync(fullpath);
+    }
+  }
+*/
