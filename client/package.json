@@ -14,7 +14,6 @@
     "build": "script/build.bash",
     "configapp": "script/config.bash",
     "start": "script/start.bash",
-    "dev": "react-scripts start",
     "clean": "script/clean.bash"
   },
   "eslintConfig": {
