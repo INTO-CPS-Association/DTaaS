@@ -5,7 +5,7 @@ import * as React from 'react';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 
-const jupyterURL = process.env.REACT_APP_URL_LIB;
+const jupyterURL = window.env.REACT_APP_JUPYTER_URL;
 
 const tabs: TabData[] = [
   {

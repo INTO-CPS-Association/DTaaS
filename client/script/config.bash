@@ -5,6 +5,8 @@
 mode=${REACT_APP_ENV-dev}
 
 case "$mode" in 
-    dev) cp config/dev.js build/static/js/config.js
+    dev) cp config/dev.js build/static/env.js
          ;;
+    prod) cp config/prod.js build/static/env.js
+        ;;
 esac
