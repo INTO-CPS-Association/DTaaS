@@ -5,7 +5,7 @@ import * as React from 'react';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 
-const jupyterURL = window.env.REACT_APP_JUPYTER_URL;
+const jupyterURL = window.env.REACT_APP_URL_LIB;
 
 const tabs: TabData[] = [
   {
@@ -16,11 +16,7 @@ const tabs: TabData[] = [
       <>
         A selection of functions useful for composition of digital twins. The
         functions for data processing and analysis scripts can be placed here.
-        <Iframe
-          title="JupyterLight-Demo"
-          url={jupyterURL || 'google.com'}
-          fullsize={true}
-        />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
       </>
     ),
   },
@@ -31,11 +27,7 @@ const tabs: TabData[] = [
     body: (
       <>
         Digital twin models.
-        <Iframe
-          title="JupyterLight-Demo"
-          url={jupyterURL || 'google.com'}
-          fullsize={true}
-        />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
       </>
     ),
   },
@@ -46,11 +38,7 @@ const tabs: TabData[] = [
     body: (
       <>
         Digital twin execution software.
-        <Iframe
-          title="JupyterLight-Demo"
-          url={jupyterURL || 'google.com'}
-          fullsize={true}
-        />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
       </>
     ),
   },
@@ -61,11 +49,7 @@ const tabs: TabData[] = [
     body: (
       <>
         Data sources for execution of digital twins.
-        <Iframe
-          title="JupyterLight-Demo"
-          url={jupyterURL || 'google.com'}
-          fullsize={true}
-        />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
       </>
     ),
   },
@@ -76,11 +60,7 @@ const tabs: TabData[] = [
     body: (
       <>
         Ready to use digital twins.
-        <Iframe
-          title="JupyterLight-Demo"
-          url={jupyterURL || 'google.com'}
-          fullsize={true}
-        />
+        <Iframe title="JupyterLight-Demo" url={jupyterURL} fullsize={true} />
       </>
     ),
   },
