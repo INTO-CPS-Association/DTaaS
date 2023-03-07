@@ -8,7 +8,6 @@ on:
 jobs:
   client:
     runs-on: ubuntu-latest
-    continue-on-error: true    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,6 +19,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: '**/yarn.lock'
 
+
       - name: Run the linting checks
         continue-on-error: true
         run: |
@@ -28,15 +28,27 @@ jobs:
           yarn syntax
 
       - name: Build the React SPA website
-        continue-on-error: true
         run: |
           cd client/
           yarn install
           yarn build
 
       - name: Run client unit and integration tests
-        continue-on-error: true
         run: |
           cd client/
           yarn install
           yarn test
+
+      - name: Upload unit test coverage to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v3
+        with:
+          files: client/coverage/clover.xml
+          flags: client-unit-test
+
+      - name: Upload browser test coverage to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v3
+        with:
+          files: client/playwright-report/results.json
+          flags: client-browser-test

@@ -1,11 +1,11 @@
 {
   "name": "dtaas-web",
   "version": "0.1.0",
-  "description": "Web application for Digital Twin as a Service",
-  "main": "index.js",
+  "description": "Web client for Digital Twin as a Service (DTaaS)",
+  "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com>",
-  "license": "MIT",
-  "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
+  "private": false,
   "type": "module",
   "scripts": {
     "develop": "npx react-scripts start",
