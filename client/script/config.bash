@@ -2,9 +2,10 @@
 # https://stackoverflow.com/questions/51653931/react-configuration-file-for-post-deployment-settings
 # https://dev.to/akdevcraft/react-runtime-variables-49dc
 
-mode=$1
+mode=${REACT_APP_ENV-dev}
 if [ -z "$mode" ]; then
-    echo "No mode specified - use 'dev' or 'prod'"
+    echo "Set REACT_APP_ENV to eiter dev or prod with:"
+    echo "export REACT_APP_ENV=\"dev | test | prod\""
     exit 1
 fi
 
@@ -17,11 +18,15 @@ set_env() {
 }
 
 case "$mode" in 
+
     dev)
         set_env dev
         ;;
     prod)
         set_env prod
+        ;;
+    test)
+        set_env test
         ;;
     *) echo "Invalid mode $mode - use 'dev' or 'prod'"
         exit 1
