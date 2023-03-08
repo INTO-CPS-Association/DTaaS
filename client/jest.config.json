@@ -8,6 +8,13 @@
         "/node_modules/(?![d3-shape|recharts]).+\\.js$"
     ],
     "collectCoverage": true,
+    "coverageReporters": [
+        "text",
+        "cobertura",
+        "clover",
+        "lcov",
+        "json"
+      ],
     "collectCoverageFrom": [
         "src/**/*.[jt]sx?"
     ],
