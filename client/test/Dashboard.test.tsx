@@ -1,0 +1,33 @@
+/**
+ * @jest-environment jsdom
+ */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable class-methods-use-this */
+import { expect, describe, it } from '@jest/globals';
+import Grid from '@mui/material/Grid';
+import { render } from '@testing-library/react';
+import * as React from 'react';
+import Dashboard from '../src/route/dashboard/Dashboard';
+import 'resize-observer-polyfill';
+
+// TODO: Remove this mock when the issue is fixed. MUI needs this to render.
+class ResizeObserverMock {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+}
+
+describe('Dashboard', () => {
+  it('renders Dashboard without crashing', () => {
+    window.ResizeObserver =
+      ResizeObserverMock as unknown as typeof ResizeObserver;
+    render(
+      <Grid container spacing={3} sx={{ minHeight: '100%' }}>
+        <Dashboard />
+      </Grid>
+    );
+    expect(true);
+  });
+});

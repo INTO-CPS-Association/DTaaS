@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import { TabData } from 'components/tab/TabComponent';
-import React from 'react';
 
 interface TabPanelProps {
   children: TabData;
@@ -9,7 +9,7 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children: tab, active } = props;
-  
+
   return (
     <Box
       role="tabpanel"

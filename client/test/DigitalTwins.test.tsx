@@ -8,7 +8,9 @@ import DigitalTwins from '../src/route/digitaltwins/DigitalTwins';
 
 describe('Digital Twins', () => {
   it('Reder OK', () => {
-    render(<DigitalTwins />);
+    render(
+        <DigitalTwins />
+    );
     expect(true);
   });
 });
