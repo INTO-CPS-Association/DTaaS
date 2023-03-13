@@ -1,5 +1,5 @@
 import '@fontsource/roboto';
-import React from 'react';
+import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from 'page/Layout';
 import ReactDOM from 'react-dom/client';
@@ -19,36 +19,68 @@ const router = createBrowserRouter([
   },
   {
     path: 'dashboard',
-    element: <Layout><Dashboard /></Layout>,
+    element: (
+      <Layout>
+        <Dashboard />
+      </Layout>
+    ),
   },
   {
     path: 'library',
-    element: <Layout><Library /></Layout>,
+    element: (
+      <Layout>
+        <Library />
+      </Layout>
+    ),
   },
   {
     path: 'digitaltwins',
-    element: <Layout><DigitalTwins /></Layout>,
+    element: (
+      <Layout>
+        <DigitalTwins />
+      </Layout>
+    ),
   },
   {
     path: 'sanalysis',
-    element: <Layout><ScenarioAnalysis /></Layout>,
+    element: (
+      <Layout>
+        <ScenarioAnalysis />
+      </Layout>
+    ),
   },
   {
     path: 'history',
-    element: <Layout><DTHistory /></Layout>,
+    element: (
+      <Layout>
+        <DTHistory />
+      </Layout>
+    ),
   },
   {
     path: 'account',
-    element: <Layout><Account /></Layout>,
+    element: (
+      <Layout>
+        <Account />
+      </Layout>
+    ),
   },
   {
     path: 'workbench',
-    element: <Layout><WorkBench/></Layout>,
+    element: (
+      <Layout>
+        <WorkBench />
+      </Layout>
+    ),
   },
   {
     path: '*',
-    element: <Layout><h1>404 - Page not found...</h1></Layout>,
-  }
+    element: (
+      <Layout>
+        <h1>404 - Page not found...</h1>
+      </Layout>
+    ),
+  },
 ]);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
