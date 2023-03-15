@@ -3,21 +3,21 @@
 # https://dev.to/akdevcraft/react-runtime-variables-49dc
 
 mode=$1
-if [ -z `$mode` ]; then
-    echo `Use yarn configapp with either dev, prod or test:`
-    echo `i.e. \"yarn configapp dev\" `
+if [ -z "$mode" ]; then
+    echo "Use yarn configapp with either dev, prod or test:"
+    echo "i.e. \"yarn configapp dev\" "
     exit 1
 fi
 
 set_env() {
-    echo `Setting env to $1`
+    echo "Setting env to "$1""
     cp config/$1.js public/env.js # Configure dev environment in public for next build
     if [ -d build ]; then
         cp public/env.js build/env.js # Hot swap dev to build
     fi
 }
 
-case `$mode` in 
+case "$mode" in 
 
     dev)
         set_env dev
@@ -28,7 +28,7 @@ case `$mode` in
     test)
         set_env test
         ;;
-    *) echo `Invalid mode $mode - use 'dev', 'prod' or 'test'`
+    *) echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
         exit 1
         ;;
 esac
