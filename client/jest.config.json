@@ -6,6 +6,13 @@
   },
   "transformIgnorePatterns": ["/node_modules/(?![d3-shape|recharts]).+\\.js$"],
   "collectCoverage": true,
+  "coverageReporters": [
+        "text",
+        "cobertura",
+        "clover",
+        "lcov",
+        "json"
+      ],
   "collectCoverageFrom": ["src/**/*.[jt]sx?"],
   "coveragePathIgnorePatterns": ["node_modules", "build"],
   "modulePathIgnorePatterns": ["test/e2e"],

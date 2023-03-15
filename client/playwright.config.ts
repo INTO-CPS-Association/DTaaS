@@ -9,7 +9,12 @@ const config = {
   globalTimeout: 600000,
   testDir: './test/e2e',
   testMatch: /.*\.test\.ts/,
-  reporter: [['html'], ['list']],
+  reporter: [
+    ['html', { outputFile: 'playwright-report/index.html' }], 
+    ['list'], 
+    ['junit', { outputFile: 'playwright-report/results.xml' }],
+    ['json', { outputFile: 'playwright-report/results.json' }]
+  ],
   use: {
     baseURL: 'http://localhost:4000',
   },
