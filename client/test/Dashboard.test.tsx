@@ -10,7 +10,6 @@ import * as React from 'react';
 import Dashboard from '../src/route/dashboard/Dashboard';
 import 'resize-observer-polyfill';
 
-// TODO: Remove this mock when the issue is fixed. MUI needs this to render.
 class ResizeObserverMock {
   observe() {}
 
