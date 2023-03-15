@@ -15,7 +15,19 @@ export interface TabData {
   fullsize?: boolean;
 }
 
-function TabComponent(props: { tabs: TabData[];}) {
+export function createTabData(
+  tabs: { label: string; body: JSX.Element }[],
+  fullsize?: boolean
+): TabData[] {
+  return tabs.map(({ label, body }, index) => ({
+    index: index as TabDataIndex,
+    label,
+    body,
+    fullsize,
+  }));
+}
+
+function TabComponent(props: { tabs: TabData[] }) {
   const [activeTab, setSelectedTabIndex] = useState<number>(0);
 
   const handleTabChange = (
@@ -61,10 +73,7 @@ function TabComponent(props: { tabs: TabData[];}) {
         </Tabs>
       </Box>
       {props.tabs.map((tab) => (
-        <TabPanel
-          key={tab.index}
-          active={activeTab === tab.index}
-        >
+        <TabPanel key={tab.index} active={activeTab === tab.index}>
           {tab}
         </TabPanel>
       ))}
