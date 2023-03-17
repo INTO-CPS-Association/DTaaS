@@ -1,8 +1,6 @@
 # Introduction
 
-Client (frontend) for Digital Twin as a Service (DTaaS) software. This software shall be used for creating a Digital Twin support platform.
-
-This is a mono repo containing code for the client (web browser).
+Client (frontend) for Digital Twin as a Service (DTaaS) software. This software shall be used for providing a single page web application for the Digital Twin support platform.
 
 ---
 

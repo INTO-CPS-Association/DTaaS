@@ -1,6 +1,6 @@
 # Motivation
 
-Website for Digital Twin as a Service (DTaaS) software. This software shall be used for creating a Digital Twin support platform for SMEs. A brief overview of the software is available in [this presentation](docs/DTaaS-overview.pdf).
+Website for Digital Twin as a Service (DTaaS) software. This software shall be used for creating a Digital Twin support platform for SMEs. A brief overview of the software is available in [this presentation](docs/DTaaS-overview.pdf) and [recorded video](https://www.dropbox.com/s/mgxxf5chp9b130x/DTaaS%20presentation%20and%20brainstorming-20230317.mp4?dl=1).
 
 This is a mono repo containing code for both the client (web browser) and server code.
 
@@ -14,22 +14,7 @@ bash script/install.bash
 
 ## For Client app (serves React Website)
 
-```bash
-cd client
-yarn install    #install the nodejs dependencies
-yarn syntax     #perform linting and static analysis
-yarn build      #build the react app into build/ directory
-
-#one of the environments; specify only one; "dev" used the REACT_APP_ENV is not set
-export REACT_APP_ENV= "dev | test | prod"   
-yarn configapp
-
-yarn start      #start the application
-yarn test       #UI testing of the application
-yarn clean      #clean the directory of temporary files
-```
-
----
+See these [instructions](client/README.md)
 
 ## Infrastructure Components
 
