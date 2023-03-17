@@ -2,43 +2,34 @@
 src: https://mui.com/material-ui/react-tabs/
 */
 import * as React from 'react';
-import TabComponent, { TabData } from 'components/tab/TabComponent';
+import TabComponent, {
+  TabData,
+  createTabData,
+} from 'components/tab/TabComponent';
+import Iframe from 'components/Iframe';
+import tabs from './ComponentsData';
 
-const tabs: TabData[] = [
-  {
-    index: 0 as TabData['index'],
-    label: 'Functions',
+const jupyterURL = window.env.REACT_APP_URL_LIB;
+
+const tabsData: TabData[] = createTabData(
+  tabs.map((tab) => ({
+    label: tab.label,
     body: (
       <>
-        A selection of functions useful for composition of digital twins. The
-        functions for data processing and analysis scripts can be placed here.
+        {tab.body}
+        <Iframe
+          title={`JupyterLight-Demo-${tab.label}`}
+          url={`${jupyterURL}`}
+          fullsize
+        />
       </>
     ),
-  },
-  {
-    index: 1 as TabData['index'],
-    label: 'Models',
-    body: <>Digital twin models.</>,
-  },
-  {
-    index: 2 as TabData['index'],
-    label: 'Tools',
-    body: <>Digital twin execution software.</>,
-  },
-  {
-    index: 3 as TabData['index'],
-    label: 'Data',
-    body: <>Data sources for execution of digital twins.</>,
-  },
-  {
-    index: 4 as TabData['index'],
-    label: 'Digital Twins',
-    body: <>Ready to use digital twins.</>,
-  },
-];
+  })),
+  true
+);
 
 function LibComponents() {
-  return <TabComponent tabs={tabs} />;
+  return <TabComponent tabs={tabsData} />;
 }
 
 export default LibComponents;

@@ -29,7 +29,7 @@ function Layout(props: { children: React.ReactNode }) {
           <Toolbar />{' '}
           <Container
             maxWidth="lg"
-            sx={{ mt: 4, mb: 2, flexGrow: 1 }}
+            sx={{ mt: 4, mb: 2, flexGrow: 1, display: 'flex' }}
             className="content"
           >
             <Grid container spacing={3} sx={{ minHeight: '100%' }}>

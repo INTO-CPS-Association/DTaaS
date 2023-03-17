@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 interface IFrameProps {
   url: string;
@@ -15,7 +15,7 @@ function Iframe({ url, fullsize, title }: IFrameProps) {
       width="100%"
       referrerPolicy="no-referrer"
       style={fullsize ? { flexGrow: 1 } : { height: '100%' }}
-    ></iframe>
+    />
   );
 }
 

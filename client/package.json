@@ -14,7 +14,6 @@
     "build": "script/build.bash",
     "configapp": "script/config.bash",
     "start": "script/start.bash",
-    "dev": "react-scripts start",
     "clean": "script/clean.bash"
   },
   "eslintConfig": {
@@ -36,6 +35,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "recharts": "^2.1.13",
+    "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.0.1",
     "typescript": "^4.7.4"
   },
