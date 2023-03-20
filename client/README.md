@@ -29,7 +29,7 @@ To customize the configuration of endpoints to your preference, it is recommende
 Once the configuration file has been updated, please rerun the configuration bash to apply the changes.
 
 ```bash
-yarn configapp #prod | dev | test
+yarn configapp #prod | dev
 ```
 
 ---
