@@ -1,7 +1,7 @@
 printf "\n\n################ Testing in progress ################"
 printf "\n################ Running Jest ################\n"
 export PATH="$(yarn bin):$PATH"
-jest .
+jest . --watchAll=false
 
 # { { yarn start 2>&3 || [ $? -eq 137 ]; } 3>&2 2>/dev/null & } <-- Does not work. Trying to only suppress error 137.
 yarn start >/dev/null & # Start server in background. Suppress stderr.
