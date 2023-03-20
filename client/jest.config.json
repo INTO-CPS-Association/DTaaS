@@ -1,19 +1,14 @@
 {
   "preset": "ts-jest",
+  "testEnvironment": "jsdom",
   "transform": {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest"
   },
   "transformIgnorePatterns": ["/node_modules/(?![d3-shape|recharts]).+\\.js$"],
   "collectCoverage": true,
-  "coverageReporters": [
-        "text",
-        "cobertura",
-        "clover",
-        "lcov",
-        "json"
-      ],
-  "collectCoverageFrom": ["src/**/*.[jt]sx?"],
+  "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
+  "collectCoverageFrom": ["src/**/*.tsx"],
   "coveragePathIgnorePatterns": ["node_modules", "build"],
   "modulePathIgnorePatterns": ["test/e2e"],
   "coverageDirectory": "<rootDir>/coverage/",
