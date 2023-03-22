@@ -2,7 +2,6 @@
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
   "transform": {
-    "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest"
   },
   "transformIgnorePatterns": ["/node_modules/(?![d3-shape|recharts]).+\\.js$"],
@@ -27,5 +26,8 @@
   "verbose": true,
   "testRegex": "/test/.*\\.[jt]sx?$",
   "modulePaths": ["<rootDir>/src/"],
-  "setupFilesAfterEnv": ["<rootDir>/config/test.js"]
+  "setupFilesAfterEnv": [
+    "<rootDir>/config/test.js",
+    "<rootDir>/test/config/importJestDom.ts"
+  ]
 }

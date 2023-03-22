@@ -1,9 +1,5 @@
-/*
- * @jest-environment jsdom
- */
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { describe, expect, it } from '@jest/globals';
 import Iframe from '../src/components/Iframe';
 
 describe('Iframe', () => {

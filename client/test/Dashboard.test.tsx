@@ -1,9 +1,5 @@
-/**
- * @jest-environment jsdom
- */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable class-methods-use-this */
-import { expect, describe, it } from '@jest/globals';
 import Grid from '@mui/material/Grid';
 import { render } from '@testing-library/react';
 import * as React from 'react';
