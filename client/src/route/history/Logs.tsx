@@ -21,8 +21,7 @@ function LogContents() {
 }
 
 function preventDefault(
-  event: React.MouseEvent<HTMLAnchorElement> &
-    React.MouseEvent<HTMLSpanElement>,
+  event: React.MouseEvent<HTMLAnchorElement> & React.MouseEvent<HTMLSpanElement>
 ) {
   event.preventDefault();
 }

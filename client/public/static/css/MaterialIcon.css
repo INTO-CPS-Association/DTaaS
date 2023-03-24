@@ -4,12 +4,10 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src:  local('Material Icons'),
-        local('MaterialIcons-Regular'),
-        url(/static/font/MaterialIcons-Regular.woff2) format('woff2'),
-        url(/static/font/MaterialIcons-Regular.woff) format('woff'),
-        url(/static/font/MaterialIcons-Regular.ttf) format('truetype');
-      
+  src: local('Material Icons'), local('MaterialIcons-Regular'),
+    url(/static/font/MaterialIcons-Regular.woff2) format('woff2'),
+    url(/static/font/MaterialIcons-Regular.woff) format('woff'),
+    url(/static/font/MaterialIcons-Regular.ttf) format('truetype');
 }
 
 .material-icons {
@@ -25,7 +23,6 @@
   word-wrap: normal;
   direction: ltr;
 
-
   /* Support for all WebKit browsers. */
   -webkit-font-smoothing: antialiased;
   /* Support for Safari and Chrome. */
@@ -36,9 +33,8 @@
 
   /* Support for IE. */
   font-feature-settings: 'liga';
-
 }
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }

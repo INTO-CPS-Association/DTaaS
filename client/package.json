@@ -14,7 +14,8 @@
     "build": "script/build.bash",
     "configapp": "script/config.bash",
     "start": "script/start.bash",
-    "clean": "script/clean.bash"
+    "clean": "script/clean.bash",
+    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\""
   },
   "eslintConfig": {
     "extends": [
@@ -58,6 +59,7 @@
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.30.1",
+    "husky": "^8.0.3",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "playwright": "^1.25.0",

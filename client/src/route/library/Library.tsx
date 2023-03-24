@@ -6,7 +6,7 @@ import LibComponents from './Components';
 function LibraryContent() {
   return (
     <Grid item xs={12} md={12} lg={12}>
-        <LibComponents />
+      <LibComponents />
     </Grid>
   );
 }
