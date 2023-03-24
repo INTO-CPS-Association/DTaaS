@@ -1,28 +1,27 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable class-methods-use-this */
-import Grid from '@mui/material/Grid';
-import { render } from '@testing-library/react';
 import * as React from 'react';
-import Dashboard from '../src/route/dashboard/Dashboard';
-import 'resize-observer-polyfill';
+import { render, screen } from '@testing-library/react';
+import Dashboard from 'route/dashboard/Dashboard';
 
-class ResizeObserverMock {
-  observe() {}
-
-  unobserve() {}
-
-  disconnect() {}
-}
+jest.mock('route/history/Chart', () => ({
+  default: () => <div>chart-mock</div>,
+}));
+jest.mock('route/history/RecentRuns', () => ({
+  default: () => <div>recent-runs-mock</div>,
+}));
 
 describe('Dashboard', () => {
-  it('renders Dashboard without crashing', () => {
-    window.ResizeObserver =
-      ResizeObserverMock as unknown as typeof ResizeObserver;
-    render(
-      <Grid container spacing={3} sx={{ minHeight: '100%' }}>
-        <Dashboard />
-      </Grid>
-    );
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('renders Dashboard', () => {
+    render(<Dashboard />);
     expect(true);
+  });
+
+  it('renders Chart and RecentRuns components', () => {
+    render(<Dashboard />);
+    expect(screen.queryByText('chart-mock')).toBeInTheDocument();
+    expect(screen.queryByText('recent-runs-mock')).toBeInTheDocument();
   });
 });

@@ -13,7 +13,7 @@ yarn syntax     #perform linting and static analysis
 yarn build      #build the react app into build/ directory
 
 #specify the environment; specify only one
-yarn configapp #prod | dev | test
+yarn configapp #prod | dev
 
 yarn start      #start the application
 yarn test       #UI testing of the application
