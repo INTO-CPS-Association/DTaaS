@@ -24,7 +24,7 @@
     "window.ENV.SERVER_PORT": 3500
   },
   "verbose": true,
-  "testRegex": "/test/.*\\.[jt]sx?$",
+  "testRegex": "/test/.*\\.test.tsx?$",
   "modulePaths": ["<rootDir>/src/"],
   "setupFilesAfterEnv": [
     "<rootDir>/config/test.js",
