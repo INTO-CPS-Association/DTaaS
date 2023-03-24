@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import Grid from '@mui/material/Grid';
+import Layout from 'page/Layout';
 import LibComponents from './Components';
 
 function LibraryContent() {
   return (
-    <Grid item xs={12} md={12} lg={12}>
+    <Layout>
       <LibComponents />
-    </Grid>
+    </Layout>
   );
 }
 

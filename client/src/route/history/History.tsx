@@ -1,12 +1,13 @@
 import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Layout from 'page/Layout';
 import RecentRuns from './RecentRuns';
 import Logs from './Logs';
 
 function HistoryContent() {
   return (
-    <>
+    <Layout>
       {/* Past Runs */}
       <Grid item xs={12}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
@@ -19,7 +20,7 @@ function HistoryContent() {
           <Logs />
         </Paper>
       </Grid>
-    </>
+    </Layout>
   );
 }
 

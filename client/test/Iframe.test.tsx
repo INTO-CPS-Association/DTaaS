@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import Iframe from '../src/components/Iframe';
 
 describe('Iframe', () => {
-  var iframe: HTMLIFrameElement;
+  let iframe: HTMLIFrameElement;
 
   beforeEach(() => {
     render(<Iframe url="https://example.com/" title="Example" />);
