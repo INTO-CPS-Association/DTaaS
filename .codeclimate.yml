@@ -1,41 +1,42 @@
 ---
 engines:
-  shellcheck:
-    enabled: true
-  checkstyle:
-    enabled: true
-    channel: "beta"
-  csslint:
-    enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - typescript
-      - javascript
-      - python
-      - php
-  eslint:
-    enabled: true
-    config:
-      config: .eslintrc
-  fixme:
-    enabled: true
+    shellcheck:
+        enabled: true
+    checkstyle:
+        enabled: true
+        channel: "beta"
+    csslint:
+        enabled: true
+    duplication:
+        enabled: true
+        config:
+            languages:
+                - typescript
+                - javascript
+                - python
+                - php
+    eslint:
+        enabled: true
+        config:
+            config: .eslintrc
+    fixme:
+        enabled: true
 ratings:
-  paths:
-  - "**.css"
-  - "**.inc"
-  - "**.ts"
-  - "**.js"
-  - "**.jsx"
-  - "**.tsx"
-  - "**.module"
-  - "**.sh"
-  - "**.bash"
+    paths:
+        - "**.css"
+        - "**.inc"
+        - "**.ts"
+        - "**.js"
+        - "**.jsx"
+        - "**.tsx"
+        - "**.module"
+        - "**.sh"
+        - "**.bash"
 exclude_paths:
-- "**.md"
-- "**.txt"
-- "**.json"
-- "**.lock"
-- docs/
-- deploy/
+    - "**.md"
+    - "**.txt"
+    - "**.json"
+    - "**.lock"
+    - client/test/
+    - docs/
+    - deploy/
