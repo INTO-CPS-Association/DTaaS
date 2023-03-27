@@ -11,6 +11,12 @@ jest.mock('page/Layout', () => ({
   ),
 }));
 
+jest.mock('page/Layout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
+
 describe('Workbench', () => {
   beforeEach(() => {
     jest.resetAllMocks();
