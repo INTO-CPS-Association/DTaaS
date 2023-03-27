@@ -9,7 +9,7 @@
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
   "collectCoverageFrom": ["src/**/*.tsx"],
   "coveragePathIgnorePatterns": ["node_modules", "build"],
-  "modulePathIgnorePatterns": ["test/e2e"],
+  "modulePathIgnorePatterns": ["test/e2e","mocks","config"],
   "coverageDirectory": "<rootDir>/coverage/",
   "coverageThreshold": {
     "global": {

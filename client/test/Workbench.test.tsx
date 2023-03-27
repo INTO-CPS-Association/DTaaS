@@ -5,6 +5,11 @@ import WorkBench from 'route/workbench/Workbench';
 jest.mock('components/Iframe', () => ({
   default: () => <div>iframe-mock</div>,
 }));
+jest.mock('page/Layout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
 
 describe('Workbench', () => {
   beforeEach(() => {

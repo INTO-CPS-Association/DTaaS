@@ -5,7 +5,7 @@ import Layout from 'page/Layout';
 import RecentRuns from './RecentRuns';
 import Logs from './Logs';
 
-function HistoryContent() {
+function DTHistory() {
   return (
     <Layout>
       {/* Past Runs */}
@@ -24,6 +24,4 @@ function HistoryContent() {
   );
 }
 
-export default function DTHistory() {
-  return <HistoryContent />;
-}
+export default DTHistory;

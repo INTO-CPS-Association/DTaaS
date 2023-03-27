@@ -5,6 +5,11 @@ import DigitalTwins from '../src/route/digitaltwins/DigitalTwins';
 jest.mock('route/digitaltwins/Workflows', () => ({
   default: () => <div>workflows-mock</div>,
 }));
+jest.mock('page/Layout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
 
 describe('Digital Twins', () => {
   it('reder DigitalTwin', () => {

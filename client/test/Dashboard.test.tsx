@@ -8,6 +8,11 @@ jest.mock('route/history/Chart', () => ({
 jest.mock('route/history/RecentRuns', () => ({
   default: () => <div>recent-runs-mock</div>,
 }));
+jest.mock('page/Layout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
 
 describe('Dashboard', () => {
   beforeEach(() => {
