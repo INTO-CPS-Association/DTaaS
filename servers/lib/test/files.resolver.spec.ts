@@ -36,12 +36,10 @@ describe("FilesResolver", () => {
     });
 
     it("should return the filenames in the given directory", async () => {
-      // the mockvalue that our test will use
       const files = ["digital twins", "functions", "data", "tools", "models"];
       const path = "user1";
       const result = await filesResolver.getFiles(path);
 
-      // compare the result to the expected value
       expect(result).toEqual(files);
     });
   });

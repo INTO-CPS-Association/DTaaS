@@ -68,7 +68,8 @@ export class FilesService {
     });
 
     const trees = data?.project?.repository?.paginatedTree?.nodes?.flatMap(
-      (node: any) => node.trees.nodes.map((tree: any) => tree.name)
+      (node: { trees: { nodes: { name: string }[] } }) =>
+        node.trees.nodes.map((tree: { name: string }) => tree.name)
     );
 
     if (!trees) {
