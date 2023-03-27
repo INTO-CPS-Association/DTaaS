@@ -40,3 +40,4 @@ exclude_paths:
     - client/test/
     - docs/
     - deploy/
+    - .husky/

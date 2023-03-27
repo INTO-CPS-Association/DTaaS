@@ -1,6 +1,6 @@
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider, createTheme, Theme } from '@mui/material/styles';
-import React from 'react';
+import * as React from 'react';
 
 const mdTheme: Theme = createTheme({
   palette: {
