@@ -10,6 +10,9 @@ export class FilesService {
   constructor(private configService: ConfigService) {}
 
   async Wrapper(path: string): Promise<string[]> {
+    if (!path) {
+      throw new Error("Invalid query");
+    }
     const mode = this.configService.get("MODE");
 
     if (mode === "local") {

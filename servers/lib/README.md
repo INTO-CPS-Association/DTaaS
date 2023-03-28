@@ -22,6 +22,7 @@ GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
 MODE=local or gitlab
 LOG_LEVEL=debug
+TEST_PATH="/Users/<Username>/DTaaS/servers/lib/test/data/test_assets"
 ```
 
 The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, visit:

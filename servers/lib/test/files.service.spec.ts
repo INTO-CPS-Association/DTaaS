@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
-import ApolloClient from "apollo-client";
+require("dotenv").config({ path: ".env" });
 
 describe("FilesService", () => {
   let filesService: FilesService;
@@ -12,13 +12,13 @@ describe("FilesService", () => {
     get: jest.fn((key: string) => {
       switch (key) {
         case "TOKEN":
-          return "glpat-ysRcoUyuxB-M_oG5X71T";
+          return process.env.TOKEN;
         case "LOCAL_PATH":
-          return "/Users/phillipravn/DTaaS/data/assets/";
+          return process.env.TEST_PATH;
         case "GITLAB_URL":
-          return "https://gitlab.com/api/graphql";
+          return process.env.GITLAB_URL;
         case "GITLAB_GROUP":
-          return "dtaas/";
+          return "dtaas";
         case "MODE":
           if (process.env.MODE === "gitlab") {
             return "gitlab";
@@ -56,8 +56,8 @@ describe("FilesService", () => {
     });
 
     it("should return the filenames in the given directory", async () => {
-      const files = ["digital twins", "functions", "data", "tools", "models"];
-      const path = "user1";
+      const files = ["test_file1", "test_file2", "test_file3"];
+      const path = "test_user1";
 
       jest.mock("fs", () => ({
         readdirSync: jest.fn(() => files),
@@ -89,13 +89,11 @@ describe("FilesService", () => {
     });
 
     it("should throw an error if response from GitLab API is invalid", async () => {
-      jest
-        .spyOn(ApolloClient.prototype, "query")
-        .mockImplementation(() => ApolloClient as any);
+      const path = "invalid_path";
 
-      await expect(
-        filesService.getGitlabFiles("mock-path")
-      ).rejects.toThrowError("Invalid response from GitLab API");
+      await expect(filesService.getGitlabFiles(path)).rejects.toThrow(
+        new Error("Invalid query")
+      );
     });
   });
 
@@ -104,16 +102,18 @@ describe("FilesService", () => {
       expect(filesService.Wrapper).toBeDefined();
     });
 
+    it("should throw an error if path is empty", async () => {
+      const path = "";
+
+      await expect(filesService.Wrapper(path)).rejects.toThrow(
+        new Error("Invalid query")
+      );
+    });
+
     it("should return local files when run in local mode", async () => {
-      const path = "user1";
+      const path = "test_user1";
       process.env.MODE = "local";
-      const expected = [
-        "digital twins",
-        "functions",
-        "data",
-        "tools",
-        "models",
-      ];
+      const expected = ["test_file1", "test_file2", "test_file3"];
 
       jest.mock("fs", () => ({
         readdirSync: jest.fn(() => expected),
