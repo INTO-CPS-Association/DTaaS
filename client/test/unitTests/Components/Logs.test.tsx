@@ -3,7 +3,6 @@ import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import Logs from 'route/history/Logs';
 
 describe('Logs', () => {
-    
   test('renders title', () => {
     render(<Logs />);
     const titleElement = screen.getByText(/Logs/i);
@@ -27,7 +26,7 @@ describe('Logs', () => {
     const seeMoreLink = screen.getByText('See more');
     // Simulate click event on see more link
     const clickEvent = createEvent.click(seeMoreLink);
-    fireEvent(seeMoreLink,clickEvent);
+    fireEvent(seeMoreLink, clickEvent);
     expect(clickEvent.defaultPrevented).toBeTruthy();
   });
 });
