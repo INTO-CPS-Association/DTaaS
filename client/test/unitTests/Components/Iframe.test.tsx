@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
-import Iframe from '../src/components/Iframe';
+import Iframe from 'components/Iframe';
 
 describe('Iframe', () => {
   let iframe: HTMLIFrameElement;

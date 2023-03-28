@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
-import DigitalTwins from '../src/route/digitaltwins/DigitalTwins';
+import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 
 jest.mock('route/digitaltwins/Workflows', () => ({
   default: () => <div>workflows-mock</div>,

@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import Layout from '../src/page/Layout';
+import Layout from 'page/Layout';
 
 jest.mock('@mui/material/Toolbar', () => ({
   __esModule: true,
   default: () => <div data-testid="toolbar" />,
 }));
 
-jest.mock('../src/page/Footer', () => ({
+jest.mock('page/Footer', () => ({
   __esModule: true,
   default: () => <div data-testid="footer" />,
 }));
 
-jest.mock('../src/page/Menu', () => ({
+jest.mock('page/Menu', () => ({
   __esModule: true,
   default: () => <div data-testid="menu" />,
 }));
