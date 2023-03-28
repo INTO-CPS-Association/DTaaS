@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
-import { ConfigService } from "@nestjs/config";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
@@ -13,8 +12,6 @@ describe("End to End test for the application", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-
-    const configService = app.get(ConfigService);
     await app.init();
   });
 
