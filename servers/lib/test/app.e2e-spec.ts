@@ -4,7 +4,7 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { ConfigService } from "@nestjs/config";
 
-describe("App (e2e)", () => {
+describe("End to End test for the application", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -15,9 +15,11 @@ describe("App (e2e)", () => {
     app = moduleFixture.createNestApplication();
 
     const configService = app.get(ConfigService);
-    const port = configService.get<number>("PORT_TEST");
-    const mode = configService.get<string>("MODE");
     await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it("should return the filename corresponding to the directory given in the query", async () => {
@@ -36,9 +38,5 @@ describe("App (e2e)", () => {
       .post("/graphql")
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });

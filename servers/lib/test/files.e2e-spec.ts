@@ -9,7 +9,7 @@ import { FilesService } from "../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 
-describe("FilesResolver (e2e)", () => {
+describe("Integration Tests for FilesService", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
@@ -33,32 +33,62 @@ describe("FilesResolver (e2e)", () => {
     filesService = moduleFixture.get<FilesService>(FilesService);
   });
 
-  it("should return an array of file names for a given path", async () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("should return an array of file names for a given path (local mode)", async () => {
     const path = "test_directory";
     const expectedFiles = ["file1.txt", "file2.txt"];
 
-    // Mock the getFilesInDirectory method of the filesService to return the expected array of files
+    const filesService = app.get<FilesService>(FilesService);
+
     jest
       .spyOn(filesService, "getLocalFiles")
       .mockReturnValue(Promise.resolve(expectedFiles));
 
-    // Make a GraphQL query to the getFiles query with a path argument
+    const result = await filesService.getLocalFiles(path);
+
+    expect(result).toEqual(expectedFiles);
+  });
+
+  it("should return an array of file names for a given path (gitlab mode)", async () => {
+    const path = "test_directory";
+    const expectedFiles = ["file1.txt", "file2.txt"];
+
+    const filesService = app.get<FilesService>(FilesService);
+
+    jest
+      .spyOn(filesService, "getGitlabFiles")
+      .mockReturnValue(Promise.resolve(expectedFiles));
+
+    const result = await filesService.getGitlabFiles(path);
+
+    expect(result).toEqual(expectedFiles);
+  });
+
+  it("should return an array of file names for a given path (getFiles query)", async () => {
+    const path = "test_directory";
+    const expectedFiles = ["file1.txt", "file2.txt"];
+
+    const filesService = app.get<FilesService>(FilesService);
+
+    jest
+      .spyOn(filesService, "Wrapper")
+      .mockReturnValue(Promise.resolve(expectedFiles));
+
     const query = `{
-        getFiles(path: "${path}")
+      getFiles(path: "${path}")
     }`;
 
     const variables = { path };
+
     const response = await request(app.getHttpServer())
       .post("/graphql")
       .send({ query, variables });
 
-    // Expect the response data to be equal to the expected array of files
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
     expect(response.body.data.getFiles).toEqual(expectedFiles);
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });
