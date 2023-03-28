@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
-  "private": true,
-  "license": "UNLICENSED",
+  "private": false,
+  "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "build": "script/build.bash",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

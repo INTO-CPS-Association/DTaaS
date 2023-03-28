@@ -32,7 +32,8 @@ export class FilesService {
 
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
-    const domain: string = gitlabGroup + project;
+    const domain: string = gitlabGroup + "/" + project;
+
     path = pathParts.slice(1).join("/");
 
     const client = new ApolloClient({
@@ -73,7 +74,7 @@ export class FilesService {
     );
 
     if (!trees) {
-      throw new Error("Invalid response from GitLab API");
+      throw new Error("Invalid query");
     }
 
     return trees;
