@@ -16,7 +16,7 @@
     "start": "script/start.bash",
     "clean": "script/clean.bash",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "prepare": "cd .. && husky install client/.husky"
+    "prepare": "cd .. && husky install"
   },
   "eslintConfig": {
     "extends": [

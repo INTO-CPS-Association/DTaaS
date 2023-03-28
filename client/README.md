@@ -6,9 +6,16 @@ Client (frontend) for Digital Twin as a Service (DTaaS) software. This software 
 
 ## Setup the Environment and Build
 
+The following steps are required to setup the environment and build the application.
+
+### Prerequisites
+
+If you are using yarn 2, please change the package.json to use `postinstall` instead `prepare` scripts. This application is using **Husky** for pre-commit hooks, read more about husky and yarn 2 [here](https://typicode.github.io/husky/#/?id=yarn-2).
+
 ```bash
 cd client
 yarn install    #install the nodejs dependencies
+yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
 yarn build      #build the react app into build/ directory
 

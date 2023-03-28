@@ -21,7 +21,7 @@ describe('RecentRuns component', () => {
     const seeMoreLink = screen.getByRole('link');
     // Simulate click event on see more link
     const clickEvent = createEvent.click(seeMoreLink);
-    fireEvent(seeMoreLink,clickEvent);
+    fireEvent(seeMoreLink, clickEvent);
     expect(clickEvent.defaultPrevented).toBeTruthy();
   });
 });
