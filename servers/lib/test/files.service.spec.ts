@@ -60,6 +60,7 @@ describe("FilesService", () => {
       const path = "test_user1";
 
       console.log(path);
+      console.log(files);
 
       jest.mock("fs", () => ({
         readdirSync: jest.fn(() => files),
