@@ -2,7 +2,6 @@ name: Check the server microservices
 
 on:
   push:
-    branches: [development]
   pull_request:
   workflow_dispatch:
 
