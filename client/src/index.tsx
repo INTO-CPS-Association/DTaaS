@@ -1,9 +1,9 @@
 import '@fontsource/roboto';
 import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Layout from 'page/Layout';
 import ReactDOM from 'react-dom/client';
 import WorkBench from 'route/workbench/Workbench';
+import AppProvider from 'AppProvider';
 import Dashboard from './route/dashboard/Dashboard';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
@@ -19,67 +19,31 @@ const router = createBrowserRouter([
   },
   {
     path: 'dashboard',
-    element: (
-      <Layout>
-        <Dashboard />
-      </Layout>
-    ),
+    element: <Dashboard />,
   },
   {
     path: 'library',
-    element: (
-      <Layout>
-        <Library />
-      </Layout>
-    ),
+    element: <Library />,
   },
   {
     path: 'digitaltwins',
-    element: (
-      <Layout>
-        <DigitalTwins />
-      </Layout>
-    ),
+    element: <DigitalTwins />,
   },
   {
     path: 'sanalysis',
-    element: (
-      <Layout>
-        <ScenarioAnalysis />
-      </Layout>
-    ),
+    element: <ScenarioAnalysis />,
   },
   {
     path: 'history',
-    element: (
-      <Layout>
-        <DTHistory />
-      </Layout>
-    ),
+    element: <DTHistory />,
   },
   {
     path: 'account',
-    element: (
-      <Layout>
-        <Account />
-      </Layout>
-    ),
+    element: <Account />,
   },
   {
     path: 'workbench',
-    element: (
-      <Layout>
-        <WorkBench />
-      </Layout>
-    ),
-  },
-  {
-    path: '*',
-    element: (
-      <Layout>
-        <h1>404 - Page not found...</h1>
-      </Layout>
-    ),
+    element: <WorkBench />,
   },
 ]);
 
@@ -88,6 +52,8 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AppProvider>
+      <RouterProvider router={router} />
+    </AppProvider>
   </React.StrictMode>
 );

@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tests on Authentication Flow', () => {
   test('Homepage has correct title and signin link', async ({ page }) => {
-  //    await page.goto(config.baseURL);
+    //    await page.goto(config.baseURL);
     await page.goto('/');
 
     await expect(page).toHaveTitle('The Digital Twin as a Service');
@@ -18,13 +18,9 @@ test.describe('Tests on Authentication Flow', () => {
   test('Fill the signin fields', async ({ page }) => {
     await page.goto('/');
 
-    await page.locator('input[name="password"]')
-      .fill('dummy password');
-    await page.locator('input[name="email"]')
-      .fill('user@au.dk');
-    await page.locator('button')
-      .first()
-      .click();
+    await page.locator('input[name="password"]').fill('dummy password');
+    await page.locator('input[name="email"]').fill('user@au.dk');
+    await page.locator('button').first().click();
 
     await expect(page).toHaveURL(/.*dashboard/);
   });

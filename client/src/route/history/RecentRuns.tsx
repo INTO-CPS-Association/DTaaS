@@ -5,7 +5,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Title from '../../page/Title';
+import Title from 'page/Title';
 
 // Generate Data of Past DT Runs
 function createData(id: number, date: string, name: string) {
@@ -16,10 +16,7 @@ function createData(id: number, date: string, name: string) {
   };
 }
 
-function preventDefault(
-  event: React.MouseEvent<HTMLAnchorElement> &
-    React.MouseEvent<HTMLSpanElement>,
-) {
+function preventDefault(event: React.MouseEvent) {
   event.preventDefault();
 }
 
@@ -49,7 +46,12 @@ function RecentRuns() {
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
+      <Link
+        color="primary"
+        href="#"
+        onClick={(e) => preventDefault(e)}
+        sx={{ mt: 3 }}
+      >
         See more
       </Link>
     </>

@@ -1,6 +1,6 @@
 name: Make quality checks on the client react SPA application
 
-on: 
+on:
   push:
   pull_request:
   workflow_dispatch:
@@ -12,13 +12,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup node 
+      - name: Setup node
+        env:
+          HUSKY_SKIP_INSTALL: 1
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
-
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
 
       - name: Run the linting checks
         continue-on-error: true

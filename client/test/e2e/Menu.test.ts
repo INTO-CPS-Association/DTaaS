@@ -17,7 +17,9 @@ test.describe('Header Contents and Navigation Links', () => {
     await expect(page).toHaveURL('/digitaltwins');
 
     await page.goto('/dashboard');
-    await page.locator('div[role="button"]:has-text("Scenario Analysis")').click();
+    await page
+      .locator('div[role="button"]:has-text("Scenario Analysis")')
+      .click();
     await expect(page).toHaveURL('/sanalysis');
 
     await page.goto('/dashboard');
@@ -39,7 +41,9 @@ test.describe('Header Contents and Navigation Links', () => {
     await expect(page).toHaveURL('/digitaltwins');
 
     await page.goto('/library');
-    await page.locator('div[role="button"]:has-text("Scenario Analysis")').click();
+    await page
+      .locator('div[role="button"]:has-text("Scenario Analysis")')
+      .click();
     await expect(page).toHaveURL('/sanalysis');
 
     await page.goto('/library');
@@ -61,7 +65,9 @@ test.describe('Header Contents and Navigation Links', () => {
     await expect(page).toHaveURL('/digitaltwins');
 
     await page.goto('/digitaltwins');
-    await page.locator('div[role="button"]:has-text("Scenario Analysis")').click();
+    await page
+      .locator('div[role="button"]:has-text("Scenario Analysis")')
+      .click();
     await expect(page).toHaveURL('/sanalysis');
 
     await page.goto('/digitaltwins');
@@ -83,7 +89,9 @@ test.describe('Header Contents and Navigation Links', () => {
     await expect(page).toHaveURL('/digitaltwins');
 
     await page.goto('/sanalysis');
-    await page.locator('div[role="button"]:has-text("Scenario Analysis")').click();
+    await page
+      .locator('div[role="button"]:has-text("Scenario Analysis")')
+      .click();
     await expect(page).toHaveURL('/sanalysis');
 
     await page.goto('/sanalysis');

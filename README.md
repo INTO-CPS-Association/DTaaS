@@ -14,7 +14,9 @@ bash script/install.bash
 
 ## For Client app (serves React Website)
 
-See these [instructions](client/README.md)
+[README.md](client/README.md) for client GUI is found in `./client`
+
+---
 
 ## Infrastructure Components
 
