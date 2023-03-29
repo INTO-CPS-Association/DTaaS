@@ -21,29 +21,19 @@ jobs:
           cache-dependency-path: "**/yarn.lock"
 
       - name: Run the linting checks
-        continue-on-error: true
         run: |
           cd servers/lib
           yarn install
           yarn syntax
 
-      - name: Run lib server unit tests
-        continue-on-error: true
+      - name: Run lib microservice tests
         run: |
-          cd servers/lib/
+          cd servers/lib
           yarn install
           yarn test
 
       - name: Upload unit test coverage to Codecov
-        continue-on-error: true
         uses: codecov/codecov-action@v3
         with:
           files: servers/lib/coverage/clover.xml
-          flags: servers-unit-test
-
-      - name: Upload browser test coverage to Codecov
-        continue-on-error: true
-        uses: codecov/codecov-action@v3
-        with:
-          files: servers/lib/coverage/coverage-final.json
-          flags: server-unit-test-coverage
+          flags: lib-microservice

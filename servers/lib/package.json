@@ -7,7 +7,9 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "build": "script/build.bash",
+    "clean": "script/clean.bash",
     "start": "script/start.bash",
+    "syntax": "script/syntax.bash",
     "test": "script/test.bash"
   },
   "dependencies": {

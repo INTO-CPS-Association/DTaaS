@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
-import exp from "constants";
 require("dotenv").config({ path: ".env" });
 
 describe("FilesService", () => {
