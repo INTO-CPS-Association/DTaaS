@@ -48,8 +48,9 @@ yarn install    # Install dependencies for the microservice
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
 yarn test       # test the application
 
-yarn start      #start the application
+yarn start      # start the application
 
+yarn clean      # deletes directories "build", "coverage", and "dist"
 ## License
 This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is licensed under the terms of the INTO-CPS Association.
 ```
