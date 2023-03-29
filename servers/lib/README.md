@@ -50,7 +50,10 @@ yarn test       # test the application
 
 yarn start      # start the application
 
+yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
+
 yarn clean      # deletes directories "build", "coverage", and "dist"
+
 ## License
 This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is licensed under the terms of the INTO-CPS Association.
 ```
