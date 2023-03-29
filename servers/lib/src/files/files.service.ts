@@ -11,15 +11,16 @@ export class FilesService {
 
   async Wrapper(path: string): Promise<string[]> {
     if (!path) {
-      throw new Error("Invalid query");
+      return ["Invalid query"];
     }
     const mode = this.configService.get("MODE");
-
     if (mode === "local") {
       return this.getLocalFiles(path);
     } else if (mode === "gitlab") {
       return this.getGitlabFiles(path);
-    } else throw new Error("Invalid mode");
+    } else {
+      return ["Invalid query"];
+    }
   }
 
   async getLocalFiles(path: string): Promise<string[]> {
@@ -77,7 +78,7 @@ export class FilesService {
     );
 
     if (!trees) {
-      throw new Error("Invalid query");
+      return ["Invalid query"];
     }
 
     return trees;

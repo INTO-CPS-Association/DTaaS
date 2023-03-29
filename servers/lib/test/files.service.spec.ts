@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
+import exp from "constants";
 require("dotenv").config({ path: ".env" });
 
 describe("FilesService", () => {
@@ -89,11 +90,10 @@ describe("FilesService", () => {
     });
 
     it("should throw an error if response from GitLab API is invalid", async () => {
+      const expected = ["Invalid query"];
       const path = "invalid_path";
-
-      await expect(filesService.getGitlabFiles(path)).rejects.toThrow(
-        new Error("Invalid query")
-      );
+      const result = await filesService.getGitlabFiles(path);
+      expect(result).toEqual(expected);
     });
   });
 
@@ -104,10 +104,9 @@ describe("FilesService", () => {
 
     it("should throw an error if path is empty", async () => {
       const path = "";
-
-      await expect(filesService.Wrapper(path)).rejects.toThrow(
-        new Error("Invalid query")
-      );
+      const expected = ["Invalid query"];
+      const result = await filesService.Wrapper(path);
+      expect(result).toEqual(expected);
     });
 
     it("should return local files when run in local mode", async () => {
@@ -123,29 +122,31 @@ describe("FilesService", () => {
 
       expect(result.sort()).toEqual(expected.sort());
     });
-  });
 
-  it("should return gitlab files when run in gitlab mode", async () => {
-    const path = "user1";
-    process.env.MODE = "gitlab";
+    it("should return gitlab files when run in gitlab mode", async () => {
+      const path = "user1";
+      process.env.MODE = "gitlab";
 
-    const expected = ["digital twins", "functions", "data", "tools", "models"];
+      const expected = [
+        "digital twins",
+        "functions",
+        "data",
+        "tools",
+        "models",
+      ];
 
-    const result = await filesService.Wrapper(path);
+      const result = await filesService.Wrapper(path);
 
-    expect(result.sort()).toEqual(expected.sort());
-  });
+      expect(result.sort()).toEqual(expected.sort());
+    });
 
-  it("should return an error when run in an unknown mode", async () => {
-    const path = "user1";
-    process.env.MODE = "unknown";
+    it("should return an error when run in an unknown mode", async () => {
+      const path = "user1";
+      process.env.MODE = "unknown";
 
-    const expected = new Error("Invalid mode");
-
-    try {
-      await filesService.Wrapper(path);
-    } catch (error) {
-      expect(error).toEqual(expected);
-    }
+      const expected = ["Invalid query"];
+      const result = await filesService.Wrapper(path);
+      expect(result).toEqual(expected);
+    });
   });
 });

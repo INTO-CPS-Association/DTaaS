@@ -7,17 +7,8 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "build": "script/build.bash",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "script/start.bash",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "start:test": "NODE_ENV=test nest start",
-    "syntax": "script/syntax.bash",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "script/test.bash",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test": "script/test.bash"
   },
   "dependencies": {
     "@apollo/client": "^3.7.10",
