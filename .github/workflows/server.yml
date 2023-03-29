@@ -33,13 +33,13 @@ jobs:
           yarn test
         env:
           PORT: 3000
-          LOCAL_PATH: /Users/phillipravn/DTaaS/data/assets
+          LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
           TOKEN: token
           MODE: gitlab
           LOG_LEVEL: debug
-          TEST_PATH: /Users/phillipravn/DTaaS/servers/lib/test/data/test_assets
+          TEST_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
 
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v3
