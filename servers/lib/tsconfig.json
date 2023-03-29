@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-
+  "rules": {
+    "@typescript-eslint/no-var-requires": "error"
+  },
   "exclude": ["**/node_modules/*", "./dist"]
 }
