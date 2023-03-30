@@ -12,4 +12,12 @@ export class FilesResolver {
   async getFiles(@Args("path") path: string): Promise<string[]> {
     return this.filesService.Wrapper(path);
   }
+
+  @Query(() => [String])
+  async getFileContent(
+    @Args("projectPath") projectPath: string,
+    @Args("filePath") filePath: string
+  ) {
+    return this.filesService.getGitlabFileContent(projectPath, filePath);
+  }
 }
