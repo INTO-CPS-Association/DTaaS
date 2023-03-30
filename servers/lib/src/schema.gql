@@ -4,4 +4,5 @@
 
 type Query {
   getFiles(path: String!): [String!]!
+  getFileContent(projectPath: String!, filePath: String!): [String!]!
 }
