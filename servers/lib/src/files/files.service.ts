@@ -64,4 +64,51 @@ export class FilesService {
 
     return trees;
   }
+
+  async getGitlabFileContent(
+    projectPath: string,
+    filePath: string
+  ): Promise<string[]> {
+    const gitlabGroup = this.configService.get("GITLAB_GROUP");
+    const token = this.configService.get("TOKEN");
+    const gitlabUrl = this.configService.get("GITLAB_URL");
+
+    const client = new ApolloClient({
+      cache: new InMemoryCache(),
+      uri: gitlabUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("projectPath: " + projectPath);
+    console.log("filePath: " + filePath);
+
+    const { data } = await client.query({
+      query: gql`
+        query fileContent($projectPath: ID!, $filePath: [String!]!) {
+          project(fullPath: $projectPath) {
+            repository {
+              blobs(paths: $filePath) {
+                nodes {
+                  name
+                  rawBlob
+                  rawTextBlob
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: { projectPath, filePath: [filePath] },
+    });
+
+    const nodes = data?.project?.repository?.blobs?.nodes;
+
+    if (!nodes) {
+      return ["Invalid query"];
+    }
+
+    return [nodes[0].rawTextBlob];
+  }
 }
