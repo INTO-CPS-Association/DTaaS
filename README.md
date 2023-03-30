@@ -39,16 +39,12 @@ The server apps shall be a set of microservices.
 ```bash
 cd server/<microservice-folder>
 yarn install    #install the nodejs dependencies
-yarn syntax     #perform linting and static analysis
 yarn build      #compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
 yarn test       #test the application
 
-#optional step: set the environment variables in .env file
-
 yarn start      #start the application
-yarn clean      #clean the directory of temporary files
-```
 
 ## License
 
 This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is licensed under the terms of the INTO-CPS Association.
+```

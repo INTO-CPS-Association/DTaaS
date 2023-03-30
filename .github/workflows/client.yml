@@ -24,22 +24,19 @@ jobs:
       - name: Run the linting checks
         continue-on-error: true
         run: |
-          cd client/
-          yarn install
+          cd client/	
+          yarn install	
           yarn syntax
-
       - name: Build the React SPA website
         run: |
-          cd client/
-          yarn install
+          cd client/	
+          yarn install	
           yarn build
-
       - name: Run client unit and integration tests
         run: |
-          cd client/
-          yarn install
+          cd client/	
+          yarn install	
           yarn test
-
       - name: Upload unit test coverage to Codecov
         continue-on-error: true
         uses: codecov/codecov-action@v3

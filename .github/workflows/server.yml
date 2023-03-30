@@ -1,6 +1,6 @@
 name: Check the server microservices
 
-on: 
+on:
   push:
   pull_request:
   workflow_dispatch:
@@ -8,28 +8,41 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    continue-on-error: true    
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup node 
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
 
       - name: Run the linting checks
-        continue-on-error: true
         run: |
-          cd servers/auth
+          cd servers/lib
           yarn install
           yarn syntax
 
-      - name: Run authentication server unit tests
-        continue-on-error: true
+      - name: Run lib microservice tests
         run: |
-          cd servers/auth/
+          cd servers/lib
           yarn install
           yarn test
+        env:
+          PORT: 3000
+          LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
+          GITLAB_GROUP: dtaas
+          GITLAB_URL: https://gitlab.com/api/graphql
+          TOKEN: token
+          MODE: gitlab
+          LOG_LEVEL: debug
+          TEST_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
+
+      - name: Upload unit test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: servers/lib/coverage/clover.xml
+          flags: lib-microservice
