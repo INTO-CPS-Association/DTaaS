@@ -26,11 +26,11 @@ export class FilesService {
       } else if (mode === "gitlab") {
         return this.getGitlabFiles(path);
       }
-    } else if (operation === "getFileContent" && filePath) {
-      if (mode === "gitlab") {
-        return this.getGitlabFileContent(path, filePath);
-      } else if (mode === "local") {
-        return this.getLocalFileContent(path, filePath);
+    } else if (operation === "getFileContent") {
+      if (mode === "local") {
+        return this.getLocalFileContent(path);
+      } else if (mode === "gitlab") {
+        return this.getGitlabFileContent(path);
       }
     }
 
@@ -43,8 +43,17 @@ export class FilesService {
     return fs.readdirSync(fullpath);
   }
 
-  async getLocalFileContent(path: string, filePath: string): Promise<string[]> {
-    return ["Local files not supported yet"];
+  async getLocalFileContent(path: string): Promise<string[]> {
+    const dataPath = this.configService.get("LOCAL_PATH");
+    const fullpath = join(dataPath, path);
+
+    try {
+      const content = fs.readFileSync(fullpath, "utf8");
+      return [content];
+    } catch (error) {
+      console.error("Error reading local file:", error);
+      return ["Invalid query"];
+    }
   }
 
   async getGitlabFiles(path: string): Promise<string[]> {
@@ -83,13 +92,19 @@ export class FilesService {
     return trees;
   }
 
-  async getGitlabFileContent(
-    projectPath: string,
-    filePath: string
-  ): Promise<string[]> {
+  async getGitlabFileContent(path: string): Promise<string[]> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const token = this.configService.get("TOKEN");
     const gitlabUrl = this.configService.get("GITLAB_URL");
+
+    const pathParts: string[] = path.split("/");
+    const project: string = pathParts[0];
+    const domain: string = gitlabGroup + "/" + project;
+
+    console.log("domain", domain);
+    path = pathParts.slice(1).join("/");
+
+    console.log("path", path);
 
     const client = new ApolloClient({
       cache: new InMemoryCache(),
@@ -99,15 +114,14 @@ export class FilesService {
       },
     });
 
-    console.log("projectPath: " + projectPath);
-    console.log("filePath: " + filePath);
+    console.log("path", path);
 
     const { data } = await client.query({
       query: gql`
-        query fileContent($projectPath: ID!, $filePath: [String!]!) {
-          project(fullPath: $projectPath) {
+        query fileContent($domain: ID!, $path: [String!]!) {
+          project(fullPath: $domain) {
             repository {
-              blobs(paths: $filePath) {
+              blobs(paths: $path) {
                 nodes {
                   name
                   rawBlob
@@ -118,7 +132,7 @@ export class FilesService {
           }
         }
       `,
-      variables: { projectPath, filePath: [filePath] },
+      variables: { domain: domain, path: [path] },
     });
 
     const nodes = data?.project?.repository?.blobs?.nodes;
