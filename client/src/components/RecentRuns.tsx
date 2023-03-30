@@ -26,26 +26,32 @@ const rows = [
   createData(2, '16 August, 2022', 'Electroingenium Rotary Dryer'),
 ];
 
+function DisplayRuns() {
+  return (
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell>Date</TableCell>
+          <TableCell>Name</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.date}</TableCell>
+            <TableCell>{row.name}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 function RecentRuns() {
   return (
     <>
       <Title>Recent Runs</Title>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.name}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DisplayRuns />
       <Link
         color="primary"
         href="#"

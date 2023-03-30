@@ -6,9 +6,9 @@ import Grid from '@mui/material/Grid';
 import DTaaSMenu from './Menu';
 import Footer from './Footer';
 
-function Layout(props: { children: React.ReactNode }) {
+function MenuLayout(props: { children: React.ReactNode }) {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <>
       <DTaaSMenu />
       <Box
         component="main"
@@ -18,11 +18,19 @@ function Layout(props: { children: React.ReactNode }) {
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
-          // gridTemplateRows: 'auto 1fr auto',
         }}
       >
-        {/* Toolbar is the space between the menu and the content */}
-        <Toolbar />{' '}
+        <Toolbar />
+        {props.children}
+      </Box>
+    </>
+  );
+}
+
+function Layout(props: { children: React.ReactNode }) {
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <MenuLayout>
         <Container
           maxWidth="lg"
           sx={{ mt: 4, mb: 2, flexGrow: 1, display: 'flex' }}
@@ -37,7 +45,7 @@ function Layout(props: { children: React.ReactNode }) {
           </Grid>
         </Container>
         <Footer />
-      </Box>
+      </MenuLayout>
     </Box>
   );
 }
