@@ -8,16 +8,15 @@ export class FilesResolver {
   constructor(private readonly filesService: FilesService) {}
 
   @Query(() => [String])
-  //getFiles, calls Wrapper function, which handles this query depending on the mode (local or gitlab)
   async getFiles(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.Wrapper(path);
+    return this.filesService.Wrapper("getFiles", path);
   }
 
   @Query(() => [String])
   async getFileContent(
     @Args("projectPath") projectPath: string,
     @Args("filePath") filePath: string
-  ) {
-    return this.filesService.getGitlabFileContent(projectPath, filePath);
+  ): Promise<string[]> {
+    return this.filesService.Wrapper("getFileContent", projectPath, filePath);
   }
 }

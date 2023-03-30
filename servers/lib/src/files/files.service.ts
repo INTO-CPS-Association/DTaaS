@@ -9,18 +9,32 @@ import { DIRECTORY_LIST } from "../queries";
 export class FilesService {
   constructor(private configService: ConfigService) {}
 
-  async Wrapper(path: string): Promise<string[]> {
+  async Wrapper(
+    operation: "getFiles" | "getFileContent",
+    path: string,
+    filePath?: string
+  ): Promise<string[]> {
     if (!path) {
       return ["Invalid query"];
     }
+
     const mode = this.configService.get("MODE");
-    if (mode === "local") {
-      return this.getLocalFiles(path);
-    } else if (mode === "gitlab") {
-      return this.getGitlabFiles(path);
-    } else {
-      return ["Invalid query"];
+
+    if (operation === "getFiles") {
+      if (mode === "local") {
+        return this.getLocalFiles(path);
+      } else if (mode === "gitlab") {
+        return this.getGitlabFiles(path);
+      }
+    } else if (operation === "getFileContent" && filePath) {
+      if (mode === "gitlab") {
+        return this.getGitlabFileContent(path, filePath);
+      } else if (mode === "local") {
+        return this.getLocalFileContent(path, filePath);
+      }
     }
+
+    return ["Invalid query"];
   }
 
   async getLocalFiles(path: string): Promise<string[]> {
