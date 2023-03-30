@@ -11,8 +11,7 @@ export class FilesService {
 
   async Wrapper(
     operation: "getFiles" | "getFileContent",
-    path: string,
-    filePath?: string
+    path: string
   ): Promise<string[]> {
     if (!path) {
       return ["Invalid query"];
@@ -51,27 +50,28 @@ export class FilesService {
       const content = fs.readFileSync(fullpath, "utf8");
       return [content];
     } catch (error) {
-      console.error("Error reading local file:", error);
       return ["Invalid query"];
     }
   }
 
-  async getGitlabFiles(path: string): Promise<string[]> {
+  async parseArguments(
+    path: string
+  ): Promise<{ domain: string; parsedPath: string }> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
-    const token = this.configService.get("TOKEN");
-    const gitlabUrl = this.configService.get("GITLAB_URL");
-
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
     const domain: string = gitlabGroup + "/" + project;
 
-    path = pathParts.slice(1).join("/");
-
+    const parsedPath = pathParts.slice(1).join("/");
+    return { domain, parsedPath };
+  }
+  async getGitlabFiles(path: string): Promise<string[]> {
+    const { domain, parsedPath } = await this.parseArguments(path);
     const client = new ApolloClient({
       cache: new InMemoryCache(),
-      uri: gitlabUrl,
+      uri: this.configService.get("GITLAB_URL"),
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
       },
     });
 
@@ -93,28 +93,14 @@ export class FilesService {
   }
 
   async getGitlabFileContent(path: string): Promise<string[]> {
-    const gitlabGroup = this.configService.get("GITLAB_GROUP");
-    const token = this.configService.get("TOKEN");
-    const gitlabUrl = this.configService.get("GITLAB_URL");
-
-    const pathParts: string[] = path.split("/");
-    const project: string = pathParts[0];
-    const domain: string = gitlabGroup + "/" + project;
-
-    console.log("domain", domain);
-    path = pathParts.slice(1).join("/");
-
-    console.log("path", path);
-
+    const { domain, parsedPath } = await this.parseArguments(path);
     const client = new ApolloClient({
       cache: new InMemoryCache(),
-      uri: gitlabUrl,
+      uri: this.configService.get("GITLAB_URL"),
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
       },
     });
-
-    console.log("path", path);
 
     const { data } = await client.query({
       query: gql`
@@ -132,7 +118,7 @@ export class FilesService {
           }
         }
       `,
-      variables: { domain: domain, path: [path] },
+      variables: { domain: domain, path: [parsedPath] },
     });
 
     const nodes = data?.project?.repository?.blobs?.nodes;
