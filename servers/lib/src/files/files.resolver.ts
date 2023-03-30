@@ -13,10 +13,7 @@ export class FilesResolver {
   }
 
   @Query(() => [String])
-  async getFileContent(
-    @Args("projectPath") projectPath: string,
-    @Args("filePath") filePath: string
-  ): Promise<string[]> {
-    return this.filesService.Wrapper("getFileContent", projectPath, filePath);
+  async getFileContent(@Args("path") path: string): Promise<string[]> {
+    return this.filesService.Wrapper("getFileContent", path);
   }
 }
