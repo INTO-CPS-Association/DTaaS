@@ -2,10 +2,10 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import Dashboard from 'route/dashboard/Dashboard';
 
-jest.mock('route/history/Chart', () => ({
+jest.mock('components/Chart', () => ({
   default: () => <div>chart-mock</div>,
 }));
-jest.mock('route/history/RecentRuns', () => ({
+jest.mock('components/RecentRuns', () => ({
   default: () => <div>recent-runs-mock</div>,
 }));
 jest.mock('page/Layout', () => ({
