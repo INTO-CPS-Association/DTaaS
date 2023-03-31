@@ -27,12 +27,23 @@ yarn clean      #clean the directory of temporary files
 
 ---
 
-## Configuration
+## Custom configuration
 
-To customize the configuration of endpoints to your preference, it is recommended that you configure the environment file of your choice located in the `'./config'` directory.
+It is required to have a `env.js` in the root directory of `build` during runtime. This file is used to configure the endpoints of the application. See the [build instructions](../docs/CLIENT.md) for an example.
 
-Once the configuration file has been updated, please rerun the configuration bash to apply the changes.
+### Multiple configurations
+
+If you want to switch between multiple environments, you can use the `yarn configapp` command to copy a configuration file from `client/config/` to the `build` directory.
+
+1. Save the file as `client/config/<config-name>.js`.
+2. Run the config command to copy the file to the `public` directory and the `build` directory, if a build is present.
 
 ```bash
-yarn configapp #prod | dev
+yarn configapp <config-name>
 ```
+
+> Which ever env.js file is present in the `public` directory during `yarn build`, will be used in the build.
+
+It is therefore reccommend to keep the configurations in the `client/config/` directory and use the `yarn configapp` command to switch between them.
+
+---
