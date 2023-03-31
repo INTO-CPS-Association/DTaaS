@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import DTHistory from 'route/history/History';
 
-jest.mock('route/history/RecentRuns', () => ({
+jest.mock('components/RecentRuns', () => ({
   default: () => <div>RecentRuns-mock</div>,
 }));
 jest.mock('route/history/Logs', () => ({

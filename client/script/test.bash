@@ -1,3 +1,4 @@
+#!/bin/bash
 printf "\n\n################ Testing in progress ################"
 printf "\n################ Running Jest ################\n"
 export PATH="$(yarn bin):$PATH"

@@ -37,7 +37,6 @@ exclude_paths:
     - "**.txt"
     - "**.json"
     - "**.lock"
-    - client/test/
     - docs/
     - deploy/
     - .husky/

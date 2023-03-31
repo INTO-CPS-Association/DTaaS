@@ -1,4 +1,5 @@
-echo "starting the node application"
+#!/bin/bash
+printf "starting the node application"
 #node build/index.js
 
 # serve static site; can be run from production server

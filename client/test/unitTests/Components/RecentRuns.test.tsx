@@ -1,6 +1,6 @@
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import * as React from 'react';
-import RecentRuns from 'route/history/RecentRuns';
+import RecentRuns from 'components/RecentRuns';
 
 describe('RecentRuns component', () => {
   test('renders table with rows', () => {
