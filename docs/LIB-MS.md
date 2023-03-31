@@ -68,14 +68,14 @@ yarn install
 
 ## Environment Variables
 
-To set up the environment variables for the lib microservice, create a new file named .env in the servers/lib folder. Then, add the following variables and their respective values:
+To set up the environment variables for the lib microservice, create a new file named .env in the servers/lib folder. Then, add the following variables and their respective values. Below you can see an how, with included examples:
 
 ```
-MODE=<local or gitlab>
-LOCAL_PATH=<path_to_your_local_files>
-GITLAB_URL=<gitlab_api_url>
-TOKEN=<your_gitlab_token>
-GITLAB_GROUP=<your_gitlab_group_name>
+MODE='gitlab'
+LOCAL_PATH='/home/dtaas'
+GITLAB_URL='https://gitlab.com/api/graphql'
+TOKEN='123-sample-token'
+GITLAB_GROUP='dtaas'
 ```
 
 Replace the values within the angle brackets (<>) with the appropriate values for your setup.

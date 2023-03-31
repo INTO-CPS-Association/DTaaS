@@ -11,7 +11,7 @@ engines:
     enabled: true
     config:
       enabled: true
-      threshold: 10
+      threshold: 7
       languages:
         - typescript
         - javascript
@@ -38,8 +38,5 @@ exclude_paths:
   - "**.md"
   - "**.txt"
   - "**.json"
-  - "**.lock"
-  - client/test/
   - docs/
-  - deploy/
   - .husky/
