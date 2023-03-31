@@ -6,13 +6,7 @@ I will be referring to the slides 23-27 from [this presentation](/docs/DTaaS-ove
 
 ## Overview
 
-The lib microservice is responsible for handling and serving the contents of the functions and models. It provides API endpoints for clients to query, fetch, and interact with these resources. The microservice is built using the NestJS framework and leverages the Apollo GraphQL server to provide a flexible and efficient way to query data.
-
-By looking into the servers/lib directory, you can find the main components and modules that make up the microservice:
-
-- src/files: This directory contains the main service (files.service.ts) responsible for handling the logic of fetching and serving files. It supports both local and GitLab modes for fetching files, which can be seen in the figure image below
-- src/app.module.ts: The main application module, which imports the necessary modules and providers for the microservice.
-- src/main.ts: The entry point of the microservice, which bootstraps the NestJS application.
+The lib microservice is responsible for handling and serving the contents of the functions and models. It provides API endpoints for clients to query, fetch, and interact with these resources.
 
 ## File Structure
 
