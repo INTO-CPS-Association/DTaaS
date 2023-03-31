@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as fs from "fs";
 import { ConfigService } from "@nestjs/config";
 import { join } from "path";
-import { ApolloClient, gql } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/core";
 import { DIRECTORY_LIST } from "../queries";
 @Injectable()
