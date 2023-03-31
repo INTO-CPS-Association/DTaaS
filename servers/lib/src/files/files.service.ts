@@ -4,8 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { join } from "path";
 import { ApolloClient, gql } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/core";
-import { DIRECTORY_LIST } from "../loadSchema";
-
+import { DIRECTORY_LIST } from "../queries";
 @Injectable()
 export class FilesService {
   constructor(private configService: ConfigService) {}
