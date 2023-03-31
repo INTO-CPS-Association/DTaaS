@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
-import Chart from 'route/history/Chart';
+import Chart from 'components/Chart';
 
 jest.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (

@@ -4,8 +4,8 @@ source: https://github.com/mui/material-ui/tree/v5.10.0/docs/data/material/getti
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Layout from 'page/Layout';
-import Chart from '../history/Chart';
-import RecentRuns from '../history/RecentRuns';
+import Chart from 'components/Chart';
+import RecentRuns from 'components/RecentRuns';
 
 function DashboardContent() {
   return (
