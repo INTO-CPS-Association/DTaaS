@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { join } from "path";
 import { ApolloClient, gql } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/core";
+import { DIRECTORY_LIST } from "../loadSchema";
 
 @Injectable()
 export class FilesService {
@@ -49,27 +50,8 @@ export class FilesService {
     });
 
     const { data } = await client.query({
-      query: gql`
-        query directorylist($path: String!, $domain: ID!) {
-          project(fullPath: $domain) {
-            webUrl
-            path
-            repository {
-              paginatedTree(path: $path, recursive: false) {
-                nodes {
-                  trees {
-                    nodes {
-                      name
-                    }
-                  }
-                }
-              }
-              diskPath
-            }
-          }
-        }
-      `,
-      variables: { path, domain: domain },
+      query: DIRECTORY_LIST,
+      variables: { path: path, domain: domain },
     });
 
     const trees = data?.project?.repository?.paginatedTree?.nodes?.flatMap(
