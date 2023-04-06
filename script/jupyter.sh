@@ -16,6 +16,9 @@ docker run -d \
   --restart always \
   mltooling/ml-workspace:0.13.2
 
+# commands to generate sample Jupyter config files
+#jupyter notebook --generate-config
+#jupyter notebook password
 
 #Run the next two services on the host
 mkdir -p "$HOME/.jupyter"

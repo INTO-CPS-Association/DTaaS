@@ -11,9 +11,9 @@ providers:
     watch: true
 
 # Enable traefik ui
-api:
-  dashboard: true
-  insecure: true
+#dapi:
+#  dashboard: true
+#  insecure: true
 
 # Log level INFO|DEBUG|ERROR
 log:
