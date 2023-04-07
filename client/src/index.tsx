@@ -4,38 +4,22 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import WorkBench from 'route/workbench/Workbench';
 import AppProvider from 'AppProvider';
-import Dashboard from './route/dashboard/Dashboard';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
-import ScenarioAnalysis from './route/scenarioAnalysis/ScenarioAnalysis';
-import DTHistory from './route/history/History';
-import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <SignIn />,
+    element: <Library />,
   },
   {
-    path: 'dashboard',
-    element: <Dashboard />,
-  },
-  {
-    path: 'library',
+    path: '/library',
     element: <Library />,
   },
   {
     path: 'digitaltwins',
     element: <DigitalTwins />,
-  },
-  {
-    path: 'sanalysis',
-    element: <ScenarioAnalysis />,
-  },
-  {
-    path: 'history',
-    element: <DTHistory />,
   },
   {
     path: 'account',

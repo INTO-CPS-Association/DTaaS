@@ -1,7 +1,0 @@
-# ------------------------------------------------------
-# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
-# ------------------------------------------------------
-
-type Query {
-  getFiles(path: String!): [String!]!
-}
