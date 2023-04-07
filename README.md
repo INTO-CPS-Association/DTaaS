@@ -1,50 +1,27 @@
 # Motivation
 
-Website for Digital Twin as a Service (DTaaS) software. This software shall be used for creating a Digital Twin support platform for SMEs. A brief overview of the software is available in [this presentation](docs/DTaaS-overview.pdf) and [recorded video](https://www.dropbox.com/s/mgxxf5chp9b130x/DTaaS%20presentation%20and%20brainstorming-20230317.mp4?dl=1).
+The Digital Twin as a Service (DTaaS) software shall be used for creating a Digital Twin support platform for SMEs. A brief overview of the software is available in [this presentation](docs/DTaaS-overview.pdf) and [recorded video](https://www.dropbox.com/s/mgxxf5chp9b130x/DTaaS%20presentation%20and%20brainstorming-20230317.mp4?dl=1). There is also a [research paper draft](docs/DTaaS-Paper-Draft.pdf) if you are interested in reading the scientific roadmap for this software.
 
-This is a mono repo containing code for both the client (web browser) and server code.
+This is a mono repo containing code for both the web client and the microservices code base. Only the [web client](client) and [library microservice](servers/lib) components are functional at present. Everything else is a work-in-progress.
 
-## Install the Environment
+### Installation
 
+The best way to use the DTaaS software is via a vagrant virtual machine. The install instructions for [single node vagrant machine](deploy/vagrant/single-machine/README.md) should help you get started. If you face any issues, please open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
+
+## Development Setup
+
+The rest of the information on this page is aimed at current and potential contributors to DTaaS software development.
+
+To install the development environment, run
 ```bash
 bash script/install.bash
 ```
 
----
+### Infrastructure Components
 
-## For Client app (serves React Website)
+The application uses [Træfik](https://github.com/traefik/traefik) and [ML Workspace](https://github.com/ml-tooling/ml-workspace) open-source components. It is possible to run [jupyterlab notebooks](script/jupyter.sh), [Grafana servers](script/grafana.sh) and [InfluxDB](script/influx.sh) as part of the DTaaS software. But terminal-based Jupyterlab, Grafana and InfluxDB are not installed in the default setup.
 
-[README.md](client/README.md) for client GUI is found in `./client`
-
----
-
-## Infrastructure Components
-
-The application requires the following open-source components.
-
-1. Traefik
-1. InfluxDB
-1. Grafana
-
-See each of the directories to launch the respective docker services.
-
-**TODO**: docker-compose file for all the infrastructure components.
-
----
-
-## For server apps
-
-The server apps shall be a set of microservices.
-
-```bash
-cd server/<microservice-folder>
-yarn install    #install the nodejs dependencies
-yarn build      #compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
-yarn test       #test the application
-
-yarn start      #start the application
 
 ## License
 
-This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is licensed under the terms of the INTO-CPS Association.
-```
+This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is available under [the INTO-CPS License](./LICENSE.txt).

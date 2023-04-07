@@ -1,8 +1,6 @@
 # Introduction
 
-Client (frontend) for Digital Twin as a Service (DTaaS) software. This software shall be used for providing a single page web application for the Digital Twin support platform.
-
----
+Client (frontend) for Digital Twin as a Service (DTaaS) software. This software shall be used for providing a React single page web application for the Digital Twin support platform.
 
 ## Setup the Environment and Build
 
@@ -38,5 +36,3 @@ Once the configuration file has been updated, please rerun the configuration bas
 ```bash
 yarn configapp #prod | dev
 ```
-
----
