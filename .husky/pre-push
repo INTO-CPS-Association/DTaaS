@@ -1,10 +1,17 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-if git diff --name-only origin...HEAD | grep "^client/" >/dev/null; then
+# Look in folders:
+# - client/public
+# - client/src
+# - client/test
+# - client/scripts
+# - client/config
+
+if git diff --name-only origin...HEAD | grep "^(client/(public|src|test|scripts|config)/)" >/dev/null; then
     cd client
     yarn install
     yarn jest . --coverage=false
 else
-    echo "No changes in the client directory. Skipping pre-push hook."
+    echo "No changes in client/(public|src|test|scripts|config). Skipping pre-push hook."
 fi

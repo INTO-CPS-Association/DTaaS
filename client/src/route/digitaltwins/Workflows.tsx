@@ -1,14 +1,13 @@
 import * as React from 'react';
 import Iframe from 'components/Iframe';
 import TabComponent, {
-  createTabData,
   TabData,
 } from 'components/tab/TabComponent';
 import tabs from './WorkflowsData';
 
 const jupyterURL = window.env.REACT_APP_URL_DT;
 
-const tabData: TabData[] = createTabData(
+const tabData: TabData[] = 
   tabs.map((tab, i) => ({
     label: tab.label,
     body: (
@@ -23,9 +22,8 @@ const tabData: TabData[] = createTabData(
         )}
       </>
     ),
-  })),
-  true
-);
+  }))
+;
 
 function Workflows() {
   return <TabComponent tabs={tabData} />;

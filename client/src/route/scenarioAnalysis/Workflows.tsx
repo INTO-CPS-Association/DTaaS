@@ -3,7 +3,6 @@ import TabComponent, { TabData } from 'components/tab/TabComponent';
 
 const tabs: TabData[] = [
   {
-    index: 0 as TabData['index'],
     label: 'Define',
     body: (
       <>
@@ -13,12 +12,10 @@ const tabs: TabData[] = [
     ),
   },
   {
-    index: 1 as TabData['index'],
     label: 'Execute',
     body: <>Execution of scenarios and potential real-time interaction.</>,
   },
   {
-    index: 2 as TabData['index'],
     label: 'Analyze',
     body: <>Execution summary, output data in text and graphical formats.</>,
   },
