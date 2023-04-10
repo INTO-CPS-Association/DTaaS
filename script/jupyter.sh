@@ -1,8 +1,8 @@
 #!/bin/bash
 #-------------
-echo -e "\n\n Jupyter server provisioning script"
+printf "\n\n Jupyter server provisioning script"
 
-echo "\n\n start the jupyter notebook servers"
+printf "\n\n start the jupyter notebook servers"
 
 #Run this service in docker container
 docker run -d \
@@ -26,7 +26,7 @@ cp -R "$PWD/servers/config/jupyter.conf/*" "$HOME/.jupyter"
 sudo chown -R "$USER:$USER" "$HOME/.jupyter"
 rm "$HOME/.jupyter/jupyter_notebook_config.json" #remove the password
 
-cd "$PWD/data/assets/user/1"
+cd "$PWD/data/assets/user/1" || exit
 nohup jupyter lab --port=8091 --notebook-dir=''  --LabApp.token='' \
  --ServerApp.base_url='host/1/lab' > /home/vagrant/jupyter-lab.log 2>&1 &
 

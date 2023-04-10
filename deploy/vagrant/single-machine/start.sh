@@ -1,14 +1,14 @@
 #!/bin/bash
 
 git clone https://github.com/INTO-CPS-Association/DTaaS.git DTaaS
-cd DTaaS
+cd DTaaS || exit
 TOP_DIR=`pwd`
 git fetch --all
 git checkout feature/distributed-demo
 
 #-------------
-echo "\n\n start the react website"
-cd "${TOP_DIR}/client"
+printf "\n\n start the react website"
+cd "${TOP_DIR}/client" || exit
 yarn install
 yarn build
 
@@ -17,7 +17,7 @@ yarn configapp dev
 nohup serve -s build -l 4000 & disown
 
 #-------------
-echo "\n\n start the jupyter notebook server"
+printf "\n\n start the jupyter notebook server"
 docker run -d \
  -p 8090:8080 \
   --name "ml-workspace-user1" \
@@ -30,14 +30,13 @@ docker run -d \
   mltooling/ml-workspace:0.13.2
 
 #-------------
-echo "\n\n start the traefik gateway server"
-echo ".........................."
-cd "${TOP_DIR}/servers/config/gateway"
+printf "\n\n start the traefik gateway server"
+printf ".........................."
+cd "${TOP_DIR}/servers/config/gateway" || exit
 sudo docker run -d \
  --name "traefik-gateway" \
- --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
- -v $PWD/auth:/etc/traefik/auth \
- -v $PWD/dynamic:/etc/traefik/dynamic \
+ --network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \
+ -v "$PWD/auth:/etc/traefik/auth" \
+ -v "$PWD/dynamic:/etc/traefik/dynamic" \
  -v /var/run/docker.sock:/var/run/docker.sock \
  traefik:v2.5
-

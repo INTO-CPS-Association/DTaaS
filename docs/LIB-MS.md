@@ -85,6 +85,7 @@ Replace the default values the appropriate values for your setup.
 
 ```bash
 yarn install
+yarn build
 yarn start
 ```
 

@@ -17,6 +17,8 @@ vagrant to publish all other virtualbox packages
 ```bash
 #create a key pair
 ssh-keygen -b 4096 -t rsa -f key -q -N ""
+mv key vagrant
+mv key.pub vagrant.pub
 
 vagrant up
 

@@ -2,7 +2,6 @@
 
 This directory contains code for running DTaaS application inside one vagrant VM. The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space to the vagrant box.
 
-
 A dummy **foo.com** URL has been used for illustration. Please change this to your unique website URL.
 
 Please follow these steps to make this work in your local environment.

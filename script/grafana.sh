@@ -1,7 +1,7 @@
 #!/bin/bash
-echo -e "Grafana provisioning script"
+printf "Grafana provisioning script\n"
 # Command to launch grafana
-```bash
+
 docker run -d \
  -p 3000:3000 \
  --name=grafana-test \
@@ -16,4 +16,3 @@ docker run -d \
  -e "GF_PATHS_PROVISIONING=/etc/grafana/provisioning" \
  -e "HOME=/home/grafana" \
   grafana/grafana
-```

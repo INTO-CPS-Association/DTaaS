@@ -1,11 +1,11 @@
 #!/bin/bash
-echo "gateway provision script"
+printf "gateway provision script"
 
 
 #-------------
-echo "\n\n start the DTaaS client server"
-echo ".........................."
-cd /vagrant/DTaaS/client
+printf "\n\n start the DTaaS client server"
+printf ".........................."
+cd /vagrant/DTaaS/client || exit
 
 #yarn install    #install the nodejs dependencies
 #yarn build      #build the react app into build/ directory
@@ -16,8 +16,8 @@ yarn start &	#start the application in the background
 
 
 #-------------
-echo "\n\n start the jupyter notebook server"
-cd /home/vagrant
+printf "\n\n start the jupyter notebook server"
+cd /home/vagrant || exit
 cp -R /vagrant/assets .
 chown -R vagrant:vagrant assets
 
@@ -45,20 +45,20 @@ docker run -d \
 
 
 #-------------
-echo "\n\n start the traefik gateway server"
-echo ".........................."
+printf "\n\n start the traefik gateway server"
+printf ".........................."
 cp -R /vagrant/gateway /home/vagrant
 sudo chown -R vagrant:vagrant /home/vagrant/gateway
-cd /home/vagrant/gateway
+cd /home/vagrant/gateway || exit
 sudo docker run -d \
- --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
- -v $PWD/auth:/etc/traefik/auth \
- -v $PWD/dynamic:/etc/traefik/dynamic \
+ --network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \
+ -v "$PWD/auth:/etc/traefik/auth" \
+ -v "$PWD/dynamic:/etc/traefik/dynamic" \
  -v /var/run/docker.sock:/var/run/docker.sock \
  traefik:v2.5
 
 #-------------------------------------
-echo "\n\n Incubator demo specific packages"
+printf "\n\n Incubator demo specific packages"
 sudo apt-get -y install zip
 pip install pyhocon
 pip install influxdb_client
