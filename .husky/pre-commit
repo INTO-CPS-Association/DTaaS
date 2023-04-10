@@ -1,17 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Look in folders:
-# - client/public
-# - client/src
-# - client/test
-# - client/scripts
-# - client/config
-
-if git diff --cached --name-only | grep -E "^(client/(public|src|test|scripts|config)/)" >/dev/null; then
+if git diff --cached --name-only | grep "^client/" >/dev/null; then
     cd client
     yarn install
     yarn format && yarn syntax
 else
-    echo "No changes in client/(public|src|test|scripts|config) directory. Skipping pre-commit hook."
+    echo "No changes in the client directory. Skipping pre-commit hook."
 fi
