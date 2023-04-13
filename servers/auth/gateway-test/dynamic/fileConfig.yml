@@ -1,0 +1,38 @@
+http:
+  routers:
+    dtaas:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`)'
+      middlewares:
+        - oauth2
+      service: dtaas
+    root:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && Path(`/`)'
+      service: dtaas
+    user1:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/user/1`)'
+      middlewares:
+        - oauth2
+      service: user1
+  # Middleware: OAuth2 authentication with GitLab
+  middlewares:
+    oauth2:
+      forwardAuth:
+        address: "http://localhost:8090/auth"
+        authResponseHeaders:
+          - "X-Forwarded-User"
+        trustForwardHeader: true
+  services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:4000"
+    user1:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8090"

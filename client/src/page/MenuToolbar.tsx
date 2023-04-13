@@ -10,6 +10,7 @@ import { deepPurple } from '@mui/material/colors';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import { logoutClearLocalStorage } from '../util/utility';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -101,8 +102,8 @@ function MenuToolbar({
             >
               Account
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleCloseUserMenu}>
-              Logout
+            <MenuItem component={Link} to="/" onClick={() => {handleCloseUserMenu(); logoutClearLocalStorage();}}>
+                Logout
             </MenuItem>
           </Menu>
         </Box>

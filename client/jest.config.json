@@ -29,5 +29,8 @@
   "setupFilesAfterEnv": [
     "<rootDir>/test/unitTests/config/test.env.js",
     "<rootDir>/test/unitTests/config/importJestDom.ts"
-  ]
+  ],
+  "moduleNameMapper": {
+    "\\.css$": "<rootDir>/__mocks__/styleMock.js"
+  }
 }
