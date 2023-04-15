@@ -12,6 +12,8 @@ import DTHistory from './route/history/History';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
+import PrivateRoute from '../src/components/PrivateRoute';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -19,31 +21,59 @@ const router = createBrowserRouter([
   },
   {
     path: 'dashboard',
-    element: <Dashboard />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <Dashboard />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'library',
-    element: <Library />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <Library />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'digitaltwins',
-    element: <DigitalTwins />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <DigitalTwins />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'sanalysis',
-    element: <ScenarioAnalysis />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <ScenarioAnalysis />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'history',
-    element: <DTHistory />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <DTHistory />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'account',
-    element: <Account />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <Account />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'workbench',
-    element: <WorkBench />,
+    element: (
+      <PrivateRoute useDummyAuth={true}>
+        <WorkBench />
+      </PrivateRoute>
+    ),
   },
 ]);
 

@@ -1,6 +1,6 @@
 window.env = {
-  REACT_APP_ENVIRONMENT: 'test',
-  REACT_APP_URL_LIB: 'https://example.com/LIB',
-  REACT_APP_URL_DT: 'https://example.com/DT',
-  REACT_APP_URL_WORKBENCH: 'https://example.com/WORKBENCH',
+  REACT_APP_ENVIRONMENT: 'development',
+  REACT_APP_URL_LIB: 'https://ingenioer.au.dk/',
+  REACT_APP_URL_DT: 'https://jupyterlite.github.io/demo/repl/index.html',
+  REACT_APP_URL_WORKBENCH: 'https://ece.au.dk/',
 };
