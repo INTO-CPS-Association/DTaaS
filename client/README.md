@@ -8,7 +8,7 @@ The following steps are required to setup the environment and build the applicat
 
 ### Prerequisites
 
-If you are using yarn 2, please change the package.json to use `postinstall` instead `prepare` scripts. This application is using **Husky** for pre-commit hooks, read more about husky and yarn 2 [here](https://typicode.github.io/husky/#/?id=yarn-2).
+If you are using yarn 2, please change the package.json to use `postinstall` instead `prepare` scripts.
 
 ```bash
 cd client

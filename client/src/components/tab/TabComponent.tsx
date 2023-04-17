@@ -3,12 +3,10 @@ import { Paper } from '@mui/material';
 import TabRender from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
-
 export interface TabData {
   label: string;
   body: JSX.Element;
 }
-
 
 function TabComponent(props: { tabs: TabData[] }) {
   return (
@@ -22,11 +20,11 @@ function TabComponent(props: { tabs: TabData[] }) {
     >
       <Tabs>
         <TabList>
-          {props.tabs.map((tab,index) => (
+          {props.tabs.map((tab, index) => (
             <Tab key={index}>{tab.label}</Tab>
           ))}
         </TabList>
-        {props.tabs.map((tab,index) => (
+        {props.tabs.map((tab, index) => (
           <TabPanel key={index}>
             <TabRender index={index}>{tab}</TabRender>
           </TabPanel>

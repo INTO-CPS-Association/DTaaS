@@ -4,12 +4,10 @@ import userEvent from '@testing-library/user-event';
 import TabComponent, { TabData } from 'components/tab/TabComponent';
 
 describe('TabComponent', () => {
-  test('empty tab renders',  () => {
-    const tabs: TabData[] = [
-    ];
+  test('empty tab renders', () => {
+    const tabs: TabData[] = [];
     render(<TabComponent tabs={tabs} />);
     expect(true);
-
   });
 
   test('renders tabs with labels and default tab open', () => {
@@ -41,6 +39,4 @@ describe('TabComponent', () => {
     expect(getByText('Tab 2 content')).toBeInTheDocument();
     expect(queryByText('Tab 3 content')).not.toBeInTheDocument();
   });
-
-
 });

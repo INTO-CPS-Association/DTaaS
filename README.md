@@ -13,14 +13,22 @@ The best way to use the DTaaS software is via a vagrant virtual machine. The ins
 The rest of the information on this page is aimed at current and potential contributors to DTaaS software development.
 
 To install the development environment, run
+
 ```bash
 bash script/install.bash
 ```
 
+Before you make commits, please install the git hooks provided in the repository.
+
+```shell
+script/configure-git-hooks.sh
+```
+
+This will ensure that your commits are formatted correctly and that the unittests pass before you push your changes. Be aware that the tests take a long time to run. If you want to skip the tests or formatting, you can use the `--no-verify` flag on `git commit` or `git push`.
+
 ### Infrastructure Components
 
 The application uses [Træfik](https://github.com/traefik/traefik) and [ML Workspace](https://github.com/ml-tooling/ml-workspace) open-source components. It is possible to run [jupyterlab notebooks](script/jupyter.sh), [Grafana servers](script/grafana.sh) and [InfluxDB](script/influx.sh) as part of the DTaaS software. But terminal-based Jupyterlab, Grafana and InfluxDB are not installed in the default setup.
-
 
 ## License
 

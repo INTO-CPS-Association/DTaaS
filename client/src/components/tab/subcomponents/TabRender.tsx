@@ -8,7 +8,7 @@ interface TabRenderProps {
 }
 
 function TabRender(props: TabRenderProps) {
-  const { children: tab,index } = props;
+  const { children: tab, index } = props;
 
   return (
     <Box
@@ -23,8 +23,7 @@ function TabRender(props: TabRenderProps) {
         flexGrow: 1,
       }}
     >
-
-        {tab.body}
+      {tab.body}
     </Box>
   );
 }
