@@ -13,6 +13,7 @@ import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
 import PrivateRoute from '../src/components/PrivateRoute';
+import { AuthProvider } from './components/AuthContext';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: 'dashboard',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <Dashboard />
       </PrivateRoute>
     ),
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
   {
     path: 'library',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <Library />
       </PrivateRoute>
     ),
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
   {
     path: 'digitaltwins',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <DigitalTwins />
       </PrivateRoute>
     ),
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
   {
     path: 'sanalysis',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <ScenarioAnalysis />
       </PrivateRoute>
     ),
@@ -54,7 +55,7 @@ const router = createBrowserRouter([
   {
     path: 'history',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <DTHistory />
       </PrivateRoute>
     ),
@@ -62,7 +63,7 @@ const router = createBrowserRouter([
   {
     path: 'account',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <Account />
       </PrivateRoute>
     ),
@@ -70,7 +71,7 @@ const router = createBrowserRouter([
   {
     path: 'workbench',
     element: (
-      <PrivateRoute useDummyAuth={true}>
+      <PrivateRoute>
         <WorkBench />
       </PrivateRoute>
     ),
@@ -83,7 +84,9 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
     <AppProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </AppProvider>
   </React.StrictMode>
 );
