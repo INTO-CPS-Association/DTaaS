@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Iframe from 'components/Iframe';
-import TabComponent, { TabData } from 'components/tab/TabComponent';
+import TabComponent from 'components/tab/TabComponent';
+import { TabData } from 'components/tab/subcomponents/TabRender';
 import tabs from './WorkflowsData';
 
 const jupyterURL = window.env.REACT_APP_URL_DT;

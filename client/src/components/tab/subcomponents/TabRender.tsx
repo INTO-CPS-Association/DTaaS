@@ -1,10 +1,14 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
-import { TabData } from 'components/tab/TabComponent';
 
 interface TabRenderProps {
   index: number;
   children: TabData;
+}
+
+export interface TabData {
+  label: string;
+  body: JSX.Element;
 }
 
 function TabRender(props: TabRenderProps) {

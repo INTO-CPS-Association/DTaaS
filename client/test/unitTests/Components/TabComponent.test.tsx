@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TabComponent, { TabData } from 'components/tab/TabComponent';
+import TabComponent from 'components/tab/TabComponent';
+import { TabData } from 'components/tab/subcomponents/TabRender';
 
 describe('TabComponent', () => {
   test('empty tab renders', () => {

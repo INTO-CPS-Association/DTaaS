@@ -2,7 +2,8 @@
 src: https://mui.com/material-ui/react-tabs/
 */
 import * as React from 'react';
-import TabComponent, { TabData } from 'components/tab/TabComponent';
+import TabComponent from 'components/tab/TabComponent';
+import { TabData } from 'components/tab/subcomponents/TabRender';
 import Iframe from 'components/Iframe';
 import tabs from './ComponentsData';
 

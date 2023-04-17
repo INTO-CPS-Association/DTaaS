@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { Paper } from '@mui/material';
-import TabRender from './subcomponents/TabRender';
+import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
-export interface TabData {
-  label: string;
-  body: JSX.Element;
-}
+
 
 function TabComponent(props: { tabs: TabData[] }) {
   return (
