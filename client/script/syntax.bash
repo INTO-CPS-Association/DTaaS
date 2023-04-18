@@ -1,4 +1,5 @@
 #!/bin/bash
-export PATH="$(yarn bin):$PATH"
+PATH="$(yarn bin):$PATH"
+export PATH
 printf "Running eslint"
 eslint .
