@@ -13,8 +13,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup node
-        env:
-          HUSKY_SKIP_INSTALL: 1
         uses: actions/setup-node@v3
         with:
           node-version: 18
