@@ -9,7 +9,11 @@ describe('SignIn', () => {
     render(
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       <AuthContext.Provider
-        value={{ isLoggedIn: false, logIn: () => undefined, logOut: () => undefined }}
+        value={{
+          isLoggedIn: false,
+          logIn: () => undefined,
+          logOut: () => undefined,
+        }}
       >
         <Router>
           <SignIn />

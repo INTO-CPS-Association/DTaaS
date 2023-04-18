@@ -9,7 +9,11 @@ test('renders children when user is authenticated', () => {
 
   render(
     <AuthContext.Provider
-      value={{ isLoggedIn: true, logIn: () => undefined, logOut: () => undefined }}
+      value={{
+        isLoggedIn: true,
+        logIn: () => undefined,
+        logOut: () => undefined,
+      }}
     >
       <MemoryRouter initialEntries={['/private']}>
         <Routes>
@@ -35,7 +39,11 @@ test('redirects to / when user is not authenticated', () => {
 
   render(
     <AuthContext.Provider
-      value={{ isLoggedIn: false, logIn: () => undefined, logOut: () => undefined }}
+      value={{
+        isLoggedIn: false,
+        logIn: () => undefined,
+        logOut: () => undefined,
+      }}
     >
       <MemoryRouter initialEntries={['/dashboard']}>
         <Routes>

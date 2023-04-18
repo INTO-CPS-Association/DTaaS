@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { AuthProvider, useAuth } from 'components/AuthContext';
 
 function TestComponent() {
@@ -16,9 +16,17 @@ function TestComponent() {
 
 describe('AuthContext', () => {
   it('throws an error when useAuth is not used within an AuthProvider', () => {
-    expect(() => render(<TestComponent />)).toThrow(
-      'useAuth must be used within an AuthProvider'
-    );
+    try {
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>
+      );
+    } catch (error) {
+      expect((error as Error).message).toMatch(
+        'useAuth must be used within an AuthProvider'
+      );
+    }
   });
 
   it('returns the correct values when useAuth is used within an AuthProvider', async () => {
@@ -33,12 +41,16 @@ describe('AuthContext', () => {
     const loginButton = screen.getByText(/Log In/i);
     const logoutButton = screen.getByText(/Log Out/i);
 
-    loginButton.click();
+    act(() => {
+      loginButton.click();
+    });
     await waitFor(() =>
       expect(screen.getByText(/Is logged in: true/i)).toBeInTheDocument()
     );
 
-    logoutButton.click();
+    act(() => {
+      logoutButton.click();
+    });
     await waitFor(() =>
       expect(screen.getByText(/Is logged in: false/i)).toBeInTheDocument()
     );

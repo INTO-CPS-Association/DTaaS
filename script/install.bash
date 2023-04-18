@@ -22,7 +22,7 @@ apt-get update -y
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 groupadd docker
 usermod -aG docker "$USER"
-newgrp docker
+#newgrp docker
 service docker start
 docker run hello-world
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { useState } from 'react';
 import useFakeAuth from 'components/Auth';
 
@@ -38,12 +38,16 @@ describe('useFakeAuth', () => {
     const loginButton = screen.getByText(/Log In/i);
     const logoutButton = screen.getByText(/Log Out/i);
 
-    loginButton.click();
+    act(() => {
+      loginButton.click();
+    });
     await waitFor(() =>
       expect(screen.getByText(/Is logged in: true/i)).toBeInTheDocument()
     );
 
-    logoutButton.click();
+    act(() => {
+      logoutButton.click();
+    });
     await waitFor(() =>
       expect(screen.getByText(/Is logged in: false/i)).toBeInTheDocument()
     );
