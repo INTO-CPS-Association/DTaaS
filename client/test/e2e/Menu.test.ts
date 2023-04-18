@@ -2,136 +2,81 @@
 
 import { test, expect, Page } from '@playwright/test';
 
-const title = 'The Digital Twin as a Service';
-const signInButton = 'button:has-text("Sign In")';
-
-async function signInAndNavigateToDashboard(page: Page) {
-  await page.goto('/');
-  await expect(page).toHaveTitle(title);
-  await page.locator(signInButton).click();
-  await expect(page).toHaveURL('/dashboard');
+async function navigateAndCheckURL(page: Page, buttonSelector: string, expectedURL: string) {
+  await page.locator(buttonSelector).click();
+  await expect(page).toHaveURL(expectedURL);
 }
 
 test.describe('Header Contents and Navigation Links', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('The Digital Twin as a Service');
+    await page.locator('button:has-text("Sign In")').click();
+    await expect(page).toHaveURL('/dashboard');
+  });
   test('Navigation Links on the dashboard page', async ({ page }) => {
-    await signInAndNavigateToDashboard(page);
 
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
 
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
 
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
 
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
-
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
-    await page.locator('div[role="button"]:has-text("History")').click();
-    await expect(page).toHaveURL('/history');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("History")', '/history')
   });
 
   test('Navigation Links on the Library page', async ({ page }) => {
-    await signInAndNavigateToDashboard(page);
 
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
 
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
 
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
 
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
 
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
-    await page.locator('div[role="button"]:has-text("History")').click();
-    await expect(page).toHaveURL('/history');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("History")', '/history')
   });
 
   test('Navigation Links on the Digital Twins page', async ({ page }) => {
-    await signInAndNavigateToDashboard(page);
 
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
 
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
 
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
 
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
 
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
-    await page.locator('div[role="button"]:has-text("History")').click();
-    await expect(page).toHaveURL('/history');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("History")', '/history')
   });
 
   test('Navigation Links on the Scenario Analysis page', async ({ page }) => {
-    await signInAndNavigateToDashboard(page);
 
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
-    await page.locator('div[role="button"]:has-text("Dashboard")').click();
-    await expect(page).toHaveURL('/dashboard');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Dashboard")', '/dashboard')
 
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
-    await page.locator('div[role="button"]:has-text("Library")').click();
-    await expect(page).toHaveURL('/library');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Library")', '/library')
 
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
-    await page.locator('div[role="button"]:has-text("Digital Twins")').click();
-    await expect(page).toHaveURL('/digitaltwins');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Digital Twins")', '/digitaltwins')
 
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
-    await page
-      .locator('div[role="button"]:has-text("Scenario Analysis")')
-      .click();
-    await expect(page).toHaveURL('/sanalysis');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("Scenario Analysis")', '/sanalysis')
 
-    await page.locator('div[role="button"]:has-text("History")').click();
-    await expect(page).toHaveURL('/history');
+    await navigateAndCheckURL(page, 'div[role="button"]:has-text("History")', '/history')
   });
 });
