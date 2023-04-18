@@ -26,7 +26,12 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Account Button Contents and Links', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/');
+
+    await expect(page).toHaveTitle('The Digital Twin as a Service');
+
+    await page.locator('button:has-text("Sign In")').click();
+    await expect(page).toHaveURL(/.*dashboard/);
 
     await page.locator('[aria-label="Open settings"]').click();
     await page.locator('text=Account').click();
@@ -35,5 +40,32 @@ test.describe('Tests on Authentication Flow', () => {
     await page.locator('[aria-label="Open settings"]').click();
     await page.locator('text=Logout').click();
     await expect(page).toHaveURL('/');
+  });
+
+  test('Accessing protected routes without authentication', async ({ page }) => {
+    await page.goto('/dashboard');
+
+    // Check if redirected back to the Signin page
+    await expect(page).toHaveURL('/');
+
+    // Check if "Sign In" button is visible
+    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+
+    await page.goto('/library');
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+
+    await page.goto('/digitaltwins');
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+
+    await page.goto('/sanalysis');
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+
+    await page.goto('/history');
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+
   });
 });
