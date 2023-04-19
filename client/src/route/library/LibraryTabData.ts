@@ -1,8 +1,9 @@
-const tabs = [
+import { ITabs } from 'route/IData';
+
+const tabs: ITabs[] = [
   {
     label: 'Functions',
-    body: `A selection of functions useful for composition of digital twins. The
-        functions for data processing and analysis scripts can be placed here.`,
+    body: `A selection of functions useful for composition of digital twins. The functions for data processing and analysis scripts can be placed here.`,
   },
   {
     label: 'Models',

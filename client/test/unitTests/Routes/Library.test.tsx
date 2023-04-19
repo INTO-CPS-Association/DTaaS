@@ -1,28 +1,23 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
 import Library from 'route/library/Library';
+import tabs from 'route/library/LibraryTabData';
+import { mockURLforLIB } from '../__mocks__/global_mocks';
+import {
+  InitRouteTests,
+  itDisplaysContentOfTabs,
+  itHasCorrectURLOfTabsWithIframe,
+  TabLabelURLPair,
+} from '../testUtils';
 
-jest.mock('route/library/Components', () => ({
-  default: () => <div>LibComponents-mock</div>,
-}));
-
-jest.mock('page/Layout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+const urlsByTabs: TabLabelURLPair[] = tabs.map((tab) => ({
+  label: tab.label,
+  url: `${mockURLforLIB}/${tab.label}`,
 }));
 
 describe('Library with no props', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-    render(<Library />);
-  });
+  InitRouteTests(<Library />);
 
-  it('renders Library', () => {
-    expect(true);
-  });
+  itDisplaysContentOfTabs(tabs);
 
-  it('renders LibComponents', () => {
-    expect(screen.queryByText('LibComponents-mock')).toBeInTheDocument();
-  });
+  itHasCorrectURLOfTabsWithIframe(urlsByTabs);
 });

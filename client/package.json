@@ -75,6 +75,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "playwright": "^1.32.1",
     "prettier": "2.7.1",
+    "react-iframe": "^1.8.5",
     "react-scripts": "^5.0.1",
     "ts-jest": "^29.0.5"
   },

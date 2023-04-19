@@ -1,6 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import * as React from 'react';
 import Chart from 'components/Chart';
+import { itDisplaysMocks } from '../testUtils';
+
+jest.mock('components/Chart', () => ({
+  default: jest.requireActual('components/Chart').default,
+}));
 
 jest.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
@@ -14,21 +19,12 @@ jest.mock('page/Title', () => ({
 }));
 
 describe('Chart', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     // Supress console.error messages. This is a hack to avoid errors from
     // recharts. Rechart is being mocked, so it should not be throwing errors.
     jest.spyOn(console, 'error').mockImplementation();
+    render(<Chart />);
   });
 
-  it('renders title', () => {
-    render(<Chart />);
-    const titleElement = screen.getByText('Observed Output');
-    expect(titleElement).toBeInTheDocument();
-  });
-
-  it('renders linechart', () => {
-    render(<Chart />);
-    const linechart = screen.getByText('LineChart-mock');
-    expect(linechart).toBeInTheDocument();
-  });
+  itDisplaysMocks(['LineChart-mock', 'Observed Output']);
 });

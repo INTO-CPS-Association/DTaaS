@@ -3,21 +3,21 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { TabData } from 'components/tab/subcomponents/TabRender';
+import { getURLforDT } from 'util/envUtil';
+import { Typography } from '@mui/material';
 import tabs from './DigitalTwinTabData';
 
-const jupyterURL = window.env.REACT_APP_URL_DT;
+const jupyterURL = getURLforDT();
 
 const tabData: TabData[] = tabs.map((tab, i) => ({
   label: tab.label,
   body: (
     <>
-      {tab.body}
+      <Typography variant="body1">{tab.body}</Typography>
       {i === 0 && (
-        <Iframe
-          title={`JupyterLight-Demo-${tab.label}`}
-          url={jupyterURL}
-          fullsize
-        />
+        <>
+          <Iframe title={`JupyterLight-Demo-${tab.label}`} url={jupyterURL} />
+        </>
       )}
     </>
   ),

@@ -42,7 +42,9 @@ test.describe('Tests on Authentication Flow', () => {
     await expect(page).toHaveURL('/');
   });
 
-  test('Accessing protected routes without authentication', async ({ page }) => {
+  test('Accessing protected routes without authentication', async ({
+    page,
+  }) => {
     await page.goto('/dashboard');
 
     // Check if redirected back to the Signin page
@@ -66,6 +68,5 @@ test.describe('Tests on Authentication Flow', () => {
     await page.goto('/history');
     await expect(page).toHaveURL('/');
     await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
-
   });
 });

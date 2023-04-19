@@ -3,8 +3,6 @@ import { Paper } from '@mui/material';
 import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
-
-
 function TabComponent(props: { tabs: TabData[] }) {
   return (
     <Paper

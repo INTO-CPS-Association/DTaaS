@@ -3,19 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Layout from 'page/Layout';
 
-jest.mock('@mui/material/Toolbar', () => ({
-  __esModule: true,
-  default: () => <div data-testid="toolbar" />,
-}));
-
-jest.mock('page/Footer', () => ({
-  __esModule: true,
-  default: () => <div data-testid="footer" />,
-}));
-
-jest.mock('page/Menu', () => ({
-  __esModule: true,
-  default: () => <div data-testid="menu" />,
+jest.mock('page/Layout', () => ({
+  default: jest.requireActual('page/Layout').default,
 }));
 
 describe('Layout component with one element', () => {
