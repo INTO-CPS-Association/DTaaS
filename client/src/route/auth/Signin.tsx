@@ -18,7 +18,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
+
+import { useNavigate } from 'react-router-dom';
+
 import Footer from '../../page/Footer';
+
+import { useAuth } from '../../components/AuthContext';
 
 // const drawerWidth = 240;
 
@@ -46,9 +51,13 @@ import Footer from '../../page/Footer';
 const theme: Theme = createTheme();
 
 function SignIn() {
+  const { logIn } = useAuth();
+  const navigate = useNavigate();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    window.location.href = '/dashboard';
+    logIn();
+    navigate('/dashboard');
   };
 
   return (

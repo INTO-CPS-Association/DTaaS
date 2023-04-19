@@ -22,7 +22,7 @@ apt-get update -y
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 groupadd docker
 usermod -aG docker "$USER"
-newgrp docker
+#newgrp docker
 service docker start
 docker run hello-world
 
@@ -45,13 +45,17 @@ apt-get install -y wget openssl
 
 
 # Install jupter toolchain
-sudo apt install -y python3-pip
+apt install -y python3-pip
 sudo -H pip install jupyterlab
 
 # Install playwright tool for integration tests on browsers
-sudo npx playwright install-deps
+npx playwright install-deps
 
 #-------------
 printf "\n\n Install jupyter toolchain"
-sudo apt install -y python3-pip
+apt install -y python3-pip
 sudo -H pip install jupyterlab
+
+#install docker-compose from https://docs.docker.com/compose/install/other/
+curl -SL "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose

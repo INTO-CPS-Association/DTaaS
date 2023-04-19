@@ -12,6 +12,9 @@ import DTHistory from './route/history/History';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
+import PrivateRoute from '../src/components/PrivateRoute';
+import { AuthProvider } from './components/AuthContext';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -19,31 +22,59 @@ const router = createBrowserRouter([
   },
   {
     path: 'dashboard',
-    element: <Dashboard />,
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'library',
-    element: <Library />,
+    element: (
+      <PrivateRoute>
+        <Library />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'digitaltwins',
-    element: <DigitalTwins />,
+    element: (
+      <PrivateRoute>
+        <DigitalTwins />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'sanalysis',
-    element: <ScenarioAnalysis />,
+    element: (
+      <PrivateRoute>
+        <ScenarioAnalysis />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'history',
-    element: <DTHistory />,
+    element: (
+      <PrivateRoute>
+        <DTHistory />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'account',
-    element: <Account />,
+    element: (
+      <PrivateRoute>
+        <Account />
+      </PrivateRoute>
+    ),
   },
   {
     path: 'workbench',
-    element: <WorkBench />,
+    element: (
+      <PrivateRoute>
+        <WorkBench />
+      </PrivateRoute>
+    ),
   },
 ]);
 
@@ -53,7 +84,9 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
     <AppProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </AppProvider>
   </React.StrictMode>
 );
