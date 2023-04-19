@@ -3,7 +3,7 @@ printf "\n\n################ Testing in progress ################\n"
 printf "\n################ Running Jest ################\n"
 PATH="$(yarn bin):$PATH" # Add yarn bin to path
 export PATH
-jest . --collectCoverage=false
+jest .
 
 JEST_EXIT_CODE=$?
 if [ $JEST_EXIT_CODE -ne 0 ]; then
@@ -24,8 +24,3 @@ if [ $PLAYWRGHT_EXIT_CODE -ne 0 ]; then
     printf "\n\n################ Playwright tests failed ################\n"
     exit $PLAYWRGHT_EXIT_CODE
 fi
-
-printf "\n\n################ Testing finished ################\n"
-
-printf "\n\n################ Collecting coverage unittest ################\n"
-jest . --collectCoverage=true
