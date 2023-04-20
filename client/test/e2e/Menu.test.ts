@@ -1,53 +1,222 @@
 // src: https://playwright.dev/docs/writing-tests
 
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
-interface TestLink {
-  text: string;
-  url: string;
+async function navigateAndCheckURL(
+  page: Page,
+  buttonSelector: string,
+  expectedURL: string
+) {
+  await page.locator(buttonSelector).click();
+  await expect(page).toHaveURL(expectedURL);
 }
-const links: TestLink[] = [
-  { text: 'Dashboard', url: '/dashboard' },
-  { text: 'Library', url: '/library' },
-  { text: 'Digital Twins', url: '/digitaltwins' },
-  { text: 'Scenario Analysis', url: '/sanalysis' },
-  { text: 'History', url: '/history' },
-];
 
 test.describe('Header Contents and Navigation Links', () => {
-  links.forEach((link) => {
-    test(`Navigation to ${link.text} link on the dashboard page`, async ({
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('The Digital Twin as a Service');
+    await page.locator('button:has-text("Sign In")').click();
+    await expect(page).toHaveURL('/dashboard');
+  });
+  test('Navigation Links on the dashboard page', async ({ page }) => {
+    await navigateAndCheckURL(
       page,
-    }) => {
-      await page.goto(`${link.url}`);
-      await expect(page).toHaveURL(link.url);
-    });
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("History")',
+      '/history'
+    );
   });
-});
 
-test.describe('Navigation from each link to other links', () => {
-  test.afterAll(async ({ browser, context }) => {
-    await context.close();
-    await browser.close();
+  test('Navigation Links on the Library page', async ({ page }) => {
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("History")',
+      '/history'
+    );
   });
 
-  links.forEach((link) => {
-    test.describe(`Navigation from ${link.text} to menu links`, () => {
-      const linksToBeTested = links.filter((linkToTest) => linkToTest !== link);
+  test('Navigation Links on the Digital Twins page', async ({ page }) => {
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
 
-      linksToBeTested.forEach((linkToTest) => {
-        test(`Navigation from ${link.text} to ${linkToTest.text}`, async ({
-          page,
-        }) => {
-          await page.goto(`${link.url}`);
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
 
-          await page
-            .locator(`div[role="button"]:has-text("${linkToTest.text}")`)
-            .click();
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
 
-          await expect(page).toHaveURL(linkToTest.url);
-        });
-      });
-    });
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("History")',
+      '/history'
+    );
+  });
+
+  test('Navigation Links on the Scenario Analysis page', async ({ page }) => {
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Dashboard")',
+      '/dashboard'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Library")',
+      '/library'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Digital Twins")',
+      '/digitaltwins'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("Scenario Analysis")',
+      '/sanalysis'
+    );
+
+    await navigateAndCheckURL(
+      page,
+      'div[role="button"]:has-text("History")',
+      '/history'
+    );
   });
 });
