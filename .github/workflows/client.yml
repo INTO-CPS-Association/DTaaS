@@ -31,7 +31,6 @@ jobs:
           yarn install	
           yarn build
       - name: Run client unit and integration tests
-        continue-on-error: true
         run: |
           cd client/	
           yarn install	
