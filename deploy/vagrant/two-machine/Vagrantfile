@@ -9,7 +9,7 @@ Vagrant.configure(2) do |config|
 
   boxes.each do |opts|
     config.vm.define opts["name"] do |node|
-      node.vm.box = "dtaas-base-box"
+      node.vm.box = "dtaas"
       node.vm.hostname = opts["hostname"]
       node.vm.network "public_network", :bridge => 'ens10f3', :mac => opts["mac"]
 
@@ -19,8 +19,11 @@ Vagrant.configure(2) do |config|
         vb.name = opts["name"]
       end
 
+
       node.ssh.private_key_path = "vagrant"
-      node.vm.provision "shell", path: "provision.sh"
+      # remove the incorrect default gateway
+      node.vm.provision "shell", path: "route.sh"
+      node.vm.provision "shell", privileged: false, path: opts["script"]
     end
   end
 

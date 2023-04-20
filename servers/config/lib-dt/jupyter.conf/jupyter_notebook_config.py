@@ -447,7 +447,7 @@ c.NotebookApp.ip = '*'
 
 ## The directory to use for notebooks and kernels.
 #  Default: ''
-# c.NotebookApp.notebook_dir = ''
+c.NotebookApp.notebook_dir = ''
 
 ## Whether to open in a browser after starting.
 #                          The specific browser used is platform dependent and
@@ -580,7 +580,7 @@ c.NotebookApp.token = ''
 #  For headers sent by the upstream reverse proxy. Necessary if the proxy handles
 #  SSL
 #  Default: False
-# c.NotebookApp.trust_xheaders = True
+c.NotebookApp.trust_xheaders = True
 
 ## Disable launching browser by redirect file
 #  
@@ -1437,4 +1437,4 @@ c.NotebookApp.token = ''
 #  Default: 300
 # c.TerminalManager.cull_interval = 300
 
-c.FileCheckpoints.checkpoint_dir = ''
+# c.FileCheckpoints.checkpoint_dir = ''

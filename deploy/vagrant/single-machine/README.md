@@ -21,8 +21,8 @@ vagrant ssh
 
 The Traefik gateway configuration file will be at `/home/vagrant/DTaaS/servers/config/gateway/dynamic/fileConfig.yml`. Update it as per instructions in this [README](../../../servers/config/gateway/README.md).
 
-
 Change the React website configuration in _client/build/env.js_.
+
 ```js
 window.env = {
   REACT_APP_ENVIRONMENT: 'development',
@@ -31,7 +31,9 @@ window.env = {
   REACT_APP_URL_WORKBENCH: 'http://foo.com/user1',
 };
 ```
+
 Serve the react website. From inside the vagrant machine,
+
 ```bash
 cd ~/DTaaS/client
 nohup serve -s build -l 4000 & disown
