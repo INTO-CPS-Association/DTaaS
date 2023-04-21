@@ -1,20 +1,19 @@
 import * as React from 'react';
+import IframeReact from 'react-iframe';
 
 interface IFrameProps {
   url: string;
-  fullsize?: boolean;
   title: string;
 }
 
-function Iframe({ url, fullsize, title }: IFrameProps) {
+function Iframe({ url, title }: IFrameProps) {
   // Be aware sandbox is not supported by current JupyterLight implementation.
   return (
-    <iframe
+    <IframeReact
       title={title}
-      src={url}
+      url={url}
       width="100%"
-      referrerPolicy="no-referrer"
-      style={fullsize ? { flexGrow: 1 } : { height: '100%' }}
+      styles={{ flexGrow: '1' }}
     />
   );
 }

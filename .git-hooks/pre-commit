@@ -1,10 +1,9 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 if git diff --cached --name-only | grep "^client/" >/dev/null; then
-    cd client
+    cd client || exit
     yarn install
     yarn format && yarn syntax
 else
-    echo "No changes in the client directory. Skipping pre-commit hook."
+    printf "No changes in the client directory. Skipping pre-commit hook."
 fi

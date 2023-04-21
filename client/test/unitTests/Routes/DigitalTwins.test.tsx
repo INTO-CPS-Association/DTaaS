@@ -1,24 +1,19 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
-
-jest.mock('route/digitaltwins/Workflows', () => ({
-  default: () => <div>workflows-mock</div>,
-}));
-jest.mock('page/Layout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-}));
+import tabs from 'route/digitaltwins/DigitalTwinTabData';
+import { mockURLforDT } from '../__mocks__/global_mocks';
+import {
+  InitRouteTests,
+  itDisplaysContentOfTabs,
+  itHasCorrectURLOfTabsWithIframe,
+} from '../testUtils';
 
 describe('Digital Twins', () => {
-  it('reder DigitalTwin', () => {
-    render(<DigitalTwins />);
-    expect(true);
-  });
+  InitRouteTests(<DigitalTwins />);
 
-  it('renders Dashboard woth components', () => {
-    render(<DigitalTwins />);
-    expect(screen.queryByText('workflows-mock')).toBeInTheDocument();
-  });
+  itDisplaysContentOfTabs(tabs);
+
+  itHasCorrectURLOfTabsWithIframe([
+    { label: tabs[0].label, url: mockURLforDT },
+  ]);
 });

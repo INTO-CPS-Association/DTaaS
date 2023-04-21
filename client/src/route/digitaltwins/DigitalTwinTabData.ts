@@ -1,4 +1,6 @@
-const tabs = [
+import { ITabs } from 'route/IData';
+
+const tabs: ITabs[] = [
   {
     label: 'Create',
     body: `Create digital twins from available library components. The text and graphical configuration of digital twins happen here.`,

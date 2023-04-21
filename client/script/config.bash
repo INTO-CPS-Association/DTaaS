@@ -1,7 +1,7 @@
+#!/bin/bash
 # copy the correct environment variables file to react SPA
 # https://stackoverflow.com/questions/51653931/react-configuration-file-for-post-deployment-settings
 # https://dev.to/akdevcraft/react-runtime-variables-49dc
-#!/bin/bash
 mode=$1
 if [ -z "$mode" ]; then
     printf "Use yarn configapp with either dev, prod or test:"
@@ -17,8 +17,7 @@ set_env() {
     fi
 }
 
-case "$mode" in 
-
+case "$mode" in
     dev)
         set_env dev
         ;;
@@ -28,7 +27,8 @@ case "$mode" in
     test)
         set_env test
         ;;
-    *) echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
+    *)
+        echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
         exit 1
         ;;
 esac

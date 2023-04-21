@@ -1,7 +1,7 @@
 {
   "env": {
     "browser": true,
-    "es6": true,
+    "es2022": true,
     "jest": true,
     "jest/globals": true
   },
@@ -30,11 +30,9 @@
   "parserOptions": {
     "requireConfigFile": false,
     "ecmaFeatures": {
-      "emacVersion": 6,
-      "sourceType": "module",
       "jsx": true
     },
-    "ecmaVersion": 2018,
+    "ecmaVersion": 11,
     "sourceType": "module" // Allows for the use of imports
   },
   "plugins": ["jsx-a11y", "react", "jest", "@typescript-eslint"],

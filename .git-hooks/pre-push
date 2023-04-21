@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+if git diff --name-only origin/"$BRANCH_NAME"...HEAD | grep "^client/" >/dev/null; then
+    cd client || exit
+    yarn install
+    yarn jest . --coverage=false
+else
+    echo "No changes in the client directory. Skipping pre-push hook."
+fi

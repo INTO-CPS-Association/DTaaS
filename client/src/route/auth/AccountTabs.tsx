@@ -1,14 +1,13 @@
 import * as React from 'react';
-import TabComponent, { TabData } from 'components/tab/TabComponent';
+import TabComponent from 'components/tab/TabComponent';
+import { TabData } from 'components/tab/subcomponents/TabRender';
 
 const tabs: TabData[] = [
   {
-    index: 0 as TabData['index'],
     label: 'Profile',
     body: <>Profile - potentially visible to other users.</>,
   },
   {
-    index: 1 as TabData['index'],
     label: 'Settings',
     body: <>Account settings - private to a user.</>,
   },
