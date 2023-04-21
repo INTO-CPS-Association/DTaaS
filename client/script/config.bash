@@ -18,20 +18,19 @@ set_env() {
 }
 
 case "$mode" in
-
-dev)
-    set_env dev
-    ;;
-prod)
-    set_env prod
-    ;;
-test)
-    set_env test
-    ;;
-*)
-    echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
-    exit 1
-    ;;
+    dev)
+        set_env dev
+        ;;
+    prod)
+        set_env prod
+        ;;
+    test)
+        set_env test
+        ;;
+    *)
+        echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
+        exit 1
+        ;;
 esac
 
 exit 0
