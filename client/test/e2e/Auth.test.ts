@@ -12,7 +12,7 @@ test.describe('Tests on Authentication Flow', () => {
 
     await page.locator('button:has-text("Sign In")').click();
 
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*library/);
   });
 
   test('Fill the signin fields', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page.locator('input[name="email"]').fill('user@au.dk');
     await page.locator('button').first().click();
 
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*library/);
   });
 
   test('Account Button Contents and Links', async ({ page }) => {
@@ -31,7 +31,7 @@ test.describe('Tests on Authentication Flow', () => {
     await expect(page).toHaveTitle('The Digital Twin as a Service');
 
     await page.locator('button:has-text("Sign In")').click();
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*library/);
 
     await page.locator('[aria-label="Open settings"]').click();
     await page.locator('text=Account').click();
@@ -45,7 +45,7 @@ test.describe('Tests on Authentication Flow', () => {
   test('Accessing protected routes without authentication', async ({
     page,
   }) => {
-    await page.goto('/dashboard');
+    await page.goto('/library');
 
     // Check if redirected back to the Signin page
     await expect(page).toHaveURL('/');
@@ -61,11 +61,7 @@ test.describe('Tests on Authentication Flow', () => {
     await expect(page).toHaveURL('/');
     await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
 
-    await page.goto('/sanalysis');
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
-
-    await page.goto('/history');
+    await page.goto('/workbench');
     await expect(page).toHaveURL('/');
     await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
   });

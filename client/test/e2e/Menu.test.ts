@@ -7,11 +7,9 @@ interface TestLink {
   url: string;
 }
 const links: TestLink[] = [
-  { text: 'Dashboard', url: '/dashboard' },
   { text: 'Library', url: '/library' },
   { text: 'Digital Twins', url: '/digitaltwins' },
-  { text: 'Scenario Analysis', url: '/sanalysis' },
-  { text: 'History', url: '/history' },
+  { text: 'Workbench', url: '/workbench' },
 ];
 
 test.describe('Menu Links from first page (Layout)', () => {
@@ -35,6 +33,7 @@ test.describe('Menu Links from first page (Layout)', () => {
       await previousPromise;
       await page.locator(`div[role="button"]:has-text("${link.text}")`).click();
       await expect(page).toHaveURL(link.url);
+      await expect(page.locator('text=404 Not Found')).not.toBeVisible();
     }, Promise.resolve());
   });
 });

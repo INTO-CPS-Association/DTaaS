@@ -57,7 +57,7 @@ function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     logIn();
-    navigate('/dashboard');
+    navigate('/library');
   };
 
   return (
