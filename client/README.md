@@ -14,6 +14,8 @@ yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
 yarn build      #build the react app into build/ directory
+yarn develop    #start the development server without building. Great for live edits.
+
 
 #specify the environment; specify only one
 yarn configapp #prod | dev
