@@ -8,8 +8,6 @@ The following steps are required to setup the environment and build the applicat
 
 ### Prerequisites
 
-If you are using yarn 2, please change the package.json to use `postinstall` instead `prepare` scripts.
-
 ```bash
 cd client
 yarn install    #install the nodejs dependencies
