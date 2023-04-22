@@ -1,7 +1,8 @@
 #!/bin/bash
 printf "\n\n################ Testing in progress ################"
 printf "\n################ Running Jest ################\n"
-export PATH="$(yarn bin):$PATH"
+PATH="$(yarn bin):$PATH"
+export PATH
 jest .
 
 # { { yarn start 2>&3 || [ $? -eq 137 ]; } 3>&2 2>/dev/null & } <-- Does not work. Trying to only suppress error 137.
