@@ -1,37 +1,14 @@
 http:
   routers:
-    dtaas:
+    lib:
       entryPoints:
         - http
-      rule: 'Host(`localhost`)'
-      middlewares:
-        - basic-auth
-      service: dtaas
-
-    user1:
-      entryPoints:
-        - http
-      rule: 'Host(`localhost`) && PathPrefix(`/user1`)'
-      middlewares:
-        - basic-auth
-      service: user1
-
-
-  # Middleware: Basic authentication
-  middlewares:
-    basic-auth:
-      basicAuth:
-        usersFile: "/etc/traefik/auth"
+      rule: 'Host(`localhost`) && PathPrefix(`/lib`)'
+      service: lib
 
 
   services:
-    dtaas:
+    lib:
       loadBalancer:
         servers:
-          - url: "http://localhost:4000"
-
-    user1:
-      loadBalancer:
-        servers:
-          - url: "http://localhost:8090"
-
+          - url: "http://localhost:3000"
