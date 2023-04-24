@@ -5,20 +5,19 @@ HTTPS mode is disabled for now.
 
 ## The background services
 
-The gateway requires background services to serve the URLs. These background
-services must be running in order for the gateway to service user requests.
-The default configuration uses two services at the following URLs:
+Run Lib MS at port 3000
 
-| Route / URL | Background Service | Service URL |
-|:---|:---|:---|
-| localhost | React Website | localhost:4000 |
-| localhost/lib | Lib Microservice | localhost:4001 |
-| localhost/user1 | ML Workspace | localhost:8090 |
-||
+| Route / URL     | Background Service | Service URL    |
+| :-------------- | :----------------- | :------------- |
+| localhost       | React Website      | localhost:4000 |
+| localhost/lib   | Lib Microservice   | localhost:4001 |
+| localhost/user1 | ML Workspace       | localhost:8090 |
+|                 |
 
 ## Start the Gateway
 
 ```bash
+cd servers/config/gateway
 docker run -d \
  --name "traefik-gateway" \
 --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
@@ -27,10 +26,9 @@ docker run -d \
 traefik:v2.5
 ```
 
-## Authentication
+## Access
 
-The dummy username is `foo` and the password is `bar`.
-Please change this before starting the gateway.
+Run Lib MS at port 3000
 
 ```bash
 rm auth
@@ -50,9 +48,9 @@ for more information.
 
 The routes / URLs need to be updated for your local setup. The current version of software only works for non-localhost setting, i.e. URL other than the localhost. Here is an example,
 
-| Route / URL | Background Service | Service URL |
-|:---|:---|:---|
-| foo.com | React Website | localhost:4000 |
-| foo.com/lib | Lib Microservice | localhost:4001 |
-| foo.com/user1 | ML Workspace | localhost:8090 |
-||
+| Route / URL   | Background Service | Service URL    |
+| :------------ | :----------------- | :------------- |
+| foo.com       | React Website      | localhost:4000 |
+| foo.com/lib   | Lib Microservice   | localhost:4001 |
+| foo.com/user1 | ML Workspace       | localhost:8090 |
+|               |
