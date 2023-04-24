@@ -42,6 +42,12 @@ http:
       basicAuth:
         usersFile: "/etc/traefik/auth"
         removeHeader: true
+    dashboard:
+      entryPoints:
+        - http
+      rule: 'Host(`gateway.localhost`)'
+      service: api@internal
+
 
   services:
     lib:
