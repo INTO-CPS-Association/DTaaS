@@ -1,6 +1,6 @@
 http:
   routers:
-    dtaas:
+    lib:
       entryPoints:
         - http
       rule: "Host(`localhost`)"
@@ -44,7 +44,7 @@ http:
         removeHeader: true
 
   services:
-    dtaas:
+    lib:
       loadBalancer:
         servers:
           - url: "http://localhost:4000"
