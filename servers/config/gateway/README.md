@@ -5,9 +5,7 @@ HTTPS mode is disabled for now.
 
 ## The background services
 
-The gateway requires background services to serve the URLs. These background
-services must be running in order for the gateway to service user requests.
-The default configuration uses two services at the following URLs:
+Run Lib MS at port 3000
 
 | Route / URL     | Background Service | Service URL    |
 | :-------------- | :----------------- | :------------- |
@@ -19,6 +17,7 @@ The default configuration uses two services at the following URLs:
 ## Start the Gateway
 
 ```bash
+cd servers/config/gateway
 docker run -d \
  --name "traefik-gateway" \
 --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
@@ -33,26 +32,7 @@ traefik:v2.5
 
 ## Authentication
 
-The dummy username is `foo` and the password is `bar`.
-Please change this before starting the gateway.
-
-```bash
-rm auth
-htpasswd -c auth <username>
-password: <your password>
-```
-
-The change in password becomes effective upon restart of **traefik-gateway** container.
-
-## Update Configuration
-
-The gateway serves routes specified in _dynamic/fileConfig.yml_ file.
-The **traefik-gateway** gateway comes with ability to receive dynamic configuration.
-You can update the configuration in this file to reflect your local setup.
-See [Traefik help docs](https://doc.traefik.io/traefik/providers/file/)
-for more information.
-
-The routes / URLs need to be updated for your local setup. The current version of software only works for non-localhost setting, i.e. URL other than the localhost. Here is an example,
+Run Lib MS at port 3000
 
 | Route / URL   | Background Service | Service URL    |
 | :------------ | :----------------- | :------------- |
