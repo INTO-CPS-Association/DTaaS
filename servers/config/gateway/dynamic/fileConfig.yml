@@ -12,9 +12,8 @@ http:
       rule: 'Host(`gateway.localhost`)'
       service: api@internal
 
-
   services:
     lib:
       loadBalancer:
         servers:
-          - url: "http://localhost:4000"
+          - url: "http://host.docker.internal:3000"
