@@ -48,7 +48,6 @@ http:
       rule: 'Host(`gateway.localhost`)'
       service: api@internal
 
-
   services:
     lib:
       loadBalancer:
