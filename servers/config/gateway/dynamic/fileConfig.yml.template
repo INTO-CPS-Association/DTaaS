@@ -1,0 +1,19 @@
+http:
+  routers:
+    lib:
+      entryPoints:
+        - http
+      rule: "Host(`localhost`)"
+      service: lib
+
+    dashboard:
+      entryPoints:
+        - http
+      rule: "Host(`gateway.localhost`)"
+      service: api@internal
+
+  services:
+    lib:
+      loadBalancer:
+        servers:
+          - url: "http://${HOST_IP}:4000"
