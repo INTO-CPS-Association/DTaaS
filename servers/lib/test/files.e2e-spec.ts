@@ -8,6 +8,8 @@ import { FilesResolver } from "../src/files/files.resolver";
 import { FilesService } from "../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env" });
 
 describe("Integration Tests for FilesService", () => {
   let app: INestApplication;
@@ -21,6 +23,7 @@ describe("Integration Tests for FilesService", () => {
           autoSchemaFile: join(process.cwd(), "src/schema.gql"),
           debug: false,
           playground: true,
+          path: "/lib",
         }),
         FilesModule,
       ],
@@ -84,11 +87,29 @@ describe("Integration Tests for FilesService", () => {
     const variables = { path };
 
     const response = await request(app.getHttpServer())
-      .post("/graphql")
+      .post("/lib")
       .send({ query, variables });
 
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
     expect(response.body.data.getFiles).toEqual(expectedFiles);
+  });
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      getFiles(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        getFiles: ["data", "digital twins", "functions", "models", "tools"],
+      },
+    };
+
+    const response = await request("http://localhost:80")
+      .post("/lib")
+      .send({ query });
+    expect(response.body).toEqual(expectedResponse);
   });
 });
