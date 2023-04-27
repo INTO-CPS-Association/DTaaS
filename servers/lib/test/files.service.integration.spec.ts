@@ -4,13 +4,14 @@ import * as request from "supertest";
 import { FilesModule } from "../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { join } from "path";
+import { FilesResolver } from "../src/files/files.resolver";
 import { FilesService } from "../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 
-describe("Integration Tests", () => {
+describe("Integration Tests for FilesService", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
@@ -21,20 +22,21 @@ describe("Integration Tests", () => {
           driver: ApolloDriver,
           autoSchemaFile: join(process.cwd(), "src/schema.gql"),
           debug: false,
-          playground: process.env.GRAPHQL_PLAYGROUND === "true",
-          path: process.env.APOLLO_PATH,
+          playground: true,
+          path: "/lib",
         }),
         FilesModule,
       ],
-      providers: [FilesService, ConfigService],
+      providers: [FilesResolver, FilesService, ConfigService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
     filesService = moduleFixture.get<FilesService>(FilesService);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
@@ -85,11 +87,29 @@ describe("Integration Tests", () => {
     const variables = { path };
 
     const response = await request(app.getHttpServer())
-      .post(process.env.APOLLO_PATH)
+      .post("/lib")
       .send({ query, variables });
 
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
     expect(response.body.data.getFiles).toEqual(expectedFiles);
+  });
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      getFiles(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        getFiles: ["data", "digital twins", "functions", "models", "tools"],
+      },
+    };
+
+    const response = await request("http://localhost:80")
+      .post("/lib")
+      .send({ query });
+    expect(response.body).toEqual(expectedResponse);
   });
 });
