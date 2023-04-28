@@ -1,27 +1,19 @@
-import { Paper } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import LinkButtons from 'components/LinkButtons';
 import Layout from 'page/Layout';
 import * as React from 'react';
 import styled from '@emotion/styled';
-import { getURLforWorkbench } from 'util/envUtil';
-import buttons from './WorkbenchButtonData';
-
-const linkURL = getURLforWorkbench();
+import { getWorkbenchLinkValues } from 'util/envUtil';
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-`;
-
-const Title = styled.h1`
-  position: absolute;
-  margin-left: 30px;
-  top: 10px;
+  flex-grow: 1;
 `;
 
 function WorkBenchContent() {
+  const linkValues = getWorkbenchLinkValues();
   return (
     <Layout>
       <Paper
@@ -33,9 +25,9 @@ function WorkBenchContent() {
           position: 'relative',
         }}
       >
-        <Title>Workbench Tools</Title>
+        <Typography variant="h4">Workbench Tools</Typography>
         <Container>
-          <LinkButtons buttons={buttons} link={linkURL} />
+          <LinkButtons buttons={linkValues} size={6} />
         </Container>
       </Paper>
     </Layout>

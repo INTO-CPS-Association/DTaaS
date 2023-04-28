@@ -1,7 +1,3 @@
-/*
-src: https://github.com/mui/material-ui/blob/v5.10.0/docs/data/material/getting-started/templates/sign-in/SignIn.js
-*/
-
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -18,11 +14,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, Theme, ThemeProvider } from '@mui/material/styles';
-
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setUserName } from 'store/auth.slice';
 
 import Footer from '../../page/Footer';
-
 import { useAuth } from '../../components/AuthContext';
 
 // const drawerWidth = 240;
@@ -51,11 +47,15 @@ import { useAuth } from '../../components/AuthContext';
 const theme: Theme = createTheme();
 
 function SignIn() {
+  const dispatch = useDispatch();
   const { logIn } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = React.useState<string>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!email) return;
+    dispatch(setUserName(email));
     logIn();
     navigate('/library');
   };
@@ -103,6 +103,8 @@ function SignIn() {
           >
             <TextField
               margin="normal"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               required
               fullWidth
               id="email"

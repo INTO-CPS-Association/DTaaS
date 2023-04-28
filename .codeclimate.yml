@@ -29,3 +29,4 @@ exclude_patterns:
   - "**/build/"
   - "**/public/"
   - "**/coverage"
+  - "client/config/"
