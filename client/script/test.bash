@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 printf "\n\n################ Testing in progress ################"
 printf "\n################ Running Jest ################\n"
 PATH="$(yarn bin):$PATH"
