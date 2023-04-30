@@ -9,10 +9,11 @@ plugins:
     enabled: true
     config:
       languages:
-        - typescript:
-        - javascript:
-        - python:
-        - php:
+        typescript:
+          mass_threshold: 55
+        javascript:
+        python:
+        php:
   eslint:
     enabled: true
     channel: "eslint-8"
