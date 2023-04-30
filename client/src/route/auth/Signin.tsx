@@ -26,7 +26,7 @@ function SignIn() {
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
-  const [localUsername, setLocalUsername] = React.useState<string>();
+  const [localUsername, setLocalUsername] = React.useState<string>('');
   React.useEffect(() => {
     if (isLoggedIn) {
       navigate('/library');
