@@ -29,6 +29,7 @@ jobs:
           cd client/	
           yarn install	
           yarn build
+          yarn configapp dev
       - name: Run client unit and integration tests
         run: |
           cd client/	

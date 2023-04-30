@@ -4,10 +4,13 @@ import { test, expect } from '@playwright/test';
 // import config from '../../playwright.config';
 
 test.describe('Tests on Authentication Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('textbox', { name: 'username' }).fill('user-test');
+  });
+
   test('Homepage has correct title and signin link', async ({ page }) => {
     //    await page.goto(config.baseURL);
-    await page.goto('/');
-
     await expect(page).toHaveTitle('The Digital Twin as a Service');
 
     await page.locator('button:has-text("Sign In")').click();
@@ -19,17 +22,13 @@ test.describe('Tests on Authentication Flow', () => {
     await page.goto('/');
 
     await page.locator('input[name="password"]').fill('dummy password');
-    await page.locator('input[name="email"]').fill('user@au.dk');
+    await page.locator('input[name="username"]').fill('user@au.dk');
     await page.locator('button').first().click();
 
     await expect(page).toHaveURL(/.*library/);
   });
 
   test('Account Button Contents and Links', async ({ page }) => {
-    await page.goto('/');
-
-    await expect(page).toHaveTitle('The Digital Twin as a Service');
-
     await page.locator('button:has-text("Sign In")').click();
     await expect(page).toHaveURL(/.*library/);
 
@@ -50,7 +49,6 @@ test.describe('Tests on Authentication Flow', () => {
     // Check if redirected back to the Signin page
     await expect(page).toHaveURL('/');
 
-    // Check if "Sign In" button is visible
     await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
 
     await page.goto('/library');

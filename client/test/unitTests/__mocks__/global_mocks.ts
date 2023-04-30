@@ -6,4 +6,9 @@ jest.mock('util/envUtil', () => ({
   getURLforDT: () => mockURLforDT,
   getURLforLIB: () => mockURLforLIB,
   getURLforWorkbench: () => mockURLforWorkbench,
+  getWorkbenchLinkValues: () => [
+    { key: '1', link: 'link1' },
+    { key: '2', link: 'link2' },
+    { key: '3', link: 'link3' },
+  ],
 }));

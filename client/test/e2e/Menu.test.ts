@@ -15,6 +15,7 @@ const links: TestLink[] = [
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    await page.getByRole('textbox', { name: 'username' }).fill('user-test');
     await page.locator('button:has-text("Sign In")').click();
   });
 
