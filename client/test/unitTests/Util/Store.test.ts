@@ -1,5 +1,5 @@
 import menuReducer, { openMenu, closeMenu } from 'store/menu.slice';
-import authReducer, { setUserName } from 'store/auth.slice';
+import authReducer, { logIn, logOut, setUserName } from 'store/auth.slice';
 
 describe('reducers', () => {
   let initialState: {
@@ -8,6 +8,7 @@ describe('reducers', () => {
     };
     auth: {
       userName: string | undefined;
+      isLoggedIn: boolean;
     };
   };
 
@@ -18,6 +19,7 @@ describe('reducers', () => {
       },
       auth: {
         userName: undefined,
+        isLoggedIn: false,
       },
     };
   });
@@ -57,6 +59,25 @@ describe('reducers', () => {
     it('should handle setUserName', () => {
       const newState = authReducer(initialState.auth, setUserName('user1'));
       expect(newState.userName).toBe('user1');
+    });
+
+    it('should handle setUserName with undefined', () => {
+      initialState.auth.userName = 'user1';
+      const newState = authReducer(initialState.auth, setUserName(undefined));
+      expect(newState.userName).toBe(undefined);
+    });
+
+    it('should handle logIn', () => {
+      const newState = authReducer(initialState.auth, logIn());
+      expect(newState.isLoggedIn).toBe(true);
+      expect(localStorage.getItem('isLoggedIn')).toBe('true');
+    });
+
+    it('should handle logOut', () => {
+      initialState.auth.isLoggedIn = true;
+      const newState = authReducer(initialState.auth, logOut());
+      expect(newState.isLoggedIn).toBe(false);
+      expect(localStorage.getItem('isLoggedIn')).toBe('false');
     });
   });
 });

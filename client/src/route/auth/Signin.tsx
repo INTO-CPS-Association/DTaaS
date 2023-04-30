@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUserName, logIn } from 'store/auth.slice';
 import { RootState } from 'store/store';
-import Footer from '../../page/Footer';
+import Footer from 'page/Footer';
 
 const theme: Theme = createTheme();
 
@@ -26,17 +26,18 @@ function SignIn() {
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
-  const [localUsername, setLocalUsername] = React.useState<string>('');
+  const [localUsername, setLocalUsername] = React.useState<string>();
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/library');
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleUsernameChange = (input: string) => {
     if (!input.includes(' ')) {
       setLocalUsername(input);
     }
   };
-
-  if (isLoggedIn) {
-    navigate('/library');
-  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
