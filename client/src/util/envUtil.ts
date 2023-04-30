@@ -2,10 +2,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 
 const constructUserLink = (baseURL: string, endpoint: string): string => {
-  const userState = useSelector((state: RootState) => state.auth);
-  const cleanBaseRL = baseURL.trim().endsWith('/') ? baseURL : `${baseURL}/`;
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${cleanBaseRL}${userState.userName}${cleanEndpoint}`;
+  const username = useSelector((state: RootState) => state.auth).userName;
+  const cleanBaseURL = baseURL.trim().replace(/\/$/, ''); // Remove trailing slash
+  const cleanEndpoint = endpoint.replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
+  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
 };
 
 export function getURLforDT(): string {
