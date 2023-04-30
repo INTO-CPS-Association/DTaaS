@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeMenu, openMenu } from 'store/menu.slice';
 import { RootState } from 'store/store';
+import { AnyAction } from 'redux';
 import MenuToolbar from './MenuToolbar';
 import DrawerComponent from './DrawerComponent';
 
@@ -18,13 +19,33 @@ const hooks = () => {
   return { theme, menuState, dispatch, anchorElUser, setAnchorElUser };
 };
 
-function MiniDrawer() {
-  const { theme, menuState, dispatch, anchorElUser, setAnchorElUser } = hooks();
+const handlers = (
+  setAnchorElUser: React.Dispatch<
+    React.SetStateAction<HTMLButtonElement | null>
+  >,
+  dispatch: React.Dispatch<AnyAction>
+) => {
   const handleCloseUserMenu = () => setAnchorElUser(null);
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLButtonElement>) =>
     setAnchorElUser(event.currentTarget);
   const handleDrawerOpen = () => dispatch(openMenu());
   const handleDrawerClose = () => dispatch(closeMenu());
+  return {
+    handleCloseUserMenu,
+    handleOpenUserMenu,
+    handleDrawerOpen,
+    handleDrawerClose,
+  };
+};
+
+function MiniDrawer() {
+  const { theme, menuState, dispatch, anchorElUser, setAnchorElUser } = hooks();
+  const {
+    handleCloseUserMenu,
+    handleOpenUserMenu,
+    handleDrawerOpen,
+    handleDrawerClose,
+  } = handlers(setAnchorElUser, dispatch);
   return (
     <Box sx={{ display: 'flex' }}>
       <MenuToolbar
