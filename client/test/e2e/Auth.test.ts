@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Tests on Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('textbox', { name: 'email' }).fill('user-test');
+    await page.getByRole('textbox', { name: 'username' }).fill('user-test');
   });
 
   test('Homepage has correct title and signin link', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page.goto('/');
 
     await page.locator('input[name="password"]').fill('dummy password');
-    await page.locator('input[name="email"]').fill('user@au.dk');
+    await page.locator('input[name="username"]').fill('user@au.dk');
     await page.locator('button').first().click();
 
     await expect(page).toHaveURL(/.*library/);

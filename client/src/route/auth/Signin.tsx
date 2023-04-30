@@ -44,18 +44,42 @@ import { useAuth } from '../../components/AuthContext';
 //   }),
 // }));
 
+// const handleUsernameChange = (
+//   event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+//   updateUsername: {
+//     (value: React.SetStateAction<string | undefined>): void;
+//     (arg0: string): void;
+//   }
+// ) => {
+//   const input = event.target.value;
+//   if (input.includes(' ')) {
+//     UsernameError = true;
+//     helperText = 'No spaces allowed';
+//   } else {
+//     UsernameError = false;
+//     helperText = '';
+//     updateUsername(input);
+//   }
+// };
+
 const theme: Theme = createTheme();
 
 function SignIn() {
   const dispatch = useDispatch();
   const { logIn } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = React.useState<string>();
+  const [localUsername, setLocalUsername] = React.useState<string>();
+
+  const handleUsernameChange = (input: string) => {
+    if (!input.includes(' ')) {
+      setLocalUsername(input);
+    }
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email) return;
-    dispatch(setUserName(email));
+    if (!localUsername) return;
+    dispatch(setUserName(localUsername));
     logIn();
     navigate('/library');
   };
@@ -103,14 +127,13 @@ function SignIn() {
           >
             <TextField
               margin="normal"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              value={localUsername}
+              onChange={(event) => handleUsernameChange(event.target.value)}
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="Username"
+              name="username"
               autoFocus
             />
             <TextField

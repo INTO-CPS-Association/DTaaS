@@ -9,7 +9,6 @@ import store from 'store/store';
 describe('SignIn', () => {
   it('renders the SignIn form', () => {
     render(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       <Provider store={store}>
         <AuthContext.Provider
           value={{
@@ -24,7 +23,7 @@ describe('SignIn', () => {
         </AuthContext.Provider>
       </Provider>
     );
-    expect(screen.getByLabelText(/Email Address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Sign In/i })
