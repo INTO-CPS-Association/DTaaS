@@ -42,7 +42,6 @@ interface LinkButtonProps {
 
 /**
  * @description Renders a row of buttons with icons and labels. The buttons open a new tab with the link.
- * @category Component
  * @param buttons: KeyLinkPair[] (required) - an array of objects with a key and link
  * @param size: number (optional) - the size of the icons
  * @returns React.ReactElement - a row of buttons with icons and labels
