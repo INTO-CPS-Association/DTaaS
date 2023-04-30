@@ -44,7 +44,6 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.3.0",
     "react-tabs": "^6.0.0",
-    "recharts": "^2.1.13",
     "redux": "^4.2.1",
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.0.1",
