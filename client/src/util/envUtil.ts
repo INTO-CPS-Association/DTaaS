@@ -13,7 +13,7 @@ export function getURLforDT(): string {
 }
 
 export function getURLforLIB(): string {
-  return constructUserLink(getAppURL(), window.env.REACT_APP_URL_LIB);
+  return constructUserLink(getAppURL(), window.env.REACT_APP_URL_LIBLINK);
 }
 
 function getAppURL(): string {

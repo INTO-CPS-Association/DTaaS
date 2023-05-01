@@ -11,7 +11,7 @@ window.env = {
   REACT_APP_ENVIRONMENT: "prod | dev",
   REACT_APP_URL: "URL for the gateway",
   REACT_APP_URL_DTLINK: "Endpoint for the Digital Twin",
-  REACT_APP_URL_LIB: "Endpoint for the Library Assets",
+  REACT_APP_URL_LIBLINK: "Endpoint for the Library Assets",
   REACT_APP_WORKBENCHLINK_TERMINAL: "Endpoint for the terminal link",
   REACT_APP_WORKBENCHLINK_VNCDESKTOP: "Endpoint for the VNC Desktop link",
   REACT_APP_WORKBENCHLINK_VSCODE: "Endpoint for the VS Code link",

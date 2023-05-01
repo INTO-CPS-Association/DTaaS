@@ -24,7 +24,7 @@ describe('envUtil', () => {
     REACT_APP_ENVIRONMENT: 'test',
     REACT_APP_URL: testAppURL,
     REACT_APP_URL_DTLINK: testDT,
-    REACT_APP_URL_LIB: testLIB,
+    REACT_APP_URL_LIBLINK: testLIB,
     REACT_APP_WORKBENCHLINK_TERMINAL: testWorkbenchEndpoints[0],
     REACT_APP_WORKBENCHLINK_VNCDESKTOP: testWorkbenchEndpoints[1],
     REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[2],
