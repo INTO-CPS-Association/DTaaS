@@ -46,8 +46,16 @@ describe('SignIn', () => {
       </MemoryRouter>
     );
 
+    const usernameField = screen.getByRole('textbox', { name: 'Username' })
+    const mockedUsername = 'username';
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Username' }), {
+      target: { value: 'username' },
+    });
+    expect(usernameField).toHaveValue(mockedUsername);
+
     const signInButton = screen.getByRole('button', { name: /Sign In/i });
-    fireEvent.submit(signInButton);
+    fireEvent.click(signInButton);
 
     expect(signinRedirect).toHaveBeenCalled();
   });
