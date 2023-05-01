@@ -1,19 +1,19 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 
-const constructUserLink = (baseURL: string, endpoint: string): string => {
+const constructUserLink = (baseURL: string, endpoint?: string): string => {
   const username = useSelector((state: RootState) => state.auth).userName;
   const cleanBaseURL = baseURL.trim().replace(/\/$/, ''); // Remove trailing slash
-  const cleanEndpoint = endpoint.replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
-  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
+  const cleanEndpoint = endpoint?.replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
+  return `${cleanBaseURL}/${username}/${cleanEndpoint ?? ''}`;
 };
 
 export function getURLforDT(): string {
-  return window.env.REACT_APP_URL_DT;
+  return constructUserLink(window.env.REACT_APP_URL_DT, 'lab');
 }
 
 export function getURLforLIB(): string {
-  return window.env.REACT_APP_URL_LIB;
+  return constructUserLink(window.env.REACT_APP_URL_LIB);
 }
 
 export function getURLforWorkbench(): string {
@@ -50,6 +50,10 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
         });
       }
     });
+
+  if (workbenchLinkValues.length === 0) {
+    throw new Error(`No environment variables found with prefix "${prefix}"`);
+  }
 
   return workbenchLinkValues;
 }

@@ -10,6 +10,7 @@ import { deepPurple } from '@mui/material/colors';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import { useAuth } from 'components/AuthContext';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -59,6 +60,7 @@ function MenuToolbar({
   handleDrawerOpen,
   anchorElUser,
 }: MenuToolbarProps) {
+  const { logOut } = useAuth();
   return (
     <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -101,7 +103,12 @@ function MenuToolbar({
             >
               Account
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleCloseUserMenu}>
+            <MenuItem
+              onClick={() => {
+                handleCloseUserMenu();
+                logOut();
+              }}
+            >
               Logout
             </MenuItem>
           </Menu>
