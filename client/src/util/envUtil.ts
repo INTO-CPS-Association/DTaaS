@@ -9,15 +9,15 @@ const constructUserLink = (baseURL: string, endpoint?: string): string => {
 };
 
 export function getURLforDT(): string {
-  return constructUserLink(window.env.REACT_APP_URL_DT, 'lab');
+  return constructUserLink(getAppURL(), window.env.REACT_APP_URL_DTLINK);
 }
 
 export function getURLforLIB(): string {
-  return constructUserLink(window.env.REACT_APP_URL_LIB);
+  return constructUserLink(getAppURL(), window.env.REACT_APP_URL_LIB);
 }
 
-export function getURLforWorkbench(): string {
-  return window.env.REACT_APP_URL_WORKBENCH;
+function getAppURL(): string {
+  return window.env.REACT_APP_URL;
 }
 
 export interface KeyLinkPair {
@@ -46,14 +46,10 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
         const keyWithoutPrefix = key.slice(prefix.length);
         workbenchLinkValues.push({
           key: keyWithoutPrefix,
-          link: constructUserLink(getURLforWorkbench(), value),
+          link: constructUserLink(getAppURL(), value),
         });
       }
     });
-
-  if (workbenchLinkValues.length === 0) {
-    throw new Error(`No environment variables found with prefix "${prefix}"`);
-  }
 
   return workbenchLinkValues;
 }

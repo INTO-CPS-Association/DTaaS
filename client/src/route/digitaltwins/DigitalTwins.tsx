@@ -8,7 +8,7 @@ import { Typography } from '@mui/material';
 import tabs from './DigitalTwinTabData';
 
 function DTContent() {
-  const jupyterURL = getURLforDT();
+  const DTurl = getURLforDT();
 
   const tabData: TabData[] = tabs.map((tab, i) => ({
     label: tab.label,
@@ -17,7 +17,7 @@ function DTContent() {
         <Typography variant="body1">{tab.body}</Typography>
         {i === 0 && (
           <>
-            <Iframe title={`JupyterLight-Demo-${tab.label}`} url={jupyterURL} />
+            <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />
           </>
         )}
       </>

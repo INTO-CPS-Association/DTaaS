@@ -8,14 +8,14 @@ import { Typography } from '@mui/material';
 import tabs from './LibraryTabData';
 
 function LibraryContent() {
-  const jupyterURL = getURLforLIB();
+  const LIBurl = getURLforLIB();
 
   const tabsData: TabData[] = tabs.map((tab) => ({
     label: tab.label,
     body: (
       <>
         <Typography variant="body1">{tab.body}</Typography>
-        <Iframe title={`JupyterLight-Demo-${tab.label}`} url={jupyterURL} />
+        <Iframe title={`JupyterLight-Demo-${tab.label}`} url={LIBurl} />
       </>
     ),
   }));

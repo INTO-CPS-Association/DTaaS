@@ -1,6 +1,5 @@
 import {
   getURLforDT,
-  getURLforWorkbench,
   getURLforLIB,
   getWorkbenchLinkValues,
 } from 'util/envUtil';
@@ -9,9 +8,9 @@ import { useSelector } from 'react-redux';
 jest.unmock('util/envUtil');
 
 describe('envUtil', () => {
-  const testDT = 'https://digitaltwins.example.com';
-  const testLIB = 'https://library.example.com';
-  const testWorkbench = 'https://workbench.example.com';
+  const testDT = '/testDT';
+  const testLIB = '';
+  const testAppURL = 'https://example.com';
   const testWorkbenchEndpoints = [
     'one',
     '/two',
@@ -23,14 +22,14 @@ describe('envUtil', () => {
 
   window.env = {
     REACT_APP_ENVIRONMENT: 'test',
-    REACT_APP_URL_DT: testDT,
+    REACT_APP_URL: testAppURL,
+    REACT_APP_URL_DTLINK: testDT,
     REACT_APP_URL_LIB: testLIB,
-    REACT_APP_URL_WORKBENCH: testWorkbench,
-    REACT_APP_WORKBENCHLINK_ONE: testWorkbenchEndpoints[0],
-    REACT_APP_WORKBENCHLINK_TWO: testWorkbenchEndpoints[1],
-    REACT_APP_WORKBENCHLINK_THREE: testWorkbenchEndpoints[2],
-    REACT_APP_WORKBENCHLINK_FOUR: testWorkbenchEndpoints[3],
-    REACT_APP_WORKBENCHLINK_FIVE: testWorkbenchEndpoints[4],
+    REACT_APP_WORKBENCHLINK_TERMINAL: testWorkbenchEndpoints[0],
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: testWorkbenchEndpoints[1],
+    REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[2],
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[3],
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[4],
   };
 
   beforeEach(() => {
@@ -38,9 +37,12 @@ describe('envUtil', () => {
   });
 
   test('GetURL should return the correct enviroment variables', () => {
-    expect(getURLforDT()).toBe(`${testDT}/${testUsername}/lab`);
-    expect(getURLforLIB()).toBe(`${testLIB}/${testUsername}/`);
-    expect(getURLforWorkbench()).toBe(testWorkbench);
+    expect(getURLforDT()).toBe(
+      `${testAppURL}/${testUsername}/${testDT.replace(/^\/|\/$/g, '')}`
+    );
+    expect(getURLforLIB()).toBe(
+      `${testAppURL}/${testUsername}/${testLIB.replace(/^\/|\/$/g, '')}`
+    );
   });
 
   test('GetWorkbenchLinkValues should return an array', () => {
@@ -67,7 +69,7 @@ describe('envUtil', () => {
 
     result.forEach((el, i) => {
       expect(el.link).toEqual(
-        `${testWorkbench}/${testUsername}/${noTrailingOrLeadingSlashes(
+        `${testAppURL}/${testUsername}/${noTrailingOrLeadingSlashes(
           testWorkbenchEndpoints[i]
         )}`
       );
