@@ -30,11 +30,15 @@ test('renders loading', () => {
     isAuthenticated: false,
   });
 
-  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+  renderWithRouter(
+    <PrivateRoute>
+      <TestComponent />
+    </PrivateRoute>,
+    { route: '/private' }
+  );
 
   expect(screen.getByText('Loading...')).toBeInTheDocument();
 });
-
 
 test('renders error', () => {
   (useAuth as jest.Mock).mockReturnValue({
@@ -43,7 +47,12 @@ test('renders error', () => {
     isAuthenticated: false,
   });
 
-  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+  renderWithRouter(
+    <PrivateRoute>
+      <TestComponent />
+    </PrivateRoute>,
+    { route: '/private' }
+  );
 
   expect(screen.getByText('Oops... Test error')).toBeInTheDocument();
 });
@@ -55,7 +64,12 @@ test('redirects to root when not authenticated', () => {
     isAuthenticated: false,
   });
 
-  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+  renderWithRouter(
+    <PrivateRoute>
+      <TestComponent />
+    </PrivateRoute>,
+    { route: '/private' }
+  );
 
   expect(screen.getByText('Home')).toBeInTheDocument();
 });
@@ -67,7 +81,12 @@ test('renders children when authenticated', () => {
     isAuthenticated: true,
   });
 
-  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+  renderWithRouter(
+    <PrivateRoute>
+      <TestComponent />
+    </PrivateRoute>,
+    { route: '/private' }
+  );
 
   expect(screen.getByText('Test Component')).toBeInTheDocument();
 });

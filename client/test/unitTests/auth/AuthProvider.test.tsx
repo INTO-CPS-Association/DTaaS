@@ -7,7 +7,9 @@ jest.mock('react-oidc-context', () => {
   const actualModule = jest.requireActual('react-oidc-context');
   return {
     ...actualModule,
-    AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    AuthProvider: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
   };
 });
 
@@ -15,7 +17,8 @@ jest.mock('../../../src/util/auth/useOidcConfig', () => ({
   useOidcConfig: jest.fn(),
 }));
 
-const renderAuthProvider = (children: React.ReactNode) => render(<AuthProvider>{children}</AuthProvider>);
+const renderAuthProvider = (children: React.ReactNode) =>
+  render(<AuthProvider>{children}</AuthProvider>);
 
 describe('AuthProvider', () => {
   const DummyComponent: React.FC = () => <div>Dummy Component</div>;
