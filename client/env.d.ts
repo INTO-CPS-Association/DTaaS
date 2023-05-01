@@ -13,6 +13,12 @@ declare global {
       REACT_APP_WORKBENCHLINK_VSCODE: string;
       REACT_APP_WORKBENCHLINK_JUPYTERLAB: string;
       REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: string;
+      REACT_APP_URL_LIB: string;
+      REACT_APP_URL_DT: string;
+      REACT_APP_URL_WORKBENCH: string;
+
+      REACT_APP_CLIENT_ID: string;
+      REACT_APP_AUTH_AUTHORITY: string;
     }
   }
 

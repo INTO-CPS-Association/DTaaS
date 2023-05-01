@@ -76,6 +76,10 @@ export function getClientID(): string {
   return window.env.REACT_APP_CLIENT_ID;
 }
 
+export function getAuthority(): string {
+  return window.env.REACT_APP_AUTH_AUTHORITY;
+}
+
 export interface KeyLinkPair {
   key: string;
   link: string;

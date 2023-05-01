@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
-import WaitNavigateAndReload from '../util/auth/WaitAndNavigate';
+import WaitNavigateAndReload from './WaitAndNavigate';
 
 interface PrivateRouteProps {
   children: ReactNode;

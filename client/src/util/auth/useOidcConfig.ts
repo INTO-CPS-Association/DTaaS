@@ -5,7 +5,7 @@ import {
   generateCodeChallenge,
   getCodeVerifier,
 } from './Authentication';
-import { getClientID } from '../envUtil';
+import { getClientID, getAuthority, getURLforLIB } from '../envUtil';
 
 export interface OidcConfig {
   authority: string;
@@ -30,14 +30,16 @@ export const useOidcConfig = (): OidcConfig | null => {
   useEffect(() => {
     const prepareConfig = async () => {
       const CLIENT_ID = getClientID() ?? '';
+      const AUTH_AUTHORITY = getAuthority() ?? '';
+      const LIB_URL = getURLforLIB() ?? '';
       const codeVerifier = getCodeVerifier() ?? generateCodeVerifier();
       const config: OidcConfig = {
-        authority: 'https://gitlab.com',
+        authority: AUTH_AUTHORITY.toString(),
         client_id: CLIENT_ID.toString(),
         redirect_uri: 'http://localhost:4000/library/',
         response_type: 'code',
         scope: 'openid profile read_user',
-        post_logout_redirect_uri: 'http://localhost:4000/',
+        post_logout_redirect_uri: LIB_URL.toString(),
         automaticSilentRenew: false,
         loadUserInfo: true,
         code_verifier: codeVerifier,

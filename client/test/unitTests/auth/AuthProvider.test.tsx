@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import AuthProvider from '../../../src/util/auth/AuthProvider';
+import AuthProvider from '../../../src/route/auth/AuthProvider';
 import { useOidcConfig } from '../../../src/util/auth/useOidcConfig';
 
 jest.mock('react-oidc-context', () => {
