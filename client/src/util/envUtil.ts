@@ -72,6 +72,10 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
   return workbenchLinkValues;
 }
 
+export function getClientID(): string {
+  return window.env.REACT_APP_CLIENT_ID;
+}
+
 export interface KeyLinkPair {
   key: string;
   link: string;

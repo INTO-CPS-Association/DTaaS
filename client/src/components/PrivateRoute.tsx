@@ -1,18 +1,49 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from 'react-oidc-context';
+import WaitNavigateAndReload from '../util/auth/WaitAndNavigate'
 
 interface PrivateRouteProps {
   children: ReactNode;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) {
+  const auth = useAuth();
+  const [isInitialFetchDone, setIsInitialFetchDone] = React.useState(false);
+  React.useEffect(() => {
+    if (auth.isAuthenticated && !isInitialFetchDone) {
+      if(auth.user !== null && auth.user !== undefined)
+      {
+        localStorage.setItem('username', auth.user.profile.profile ?? '');
+        localStorage.setItem('access_token', auth.user.access_token);
+        setIsInitialFetchDone(true);
+      }
+    }
+  }, [auth.isAuthenticated, isInitialFetchDone]);
+
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (auth.error) {
+    return (
+      <div>
+        Oops... {auth.error.message}
+        <WaitNavigateAndReload />
+      </div>
+    );
+  }
+
+  if (!auth.isAuthenticated) {
     return <Navigate to="/" replace />;
   }
-  return <>{children}</>;
+
+  if (auth.isAuthenticated) {
+    return <>{children}</>;
+  }
+
+  return <Navigate to="/" replace />;
 };
 
 export default PrivateRoute;

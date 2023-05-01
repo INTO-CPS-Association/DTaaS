@@ -1,65 +1,73 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 import PrivateRoute from '../../../src/components/PrivateRoute';
-import AuthContext from '../../../src/components/AuthContext';
 
-test('renders children when user is authenticated', () => {
-  const TestComponent = () => <div>Test component</div>;
+jest.mock('react-oidc-context', () => ({
+  useAuth: jest.fn(),
+}));
 
-  render(
-    <AuthContext.Provider
-      value={{
-        isLoggedIn: true,
-        logIn: () => undefined,
-        logOut: () => undefined,
-      }}
-    >
-      <MemoryRouter initialEntries={['/private']}>
-        <Routes>
-          <Route
-            path="/private"
-            element={
-              <PrivateRoute>
-                <TestComponent />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/private/inner" element={<TestComponent />} />
-        </Routes>
-      </MemoryRouter>
-    </AuthContext.Provider>
+const TestComponent = () => <div>Test Component</div>;
+
+const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
+  window.history.pushState({}, 'Test page', route);
+
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <Routes>
+        <Route path="/private" element={ui} />
+        <Route path="/" element={<div>Home</div>} />
+      </Routes>
+    </MemoryRouter>
   );
+};
 
-  expect(screen.getByText('Test component')).toBeInTheDocument();
+test('renders loading', () => {
+  (useAuth as jest.Mock).mockReturnValue({
+    isLoading: true,
+    error: null,
+    isAuthenticated: false,
+  });
+
+  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+
+  expect(screen.getByText('Loading...')).toBeInTheDocument();
 });
 
-test('redirects to / when user is not authenticated', () => {
-  const TestComponent = () => <div>Test component</div>;
 
-  render(
-    <AuthContext.Provider
-      value={{
-        isLoggedIn: false,
-        logIn: () => undefined,
-        logOut: () => undefined,
-      }}
-    >
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <TestComponent />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/" element={<div>Home</div>} />
-        </Routes>
-      </MemoryRouter>
-    </AuthContext.Provider>
-  );
+test('renders error', () => {
+  (useAuth as jest.Mock).mockReturnValue({
+    isLoading: false,
+    error: new Error('Test error'),
+    isAuthenticated: false,
+  });
+
+  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+
+  expect(screen.getByText('Oops... Test error')).toBeInTheDocument();
+});
+
+test('redirects to root when not authenticated', () => {
+  (useAuth as jest.Mock).mockReturnValue({
+    isLoading: false,
+    error: null,
+    isAuthenticated: false,
+  });
+
+  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
 
   expect(screen.getByText('Home')).toBeInTheDocument();
+});
+
+test('renders children when authenticated', () => {
+  (useAuth as jest.Mock).mockReturnValue({
+    isLoading: false,
+    error: null,
+    isAuthenticated: true,
+  });
+
+  renderWithRouter(<PrivateRoute><TestComponent /></PrivateRoute>, { route: '/private' });
+
+  expect(screen.getByText('Test Component')).toBeInTheDocument();
 });
