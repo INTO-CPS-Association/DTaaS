@@ -77,4 +77,18 @@ describe('envUtil', () => {
       );
     });
   });
+
+  it('cleanURL should remove leading and trailing slashes', () => {
+    expect(cleanURL('/test/')).toBe('test');
+    expect(cleanURL('/test')).toBe('test');
+    expect(cleanURL('test/')).toBe('test');
+    expect(cleanURL('test')).toBe('test');
+  });
+
+  it('still handles if basename is set to empty string', () => {
+    window.env.REACT_APP_URL_BASENAME = '';
+    expect(getURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
+    expect(getURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
+    expect(getURLbasename()).toBe('');
+  });
 });
