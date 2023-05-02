@@ -1,9 +1,9 @@
 import {
-  getURLforDT,
-  getURLforLIB,
+  useURLforDT,
+  useURLforLIB,
   getWorkbenchLinkValues,
   cleanURL,
-  getURLbasename,
+  useURLbasename,
 } from 'util/envUtil';
 import { useSelector } from 'react-redux';
 
@@ -41,13 +41,13 @@ describe('envUtil', () => {
   });
 
   test('GetURL should return the correct enviroment variables', () => {
-    expect(getURLforDT()).toBe(
+    expect(useURLforDT()).toBe(
       `${testAppURL}/${testBasename}/${testUsername}/${testDT}`
     );
-    expect(getURLforLIB()).toBe(
+    expect(useURLforLIB()).toBe(
       `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`
     );
-    expect(getURLbasename()).toBe(testBasename);
+    expect(useURLbasename()).toBe(testBasename);
   });
 
   test('GetWorkbenchLinkValues should return an array', () => {
@@ -87,8 +87,8 @@ describe('envUtil', () => {
 
   it('still handles if basename is set to empty string', () => {
     window.env.REACT_APP_URL_BASENAME = '';
-    expect(getURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
-    expect(getURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
-    expect(getURLbasename()).toBe('');
+    expect(useURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
+    expect(useURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
+    expect(useURLbasename()).toBe('');
   });
 });

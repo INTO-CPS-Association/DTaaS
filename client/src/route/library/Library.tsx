@@ -3,12 +3,12 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { getURLforLIB } from 'util/envUtil';
+import { useURLforLIB } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import tabs from './LibraryTabData';
 
 function LibraryContent() {
-  const LIBurl = getURLforLIB();
+  const LIBurl = useURLforLIB();
 
   const tabsData: TabData[] = tabs.map((tab) => ({
     label: tab.label,

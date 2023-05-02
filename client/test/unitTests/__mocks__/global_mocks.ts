@@ -3,8 +3,8 @@ export const mockURLforLIB = 'https://example.com/URL_LIB';
 export const mockURLforWorkbench = 'https://example.com/URL_WORKBENCH';
 
 jest.mock('util/envUtil', () => ({
-  getURLforDT: () => mockURLforDT,
-  getURLforLIB: () => mockURLforLIB,
+  useURLforDT: () => mockURLforDT,
+  useURLforLIB: () => mockURLforLIB,
   getURLforWorkbench: () => mockURLforWorkbench,
   getWorkbenchLinkValues: () => [
     { key: '1', link: 'link1' },

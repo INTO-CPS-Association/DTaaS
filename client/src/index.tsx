@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import WorkBench from 'route/workbench/Workbench';
 import AppProvider from 'AppProvider';
-import { getURLbasename } from 'util/envUtil';
+import { useURLbasename } from 'util/envUtil';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import SignIn from './route/auth/Signin';
@@ -53,7 +53,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: `/${getURLbasename()}`,
+    basename: `/${useURLbasename()}`,
   }
 );
 

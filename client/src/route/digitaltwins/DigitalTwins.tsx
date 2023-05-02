@@ -3,12 +3,12 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { getURLforDT } from 'util/envUtil';
+import { useURLforDT } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import tabs from './DigitalTwinTabData';
 
 function DTContent() {
-  const DTurl = getURLforDT();
+  const DTurl = useURLforDT();
 
   const tabData: TabData[] = tabs.map((tab, i) => ({
     label: tab.label,
