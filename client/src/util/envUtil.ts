@@ -1,15 +1,27 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 
+/**
+ * @param url or endpoint to clean
+ * @returns a `string` with no whitespaces, leading or trailing slashes
+ */
+export function cleanURL(url: string): string {
+  return url?.trim().replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
+}
+
 const constructUserLink = (baseURL: string, endpoint?: string): string => {
   const username = useSelector((state: RootState) => state.auth).userName;
-  const cleanBaseURL = baseURL.trim().replace(/\/$/, ''); // Remove trailing slash
-  const cleanEndpoint = endpoint?.replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
-  return `${cleanBaseURL}/${username}/${cleanEndpoint ?? ''}`;
+  const cleanBaseURL = cleanURL(baseURL);
+  const cleanEndpoint = cleanURL(endpoint ?? '');
+  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
 };
 
 export function getURLforDT(): string {
   return constructUserLink(getAppURL(), window.env.REACT_APP_URL_DTLINK);
+}
+
+export function getURLbasename(): string {
+  return cleanURL(window.env.REACT_APP_URL_BASENAME);
 }
 
 export function getURLforLIB(): string {
@@ -17,7 +29,7 @@ export function getURLforLIB(): string {
 }
 
 function getAppURL(): string {
-  return window.env.REACT_APP_URL;
+  return `${cleanURL(window.env.REACT_APP_URL)}/${getURLbasename()}`;
 }
 
 export interface KeyLinkPair {

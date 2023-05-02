@@ -2,15 +2,18 @@ import {
   getURLforDT,
   getURLforLIB,
   getWorkbenchLinkValues,
+  cleanURL,
+  getURLbasename,
 } from 'util/envUtil';
 import { useSelector } from 'react-redux';
 
 jest.unmock('util/envUtil');
 
 describe('envUtil', () => {
-  const testDT = '/testDT';
+  const testDT = 'testDT';
   const testLIB = '';
   const testAppURL = 'https://example.com';
+  const testBasename = 'testBasename';
   const testWorkbenchEndpoints = [
     'one',
     '/two',
@@ -23,6 +26,7 @@ describe('envUtil', () => {
   window.env = {
     REACT_APP_ENVIRONMENT: 'test',
     REACT_APP_URL: testAppURL,
+    REACT_APP_URL_BASENAME: testBasename,
     REACT_APP_URL_DTLINK: testDT,
     REACT_APP_URL_LIBLINK: testLIB,
     REACT_APP_WORKBENCHLINK_TERMINAL: testWorkbenchEndpoints[0],
@@ -38,11 +42,12 @@ describe('envUtil', () => {
 
   test('GetURL should return the correct enviroment variables', () => {
     expect(getURLforDT()).toBe(
-      `${testAppURL}/${testUsername}/${testDT.replace(/^\/|\/$/g, '')}`
+      `${testAppURL}/${testBasename}/${testUsername}/${testDT}`
     );
     expect(getURLforLIB()).toBe(
-      `${testAppURL}/${testUsername}/${testLIB.replace(/^\/|\/$/g, '')}`
+      `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`
     );
+    expect(getURLbasename()).toBe(testBasename);
   });
 
   test('GetWorkbenchLinkValues should return an array', () => {
@@ -64,12 +69,9 @@ describe('envUtil', () => {
   it('should construct the links correctly', () => {
     const result = getWorkbenchLinkValues();
 
-    const noTrailingOrLeadingSlashes = (str: string) =>
-      str.replace(/^\/|\/$/g, '');
-
     result.forEach((el, i) => {
       expect(el.link).toEqual(
-        `${testAppURL}/${testUsername}/${noTrailingOrLeadingSlashes(
+        `${testAppURL}/${testBasename}/${testUsername}/${cleanURL(
           testWorkbenchEndpoints[i]
         )}`
       );
