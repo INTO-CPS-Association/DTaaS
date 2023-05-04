@@ -20,7 +20,22 @@ To host DTaaS client website on your server, follow these steps:
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK:
       "Endpoint for the Jupyter Notebook link",
   };
-```
+
+  // Example values with no base URL. Trailing and ending slashes are optional.
+  window.env = {
+    REACT_APP_ENVIRONMENT: 'dev',
+    REACT_APP_URL: 'https://example.com/',
+    REACT_APP_URL_BASENAME: '',
+    REACT_APP_URL_DTLINK: '/lab',
+    REACT_APP_URL_LIBLINK: '',
+    REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+  };
+  ```
+
 
 - Copy the entire contents of the build folder to the root directory of your server where you want to deploy the app. You can use FTP, SFTP, or any other file transfer protocol to transfer the files.
 
