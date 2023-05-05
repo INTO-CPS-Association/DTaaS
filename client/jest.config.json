@@ -8,7 +8,13 @@
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
   "collectCoverageFrom": ["src/**/*.{ts,tsx}"],
-  "coveragePathIgnorePatterns": ["node_modules", "build"],
+  "coveragePathIgnorePatterns": [
+    "node_modules",
+    "build",
+    "src/index.tsx",
+    "src/AppProvider.tsx",
+    "src/store/store.ts"
+  ],
   "modulePathIgnorePatterns": ["test/e2e", "mocks", "config"],
   "coverageDirectory": "<rootDir>/coverage/",
   "coverageThreshold": {

@@ -11,7 +11,7 @@ import {
 
 const urlsByTabs: TabLabelURLPair[] = tabs.map((tab) => ({
   label: tab.label,
-  url: `${mockURLforLIB}/${tab.label}`,
+  url: mockURLforLIB,
 }));
 
 describe('Library with no props', () => {

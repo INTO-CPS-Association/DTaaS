@@ -21,54 +21,13 @@ import { setUserName } from 'store/auth.slice';
 import Footer from '../../page/Footer';
 import { useAuth } from '../../components/AuthContext';
 
-// const drawerWidth = 240;
-
-// TODO: The following style should be moved
-// TODO: Transform to ts?
-
-// const AppBar = styled(MuiAppBar, {
-//   shouldForwardProp: (prop) => prop !== 'open',
-// })(({ theme, open }) => ({
-//   zIndex: theme.zIndex.drawer + 1,
-//   transition: theme.transitions.create(['width', 'margin'], {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.leavingScreen,
-//   }),
-//   ...(open && {
-//     marginLeft: drawerWidth,
-//     width: `calc(100% - ${drawerWidth}px)`,
-//     transition: theme.transitions.create(['width', 'margin'], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//   }),
-// }));
-
-// const handleUsernameChange = (
-//   event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-//   updateUsername: {
-//     (value: React.SetStateAction<string | undefined>): void;
-//     (arg0: string): void;
-//   }
-// ) => {
-//   const input = event.target.value;
-//   if (input.includes(' ')) {
-//     UsernameError = true;
-//     helperText = 'No spaces allowed';
-//   } else {
-//     UsernameError = false;
-//     helperText = '';
-//     updateUsername(input);
-//   }
-// };
-
 const theme: Theme = createTheme();
 
 function SignIn() {
   const dispatch = useDispatch();
   const { logIn } = useAuth();
   const navigate = useNavigate();
-  const [localUsername, setLocalUsername] = React.useState<string>();
+  const [localUsername, setLocalUsername] = React.useState<string>('');
 
   const handleUsernameChange = (input: string) => {
     if (!input.includes(' ')) {
