@@ -4,8 +4,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import SignIn from 'route/auth/Signin';
 import { useSelector } from 'react-redux';
 
-jest.unmock('react-redux'); // unmock to use the actual implementation of react-redux useSelector
-
 describe('SignIn', () => {
   const authenticated = false;
 
