@@ -15,8 +15,8 @@ jobs:
         ports:
           - 80:80
         volumes:
-          - ./servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml
-          - ./servers/config/gateway/dynamic:/etc/traefik/dynamic/fileConfig.yml
+          - ${{ github.workspace }}/servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml
+          - ${{ github.workspace }}/servers/config/gateway/dynamic:/etc/traefik/dynamic/fileConfig.yml
 
     steps:
       - name: Checkout
