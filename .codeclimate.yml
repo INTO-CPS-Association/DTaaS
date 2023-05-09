@@ -13,6 +13,8 @@ plugins:
         - javascript:
         - python:
         - php:
+      min_tokens: 50
+      max_blocks: 10
   eslint:
     enabled: true
     channel: "eslint-8"
