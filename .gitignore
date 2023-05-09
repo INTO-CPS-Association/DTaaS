@@ -116,3 +116,4 @@ playwright-report/
 servers/.DS_Store
 data/.DS_Store
 **/.DS_Store
+servers/config/gateway/dynamic/fileConfig_local.yml
