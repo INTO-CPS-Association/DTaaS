@@ -39,6 +39,7 @@ jobs:
           MODE: gitlab
           LOG_LEVEL: debug
           TEST_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
+          APOLLO_PATH: /lib
 
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v3
