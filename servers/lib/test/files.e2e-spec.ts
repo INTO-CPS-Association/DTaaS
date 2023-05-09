@@ -46,13 +46,13 @@ describe("Integration Tests for FilesService", () => {
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
     filesService = moduleFixture.get<FilesService>(FilesService);
-    await sleep(2000);
-  });
+    await sleep(5000);
+  }, 10000);
 
   afterEach(async () => {
     await app.close();
     execSync("test/stoptraefik.bash");
-  });
+  }, 10000);
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
     const path = "test_path_local";
