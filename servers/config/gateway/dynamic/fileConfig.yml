@@ -45,7 +45,7 @@ http:
     dashboard:
       entryPoints:
         - http
-      rule: 'Host(`gateway.localhost`)'
+      rule: "Host(`gateway.localhost`)"
       service: api@internal
 
   services:
