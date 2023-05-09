@@ -3,17 +3,17 @@ http:
     lib:
       entryPoints:
         - http
-      rule: 'Host(`localhost`)'
+      rule: "Host(`localhost`)"
       service: lib
 
     dashboard:
       entryPoints:
         - http
-      rule: 'Host(`gateway.localhost`)'
+      rule: "Host(`gateway.localhost`)"
       service: api@internal
 
   services:
     lib:
       loadBalancer:
         servers:
-          - url: "http://host.docker.internal:3000"
+          - url: "http://192.168.1.12:4000"

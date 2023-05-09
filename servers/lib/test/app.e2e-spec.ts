@@ -32,7 +32,7 @@ describe("End to End test for the application", () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post("/lib")
+      .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });

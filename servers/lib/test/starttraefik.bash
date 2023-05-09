@@ -1,12 +1,7 @@
 #!/bin/bash
 
-# Load .env file
-source ../../lib/.env
-
-# Replace placeholder with actual value
-sed "s|\${HOST_IP}|${HOST_IP}|g" dynamic/fileConfig.yml.template > dynamic/fileConfig.yml
-
-# Run Traefik
+echo "Starting the Traefik gateway"
+cd ../../servers/config/gateway
 docker run -d \
  --name "traefik-gateway" \
  -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
