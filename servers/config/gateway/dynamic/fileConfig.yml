@@ -16,4 +16,4 @@ http:
     lib:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.12:4000"
+          - url: "http:127.0.0.1:4000"
