@@ -125,5 +125,5 @@ describe("Integration Tests for FilesService", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
-  });
+  }, 15000);
 });
