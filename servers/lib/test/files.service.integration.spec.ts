@@ -9,6 +9,7 @@ import { FilesService } from "../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
+import { execSync } from "child_process";
 dotenv.config({ path: ".env" });
 
 function sleep(ms) {
@@ -18,18 +19,15 @@ function sleep(ms) {
 describe("Integration Tests for FilesService", () => {
   let app: INestApplication;
   let filesService: FilesService;
-  const { execSync } = require("child_process");
-  const path = require("path");
-  const startscriptPath = path.join(process.cwd(), "test/starttraefik.bash");
-  const stopscriptPath = path.join(process.cwd(), "test/stoptraefik.bash");
+
+  //const startscriptPath = path.join(process.cwd(), "test/starttraefik.bash");
+  //const stopscriptPath = path.join(process.cwd(), "test/stoptraefik.bash");
 
   beforeEach(async () => {
     // Start traefik gateway
-    try {
-      execSync(startscriptPath);
-    } catch (error) {
-      console.error("Error starting Traefik:", error);
-    }
+
+    execSync("test/starttraefik.bash");
+
     // Start nest app
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -53,11 +51,7 @@ describe("Integration Tests for FilesService", () => {
 
   afterEach(async () => {
     await app.close();
-    try {
-      execSync(stopscriptPath);
-    } catch (error) {
-      console.error("Error stopping Traefik:", error);
-    }
+    execSync("test/stoptraefik.bash");
   });
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
