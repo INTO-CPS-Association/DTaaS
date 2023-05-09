@@ -6,14 +6,8 @@ http:
       rule: "Host(`localhost`)"
       service: lib
 
-    dashboard:
-      entryPoints:
-        - http
-      rule: "Host(`gateway.localhost`)"
-      service: api@internal
-
   services:
     lib:
       loadBalancer:
         servers:
-          - url: "http:127.0.0.1:4000"
+          - url: "http://localhost:4000"
