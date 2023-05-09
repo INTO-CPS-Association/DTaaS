@@ -11,11 +11,26 @@ import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 describe("Integration Tests for FilesService", () => {
   let app: INestApplication;
   let filesService: FilesService;
+  const { execSync } = require("child_process");
+  const path = require("path");
+  const startscriptPath = path.join(process.cwd(), "test/starttraefik.bash");
+  const stopscriptPath = path.join(process.cwd(), "test/stoptraefik.bash");
 
   beforeEach(async () => {
+    // Start traefik gateway
+    try {
+      execSync(startscriptPath);
+    } catch (error) {
+      console.error("Error starting Traefik:", error);
+    }
+    // Start nest app
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot({
@@ -23,7 +38,7 @@ describe("Integration Tests for FilesService", () => {
           autoSchemaFile: join(process.cwd(), "src/schema.gql"),
           debug: false,
           playground: true,
-          path: "/lib",
+          path: process.env.APOLLO_PATH,
         }),
         FilesModule,
       ],
@@ -31,13 +46,18 @@ describe("Integration Tests for FilesService", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
-
+    await app.listen(process.env.PORT);
     filesService = moduleFixture.get<FilesService>(FilesService);
+    await sleep(2000);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
+    try {
+      execSync(stopscriptPath);
+    } catch (error) {
+      console.error("Error stopping Traefik:", error);
+    }
   });
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
@@ -87,7 +107,7 @@ describe("Integration Tests for FilesService", () => {
     const variables = { path };
 
     const response = await request(app.getHttpServer())
-      .post("/lib")
+      .post(process.env.APOLLO_PATH)
       .send({ query, variables });
 
     expect(response.body).toBeDefined();
@@ -108,7 +128,7 @@ describe("Integration Tests for FilesService", () => {
     };
 
     const response = await request("http://localhost:80")
-      .post("/lib")
+      .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });
