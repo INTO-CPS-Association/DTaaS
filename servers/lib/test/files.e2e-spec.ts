@@ -124,6 +124,7 @@ describe("Integration Tests for FilesService", () => {
     const response = await request("http://localhost")
       .post(process.env.APOLLO_PATH)
       .send({ query });
+    console.log(response.body);
     expect(response.body).toEqual(expectedResponse);
   });
 });
