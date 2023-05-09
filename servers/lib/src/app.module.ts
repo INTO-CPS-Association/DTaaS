@@ -15,7 +15,7 @@ import { FilesModule } from "./files/files.module";
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       debug: false,
       playground: true,
-      path: "/lib"
+      path: process.env.APOLLO_PATH,
     }),
     FilesModule,
   ],
