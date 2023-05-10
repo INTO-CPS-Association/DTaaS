@@ -15,15 +15,9 @@ jest.mock('util/envUtil', () => ({
   getRedirectURI: () => mockRedirectURI,
   getLogoutRedirectURI: () => mockLogoutRedirectURI,
   getGitLabScopes: () => mockGitLabScopes,
-  getURLforWorkbench: () => mockURLforWorkbench,
-  getWorkbenchLinkValues: () => [
+  useWorkbenchLinkValues: () => [
     { key: '1', link: 'link1' },
     { key: '2', link: 'link2' },
     { key: '3', link: 'link3' },
   ],
-}));
-
-jest.mock('react-redux', () => ({
-  useSelector: jest.fn(),
-  useDispatch: () => jest.fn(),
 }));

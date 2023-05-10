@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import WorkBench from 'route/workbench/Workbench';
 import AppProvider from 'AppProvider';
-import { useURLbasename } from 'util/envUtil';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from './route/library/Library';
@@ -56,7 +55,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: `/${useURLbasename()}`,
+    basename: `/${getURLbasename()}`,
   }
 );
 

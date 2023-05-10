@@ -1,7 +1,7 @@
 import * as React from 'react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import { mockURLforDT } from '../__mocks__/global_mocks';
+import { mockURLforDT } from '../__mocks__/util_mocks';
 import {
   InitRouteTests,
   itDisplaysContentOfTabs,
