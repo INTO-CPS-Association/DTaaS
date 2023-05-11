@@ -67,7 +67,7 @@ HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
- 
+
 
 POST /lib
 
@@ -79,7 +79,7 @@ User-Agent:Mozilla
 
 Accept:*/*
 
- 
+
 
 {
 
@@ -87,7 +87,7 @@ Accept:*/*
 
 }
 
- 
+
 
 HTTP Response:
 
@@ -111,7 +111,7 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
- 
+
 
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
 
