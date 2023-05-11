@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 
-describe("FilesService", () => {
+describe("Unit tests for FilesService", () => {
   let filesService: FilesService;
 
   // Mocked value of our ConfigService, so it just gives a hardcoded value out,

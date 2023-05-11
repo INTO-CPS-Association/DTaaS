@@ -4,6 +4,8 @@ import { join } from "path";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { FilesModule } from "./files/files.module";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env" });
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { FilesModule } from "./files/files.module";
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       debug: false,
-      playground: true,
+      playground: process.env.GRAPHQL_PLAYGROUND === "true",
       path: process.env.APOLLO_PATH,
     }),
     FilesModule,
