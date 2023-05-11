@@ -1,12 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-<<<<<<<< HEAD:servers/lib/test/e2e/app.e2e.spec.ts
-import { AppModule } from "../../src/app.module";
-========
 import { execSync } from "child_process";
 import { AppModule } from "../src/app.module";
->>>>>>>> 92ace14 (move traefik test, structure tests):servers/lib/test/app.e2e.spec.ts
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -24,18 +20,12 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-<<<<<<<< HEAD:servers/lib/test/e2e/app.e2e.spec.ts
-========
     await sleep(5000);
->>>>>>>> 92ace14 (move traefik test, structure tests):servers/lib/test/app.e2e.spec.ts
   }, 10000);
 
   afterEach(async () => {
     await app.close();
-<<<<<<<< HEAD:servers/lib/test/e2e/app.e2e.spec.ts
-========
     execSync("test/stoptraefik.bash");
->>>>>>>> 92ace14 (move traefik test, structure tests):servers/lib/test/app.e2e.spec.ts
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
