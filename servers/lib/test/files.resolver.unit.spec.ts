@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../src/files/files.service";
 import { FilesResolver } from "../src/files/files.resolver";
 
-describe("FilesResolver", () => {
+describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
 
   const mockFilesService = {

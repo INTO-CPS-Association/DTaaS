@@ -20,8 +20,11 @@ LOCAL_PATH ='/Users/<Username>/DTaaS/files'
 GITLAB_GROUP ="dtaas"
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
-LOG_LEVEL=debug
-TEST_PATH="/Users/<Username>/DTaaS/servers/lib/test/data/test_assets"
+LOG_LEVEL='debug'
+TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
+APOLLO_PATH='/lib'
+GRAPHQL_PLAYGROUND='false
+
 ```
 
 The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, visit:
@@ -51,22 +54,22 @@ The only accepted query is:
 
 ```graphql
 query directoryList($path: String!, $domain: ID!) {
-project(fullPath: $domain) {
+  project(fullPath: $domain) {
     webUrl
     path
     repository {
-    paginatedTree(path: $path, recursive: false) {
+      paginatedTree(path: $path, recursive: false) {
         nodes {
-        trees {
+          trees {
             nodes {
-            name
+              name
             }
+          }
         }
-        }
+      }
+      diskPath
     }
-    diskPath
-    }
-}
+  }
 }
 ```
 
