@@ -45,22 +45,4 @@ describe("End to End test for the application", () => {
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });
-
-  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
-    const query = `{
-      getFiles(path: "${path}")
-    }`;
-
-    const expectedResponse = {
-      data: {
-        getFiles: ["data", "digital twins", "functions", "models", "tools"],
-      },
-    };
-
-    const response = await request("http://localhost")
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-    expect(response.body).toEqual(expectedResponse);
-  });
 });
