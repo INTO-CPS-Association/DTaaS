@@ -4,55 +4,39 @@ import * as request from "supertest";
 import { FilesModule } from "../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { join } from "path";
-import { FilesResolver } from "../src/files/files.resolver";
 import { FilesService } from "../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { execSync } from "child_process";
 dotenv.config({ path: ".env" });
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-describe("Integration Tests for FilesService", () => {
+describe("Integration Tests", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
-  //const startscriptPath = path.join(process.cwd(), "test/starttraefik.bash");
-  //const stopscriptPath = path.join(process.cwd(), "test/stoptraefik.bash");
-
   beforeEach(async () => {
-    // Start traefik gateway
-
-    execSync("test/starttraefik.bash");
-
-    // Start nest app
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot({
           driver: ApolloDriver,
           autoSchemaFile: join(process.cwd(), "src/schema.gql"),
           debug: false,
-          playground: true,
+          playground: process.env.GRAPHQL_PLAYGROUND === "true",
           path: process.env.APOLLO_PATH,
         }),
         FilesModule,
       ],
-      providers: [FilesResolver, FilesService, ConfigService],
+      providers: [FilesService, ConfigService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.listen(process.env.PORT);
+    await app.init();
     filesService = moduleFixture.get<FilesService>(FilesService);
-    await sleep(5000);
-  }, 10000);
+  });
 
   afterEach(async () => {
     await app.close();
-    execSync("test/stoptraefik.bash");
-  }, 10000);
+  });
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
     const path = "test_path_local";
@@ -107,24 +91,5 @@ describe("Integration Tests for FilesService", () => {
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
     expect(response.body.data.getFiles).toEqual(expectedFiles);
-  });
-
-  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
-    const query = `{
-      getFiles(path: "${path}")
-    }`;
-
-    const expectedResponse = {
-      data: {
-        getFiles: ["data", "digital twins", "functions", "models", "tools"],
-      },
-    };
-
-    const response = await request("http://localhost")
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-    console.log(response.body);
-    expect(response.body).toEqual(expectedResponse);
   });
 });

@@ -1,21 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "../../src/files/files.service";
-import { FilesResolver } from "../../src/files/files.resolver";
-import { pathToTestDirectory, testDirectory } from "../testUtil";
+import { FilesService } from "../src/files/files.service";
+import { FilesResolver } from "../src/files/files.resolver";
 
-<<<<<<<< HEAD:servers/lib/test/unit/files.resolver.unit.spec.ts
-
-
-========
->>>>>>>> 92ace14 (move traefik test, structure tests):servers/lib/test/files.resolver.unit.spec.ts
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
 
   const mockFilesService = {
-    Wrapper: jest.fn(() => testDirectory),
-    getLocalFiles: jest.fn(() => testDirectory),
-    getGitlabFiles: jest.fn(() => testDirectory),
-
+    Wrapper: jest.fn(() => [
+      "digital twins",
+      "functions",
+      "data",
+      "tools",
+      "models",
+    ]),
   };
 
   beforeEach(async () => {
@@ -38,9 +35,12 @@ describe("Unit tests for FilesResolver", () => {
       expect(filesResolver.getFiles).toBeDefined();
     });
 
-    it("should list files in directory", async () => {
-      const result = await filesResolver.getFiles(pathToTestDirectory);
-      expect(result).toEqual(testDirectory);
+    it("should return the filenames in the given directory", async () => {
+      const files = ["digital twins", "functions", "data", "tools", "models"];
+      const path = "user1";
+      const result = await filesResolver.getFiles(path);
+
+      expect(result).toEqual(files);
     });
   });
 });
