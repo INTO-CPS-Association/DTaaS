@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { FilesModule } from "../src/files/files.module";
+import { FilesModule } from "../../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { join } from "path";
-import { FilesService } from "../src/files/files.service";
+import { FilesService } from "../../src/files/files.service";
 import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
@@ -32,6 +32,10 @@ describe("Integration Tests", () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     filesService = moduleFixture.get<FilesService>(FilesService);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
