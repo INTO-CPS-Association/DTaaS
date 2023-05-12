@@ -4,10 +4,6 @@ import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { execSync } from "child_process";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
@@ -18,8 +14,7 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-    await sleep(5000);
-  }, 10000);
+  });
 
   afterEach(async () => {
     await app.close();
