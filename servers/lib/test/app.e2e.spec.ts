@@ -4,10 +4,6 @@ import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../src/app.module";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
@@ -18,12 +14,11 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-    await sleep(5000);
-  }, 10000);
+  });
 
   afterEach(async () => {
     await app.close();
-  }, 10000);
+  });
 
   it("should return the filename corresponding to the directory given in the query", async () => {
     const path = "user1";
