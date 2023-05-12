@@ -7,18 +7,7 @@ export PATH="$new_path"
 mode=$1
 
 if [ "$mode" == "-a" ]; then
-  echo "making all tests ..."
-
-  echo "making unit tests"
-  jest ../test/unit
-
-  echo "making integration tests"
-  jest ../test/integration 
-
-  echo "making e2e tests"
-  jest --config ./test/jest-e2e.json
-  
-  echo "retrieving coverage report"
+  echo "making all tests ... and retrieving coverage report"
   jest --coverage
 elif [ "$mode" == "-u" ]; then
   echo "making unit tests"
