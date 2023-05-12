@@ -12,8 +12,6 @@ describe("End to End test for the application", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    execSync("test/starttraefik.bash");
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -25,7 +23,6 @@ describe("End to End test for the application", () => {
 
   afterEach(async () => {
     await app.close();
-    execSync("test/stoptraefik.bash");
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
