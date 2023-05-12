@@ -32,7 +32,7 @@ jobs:
           yarn install
           yarn test
         env:
-          PORT: 3001
+          PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
