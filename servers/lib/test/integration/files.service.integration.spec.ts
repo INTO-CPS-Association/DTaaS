@@ -32,11 +32,11 @@ describe("Integration Tests", () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     filesService = moduleFixture.get<FilesService>(FilesService);
-  });
+  }, 10000);
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
-  });
+  }, 10000);
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
     const path = "test_path_local";

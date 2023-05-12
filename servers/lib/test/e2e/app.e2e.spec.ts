@@ -14,11 +14,11 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-  });
+  }, 10000);
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
-  });
+  }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
     const path = "user1";
