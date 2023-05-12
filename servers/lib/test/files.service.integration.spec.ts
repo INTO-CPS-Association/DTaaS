@@ -34,10 +34,6 @@ describe("Integration Tests", () => {
     filesService = moduleFixture.get<FilesService>(FilesService);
   });
 
-  afterEach(async () => {
-    await app.close();
-  });
-
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
     const path = "test_path_local";
     const expectedFiles = ["file1.txt", "file2.txt"];
