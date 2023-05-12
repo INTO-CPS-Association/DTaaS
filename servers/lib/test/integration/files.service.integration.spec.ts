@@ -42,8 +42,6 @@ describe("Integration Tests", () => {
     const path = "test_path_local";
     const expectedFiles = ["file1.txt", "file2.txt"];
 
-    const filesService = app.get<FilesService>(FilesService);
-
     jest
       .spyOn(filesService, "getLocalFiles")
       .mockReturnValue(Promise.resolve(expectedFiles));
@@ -57,8 +55,6 @@ describe("Integration Tests", () => {
     const path = "test_path_gitlab";
     const expectedFiles = ["file1.txt", "file2.txt"];
 
-    const filesService = app.get<FilesService>(FilesService);
-
     jest
       .spyOn(filesService, "getGitlabFiles")
       .mockReturnValue(Promise.resolve(expectedFiles));
@@ -71,8 +67,6 @@ describe("Integration Tests", () => {
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
     const path = "test_directory";
     const expectedFiles = ["file1.txt", "file2.txt"];
-
-    const filesService = app.get<FilesService>(FilesService);
 
     jest
       .spyOn(filesService, "Wrapper")
