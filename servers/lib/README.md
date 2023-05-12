@@ -14,8 +14,8 @@ In order to create this environment, you need to create a `.env` file, wherein y
 and insert with the correct-information relevant for your setup:
 
 ```
-PORT=3000
-MODE=local or gitlab
+PORT='4001'
+MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
 GITLAB_GROUP ="dtaas"
 GITLAB_URL='https://gitlab.com/api/graphql'
@@ -23,7 +23,7 @@ TOKEN='123-sample-token'
 LOG_LEVEL='debug'
 TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='false
+GRAPHQL_PLAYGROUND='false'
 
 ```
 
