@@ -3,11 +3,10 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { FilesModule } from "../../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
-import { join } from "path";
 import { FilesService } from "../../src/files/files.service";
-import { ApolloDriver } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
+import { createGraphQLTestModule, localFiles, path } from "../testUtil";
 dotenv.config({ path: ".env" });
 
 describe("Integration Tests", () => {
@@ -17,13 +16,7 @@ describe("Integration Tests", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        GraphQLModule.forRoot({
-          driver: ApolloDriver,
-          autoSchemaFile: join(process.cwd(), "src/schema.gql"),
-          debug: false,
-          playground: process.env.GRAPHQL_PLAYGROUND === "true",
-          path: process.env.APOLLO_PATH,
-        }),
+        GraphQLModule.forRoot(createGraphQLTestModule()), // use your function
         FilesModule,
       ],
       providers: [FilesService, ConfigService],
@@ -39,38 +32,29 @@ describe("Integration Tests", () => {
   }, 10000);
 
   it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
-    const path = "test_path_local";
-    const expectedFiles = ["file1.txt", "file2.txt"];
-
     jest
       .spyOn(filesService, "getLocalFiles")
-      .mockReturnValue(Promise.resolve(expectedFiles));
+      .mockReturnValue(Promise.resolve(localFiles));
 
     const result = await filesService.getLocalFiles(path);
 
-    expect(result).toEqual(expectedFiles);
+    expect(result).toEqual(localFiles);
   });
 
   it("ensure that the getGitlabFiles method of the FilesService class returns the expected array of file names when called with a specific path in Gitlab mode", async () => {
-    const path = "test_path_gitlab";
-    const expectedFiles = ["file1.txt", "file2.txt"];
-
     jest
       .spyOn(filesService, "getGitlabFiles")
-      .mockReturnValue(Promise.resolve(expectedFiles));
+      .mockReturnValue(Promise.resolve(localFiles));
 
     const result = await filesService.getGitlabFiles(path);
 
-    expect(result).toEqual(expectedFiles);
+    expect(result).toEqual(localFiles);
   });
 
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
-    const path = "test_directory";
-    const expectedFiles = ["file1.txt", "file2.txt"];
-
     jest
       .spyOn(filesService, "Wrapper")
-      .mockReturnValue(Promise.resolve(expectedFiles));
+      .mockReturnValue(Promise.resolve(localFiles));
 
     const query = `{
       getFiles(path: "${path}")
@@ -84,6 +68,6 @@ describe("Integration Tests", () => {
 
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
-    expect(response.body.data.getFiles).toEqual(expectedFiles);
+    expect(response.body.data.getFiles).toEqual(localFiles);
   });
 });

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
 
 describe("End to End test for the application", () => {

@@ -21,7 +21,6 @@ dotenv.config({ path: ".env" });
     }),
     FilesModule,
   ],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}
