@@ -5,7 +5,7 @@ HTTPS mode is disabled for now.
 
 ## The background services
 
-Run Lib MS at port 3000
+Run Lib MS at port 4001
 
 | Route / URL     | Background Service | Service URL    |
 | :-------------- | :----------------- | :------------- |
@@ -17,7 +17,6 @@ Run Lib MS at port 3000
 ## Start the Gateway
 
 ```bash
-cd servers/config/gateway
 docker run -d \
  --name "traefik-gateway" \
 --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
@@ -25,6 +24,8 @@ docker run -d \
 -v /var/run/docker.sock:/var/run/docker.sock \
 traefik:v2.5
 ```
+
+<<<<<<< HEAD
 
 for mac
 
@@ -67,3 +68,7 @@ The routes / URLs need to be updated for your local setup. The current version o
 | foo.com/lib   | Lib Microservice   | localhost:4001 |
 | foo.com/user1 | ML Workspace       | localhost:8090 |
 |               |
+
+=======
+
+> > > > > > > a42b4a3 (final cahnges)
