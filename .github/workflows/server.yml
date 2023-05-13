@@ -8,7 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,12 +18,6 @@ jobs:
           node-version: 18
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
-
-      # - name: Run the linting checks
-      #   run: |
-      #     cd servers/lib
-      #     yarn install
-      #     yarn syntax
 
       - name: Run lib microservice tests
         run: |

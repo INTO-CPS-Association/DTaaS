@@ -14,7 +14,7 @@ describe("Integration Tests", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot(getApolloDriverConfig()), // use your function
@@ -26,7 +26,11 @@ describe("Integration Tests", () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     filesService = moduleFixture.get<FilesService>(FilesService);
-  });
+  }, 10000);
+
+  afterEach(async () => {
+    await app.close();
+  }, 10000);
 
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
     jest
