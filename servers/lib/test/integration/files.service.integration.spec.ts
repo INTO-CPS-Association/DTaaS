@@ -6,7 +6,8 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { createGraphQLTestModule, localFiles, path } from "../testUtil";
+import { localFiles, path } from "../testUtil";
+import { getApolloDriverConfig } from "../../util";
 dotenv.config({ path: ".env" });
 
 describe("Integration Tests", () => {
@@ -16,7 +17,7 @@ describe("Integration Tests", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        GraphQLModule.forRoot(createGraphQLTestModule()), // use your function
+        GraphQLModule.forRoot(getApolloDriverConfig()), // use your function
         FilesModule,
       ],
       providers: [FilesService, ConfigService],
