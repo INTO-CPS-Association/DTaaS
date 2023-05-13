@@ -6,7 +6,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { localFiles, path } from "../testUtil";
+import { files, localFiles, path } from "../testUtil";
 import { getApolloDriverConfig } from "../../util";
 dotenv.config({ path: ".env" });
 
@@ -36,20 +36,16 @@ describe("Integration Tests", () => {
     jest
       .spyOn(filesService, "getLocalFiles")
       .mockReturnValue(Promise.resolve(localFiles));
-
     const result = await filesService.getLocalFiles(path);
-
     expect(result).toEqual(localFiles);
   });
 
   it("ensure that the getGitlabFiles method of the FilesService class returns the expected array of file names when called with a specific path in Gitlab mode", async () => {
     jest
       .spyOn(filesService, "getGitlabFiles")
-      .mockReturnValue(Promise.resolve(localFiles));
-
+      .mockReturnValue(Promise.resolve(files));
     const result = await filesService.getGitlabFiles(path);
-
-    expect(result).toEqual(localFiles);
+    expect(result).toEqual(files);
   });
 
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
