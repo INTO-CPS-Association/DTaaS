@@ -6,7 +6,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { files, localFiles, path } from "../testUtil";
+import { localFiles, path } from "../testUtil";
 import { getApolloDriverConfig } from "../../util";
 dotenv.config({ path: ".env" });
 
