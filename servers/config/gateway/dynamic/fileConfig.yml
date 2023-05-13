@@ -1,6 +1,6 @@
 http:
   routers:
-    lib:
+    dtaas:
       entryPoints:
         - http
       rule: "Host(`localhost`)"
@@ -49,6 +49,26 @@ http:
       service: api@internal
 
   services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:4000"
+
+    user1:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8090"
+
+    user2:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8091"
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:3000"
+
     lib:
       loadBalancer:
         servers:
