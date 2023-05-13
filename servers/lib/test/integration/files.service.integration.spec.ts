@@ -32,6 +32,26 @@ describe("Integration Tests", () => {
     await app.close();
   }, 10000);
 
+  it("ensure that the getLocalFiles method of the FilesService class returns the expected array of file names when called with a specific path in local mode", async () => {
+    jest
+      .spyOn(filesService, "getLocalFiles")
+      .mockReturnValue(Promise.resolve(localFiles));
+
+    const result = await filesService.getLocalFiles(path);
+
+    expect(result).toEqual(localFiles);
+  });
+
+  it("ensure that the getGitlabFiles method of the FilesService class returns the expected array of file names when called with a specific path in Gitlab mode", async () => {
+    jest
+      .spyOn(filesService, "getGitlabFiles")
+      .mockReturnValue(Promise.resolve(localFiles));
+
+    const result = await filesService.getGitlabFiles(path);
+
+    expect(result).toEqual(localFiles);
+  });
+
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
     jest
       .spyOn(filesService, "Wrapper")
