@@ -44,7 +44,7 @@ jobs:
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
           TOKEN: token
-          MODE: local
+          MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
 
