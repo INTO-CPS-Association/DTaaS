@@ -67,4 +67,4 @@ http:
     lib:
       loadBalancer:
         servers:
-          - url: "http://192.168.0.213:4001"
+          - url: "http://localhost:4001"
