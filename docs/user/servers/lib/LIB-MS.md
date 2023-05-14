@@ -93,6 +93,7 @@ yarn start
 The lib microservice is now running and ready to serve files, functions, and models.
 
 You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
+
 ```
 
 ### Lib request and response
@@ -115,8 +116,7 @@ Content-Type:application/json
 
 User-Agent:Mozilla
 
-Accept:*/*
-
+Accept:_/_
 
 {
 
@@ -124,14 +124,13 @@ Accept:*/*
 
 }
 
-
 HTTP Response:
 
 .....
 
 200 OK
 
-access-control-allow-origin: *
+access-control-allow-origin: \*
 
 connection: keep-alive
 
@@ -147,10 +146,9 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
-
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
 
-```
+````
 
 ### GraphQL API queries
 
@@ -175,6 +173,6 @@ query directoryList($path: String!) {
     }
   }
 }
-```
+````
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
