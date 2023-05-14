@@ -1,11 +1,8 @@
-# The gateway server
-
-Run the Traefik gateway server in HTTP mode to experience the DTaaS application.
-HTTPS mode is disabled for now.
-
 ## The background services
 
-Run Lib MS at port 4001
+The gateway requires background services to serve the URLs. These background
+services must be running in order for the gateway to service user requests.
+The default configuration uses two services at the following URLs:
 
 | Route / URL     | Background Service | Service URL    |
 | :-------------- | :----------------- | :------------- |
@@ -20,12 +17,10 @@ Run Lib MS at port 4001
 docker run -d \
  --name "traefik-gateway" \
 --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
--v $PWD/dynamic:/etc/traefik/dynamic \
--v /var/run/docker.sock:/var/run/docker.sock \
+Expand All
+	@@ -26,31 +24,24 @@ docker run -d \
 traefik:v2.5
 ```
-
-<<<<<<< HEAD
 
 for mac
 
@@ -42,7 +37,12 @@ docker run -d \
 
 ## Access
 
-Run Lib MS at port 3000
+# Run Lib MS at port 3000
+
+## Authentication
+
+The dummy username is `foo` and the password is `bar`.
+Please change this before starting the gateway.
 
 ```bash
 rm auth
@@ -68,7 +68,3 @@ The routes / URLs need to be updated for your local setup. The current version o
 | foo.com/lib   | Lib Microservice   | localhost:4001 |
 | foo.com/user1 | ML Workspace       | localhost:8090 |
 |               |
-
-=======
-
-> > > > > > > a42b4a3 (final cahnges)
