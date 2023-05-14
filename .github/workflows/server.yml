@@ -20,17 +20,11 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      # - name: Run the linting checks
-      #   run: |
-      #     cd servers/lib
-      #     yarn install
-      #     yarn syntax
-
-      - name: Build the lib microservice
+      - name: Run the linting checks
         run: |
-          cd servers/lib	
-          yarn install	
-          yarn build
+          cd servers/lib
+          yarn install
+          yarn syntax
 
       - name: Build the lib microservice
         run: |

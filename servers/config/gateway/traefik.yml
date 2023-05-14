@@ -10,6 +10,11 @@ providers:
     filename: /etc/traefik/dynamic/fileConfig.yml
     watch: true
 
+# Enable traefik ui
+#dapi:
+#  dashboard: true
+#  insecure: true
+
 # Log level INFO|DEBUG|ERROR
 log:
   level: DEBUG
