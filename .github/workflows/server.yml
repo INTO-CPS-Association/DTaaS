@@ -36,14 +36,15 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test -a
+          yarn test -u
+          yarn test -i
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
           TOKEN: token
-          MODE: gitlab
+          MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
 
