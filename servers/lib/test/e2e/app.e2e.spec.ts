@@ -1,12 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-<<<<<<<< HEAD:servers/lib/test/app.e2e.spec.ts
 import { execSync } from "child_process";
-import { AppModule } from "../src/app.module";
-========
 import { AppModule } from "../../src/app.module";
->>>>>>>> feature/distributed-demo:servers/lib/test/e2e/app.e2e.spec.ts
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -24,18 +20,12 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-<<<<<<<< HEAD:servers/lib/test/app.e2e.spec.ts
     await sleep(5000);
-========
->>>>>>>> feature/distributed-demo:servers/lib/test/e2e/app.e2e.spec.ts
   }, 10000);
 
   afterEach(async () => {
     await app.close();
-<<<<<<<< HEAD:servers/lib/test/app.e2e.spec.ts
     execSync("test/stoptraefik.bash");
-========
->>>>>>>> feature/distributed-demo:servers/lib/test/e2e/app.e2e.spec.ts
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
@@ -52,7 +42,6 @@ describe("End to End test for the application", () => {
 
     const response = await request(app.getHttpServer())
       .post(process.env.APOLLO_PATH)
-<<<<<<<< HEAD:servers/lib/test/app.e2e.spec.ts
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });
@@ -71,8 +60,6 @@ describe("End to End test for the application", () => {
 
     const response = await request("http://localhost")
       .post(process.env.APOLLO_PATH)
-========
->>>>>>>> feature/distributed-demo:servers/lib/test/e2e/app.e2e.spec.ts
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });
