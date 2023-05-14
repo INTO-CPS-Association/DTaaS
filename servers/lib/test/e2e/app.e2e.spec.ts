@@ -20,7 +20,9 @@ describe("End to End test for the application", () => {
 
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
-    await sleep(5000);
+  });
+
+  afterEach(async () => {
   }, 10000);
 
   afterAll(async () => {
