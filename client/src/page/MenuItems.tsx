@@ -41,7 +41,13 @@ function MenuItems() {
     <>
       {menuItems.map((item) => (
         <Link to={item.link} style={tolinkStyle} key={item.index}>
-          <ListItemButton>
+          <ListItemButton
+            style={
+              window.location.pathname === item.link
+                ? { backgroundColor: 'lightgray' }
+                : undefined
+            }
+          >
             <ListItemIcon>{item.icon}</ListItemIcon>
             {item.name}
           </ListItemButton>

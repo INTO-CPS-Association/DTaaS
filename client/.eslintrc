@@ -62,6 +62,12 @@
         "project": ["./tsconfig.json"]
       },
       "plugins": ["@typescript-eslint"]
+    },
+    {
+      "files": ["src/**/*.slice.ts"],
+      "rules": {
+        "no-param-reassign": ["error", { "props": false }]
+      }
     }
   ]
 }

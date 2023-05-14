@@ -17,8 +17,8 @@ yarn build      #build the react app into build/ directory
 yarn develop    #start the development server without building. Great for live edits.
 
 
-#specify the environment; specify only one
-yarn configapp #prod | dev
+#Required: Specify the environment; specify only one
+yarn configapp #prod | dev #If not specified, the app wont run.
 
 yarn start      #start the application
 yarn test       #UI testing of the application

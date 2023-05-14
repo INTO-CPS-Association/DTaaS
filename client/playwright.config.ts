@@ -16,7 +16,7 @@ const config = {
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    baseURL: 'http://localhost:4000',
+    baseURL: 'http://localhost:4000/dtaas/',
   },
   projects: [
     {

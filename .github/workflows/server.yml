@@ -8,7 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,19 +19,13 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      # - name: Run the linting checks
-      #   run: |
-      #     cd servers/lib
-      #     yarn install
-      #     yarn syntax
-
       - name: Run lib microservice tests
         run: |
           cd servers/lib
           yarn install
-          yarn test
+          yarn test -a
         env:
-          PORT: 4000
+          PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql

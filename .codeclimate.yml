@@ -9,12 +9,11 @@ plugins:
     enabled: true
     config:
       languages:
-        - typescript:
-        - javascript:
-        - python:
-        - php:
-      min_tokens: 50
--     max_blocks: 10
+        typescript:
+          mass_threshold: 55
+        javascript:
+        python:
+        php:
   eslint:
     enabled: true
     channel: "eslint-8"
@@ -31,3 +30,4 @@ exclude_patterns:
   - "**/build/"
   - "**/public/"
   - "**/coverage"
+  - "client/config/"

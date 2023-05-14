@@ -5,11 +5,11 @@ HTTPS mode is disabled for now.
 
 ## The background services
 
-Run Lib MS at port 3000
+Run Lib MS at port 4001
 
 | Route / URL | Background Service | Service URL    |
 | :---------- | :----------------- | :------------- |
-| localhost   | Lib MS             | localhost:3000 |
+| localhost   | Lib MS             | localhost:4001 |
 |             |
 
 ## Start the Gateway

@@ -14,16 +14,16 @@ In order to create this environment, you need to create a `.env` file, wherein y
 and insert with the correct-information relevant for your setup:
 
 ```
-PORT=3000
-MODE=local or gitlab
+PORT='4001'
+MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-GITLAB_GROUP ="dtaas"
+GITLAB_GROUP ='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
 LOG_LEVEL='debug'
 TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='false
+GRAPHQL_PLAYGROUND='false'
 
 ```
 
@@ -39,7 +39,7 @@ cd server/lib
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
-yarn test       # test the application
+yarn test -a      # test the application
 yarn start      # start the application
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
