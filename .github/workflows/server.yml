@@ -28,9 +28,9 @@ jobs:
 
       - name: Build the lib microservice
         run: |
-          cd servers/lib	
-          yarn install	
-          yarn build
+          cd servers/lib
+          yarn install
+          yarn syntax
 
       - name: Run lib microservice tests
         run: |
