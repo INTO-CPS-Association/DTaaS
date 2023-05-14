@@ -19,11 +19,18 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
+      - name: Run the linting checks
+        run: |
+          cd servers/lib
+          yarn install
+          yarn syntax
+
       - name: Run lib microservice tests
         run: |
           cd servers/lib
           yarn install
-          yarn test -a
+          yarn test -u
+          yarn test -i
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets

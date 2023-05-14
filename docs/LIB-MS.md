@@ -9,6 +9,7 @@ The lib microservice is responsible for handling and serving the contents of lib
 ## File Structure
 
 The DTaaS software categorizes all the reusable library assets into four categories:
+
 1. **Data** - data files on disk
 2. **Models** - digital twin models that tools can evaluate
 3. **Tools** - algorithms / software tools that evaluate **Models** with the help of **Data**.
@@ -18,7 +19,6 @@ The DTaaS software categorizes all the reusable library assets into four categor
 Each user has their assets put into five different directories named above. In addition, there will also be common library assets that all users have access to. A graphical representation is given below.
 
 <img title="File System Layout" src="./file-system-layout.png">
-
 
 An simplified example of the structure is as follows:
 
@@ -62,24 +62,27 @@ yarn install   # Install the required dependencies
 
 ### Environment Variables
 
-To set up the environment variables for the lib microservice, create a new file named _.env_ in the `servers/lib` folder. Then, add the following variables and their respective values. Below you can see an how, with included examples:
+To set up the environment variables for the lib microservice, create a new file named _.env_ in the `servers/lib` folder. Then, add the following variables and their respective values. Below you can see and how, with included examples:
 
 ```env
-PORT=3000
-MODE='gitlab'
-LOCAL_PATH='/home/dtaas'
+PORT='4001'
+MODE='local' or 'gitlab'
+LOCAL_PATH ='/Users/<Username>/DTaaS/files'
+GITLAB_GROUP ='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
-GITLAB_GROUP='dtaas'
+LOG_LEVEL='debug'
+TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
+APOLLO_PATH='/lib' or ''
+GRAPHQL_PLAYGROUND='false' or 'true'
 ```
 
 Replace the default values the appropriate values for your setup.
 
 **NOTE**:
-1. When __MODE=local_, only _LOCAL_PATH_ is used. Other environment variables are unused.
+
+1. When \__MODE=local_, only _LOCAL_PATH_ is used. Other environment variables are unused.
 1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_, and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
-
-
 
 ### Start Microservice
 
@@ -91,7 +94,7 @@ yarn start
 
 The lib microservice is now running and ready to serve files, functions, and models.
 
-You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/graphql`
+You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`
 
 ### GraphQL API queries
 
@@ -99,22 +102,22 @@ The only accepted query is:
 
 ```graphql
 query directoryList($path: String!) {
-project(fullPath: $domain) {
+  project(fullPath: $domain) {
     webUrl
     path
     repository {
-    paginatedTree(path: $path, recursive: false) {
+      paginatedTree(path: $path, recursive: false) {
         nodes {
-        trees {
+          trees {
             nodes {
-            name
+              name
             }
+          }
         }
-        }
+      }
+      diskPath
     }
-    diskPath
-    }
-}
+  }
 }
 ```
 

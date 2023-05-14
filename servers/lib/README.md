@@ -22,8 +22,8 @@ GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
 LOG_LEVEL='debug'
 TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='false'
+APOLLO_PATH='/lib' or ''
+GRAPHQL_PLAYGROUND='false' or 'true'
 
 ```
 
@@ -39,7 +39,10 @@ cd server/lib
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
-yarn test -a      # test the application
+yarn test -a      # run all tests
+yarn test -e      # run end-to-end tests
+yarn test -i      # run integration tests
+yarn test -u      # run unit tests
 yarn start      # start the application
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
