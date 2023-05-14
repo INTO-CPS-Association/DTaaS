@@ -22,13 +22,11 @@ describe("End to End test for the application", () => {
     await app.listen(process.env.PORT);
   });
 
-  afterEach(async () => {
-  }, 10000);
 
   afterAll(async () => {
     await app.close();
     execSync("test/stoptraefik.bash");
-  }, 10000);
+  });
   
   it("should return the filename corresponding to the directory given in the query", async () => {
     const path = "user1";
