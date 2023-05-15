@@ -29,8 +29,7 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test -u
-          yarn test -i
+          yarn test -a
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
