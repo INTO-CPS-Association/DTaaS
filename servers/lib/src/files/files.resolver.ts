@@ -8,12 +8,12 @@ export class FilesResolver {
   constructor(private readonly filesService: FilesService) {}
 
   @Query(() => [String])
-  async getFiles(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.Wrapper("getFiles", path);
+  async listDirectory(@Args("path") path: string): Promise<string[]> {
+    return this.filesService.Wrapper("listDirectory", path);
   }
 
   @Query(() => [String])
-  async getFileContent(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.Wrapper("getFileContent", path);
+  async readFile(@Args("path") path: string): Promise<string[]> {
+    return this.filesService.Wrapper("readFile", path);
   }
 }
