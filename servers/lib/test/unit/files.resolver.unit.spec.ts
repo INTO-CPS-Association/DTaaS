@@ -25,13 +25,13 @@ describe("Unit tests for FilesResolver", () => {
     expect(filesResolver).toBeDefined();
   });
 
-  describe("getFiles", () => {
+  describe("listDirectory", () => {
     it("should be defined", () => {
-      expect(filesResolver.getFiles).toBeDefined();
+      expect(filesResolver.listDirectory).toBeDefined();
     });
 
     it("should return the filenames in the given directory", async () => {
-      const result = await filesResolver.getFiles(path);
+      const result = await filesResolver.listDirectory(path);
 
       expect(result).toEqual(files);
     });

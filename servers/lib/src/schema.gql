@@ -3,6 +3,6 @@
 # ------------------------------------------------------
 
 type Query {
-  getFiles(path: String!): [String!]!
-  getFileContent(path: String!): [String!]!
+  listDirectory(path: String!): [String!]!
+  readFile(path: String!): [String!]!
 }

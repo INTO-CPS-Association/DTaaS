@@ -26,9 +26,9 @@ describe("Unit tests for FilesService", () => {
     expect(filesService).toBeDefined();
   });
 
-  describe("getLocalFiles", () => {
+  describe("listLocalDirectory", () => {
     it("should be defined", () => {
-      expect(filesService.getLocalFiles).toBeDefined();
+      expect(filesService.listLocalDirectory).toBeDefined();
     });
 
     it("should return the filenames in the given directory", async () => {
@@ -36,19 +36,19 @@ describe("Unit tests for FilesService", () => {
         readdirSync: jest.fn(() => localFiles),
       }));
 
-      const result = await filesService.getLocalFiles(path);
+      const result = await filesService.listLocalDirectory(path);
 
       expect(result.sort()).toEqual(localFiles.sort());
     });
   });
 
-  describe("getGitlabFiles", () => {
+  describe("listGitlabDirectory", () => {
     it("should be defined", () => {
       expect(filesService).toBeDefined();
     });
 
     it("should return the filenames in the given directory", async () => {
-      const result = await filesService.getGitlabFiles(path);
+      const result = await filesService.listGitlabDirectory(path);
 
       expect(result.sort()).toEqual(files.sort());
     });
@@ -56,7 +56,7 @@ describe("Unit tests for FilesService", () => {
     it("should throw an error if response from GitLab API is invalid", async () => {
       const expected = ["Invalid query"];
       const path = "invalid_path";
-      const result = await filesService.getGitlabFiles(path);
+      const result = await filesService.listGitlabDirectory(path);
       expect(result).toEqual(expected);
     });
   });
@@ -69,7 +69,7 @@ describe("Unit tests for FilesService", () => {
     it("should throw an error if path is empty", async () => {
       const path = "";
       const expected = ["Invalid query"];
-      const result = await filesService.Wrapper(path);
+      const result = await filesService.Wrapper("listDirectory", path);
       expect(result).toEqual(expected);
     });
 
@@ -80,14 +80,14 @@ describe("Unit tests for FilesService", () => {
         readdirSync: jest.fn(() => localFiles),
       }));
 
-      const result = await filesService.Wrapper(path);
+      const result = await filesService.Wrapper("listDirectory", path);
 
       expect(result.sort()).toEqual(localFiles.sort());
     });
 
     it("should return gitlab files when run in gitlab mode", async () => {
       process.env.MODE = "gitlab";
-      const result = await filesService.Wrapper(path);
+      const result = await filesService.Wrapper("listDirectory", path);
 
       expect(result.sort()).toEqual(files.sort());
     });
@@ -96,7 +96,7 @@ describe("Unit tests for FilesService", () => {
       process.env.MODE = "unknown";
 
       const expected = ["Invalid query"];
-      const result = await filesService.Wrapper(path);
+      const result = await filesService.Wrapper("listDirectory", path);
       expect(result).toEqual(expected);
     });
   });

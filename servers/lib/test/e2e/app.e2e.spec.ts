@@ -19,48 +19,176 @@ describe("End to End test for the application", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    await app.init(); // Initialize the application
     await app.listen(process.env.PORT);
-  });
 
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+  }, 10000);
 
   afterAll(async () => {
     await app.close();
     execSync("test/stoptraefik.bash");
   });
-  
-  it("should return the filename corresponding to the directory given in the query", async () => {
-    const path = "user1";
-    const query = `{
-      getFiles(path: "${path}")
-  }`;
-
-    const expectedResponse = {
-      data: {
-        getFiles: ["data", "digital twins", "functions", "models", "tools"],
-      },
-    };
-
-    const response = await request(app.getHttpServer())
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-    expect(response.body).toEqual(expectedResponse);
-  });
 
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
     const path = "user1";
     const query = `{
-      getFiles(path: "${path}")
+      listDirectory(path: "${path}")
     }`;
 
     const expectedResponse = {
       data: {
-        getFiles: ["data", "digital twins", "functions", "models", "tools"],
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
       },
     };
 
     const response = await request("http://localhost")
       .post(process.env.APOLLO_PATH)
       .send({ query });
+
+    console.log(response);
     expect(response.body).toEqual(expectedResponse);
-  });
+  }, 10000);
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      listDirectory(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
+      },
+    };
+
+    const response = await request("http://localhost")
+      .post(process.env.APOLLO_PATH)
+      .send({ query });
+
+    console.log(response);
+    expect(response.body).toEqual(expectedResponse);
+  }, 10000);
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      listDirectory(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
+      },
+    };
+
+    const response = await request("http://localhost")
+      .post(process.env.APOLLO_PATH)
+      .send({ query });
+
+    console.log(response);
+    expect(response.body).toEqual(expectedResponse);
+  }, 10000);
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      listDirectory(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
+      },
+    };
+
+    const response = await request("http://localhost")
+      .post(process.env.APOLLO_PATH)
+      .send({ query });
+
+    console.log(response);
+    expect(response.body).toEqual(expectedResponse);
+  }, 10000);
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      listDirectory(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
+      },
+    };
+
+    const response = await request("http://localhost")
+      .post(process.env.APOLLO_PATH)
+      .send({ query });
+
+    console.log(response);
+    expect(response.body).toEqual(expectedResponse);
+  }, 10000);
+
+  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+    const path = "user1";
+    const query = `{
+      listDirectory(path: "${path}")
+    }`;
+
+    const expectedResponse = {
+      data: {
+        listDirectory: [
+          "README.md",
+          "data",
+          "digital twins",
+          "functions",
+          "models",
+          "tools",
+        ],
+      },
+    };
+
+    const response = await request("http://localhost")
+      .post(process.env.APOLLO_PATH)
+      .send({ query });
+
+    console.log(response);
+    expect(response.body).toEqual(expectedResponse);
+  }, 10000);
 });

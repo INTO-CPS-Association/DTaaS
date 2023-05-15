@@ -4,13 +4,13 @@ import { ConfigService } from "@nestjs/config";
 import { join } from "path";
 import { ApolloClient } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/core";
-import { DIRECTORY_LIST } from "../queries";
+import { LIST_DIRECTORY, READ_FILE } from "../queries";
 @Injectable()
 export class FilesService {
   constructor(private configService: ConfigService) {}
 
   async Wrapper(
-    operation: "getFiles" | "getFileContent",
+    operation: "listDirectory" | "readFile",
     path: string
   ): Promise<string[]> {
     if (!path) {
@@ -19,30 +19,30 @@ export class FilesService {
 
     const mode = this.configService.get("MODE");
 
-    if (operation === "getFiles") {
+    if (operation === "listDirectory") {
       if (mode === "local") {
-        return this.getLocalFiles(path);
+        return this.listLocalDirectory(path);
       } else if (mode === "gitlab") {
-        return this.getGitlabFiles(path);
+        return this.listGitlabDirectory(path);
       }
-    } else if (operation === "getFileContent") {
+    } else if (operation === "readFile") {
       if (mode === "local") {
-        return this.getLocalFileContent(path);
+        return this.readLocalFile(path);
       } else if (mode === "gitlab") {
-        return this.getGitlabFileContent(path);
+        return this.readGitlabFile(path);
       }
     }
 
     return ["Invalid query"];
   }
 
-  async getLocalFiles(path: string): Promise<string[]> {
+  async listLocalDirectory(path: string): Promise<string[]> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
     return fs.readdirSync(fullpath);
   }
 
-  async getLocalFileContent(path: string): Promise<string[]> {
+  async readLocalFile(path: string): Promise<string[]> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
 
@@ -65,8 +65,9 @@ export class FilesService {
     const parsedPath = pathParts.slice(1).join("/");
     return { domain, parsedPath };
   }
-  async getGitlabFiles(path: string): Promise<string[]> {
+  async listGitlabDirectory(path: string): Promise<string[]> {
     const { domain, parsedPath } = await this.parseArguments(path);
+
     const client = new ApolloClient({
       cache: new InMemoryCache(),
       uri: this.configService.get("GITLAB_URL"),
@@ -76,23 +77,27 @@ export class FilesService {
     });
 
     const { data } = await client.query({
-      query: DIRECTORY_LIST,
-      variables: { path: path, domain: domain },
+      query: LIST_DIRECTORY,
+      variables: { path: parsedPath, domain: domain },
     });
 
-    const trees = data?.project?.repository?.paginatedTree?.nodes?.flatMap(
-      (node: { trees: { nodes: { name: string }[] } }) =>
-        node.trees.nodes.map((tree: { name: string }) => tree.name)
+    const blobs = data?.project?.repository?.tree?.blobs?.edges?.map(
+      (edge: { node: { name: string; type: string } }) => edge.node.name
     );
 
-    if (!trees) {
+    const trees = data?.project?.repository?.tree?.trees?.edges?.map(
+      (edge: { node: { name: string; type: string } }) => edge.node.name
+    );
+
+    if (!blobs || !trees) {
       return ["Invalid query"];
     }
 
-    return trees;
+    // Concatenate the names of files (blobs) and directories (trees)
+    return [...blobs, ...trees];
   }
 
-  async getGitlabFileContent(path: string): Promise<string[]> {
+  async readGitlabFile(path: string): Promise<string[]> {
     const { domain, parsedPath } = await this.parseArguments(path);
     const client = new ApolloClient({
       cache: new InMemoryCache(),
@@ -103,21 +108,7 @@ export class FilesService {
     });
 
     const { data } = await client.query({
-      query: gql`
-        query fileContent($domain: ID!, $path: [String!]!) {
-          project(fullPath: $domain) {
-            repository {
-              blobs(paths: $path) {
-                nodes {
-                  name
-                  rawBlob
-                  rawTextBlob
-                }
-              }
-            }
-          }
-        }
-      `,
+      query: READ_FILE,
       variables: { domain: domain, path: [parsedPath] },
     });
 
