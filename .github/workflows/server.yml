@@ -26,6 +26,12 @@ jobs:
           yarn install
           yarn syntax
 
+      - name: Build the lib microservice
+        run: |
+          cd servers/lib	
+          yarn install	
+          yarn build
+
       - name: Run lib microservice tests
         run: |
           cd servers/lib
