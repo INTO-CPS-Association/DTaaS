@@ -68,7 +68,6 @@ HTTP Request:
 send the request to: http://foo.com:<PORT>/lib
 
 
-
 POST /lib
 
 Host: foo.com:<PORT>
@@ -80,13 +79,11 @@ User-Agent:Mozilla
 Accept:*/*
 
 
-
 {
 
 "query": "{ getFiles(path: \"common\")}"
 
 }
-
 
 
 HTTP Response:
@@ -110,7 +107,6 @@ etag: ................
 keep-alive: timeout=5
 
 x-powered-by: Express
-
 
 
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
