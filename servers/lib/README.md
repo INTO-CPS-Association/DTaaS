@@ -49,7 +49,73 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 ## Service Endpoint
 
-The URL endpoint for this microservice is located at: `localhost:PORT/graphql`
+The URL endpoint for this microservice is located at: `localhost:PORT/lib`
+
+### Lib request and response
+
+Documentation of the lib query and responses.
+
+The provided HTTP request is a POST request sent to the endpoint http://foo.com:<PORT>/lib. It contains a JSON payload in the body. The request includes headers such as Content-Type, User-Agent, and Accept.
+
+The request is using a POST method because it is sending a GraphQL query. GraphQL queries are usually sent as POST requests because they can be complex and include a JSON payload, allowing for more flexibility in the query structure and variables
+
+```
+
+HTTP Request:
+
+.....
+
+send the request to: http://foo.com:<PORT>/lib
+
+ 
+
+POST /lib
+
+Host: foo.com:<PORT>
+
+Content-Type:application/json
+
+User-Agent:Mozilla
+
+Accept:*/*
+
+ 
+
+{
+
+"query": "{ getFiles(path: \"common\")}"
+
+}
+
+ 
+
+HTTP Response:
+
+.....
+
+200 OK
+
+access-control-allow-origin: *
+
+connection: keep-alive
+
+content-length: 76
+
+content-type: application/json; charset=utf-8
+
+date: Mon, 15 May 2023 10:13:37 GMT
+
+etag: ................
+
+keep-alive: timeout=5
+
+x-powered-by: Express
+
+ 
+
+{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
+
+```
 
 ### GraphQL API queries
 

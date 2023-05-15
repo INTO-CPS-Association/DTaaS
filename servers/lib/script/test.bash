@@ -9,17 +9,17 @@ export TEST_PATH="$test_path"
 mode=$1
 
 if [ "$mode" == "-a" ]; then
-  echo "making all tests ... and retrieving coverage report"
+  printf "making all tests ... and retrieving coverage report"
   jest --coverage
 elif [ "$mode" == "-u" ]; then
-  echo "making unit tests"
+  printf "making unit tests"
   jest ../test/unit
 elif [ "$mode" == "-i" ]; then
-  echo "making integration tests"
+  printf "making integration tests"
   jest ../test/integration
 elif [ "$mode" == "-e" ]; then
-  echo "making e2e tests"
+  printf "making e2e tests"
   jest --config ./test/jest-e2e.json
 else
-  echo "Invalid option. Please use -a for all tests, -u for unit tests, -i for integration tests, or -e for e2e tests."
+  printf "Invalid option. Please use -a for all tests, -u for unit tests, -i for integration tests, or -e for e2e tests."
 fi

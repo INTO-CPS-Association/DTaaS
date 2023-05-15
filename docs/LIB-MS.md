@@ -100,6 +100,68 @@ Futhermore, you are able to access the graphql playground when
 GRAPHQL_PLAYGROUND='true' 
 ```
 
+### Lib request and response
+
+Documentation of the lib query and responses.
+
+```
+
+HTTP Request:
+
+.....
+
+send the request to: http://foo.com:<PORT>/lib
+
+ 
+
+POST /lib
+
+Host: foo.com:<PORT>
+
+Content-Type:application/json
+
+User-Agent:Mozilla
+
+Accept:*/*
+
+ 
+
+{
+
+"query": "{ getFiles(path: \"common\")}"
+
+}
+
+ 
+
+HTTP Response:
+
+.....
+
+200 OK
+
+access-control-allow-origin: *
+
+connection: keep-alive
+
+content-length: 76
+
+content-type: application/json; charset=utf-8
+
+date: Mon, 15 May 2023 10:13:37 GMT
+
+etag: ................
+
+keep-alive: timeout=5
+
+x-powered-by: Express
+
+ 
+
+{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
+
+```
+
 ### GraphQL API queries
 
 The only accepted query is:
