@@ -1,3 +1,8 @@
+# The gateway server
+
+Run the Traefik gateway server in HTTP mode to experience the DTaaS application.
+HTTPS mode is disabled for now.
+
 ## The background services
 
 The gateway requires background services to serve the URLs. These background
@@ -17,8 +22,8 @@ The default configuration uses two services at the following URLs:
 docker run -d \
  --name "traefik-gateway" \
 --network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
-Expand All
-	@@ -26,31 +24,24 @@ docker run -d \
+-v $PWD/dynamic:/etc/traefik/dynamic \
+-v /var/run/docker.sock:/var/run/docker.sock \
 traefik:v2.5
 ```
 
