@@ -232,6 +232,6 @@ query directoryList($path: String!) {
     }
   }
 }
-````
+```
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
