@@ -94,7 +94,11 @@ yarn start
 
 The lib microservice is now running and ready to serve files, functions, and models.
 
-You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`
+You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
+Futhermore, you are able to access the graphql playground when 
+```
+GRAPHQL_PLAYGROUND='true' 
+```
 
 ### GraphQL API queries
 
