@@ -4,10 +4,6 @@ import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
@@ -53,7 +49,7 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
+    response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 
@@ -80,7 +76,7 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
+    response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 
@@ -107,7 +103,7 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
+    response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 
@@ -134,7 +130,6 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 
@@ -161,7 +156,6 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 
@@ -188,7 +182,7 @@ describe("End to End test for the application", () => {
       .post(process.env.APOLLO_PATH)
       .send({ query });
 
-    console.log(response);
+    response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
 });

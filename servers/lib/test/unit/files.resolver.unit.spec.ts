@@ -7,7 +7,6 @@ import {
   pathToTestFileContent,
   testFileContent,
 } from "../testUtil";
-import path from "path";
 
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;

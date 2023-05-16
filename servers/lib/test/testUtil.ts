@@ -22,6 +22,9 @@ export const testDirectory = ["testfile.txt", "testfolder"];
 export const pathToTestFileContent = "test_user1/testfile.txt";
 export const testFileContent = "testcontent123";
 
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export class MockConfigService {
   get(key: string): string {
     switch (key) {
