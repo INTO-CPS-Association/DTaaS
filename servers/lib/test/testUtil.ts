@@ -17,6 +17,9 @@ export const testDirectory = [
   "tools",
 ];
 
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export class MockConfigService {
   get(key: string): string {
     switch (key) {
