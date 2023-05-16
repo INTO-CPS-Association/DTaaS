@@ -1,14 +1,16 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { FilesResolver } from "./files.resolver";
-import { FilesService } from "./interfaces/files.service";
+import { LocalFilesService } from "./services/local-files.service";
+import { GitlabFilesService } from "./services/gitlab-files.service";
+import { DataSourceService } from "./services/data-source.service";
 @Module({
   providers: [
     FilesResolver,
-    FilesService,
-    ConfigService,
     LocalFilesService,
     GitlabFilesService,
+    DataSourceService,
+    ConfigService,
   ],
 })
 export class FilesModule {}
