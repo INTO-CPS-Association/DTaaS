@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "testing in progress"
+printf "testing in progress"
 new_path="$(yarn bin):$PATH"
 export PATH="$new_path"
 test_path=$(pwd)/test/data
