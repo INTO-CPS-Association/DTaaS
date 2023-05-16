@@ -97,6 +97,12 @@ Futhermore, you are able to access the graphql playground when
 
 ```
 GRAPHQL_PLAYGROUND='true'
+
+Futhermore, you are able to access the graphql playground when
+```
+
+GRAPHQL_PLAYGROUND='true'
+
 ```
 
 ### Lib request and response
@@ -111,8 +117,6 @@ HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
-
-
 POST /lib
 
 Host: foo.com:<PORT>
@@ -121,9 +125,7 @@ Content-Type:application/json
 
 User-Agent:Mozilla
 
-Accept:*/*
-
-
+Accept:_/_
 
 {
 
@@ -131,15 +133,13 @@ Accept:*/*
 
 }
 
-
-
 HTTP Response:
 
 .....
 
 200 OK
 
-access-control-allow-origin: *
+access-control-allow-origin: \*
 
 connection: keep-alive
 
@@ -155,11 +155,9 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
-
-
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
 
-```
+````
 
 ### GraphQL API queries
 
@@ -184,6 +182,6 @@ query directoryList($path: String!) {
     }
   }
 }
-```
+````
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
