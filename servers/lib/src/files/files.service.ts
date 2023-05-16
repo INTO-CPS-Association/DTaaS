@@ -63,6 +63,8 @@ export class FilesService {
 
     const client = await this.createClient();
 
+    //console.log("client", client);
+
     const { data } = await client.query({
       query: DIRECTORY_LIST,
       variables: { path: path, domain: domain },
