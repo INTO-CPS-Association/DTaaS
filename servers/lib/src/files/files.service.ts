@@ -76,6 +76,8 @@ export class FilesService {
       },
     });
 
+    //console.log("client", client);
+
     const { data } = await client.query({
       query: LIST_DIRECTORY,
       variables: { path: parsedPath, domain: domain },

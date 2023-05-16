@@ -1,12 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
 import { FilesModule } from "../../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { localFiles, path } from "../testUtil";
+import {
+  pathToDirectory,
+  directory,
+  pathToFileContent,
+  fileContent,
+} from "../testUtil";
 import { getApolloDriverConfig } from "../../util";
 dotenv.config({ path: ".env" });
 
@@ -32,5 +36,40 @@ describe("Integration Tests", () => {
     await app.close();
   });
 
-  it("should return the filename corresponding to the directory given in the query", async () => {});
+  describe("listGitlabDirectory", () => {
+    it("should be defined", () => {
+      expect(filesService).toBeDefined();
+    });
+
+    it("should return the filenames in the given directory", async () => {
+      const result = await filesService.listGitlabDirectory(pathToDirectory);
+
+      expect(result.sort()).toEqual(directory.sort());
+    });
+
+    it("should throw an error if response from GitLab API is invalid", async () => {
+      const expected = ["Invalid query"];
+      const path = "invalid_path";
+      const result = await filesService.listGitlabDirectory(path);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("readGitlabFile", () => {
+    it("should be defined", () => {
+      expect(filesService).toBeDefined();
+    });
+
+    it("should return the content of the file", async () => {
+      const result = await filesService.readGitlabFile(pathToFileContent);
+      expect(result).toEqual([fileContent]);
+    });
+
+    it("should throw an error if response from GitLab API is invalid", async () => {
+      const expected = ["Invalid query"];
+      const path = "invalid_path";
+      const result = await filesService.readGitlabFile(path);
+      expect(result).toEqual(expected);
+    });
+  });
 });

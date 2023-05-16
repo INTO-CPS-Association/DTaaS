@@ -1,9 +1,10 @@
 import * as dotenv from "dotenv";
-
+import { gql } from "@apollo/client/core";
 dotenv.config({ path: ".env" });
 
-export const path = "user1";
-export const files = [
+// actual data for integration and e2e tests
+export const pathToDirectory = "user1";
+export const directory = [
   "README.md",
   "data",
   "digital twins",
@@ -11,7 +12,15 @@ export const files = [
   "models",
   "tools",
 ];
-export const localFiles = ["file1.txt", "file2.txt", "file3.txt"];
+
+export const pathToFileContent = "common/functions/function1/function1.txt";
+export const fileContent = "content123";
+
+// mocked data for unit tests
+export const pathToTestDirectory = "test_user1";
+export const testDirectory = ["testfile.txt", "testfolder"];
+export const pathToTestFileContent = "test_user1/testfile.txt";
+export const testFileContent = "testcontent123";
 
 export class MockConfigService {
   get(key: string): string {
@@ -37,3 +46,30 @@ export class MockConfigService {
     }
   }
 }
+
+export const TEST_LIST_DIRECTORY = gql`
+  query listDirectory($path: String, $domain: ID!) {
+    project(fullPath: $domain) {
+      repository {
+        tree(path: $path, recursive: false) {
+          blobs {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+          trees {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

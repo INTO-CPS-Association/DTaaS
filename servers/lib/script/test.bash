@@ -2,7 +2,8 @@
 echo "testing in progress"
 new_path="$(yarn bin):$PATH"
 export PATH="$new_path"
-
+test_path=$(pwd)/test/data
+export TEST_PATH="$test_path"
 # Get the first argument passed to the script
 mode=$1
 

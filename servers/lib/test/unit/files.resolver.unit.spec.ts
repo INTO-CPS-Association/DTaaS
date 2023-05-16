@@ -1,16 +1,23 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../../src/files/files.service";
 import { FilesResolver } from "../../src/files/files.resolver";
-import { files, path } from "../testUtil";
+import {
+  testDirectory,
+  pathToTestDirectory,
+  pathToTestFileContent,
+  testFileContent,
+} from "../testUtil";
+import path from "path";
 
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
-
-  const mockFilesService = {
-    Wrapper: jest.fn(() => files),
-  };
+  let mockFilesService;
 
   beforeEach(async () => {
+    mockFilesService = {
+      Wrapper: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [FilesResolver, FilesService],
     })
@@ -30,10 +37,31 @@ describe("Unit tests for FilesResolver", () => {
       expect(filesResolver.listDirectory).toBeDefined();
     });
 
-    it("should return the filenames in the given directory", async () => {
-      const result = await filesResolver.listDirectory(path);
+    it("should return the result from the FilesService", async () => {
+      mockFilesService.Wrapper.mockResolvedValue(testDirectory);
 
-      expect(result).toEqual(files);
+      const result = await filesResolver.listDirectory(pathToTestDirectory);
+      expect(mockFilesService.Wrapper).toHaveBeenCalledWith(
+        "listDirectory",
+        pathToTestDirectory
+      );
+      expect(result).toEqual(testDirectory);
+    });
+  });
+
+  describe("readFile", () => {
+    it("should be defined", () => {
+      expect(filesResolver.readFile).toBeDefined();
+    });
+
+    it("should return the result from the FilesService", async () => {
+      mockFilesService.Wrapper.mockResolvedValue(testFileContent);
+      const result = await filesResolver.readFile(pathToTestFileContent);
+      expect(mockFilesService.Wrapper).toHaveBeenCalledWith(
+        "readFile",
+        pathToTestFileContent
+      );
+      expect(result).toEqual(testFileContent);
     });
   });
 });

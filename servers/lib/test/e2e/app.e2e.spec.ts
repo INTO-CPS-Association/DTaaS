@@ -26,9 +26,9 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   afterAll(async () => {
-    await app.close();
     execSync("test/stoptraefik.bash");
-  });
+    await app.close();
+  }, 10000);
 
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
     const path = "user1";
