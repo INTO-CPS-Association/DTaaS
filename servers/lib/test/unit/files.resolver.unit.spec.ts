@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "../../src/files/files.service";
+import { FilesService } from "../../src/files/interfaces/files.service";
 import { FilesResolver } from "../../src/files/files.resolver";
 import { pathToTestDirectory, testDirectory } from "../testUtil";
 
