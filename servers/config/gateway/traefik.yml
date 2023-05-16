@@ -18,4 +18,3 @@ providers:
 # Log level INFO|DEBUG|ERROR
 log:
   level: DEBUG
-

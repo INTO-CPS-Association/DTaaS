@@ -25,20 +25,26 @@ jobs:
           yarn install
           yarn syntax
 
+      - name: Build the lib microservice
+        run: |
+          cd servers/lib	
+          yarn install	
+          yarn build
+
       - name: Run lib microservice tests
         run: |
           cd servers/lib
           yarn install
-          yarn test
+          yarn test -a
         env:
-          PORT: 3000
-          LOCAL_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
+          PORT: 4001
+          LOCAL_PATH: ${{ github.workspace }}/files
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
           TOKEN: token
           MODE: gitlab
           LOG_LEVEL: debug
-          TEST_PATH: ${{ github.workspace }}/servers/lib/test/data/test_assets
+          APOLLO_PATH: /lib
 
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v3

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../src/app.module";
+import { AppModule } from "../../src/app.module";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
@@ -12,12 +12,12 @@ describe("End to End test for the application", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+    await app.listen(process.env.PORT);
+  }, 10000);
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
-  });
+  }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
     const path = "user1";
@@ -32,7 +32,7 @@ describe("End to End test for the application", () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post("/graphql")
+      .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   });
