@@ -1,19 +1,18 @@
 import { Resolver, Query, Args } from "@nestjs/graphql";
-import { FilesService } from "./files.service";
+import { FilesService } from "./services/files.service";
+import { PathDto } from "./dtos/path.dto";
 
-// The FilesResolver class uses the FilesService class to fetch the file names, which encapsulates the business logic for handling files.
 @Resolver(() => String)
 export class FilesResolver {
-  // The constructor takes an instance of the FilesService as parameter, which is the service that handles all of the business logic
   constructor(private readonly filesService: FilesService) {}
 
   @Query(() => [String])
-  async listDirectory(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.Wrapper("listDirectory", path);
+  async listDirectory(@Args() pathDto: PathDto): Promise<string[]> {
+    return this.filesService.listDirectory(pathDto.path);
   }
 
   @Query(() => [String])
-  async readFile(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.Wrapper("readFile", path);
+  async readFile(@Args() pathDto: PathDto): Promise<string[]> {
+    return this.filesService.readFile(pathDto.path);
   }
 }
