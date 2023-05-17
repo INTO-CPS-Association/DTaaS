@@ -3,7 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { FilesModule } from "../../src/files/files.module";
 import { GraphQLModule } from "@nestjs/graphql";
-import { FilesService } from "../../src/files/interfaces/files.service";
+import { FilesService } from "../../src/files/interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 import { getApolloDriverConfig } from "../../util";

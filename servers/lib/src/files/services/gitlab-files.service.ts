@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
-import { FilesService } from "../interfaces/files.service";
+import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { LIST_DIRECTORY, READ_FILE } from "../queries";
 
 @Injectable()
-export class GitlabFilesService implements FilesService {
+export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async parseArguments(

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "../../src/files/interfaces/files.service";
+import { FilesService } from "../../src/files/interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 import {

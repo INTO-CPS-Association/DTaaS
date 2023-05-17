@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import * as fs from "fs";
 import { join } from "path";
-import { FilesService } from "../interfaces/files.service";
+import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
-export class LocalFilesService implements FilesService {
+export class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<string[]> {
@@ -22,7 +22,7 @@ export class LocalFilesService implements FilesService {
       const content = fs.readFileSync(fullpath, "utf8");
       return [content];
     } catch (error) {
-      return ["Invalid path"];
+      return ["Invalid query"];
     }
   }
 }
