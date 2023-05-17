@@ -1,18 +1,22 @@
 import { Resolver, Query, Args } from "@nestjs/graphql";
-import { FilesService } from "./interfaces/files.service";
-import path from "path";
+import { IFilesService } from "../files/interfaces/files.service.interface";
+import { FilesServiceFactory } from "../files/services/files-service.factory";
 
 @Resolver(() => String)
 export class FilesResolver {
-  constructor(private readonly filesService: FilesService) {}
+  private readonly filesService: IFilesService;
+
+  constructor(filesServiceFactory: FilesServiceFactory) {
+    this.filesService = filesServiceFactory.create();
+  }
 
   @Query(() => [String])
-  async listDirectory(@Args() path: string): Promise<string[]> {
+  async listDirectory(@Args("path") path: string): Promise<string[]> {
     return this.filesService.listDirectory(path);
   }
 
   @Query(() => [String])
-  async readFile(@Args() path: string): Promise<string[]> {
+  async readFile(@Args("path") path: string): Promise<string[]> {
     return this.filesService.readFile(path);
   }
 }
