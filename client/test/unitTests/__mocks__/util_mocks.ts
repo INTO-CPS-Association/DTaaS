@@ -29,19 +29,47 @@ jest.mock('util/envUtil', () => ({
 export const testPath = '/path';
 export const mockAssets: Asset[] = [
   {
-    name: 'file1',
-    path: `${testPath}/file1`,
-    isDir: false,
-  },
-  {
-    name: 'file2',
-    path: `${testPath}/file2`,
-    isDir: false,
-  },
-  {
-    name: 'dir1',
-    path: `${testPath}/dir1`,
+    name: 'folderTest1.somethingsdfsdfsdf',
+    description: 'Aenean placerat. In vulputate urna',
     isDir: true,
+    path: `${testPath}/Functions,`,
+  },
+  {
+    name: 'folderTest2.something',
+    isDir: true,
+    path: `${testPath}/Funct`,
+  },
+  {
+    name: 'folderTest3',
+    description:
+      'Morbi leo mi, nonummy eget, tristique non, rhoncus non, leo. Nullam faucibus mi quis velit. Integer in sapien. Fusce tellus',
+    isDir: true,
+    path: `${testPath}/Funct`,
+  },
+  {
+    name: 'folderTest4',
+    description: 'Aenean placerat. In vulputate urna',
+    isDir: true,
+    path: `${testPath}/Funct`,
+  },
+  {
+    name: 'folderTest5',
+    description: undefined,
+    isDir: true,
+    path: `${testPath}/Funct`,
+  },
+  {
+    name: 'filetest',
+    description:
+      'Morbi leo mi, nonummy eget, tristique non, rhoncus non, leo. Nullam faucibus mi quis velit. Integer in sapien. Fusce tellus',
+    isDir: false,
+    path: `${testPath}/Funct`,
+  },
+  {
+    name: 'folderTest7',
+    description: 'Aenean placerat. In vulputate urna',
+    isDir: true,
+    path: `${testPath}/Funct`,
   },
 ];
 

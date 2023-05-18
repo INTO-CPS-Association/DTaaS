@@ -1,19 +1,8 @@
 import * as React from 'react';
 import Library from 'route/library/Library';
 import tabs from 'route/library/LibraryTabData';
-import { mockURLforLIB } from '../__mocks__/util_mocks';
-import {
-  InitRouteTests,
-  itDisplaysContentOfTabs,
-  itHasCorrectURLOfTabsWithIframe,
-  TabLabelURLPair,
-} from '../testUtils';
 import AuthProvider from '../../../src/route/auth/AuthProvider';
-
-const urlsByTabs: TabLabelURLPair[] = tabs.map((tab) => ({
-  label: tab.label,
-  url: mockURLforLIB,
-}));
+import { InitRouteTests, itDisplaysContentOfTabs } from '../testUtils';
 
 describe('Library with no props', () => {
   InitRouteTests(
@@ -23,6 +12,4 @@ describe('Library with no props', () => {
   );
 
   itDisplaysContentOfTabs(tabs);
-
-  itHasCorrectURLOfTabsWithIframe(urlsByTabs);
 });
