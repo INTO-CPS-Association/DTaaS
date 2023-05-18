@@ -8,7 +8,6 @@ describe('CartAccess', () => {
   const testAsset: Asset = {
     path: '/assets/1',
     name: 'testAsset',
-    isDir: false,
   };
 
   it('should handle addToCart correctly', () => {

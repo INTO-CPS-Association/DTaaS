@@ -12,8 +12,19 @@ type Project {
 
 "Represents a GitLab repository. Repositories are used to manage a collection of files, as well as the history of changes made to those files."
 type Repository {
-  paginatedTree(path: String!, recursive: Boolean!): TreeConnection
-  diskPath: String
+  paginatedTree(path: String!, recursive: Boolean!): TreeConnection!
+  blobs(paths: [String!]!): RepositoryBlobConnection
+}
+
+type RepositoryBlobConnection {
+  nodes: [RepositoryBlob]
+}
+
+type RepositoryBlob {
+  rawTextBlob: String
+  name: String
+  path: String!
+  fileType: String
 }
 
 "Files and directories are represented as entries in a tree."

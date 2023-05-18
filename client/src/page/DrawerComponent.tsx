@@ -7,10 +7,10 @@ import { transition } from './MenuToolbar';
 import MenuItems from './MenuItems';
 import DrawerHeaderComponent from './DrawerHeaderComponent';
 
-const drawerWidth = 240;
+const drawerwidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  width: drawerwidth,
   transition: transition({ theme, open: true }),
   overflowX: 'hidden',
 });
@@ -27,7 +27,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
-  width: drawerWidth,
+  width: drawerwidth,
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',

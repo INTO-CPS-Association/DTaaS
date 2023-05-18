@@ -45,9 +45,7 @@ function CardActionAreaContainer(asset: Asset) {
         </CardContent>
       </Grid>
       <Grid item xs={5} textAlign={'end'} sx={{ width: 100 }}>
-        <Icon sx={{ fontSize: 80 }}>
-          {asset.isDir ? 'folder' : 'description'}
-        </Icon>
+        <Icon sx={{ fontSize: 80 }}>folder</Icon>
       </Grid>
     </Grid>
   );

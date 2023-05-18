@@ -1,7 +1,7 @@
 // src: https://playwright.dev/docs/writing-tests
 
 import { test, expect } from '@playwright/test';
-import links from './Links.ts'; // Extension is required with Playwright import
+import links from './Links.ts'; // Extension is required with Playwright import - ignore VSCode warning
 
 test.describe('Tests on Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -27,12 +27,12 @@ test.describe('Tests on Authentication Flow', () => {
     ).toBeVisible();
     await expect(page).toHaveURL(/.*Library/);
 
-    await page.locator('[aria-label="Open settings"]').click();
-    await page.locator('text=Account').click();
+    await page.getByLabel('Open settings').click();
+    await page.getByText('Account').click();
     await expect(page).toHaveURL('./account');
 
-    await page.locator('[aria-label="Open settings"]').click();
-    await page.locator('text=Logout').click();
+    await page.getByLabel('Open settings').click();
+    await page.getByText('Logout').click();
     await expect(page).toHaveURL(baseURL?.replace(/\/$/, '') ?? './');
   });
 
@@ -44,7 +44,9 @@ test.describe('Tests on Authentication Flow', () => {
       await previousPromise;
       await page.goto(link.url.charAt(1).toUpperCase());
       await expect(page).toHaveURL(baseURL?.replace(/\/$/, '') ?? './');
-      await expect(page.locator('button:has-text("Sign In")')).toBeVisible();
+      await expect(
+        page.getByRole('button').filter({ hasText: 'Sign In' })
+      ).toBeVisible();
     }, Promise.resolve());
   });
 });

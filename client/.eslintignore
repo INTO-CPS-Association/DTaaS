@@ -4,3 +4,5 @@ script/
 api/
 config/
 *.graphql.ts
+test-results/
+playwright-report/

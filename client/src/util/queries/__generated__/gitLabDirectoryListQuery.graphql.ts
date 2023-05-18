@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0cf99abfba3f2b4d9aa52d37fb4d36a7>>
+ * @generated SignedSource<<bc35fb2ac64b793b84141ff9ada3e704>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,22 +9,15 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type gitLabQueriesgitLabDirectoryListQuery$variables = {
+export type gitLabDirectoryListQuery$variables = {
   groupAndProject: string;
   path: string;
 };
-export type gitLabQueriesgitLabDirectoryListQuery$data = {
+export type gitLabDirectoryListQuery$data = {
   readonly project: {
-    readonly path: string;
     readonly repository: {
       readonly paginatedTree: {
         readonly nodes: ReadonlyArray<{
-          readonly blobs: {
-            readonly nodes: ReadonlyArray<{
-              readonly name: string;
-              readonly path: string;
-            } | null> | null;
-          };
           readonly trees: {
             readonly nodes: ReadonlyArray<{
               readonly name: string;
@@ -32,14 +25,13 @@ export type gitLabQueriesgitLabDirectoryListQuery$data = {
             } | null> | null;
           } | null;
         } | null> | null;
-      } | null;
+      };
     } | null;
-    readonly webUrl: string | null;
   } | null;
 };
-export type gitLabQueriesgitLabDirectoryListQuery = {
-  response: gitLabQueriesgitLabDirectoryListQuery$data;
-  variables: gitLabQueriesgitLabDirectoryListQuery$variables;
+export type gitLabDirectoryListQuery = {
+  response: gitLabDirectoryListQuery$data;
+  variables: gitLabDirectoryListQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -53,24 +45,7 @@ v1 = {
   "kind": "LocalArgument",
   "name": "path"
 },
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "path",
-  "storageKey": null
-},
-v3 = [
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "name",
-    "storageKey": null
-  },
-  (v2/*: any*/)
-],
-v4 = [
+v2 = [
   {
     "alias": null,
     "args": [
@@ -85,14 +60,6 @@ v4 = [
     "name": "project",
     "plural": false,
     "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "webUrl",
-        "storageKey": null
-      },
-      (v2/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -131,27 +98,6 @@ v4 = [
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "BlobConnection",
-                    "kind": "LinkedField",
-                    "name": "blobs",
-                    "plural": false,
-                    "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "Blob",
-                        "kind": "LinkedField",
-                        "name": "nodes",
-                        "plural": true,
-                        "selections": (v3/*: any*/),
-                        "storageKey": null
-                      }
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
                     "concreteType": "TreeEntryConnection",
                     "kind": "LinkedField",
                     "name": "trees",
@@ -164,7 +110,22 @@ v4 = [
                         "kind": "LinkedField",
                         "name": "nodes",
                         "plural": true,
-                        "selections": (v3/*: any*/),
+                        "selections": [
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "name",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "path",
+                            "storageKey": null
+                          }
+                        ],
                         "storageKey": null
                       }
                     ],
@@ -191,8 +152,8 @@ return {
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "gitLabQueriesgitLabDirectoryListQuery",
-    "selections": (v4/*: any*/),
+    "name": "gitLabDirectoryListQuery",
+    "selections": (v2/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -203,20 +164,20 @@ return {
       (v0/*: any*/)
     ],
     "kind": "Operation",
-    "name": "gitLabQueriesgitLabDirectoryListQuery",
-    "selections": (v4/*: any*/)
+    "name": "gitLabDirectoryListQuery",
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "db8142e6c6027316c0a3099bb84f02b9",
+    "cacheID": "6a0a0481647caf243d36569f4b1f53d0",
     "id": null,
     "metadata": {},
-    "name": "gitLabQueriesgitLabDirectoryListQuery",
+    "name": "gitLabDirectoryListQuery",
     "operationKind": "query",
-    "text": "query gitLabQueriesgitLabDirectoryListQuery(\n  $path: String!\n  $groupAndProject: ID!\n) {\n  project(fullPath: $groupAndProject) {\n    webUrl\n    path\n    repository {\n      paginatedTree(path: $path, recursive: false) {\n        nodes {\n          blobs {\n            nodes {\n              name\n              path\n            }\n          }\n          trees {\n            nodes {\n              name\n              path\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query gitLabDirectoryListQuery(\n  $path: String!\n  $groupAndProject: ID!\n) {\n  project(fullPath: $groupAndProject) {\n    repository {\n      paginatedTree(path: $path, recursive: false) {\n        nodes {\n          trees {\n            nodes {\n              name\n              path\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9b6f29df561dd41c5ca729894cccaae9";
+(node as any).hash = "b6aa5ac24780fe94f572eac3ef741fe9";
 
 export default node;

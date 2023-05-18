@@ -31,45 +31,38 @@ export const mockAssets: Asset[] = [
   {
     name: 'folderTest1.somethingsdfsdfsdf',
     description: 'Aenean placerat. In vulputate urna',
-    isDir: true,
-    path: `${testPath}/Functions,`,
+    path: `${testPath}/Functions/folderTest1.somethingsdfsdfsdf`,
   },
   {
     name: 'folderTest2.something',
-    isDir: true,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/folderTest2.something`,
   },
   {
     name: 'folderTest3',
     description:
       'Morbi leo mi, nonummy eget, tristique non, rhoncus non, leo. Nullam faucibus mi quis velit. Integer in sapien. Fusce tellus',
-    isDir: true,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/folderTest3`,
   },
   {
     name: 'folderTest4',
     description: 'Aenean placerat. In vulputate urna',
-    isDir: true,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/folderTest4`,
   },
   {
     name: 'folderTest5',
     description: undefined,
-    isDir: true,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/folderTest5`,
   },
   {
     name: 'filetest',
     description:
       'Morbi leo mi, nonummy eget, tristique non, rhoncus non, leo. Nullam faucibus mi quis velit. Integer in sapien. Fusce tellus',
-    isDir: false,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/filetest`,
   },
   {
     name: 'folderTest7',
     description: 'Aenean placerat. In vulputate urna',
-    isDir: true,
-    path: `${testPath}/Funct`,
+    path: `${testPath}/Functions/folderTest7`,
   },
 ];
 

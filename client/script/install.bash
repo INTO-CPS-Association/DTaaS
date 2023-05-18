@@ -1,3 +1,3 @@
 #!/bin/bash
 yarn install --frozen-lockfile
-npx playwright install-deps
+yarn playwright install --with-deps

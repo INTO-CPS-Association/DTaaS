@@ -5,7 +5,7 @@ import useAppState from 'store/AppAccess';
 import MenuToolbar from './MenuToolbar';
 import DrawerComponent from './DrawerComponent';
 
-const drawerWidth = 240;
+const drawerwidth = 240;
 
 const hooks = () => {
   const theme = useTheme();
@@ -21,13 +21,13 @@ function MiniDrawer() {
   const handleCloseUserMenu = () => setAnchorElUser(null);
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLButtonElement>) =>
     setAnchorElUser(event.currentTarget);
-  const handleDrawerOpen = () => menuAction.open;
-  const handleDrawerClose = () => menuAction.close;
+  const handleDrawerOpen = () => menuAction.open();
+  const handleDrawerClose = () => menuAction.close();
   return (
     <Box sx={{ display: 'flex' }}>
       <MenuToolbar
         open={menuState.isOpen}
-        drawerWidth={drawerWidth}
+        drawerwidth={drawerwidth}
         handleCloseUserMenu={handleCloseUserMenu}
         handleDrawerOpen={handleDrawerOpen}
         handleOpenUserMenu={handleOpenUserMenu}

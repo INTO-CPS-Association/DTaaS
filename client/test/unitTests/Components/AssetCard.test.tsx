@@ -8,7 +8,6 @@ describe('AssetCard', () => {
   const assetMock = {
     name: 'Test Asset',
     description: 'Test Description',
-    isDir: true,
     path: 'test-path',
   };
 
