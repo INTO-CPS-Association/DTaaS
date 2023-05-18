@@ -37,6 +37,14 @@ function getAppURL(): string {
   return `${cleanURL(window.env.REACT_APP_URL)}/${getURLbasename()}`;
 }
 
+export function getGitlabURL(): string {
+  return cleanURL(window.env.REACT_APP_BACKEND_URL_GITLAB);
+}
+
+export function getGitlabGroup(): string {
+  return cleanURL(window.env.REACT_APP_BACKEND_GITLAB_GROUP);
+}
+
 export interface KeyLinkPair {
   key: string;
   link: string;

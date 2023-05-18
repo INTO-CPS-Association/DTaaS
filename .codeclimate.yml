@@ -31,3 +31,4 @@ exclude_patterns:
   - "**/public/"
   - "**/coverage"
   - "client/config/"
+  - "**/__generated__/"

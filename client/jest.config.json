@@ -13,7 +13,11 @@
     "build",
     "src/index.tsx",
     "src/AppProvider.tsx",
-    "src/store/store.ts"
+    "src/store/store.ts",
+    "src/util/queries/__generated__/",
+    "src/RelayEnvironment.ts",
+    "src/util/queries/",
+    "src/react-app-env.d.ts"
   ],
   "modulePathIgnorePatterns": ["test/e2e", "mocks", "config"],
   "coverageDirectory": "<rootDir>/coverage/",

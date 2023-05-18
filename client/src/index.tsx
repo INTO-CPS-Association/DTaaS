@@ -54,6 +54,7 @@ const router = createBrowserRouter(
       ),
     },
   ],
+
   {
     basename: `/${getURLbasename()}`,
   }

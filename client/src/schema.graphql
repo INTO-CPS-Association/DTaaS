@@ -1,0 +1,59 @@
+type Query {
+  project(fullPath: ID!): Project
+}
+
+"Represents a GitLab project. Projects are used to manage various resources such as repositories and issues."
+type Project {
+  fullPath: String
+  webUrl: String
+  path: String!
+  repository: Repository
+}
+
+"Represents a GitLab repository. Repositories are used to manage a collection of files, as well as the history of changes made to those files."
+type Repository {
+  paginatedTree(path: String!, recursive: Boolean!): TreeConnection
+  diskPath: String
+}
+
+"Files and directories are represented as entries in a tree."
+type TreeConnection {
+  nodes: [Tree]
+  # Supports pagination on this level
+}
+
+"Entries can be either a blob (file) or a tree (directory)."
+type Tree {
+  blobs: BlobConnection!
+  trees: TreeEntryConnection
+}
+
+type BlobConnection {
+  nodes: [Blob]
+}
+
+# Implements "Entry" interface
+"Represents a file in a directory tree."
+type Blob {
+  flatPath: String!
+  id: String!
+  name: String!
+  path: String!
+  webPath: String
+  webUrl: String
+}
+
+type TreeEntryConnection {
+  nodes: [TreeEntry]
+}
+
+# Implements "Entry" interface
+"Represents a directory in a repository. Directories contain blobs and other directories."
+type TreeEntry {
+  flatPath: String!
+  id: String!
+  name: String!
+  path: String!
+  webPath: String
+  webUrl: String
+}

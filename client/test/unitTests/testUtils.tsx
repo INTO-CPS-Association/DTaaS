@@ -11,6 +11,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { Store, PreloadedState } from 'redux';
 import { RootState, setupStore } from 'store/Redux/store';
+import { Asset } from 'models/Asset';
 
 type RouterOptions = {
   route?: string;
@@ -196,3 +197,34 @@ export const wrapWithInitialState = (
 };
 
 // #####################################################################################
+
+// ###########################################################
+// ********************API UTILS*****************************
+
+interface Accumulator {
+  blobs: { name: string; path: string }[];
+  trees: { name: string; path: string }[];
+}
+
+export function generateMockGraphQLtreeWithAssets(assets: Asset[]) {
+  const initial: Accumulator = { blobs: [], trees: [] };
+  const { blobs, trees } = assets.reduce((acc, asset) => {
+    const node = { name: asset.name, path: asset.path };
+    if (asset.isDir) {
+      acc.trees.push(node);
+    } else {
+      acc.blobs.push(node);
+    }
+    return acc;
+  }, initial);
+
+  return {
+    project: {
+      repository: {
+        paginatedTree: {
+          nodes: [{ trees: { nodes: trees } }, { blobs: { nodes: blobs } }],
+        },
+      },
+    },
+  };
+}

@@ -3,3 +3,4 @@ node_modules/
 script/
 api/
 config/
+*.graphql.ts
