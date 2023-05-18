@@ -1,0 +1,17 @@
+@startuml
+hide empty members
+
+!include Types/KeyLinkPair.puml
+!include Store/UserAccess.puml
+!include Util/envUtil.puml
+!include Components/LinkButtons.puml
+!include Components/LinkButtonsLib.puml
+
+class "Route::Workbench" as Workbench {
+}
+
+Workbench ..> envUtil: <<uses>>
+envUtil ..> UserAccess: <<uses>>
+Workbench o-- LinkButtons
+LinkButtons ..> LinkButtonsLib: <<imports>>
+@enduml

@@ -1,0 +1,4 @@
+class "AssetBoard::AddButton" as AddButton {
+  - AddToCart(path: string)
+  - IsInCart(): bool
+}

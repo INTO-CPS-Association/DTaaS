@@ -1,0 +1,3 @@
+class "Store::UserAccess" as UserAccess{
+  useUsername(): string
+}

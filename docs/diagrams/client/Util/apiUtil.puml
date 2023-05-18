@@ -1,0 +1,3 @@
+class "Util::ApiUtil" as apiUtil{
+  +useAssets(pathToDir: string, private: bool) : Asset[]
+}

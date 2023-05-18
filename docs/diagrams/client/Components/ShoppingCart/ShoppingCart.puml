@@ -1,0 +1,4 @@
+class "Component::ShoppingCart" as Shop {
+  - EmptyCart(): bool
+  + Checkout(): void
+}

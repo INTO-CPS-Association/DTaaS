@@ -1,0 +1,4 @@
+interface KeyLinkPair {
+  key: string
+  link: string
+}

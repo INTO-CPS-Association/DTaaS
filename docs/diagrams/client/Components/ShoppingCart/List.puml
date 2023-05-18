@@ -1,0 +1,3 @@
+class "ShoppingCart::CartList" as List {
+  - RemoveAsset(asset: Asset): bool
+}

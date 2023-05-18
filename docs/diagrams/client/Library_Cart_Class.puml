@@ -1,0 +1,12 @@
+@startuml
+hide empty members
+
+!include Types/Asset.puml
+!include Components/ShoppingCart/ShoppingCart.puml
+!include Components/ShoppingCart/List.puml
+!include Store/CartAccess.puml
+
+Shop *-- List
+Shop ..> CartAccess : <<uses>>
+List .r.> CartAccess : <<uses>>
+@enduml

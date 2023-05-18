@@ -1,0 +1,6 @@
+interface Asset {
+  path: string
+  name: string
+  isDir: bool
+  description?: string
+}

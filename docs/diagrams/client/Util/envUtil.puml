@@ -1,0 +1,3 @@
+class "Util::envUtil" as envUtil{
+  + useWorkbenchLinkValues() : KeyLinkPair[]
+}

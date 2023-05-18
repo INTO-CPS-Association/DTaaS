@@ -1,0 +1,3 @@
+class "Component::AssetCard" as Card {
+  + AssetCard(asset: Asset)
+}

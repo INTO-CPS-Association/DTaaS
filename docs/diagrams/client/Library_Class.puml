@@ -1,0 +1,19 @@
+@startuml
+hide empty members
+
+!include Types/Asset.puml
+!include Components/AssetBoard/Board.puml
+!include Components/ShoppingCart/ShoppingCart.puml
+!include Util/apiUtil.puml
+!include Store/CartAccess.puml
+
+class "Route::Library" as LinkButtonsLibrary
+
+Board ..> apiUtil : <<uses>>
+LinkButtonsLibrary o-- Board
+LinkButtonsLibrary o-- Shop
+Shop ..> CartAccess : <<uses>>
+Board ..> CartAccess : <<uses>>
+
+note right of CartAccess : Gives acces to the \ncurrently selected \nassets
+@enduml

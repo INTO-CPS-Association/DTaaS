@@ -1,0 +1,21 @@
+@startuml
+hide empty members
+
+!include Types/Asset.puml
+!include Components/AssetBoard/Board.puml
+!include Components/AssetBoard/Card.puml
+!include Components/AssetBoard/AddButton.puml
+!include Components/AssetBoard/Info.puml
+!include Store/CartAccess.puml
+!include Util/apiUtil.puml
+
+Board ..> apiUtil : <<uses>>
+Board "1" *-- "0..*" Card
+Card *-d- Info
+Card *-d- AddButton
+Info *-l- AddButton
+AddButton .l.> CartAccess : <<uses>>
+
+apiUtil -r[hidden]- Card
+note right of Card : Displays a \nsingle asset
+@enduml

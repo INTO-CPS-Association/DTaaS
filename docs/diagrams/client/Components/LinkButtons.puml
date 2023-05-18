@@ -1,0 +1,3 @@
+class "Components::LinkButtons" as LinkButtons {
+  LinkButtons(buttons: KeyLinkPair[], size?: number)
+}
