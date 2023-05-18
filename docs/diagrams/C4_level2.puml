@@ -1,0 +1,47 @@
+@startuml
+!include <C4/C4_Container>
+
+AddElementTag("microService", $shape=EightSidedShape(), $legendText="micro service (eight sided) (no text, no back color)")
+
+
+Person(DTuser, "DT User", "Uses digital twins for various purposes.")
+Person(DTcreator, "DT Creator", "Manufacturer of PT and creating a new DT.")
+'Person(DTprovider, "DT Asset Provider", "Provides reusable assets for the creation of DTs. Typically manufactors or researchers.")
+
+
+System_Boundary(DTaaS, "Digital Twin as a Service (DTaaS)") {
+    Container(webApp, "Web Application", "File server" , "Serves static files and user-specific webpage configuration")
+    Container(gateway, "Service Router", "Traefik, Consul" , "Routes static file requests to web application and API requests to different microservices")
+    Container(SPWA, "Single Page Web Application", "React, GraphQL", "Single page application that interacts with microservices via the gateway.")
+    Container(MS_ReuseAssets, "Reusable Assets", "Container : ext4, git", "Data, Models, Functions, Tools and whole DTs provided by DT Asset Providers", $tags="microService")
+    Container(DT_Lifecycle, "DT Lifecycle", "Container : NestJS, GraphQL", "Manages the lifecycle of DTs", $tags="microService")
+
+    Container(Execution_manager, "Execution Manager", "Container : Kubernetes, Nomad, Vagrant", "Runs DT. Provides and revokes execution resources to DT.", $tags="microService")
+    Container(DT_ConfigValidator, "DT Configuration Validator", "Container : DT DSL", "Validates DT configurations", $tags="microService")
+}
+
+    
+    System_Ext(CPS, "Physical Twins", "Physical system that is represented by the DT.")
+    System_Ext(Cloud, "Cloud Services", "On premise and external compute and services")
+    System_Ext(GitLab, "GitLab", "Authentication provider using OAuth2 service")
+    System_Ext(FileSys, "File System", "Local file system on host computer")
+    
+    Rel_R(webApp, gateway, "sends static files and config", "HTTP, JSON")
+    Rel_L(SPWA, gateway, "Requests single page web application files, user config, and makes  API calls", "HTTP, GraphQL")
+
+    Rel_D(gateway, DT_Lifecycle, "CRUD and Execute operations on DTs.", "GraphQL, DT DSL")
+    Rel_R(DT_Lifecycle, DT_ConfigValidator, "Starth, Change, Terminate DT execution", "DT DSL")
+    Rel_R(DT_Lifecycle, Execution_manager, "Start, Change, Terminate DT execution", "DT DSL")
+    Rel(DT_Lifecycle, MS_ReuseAssets, "Configure and use DTs", "HTTPS, GraphQL")
+    Rel(gateway, MS_ReuseAssets,"CRUD operations on reusable assets", "HTTP, GraphQL")
+    Rel(gateway, GitLab, "Uses OAuth2 and HTTP header based authentication all requests", "HTTP")
+    Rel(Execution_manager, Cloud, "Deploy and connect", "GIT, HTTP, FTP")
+    Rel_L(Execution_manager, MS_ReuseAssets, "Copy Assets", "HTTP, GraphQL")
+    Rel(MS_ReuseAssets,FileSys, "CRUD on local file system", "NodeJS")
+    Rel(MS_ReuseAssets, GitLab, "CRUD operations on gitlab", "HTTP, GraphQL")
+    Rel_L(CPS, Cloud, "data and control flow", "Comm Protocols")
+
+    Rel_D(DTuser, SPWA, "Requests instantiation of specific DT linked to one PT instance. Adapts the configuration to a the PT installed at user premises.")
+    'Rel_D(DTprovider, SPWA, "Publishes reusable DT assets (models, software and data etc.), and complete DTs")
+    Rel_D(DTcreator, SPWA, "Select DT assets, and configure the assets to create new DT that represents selected aspects of the PT.")
+@enduml

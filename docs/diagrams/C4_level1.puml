@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(DTuser, "DT User", "Uses digital twins for various purposes.")
+Person(DTcreator, "DT Creator", "Manufacturer of PT and creating a new DT.")
+Person(DTprovider, "DT Asset Provider", "Provides reusable assets for the creation of DTs. Typically manufactors or researchers.")
+Person_Ext(CPS_Manager, "Physical Systems Manager", "Multiple types of actors, not limited to: PT designer, manufacturing engineer, maintenance expert etc.")
+
+System(DTaaS, "DTaaS", "Digital Twin as a Service, where users can publish and manage items for creation of DTs.")
+System_Ext(CPS, "Cyber Physical System", "Real-world physical system or product that is replicated by the digital twin.")
+
+Rel(DTuser, DTaaS, "Publishes complete DTs and DT assets (models, software and data etc.)")
+Rel(DTcreator, DTaaS, "Requests instantiation of a DT already linked to a PT. Adapts configuration.")
+Rel(DTprovider, DTaaS, "Publishes complete DTs and DT assets (models, software and data etc.)")
+
+Rel_R(DTaaS, CPS, "Controls and monitors")
+Rel_D(CPS_Manager, CPS, "Manages")
+@enduml
