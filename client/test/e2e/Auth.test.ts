@@ -19,7 +19,6 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Fill the signin fields', async ({ page }) => {
-    await page.locator('input[name="password"]').fill('dummy password');
     await page.locator('input[name="username"]').fill('user@au.dk');
     await page.locator('button').first().click();
 
