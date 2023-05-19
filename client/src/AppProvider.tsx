@@ -19,8 +19,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       <ThemeProvider theme={mdTheme}>
         <AuthProvider>
           <CssBaseline />
+          {children}
         </AuthProvider>
-        {children}
       </ThemeProvider>
     </Provider>
   );
