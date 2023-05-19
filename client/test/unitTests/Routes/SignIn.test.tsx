@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 import SignIn from 'route/auth/Signin';
 import { useAuth } from 'react-oidc-context';
+import { wrapWithInitialState } from '../testUtils';
 
 jest.mock('react-oidc-context');
 jest.mock('react-router-dom', () => ({
@@ -31,8 +32,16 @@ describe('SignIn', () => {
     render(
       <MemoryRouter>
         <SignIn />
-      </MemoryRouter>
+      </MemoryRouter>,
+      {
+        wrapper: wrapWithInitialState({
+          auth: {
+            userName: 'testUsername',
+          },
+        }),
+      }
     );
+
     expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Sign In/i })
@@ -43,7 +52,14 @@ describe('SignIn', () => {
     render(
       <MemoryRouter>
         <SignIn />
-      </MemoryRouter>
+      </MemoryRouter>,
+      {
+        wrapper: wrapWithInitialState({
+          auth: {
+            userName: 'testUsername',
+          },
+        }),
+      }
     );
 
     const usernameField = screen.getByRole('textbox', { name: 'Username' });

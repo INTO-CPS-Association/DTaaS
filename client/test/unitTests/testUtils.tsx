@@ -7,6 +7,9 @@ import {
   render,
   screen,
 } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { PreloadedState } from 'redux';
+import { RootState, setupStore } from 'store/Redux/store';
 
 export function generateTestDivs(testIds: string[]) {
   return testIds.map((id, i) => (
@@ -99,3 +102,42 @@ export function itHasCorrectURLOfTabsWithIframe(
     });
   });
 }
+
+// #####################################################################################
+// # The following functions are used to test the Redux store.                         #
+
+interface RenderProps {
+  children: React.ReactNode;
+  initialState?: RootState;
+}
+
+/**
+ * Create a wrapper for the component to be tested.
+ * 
+ * This wrapper can be used with the render and the render-hook functions from `@testing-library`.
+ * Example usage:
+ * ```tsx
+ * const initUser = wrapWithInitialState({
+    auth: { userName: "user1" }
+  });
+
+  render(<ComponentToBeTested />, {
+    wrapper: initUser
+  });
+  ```
+ * @param initialState Optional initial state for the store
+ * @returns 
+ */
+export const wrapWithInitialState = (
+  initialState?: PreloadedState<RootState>
+) => {
+  const renderWithStore: React.FC<RenderProps> = ({
+    children,
+  }: RenderProps) => {
+    const store = setupStore(initialState);
+    return <Provider store={store}>{children}</Provider>;
+  };
+  return renderWithStore;
+};
+
+// #####################################################################################

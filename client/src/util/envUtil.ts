@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { RootState } from 'store/store';
+import { RootState } from 'store/Redux/store';
 
 /**
  * @param url or endpoint to clean
