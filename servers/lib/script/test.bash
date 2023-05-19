@@ -9,7 +9,7 @@ mode=$1
 
 if [ "$mode" == "-a" ]; then
   echo "making all tests ... and retrieving coverage report"
-  jest --coverage
+  jest --collectCoverage
 elif [ "$mode" == "-u" ]; then
   echo "making unit tests"
   jest ../test/unit
