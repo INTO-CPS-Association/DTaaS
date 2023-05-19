@@ -2,6 +2,7 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
@@ -9,10 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { setUserName } from 'store/auth.slice';
 
 import { useAuth } from 'react-oidc-context';
-
-import Footer from '../../page/Footer';
-
-const theme: Theme = createTheme();
 
 function SignIn() {
   const dispatch = useDispatch();
