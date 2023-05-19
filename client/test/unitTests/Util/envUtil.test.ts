@@ -22,6 +22,11 @@ describe('envUtil', () => {
     '/five/guy/',
   ];
   const testUsername = 'username';
+  const testAppID = 'testAppID';
+  const testAuthority = 'https://example.com';
+  const testLibURL = '';
+  const testWorkBench = '';
+
 
   window.env = {
     REACT_APP_ENVIRONMENT: 'test',
@@ -34,7 +39,16 @@ describe('envUtil', () => {
     REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[2],
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[3],
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[4],
+
+    REACT_APP_URL_DT: testDT,
+    REACT_APP_URL_WORKBENCH: testWorkBench,
+
+    REACT_APP_URL_LIB: testLibURL,
+
+    REACT_APP_CLIENT_ID: testAppID,
+    REACT_APP_AUTH_AUTHORITY: testAuthority,
   };
+
 
   beforeEach(() => {
     (useSelector as jest.Mock).mockReturnValue({ userName: testUsername });

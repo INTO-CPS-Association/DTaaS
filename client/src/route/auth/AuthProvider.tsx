@@ -10,7 +10,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const oidcConfig = useOidcConfig();
 
   if (!oidcConfig) {
-    return <div>Loading AuthProvider...</div>;
+    return <div>Loading...</div>;
   }
 
   return <OIDCAuthProvider {...oidcConfig}>{children}</OIDCAuthProvider>;
