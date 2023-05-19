@@ -22,7 +22,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   }, [auth.isAuthenticated, isInitialFetchDone]);
 
   if (auth.isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading auth...</div>;
   }
 
   if (auth.error) {

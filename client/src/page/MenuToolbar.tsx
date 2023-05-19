@@ -61,7 +61,13 @@ function MenuToolbar({
   handleDrawerOpen,
   anchorElUser,
 }: MenuToolbarProps) {
-  const { logOut } = useAuth();
+  const auth = useAuth();
+
+  const handleSignOut = async () => {
+    if (auth) {
+      await signOut(auth as CustomAuthContext);
+    }
+  };
   return (
     <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -104,12 +110,7 @@ function MenuToolbar({
             >
               Account
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleCloseUserMenu();
-                logOut();
-              }}
-            >
+            <MenuItem component={Link} to="/" onClick={handleSignOut}>
               Logout
             </MenuItem>
           </Menu>
