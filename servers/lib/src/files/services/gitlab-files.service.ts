@@ -20,16 +20,19 @@ export class GitlabFilesService implements IFilesService {
     return { domain, parsedPath };
   }
 
-  async listDirectory(path: string): Promise<string[]> {
-    const { domain, parsedPath } = await this.parseArguments(path);
-
-    const client = new ApolloClient({
+  async createClient() {
+    return new ApolloClient({
       cache: new InMemoryCache(),
       uri: this.configService.get("GITLAB_URL"),
       headers: {
         Authorization: `Bearer ${this.configService.get("TOKEN")}`,
       },
     });
+  }
+  async listDirectory(path: string): Promise<string[]> {
+    const { domain, parsedPath } = await this.parseArguments(path);
+
+    const client = await this.createClient();
 
     const { data } = await client.query({
       query: LIST_DIRECTORY,
@@ -53,13 +56,8 @@ export class GitlabFilesService implements IFilesService {
 
   async readFile(path: string): Promise<string[]> {
     const { domain, parsedPath } = await this.parseArguments(path);
-    const client = new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: this.configService.get("GITLAB_URL"),
-      headers: {
-        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
-      },
-    });
+
+    const client = await this.createClient();
 
     const { data } = await client.query({
       query: READ_FILE,

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "../../src/files/interfaces/files.service.interface";
+import { FilesService } from "./src/files/interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
@@ -9,7 +9,7 @@ import {
   pathToTestDirectory,
   pathToTestFileContent,
   testFileContent,
-} from "../testUtil";
+} from "./test/testUtil";
 import { ApolloClient, gql } from "@apollo/client/core";
 dotenv.config({ path: ".env" });
 

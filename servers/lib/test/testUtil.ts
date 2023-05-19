@@ -3,24 +3,18 @@ import { gql } from "@apollo/client/core";
 dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
-export const pathToDirectory = "user1";
-export const directory = [
-  "README.md",
-  "data",
-  "digital twins",
-  "functions",
-  "models",
-  "tools",
+export const pathToTestDirectory = "user2";
+export const testDirectory = [
+  "Test-README.md",
+  "Test-Data",
+  "Test-Digital Twins",
+  "Test-Functions",
+  "Test-Models",
+  "Test-Tools",
 ];
 
-export const pathToFileContent = "common/functions/function1/function1.txt";
-export const fileContent = "content123";
-
-// mocked data for unit tests
-export const pathToTestDirectory = "test_user1";
-export const testDirectory = ["testfile.txt", "testfolder"];
-export const pathToTestFileContent = "test_user1/testfile.txt";
-export const testFileContent = "testcontent123";
+export const pathToTestFileContent = "user2/Test-README.md";
+export const testFileContent = ["testcontent123"];
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -50,29 +44,44 @@ export class MockConfigService {
   }
 }
 
-export const TEST_LIST_DIRECTORY = gql`
-  query listDirectory($path: String, $domain: ID!) {
-    project(fullPath: $domain) {
-      repository {
-        tree(path: $path, recursive: false) {
-          blobs {
-            edges {
-              node {
-                name
-                type
-              }
-            }
-          }
-          trees {
-            edges {
-              node {
-                name
-                type
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+export const mockListDirectoryResponseData = {
+  project: {
+    __typename: "Project",
+    repository: {
+      __typename: "Repository",
+      tree: {
+        blobs: {
+          edges: [{ node: { name: "Test-README.md", type: "blob" } }],
+        },
+        trees: {
+          edges: [
+            { node: { name: "Test-Data", type: "tree" } },
+            { node: { name: "Test-Digital Twins", type: "tree" } },
+            { node: { name: "Test-Functions", type: "tree" } },
+            { node: { name: "Test-Models", type: "tree" } },
+            { node: { name: "Test-Tools", type: "tree" } },
+          ],
+        },
+      },
+    },
+  },
+};
+
+export const mockReadFileResponseData = {
+  project: {
+    __typename: "Project",
+    repository: {
+      __typename: "Repository",
+      blobs: {
+        nodes: [
+          {
+            __typename: "Blob",
+            name: "Test-README.md",
+            rawBlob: "testcontent123",
+            rawTextBlob: "testcontent123",
+          },
+        ],
+      },
+    },
+  },
+};

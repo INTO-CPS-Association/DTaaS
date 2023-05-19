@@ -3,6 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
+import { pathToTestDirectory, testDirectory } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
@@ -27,22 +28,12 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
     const query = `{
-      listDirectory(path: "${path}")
+      listDirectory(path: "${pathToTestDirectory}")
     }`;
 
     const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
+      data: testDirectory,
     };
 
     const response = await request("http://localhost")
@@ -54,22 +45,12 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
     const query = `{
-      listDirectory(path: "${path}")
+      listDirectory(path: "${pathToTestDirectory}")
     }`;
 
     const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
+      data: testDirectory,
     };
 
     const response = await request("http://localhost")
@@ -79,24 +60,13 @@ describe("End to End test for the application", () => {
     response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
-
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
     const query = `{
-      listDirectory(path: "${path}")
+      listDirectory(path: "${pathToTestDirectory}")
     }`;
 
     const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
+      data: testDirectory,
     };
 
     const response = await request("http://localhost")
@@ -106,76 +76,13 @@ describe("End to End test for the application", () => {
     response;
     expect(response.body).toEqual(expectedResponse);
   }, 10000);
-
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
     const query = `{
-      listDirectory(path: "${path}")
+      listDirectory(path: "${pathToTestDirectory}")
     }`;
 
     const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
-    };
-
-    const response = await request("http://localhost")
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-
-    expect(response.body).toEqual(expectedResponse);
-  }, 10000);
-
-  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
-    const query = `{
-      listDirectory(path: "${path}")
-    }`;
-
-    const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
-    };
-
-    const response = await request("http://localhost")
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-
-    expect(response.body).toEqual(expectedResponse);
-  }, 10000);
-
-  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const path = "user1";
-    const query = `{
-      listDirectory(path: "${path}")
-    }`;
-
-    const expectedResponse = {
-      data: {
-        listDirectory: [
-          "README.md",
-          "data",
-          "digital twins",
-          "functions",
-          "models",
-          "tools",
-        ],
-      },
+      data: testDirectory,
     };
 
     const response = await request("http://localhost")

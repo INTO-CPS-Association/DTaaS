@@ -1,5 +1,4 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "../../src/files/interfaces/files.service.interface";
 import { FilesResolver } from "../../src/files/files.resolver";
 import {
   testDirectory,
@@ -7,24 +6,40 @@ import {
   pathToTestFileContent,
   testFileContent,
 } from "../testUtil";
+import { IFilesService } from "../../src/files/interfaces/files.service.interface";
+import { FilesServiceFactory } from "../../src/files/services/files-service.factory";
 
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
-  let mockFilesService;
+  let filesService: IFilesService;
 
   beforeEach(async () => {
-    mockFilesService = {
-      Wrapper: jest.fn(),
+    const mockFilesService: IFilesService = {
+      listDirectory: jest
+        .fn()
+        .mockImplementation((pathToTestDirectory) => testDirectory),
+      readFile: jest
+        .fn()
+        .mockImplementation((pathToTestFileContent) => testFileContent),
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FilesResolver, FilesService],
-    })
-      .overrideProvider(FilesService)
-      .useValue(mockFilesService)
-      .compile();
+      providers: [
+        FilesResolver,
+        FilesServiceFactory,
+        {
+          provide: FilesServiceFactory,
+          useValue: {
+            create: () => mockFilesService,
+          },
+        },
+      ],
+    }).compile();
 
     filesResolver = module.get<FilesResolver>(FilesResolver);
+    filesService = module
+      .get<FilesServiceFactory>(FilesServiceFactory)
+      .create();
   });
 
   it("should be defined", () => {
@@ -36,15 +51,12 @@ describe("Unit tests for FilesResolver", () => {
       expect(filesResolver.listDirectory).toBeDefined();
     });
 
-    it("should return the result from the FilesService", async () => {
-      mockFilesService.Wrapper.mockResolvedValue(testDirectory);
-
+    it("should list files in directory", async () => {
       const result = await filesResolver.listDirectory(pathToTestDirectory);
-      expect(mockFilesService.Wrapper).toHaveBeenCalledWith(
-        "listDirectory",
+      expect(result).toEqual(testDirectory);
+      expect(filesService.listDirectory).toHaveBeenCalledWith(
         pathToTestDirectory
       );
-      expect(result).toEqual(testDirectory);
     });
   });
 
@@ -53,14 +65,10 @@ describe("Unit tests for FilesResolver", () => {
       expect(filesResolver.readFile).toBeDefined();
     });
 
-    it("should return the result from the FilesService", async () => {
-      mockFilesService.Wrapper.mockResolvedValue(testFileContent);
+    it("should read file", async () => {
       const result = await filesResolver.readFile(pathToTestFileContent);
-      expect(mockFilesService.Wrapper).toHaveBeenCalledWith(
-        "readFile",
-        pathToTestFileContent
-      );
       expect(result).toEqual(testFileContent);
+      expect(filesService.readFile).toHaveBeenCalledWith(pathToTestFileContent);
     });
   });
 });
