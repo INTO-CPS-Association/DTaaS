@@ -39,13 +39,11 @@ export class GitlabFilesService implements IFilesService {
       variables: { path: parsedPath, domain: domain },
     });
 
-    const blobs = data?.project?.repository?.tree?.blobs?.edges?.map(
-      (edge: { node: { name: string; type: string } }) => edge.node.name
-    );
+    const getNames = (edges: { node: { name: string; type: string } }[]) =>
+      edges?.map((edge) => edge.node.name) || [];
 
-    const trees = data?.project?.repository?.tree?.trees?.edges?.map(
-      (edge: { node: { name: string; type: string } }) => edge.node.name
-    );
+    const blobs = getNames(data?.project?.repository?.tree?.blobs?.edges);
+    const trees = getNames(data?.project?.repository?.tree?.trees?.edges);
 
     if (!blobs || !trees) {
       return ["Invalid query"];
