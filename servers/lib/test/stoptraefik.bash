@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ../../servers/config/gateway
+cd ../../servers/config/gateway || exit 1
 
 echo "Stopping the Traefik gateway"
 docker stop traefik-gateway
