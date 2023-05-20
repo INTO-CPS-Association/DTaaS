@@ -42,3 +42,30 @@ export const READ_FILE = gql`
     }
   }
 `;
+
+export const WORKING_QUERY = gql`
+  query {
+    listDirectory(path: "user2") {
+      repository {
+        tree {
+          blobs {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+          trees {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
