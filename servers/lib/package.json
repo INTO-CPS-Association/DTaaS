@@ -28,7 +28,8 @@
     "express": "^4.17.1",
     "graphql": "^16.6.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.1.0"
+    "rxjs": "^7.1.0",
+    "type-graphql": "^2.0.0-beta.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
