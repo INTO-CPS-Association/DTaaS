@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { ApolloClient, InMemoryCache } from "@apollo/client/core";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
 import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { LIST_DIRECTORY, READ_FILE } from "../queries";
-
+import axios from "axios";
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -29,27 +29,55 @@ export class GitlabFilesService implements IFilesService {
       },
     });
   }
+
   async listDirectory(path: string): Promise<string[]> {
     const { domain, parsedPath } = await this.parseArguments(path);
+    console.log(domain);
+    console.log(parsedPath);
+    try {
+      const response = await axios({
+        url: "https://gitlab.com/api/graphql",
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.TOKEN}`,
+        },
+        data: {
+          query: `
+            query listDirectory {
+              project(fullPath: "dtaas/user2") {
+                repository {
+                  tree(path: "", recursive: false) {
+                    blobs {
+                      edges {
+                        node {
+                          name
+                          type
+                        }
+                      }
+                    }
+                    trees {
+                      edges {
+                        node {
+                          name
+                          type
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        },
+      });
 
-    const client = await this.createClient();
-
-    const { data } = await client.query({
-      query: LIST_DIRECTORY,
-      variables: { path: parsedPath, domain: domain },
-    });
-
-    const getNames = (edges: { node: { name: string; type: string } }[]) =>
-      edges?.map((edge) => edge.node.name) || [];
-
-    const blobs = getNames(data?.project?.repository?.tree?.blobs?.edges);
-    const trees = getNames(data?.project?.repository?.tree?.trees?.edges);
-
-    if (!blobs || !trees) {
+      console.dir(response.data, { depth: null });
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data);
       return ["Invalid query"];
     }
-
-    return [...blobs, ...trees];
   }
 
   async readFile(path: string): Promise<string[]> {
