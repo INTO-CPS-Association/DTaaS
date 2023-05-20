@@ -2,7 +2,7 @@ import { Resolver, Query, Args } from "@nestjs/graphql";
 import { IFilesService } from "../files/interfaces/files.service.interface";
 import { FilesServiceFactory } from "../files/services/files-service.factory";
 
-@Resolver(() => String)
+@Resolver()
 export class FilesResolver {
   private readonly filesService: IFilesService;
 
