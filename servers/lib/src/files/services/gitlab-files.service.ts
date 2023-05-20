@@ -4,6 +4,7 @@ import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { LIST_DIRECTORY, READ_FILE } from "../queries";
 import axios from "axios";
+import { Project, Tree } from "src/types";
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -30,7 +31,7 @@ export class GitlabFilesService implements IFilesService {
     });
   }
 
-  async listDirectory(path: string): Promise<string[]> {
+  async listDirectory(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
     console.log(domain);
     console.log(parsedPath);
@@ -72,11 +73,11 @@ export class GitlabFilesService implements IFilesService {
         },
       });
 
-      console.dir(response.data, { depth: null });
-      return response.data;
+      console.dir(response.data.data.project.repository.tree, { depth: null });
+      return response.data.data.project;
     } catch (error) {
       console.log(error.response.data);
-      return ["Invalid query"];
+      throw new Error("Invalid query"); // Throw error instead of returning string
     }
   }
 
