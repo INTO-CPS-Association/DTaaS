@@ -12,7 +12,7 @@ export class FilesResolver {
 
   @Query(() => [String])
   async listDirectory(@Args("path") path: string): Promise<string[]> {
-    return this.filesService.listDirectory(path);
+    return (await this.filesService.listDirectory(path)).sort();
   }
 
   @Query(() => [String])
