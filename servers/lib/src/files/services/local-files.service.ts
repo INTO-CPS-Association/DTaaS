@@ -9,16 +9,12 @@ export class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<string[]> {
-    console.log("listDirectory-local");
-
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
     return fs.readdirSync(fullpath);
   }
 
   async readFile(path: string): Promise<string[]> {
-    console.log("readFile-local");
-
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
 

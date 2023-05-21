@@ -12,7 +12,7 @@ import {
   pathToTestDirectory,
   testDirectory,
 } from "../testUtil";
-import { create } from "domain";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 
 describe("GitlabFilesService", () => {
   let filesService: GitlabFilesService;
@@ -40,7 +40,9 @@ describe("GitlabFilesService", () => {
     };
     jest
       .spyOn(filesService, "createClient")
-      .mockResolvedValue(mockClient as any);
+      .mockResolvedValue(
+        mockClient as unknown as ApolloClient<NormalizedCacheObject>
+      );
 
     const result = await filesService.listDirectory(pathToTestDirectory);
     expect(result).toEqual(testDirectory);
@@ -54,7 +56,9 @@ describe("GitlabFilesService", () => {
     };
     jest
       .spyOn(filesService, "createClient")
-      .mockResolvedValue(mockClient as any);
+      .mockResolvedValue(
+        mockClient as unknown as ApolloClient<NormalizedCacheObject>
+      );
 
     const result = await filesService.readFile(pathToTestFileContent);
     expect(result).toEqual(testFileContent);
