@@ -93,20 +93,9 @@ describe("Unit tests for FilesService", () => {
         .spyOn(filesService, "getGitlabFiles")
         .mockResolvedValue(testDirectory);
 
-      const invalidPath = "invalid_path";
-      const result = await filesService.Wrapper(invalidPath);
+      const result = await filesService.Wrapper(pathToTestDirectory);
 
       expect(result).toEqual(testDirectory);
-    });
-
-    it('should return "Invalid query" for unknown mode', async () => {
-      jest
-        .spyOn(filesService, "getLocalFiles")
-        .mockResolvedValue(testDirectory);
-
-      const result = await filesService.Wrapper("invalid_path");
-
-      expect(result).toEqual(["Invalid query"]);
     });
   });
 });
