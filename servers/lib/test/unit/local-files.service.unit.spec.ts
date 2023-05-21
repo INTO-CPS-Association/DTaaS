@@ -31,7 +31,6 @@ describe("LocalFilesService", () => {
     jest
       .spyOn(fs, "readdirSync")
       .mockReturnValue(testDirectory as unknown as fs.Dirent[]);
-    jest.spyOn(mockConfigService, "get").mockReturnValue(pathToTestDirectory);
 
     const result = await service.listDirectory(pathToTestDirectory);
 
@@ -39,11 +38,12 @@ describe("LocalFilesService", () => {
   });
 
   it("should read file", async () => {
+    const testFileContentStr = testFileContent.join("\n"); // assuming testFileContent is an array of strings
     jest
       .spyOn(fs, "readFileSync")
-      .mockReturnValue(testFileContent as unknown as Buffer);
+      .mockReturnValue(testFileContentStr as unknown as Buffer);
 
     const result = await service.readFile(pathToTestFileContent);
-    expect(result[0]).toEqual(testFileContent);
+    expect(result).toEqual(testFileContent);
   });
 });

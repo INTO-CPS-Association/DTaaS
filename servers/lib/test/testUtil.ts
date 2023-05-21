@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
-export const pathToRealFileContent = "user2/user2-readme.md";
 export const readFileActualContent = ["test123-content"];
 
 export const pathToTestDirectory = "user2";
@@ -52,7 +51,7 @@ export const mockListDirectoryResponseData = {
       __typename: "Repository",
       tree: {
         blobs: {
-          edges: [{ node: { name: "Test-README.md", type: "blob" } }],
+          edges: [],
         },
         trees: {
           edges: [
@@ -78,8 +77,8 @@ export const mockReadFileResponseData = {
           {
             __typename: "Blob",
             name: "Test-README.md",
-            rawBlob: "testcontent123",
-            rawTextBlob: "testcontent123",
+            rawBlob: "test123-content",
+            rawTextBlob: "test123-content",
           },
         ],
       },
