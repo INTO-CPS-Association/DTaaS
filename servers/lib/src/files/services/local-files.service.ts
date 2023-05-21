@@ -17,13 +17,14 @@ export class LocalFilesService implements IFilesService {
   }
 
   async readFile(path: string): Promise<string[]> {
-    console.log("readFile-gitlab");
+    console.log("readFile-local");
 
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
 
     try {
-      const content = fs.readFileSync(fullpath, "utf8");
+      const content = fs.readFileSync(fullpath, "utf8").trim();
+
       return [content];
     } catch (error) {
       return ["Invalid query"];

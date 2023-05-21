@@ -4,11 +4,10 @@ dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
 export const pathToRealFileContent = "user2/user2-readme.md";
-export const pathToRealDirectory = "user2";
-export const readFileActualContent = "actual content of user2 - locally";
+export const readFileActualContent = ["test123-content"];
+
 export const pathToTestDirectory = "user2";
 export const testDirectory = [
-  "Test-README.md",
   "Test-Data",
   "Test-Digital Twins",
   "Test-Functions",
@@ -16,8 +15,8 @@ export const testDirectory = [
   "Test-Tools",
 ];
 
-export const pathToTestFileContent = "user2/Test-README.md";
-export const testFileContent = ["testcontent123"];
+export const pathToTestFileContent = "user2/Test-Tools/Test-README.md";
+export const testFileContent = ["test123-content"];
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
