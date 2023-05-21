@@ -4,6 +4,7 @@ import AppBar from '@mui/material/AppBar';
 import Footer from 'page/Footer';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { Container } from '@mui/material';
 
 const DTappBar = () => (
   <AppBar position="absolute">
@@ -34,7 +35,10 @@ function LayoutPublic(props: { children: React.ReactNode }) {
     >
       <DTappBar />
       <Toolbar />
-      {props.children}
+      <Container component="main" maxWidth="xs">
+        {props.children}
+      </Container>
+
       <Box />
       <Footer />
     </Box>
