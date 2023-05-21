@@ -8,6 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,7 +36,8 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test -a
+          yarn test -u
+          yarn test -i
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
@@ -45,8 +47,7 @@ jobs:
           MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
-
-      - name: Upload unit test coverage to Codecov
+      - name: Upload unit, integration, and e2e test coverage for all to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: servers/lib/coverage/clover.xml

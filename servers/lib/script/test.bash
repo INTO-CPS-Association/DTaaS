@@ -1,10 +1,13 @@
 #!/bin/bash
+
+echo "content123" > ../../files/user2/tools/README.md
+printf "README.md file created with 'content123'\n"
+
 printf "testing in progress"
 new_path="$(yarn bin):$PATH"
 export PATH="$new_path"
-test_path=$(pwd)/test/data/test_assets
+test_path=$(pwd)/test/data
 export TEST_PATH="$test_path"
-
 # Get the first argument passed to the script
 mode=$1
 
@@ -23,3 +26,6 @@ elif [ "$mode" == "-e" ]; then
 else
   printf "Invalid option. Please use -a for all tests, -u for unit tests, -i for integration tests, or -e for e2e tests."
 fi
+
+rm ../../files/user2/tools/README.md
+printf "README.md file removed\n"

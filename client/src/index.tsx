@@ -5,19 +5,22 @@ import ReactDOM from 'react-dom/client';
 import WorkBench from 'route/workbench/Workbench';
 import AppProvider from 'AppProvider';
 import { useURLbasename } from 'util/envUtil';
+import LayoutPublic from 'page/LayoutPublic';
+import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
-import PrivateRoute from '../src/components/PrivateRoute';
-import { AuthProvider } from './components/AuthContext';
-
 const router = createBrowserRouter(
   [
     {
       path: '/',
-      element: <SignIn />,
+      element: (
+        <LayoutPublic>
+          <SignIn />
+        </LayoutPublic>
+      ),
     },
     {
       path: 'library',
@@ -63,9 +66,7 @@ if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
       <AppProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </AppProvider>
     </React.StrictMode>
   );

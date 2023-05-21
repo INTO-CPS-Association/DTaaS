@@ -71,8 +71,6 @@ LOCAL_PATH ='/Users/<Username>/DTaaS/files'
 GITLAB_GROUP ='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
-LOG_LEVEL='debug'
-TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
@@ -95,10 +93,8 @@ yarn start
 The lib microservice is now running and ready to serve files, functions, and models.
 
 You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
-Futhermore, you are able to access the graphql playground when 
-```
-GRAPHQL_PLAYGROUND='true' 
-```
+
+````
 
 ### Lib request and response
 
@@ -112,7 +108,124 @@ HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
- 
+POST /lib
+
+Host: foo.com:<PORT>
+
+Content-Type:application/json
+
+User-Agent:Mozilla
+
+Accept:_/_
+
+{
+
+"query":
+query {
+  listDirectory(path: "user2") {
+    repository {
+      tree {
+        blobs {
+          edges {
+            node {
+              name
+
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}
+}
+
+HTTP Response:
+
+.....
+
+200 OK
+
+access-control-allow-origin: \*
+
+connection: keep-alive
+
+content-length: 76
+
+content-type: application/json; charset=utf-8
+
+date: Mon, 15 May 2023 10:13:37 GMT
+
+etag: ................
+
+keep-alive: timeout=5
+
+x-powered-by: Express
+
+{
+    "data": {
+        "listDirectory": {
+            "repository": {
+                "tree": {
+                    "blobs": {
+                        "edges": []
+                    },
+                    "trees": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "name": "data"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "digital twins"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "functions"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "models"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "tools"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+
+````
+
+### Lib request and response
+
+Documentation of the lib query and responses.
+
+```
+
+HTTP Request:
+
+.....
+
+send the request to: http://foo.com:<PORT>/lib
+
+
 
 POST /lib
 
@@ -124,15 +237,25 @@ User-Agent:Mozilla
 
 Accept:*/*
 
- 
 
 {
 
-"query": "{ getFiles(path: \"common\")}"
-
+"query":
+  query{
+    readFile(path:"user2/data/welcome.txt"){
+      repository{
+        blobs{
+          nodes{
+            name
+            rawBlob
+            rawTextBlob
+          }
+        }
+      }
+    }
+  }
 }
 
- 
 
 HTTP Response:
 
@@ -156,32 +279,69 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
- 
 
-{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
+            {
+              "name": "welcome.txt",
+              "rawBlob": "welcome user",
+              "rawTextBlob": "welcome user"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
 
 ```
 
 ### GraphQL API queries
 
-The only accepted query is:
+The accepted queries are:
 
 ```graphql
-query directoryList($path: String!) {
-  project(fullPath: $domain) {
-    webUrl
-    path
+query {
+  listDirectory(path: "user2") {
     repository {
-      paginatedTree(path: $path, recursive: false) {
-        nodes {
-          trees {
-            nodes {
+      tree {
+        blobs {
+          edges {
+            node {
               name
+              type
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
             }
           }
         }
       }
-      diskPath
+    }
+  }
+}
+```
+
+```graphql
+query {
+  readFile(path: "/path/to/file") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
     }
   }
 }
