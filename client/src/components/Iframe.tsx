@@ -13,7 +13,7 @@ function Iframe({ url, title }: IFrameProps) {
       title={title}
       url={url}
       width="100%"
-      styles={{ flexGrow: '1' }}
+      styles={{ flexGrow: '1', minHeight: '25rem' }}
     />
   );
 }

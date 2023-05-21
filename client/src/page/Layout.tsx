@@ -33,7 +33,7 @@ function Layout(props: { children: React.ReactNode }) {
       <MenuLayout>
         <Container
           maxWidth="lg"
-          sx={{ mt: 4, mb: 2, flexGrow: 1, display: 'flex' }}
+          sx={{ mt: 1, mb: 1, flexGrow: 1, display: 'flex' }}
           className="content"
         >
           <Grid container spacing={3} sx={{ minHeight: '100%' }}>
