@@ -60,7 +60,6 @@ describe("Unit tests for FilesService", () => {
       jest
         .spyOn(filesService, "createClient")
         .mockResolvedValue(mockClient as undefined);
-
       const result = await filesService.getGitlabFiles(pathToTestDirectory);
       expect(result).toEqual(testDirectory);
     });
