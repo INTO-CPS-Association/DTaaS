@@ -30,6 +30,7 @@ export class GitlabFilesService implements IFilesService {
     });
   }
   async listDirectory(path: string): Promise<string[]> {
+    console.log("listDirectory-gitlab");
     const { domain, parsedPath } = await this.parseArguments(path);
 
     const client = await this.createClient();
@@ -53,6 +54,8 @@ export class GitlabFilesService implements IFilesService {
   }
 
   async readFile(path: string): Promise<string[]> {
+    console.log("readFile-gitlab");
+
     const { domain, parsedPath } = await this.parseArguments(path);
 
     const client = await this.createClient();
