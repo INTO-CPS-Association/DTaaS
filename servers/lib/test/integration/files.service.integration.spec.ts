@@ -7,6 +7,7 @@ import { ConfigModule } from "@nestjs/config";
 import {
   pathToRealDirectory,
   pathToRealFileContent,
+  readFileActualContent,
   testDirectory,
   testFileContent,
 } from "../testUtil";
@@ -33,12 +34,15 @@ describe("Integration tests for FilesResolver", () => {
   });
 
   describe("listDirectory", () => {
+    process.env.MODE = "local";
+
     it("should list files in local directory", async () => {
       const files = await filesResolver.listDirectory(pathToRealDirectory);
       expect(files).toEqual(testDirectory);
     });
 
     it("should list files in GitLab repository", async () => {
+      process.env.MODE = "gitlab";
       const files = await filesResolver.listDirectory(pathToRealDirectory);
       expect(files).toEqual(testDirectory);
     });
@@ -46,13 +50,15 @@ describe("Integration tests for FilesResolver", () => {
 
   describe("readFile", () => {
     it("should read file in local directory", async () => {
+      process.env.MODE = "local";
       const content = await filesResolver.readFile(pathToRealFileContent);
-      expect(content).toEqual(testFileContent);
+      expect(content).toEqual(readFileActualContent);
     });
 
     it("should read file in GitLab repository", async () => {
+      process.env.MODE = "gitlab";
       const content = await filesResolver.readFile(pathToRealFileContent);
-      expect(content).toEqual(testFileContent);
+      expect(content).toEqual(readFileActualContent);
     });
   });
 });
