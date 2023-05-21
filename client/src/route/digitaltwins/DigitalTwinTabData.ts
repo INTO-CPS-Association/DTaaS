@@ -3,15 +3,15 @@ import { ITabs } from 'route/IData';
 const tabs: ITabs[] = [
   {
     label: 'Create',
-    body: `Create digital twins from available library components. The text and graphical configuration of digital twins happen here.`,
+    body: `Create digital twins from tools provided within user workspaces. Each digital twin will have one directory. It is suggested that user provide one bash shell script to run their digital twin. Users can create the required scripts and other files from tools provided in Workbench page.`,
   },
   {
     label: 'Execute',
-    body: 'Execute the digital twins with the DTaaS performing the automated deployment and execution. Potential realtime interactions must be possible. There should be an accordion of DT summary, Visualization, Output, Logs.',
+    body: 'Digital twins are executed from within user workspaces. The given bash script gets executed from digital twin directory. Terminal-based digital twins can be executed from VSCode and graphical digital twins can be executed from VNC GUI. The results of execution can be placed in the data directory.',
   },
   {
     label: 'Analyze',
-    body: 'Execution summary, output data in text and graphical formats.',
+    body: 'The analysis of digital twins requires running of digital twin script from user workspace. The execution results placed within data directory are processed by analysis scripts and results are placed back in the data directory. These scripts can either be executed from VSCode and graphical results or can be executed from VNC GUI.',
   },
 ];
 
