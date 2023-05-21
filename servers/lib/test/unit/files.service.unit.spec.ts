@@ -99,6 +99,10 @@ describe("Unit tests for FilesService", () => {
     });
 
     it('should return "Invalid query" for unknown mode', async () => {
+      jest
+        .spyOn(filesService, "getLocalFiles")
+        .mockResolvedValue(testDirectory);
+
       const result = await filesService.Wrapper("invalid_path");
 
       expect(result).toEqual(["Invalid query"]);
