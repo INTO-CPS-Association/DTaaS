@@ -8,8 +8,6 @@ import {
   pathToTestDirectory,
   testDirectory,
 } from "../testUtil";
-import path from "path";
-import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 dotenv.config({ path: ".env" });
 
 describe("Unit tests for FilesService", () => {

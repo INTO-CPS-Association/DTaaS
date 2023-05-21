@@ -24,7 +24,6 @@ export class FilesService {
   }
 
   async getLocalFiles(path: string): Promise<string[]> {
-    console.log("getLocalFiles");
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
     return fs.readdirSync(fullpath);
@@ -41,8 +40,6 @@ export class FilesService {
   }
   async getGitlabFiles(path: string): Promise<string[]> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
-    const token = this.configService.get("TOKEN");
-    const gitlabUrl = this.configService.get("GITLAB_URL");
 
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
