@@ -24,11 +24,21 @@ export class FilesService {
   }
 
   async getLocalFiles(path: string): Promise<string[]> {
+    console.log("getLocalFiles");
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
     return fs.readdirSync(fullpath);
   }
 
+  async createClient() {
+    return new ApolloClient({
+      cache: new InMemoryCache(),
+      uri: this.configService.get("GITLAB_URL"),
+      headers: {
+        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
+      },
+    });
+  }
   async getGitlabFiles(path: string): Promise<string[]> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const token = this.configService.get("TOKEN");
@@ -40,13 +50,7 @@ export class FilesService {
 
     path = pathParts.slice(1).join("/");
 
-    const client = new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: gitlabUrl,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const client = await this.createClient();
 
     const { data } = await client.query({
       query: DIRECTORY_LIST,

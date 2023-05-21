@@ -2,7 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { MockConfigService, files, localFiles, path } from "../testUtil";
+import {
+  MockConfigService,
+  mockQueryResponseData,
+  pathToTestDirectory,
+  testDirectory,
+} from "../testUtil";
+import path from "path";
+import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 dotenv.config({ path: ".env" });
 
 describe("Unit tests for FilesService", () => {
@@ -33,12 +40,11 @@ describe("Unit tests for FilesService", () => {
 
     it("should return the filenames in the given directory", async () => {
       jest.mock("fs", () => ({
-        readdirSync: jest.fn(() => localFiles),
+        readdirSync: jest.fn(() => testDirectory),
       }));
 
-      const result = await filesService.getLocalFiles(path);
-
-      expect(result.sort()).toEqual(localFiles.sort());
+      const result = await filesService.getLocalFiles(pathToTestDirectory);
+      expect(result.sort()).toEqual(testDirectory.sort());
     });
   });
 
@@ -47,10 +53,18 @@ describe("Unit tests for FilesService", () => {
       expect(filesService).toBeDefined();
     });
 
-    it("should return the filenames in the given directory", async () => {
-      const result = await filesService.getGitlabFiles(path);
+    it("should return a list of files from Gitlab", async () => {
+      const mockClient = {
+        query: jest.fn().mockResolvedValue({
+          data: mockQueryResponseData,
+        }),
+      };
+      jest
+        .spyOn(filesService, "createClient")
+        .mockResolvedValue(mockClient as any);
 
-      expect(result.sort()).toEqual(files.sort());
+      const result = await filesService.getGitlabFiles(pathToTestDirectory);
+      expect(result).toEqual(testDirectory);
     });
 
     it("should throw an error if response from GitLab API is invalid", async () => {
@@ -61,43 +75,35 @@ describe("Unit tests for FilesService", () => {
     });
   });
 
-  describe("Wrapper", () => {
-    it("should be defined", () => {
-      expect(filesService.Wrapper).toBeDefined();
+  describe("Wrapper method", () => {
+    it('should return "Invalid query" if no path is provided', async () => {
+      expect(await filesService.Wrapper("")).toEqual(["Invalid query"]);
     });
 
-    it("should throw an error if path is empty", async () => {
-      const path = "";
-      const expected = ["Invalid query"];
-      const result = await filesService.Wrapper(path);
-      expect(result).toEqual(expected);
+    it("should call getLocalFiles when mode is local", async () => {
+      jest
+        .spyOn(filesService, "getLocalFiles")
+        .mockResolvedValue(testDirectory);
+
+      const result = await filesService.Wrapper(pathToTestDirectory);
+
+      expect(result).toEqual(testDirectory);
     });
 
-    it("should return local files when run in local mode", async () => {
-      process.env.MODE = "local";
+    it("should call getGitlabFiles when mode is gitlab", async () => {
+      jest
+        .spyOn(filesService, "getGitlabFiles")
+        .mockResolvedValue(testDirectory);
 
-      jest.mock("fs", () => ({
-        readdirSync: jest.fn(() => localFiles),
-      }));
+      const result = await filesService.Wrapper(pathToTestDirectory);
 
-      const result = await filesService.Wrapper(path);
-
-      expect(result.sort()).toEqual(localFiles.sort());
+      expect(result).toEqual(testDirectory);
     });
 
-    it("should return gitlab files when run in gitlab mode", async () => {
-      process.env.MODE = "gitlab";
-      const result = await filesService.Wrapper(path);
+    it('should return "Invalid query" for unknown mode', async () => {
+      const result = await filesService.Wrapper("invalid_path");
 
-      expect(result.sort()).toEqual(files.sort());
-    });
-
-    it("should return an error when run in an unknown mode", async () => {
-      process.env.MODE = "unknown";
-
-      const expected = ["Invalid query"];
-      const result = await filesService.Wrapper(path);
-      expect(result).toEqual(expected);
+      expect(result).toEqual(["Invalid query"]);
     });
   });
 });
