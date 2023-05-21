@@ -57,7 +57,7 @@ function RenderFooter() {
   return (
     <>
       <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
-        <Copyright sx={{ pt: 2 }} />
+        <Copyright />
         <Acknowledgements sx={{ pt: 1 }} />
       </Container>
     </>
