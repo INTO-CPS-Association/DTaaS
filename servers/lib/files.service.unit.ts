@@ -96,7 +96,8 @@ describe("Unit tests for FilesService", () => {
         .spyOn(filesService, "getGitlabFiles")
         .mockResolvedValue(testDirectory);
 
-      const result = await filesService.Wrapper(pathToTestDirectory);
+      const invalidPath = "invalid_path";
+      const result = await filesService.Wrapper(invalidPath);
 
       expect(result).toEqual(testDirectory);
 
