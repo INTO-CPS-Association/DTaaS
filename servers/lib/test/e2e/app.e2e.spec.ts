@@ -3,7 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
-import { pathToTestDirectory, pathToTestFileContent, testDirectory } from "../testUtil";
+import { pathToTestDirectory, pathToTestFileContent } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
@@ -40,10 +40,9 @@ describe("End to End test for the application", () => {
           "Test-Digital Twins",
           "Test-Functions",
           "Test-Models",
-          "Test-Tools"
-        ]
-      }
-
+          "Test-Tools",
+        ],
+      },
     };
 
     const response = await request("http://localhost")
@@ -61,11 +60,8 @@ describe("End to End test for the application", () => {
 
     const expectedResponse = {
       data: {
-        readFile: [
-          "testcontent123"
-        ]
-      }
-
+        readFile: ["testcontent123"],
+      },
     };
 
     const response = await request("http://localhost")
