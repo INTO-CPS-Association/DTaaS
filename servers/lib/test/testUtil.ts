@@ -5,7 +5,7 @@ dotenv.config({ path: ".env" });
 // actual data for integration and e2e tests
 export const pathToRealFileContent = "user2/user2-readme.md";
 export const pathToRealDirectory = "user2";
-
+export const readFileActualContent = "actual content of user2 - locally";
 export const pathToTestDirectory = "user2";
 export const testDirectory = [
   "Test-README.md",
