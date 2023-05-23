@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { User } from 'oidc-client-ts';
 
 export function generateNonce() {
@@ -13,12 +14,12 @@ export function generateCodeVerifier() {
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('');
 
+  // Store the codeVerifier in the sessionStorage
   sessionStorage.setItem('codeVerifier', codeVerifier);
-  return codeVerifier;
-}
+  
+  console.log('codeVerifier generated: ', codeVerifier);
 
-export function getCodeVerifier() {
-  return sessionStorage.getItem('codeVerifier');
+  return codeVerifier;
 }
 
 export async function generateCodeChallenge(verifier: string) {
@@ -31,8 +32,21 @@ export async function generateCodeChallenge(verifier: string) {
     .replace('/', '_')
     .replace(/=+$/, '');
 
+  console.log('codeChallenge generated: ', base64UrlEncoded);
+
   return base64UrlEncoded;
 }
+
+export function getCodeVerifier() {
+  const codeVerifier = sessionStorage.getItem('codeVerifier');
+  
+  // Log the codeVerifier retrieved
+  console.log('codeVerifier retrieved: ', codeVerifier);
+  
+  return codeVerifier;
+}
+
+
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -41,8 +55,10 @@ export interface CustomAuthContext {
 
 export async function signOut(auth: CustomAuthContext) {
   localStorage.clear();
+  sessionStorage.clear();
   await auth.signoutRedirect();
 }
+
 
 export function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
