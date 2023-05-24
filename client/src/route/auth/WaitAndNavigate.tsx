@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as React from 'react';
+import { wait } from '../../util/auth/Authentication'
 
-export function wait(milliseconds: number): Promise<void> {
-  return new Promise<void>((resolve) => {
-    const onTimeout = () => {
-      resolve();
-    };
-    setTimeout(onTimeout, milliseconds);
-  });
-}
 
 const WaitNavigateAndReload = () => {
   const [shouldNavigate, setShouldNavigate] = useState(false);

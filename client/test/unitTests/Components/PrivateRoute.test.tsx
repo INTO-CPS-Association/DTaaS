@@ -23,70 +23,59 @@ const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
   );
 };
 
+type AuthState = {
+  isLoading: boolean;
+  error: Error | null;
+  isAuthenticated: boolean;
+};
+
+const setupTest = (authState: AuthState) => {
+  (useAuth as jest.Mock).mockReturnValue(authState);
+
+  renderWithRouter(
+    <PrivateRoute>
+      <TestComponent />
+    </PrivateRoute>,
+    { route: '/private' }
+  );
+};
+
 test('renders loading', () => {
-  (useAuth as jest.Mock).mockReturnValue({
+  setupTest({
     isLoading: true,
     error: null,
     isAuthenticated: false,
   });
 
-  renderWithRouter(
-    <PrivateRoute>
-      <TestComponent />
-    </PrivateRoute>,
-    { route: '/private' }
-  );
-
   expect(screen.getByText('Loading...')).toBeInTheDocument();
 });
 
 test('renders error', () => {
-  (useAuth as jest.Mock).mockReturnValue({
+  setupTest({
     isLoading: false,
     error: new Error('Test error'),
     isAuthenticated: false,
   });
 
-  renderWithRouter(
-    <PrivateRoute>
-      <TestComponent />
-    </PrivateRoute>,
-    { route: '/private' }
-  );
-
   expect(screen.getByText('Oops... Test error')).toBeInTheDocument();
 });
 
 test('redirects to root when not authenticated', () => {
-  (useAuth as jest.Mock).mockReturnValue({
+  setupTest({
     isLoading: false,
     error: null,
     isAuthenticated: false,
   });
 
-  renderWithRouter(
-    <PrivateRoute>
-      <TestComponent />
-    </PrivateRoute>,
-    { route: '/private' }
-  );
-
   expect(screen.getByText('Home')).toBeInTheDocument();
 });
 
 test('renders children when authenticated', () => {
-  (useAuth as jest.Mock).mockReturnValue({
+  setupTest({
     isLoading: false,
     error: null,
     isAuthenticated: true,
   });
-
-  renderWithRouter(
-    <PrivateRoute>
-      <TestComponent />
-    </PrivateRoute>,
-    { route: '/private' }
-  );
 
   expect(screen.getByText('Test Component')).toBeInTheDocument();
 });

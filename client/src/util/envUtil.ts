@@ -83,3 +83,11 @@ export function getAuthority(): string {
 export function getURLforLIB(): string {
   return window.env.REACT_APP_URL_LIB;
 }
+
+export function getRedirectURI(): string {
+  return window.env.REACT_APP_REDIRECT_URI;
+}
+
+export function getGitLabScopes(): string {
+  return window.env.REACT_APP_GITLAB_SCOPES;
+}

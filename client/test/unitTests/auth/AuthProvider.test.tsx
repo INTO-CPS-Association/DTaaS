@@ -22,6 +22,11 @@ const renderAuthProvider = (children: React.ReactNode) =>
 
 describe('AuthProvider', () => {
   const DummyComponent: React.FC = () => <div>Dummy Component</div>;
+  const oidcConfig = { someConfig: 'value' };
+
+  beforeEach(() => {
+    (useOidcConfig as jest.Mock).mockReturnValue(oidcConfig);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -36,18 +41,12 @@ describe('AuthProvider', () => {
   });
 
   it('renders OIDCAuthProvider when OIDC config is available', () => {
-    const oidcConfig = { someConfig: 'value' };
-    (useOidcConfig as jest.Mock).mockReturnValue(oidcConfig);
-
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
     expect(getByText('Dummy Component')).toBeInTheDocument();
   });
 
   it('renders the children passed to AuthProvider', () => {
-    const oidcConfig = { someConfig: 'value' };
-    (useOidcConfig as jest.Mock).mockReturnValue(oidcConfig);
-
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
     expect(getByText('Dummy Component')).toBeInTheDocument();

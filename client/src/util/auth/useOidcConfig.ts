@@ -1,5 +1,5 @@
 import { useState, useEffect, } from 'react';
-import { getClientID, getAuthority, getURLforLIB } from '../envUtil';
+import { getClientID, getAuthority, getURLforLIB, getGitLabScopes, getRedirectURI } from '../envUtil';
 
 export interface OidcConfig {
   authority: string;
@@ -19,13 +19,15 @@ export const useOidcConfig = (): OidcConfig | null => {
       const CLIENT_ID = getClientID() ?? '';
       const AUTH_AUTHORITY = getAuthority() ?? '';
       const LIB_URL = getURLforLIB() ?? '';
+      const GITLAB_SCOPES = getGitLabScopes() ?? '';
+      const REDIRECT_URI = getRedirectURI() ?? '';
 
       const config: OidcConfig = {
         authority: AUTH_AUTHORITY.toString(),
         client_id: CLIENT_ID.toString(),
-        redirect_uri: 'http://localhost:4000/library/',
+        redirect_uri: REDIRECT_URI.toString(),
         response_type: 'code',
-        scope: 'openid profile read_user',
+        scope: GITLAB_SCOPES.toString(),
         post_logout_redirect_uri: LIB_URL.toString(),
         automaticSilentRenew: false,
         loadUserInfo: true,

@@ -26,6 +26,8 @@ describe('envUtil', () => {
   const testAuthority = 'https://example.com';
   const testLibURL = '';
   const testWorkBench = '';
+  const testScopes = 'testScopes';
+  const testRedirect = 'https://example.com/redirect';
 
 
   window.env = {
@@ -47,6 +49,8 @@ describe('envUtil', () => {
 
     REACT_APP_CLIENT_ID: testAppID,
     REACT_APP_AUTH_AUTHORITY: testAuthority,
+    REACT_APP_GITLAB_SCOPES: testScopes,
+    REACT_APP_REDIRECT_URI: testRedirect,
   };
 
 
