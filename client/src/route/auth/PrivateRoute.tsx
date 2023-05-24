@@ -11,6 +11,8 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
   const [isInitialFetchDone, setIsInitialFetchDone] = React.useState(false);
+  let returnJSX;
+
   React.useEffect(() => {
     if (auth.isAuthenticated && !isInitialFetchDone) {
       if (auth.user !== null && auth.user !== undefined) {
@@ -22,27 +24,23 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   }, [auth.isAuthenticated, isInitialFetchDone]);
 
   if (auth.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (auth.error) {
-    return (
+    returnJSX = <div>Loading...</div>;
+  } else if (auth.error) {
+    returnJSX = (
       <div>
         Oops... {auth.error.message}
         <WaitNavigateAndReload />
       </div>
     );
+  } else if (!auth.isAuthenticated) {
+    returnJSX = <Navigate to="/" replace />;
+  } else if (auth.isAuthenticated) {
+    returnJSX = <>{children}</>;
+  } else {
+    returnJSX = <Navigate to="/" replace />;
   }
 
-  if (!auth.isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (auth.isAuthenticated) {
-    return <>{children}</>;
-  }
-
-  return <Navigate to="/" replace />;
+  return returnJSX;
 };
 
 export default PrivateRoute;

@@ -40,7 +40,15 @@ const setupTest = (authState: AuthState) => {
   );
 };
 
-test('renders loading', () => {
+test('renders loading and redirects correctly when authenticated/not authentic', () => {
+  setupTest({
+    isLoading: false,
+    error: null,
+    isAuthenticated: false,
+  });
+
+  expect(screen.getByText('Home')).toBeInTheDocument();
+
   setupTest({
     isLoading: true,
     error: null,
@@ -48,6 +56,14 @@ test('renders loading', () => {
   });
 
   expect(screen.getByText('Loading...')).toBeInTheDocument();
+  
+  setupTest({
+    isLoading: false,
+    error: null,
+    isAuthenticated: true,
+  });
+
+  expect(screen.getByText('Test Component')).toBeInTheDocument();
 });
 
 test('renders error', () => {
@@ -58,24 +74,4 @@ test('renders error', () => {
   });
 
   expect(screen.getByText('Oops... Test error')).toBeInTheDocument();
-});
-
-test('redirects to root when not authenticated', () => {
-  setupTest({
-    isLoading: false,
-    error: null,
-    isAuthenticated: false,
-  });
-
-  expect(screen.getByText('Home')).toBeInTheDocument();
-});
-
-test('renders children when authenticated', () => {
-  setupTest({
-    isLoading: false,
-    error: null,
-    isAuthenticated: true,
-  });
-
-  expect(screen.getByText('Test Component')).toBeInTheDocument();
 });
