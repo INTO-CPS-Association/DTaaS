@@ -1,14 +1,12 @@
-/* eslint-disable no-console */
-import { User } from 'oidc-client-ts';
+import { User, UserProfile } from 'oidc-client-ts';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
   user?: User | null | undefined;
+  profile?: UserProfile | null | undefined;
 }
 
 export async function signOut(auth: CustomAuthContext) {
-  localStorage.clear();
-  sessionStorage.clear();
   await auth.signoutRedirect();
 }
 
