@@ -18,7 +18,13 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
       if (auth.user !== null && auth.user !== undefined) {
         localStorage.setItem('username', auth.user.profile.profile ?? '');
         localStorage.setItem('access_token', auth.user.access_token);
+        sessionStorage.setItem('username', auth.user.profile.profile ?? '');
+        sessionStorage.setItem('access_token', auth.user.access_token);
         setIsInitialFetchDone(true);
+      }
+      else
+      {
+        throw new Error('Username was not available');
       }
     }
   }, [auth.isAuthenticated, isInitialFetchDone]);

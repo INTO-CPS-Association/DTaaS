@@ -7,6 +7,8 @@ export interface CustomAuthContext {
 }
 
 export async function signOut(auth: CustomAuthContext) {
+  localStorage.clear();
+  sessionStorage.clear();
   await auth.signoutRedirect();
 }
 

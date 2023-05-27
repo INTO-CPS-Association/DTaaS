@@ -1,6 +1,6 @@
 window.env = {
   REACT_APP_ENVIRONMENT: 'dev',
-  REACT_APP_URL: 'https://example.com/',
+  REACT_APP_URL: 'https://example.com/dtaas/',
   REACT_APP_URL_BASENAME: '',
   REACT_APP_URL_DTLINK: '/lab',
   REACT_APP_URL_LIB: '',

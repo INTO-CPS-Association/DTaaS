@@ -5,14 +5,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import useUserData from 'store/UserAccess';
 
 function SignIn() {
   const { actions } = useUserData();
   const auth = useAuth();
-  const navigate = useNavigate();
   const [localUsername, setLocalUsername] = React.useState<string>('');
 
   const handleUsernameChange = (input: string) => {
@@ -26,7 +24,6 @@ function SignIn() {
     if (!localUsername) return;
     actions.setUser(localUsername);
     auth.signinRedirect();
-    navigate('/library');
   };
 
   return (

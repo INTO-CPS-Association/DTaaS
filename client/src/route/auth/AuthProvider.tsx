@@ -20,8 +20,13 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userManager = new UserManager(oidcConfig)
       
       const onUserLoaded = (user: User) => {
-        dispatch(setUserName(user.profile.name!));
+        if (user.profile && user.profile.name) {
+          dispatch(setUserName(user.profile.name));
+        } else {
+          throw new Error('User profile name was not available');
+        }
       };
+      
 
       const onUserUnloaded = () => {
         dispatch(clearUser());
