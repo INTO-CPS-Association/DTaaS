@@ -1,21 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
 import { GitlabFilesService } from "../../src/files/services/gitlab-files.service";
-import {
-  mockListDirectoryResponseData,
-  mockReadFileResponseData,
-  pathToTestFileContent,
-  testFileContent,
-} from "../testUtil";
-import {
-  MockConfigService,
-  pathToTestDirectory,
-  testDirectory,
-} from "../testUtil";
-import { create } from "domain";
+import { testFileContent } from "../testUtil";
+import { MockConfigService, testDirectory } from "../testUtil";
 import axios from "axios";
-
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("GitlabFilesService", () => {
   let filesService: GitlabFilesService;

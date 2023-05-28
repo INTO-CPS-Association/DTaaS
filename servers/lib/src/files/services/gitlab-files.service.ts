@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
 import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
-import { LIST_DIRECTORY, READ_FILE } from "../queries";
 import axios from "axios";
-import { Project, Tree } from "src/types";
+import { Project } from "src/types";
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -102,7 +100,6 @@ export class GitlabFilesService implements IFilesService {
         },
       });
 
-      console.dir(response.data.data.project.repository.blobs, { depth: null });
       return response.data.data.project;
     } catch (error) {
       throw new Error("Invalid query"); // Throw error instead of returning string

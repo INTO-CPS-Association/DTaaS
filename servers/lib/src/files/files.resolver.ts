@@ -1,7 +1,7 @@
 import { Resolver, Query, Args } from "@nestjs/graphql";
 import { IFilesService } from "../files/interfaces/files.service.interface";
 import { FilesServiceFactory } from "../files/services/files-service.factory";
-import { Project, Tree } from "../types";
+import { Project } from "../types";
 
 @Resolver()
 export class FilesResolver {
@@ -11,12 +11,12 @@ export class FilesResolver {
     this.filesService = filesServiceFactory.create();
   }
 
-  @Query((returns) => Project)
+  @Query(() => Project)
   async listDirectory(@Args("path") path: string): Promise<Project> {
     return this.filesService.listDirectory(path);
   }
 
-  @Query((returns) => Project)
+  @Query(() => Project)
   async readFile(@Args("path") path: string): Promise<Project> {
     return this.filesService.readFile(path);
   }

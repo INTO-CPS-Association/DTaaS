@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { gql } from "@apollo/client/core";
+
 dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
