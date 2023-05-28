@@ -72,6 +72,8 @@ export class GitlabFilesService implements IFilesService {
 
   async readFile(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
+    console.log(domain);
+    console.log(parsedPath);
 
     try {
       const response = await axios({

@@ -15,7 +15,7 @@ export class FilesServiceFactory {
   create(): IFilesService {
     const mode = this.configService.get<string>("MODE");
     if (mode === "local") {
-      return this.gitlabFilesService;
+      return this.localFilesService;
     } else if (mode === "gitlab") {
       return this.gitlabFilesService;
     } else {
