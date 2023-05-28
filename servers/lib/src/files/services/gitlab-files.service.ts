@@ -15,26 +15,17 @@ export class GitlabFilesService implements IFilesService {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
-    const domain: string = gitlabGroup + "/" + project;
+
+    // Only prepend the gitlabGroup if it's not already part of the path
+    const domain: string =
+      project === gitlabGroup ? project : gitlabGroup + "/" + project;
 
     const parsedPath = pathParts.slice(1).join("/");
     return { domain, parsedPath };
   }
 
-  async createClient() {
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: this.configService.get("GITLAB_URL"),
-      headers: {
-        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
-      },
-    });
-  }
-
   async listDirectory(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
-    console.log(domain);
-    console.log(parsedPath);
 
     try {
       const response = await axios({
@@ -75,18 +66,14 @@ export class GitlabFilesService implements IFilesService {
         },
       });
 
-      console.dir(response.data.data.project.repository.tree, { depth: null });
       return response.data.data.project;
     } catch (error) {
-      console.log(error.response.data);
       throw new Error("Invalid query"); // Throw error instead of returning string
     }
   }
 
   async readFile(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
-    console.log(domain);
-    console.log(parsedPath);
 
     try {
       const response = await axios({
@@ -118,7 +105,6 @@ export class GitlabFilesService implements IFilesService {
       console.dir(response.data.data.project.repository.blobs, { depth: null });
       return response.data.data.project;
     } catch (error) {
-      console.log(error.response.data);
       throw new Error("Invalid query"); // Throw error instead of returning string
     }
   }
