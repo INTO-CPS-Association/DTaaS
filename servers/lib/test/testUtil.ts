@@ -4,6 +4,7 @@ dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
 export const pathToTestDirectory = "user2";
+
 export const testDirectory = {
   repository: {
     tree: {
@@ -21,8 +22,27 @@ export const testDirectory = {
   },
 };
 
-export const pathToTestFileContent = "user2/Test-README.md";
-export const testFileContent = { repository: { blobs: { nodes: [] } } };
+export const pathToTestFileContent = "user2/Test-Tools/Test-README.md";
+export const testFileArray = [
+  "Test-Data",
+  "Test-Digital Twins",
+  "Test-Functions",
+  "Test-Models",
+  "Test-Tools",
+];
+export const testFileContent = {
+  repository: {
+    blobs: {
+      nodes: [
+        {
+          name: "Test-README.md",
+          rawBlob: "test123-content",
+          rawTextBlob: "test123-content",
+        },
+      ],
+    },
+  },
+};
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

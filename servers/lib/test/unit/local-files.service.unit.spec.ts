@@ -8,11 +8,11 @@ import {
   pathToTestDirectory,
   pathToTestFileContent,
   testDirectory,
+  testFileArray,
   testFileContent,
 } from "../testUtil";
 import e from "express";
-
-jest.mock("fs");
+import { InternalServerErrorException } from "@nestjs/common";
 
 describe("LocalFilesService", () => {
   let service: LocalFilesService;
@@ -29,18 +29,72 @@ describe("LocalFilesService", () => {
   });
 
   it("should list directory", async () => {
-    jest.spyOn(fs, "readdirSync").mockReturnValue(testDirectory as any);
-    jest.spyOn(mockConfigService, "get").mockReturnValue(pathToTestDirectory);
+    // Mock readdirSync to return array of filenames
+    const mockFilenames = [
+      "Test-Data",
+      "Test-Digital Twins",
+      "Test-Functions",
+      "Test-Models",
+      "Test-Tools",
+    ];
+    jest.spyOn(fs, "readdirSync").mockReturnValue(mockFilenames as any);
+
+    // Simplified mock for lstatSync
+    const statsMock = {
+      isDirectory: jest.fn().mockReturnValue(true),
+    };
+    jest
+      .spyOn(fs, "lstatSync")
+      .mockReturnValue(statsMock as unknown as fs.Stats);
+
+    mockConfigService.get("LOCAL_PATH");
 
     const result = await service.listDirectory(pathToTestDirectory);
-
     expect(testDirectory).toEqual(result);
   });
 
   it("should read file", async () => {
-    jest.spyOn(fs, "readFile").mockReturnValue(testFileContent as any);
+    const testPath = "test-path";
+    const testDataPath = "test-data-path";
+    const testFullPath = join(testDataPath, testPath);
+    const testName = testPath.split("/").pop();
+    const testContent = "test-content";
 
-    const result = await service.readFile(pathToTestFileContent);
-    expect(result[0]).toEqual(testFileContent);
+    const responseMock = {
+      repository: {
+        blobs: {
+          nodes: [
+            {
+              name: testName,
+              rawBlob: testContent,
+              rawTextBlob: testContent,
+            },
+          ],
+        },
+      },
+    };
+
+    mockConfigService.get = jest.fn().mockReturnValue(testDataPath);
+    jest.spyOn(fs, "readFileSync").mockReturnValue(testContent as any);
+
+    const result = await service.readFile(testPath);
+
+    expect(mockConfigService.get).toHaveBeenCalledWith("LOCAL_PATH");
+    expect(fs.readFileSync).toHaveBeenCalledWith(testFullPath, "utf8");
+    expect(result).toEqual(responseMock);
+  });
+
+  it("should throw InternalServerErrorException when read file error", async () => {
+    const testPath = "test-path";
+    const testDataPath = "test-data-path";
+
+    mockConfigService.get = jest.fn().mockReturnValue(testDataPath);
+    jest.spyOn(fs, "readFileSync").mockImplementation(() => {
+      throw new Error();
+    });
+
+    await expect(service.readFile(testPath)).rejects.toThrow(
+      InternalServerErrorException
+    );
   });
 });
