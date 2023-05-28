@@ -33,8 +33,19 @@ type Tree {
   trees: TreeConnection!
 }
 
+type RepositoryBlobConnection {
+  nodes: [RepositoryBlob]
+}
+
 type Repository {
   tree: Tree!
+  blobs: RepositoryBlobConnection
+}
+
+type RepositoryBlob {
+  name: String!
+  rawBlob: String!
+  rawTextBlob: String!
 }
 
 type Project {
@@ -43,4 +54,5 @@ type Project {
 
 type Query {
   listDirectory(path: String!): Project!
+  readFile(path: String!): Project!
 }

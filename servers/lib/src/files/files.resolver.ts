@@ -19,4 +19,9 @@ export class FilesResolver {
   async readFile(@Args("path") path: string): Promise<string[]> {
     return this.filesService.readFile(path);
   }
+
+  @Query((returns) => Project)
+  async readFile(@Args("path") path: string): Promise<Project> {
+    return this.filesService.readFile(path);
+  }
 }

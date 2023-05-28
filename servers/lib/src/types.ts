@@ -58,6 +58,23 @@ export class Repository {
 }
 
 @ObjectType()
+export class RepositoryBlob {
+  @Field()
+  name: String;
+
+  @Field()
+  rawBlob: String;
+
+  @Field()
+  rawTextBlob: String;
+}
+@ObjectType()
+export class RepositoryBlobConnection {
+  @Field(() => [RepositoryBlob])
+  nodes: RepositoryBlob[];
+}
+
+@ObjectType()
 export class Project {
   @Field((type) => Repository)
   repository: Repository;
@@ -65,6 +82,9 @@ export class Project {
 
 @ObjectType()
 export class Query {
-  @Field((type) => Project)
-  project: Project;
+  @Field()
+  listDirectory: Project;
+
+  @Field()
+  readFile: Project;
 }
