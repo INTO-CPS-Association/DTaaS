@@ -60,6 +60,7 @@ export class LocalFilesService implements IFilesService {
   async readFile(path: string): Promise<any> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
+    console.log("fullpath", fullpath);
 
     try {
       const content = readFile(fullpath, "utf8");
