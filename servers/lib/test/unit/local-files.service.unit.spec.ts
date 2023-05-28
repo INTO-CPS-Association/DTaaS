@@ -2,16 +2,12 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { LocalFilesService } from "../../src/files/services/local-files.service";
 import { ConfigService } from "@nestjs/config";
 import * as fs from "fs";
-import path, { join } from "path";
+import { join } from "path";
 import {
   MockConfigService,
   pathToTestDirectory,
-  pathToTestFileContent,
   testDirectory,
-  testFileArray,
-  testFileContent,
 } from "../testUtil";
-import e from "express";
 import { InternalServerErrorException } from "@nestjs/common";
 
 describe("LocalFilesService", () => {

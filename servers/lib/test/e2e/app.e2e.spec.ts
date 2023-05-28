@@ -3,7 +3,6 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
-import { pathToTestDirectory, pathToTestFileContent, testDirectory } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;

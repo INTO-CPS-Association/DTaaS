@@ -12,6 +12,7 @@ export class LocalFilesService implements IFilesService {
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullPath = join(dataPath, path);
+
     const files = fs.readdirSync(fullPath);
 
     const tree = {
@@ -30,18 +31,17 @@ export class LocalFilesService implements IFilesService {
     return { repository: { tree } };
   }
 
-  async readFile(path: string): Promise<any> {
+  async readFile(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
-    console.log("fullpath", fullpath);
 
     try {
       const content = fs.readFileSync(fullpath, "utf8").trim();
-      console.log("content", content);
+
       const name = path.split("/").pop(); // extract file name from the path
 
       // Construct the response to mimic the structure from GitLab API
-      const response = {
+      const response: Project = {
         repository: {
           blobs: {
             nodes: [
@@ -54,7 +54,6 @@ export class LocalFilesService implements IFilesService {
           },
         },
       };
-      console.log("response", response);
       return response;
     } catch (error) {
       throw new InternalServerErrorException("Error reading file");

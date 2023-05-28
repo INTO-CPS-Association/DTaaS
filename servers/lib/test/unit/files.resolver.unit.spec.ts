@@ -15,12 +15,8 @@ describe("Unit tests for FilesResolver", () => {
 
   beforeEach(async () => {
     const mockFilesService: IFilesService = {
-      listDirectory: jest
-        .fn()
-        .mockImplementation((pathToTestDirectory) => testDirectory),
-      readFile: jest
-        .fn()
-        .mockImplementation((pathToTestFileContent) => testFileContent),
+      listDirectory: jest.fn().mockImplementation(() => testDirectory),
+      readFile: jest.fn().mockImplementation(() => testFileContent),
     };
 
     const module: TestingModule = await Test.createTestingModule({
