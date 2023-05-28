@@ -38,7 +38,7 @@ type RepositoryBlobConnection {
 }
 
 type Repository {
-  tree: Tree!
+  tree: Tree
   blobs: RepositoryBlobConnection
 }
 

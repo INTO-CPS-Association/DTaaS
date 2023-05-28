@@ -11,13 +11,13 @@ export class Blob {
 
 @ObjectType()
 export class BlobEdge {
-  @Field((type) => Blob)
+  @Field(() => Blob)
   node: Blob;
 }
 
 @ObjectType()
 export class BlobConnection {
-  @Field((type) => [BlobEdge])
+  @Field(() => [BlobEdge])
   edges: BlobEdge[];
 }
 
@@ -32,41 +32,35 @@ export class TreeEntry {
 
 @ObjectType()
 export class TreeEdge {
-  @Field((type) => TreeEntry)
+  @Field(() => TreeEntry)
   node: TreeEntry;
 }
 
 @ObjectType()
 export class TreeConnection {
-  @Field((type) => [TreeEdge])
+  @Field(() => [TreeEdge])
   edges: TreeEdge[];
 }
 
 @ObjectType()
 export class Tree {
-  @Field((type) => BlobConnection)
+  @Field()
   blobs: BlobConnection;
 
-  @Field((type) => TreeConnection)
+  @Field()
   trees: TreeConnection;
-}
-
-@ObjectType()
-export class Repository {
-  @Field((type) => Tree)
-  tree: Tree;
 }
 
 @ObjectType()
 export class RepositoryBlob {
   @Field()
-  name: String;
+  name: string;
 
   @Field()
-  rawBlob: String;
+  rawBlob: string;
 
   @Field()
-  rawTextBlob: String;
+  rawTextBlob: string;
 }
 @ObjectType()
 export class RepositoryBlobConnection {
@@ -75,8 +69,16 @@ export class RepositoryBlobConnection {
 }
 
 @ObjectType()
+export class Repository {
+  @Field()
+  tree?: Tree;
+
+  @Field()
+  blobs?: RepositoryBlobConnection;
+}
+@ObjectType()
 export class Project {
-  @Field((type) => Repository)
+  @Field(() => Repository)
   repository: Repository;
 }
 
