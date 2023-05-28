@@ -28,20 +28,62 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-    const query = `{
-      listDirectory(path: "${pathToTestDirectory}")
+    
+    const query = `query {
+      listDirectory(path:"user2")
+      {
+        repository{
+          tree{
+            trees{
+              edges{
+                node{
+                  name
+                  
+                }
+              }
+            }
+          }
+        }
+      }
     }`;
 
     const expectedResponse = {
       data: {
-        listDirectory: [
-          "Test-README.md",
-          "Test-Data",
-          "Test-Digital Twins",
-          "Test-Functions",
-          "Test-Models",
-          "Test-Tools"
-        ]
+        listDirectory: {
+          repository: {
+            tree: {
+              trees: {
+                edges: [
+                  {
+                    node: {
+                      name: "Test-Data"
+                    }
+                  },
+                  {
+                    node: {
+                      name: "Test-Digital Twins"
+                    }
+                  },
+                  {
+                    node: {
+                      name: "Test-Functions"
+                    }
+                  },
+                  {
+                    node: {
+                      name: "Test-Models"
+                    }
+                  },
+                  {
+                    node: {
+                      name: "Test-Tools"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
       }
 
     };
@@ -55,17 +97,36 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   it("should return the content of a file given in the query through the Traefik gateway", async () => {
-    const query = `{
-      readFile(path: "${pathToTestFileContent}")
+    const query = `query {
+      readFile(path:"user2/Test-Tools/Test-README.md") {
+        repository {
+          blobs {
+            nodes {
+              name
+              rawBlob
+              rawTextBlob
+            }
+          }
+        }
+      }
     }`;
 
     const expectedResponse = {
       data: {
-        readFile: [
-          "testcontent123"
-        ]
+        readFile: {
+          repository: {
+            blobs: {
+              nodes: [
+                {
+                  name: "Test-README.md",
+                  rawBlob: "test123-content",
+                  rawTextBlob: "test123-content",
+                }
+              ]
+            }
+          }
+        }
       }
-
     };
 
     const response = await request("http://localhost")
