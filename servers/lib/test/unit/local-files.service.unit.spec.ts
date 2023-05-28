@@ -38,7 +38,7 @@ describe("LocalFilesService", () => {
   });
 
   it("should read file", async () => {
-    jest.spyOn(fs, "readFileSync").mockReturnValue(testFileContent as any);
+    jest.spyOn(fs, "readFile").mockReturnValue(testFileContent as any);
 
     const result = await service.readFile(pathToTestFileContent);
     expect(result[0]).toEqual(testFileContent);

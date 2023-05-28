@@ -35,6 +35,7 @@ export class GitlabFilesService implements IFilesService {
     const { domain, parsedPath } = await this.parseArguments(path);
     console.log(domain);
     console.log(parsedPath);
+
     try {
       const response = await axios({
         url: "https://gitlab.com/api/graphql",
@@ -46,20 +47,21 @@ export class GitlabFilesService implements IFilesService {
         data: {
           query: `
             query listDirectory {
-              project(fullPath: "dtaas/user2") {
+              project(fullPath: "${domain}") {
                 repository {
-                  tree(path: "", recursive: false) {
+                  tree(path: "${parsedPath}", recursive: false) {
                     blobs {
                       edges {
                         node {
                           name
                           type
+                          
                         }
                       }
                     }
                     trees {
                       edges {
-                        node {
+                        node {  
                           name
                           type
                         }
@@ -81,22 +83,43 @@ export class GitlabFilesService implements IFilesService {
     }
   }
 
-  async readFile(path: string): Promise<string[]> {
+  async readFile(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
+    console.log(domain);
+    console.log(parsedPath);
 
-    const client = await this.createClient();
+    try {
+      const response = await axios({
+        url: "https://gitlab.com/api/graphql",
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.TOKEN}`,
+        },
+        data: {
+          query: `
+            query readFile {
+              project(fullPath: "${domain}") {
+                repository {
+                  blobs(paths: "${parsedPath}") {
+                    nodes {
+                      name
+                      rawBlob
+                      rawTextBlob
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        },
+      });
 
-    const { data } = await client.query({
-      query: READ_FILE,
-      variables: { domain: domain, path: [parsedPath] },
-    });
-
-    const nodes = data?.project?.repository?.blobs?.nodes;
-
-    if (!nodes) {
-      return ["Invalid query"];
+      console.dir(response.data.data.project.repository.blobs, { depth: null });
+      return response.data.data.project;
+    } catch (error) {
+      console.log(error.response.data);
+      throw new Error("Invalid query"); // Throw error instead of returning string
     }
-
-    return [nodes[0].rawTextBlob];
   }
 }
