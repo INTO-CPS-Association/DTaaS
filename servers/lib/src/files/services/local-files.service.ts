@@ -12,8 +12,9 @@ export class LocalFilesService implements IFilesService {
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullPath = join(dataPath, path);
+    console.log("fullPath", fullPath);
     const files = fs.readdirSync(fullPath);
-
+    console.log("files", files);
     const tree = {
       trees: {
         edges: files
