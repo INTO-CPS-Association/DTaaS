@@ -71,8 +71,6 @@ LOCAL_PATH ='/Users/<Username>/DTaaS/files'
 GITLAB_GROUP ='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
-LOG_LEVEL='debug'
-TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
@@ -95,9 +93,10 @@ yarn start
 The lib microservice is now running and ready to serve files, functions, and models.
 
 You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
-Futhermore, you are able to access the graphql playground when 
+Futhermore, you are able to access the graphql playground when
+
 ```
-GRAPHQL_PLAYGROUND='true' 
+GRAPHQL_PLAYGROUND='true'
 ```
 
 ### Lib request and response
@@ -112,7 +111,7 @@ HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
- 
+
 
 POST /lib
 
@@ -124,7 +123,7 @@ User-Agent:Mozilla
 
 Accept:*/*
 
- 
+
 
 {
 
@@ -132,7 +131,7 @@ Accept:*/*
 
 }
 
- 
+
 
 HTTP Response:
 
@@ -156,7 +155,7 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
- 
+
 
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
 
