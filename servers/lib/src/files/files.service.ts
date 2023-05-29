@@ -24,7 +24,6 @@ export class FilesService {
   }
 
   async getLocalFiles(path: string): Promise<string[]> {
-    console.log("getLocalFiles");
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
     return fs.readdirSync(fullpath);
