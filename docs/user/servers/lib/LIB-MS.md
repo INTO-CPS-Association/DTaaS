@@ -93,16 +93,6 @@ yarn start
 The lib microservice is now running and ready to serve files, functions, and models.
 
 You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
-Futhermore, you are able to access the graphql playground when
-
-```
-GRAPHQL_PLAYGROUND='true'
-
-Futhermore, you are able to access the graphql playground when
-```
-
-GRAPHQL_PLAYGROUND='true'
-
 ```
 
 ### Lib request and response
@@ -116,62 +106,6 @@ HTTP Request:
 .....
 
 send the request to: http://foo.com:<PORT>/lib
-
-POST /lib
-
-Host: foo.com:<PORT>
-
-Content-Type:application/json
-
-User-Agent:Mozilla
-
-Accept:_/_
-
-{
-
-"query": "{ getFiles(path: \"common\")}"
-
-}
-
-HTTP Response:
-
-.....
-
-200 OK
-
-access-control-allow-origin: \*
-
-connection: keep-alive
-
-content-length: 76
-
-content-type: application/json; charset=utf-8
-
-date: Mon, 15 May 2023 10:13:37 GMT
-
-etag: ................
-
-keep-alive: timeout=5
-
-x-powered-by: Express
-
-{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
-
-````
-
-### Lib request and response
-
-Documentation of the lib query and responses.
-
-```
-
-HTTP Request:
-
-.....
-
-send the request to: http://foo.com:<PORT>/lib
-
-
 
 POST /lib
 
@@ -184,13 +118,11 @@ User-Agent:Mozilla
 Accept:*/*
 
 
-
 {
 
 "query": "{ getFiles(path: \"common\")}"
 
 }
-
 
 
 HTTP Response:
@@ -214,7 +146,6 @@ etag: ................
 keep-alive: timeout=5
 
 x-powered-by: Express
-
 
 
 {'data':{'getFiles':['data','digital twins','functions','models','tools']}}
@@ -244,6 +175,6 @@ query directoryList($path: String!) {
     }
   }
 }
-````
+```
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.

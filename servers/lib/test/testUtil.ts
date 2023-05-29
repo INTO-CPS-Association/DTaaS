@@ -1,7 +1,5 @@
 import * as dotenv from "dotenv";
-
 dotenv.config({ path: ".env" });
-
 export const pathToTestDirectory = "user2";
 export const testDirectory = [
   "Test-Data",
@@ -10,6 +8,7 @@ export const testDirectory = [
   "Test-Models",
   "Test-Tools",
 ];
+
 
 export class MockConfigService {
   get(key: string): string {
@@ -67,3 +66,4 @@ export const mockQueryResponseData = {
     },
   },
 };
+

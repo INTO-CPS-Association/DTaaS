@@ -8,6 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 import { getApolloDriverConfig } from "../../util";
 import { pathToTestDirectory, testDirectory } from "../testUtil";
+
 dotenv.config({ path: ".env" });
 
 describe("Integration Tests", () => {
@@ -43,6 +44,7 @@ describe("Integration Tests", () => {
 
     const variables = { pathToTestDirectory };
 
+
     const response = await request(app.getHttpServer())
       .post(process.env.APOLLO_PATH)
       .send({ query, variables });
@@ -50,5 +52,6 @@ describe("Integration Tests", () => {
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
     expect(response.body.data.getFiles).toEqual(testDirectory);
+
   });
 });

@@ -8,6 +8,7 @@ import {
   pathToTestDirectory,
   testDirectory,
 } from "../testUtil";
+
 dotenv.config({ path: ".env" });
 
 describe("Unit tests for FilesService", () => {
@@ -43,6 +44,7 @@ describe("Unit tests for FilesService", () => {
 
       const result = await filesService.getLocalFiles(pathToTestDirectory);
       expect(result.sort()).toEqual(testDirectory.sort());
+
     });
   });
 
@@ -62,6 +64,7 @@ describe("Unit tests for FilesService", () => {
         .mockResolvedValue(mockClient as undefined);
       const result = await filesService.getGitlabFiles(pathToTestDirectory);
       expect(result).toEqual(testDirectory);
+
     });
 
     it("should throw an error if response from GitLab API is invalid", async () => {
@@ -95,6 +98,7 @@ describe("Unit tests for FilesService", () => {
       const result = await filesService.Wrapper(pathToTestDirectory);
 
       expect(result).toEqual(testDirectory);
+
     });
   });
 });

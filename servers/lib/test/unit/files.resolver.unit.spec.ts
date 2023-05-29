@@ -3,6 +3,8 @@ import { FilesService } from "../../src/files/files.service";
 import { FilesResolver } from "../../src/files/files.resolver";
 import { pathToTestDirectory, testDirectory } from "../testUtil";
 
+
+
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
 
@@ -10,6 +12,7 @@ describe("Unit tests for FilesResolver", () => {
     Wrapper: jest.fn(() => testDirectory),
     getLocalFiles: jest.fn(() => testDirectory),
     getGitlabFiles: jest.fn(() => testDirectory),
+
   };
 
   beforeEach(async () => {

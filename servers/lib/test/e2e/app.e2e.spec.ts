@@ -3,6 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { pathToTestDirectory, testDirectory } from "../testUtil";
+
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
@@ -20,6 +21,7 @@ describe("End to End test for the application", () => {
   it("should return the filename corresponding to the directory given in the query", async () => {
     const query = `{
       getFiles(path: "${pathToTestDirectory}")
+
   }`;
 
     const expectedResponse = {
