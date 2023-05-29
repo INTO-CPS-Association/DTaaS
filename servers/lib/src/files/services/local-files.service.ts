@@ -13,18 +13,32 @@ export class LocalFilesService implements IFilesService {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullPath = join(dataPath, path);
 
-    const files = fs.readdirSync(fullPath);
+    const files = await fs.promises.readdir(fullPath);
 
     const tree = {
       trees: {
-        edges: files
-          .filter((file) => fs.lstatSync(join(fullPath, file)).isDirectory())
-          .map((file) => ({ node: { name: file, type: "tree" } })),
+        edges: (
+          await Promise.all(
+            files.map(async (file) => {
+              const stats = await fs.promises.lstat(join(fullPath, file));
+              if (stats.isDirectory()) {
+                return { node: { name: file, type: "tree" } };
+              }
+            })
+          )
+        ).filter((edge) => edge !== undefined),
       },
       blobs: {
-        edges: files
-          .filter((file) => !fs.lstatSync(join(fullPath, file)).isDirectory())
-          .map((file) => ({ node: { name: file, type: "blob" } })),
+        edges: (
+          await Promise.all(
+            files.map(async (file) => {
+              const stats = await fs.promises.lstat(join(fullPath, file));
+              if (!stats.isDirectory()) {
+                return { node: { name: file, type: "blob" } };
+              }
+            })
+          )
+        ).filter((edge) => edge !== undefined),
       },
     };
 
@@ -36,7 +50,9 @@ export class LocalFilesService implements IFilesService {
     const fullpath = join(dataPath, path);
 
     try {
-      const content = fs.readFileSync(fullpath, "utf8").trim();
+      const content = await (
+        await fs.promises.readFile(fullpath, "utf8")
+      ).trim();
 
       const name = path.split("/").pop(); // extract file name from the path
 

@@ -71,12 +71,12 @@ describe("LocalFilesService", () => {
     };
 
     mockConfigService.get = jest.fn().mockReturnValue(testDataPath);
-    jest.spyOn(fs, "readFileSync").mockReturnValue(testContent as any);
+    jest.spyOn(fs.promises, "readFile").mockResolvedValue(testContent);
 
     const result = await service.readFile(testPath);
 
     expect(mockConfigService.get).toHaveBeenCalledWith("LOCAL_PATH");
-    expect(fs.readFileSync).toHaveBeenCalledWith(testFullPath, "utf8");
+    expect(fs.promises.readFile).toHaveBeenCalledWith(testFullPath, "utf8");
     expect(result).toEqual(responseMock);
   });
 
@@ -85,7 +85,7 @@ describe("LocalFilesService", () => {
     const testDataPath = "test-data-path";
 
     mockConfigService.get = jest.fn().mockReturnValue(testDataPath);
-    jest.spyOn(fs, "readFileSync").mockImplementation(() => {
+    jest.spyOn(fs.promises, "readFile").mockImplementation(() => {
       throw new Error();
     });
 
