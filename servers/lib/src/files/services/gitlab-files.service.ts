@@ -23,9 +23,7 @@ export class GitlabFilesService implements IFilesService {
     return { domain, parsedPath };
   }
 
-  async listDirectory(path: string): Promise<Project> {
-    const { domain, parsedPath } = await this.parseArguments(path);
-
+  private async sendRequest(query: string): Promise<Project> {
     try {
       const response = await axios({
         url: "https://gitlab.com/api/graphql",
@@ -35,35 +33,24 @@ export class GitlabFilesService implements IFilesService {
           Authorization: `Bearer ${process.env.TOKEN}`,
         },
         data: {
-          query: getDirectoryQuery(domain, parsedPath),
+          query: query,
         },
       });
-
       return response.data.data.project;
     } catch (error) {
       throw new Error("Invalid query"); // Throw error instead of returning string
     }
   }
 
+  async listDirectory(path: string): Promise<Project> {
+    const { domain, parsedPath } = await this.parseArguments(path);
+    const query = getDirectoryQuery(domain, parsedPath);
+    return this.sendRequest(query);
+  }
+
   async readFile(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
-
-    try {
-      const response = await axios({
-        url: "https://gitlab.com/api/graphql",
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.TOKEN}`,
-        },
-        data: {
-          query: getReadFileQuery(domain, parsedPath),
-        },
-      });
-
-      return response.data.data.project;
-    } catch (error) {
-      throw new Error("Invalid query"); // Throw error instead of returning string
-    }
+    const query = getReadFileQuery(domain, parsedPath);
+    return this.sendRequest(query);
   }
 }
