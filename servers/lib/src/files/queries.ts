@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client/core";
 
-export const LIST_DIRECTORY = gql`
-  query listDirectory($path: String, $domain: ID!) {
-    project(fullPath: $domain) {
+export const getDirectoryQuery = (domain: string, parsedPath: string) => `
+  query listDirectory {
+    project(fullPath: "${domain}") {
       repository {
-        tree(path: $path, recursive: false) {
+        tree(path: "${parsedPath}", recursive: false) {
           blobs {
             edges {
               node {
@@ -15,7 +15,7 @@ export const LIST_DIRECTORY = gql`
           }
           trees {
             edges {
-              node {
+              node {  
                 name
                 type
               }
@@ -27,11 +27,11 @@ export const LIST_DIRECTORY = gql`
   }
 `;
 
-export const READ_FILE = gql`
-  query readFile($domain: ID!, $path: [String!]!) {
-    project(fullPath: $domain) {
+export const getReadFileQuery = (domain: string, parsedPath: string) => `
+  query readFile {
+    project(fullPath: "${domain}") {
       repository {
-        blobs(paths: $path) {
+        blobs(paths: "${parsedPath}") {
           nodes {
             name
             rawBlob

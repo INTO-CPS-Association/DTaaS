@@ -3,6 +3,7 @@ import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { Project } from "src/types";
+import { getDirectoryQuery, getReadFileQuery } from "../queries";
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -34,33 +35,7 @@ export class GitlabFilesService implements IFilesService {
           Authorization: `Bearer ${process.env.TOKEN}`,
         },
         data: {
-          query: `
-            query listDirectory {
-              project(fullPath: "${domain}") {
-                repository {
-                  tree(path: "${parsedPath}", recursive: false) {
-                    blobs {
-                      edges {
-                        node {
-                          name
-                          type
-                          
-                        }
-                      }
-                    }
-                    trees {
-                      edges {
-                        node {  
-                          name
-                          type
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          `,
+          query: getDirectoryQuery(domain, parsedPath),
         },
       });
 
@@ -82,21 +57,7 @@ export class GitlabFilesService implements IFilesService {
           Authorization: `Bearer ${process.env.TOKEN}`,
         },
         data: {
-          query: `
-            query readFile {
-              project(fullPath: "${domain}") {
-                repository {
-                  blobs(paths: "${parsedPath}") {
-                    nodes {
-                      name
-                      rawBlob
-                      rawTextBlob
-                    }
-                  }
-                }
-              }
-            }
-          `,
+          query: getReadFileQuery(domain, parsedPath),
         },
       });
 
