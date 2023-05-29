@@ -5,16 +5,45 @@ dotenv.config({ path: ".env" });
 export const readFileActualContent = ["test123-content"];
 
 export const pathToTestDirectory = "user2";
-export const testDirectory = [
+
+export const testDirectory = {
+  repository: {
+    tree: {
+      blobs: { edges: [] },
+      trees: {
+        edges: [
+          { node: { name: "Test-Data", type: "tree" } },
+          { node: { name: "Test-Digital Twins", type: "tree" } },
+          { node: { name: "Test-Functions", type: "tree" } },
+          { node: { name: "Test-Models", type: "tree" } },
+          { node: { name: "Test-Tools", type: "tree" } },
+        ],
+      },
+    },
+  },
+};
+
+export const pathToTestFileContent = "user2/Test-Tools/Test-README.md";
+export const testFileArray = [
   "Test-Data",
   "Test-Digital Twins",
   "Test-Functions",
   "Test-Models",
   "Test-Tools",
 ];
-
-export const pathToTestFileContent = "user2/Test-Tools/Test-README.md";
-export const testFileContent = ["test123-content"];
+export const testFileContent = {
+  repository: {
+    blobs: {
+      nodes: [
+        {
+          name: "Test-README.md",
+          rawBlob: "test123-content",
+          rawTextBlob: "test123-content",
+        },
+      ],
+    },
+  },
+};
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

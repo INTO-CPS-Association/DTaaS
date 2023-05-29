@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
-import { LIST_DIRECTORY, READ_FILE } from "../queries";
-
+import axios from "axios";
+import { Project } from "src/types";
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -14,60 +13,96 @@ export class GitlabFilesService implements IFilesService {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
-    const domain: string = gitlabGroup + "/" + project;
+
+    // Only prepend the gitlabGroup if it's not already part of the path
+    const domain: string =
+      project === gitlabGroup ? project : gitlabGroup + "/" + project;
 
     const parsedPath = pathParts.slice(1).join("/");
     return { domain, parsedPath };
   }
 
-  async createClient() {
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: this.configService.get("GITLAB_URL"),
-      headers: {
-        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
-      },
-    });
-  }
-  async listDirectory(path: string): Promise<string[]> {
+  async listDirectory(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
 
-    const client = await this.createClient();
+    try {
+      const response = await axios({
+        url: "https://gitlab.com/api/graphql",
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.TOKEN}`,
+        },
+        data: {
+          query: `
+            query listDirectory {
+              project(fullPath: "${domain}") {
+                repository {
+                  tree(path: "${parsedPath}", recursive: false) {
+                    blobs {
+                      edges {
+                        node {
+                          name
+                          type
+                          
+                        }
+                      }
+                    }
+                    trees {
+                      edges {
+                        node {  
+                          name
+                          type
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        },
+      });
 
-    const { data } = await client.query({
-      query: LIST_DIRECTORY,
-      variables: { path: parsedPath, domain: domain },
-    });
-
-    const getNames = (edges: { node: { name: string; type: string } }[]) =>
-      edges?.map((edge) => edge.node.name) || [];
-
-    const blobs = getNames(data?.project?.repository?.tree?.blobs?.edges);
-    const trees = getNames(data?.project?.repository?.tree?.trees?.edges);
-
-    if (!blobs || !trees) {
-      return ["Invalid query"];
+      return response.data.data.project;
+    } catch (error) {
+      throw new Error("Invalid query"); // Throw error instead of returning string
     }
-
-    return [...blobs, ...trees];
   }
 
-  async readFile(path: string): Promise<string[]> {
+  async readFile(path: string): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
 
-    const client = await this.createClient();
+    try {
+      const response = await axios({
+        url: "https://gitlab.com/api/graphql",
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.TOKEN}`,
+        },
+        data: {
+          query: `
+            query readFile {
+              project(fullPath: "${domain}") {
+                repository {
+                  blobs(paths: "${parsedPath}") {
+                    nodes {
+                      name
+                      rawBlob
+                      rawTextBlob
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        },
+      });
 
-    const { data } = await client.query({
-      query: READ_FILE,
-      variables: { domain: domain, path: [parsedPath] },
-    });
-
-    const nodes = data?.project?.repository?.blobs?.nodes;
-
-    if (!nodes) {
-      return ["Invalid query"];
+      return response.data.data.project;
+    } catch (error) {
+      throw new Error("Invalid query"); // Throw error instead of returning string
     }
-
-    return [nodes[0].rawTextBlob];
   }
 }

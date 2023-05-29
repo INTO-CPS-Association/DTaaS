@@ -21,13 +21,15 @@
     "@nestjs/graphql": "^10.2.0",
     "@nestjs/platform-express": "^9.0.0",
     "apollo-server-express": "^3.12.0",
+    "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.2.1",
     "express": "^4.17.1",
     "graphql": "^16.6.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.1.0"
+    "rxjs": "^7.1.0",
+    "type-graphql": "^2.0.0-beta.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
