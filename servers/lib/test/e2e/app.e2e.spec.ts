@@ -14,7 +14,6 @@ describe("End to End test for the application", () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     await app.init(); // Initialize the application
     await app.listen(process.env.PORT);
