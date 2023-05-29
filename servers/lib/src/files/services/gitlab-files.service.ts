@@ -4,6 +4,8 @@ import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { Project } from "src/types";
 import { getDirectoryQuery, getReadFileQuery } from "../queries";
+type QueryFunction = (domain: string, parsedPath: string) => string;
+
 @Injectable()
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
@@ -42,7 +44,7 @@ export class GitlabFilesService implements IFilesService {
     }
   }
 
-  async executeQuery(path: string, getQuery: Function): Promise<Project> {
+  async executeQuery(path: string, getQuery: QueryFunction): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
     const query = getQuery(domain, parsedPath);
     return this.sendRequest(query);
