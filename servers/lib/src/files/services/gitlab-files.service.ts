@@ -42,15 +42,17 @@ export class GitlabFilesService implements IFilesService {
     }
   }
 
-  async listDirectory(path: string): Promise<Project> {
+  async executeQuery(path: string, getQuery: Function): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
-    const query = getDirectoryQuery(domain, parsedPath);
+    const query = getQuery(domain, parsedPath);
     return this.sendRequest(query);
   }
 
+  async listDirectory(path: string): Promise<Project> {
+    return this.executeQuery(path, getDirectoryQuery);
+  }
+
   async readFile(path: string): Promise<Project> {
-    const { domain, parsedPath } = await this.parseArguments(path);
-    const query = getReadFileQuery(domain, parsedPath);
-    return this.sendRequest(query);
+    return this.executeQuery(path, getReadFileQuery);
   }
 }
