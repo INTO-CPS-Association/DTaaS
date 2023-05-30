@@ -1,6 +1,14 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 export const pathToTestDirectory = "user2";
+
+export const e2eDirectory = [
+  "Data",
+  "Digital Twins",
+  "Functions",
+  "Models",
+  "Tools",
+];
 export const testDirectory = [
   "Test-Data",
   "Test-Digital Twins",

@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
 import {
   MockConfigService,
+  e2eDirectory,
   mockQueryResponseData,
   pathToTestDirectory,
   testDirectory,
@@ -83,11 +84,11 @@ describe("Unit tests for FilesService", () => {
     it("should call getLocalFiles when mode is local", async () => {
       jest
         .spyOn(filesService, "getLocalFiles")
-        .mockResolvedValue(testDirectory);
+        .mockResolvedValue(e2eDirectory);
 
       const result = await filesService.Wrapper(pathToTestDirectory);
 
-      expect(result).toEqual(testDirectory);
+      expect(result).toEqual(e2eDirectory);
     });
 
     it("should call getGitlabFiles when mode is gitlab", async () => {
