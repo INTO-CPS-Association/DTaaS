@@ -3,20 +3,19 @@ dotenv.config({ path: ".env" });
 export const pathToTestDirectory = "user2";
 
 export const e2eDirectory = [
-  "Data",
-  "Digital Twins",
-  "Functions",
-  "Models",
-  "Tools",
+  "data",
+  "digital twins",
+  "functions",
+  "models",
+  "tools",
 ];
 export const testDirectory = [
-  "Test-Data",
-  "Test-Digital Twins",
-  "Test-Functions",
-  "Test-Models",
-  "Test-Tools",
+  "data",
+  "digital twins",
+  "functions",
+  "models",
+  "tools",
 ];
-
 
 export class MockConfigService {
   get(key: string): string {
@@ -52,19 +51,19 @@ export const mockQueryResponseData = {
             trees: {
               nodes: [
                 {
-                  name: "Test-Data",
+                  name: "data",
                 },
                 {
-                  name: "Test-Digital Twins",
+                  name: "digital twins",
                 },
                 {
-                  name: "Test-Functions",
+                  name: "functions",
                 },
                 {
-                  name: "Test-Models",
+                  name: "models",
                 },
                 {
-                  name: "Test-Tools",
+                  name: "tools",
                 },
               ],
             },
@@ -74,4 +73,3 @@ export const mockQueryResponseData = {
     },
   },
 };
-
