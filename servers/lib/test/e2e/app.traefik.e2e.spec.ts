@@ -61,7 +61,7 @@ describe("End to End test for the application", () => {
       },
     };
 
-    const response = await request("http://localhost:4001")
+    const response = await request("http://localhost")
       .post("/lib")
       .send({ query });
 
@@ -71,7 +71,7 @@ describe("End to End test for the application", () => {
 
   it("should return the content of a file given in the query through the Traefik gateway", async () => {
     const query = `query {
-      readFile(path:"user2/Tools/README.md") {
+      readFile(path:"user2/tools/README.md") {
         repository {
           blobs {
             nodes {
@@ -102,7 +102,7 @@ describe("End to End test for the application", () => {
       },
     };
 
-    const response = await request("http://localhost:4001")
+    const response = await request("http://localhost")
       .post("/lib")
       .send({ query });
 
