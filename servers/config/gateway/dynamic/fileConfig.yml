@@ -3,7 +3,7 @@ http:
     dtaas:
       entryPoints:
         - http
-      rule: "Host(`localhost`)"
+      rule: 'Host(`localhost`)'
       middlewares:
         - basic-auth
       service: dtaas
@@ -11,7 +11,7 @@ http:
     user1:
       entryPoints:
         - http
-      rule: "Host(`localhost`) && PathPrefix(`/user1`)"
+      rule: 'Host(`localhost`) && PathPrefix(`/user1`)'
       middlewares:
         - basic-auth
       service: user1
@@ -19,7 +19,7 @@ http:
     user2:
       entryPoints:
         - http
-      rule: "Host(`localhost`) && PathPrefix(`/user2`)"
+      rule: 'Host(`localhost`) && PathPrefix(`/user2`)'
       middlewares:
         - basic-auth
       service: user2
@@ -33,7 +33,7 @@ http:
     lib:
       entryPoints:
         - http
-      rule: "Host(`localhost`) && PathPrefix(`/lib`)"
+      rule: 'Host(`localhost`) && PathPrefix(`/lib`)'
       service: lib
 
   # Middleware: Basic authentication
