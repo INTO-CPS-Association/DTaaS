@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
-import { e2eDirectory, pathToTestDirectory, testDirectory } from "../testUtil";
+import { e2eDirectory, pathToTestDirectory } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
