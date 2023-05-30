@@ -11,11 +11,11 @@ local file system:
 ```
 files/
   user2/
-    Data/
-    Digital Twins/
-    Functions/
-    Models/
-    Tools/
+    data/
+    digital twins/
+    functions/
+    models/
+    tools/
 ```
 
 gitlab repository:
@@ -23,9 +23,9 @@ gitlab repository:
 ```
 {Your-Gitlab-Group}/
   user2/
-    Data/
-    Digital Twins/
-    Functions/
-    Models/
-    Tools/
+    data/
+    digital twins/
+    functions/
+    models/
+    tools/
 ```

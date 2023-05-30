@@ -29,7 +29,7 @@ traefik:v2.5
 
 ## Access
 
-# Run Lib MS at port 3000
+# Run Lib MS at port 4001
 
 ## Authentication
 
