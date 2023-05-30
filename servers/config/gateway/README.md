@@ -9,7 +9,6 @@ The gateway requires background services to serve the URLs. These background
 services must be running in order for the gateway to service user requests.
 The default configuration uses two services at the following URLs:
 
-
 | Route / URL     | Background Service | Service URL    |
 | :-------------- | :----------------- | :------------- |
 | localhost       | React Website      | localhost:4000 |
@@ -26,19 +25,6 @@ docker run -d \
 -v $PWD/dynamic:/etc/traefik/dynamic \
 -v /var/run/docker.sock:/var/run/docker.sock \
 traefik:v2.5
-```
-
-for mac
-
-```bash
-cd servers/config/gateway
-docker run -d \
- --name "traefik-gateway" \
- -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
- -v $PWD/dynamic:/etc/traefik/dynamic \
- -v /var/run/docker.sock:/var/run/docker.sock \
- -p 80:80 \
- traefik:v2.5
 ```
 
 ## Access
@@ -68,11 +54,9 @@ for more information.
 
 The routes / URLs need to be updated for your local setup. The current version of software only works for non-localhost setting, i.e. URL other than the localhost. Here is an example,
 
-
 | Route / URL   | Background Service | Service URL    |
 | :------------ | :----------------- | :------------- |
 | foo.com       | React Website      | localhost:4000 |
 | foo.com/lib   | Lib Microservice   | localhost:4001 |
 | foo.com/user1 | ML Workspace       | localhost:8090 |
 |               |
-

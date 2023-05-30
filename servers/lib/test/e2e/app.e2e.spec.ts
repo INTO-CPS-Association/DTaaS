@@ -7,14 +7,14 @@ import { pathToTestDirectory, testDirectory } from "../testUtil";
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
   }, 10000);
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   }, 10000);
 
