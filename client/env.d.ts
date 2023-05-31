@@ -13,6 +13,12 @@ declare global {
       REACT_APP_WORKBENCHLINK_VSCODE: string;
       REACT_APP_WORKBENCHLINK_JUPYTERLAB: string;
       REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: string;
+
+      REACT_APP_CLIENT_ID: string;
+      REACT_APP_AUTH_AUTHORITY: string;
+      REACT_APP_REDIRECT_URI: string;
+      REACT_APP_LOGOUT_REDIRECT_URI: string;
+      REACT_APP_GITLAB_SCOPES: string;
     }
   }
 

@@ -22,6 +22,11 @@ describe('envUtil', () => {
     '/five/guy/',
   ];
   const testUsername = 'username';
+  const testAppID = 'testAppID';
+  const testAuthority = 'https://example.com';
+  const testScopes = 'testScopes';
+  const testRedirect = 'https://example.com/redirect';
+  const testLogoutRedirect = 'https://example.com';
 
   window.env = {
     REACT_APP_ENVIRONMENT: 'test',
@@ -34,6 +39,12 @@ describe('envUtil', () => {
     REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[2],
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[3],
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[4],
+
+    REACT_APP_CLIENT_ID: testAppID,
+    REACT_APP_AUTH_AUTHORITY: testAuthority,
+    REACT_APP_GITLAB_SCOPES: testScopes,
+    REACT_APP_REDIRECT_URI: testRedirect,
+    REACT_APP_LOGOUT_REDIRECT_URI: testLogoutRedirect,
   };
 
   beforeEach(() => {
