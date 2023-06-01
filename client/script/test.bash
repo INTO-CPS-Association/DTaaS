@@ -6,9 +6,20 @@ PATH="$(yarn bin):$PATH"
 export PATH
 jest .
 
-# { { yarn start 2>&3 || [ $? -eq 137 ]; } 3>&2 2>/dev/null & } <-- Does not work. Trying to only suppress error 137.
-yarn start >/dev/null & # Start server in background. Suppress stderr.
-printf "\n\n################ Running Playwright ################"
-playwright test
-printf "Closing server on port 4000..."
-npx kill-port 4000
+if [ -z ${1+x} ]; then
+    mode="unit-tests"  # Default mode if no argument passed
+else 
+    mode=$1
+fi
+
+if [ "$mode" == "-a" ] || [ "$mode" == "-e" ]; then
+    yarn start >/dev/null & # Start server in background. Suppress stderr.
+    printf "\n\n################ Running Playwright ################"
+    playwright test
+    printf "Closing server on port 4000..."
+    npx kill-port 4000
+elif [ "$mode" == "unit-tests" ]; then
+    printf "Unit tests completed. Use -a for e2e tests.\n"
+else
+    printf "Invalid argument. Use -a for e2e tests.\n"
+fi
