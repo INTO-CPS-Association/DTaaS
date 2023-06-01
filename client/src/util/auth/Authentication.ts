@@ -1,6 +1,6 @@
 import { User } from 'oidc-client-ts';
 import {
-  getLogoutRedirectURI,
+  getAuthority,
 } from '../envUtil';
 
 export interface CustomAuthContext {
@@ -12,14 +12,21 @@ export interface CustomAuthContext {
 export async function signOut(auth: CustomAuthContext) {
   localStorage.clear();
   sessionStorage.clear();
+  const AUTH_AUTHORITY = getAuthority() ?? '';
+
+  // Clear cookies
+  const allCookies = document.cookie.split(';');
+
+  // Iterate over all cookies and delete them
+  for (let i = 0; i < allCookies.length; i+=1) {
+    document.cookie = `${allCookies[i]  }=;expires=${  new Date(0).toUTCString()  }; path=${AUTH_AUTHORITY.toString()}`;
+  }
 
   if(auth.user) {
     await auth.removeUser();
   }
 
-  const gitlabSignOutUrl = 'https://gitlab.com/users/sign_out';
-  const postLogoutRedirectUrl = encodeURIComponent(getLogoutRedirectURI() ?? '');
-  window.location.href = `${gitlabSignOutUrl}?redirect_to=${postLogoutRedirectUrl}`;
+  await auth.signoutRedirect();
 }
 
 export function wait(milliseconds: number): Promise<void> {
