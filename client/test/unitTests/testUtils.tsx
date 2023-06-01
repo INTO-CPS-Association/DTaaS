@@ -17,8 +17,10 @@ export function generateTestDivs(testIds: string[]) {
 }
 
 export function InitRouteTests(component: React.ReactElement) {
-  beforeEach(() => {
-    render(component);
+  beforeEach(async () => {
+    await act(async () => {
+      render(component);
+    });
   });
 
   it('renders', () => {
