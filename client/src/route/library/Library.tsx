@@ -6,24 +6,13 @@ import { TabData } from 'components/tab/subcomponents/TabRender';
 import { useURLforLIB } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
-import { useDispatch } from 'react-redux';
-import { setUserName } from 'store/auth.slice';
+import { getAndSetUsername } from '../../util/auth/Authentication';
 import tabs from './LibraryTabData';
 
 function LibraryContent() {
   const LIBurl = useURLforLIB();
   const auth = useAuth();
-  const dispatch = useDispatch();
-  const [localUsername, setLocalUsername] = React.useState<string>('');
-
-  React.useEffect(() => {
-    if (auth.user !== null && auth.user !== undefined) {
-      const profileUrl = auth.user.profile.profile ?? '';
-      const username = profileUrl.split('/').filter(Boolean).pop();
-      setLocalUsername(username ?? '');
-      dispatch(setUserName(localUsername));
-    }
-  });
+  getAndSetUsername(auth);
 
   const tabsData: TabData[] = tabs.map((tab) => ({
     label: tab.label,

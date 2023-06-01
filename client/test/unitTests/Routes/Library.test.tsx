@@ -8,14 +8,16 @@ import {
   itHasCorrectURLOfTabsWithIframe,
   TabLabelURLPair,
 } from '../testUtils';
+import AuthProvider from '../../../src/route/auth/AuthProvider';
 
 const urlsByTabs: TabLabelURLPair[] = tabs.map((tab) => ({
   label: tab.label,
   url: mockURLforLIB,
 }));
 
+
 describe('Library with no props', () => {
-  InitRouteTests(<Library />);
+  InitRouteTests(<AuthProvider><Library /></AuthProvider>);
 
   itDisplaysContentOfTabs(tabs);
 

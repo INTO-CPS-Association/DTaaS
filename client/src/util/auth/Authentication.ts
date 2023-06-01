@@ -1,4 +1,7 @@
 import { User } from 'oidc-client-ts';
+import { useDispatch } from 'react-redux';
+import { setUserName } from 'store/auth.slice';
+import { useAuth } from 'react-oidc-context';
 import {
   getAuthority,
 } from '../envUtil';
@@ -9,12 +12,23 @@ export interface CustomAuthContext {
   user?: User | null | undefined;
 }
 
-export async function signOut(auth: CustomAuthContext) {
+export function getAndSetUsername(auth: CustomAuthContext) {
+  const dispatch = useDispatch();
+  if (auth.user !== null && auth.user !== undefined) {
+    const profileUrl = auth.user.profile.profile ?? '';
+    const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
+    dispatch(setUserName(username));
+  }
+}
+
+
+export async function signOut() {
   const accessToken = sessionStorage.getItem('access_token');
   const gitLabUrl = getAuthority();
+  const auth = useAuth();
 
   if (accessToken) {
-    const response = await fetch(`${gitLabUrl}/oauth/token/revoke`, {
+    const response = await fetch(`${gitLabUrl}oauth/token/revoke`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
