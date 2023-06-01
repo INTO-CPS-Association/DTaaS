@@ -5,13 +5,17 @@ import {
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
+  removeUser: () => Promise<void>;
   user?: User | null | undefined;
 }
 
 export async function signOut(auth: CustomAuthContext) {
   localStorage.clear();
   sessionStorage.clear();
-  await auth.signoutRedirect();
+
+  if(auth.user) {
+    await auth.removeUser();
+  }
 
   const gitlabSignOutUrl = 'https://gitlab.com/users/sign_out';
   const postLogoutRedirectUrl = encodeURIComponent(getLogoutRedirectURI() ?? '');
