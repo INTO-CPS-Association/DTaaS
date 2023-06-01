@@ -23,5 +23,3 @@ elif [ "$mode" == "unit-tests" ]; then
 else
     printf "Invalid argument. Use -a or -e for e2e tests.\n"
 fi
-    printf "Invalid argument. Use -a for e2e tests.\n"
-fi
