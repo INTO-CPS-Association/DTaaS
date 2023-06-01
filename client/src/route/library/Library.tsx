@@ -18,8 +18,7 @@ function LibraryContent() {
 
   React.useEffect(() => {
     if (auth.user !== null && auth.user !== undefined) {
-      const profileUrl = auth.user.profile.profile ?? '';
-      const username = profileUrl.split('/').filter(Boolean).pop();
+      const username = auth.user.profile.profile ?? ''.split('/').filter(Boolean).pop();
       setLocalUsername(username ?? '');
       dispatch(setUserName(localUsername));
     }

@@ -1,4 +1,7 @@
 import { User } from 'oidc-client-ts';
+import {
+  getLogoutRedirectURI,
+} from '../envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -9,6 +12,10 @@ export async function signOut(auth: CustomAuthContext) {
   localStorage.clear();
   sessionStorage.clear();
   await auth.signoutRedirect();
+
+  const gitlabSignOutUrl = 'https://gitlab.com/users/sign_out';
+  const postLogoutRedirectUrl = encodeURIComponent(getLogoutRedirectURI() ?? '');
+  window.location.href = `${gitlabSignOutUrl}?redirect_to=${postLogoutRedirectUrl}`;
 }
 
 export function wait(milliseconds: number): Promise<void> {
