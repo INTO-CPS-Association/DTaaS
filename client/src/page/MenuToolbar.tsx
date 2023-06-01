@@ -11,7 +11,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
-import { signOut, CustomAuthContext } from '../util/auth/Authentication';
+import { signOut } from '../util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -65,7 +65,7 @@ function MenuToolbar({
 
   const handleSignOut = async () => {
     if (auth) {
-      await signOut(auth as CustomAuthContext);
+      await signOut();
     }
   };
   return (
