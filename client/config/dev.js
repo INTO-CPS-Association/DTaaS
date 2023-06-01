@@ -12,7 +12,7 @@ window.env = {
 
   REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
   REACT_APP_AUTH_AUTHORITY: 'https://worker15.lab.cps.digit.au.dk/',
-  REACT_APP_REDIRECT_URI: 'https://worker16.lab.cps.digit.au.dk/Library/',
+  REACT_APP_REDIRECT_URI: 'https://worker16.lab.cps.digit.au.dk/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'https://worker16.lab.cps.digit.au.dk/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
 };
