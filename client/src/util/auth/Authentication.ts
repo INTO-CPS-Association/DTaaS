@@ -10,17 +10,25 @@ export interface CustomAuthContext {
 }
 
 export async function signOut(auth: CustomAuthContext) {
+  const accessToken = sessionStorage.getItem('access_token');
+  const gitLabUrl = getAuthority();
+
+  if (accessToken) {
+    const response = await fetch(`${gitLabUrl}/oauth/token/revoke`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+        throw new Error('Sign out failed...');
+    }
+  }
+
   localStorage.clear();
   sessionStorage.clear();
-  const AUTH_AUTHORITY = getAuthority() ?? '';
-
-  // Clear cookies
-  const allCookies = document.cookie.split(';');
-
-  // Iterate over all cookies and delete them
-  for (let i = 0; i < allCookies.length; i+=1) {
-    document.cookie = `${allCookies[i]  }=;expires=${  new Date(0).toUTCString()  }; path=${AUTH_AUTHORITY.toString()}`;
-  }
 
   if(auth.user) {
     await auth.removeUser();
