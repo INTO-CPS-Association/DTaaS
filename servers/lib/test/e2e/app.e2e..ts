@@ -3,13 +3,13 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { execSync } from "child_process";
 import { AppModule } from "../../src/app.module";
-import { expectedResponse } from "test/testUtil";
+import { expectedFileContentResponse, expectedListDirectoryResponse } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    //execSync("test/starttraefik.bash");
+    execSync("test/starttraefik.bash");
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -22,7 +22,7 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   afterAll(async () => {
-    //execSync("test/stoptraefik.bash");
+    execSync("test/stoptraefik.bash");
     await app.close();
   }, 10000);
 
@@ -50,7 +50,7 @@ describe("End to End test for the application", () => {
       .send({ query });
 
     response;
-    expect(response.body).toEqual(expectedResponse);
+    expect(response.body).toEqual(expectedListDirectoryResponse);
   }, 10000);
 
   it("should return the content of a file given in the query through the Traefik gateway", async () => {
@@ -73,6 +73,6 @@ describe("End to End test for the application", () => {
       .send({ query });
 
     response;
-    expect(response.body).toEqual(expectedResponse);
+    expect(response.body).toEqual(expectedFileContentResponse);
   }, 10000);
 });

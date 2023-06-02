@@ -93,7 +93,7 @@ export const mockReadFileResponseData = {
   },
 };
 
-export const expectedResponse = {
+export const expectedListDirectoryResponse = {
   data: {
     listDirectory: {
       repository: {
@@ -131,4 +131,22 @@ export const expectedResponse = {
       },
     },
   },
+};
+
+export const expectedFileContentResponse = {
+  data: {
+    readFile: {
+      repository: {
+        blobs: {
+          nodes: [
+            {
+              name: "README.md",
+              rawBlob: "content123",
+              rawTextBlob: "content123",
+            },
+          ],
+        },
+      },
+  },
+}
 };
