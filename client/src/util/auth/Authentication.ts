@@ -27,7 +27,7 @@ export async function signOut() {
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
   if(auth.user) {
-    const { idToken } = auth.user;
+    const idToken = auth.user.id_token; // camelCase for variable name
 
     // eslint-disable-next-line no-console
     console.log("ID TOKEN: ", idToken);
@@ -45,6 +45,7 @@ export async function signOut() {
     });
   }
 }
+
 
 
 
