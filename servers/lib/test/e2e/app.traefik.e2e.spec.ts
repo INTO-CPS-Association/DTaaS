@@ -1,5 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
+import { expectedResponse } from "test/testUtil";
 
 describe("End to End test for the application", () => {
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
@@ -20,46 +21,6 @@ describe("End to End test for the application", () => {
         }
       }
     }`;
-
-    const expectedResponse = {
-      data: {
-        listDirectory: {
-          repository: {
-            tree: {
-              trees: {
-                edges: [
-                  {
-                    node: {
-                      name: "data",
-                    },
-                  },
-                  {
-                    node: {
-                      name: "digital twins",
-                    },
-                  },
-                  {
-                    node: {
-                      name: "functions",
-                    },
-                  },
-                  {
-                    node: {
-                      name: "models",
-                    },
-                  },
-                  {
-                    node: {
-                      name: "tools",
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-    };
 
     const response = await request("http://localhost")
       .post("/lib")

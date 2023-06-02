@@ -1,15 +1,30 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
+
+// actual data for integration and e2e tests
+export const readFileActualContent = ["content123"];
+
 export const pathToTestDirectory = "user2";
 
-export const e2eDirectory = [
-  "data",
-  "digital twins",
-  "functions",
-  "models",
-  "tools",
-];
-export const testDirectory = [
+export const testDirectory = {
+  repository: {
+    tree: {
+      blobs: { edges: [] },
+      trees: {
+        edges: [
+          { node: { name: "data", type: "tree" } },
+          { node: { name: "digital twins", type: "tree" } },
+          { node: { name: "functions", type: "tree" } },
+          { node: { name: "models", type: "tree" } },
+          { node: { name: "tools", type: "tree" } },
+        ],
+      },
+    },
+  },
+};
+
+export const pathToTestFileContent = "user2/tools/README.md";
+export const testFileArray = [
   "data",
   "digital twins",
   "functions",
@@ -34,9 +49,6 @@ export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 export class MockConfigService {
   get(key: string): string {
     switch (key) {
@@ -62,38 +74,6 @@ export class MockConfigService {
   }
 }
 
-export const mockQueryResponseData = {
-  project: {
-    repository: {
-      paginatedTree: {
-        nodes: [
-          {
-            trees: {
-              nodes: [
-                {
-                  name: "data",
-                },
-                {
-                  name: "digital twins",
-                },
-                {
-                  name: "functions",
-                },
-                {
-                  name: "models",
-                },
-                {
-                  name: "tools",
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  },
-};
-
 export const mockReadFileResponseData = {
   project: {
     __typename: "Project",
@@ -108,6 +88,46 @@ export const mockReadFileResponseData = {
             rawTextBlob: "content123",
           },
         ],
+      },
+    },
+  },
+};
+
+export const expectedResponse = {
+  data: {
+    listDirectory: {
+      repository: {
+        tree: {
+          trees: {
+            edges: [
+              {
+                node: {
+                  name: "data",
+                },
+              },
+              {
+                node: {
+                  name: "digital twins",
+                },
+              },
+              {
+                node: {
+                  name: "functions",
+                },
+              },
+              {
+                node: {
+                  name: "models",
+                },
+              },
+              {
+                node: {
+                  name: "tools",
+                },
+              },
+            ],
+          },
+        },
       },
     },
   },

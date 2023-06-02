@@ -1,49 +1,42 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { LocalFilesService } from "../../src/files/services/local-files.service";
 import { ConfigService } from "@nestjs/config";
-import * as fs from "fs";
+import { GitlabFilesService } from "../../src/files/services/gitlab-files.service";
+import { pathToTestFileContent, testFileContent } from "../testUtil";
+import { MockConfigService, testDirectory } from "../testUtil";
+import axios from "axios";
 
-import {
-  MockConfigService,
-  pathToTestDirectory,
-  pathToTestFileContent,
-  testDirectory,
-  testFileContent,
-} from "../testUtil";
-
-jest.mock("fs");
-
-describe("LocalFilesService", () => {
-  let service: LocalFilesService;
+describe("GitlabFilesService", () => {
+  let filesService: GitlabFilesService;
   const mockConfigService = new MockConfigService();
+  jest.mock("axios");
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        LocalFilesService,
+        GitlabFilesService,
         { provide: ConfigService, useValue: mockConfigService },
       ],
-    }).compile();
-    service = module.get<LocalFilesService>(LocalFilesService);
+    })
+      .overrideProvider(ConfigService)
+      .useValue(mockConfigService)
+      .compile();
+
+    filesService = module.get<GitlabFilesService>(GitlabFilesService);
   });
 
   it("should list directory", async () => {
-    jest
-      .spyOn(fs, "readdirSync")
-      .mockReturnValue(testDirectory as unknown as fs.Dirent[]);
+    jest.spyOn(axios, "post").mockResolvedValue({ data: testDirectory });
 
-    const result = await service.listDirectory(pathToTestDirectory);
-
-    expect(testDirectory).toEqual(result);
+    const result = await filesService.listDirectory("user2");
+    expect(result).toEqual(testDirectory);
   });
 
   it("should read file", async () => {
-    const testFileContentStr = testFileContent.join("\n"); // assuming testFileContent is an array of strings
     jest
-      .spyOn(fs, "readFileSync")
-      .mockReturnValue(testFileContentStr as unknown as Buffer);
+      .spyOn(axios, "post")
+      .mockResolvedValue({ data: { data: testFileContent } });
 
-    const result = await service.readFile(pathToTestFileContent);
+    const result = await filesService.readFile(pathToTestFileContent);
     expect(result).toEqual(testFileContent);
   });
 });
