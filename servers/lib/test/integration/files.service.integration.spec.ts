@@ -15,7 +15,7 @@ describe("Integration Tests", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot(getApolloDriverConfig()), // use your function
@@ -29,7 +29,7 @@ describe("Integration Tests", () => {
     filesService = moduleFixture.get<FilesService>(FilesService);
   }, 10000);
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   }, 10000);
 
