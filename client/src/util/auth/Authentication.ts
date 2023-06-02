@@ -27,10 +27,10 @@ export async function signOut() {
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
   if(auth.user) {
-    const id_token = auth.user.id_token;
+    const { idToken } = auth.user;
 
     // eslint-disable-next-line no-console
-    console.log("ID TOKEN: ", id_token);
+    console.log("ID TOKEN: ", idToken);
     // eslint-disable-next-line no-console
     console.log("ID TOKEN PROFILE: ", auth.user.profile.id_token);
 
@@ -41,10 +41,11 @@ export async function signOut() {
 
     await auth.signoutRedirect({
       post_logout_redirect_uri: LOGOUT_URL.toString(),
-      id_token_hint: id_token
+      id_token_hint: idToken
     });
   }
 }
+
 
 
 export function wait(milliseconds: number): Promise<void> {
