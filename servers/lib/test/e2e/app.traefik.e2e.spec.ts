@@ -45,24 +45,6 @@ describe("End to End test for the application", () => {
       }
     }`;
 
-    const expectedResponse = {
-      data: {
-        readFile: {
-          repository: {
-            blobs: {
-              nodes: [
-                {
-                  name: "README.md",
-                  rawBlob: "content123",
-                  rawTextBlob: "content123",
-                },
-              ],
-            },
-          },
-        },
-      },
-    };
-
     const response = await request("http://localhost")
       .post("/lib")
       .send({ query });

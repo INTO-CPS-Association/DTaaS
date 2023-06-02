@@ -4,85 +4,73 @@ import { join } from "path";
 import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { Project } from "src/types";
-import { readFile } from "fs/promises";
-/*
+
 @Injectable()
 export class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
-  async listDirectory(path: string): Promise<string[]> {
-    const dataPath = this.configService.get("LOCAL_PATH");
-    const fullpath = join(dataPath, path);
-    return fs.readdirSync(fullpath);
-  }
-
-  async readFile(path: string): Promise<string[]> {
-    const dataPath = this.configService.get("LOCAL_PATH");
-    const fullpath = join(dataPath, path);
-
-    try {
-      const content = fs.readFileSync(fullpath, "utf8").trim();
-
-      return [content];
-    } catch (error) {
-      return ["Invalid query"];
+  private async getFileStats(fullPath: string, file: string) {
+    const stats = await fs.promises.lstat(join(fullPath, file));
+    if (stats.isDirectory()) {
+      return { node: { name: file, type: "tree" } };
+    } else {
+      return { node: { name: file, type: "blob" } };
     }
   }
-}
- */
-
-@Injectable()
-export class LocalFilesService implements IFilesService {
-  constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullPath = join(dataPath, path);
-    console.log("fullPath", fullPath);
-    const files = fs.readdirSync(fullPath);
-    console.log("files", files);
+
+    const files = await fs.promises.readdir(fullPath);
+
+    const edges = await Promise.all(
+      files.map((file) => this.getFileStats(fullPath, file))
+    );
+
     const tree = {
       trees: {
-        edges: files
-          .filter((file) => fs.lstatSync(join(fullPath, file)).isDirectory())
-          .map((file) => ({ node: { name: file, type: "tree" } })),
+        edges: edges.filter((edge) => edge.node.type === "tree"),
       },
       blobs: {
-        edges: files
-          .filter((file) => !fs.lstatSync(join(fullPath, file)).isDirectory())
-          .map((file) => ({ node: { name: file, type: "blob" } })),
+        edges: edges.filter((edge) => edge.node.type === "blob"),
       },
     };
 
     return { repository: { tree } };
   }
 
-  async readFile(path: string): Promise<any> {
+  async readFile(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullpath = join(dataPath, path);
 
     try {
-      const content = readFile(fullpath, "utf8");
+      const content = await (
+        await fs.promises.readFile(fullpath, "utf8")
+      ).trim();
+
       const name = path.split("/").pop(); // extract file name from the path
 
-      // Construct the response to mimic the structure from GitLab API
-      const response = {
-        repository: {
-          blobs: {
-            nodes: [
-              {
-                name: name,
-                rawBlob: content,
-                rawTextBlob: content,
-              },
-            ],
-          },
-        },
-      };
-
-      return response;
+      return this.formatResponse(name, content);
     } catch (error) {
       throw new InternalServerErrorException("Error reading file");
     }
+  }
+
+  private formatResponse(name: string, content: string): Project {
+    // Construct the response to mimic the structure from GitLab API
+    return {
+      repository: {
+        blobs: {
+          nodes: [
+            {
+              name: name,
+              rawBlob: content,
+              rawTextBlob: content,
+            },
+          ],
+        },
+      },
+    };
   }
 }
