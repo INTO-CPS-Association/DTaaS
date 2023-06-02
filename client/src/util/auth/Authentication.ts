@@ -23,28 +23,29 @@ export function getAndSetUsername(auth: CustomAuthContext) {
 
 
 export async function signOut() {
-
   const auth = useAuth();
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
-  /* eslint no-console: "error" */
-  console.log("ID TOKEN: ", auth.user.id_token);
-  /* eslint no-console: "error" */
-  console.log("ID TOKEN PROFILE: ", auth.user.profile.id_token);
-
-
-  localStorage.clear();
-  sessionStorage.clear();
-
   if(auth.user) {
-    await auth.removeUser();
-  }
+    const id_token = auth.user.id_token;
 
-  await auth.signoutRedirect({
-    post_logout_redirect_uri: LOGOUT_URL.toString(),
-    id_token_hint: auth.user.id_token
-  });
+    // eslint-disable-next-line no-console
+    console.log("ID TOKEN: ", id_token);
+    // eslint-disable-next-line no-console
+    console.log("ID TOKEN PROFILE: ", auth.user.profile.id_token);
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    await auth.removeUser();
+
+    await auth.signoutRedirect({
+      post_logout_redirect_uri: LOGOUT_URL.toString(),
+      id_token_hint: id_token
+    });
+  }
 }
+
 
 export function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
