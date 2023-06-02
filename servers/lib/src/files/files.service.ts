@@ -29,10 +29,17 @@ export class FilesService {
     return fs.readdirSync(fullpath);
   }
 
+  async createClient() {
+    return new ApolloClient({
+      cache: new InMemoryCache(),
+      uri: this.configService.get("GITLAB_URL"),
+      headers: {
+        Authorization: `Bearer ${this.configService.get("TOKEN")}`,
+      },
+    });
+  }
   async getGitlabFiles(path: string): Promise<string[]> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
-    const token = this.configService.get("TOKEN");
-    const gitlabUrl = this.configService.get("GITLAB_URL");
 
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
@@ -40,13 +47,7 @@ export class FilesService {
 
     path = pathParts.slice(1).join("/");
 
-    const client = new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: gitlabUrl,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const client = await this.createClient();
 
     const { data } = await client.query({
       query: DIRECTORY_LIST,
