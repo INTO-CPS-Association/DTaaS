@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { useAuth } from 'react-oidc-context';
 import {
-  getAuthority,
+  getLogoutRedirectURI,
 } from '../envUtil';
 
 export interface CustomAuthContext {
@@ -23,23 +23,15 @@ export function getAndSetUsername(auth: CustomAuthContext) {
 
 
 export async function signOut() {
-  const accessToken = sessionStorage.getItem('access_token');
-  const gitLabUrl = getAuthority();
+
   const auth = useAuth();
+  const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
-  if (accessToken) {
-    const response = await fetch(`${gitLabUrl}oauth/token/revoke`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
+  /* eslint no-console: "error" */
+  console.log("ID TOKEN: ", auth.user.id_token);
+  /* eslint no-console: "error" */
+  console.log("ID TOKEN PROFILE: ", auth.user.profile.id_token);
 
-    if (!response.ok) {
-        throw new Error('Sign out failed...');
-    }
-  }
 
   localStorage.clear();
   sessionStorage.clear();
@@ -48,7 +40,10 @@ export async function signOut() {
     await auth.removeUser();
   }
 
-  await auth.signoutRedirect();
+  await auth.signoutRedirect({
+    post_logout_redirect_uri: LOGOUT_URL.toString(),
+    id_token_hint: auth.user.id_token
+  });
 }
 
 export function wait(milliseconds: number): Promise<void> {
