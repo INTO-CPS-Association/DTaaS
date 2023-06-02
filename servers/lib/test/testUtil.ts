@@ -16,6 +16,23 @@ export const testDirectory = [
   "models",
   "tools",
 ];
+export const testFileContent = {
+  repository: {
+    blobs: {
+      nodes: [
+        {
+          name: "README.md",
+          rawBlob: "content123",
+          rawTextBlob: "content123",
+        },
+      ],
+    },
+  },
+};
+
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -70,6 +87,25 @@ export const mockQueryResponseData = {
                 },
               ],
             },
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const mockReadFileResponseData = {
+  project: {
+    __typename: "Project",
+    repository: {
+      __typename: "Repository",
+      blobs: {
+        nodes: [
+          {
+            __typename: "Blob",
+            name: "README.md",
+            rawBlob: "content123",
+            rawTextBlob: "content123",
           },
         ],
       },
