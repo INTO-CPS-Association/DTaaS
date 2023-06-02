@@ -16,13 +16,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   React.useEffect(() => {
     if (auth.isAuthenticated && !isInitialFetchDone) {
       if (auth.user !== null && auth.user !== undefined) {
-        const profileUrl = auth.user.profile.profile ?? '';
-        const username = profileUrl.split('/').filter(Boolean).pop();
-        sessionStorage.setItem('username', username ?? '');
         sessionStorage.setItem('access_token', auth.user.access_token);
         setIsInitialFetchDone(true);
       } else {
-        throw new Error('Username was not available');
+        throw new Error('Access token was not available...');
       }
     }
   }, [auth.isAuthenticated, isInitialFetchDone]);

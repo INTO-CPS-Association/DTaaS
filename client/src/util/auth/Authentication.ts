@@ -17,6 +17,7 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   if (auth.user !== null && auth.user !== undefined) {
     const profileUrl = auth.user.profile.profile ?? '';
     const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
+    sessionStorage.setItem('username', username ?? '');
     dispatch(setUserName(username));
   }
 }
