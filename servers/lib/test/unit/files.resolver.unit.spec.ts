@@ -1,13 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "../../src/files/files.service";
 import { FilesResolver } from "../../src/files/files.resolver";
-import { files, path } from "../testUtil";
+import { pathToTestDirectory, testDirectory } from "../testUtil";
+
+
 
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;
 
   const mockFilesService = {
-    Wrapper: jest.fn(() => files),
+    Wrapper: jest.fn(() => testDirectory),
+    getLocalFiles: jest.fn(() => testDirectory),
+    getGitlabFiles: jest.fn(() => testDirectory),
+
   };
 
   beforeEach(async () => {
@@ -30,10 +35,9 @@ describe("Unit tests for FilesResolver", () => {
       expect(filesResolver.getFiles).toBeDefined();
     });
 
-    it("should return the filenames in the given directory", async () => {
-      const result = await filesResolver.getFiles(path);
-
-      expect(result).toEqual(files);
+    it("should list files in directory", async () => {
+      const result = await filesResolver.getFiles(pathToTestDirectory);
+      expect(result).toEqual(testDirectory);
     });
   });
 });

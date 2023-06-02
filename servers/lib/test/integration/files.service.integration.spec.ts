@@ -6,15 +6,16 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { FilesService } from "../../src/files/files.service";
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from "dotenv";
-import { localFiles, path } from "../testUtil";
 import { getApolloDriverConfig } from "../../util";
+import { pathToTestDirectory, testDirectory } from "../testUtil";
+
 dotenv.config({ path: ".env" });
 
 describe("Integration Tests", () => {
   let app: INestApplication;
   let filesService: FilesService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot(getApolloDriverConfig()), // use your function
@@ -28,20 +29,21 @@ describe("Integration Tests", () => {
     filesService = moduleFixture.get<FilesService>(FilesService);
   }, 10000);
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   }, 10000);
 
   it("ensure that the getFiles method of the FilesService class returns the expected array of file names when called with a specific path", async () => {
     jest
       .spyOn(filesService, "Wrapper")
-      .mockReturnValue(Promise.resolve(localFiles));
+      .mockReturnValue(Promise.resolve(testDirectory));
 
     const query = `{
-      getFiles(path: "${path}")
+      getFiles(path: "${pathToTestDirectory}")
     }`;
 
-    const variables = { path };
+    const variables = { pathToTestDirectory };
+
 
     const response = await request(app.getHttpServer())
       .post(process.env.APOLLO_PATH)
@@ -49,6 +51,7 @@ describe("Integration Tests", () => {
 
     expect(response.body).toBeDefined();
     expect(response.body.data).toBeDefined();
-    expect(response.body.data.getFiles).toEqual(localFiles);
+    expect(response.body.data.getFiles).toEqual(testDirectory);
+
   });
 });

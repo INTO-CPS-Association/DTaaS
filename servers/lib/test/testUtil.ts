@@ -1,10 +1,21 @@
 import * as dotenv from "dotenv";
-
 dotenv.config({ path: ".env" });
+export const pathToTestDirectory = "user2";
 
-export const path = "user1";
-export const files = ["digital twins", "functions", "data", "tools", "models"];
-export const localFiles = ["file1", "file2", "file3"];
+export const e2eDirectory = [
+  "data",
+  "digital twins",
+  "functions",
+  "models",
+  "tools",
+];
+export const testDirectory = [
+  "data",
+  "digital twins",
+  "functions",
+  "models",
+  "tools",
+];
 
 export class MockConfigService {
   get(key: string): string {
@@ -30,3 +41,35 @@ export class MockConfigService {
     }
   }
 }
+
+export const mockQueryResponseData = {
+  project: {
+    repository: {
+      paginatedTree: {
+        nodes: [
+          {
+            trees: {
+              nodes: [
+                {
+                  name: "data",
+                },
+                {
+                  name: "digital twins",
+                },
+                {
+                  name: "functions",
+                },
+                {
+                  name: "models",
+                },
+                {
+                  name: "tools",
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  },
+};

@@ -2,32 +2,31 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
+import { e2eDirectory, pathToTestDirectory } from "../testUtil";
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     await app.listen(process.env.PORT);
   }, 10000);
-
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   }, 10000);
 
   it("should return the filename corresponding to the directory given in the query", async () => {
-    const path = "user1";
     const query = `{
-      getFiles(path: "${path}")
+      getFiles(path: "${pathToTestDirectory}")
+
   }`;
 
     const expectedResponse = {
       data: {
-        getFiles: ["data", "digital twins", "functions", "models", "tools"],
+        getFiles: e2eDirectory,
       },
     };
 
