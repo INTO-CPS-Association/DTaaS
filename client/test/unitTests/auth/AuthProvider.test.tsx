@@ -37,7 +37,9 @@ describe('AuthProvider', () => {
 
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
-    expect(getByText('Authentication service unavailable...try again later')).toBeInTheDocument();
+    expect(
+      getByText('Authentication service unavailable...try again later')
+    ).toBeInTheDocument();
   });
 
   it('renders OIDCAuthProvider when OIDC config is available', () => {
