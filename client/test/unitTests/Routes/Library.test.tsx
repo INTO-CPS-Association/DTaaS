@@ -15,9 +15,12 @@ const urlsByTabs: TabLabelURLPair[] = tabs.map((tab) => ({
   url: mockURLforLIB,
 }));
 
-
 describe('Library with no props', () => {
-  InitRouteTests(<AuthProvider><Library /></AuthProvider>);
+  InitRouteTests(
+    <AuthProvider>
+      <Library />
+    </AuthProvider>
+  );
 
   itDisplaysContentOfTabs(tabs);
 

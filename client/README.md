@@ -24,12 +24,17 @@ yarn start      #start the application
 yarn test       #UI testing of the application
 yarn clean      #clean the directory of temporary files
 ```
-
+It is also possible to run different types of tests using the yarn test command by passing different flags:
+```bash
+yarn test -a:   #run all tests
+yarn test -u:   #run unit tests
+yarn test -e:   #run end-to-end tests
+```
 ---
 
 ## Custom configuration
 
-It is required to have a `env.js` in the root directory of `build` during runtime. This file is used to configure the endpoints of the application. See the [build instructions](../docs/CLIENT.md) for an example.
+It is required to have a `env.js` in the root directory of `build` during runtime. This file is used to configure the endpoints of the application. See the [build instructions](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/docs/user/client/CLIENT.md) for an example.
 
 ### Multiple configurations
 

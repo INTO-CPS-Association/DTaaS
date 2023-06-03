@@ -2,9 +2,7 @@ import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { useAuth } from 'react-oidc-context';
-import {
-  getLogoutRedirectURI,
-} from '../envUtil';
+import { getLogoutRedirectURI } from '../envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -22,18 +20,17 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
-
 export async function signOut() {
   const auth = useAuth();
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
-  if(auth.user) {
+  if (auth.user) {
     const idToken = auth.user.id_token; // camelCase for variable name
 
     // eslint-disable-next-line no-console
-    console.log("ID TOKEN: ", idToken);
+    console.log('ID TOKEN: ', idToken);
     // eslint-disable-next-line no-console
-    console.log("ID TOKEN PROFILE: ", auth.user.profile.id_token);
+    console.log('ID TOKEN PROFILE: ', auth.user.profile.id_token);
 
     localStorage.clear();
     sessionStorage.clear();
@@ -42,13 +39,10 @@ export async function signOut() {
 
     await auth.signoutRedirect({
       post_logout_redirect_uri: LOGOUT_URL.toString(),
-      id_token_hint: idToken
+      id_token_hint: idToken,
     });
   }
 }
-
-
-
 
 export function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
