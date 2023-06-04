@@ -1,5 +1,3 @@
-import { gql } from "@apollo/client/core";
-
 export const getDirectoryQuery = (domain: string, parsedPath: string) => `
   query listDirectory {
     project(fullPath: "${domain}") {
