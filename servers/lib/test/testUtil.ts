@@ -22,7 +22,8 @@ export const testDirectory = {
     },
   },
 };
-
+export const testFileName = "README.md";
+export const fstestFileContent = "content123";
 export const pathToTestFileContent = "user2/tools/README.md";
 export const testFileArray = [
   "data",
