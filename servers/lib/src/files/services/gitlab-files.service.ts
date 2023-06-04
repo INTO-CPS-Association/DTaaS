@@ -10,7 +10,15 @@ type QueryFunction = (domain: string, parsedPath: string) => string;
 export class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
-  async parseArguments(
+  async listDirectory(path: string): Promise<Project> {
+    return this.executeQuery(path, getDirectoryQuery);
+  }
+
+  async readFile(path: string): Promise<Project> {
+    return this.executeQuery(path, getReadFileQuery);
+  }
+
+  private async parseArguments(
     path: string
   ): Promise<{ domain: string; parsedPath: string }> {
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
@@ -32,7 +40,7 @@ export class GitlabFilesService implements IFilesService {
         method: "post",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.TOKEN}`,
+          Authorization: `Bearer ${this.configService.get("GITLAB_TOKEN")}`,
         },
         data: {
           query: query,
@@ -44,17 +52,12 @@ export class GitlabFilesService implements IFilesService {
     }
   }
 
-  async executeQuery(path: string, getQuery: QueryFunction): Promise<Project> {
+  private async executeQuery(
+    path: string,
+    getQuery: QueryFunction
+  ): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
     const query = getQuery(domain, parsedPath);
     return this.sendRequest(query);
-  }
-
-  async listDirectory(path: string): Promise<Project> {
-    return this.executeQuery(path, getDirectoryQuery);
-  }
-
-  async readFile(path: string): Promise<Project> {
-    return this.executeQuery(path, getReadFileQuery);
   }
 }

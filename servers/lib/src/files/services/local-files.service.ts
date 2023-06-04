@@ -9,15 +9,6 @@ import { Project } from "src/types";
 export class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
-  private async getFileStats(fullPath: string, file: string) {
-    const stats = await fs.promises.lstat(join(fullPath, file));
-    if (stats.isDirectory()) {
-      return { node: { name: file, type: "tree" } };
-    } else {
-      return { node: { name: file, type: "blob" } };
-    }
-  }
-
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
     const fullPath = join(dataPath, path);
@@ -54,6 +45,15 @@ export class LocalFilesService implements IFilesService {
       return this.formatResponse(name, content);
     } catch (error) {
       throw new InternalServerErrorException("Error reading file");
+    }
+  }
+
+  private async getFileStats(fullPath: string, file: string) {
+    const stats = await fs.promises.lstat(join(fullPath, file));
+    if (stats.isDirectory()) {
+      return { node: { name: file, type: "tree" } };
+    } else {
+      return { node: { name: file, type: "blob" } };
     }
   }
 
