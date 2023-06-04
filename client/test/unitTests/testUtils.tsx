@@ -22,24 +22,27 @@ export const renderWithRouter = (ui: React.ReactElement, { route = '/', store }:
   return store
     ? render(
         <Provider store={store}>
-          <MemoryRouter initialEntries={[route]}>
-            <Routes>
-              <Route path="/private" element={ui} />
-              <Route path="/" element={<div>Signin</div>} />
-            </Routes>
-          </MemoryRouter>
+          <RouterComponent ui={ui} route={route} />
         </Provider>
       )
     : render(
-        <MemoryRouter initialEntries={[route]}>
-          <Routes>
-            <Route path="/private" element={ui} />
-            <Route path="/" element={<div>Signin</div>} />
-          </Routes>
-        </MemoryRouter>
+        <RouterComponent ui={ui} route={route} />
       );
 };
 
+interface RouterComponentProps {
+  ui: React.ReactElement;
+  route: string;
+}
+
+const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
+  <MemoryRouter initialEntries={[route]}>
+    <Routes>
+      <Route path="/private" element={ui} />
+      <Route path="/" element={<div>Signin</div>} />
+    </Routes>
+  </MemoryRouter>
+);
 export function generateTestDivs(testIds: string[]) {
   return testIds.map((id, i) => (
     <div key={i} data-testid={id}>
