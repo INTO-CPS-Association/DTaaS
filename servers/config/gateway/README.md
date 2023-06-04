@@ -39,4 +39,3 @@ Run Lib MS at port 3000
 | foo.com/lib   | Lib Microservice   | localhost:4001 |
 | foo.com/user1 | ML Workspace       | localhost:8090 |
 |               |
-

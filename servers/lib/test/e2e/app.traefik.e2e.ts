@@ -2,11 +2,9 @@ import * as request from "supertest";
 import {
   e2eReadFile,
   e2elistDirectory,
-  e2equery,
   expectedFileContentResponse,
   expectedListDirectoryResponse,
 } from "../testUtil";
-import e from "express";
 
 describe("End to End test for the application", () => {
   it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
