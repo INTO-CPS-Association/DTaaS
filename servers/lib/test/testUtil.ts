@@ -151,7 +151,7 @@ export const expectedFileContentResponse = {
   },
 };
 
-export const e2equery = `query {
+export const e2elistDirectory = `query {
   listDirectory(path:"user2")
   {
     repository{
@@ -163,6 +163,20 @@ export const e2equery = `query {
               
             }
           }
+        }
+      }
+    }
+  }
+}`;
+
+export const e2eReadFile = `query {
+  readFile(path:"user2/tools/README.md") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
         }
       }
     }
