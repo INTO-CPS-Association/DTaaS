@@ -36,7 +36,8 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test -a
+          yarn test -u
+          yarn test -i
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
@@ -46,7 +47,6 @@ jobs:
           MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
-          TEST_VERSION: local
       - name: Upload unit, integration, and e2e test coverage for all to Codecov
         uses: codecov/codecov-action@v3
         with:
