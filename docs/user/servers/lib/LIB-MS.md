@@ -120,8 +120,33 @@ Accept:_/_
 
 {
 
-"query": "{ getFiles(path: \"common\")}"
-
+"query":
+"query {
+  listDirectory {
+    project(fullPath: "/domain/") {
+      repository {
+        tree(path: "/parsedPath/", recursive: false) {
+          blobs {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+          trees {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}"
 }
 
 HTTP Response:
@@ -146,7 +171,44 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
-{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
+{'data' : data: {
+    listDirectory: {
+      repository: {
+        tree: {
+          trees: {
+            edges: [
+              {
+                node: {
+                  name: "data",
+                },
+              },
+              {
+                node: {
+                  name: "digital twins",
+                },
+              },
+              {
+                node: {
+                  name: "functions",
+                },
+              },
+              {
+                node: {
+                  name: "models",
+                },
+              },
+              {
+                node: {
+                  name: "tools",
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
 
 ````
 
@@ -177,7 +239,19 @@ Accept:*/*
 
 {
 
-"query": "{ getFiles(path: \"common\")}"
+"query": "query {
+  readFile(path:"user2/tools/README.md") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
+    }
+  }
+}"
 
 }
 
@@ -205,30 +279,66 @@ keep-alive: timeout=5
 x-powered-by: Express
 
 
-{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
+{'data': data: {
+    readFile: {
+      repository: {
+        blobs: {
+          nodes: [
+            {
+              name: "README.md",
+              rawBlob: "content123",
+              rawTextBlob: "content123",
+            },
+          ],
+        },
+      },
+    },
+  }}
 
 ```
 
 ### GraphQL API queries
 
-The only accepted query is:
+The accepted queries are:
 
 ```graphql
-query directoryList($path: String!) {
-  project(fullPath: $domain) {
-    webUrl
-    path
+query {
+  listDirectory(path: "user2") {
     repository {
-      paginatedTree(path: $path, recursive: false) {
-        nodes {
-          trees {
-            nodes {
+      tree {
+        blobs {
+          edges {
+            node {
               name
+              type
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
             }
           }
         }
       }
-      diskPath
+    }
+  }
+}
+```
+
+```graphql
+query {
+  readFile(path: "/path/to/file") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
     }
   }
 }
