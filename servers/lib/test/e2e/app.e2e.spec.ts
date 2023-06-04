@@ -37,7 +37,6 @@ describe("End to End test for the application", () => {
     const response = await request("http://localhost:4001")
       .post(process.env.APOLLO_PATH)
       .send({ query });
-    console.dir(response.body, { depth: null });
     expect(response.body).toEqual(expectedListDirectoryResponse);
   }, 10000);
 
@@ -47,7 +46,6 @@ describe("End to End test for the application", () => {
     const response = await request("http://localhost:4001")
       .post(process.env.APOLLO_PATH)
       .send({ query });
-    console.dir(response.body, { depth: null });
     expect(response.body).toEqual(expectedFileContentResponse);
   }, 10000);
 });
