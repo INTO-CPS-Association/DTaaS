@@ -46,7 +46,7 @@ jobs:
           MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
-
+          TEST_VERSION: local
       - name: Upload unit, integration, and e2e test coverage for all to Codecov
         uses: codecov/codecov-action@v3
         with:
