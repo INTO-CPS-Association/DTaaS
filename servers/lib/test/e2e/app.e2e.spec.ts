@@ -31,7 +31,7 @@ describe("End to End test for the application", () => {
     await app.close();
   }, 10000);
 
-  it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
+  it("should return the filename corresponding to the directory given in the query", async () => {
     const query = e2elistDirectory;
 
     const response = await request("http://localhost:4001")
@@ -40,7 +40,7 @@ describe("End to End test for the application", () => {
     expect(response.body).toEqual(expectedListDirectoryResponse);
   }, 10000);
 
-  it("should return the content of a file given in the query through the Traefik gateway", async () => {
+  it("should return the content of a file given in the query ", async () => {
     const query = e2eReadFile;
 
     const response = await request("http://localhost:4001")
