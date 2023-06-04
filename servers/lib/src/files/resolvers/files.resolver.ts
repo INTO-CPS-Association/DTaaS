@@ -1,7 +1,7 @@
 import { Resolver, Query, Args } from "@nestjs/graphql";
-import { IFilesService } from "../files/interfaces/files.service.interface";
-import { FilesServiceFactory } from "../files/services/files-service.factory";
-import { Project } from "../types";
+import { IFilesService } from "../interfaces/files.service.interface";
+import { FilesServiceFactory } from "../services/files-service.factory";
+import { Project } from "../../types";
 
 @Resolver()
 export class FilesResolver {

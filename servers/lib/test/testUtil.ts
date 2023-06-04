@@ -147,6 +147,24 @@ export const expectedFileContentResponse = {
           ],
         },
       },
+    },
   },
-}
 };
+
+export const e2equery = `query {
+  listDirectory(path:"user2")
+  {
+    repository{
+      tree{
+        trees{
+          edges{
+            node{
+              name
+              
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
