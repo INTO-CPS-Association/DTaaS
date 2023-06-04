@@ -7,6 +7,38 @@ import {
   render,
   screen,
 } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { Store } from 'redux';
+
+type RouterOptions = {
+  route?: string;
+  store?: Store;
+};
+
+export const renderWithRouter = (ui: React.ReactElement, { route = '/', store }: RouterOptions = {}) => {
+  window.history.pushState({}, 'Test page', route);
+
+  return store
+    ? render(
+        <Provider store={store}>
+          <MemoryRouter initialEntries={[route]}>
+            <Routes>
+              <Route path="/private" element={ui} />
+              <Route path="/" element={<div>Signin</div>} />
+            </Routes>
+          </MemoryRouter>
+        </Provider>
+      )
+    : render(
+        <MemoryRouter initialEntries={[route]}>
+          <Routes>
+            <Route path="/private" element={ui} />
+            <Route path="/" element={<div>Signin</div>} />
+          </Routes>
+        </MemoryRouter>
+      );
+};
 
 export function generateTestDivs(testIds: string[]) {
   return testIds.map((id, i) => (

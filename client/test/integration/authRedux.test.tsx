@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from '../../src/route/auth/PrivateRoute';
 import Library from '../../src/route/library/Library';
 import authReducer from '../../src/store/auth.slice';
+import { renderWithRouter } from '../unitTests/testUtils';
+
+
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
@@ -22,21 +23,6 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 }));
 
 const store = createStore(authReducer);
-
-const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[route]}>
-        <Routes>
-          <Route path="/private" element={ui} />
-          <Route path="/" element={<div>Signin</div>} />
-        </Routes>
-      </MemoryRouter>
-    </Provider>
-  );
-};
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -64,7 +50,7 @@ const setupTest = (authState: AuthState) => {
     <PrivateRoute>
       <Library />
     </PrivateRoute>,
-    { route: '/private' }
+    { route: '/private', store },
   );
 };
 

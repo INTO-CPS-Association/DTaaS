@@ -1,27 +1,14 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from '../../../src/route/auth/PrivateRoute';
+import { renderWithRouter } from '../testUtils';
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
 const TestComponent = () => <div>Test Component</div>;
-
-const renderWithRouter = (ui: React.ReactElement, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-
-  return render(
-    <MemoryRouter initialEntries={[route]}>
-      <Routes>
-        <Route path="/private" element={ui} />
-        <Route path="/" element={<div>Home</div>} />
-      </Routes>
-    </MemoryRouter>
-  );
-};
 
 type AuthState = {
   isLoading: boolean;
@@ -43,7 +30,7 @@ const setupTest = (authState: AuthState) => {
     <PrivateRoute>
       <TestComponent />
     </PrivateRoute>,
-    { route: '/private' }
+    { route: '/private' },
   );
 };
 
@@ -54,7 +41,7 @@ test('renders loading and redirects correctly when authenticated/not authentic',
     isAuthenticated: false,
   });
 
-  expect(screen.getByText('Home')).toBeInTheDocument();
+  expect(screen.getByText('Signin')).toBeInTheDocument();
 
   setupTest({
     isLoading: true,
