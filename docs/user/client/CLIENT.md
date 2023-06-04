@@ -89,7 +89,14 @@ In the env.js file:
 - `REACT_APP_REDIRECT_URI` is identical to your GitLab application's `Callback URL`.
 - `REACT_APP_GITLAB_SCOPES` is identical to your GitLab application's `Scopes`.
 
-- Be aware that _redirect uri_ might be case sensitive.
+- To make the OAuth work, please use the following URIs:
+---
+|React App Basename|REACT_APP_REDIRECT_URI in env.js|Auth Callback URL in Gitlab|
+|:---	|:---	|:---	|
+|null|https://foo.com/Library/|https://foo.com/Library|
+|dtaas|https://foo.com/dtaas/Library/|https://foo.com/dtaas/Library|
+
+---
 
 For step-by-step instructions on how to create an OAuth application on GitLab and configure scopes, please refer to the official GitLab documentation: - [Configure GitLab](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 
