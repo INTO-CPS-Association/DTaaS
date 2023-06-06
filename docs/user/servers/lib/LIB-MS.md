@@ -121,32 +121,29 @@ Accept:_/_
 {
 
 "query":
-"query {
-  listDirectory {
-    project(fullPath: "/domain/") {
-      repository {
-        tree(path: "/parsedPath/", recursive: false) {
-          blobs {
-            edges {
-              node {
-                name
-                type
-              }
+query {
+  listDirectory(path: "user2") {
+    repository {
+      tree {
+        blobs {
+          edges {
+            node {
+              name
+
             }
           }
-          trees {
-            edges {
-              node {
-                name
-                type
-              }
+        }
+        trees {
+          edges {
+            node {
+              name
             }
           }
         }
       }
     }
   }
-}"
+}
 }
 
 HTTP Response:
@@ -171,43 +168,47 @@ keep-alive: timeout=5
 
 x-powered-by: Express
 
-{'data' : data: {
-    listDirectory: {
-      repository: {
-        tree: {
-          trees: {
-            edges: [
-              {
-                node: {
-                  name: "data",
-                },
-              },
-              {
-                node: {
-                  name: "digital twins",
-                },
-              },
-              {
-                node: {
-                  name: "functions",
-                },
-              },
-              {
-                node: {
-                  name: "models",
-                },
-              },
-              {
-                node: {
-                  name: "tools",
-                },
-              },
-            ],
-          },
-        },
-      },
-    },
-  },
+{
+    "data": {
+        "listDirectory": {
+            "repository": {
+                "tree": {
+                    "blobs": {
+                        "edges": []
+                    },
+                    "trees": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "name": "data"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "digital twins"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "functions"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "models"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "tools"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
 }
 
 ````
@@ -239,20 +240,20 @@ Accept:*/*
 
 {
 
-"query": "query {
-  readFile(path:"user2/tools/README.md") {
-    repository {
-      blobs {
-        nodes {
-          name
-          rawBlob
-          rawTextBlob
+"query":
+  query{
+    readFile(path:"user2/data/welcome.txt"){
+      repository{
+        blobs{
+          nodes{
+            name
+            rawBlob
+            rawTextBlob
+          }
         }
       }
     }
   }
-}"
-
 }
 
 
@@ -279,21 +280,23 @@ keep-alive: timeout=5
 x-powered-by: Express
 
 
-{'data': data: {
-    readFile: {
-      repository: {
-        blobs: {
-          nodes: [
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
             {
-              name: "README.md",
-              rawBlob: "content123",
-              rawTextBlob: "content123",
-            },
-          ],
-        },
-      },
-    },
-  }}
+              "name": "welcome.txt",
+              "rawBlob": "welcome user",
+              "rawTextBlob": "welcome user"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
 
 ```
 
