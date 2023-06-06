@@ -33,6 +33,10 @@ class LocalFilesService {
   +readFile(path: string): Promise<Project>
 }
 
+class ConfigService {
+  +get(propertyPath: string): any
+}
+
 FilesResolver --> IFilesService: uses
 IFilesService <|.. GitlabFilesService: implements
 IFilesService <|.. LocalFilesService: implements
