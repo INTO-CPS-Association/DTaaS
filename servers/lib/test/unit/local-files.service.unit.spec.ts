@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-import { LocalFilesService } from "../../src/files/services/local-files.service";
-import * as fs from "fs";
-import { join } from "path";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import { LocalFilesService } from '../../src/files/services/local-files.service';
+import * as fs from 'fs';
+import { join } from 'path';
 import {
   fstestFileContent,
   pathToTestDirectory,
@@ -10,9 +10,9 @@ import {
   testFileArray,
   MockConfigService,
   testFileName,
-} from "../testUtil";
+} from '../testUtil';
 
-jest.mock("fs", () => ({
+jest.mock('fs', () => ({
   promises: {
     readdir: jest.fn(),
     lstat: jest.fn(),
@@ -20,7 +20,7 @@ jest.mock("fs", () => ({
   },
 }));
 
-describe("LocalFilesService", () => {
+describe('LocalFilesService', () => {
   let service: LocalFilesService;
   const mockConfigService = new MockConfigService();
 
@@ -39,13 +39,13 @@ describe("LocalFilesService", () => {
     jest.resetAllMocks();
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it("should list directory", async () => {
+  it('should list directory', async () => {
     const fullPath = join(
-      mockConfigService.get("LOCAL_PATH"),
+      mockConfigService.get('LOCAL_PATH'),
       pathToTestDirectory
     );
 
@@ -54,12 +54,14 @@ describe("LocalFilesService", () => {
       isDirectory: () => true, // change this to false when you need a file instead of a directory
     };
 
-    jest.spyOn(fs.promises, "readdir").mockResolvedValue(testFileArray as any);
+    jest
+      .spyOn(fs.promises, 'readdir')
+      .mockResolvedValue(testFileArray as unknown as Promise<[]>);
 
     jest
-      .spyOn(fs.promises, "lstat")
+      .spyOn(fs.promises, 'lstat')
       .mockImplementation((pathToTestDirectory) => {
-        if (typeof pathToTestDirectory === "string") {
+        if (typeof pathToTestDirectory === 'string') {
           return Promise.resolve(statsMock as fs.Stats);
         }
         throw new Error(`Invalid argument: ${pathToTestDirectory}`);
@@ -70,7 +72,7 @@ describe("LocalFilesService", () => {
         tree: {
           trees: {
             edges: testFileArray.map((file) => ({
-              node: { name: file, type: "tree" },
+              node: { name: file, type: 'tree' },
             })),
           },
           blobs: { edges: [] },
@@ -81,13 +83,13 @@ describe("LocalFilesService", () => {
     expect(fs.promises.lstat).toHaveBeenCalledTimes(testFileArray.length);
   });
 
-  it("should read file", async () => {
+  it('should read file', async () => {
     const fullPath = join(
-      mockConfigService.get("LOCAL_PATH"),
+      mockConfigService.get('LOCAL_PATH'),
       pathToTestFileContent
     );
 
-    jest.spyOn(fs.promises, "readFile").mockResolvedValue(fstestFileContent);
+    jest.spyOn(fs.promises, 'readFile').mockResolvedValue(fstestFileContent);
 
     const result = await service.readFile(pathToTestFileContent);
     expect(result).toEqual({
@@ -103,6 +105,6 @@ describe("LocalFilesService", () => {
         },
       },
     });
-    expect(fs.promises.readFile).toHaveBeenCalledWith(fullPath, "utf8");
+    expect(fs.promises.readFile).toHaveBeenCalledWith(fullPath, 'utf8');
   });
 });
