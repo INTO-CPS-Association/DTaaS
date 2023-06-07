@@ -71,3 +71,23 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
 
   return workbenchLinkValues;
 }
+
+export function getClientID(): string {
+  return window.env.REACT_APP_CLIENT_ID;
+}
+
+export function getAuthority(): string {
+  return window.env.REACT_APP_AUTH_AUTHORITY;
+}
+
+export function getRedirectURI(): string {
+  return window.env.REACT_APP_REDIRECT_URI;
+}
+
+export function getLogoutRedirectURI(): string {
+  return window.env.REACT_APP_LOGOUT_REDIRECT_URI;
+}
+
+export function getGitLabScopes(): string {
+  return window.env.REACT_APP_GITLAB_SCOPES;
+}
