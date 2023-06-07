@@ -4,11 +4,39 @@ printf "\n\n################ Testing in progress ################"
 printf "\n################ Running Jest ################\n"
 PATH="$(yarn bin):$PATH"
 export PATH
-jest .
 
-# { { yarn start 2>&3 || [ $? -eq 137 ]; } 3>&2 2>/dev/null & } <-- Does not work. Trying to only suppress error 137.
-yarn start >/dev/null & # Start server in background. Suppress stderr.
-printf "\n\n################ Running Playwright ################"
-playwright test
-printf "Closing server on port 4000..."
-npx kill-port 4000
+if [ -z "${1+x}" ]; then
+    mode="unit-tests"  # Default mode if no argument passed
+else 
+    mode=$1
+fi
+
+if [ "$mode" == "-a" ]; then
+    printf "\n################ Running all tests ################\n"
+    printf "Running unit tests...\n"
+    jest -c ./jest.config.json ../test/unitTests --coverage
+    printf "Running integration tests ...\n"
+    jest -c ./jest.integration.config.json ../test/integration
+    yarn start >/dev/null & # Start server in background. Suppress stderr.
+    printf "\n\n################ Running Playwright ################"
+    playwright test
+    printf "Closing server on port 4000..."
+    npx kill-port 4000
+elif [ "$mode" == "-u" ] or [ "$mode" == "-unit-tests" ]; then
+    printf "Running unit tests only...\n"
+    jest -c ./jest.config.json ../test/unitTests --coverage
+elif [ "$mode" == "-i" ]; then
+    printf "Running integration tests only...\n"
+    jest -c ./jest.integration.config.json ../test/integration
+elif [ "$mode" == "-e" ]; then
+    printf "\n################ Running e2e tests ################\n"
+    yarn start >/dev/null & # Start server in background. Suppress stderr.
+    printf "\n\n################ Running Playwright ################"
+    playwright test
+    printf "Closing server on port 4000..."
+    npx kill-port 4000
+else
+    printf "Running unit tests only...\n"
+    printf "Use -a for all tests, -u for unit tests or -e for e2e tests"
+    jest -c ./jest.config.json ../test/unitTests --coverage
+fi
