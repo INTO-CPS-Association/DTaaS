@@ -40,7 +40,8 @@ jobs:
         run: |
           cd client/	
           yarn install	
-          yarn test
+          yarn test -u
+          yarn test -i
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
