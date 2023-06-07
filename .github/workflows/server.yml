@@ -17,8 +17,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
       - name: Run the linting checks
         run: |
@@ -38,6 +38,7 @@ jobs:
           yarn install
           yarn test -u
           yarn test -i
+          pwd
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
