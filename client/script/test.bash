@@ -17,11 +17,13 @@ if [ "$mode" == "-a" ]; then
     jest -c ./jest.config.json ../test/unitTests --coverage
     printf "Running integration tests ...\n"
     jest -c ./jest.integration.config.json ../test/integration
+    yarn configapp test # Switch to testing env
     yarn start >/dev/null & # Start server in background. Suppress stderr.
     printf "\n\n################ Running Playwright ################"
     playwright test
     printf "Closing server on port 4000..."
     npx kill-port 4000
+    yarn configapp dev
 elif [ "$mode" == "-u" ] or [ "$mode" == "-unit-tests" ]; then
     printf "Running unit tests only...\n"
     jest -c ./jest.config.json ../test/unitTests --coverage
@@ -30,11 +32,13 @@ elif [ "$mode" == "-i" ]; then
     jest -c ./jest.integration.config.json ../test/integration
 elif [ "$mode" == "-e" ]; then
     printf "\n################ Running e2e tests ################\n"
+    yarn configapp test # Switch to testing env
     yarn start >/dev/null & # Start server in background. Suppress stderr.
     printf "\n\n################ Running Playwright ################"
     playwright test
     printf "Closing server on port 4000..."
     npx kill-port 4000
+    yarn configapp dev
 else
     printf "Running unit tests only...\n"
     printf "Use -a for all tests, -u for unit tests or -e for e2e tests"
