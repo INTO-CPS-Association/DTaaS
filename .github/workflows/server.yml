@@ -59,7 +59,7 @@ jobs:
       - name: Upload unit, integration, and e2e test coverage for all to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: servers/lib/coverage/clover.xml
+          files: ./servers/lib/coverage/clover.xml
           flags: lib-microservice
 
       - name: print working directory
