@@ -26,17 +26,10 @@ export async function signOut() {
 
   if (auth.user) {
     const idToken = auth.user.id_token; // camelCase for variable name
-
-    // eslint-disable-next-line no-console
-    console.log('ID TOKEN: ', idToken);
-    // eslint-disable-next-line no-console
-    console.log('ID TOKEN PROFILE: ', auth.user.profile.id_token);
-
     localStorage.clear();
     sessionStorage.clear();
 
     await auth.removeUser();
-
     await auth.signoutRedirect({
       post_logout_redirect_uri: LOGOUT_URL.toString(),
       id_token_hint: idToken,
