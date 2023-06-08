@@ -25,7 +25,6 @@ describe('SignIn', () => {
         <SignIn />
       </MemoryRouter>
     );
-
     expect(
       screen.getByRole('button', { name: /Sign In With GitLab/i })
     ).toBeInTheDocument();

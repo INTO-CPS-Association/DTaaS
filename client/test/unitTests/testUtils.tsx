@@ -52,6 +52,14 @@ export function generateTestDivs(testIds: string[]) {
   ));
 }
 
+export function generateTestDivs(testIds: string[]) {
+  return testIds.map((id, i) => (
+    <div key={i} data-testid={id}>
+      Test
+    </div>
+  ));
+}
+
 export function InitRouteTests(component: React.ReactElement) {
   beforeEach(async () => {
     await act(async () => {

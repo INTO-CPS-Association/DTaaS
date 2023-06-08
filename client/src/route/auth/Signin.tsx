@@ -2,7 +2,6 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-
 import { useAuth } from 'react-oidc-context';
 import Button from '@mui/material/Button';
 
