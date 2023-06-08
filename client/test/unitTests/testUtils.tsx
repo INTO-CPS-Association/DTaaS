@@ -44,13 +44,6 @@ const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
     </Routes>
   </MemoryRouter>
 );
-export function generateTestDivs(testIds: string[]) {
-  return testIds.map((id, i) => (
-    <div key={i} data-testid={id}>
-      Test
-    </div>
-  ));
-}
 
 export function generateTestDivs(testIds: string[]) {
   return testIds.map((id, i) => (
