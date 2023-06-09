@@ -2,9 +2,9 @@
 // @ts-check
 // src: https://playwright.dev/docs/api/class-testconfig
 
-import { devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
-const config = {
+export default defineConfig({
   timeout: 30000,
   globalTimeout: 600000,
   testDir: './test/e2e',
@@ -16,18 +16,21 @@ const config = {
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    baseURL: 'http://localhost:4000/dtaas/',
+    browserName: 'firefox',
+    baseURL: 'http://localhost:4000/',
   },
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    // Setup project
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Use prepared auth state.
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
-};
-
-export default config;
+});
