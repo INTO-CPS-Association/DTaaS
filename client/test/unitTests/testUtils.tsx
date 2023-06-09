@@ -16,7 +16,10 @@ type RouterOptions = {
   store?: Store;
 };
 
-export const renderWithRouter = (ui: React.ReactElement, { route = '/', store }: RouterOptions = {}) => {
+export const renderWithRouter = (
+  ui: React.ReactElement,
+  { route = '/', store }: RouterOptions = {}
+) => {
   window.history.pushState({}, 'Test page', route);
 
   return store
@@ -25,9 +28,7 @@ export const renderWithRouter = (ui: React.ReactElement, { route = '/', store }:
           <RouterComponent ui={ui} route={route} />
         </Provider>
       )
-    : render(
-        <RouterComponent ui={ui} route={route} />
-      );
+    : render(<RouterComponent ui={ui} route={route} />);
 };
 
 interface RouterComponentProps {

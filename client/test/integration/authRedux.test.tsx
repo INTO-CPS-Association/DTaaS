@@ -7,8 +7,6 @@ import Library from '../../src/route/library/Library';
 import authReducer from '../../src/store/auth.slice';
 import { renderWithRouter } from '../unitTests/testUtils';
 
-
-
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
@@ -37,12 +35,13 @@ const setupTest = (authState: AuthState) => {
   };
 
   (useAuth as jest.Mock).mockReturnValue({ ...authState, user: userMock });
-  
+
   if (authState.isAuthenticated) {
-    store.dispatch({ type: 'auth/setUserName', payload: userMock.profile.profile.split("/")[1] });
-  }
-  else
-  {
+    store.dispatch({
+      type: 'auth/setUserName',
+      payload: userMock.profile.profile.split('/')[1],
+    });
+  } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
   }
 
@@ -50,11 +49,9 @@ const setupTest = (authState: AuthState) => {
     <PrivateRoute>
       <Library />
     </PrivateRoute>,
-    { route: '/private', store },
+    { route: '/private', store }
   );
 };
-
-
 
 describe('Redux and Authentication integration test', () => {
   let initialState: {
@@ -87,18 +84,17 @@ describe('Redux and Authentication integration test', () => {
     setupTest({
       isAuthenticated: true,
     });
-    
-    expect(screen.getByText('Functions')).toBeInTheDocument();
-    expect(store.getState().userName).toBe("username");
-  });
 
+    expect(screen.getByText('Functions')).toBeInTheDocument();
+    expect(store.getState().userName).toBe('username');
+  });
 
   it('renders undefined username after ending authentication', () => {
     setupTest({
       isAuthenticated: true,
     });
     expect(screen.getByText('Functions')).toBeInTheDocument();
-    expect(store.getState().userName).toBe("username");
+    expect(store.getState().userName).toBe('username');
 
     setupTest({
       isAuthenticated: false,

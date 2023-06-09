@@ -66,7 +66,16 @@ query {
 }
 ```
 
+<<<<<<< HEAD
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
+=======
+The lib microservice is now running and ready to serve files, functions, and models.
+
+You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
+````
+
+### Lib request and response
+>>>>>>>   E2E tests for oauth authentication (#71)
 
 ## Example GraphQL Queries
 

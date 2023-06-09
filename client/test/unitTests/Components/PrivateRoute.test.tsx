@@ -30,7 +30,8 @@ const setupTest = (authState: AuthState) => {
     <PrivateRoute>
       <TestComponent />
     </PrivateRoute>,
-    { route: '/private' },
+
+    { route: '/private' }
   );
 };
 

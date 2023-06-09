@@ -6,8 +6,13 @@ import links from './Links.ts'; // Extension is required with Playwright import
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('./');
-    await page.getByRole('textbox', { name: 'username' }).fill('user-test');
-    await page.locator('button:has-text("Sign In")').click();
+    await page
+      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
+      .click();
+    await expect(
+      page.getByRole('button', { name: 'Open settings' })
+    ).toBeVisible();
+    await expect(page).toHaveURL(/.*Library/);
   });
 
   test('Menu Links are visible', async ({ page }) => {
