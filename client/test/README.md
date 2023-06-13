@@ -6,6 +6,11 @@ To successfully run the end-to-end tests, you need to create a .env file where y
 
 Follow these steps to create and configure your .env file:
 
+Install the required dependencies prior to running the tests, use the following command:
+```
+sudo npx playwright install-deps
+```
+
 Inside of the _test_ folder of the project, create a new file and name it .env. So the path should be client/test/.env
 
 Open the .env file in a text editor and add the following environment variables:
