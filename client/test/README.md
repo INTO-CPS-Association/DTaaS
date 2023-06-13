@@ -22,6 +22,12 @@ Here's an example:
 REACT_APP_TEST_USERNAME=TestUsername
 REACT_APP_TEST_PASSWORD=TestPassword123
 ```
+## Configuring the Test.js File
+Before running the end-to-end tests, you might need to make some changes to the `config/test.js` file. You'll find this file in the client directory of the project.
+
+Open `config/test.js` in a text editor and make sure the configuration matches the details of your testing environment. For instance, you may need to adjust the `REACT_APP_URL` and `REACT_APP_REDIRECT_URI` settings to match the local development URL, or adjust other settings according to your needs.
+
+For more information on about the environment settings go to the `docs/user/client/README.md`
 
 ## Running the Tests
 Once you've properly set up your .env file, you can now run the end-to-end tests.
