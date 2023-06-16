@@ -72,6 +72,9 @@ typings/
 .env
 .env.test
 
+# front end environment variables
+client/public/env.js
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
@@ -106,3 +109,15 @@ dist
 # Babel compiled output
 dist-server/
 build/
+
+# Test reports
+coverage/
+playwright-report/
+
+# Mac temp files
+servers/.DS_Store
+data/.DS_Store
+**/.DS_Store
+
+# Built docs
+site/
