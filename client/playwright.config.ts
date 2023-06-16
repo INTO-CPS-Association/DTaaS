@@ -3,6 +3,11 @@
 // src: https://playwright.dev/docs/api/class-testconfig
 
 import { defineConfig, devices } from '@playwright/test';
+// import fs from 'fs';
+// import path from 'path';
+
+// const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
+
 
 export default defineConfig({
   timeout: 45000,
