@@ -8,7 +8,6 @@ import { defineConfig, devices } from '@playwright/test';
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
 
-
 export default defineConfig({
   timeout: 45000,
   globalTimeout: 600000,

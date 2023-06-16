@@ -15,14 +15,16 @@ setup('authenticate', async ({ page }) => {
     .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
     .click();
   try {
-    await page.waitForSelector('label[for="user_login"]', {timeout: 30000}); // wait up to 4 seconds
+    await page.waitForSelector('label[for="user_login"]', { timeout: 10000 }); // wait up to 10 seconds
   } catch (error) {
-    // The login page did not appear within 4 seconds, so just ignore and continue.
+    // The login page did not appear within 10 seconds, so just ignore and continue.
   }
   // Accept the cookies if popup appears
   try {
     // Wait for 'Accept All Cookies' button to appear for up to 4 seconds.
-    await page.waitForSelector('button:has-text("Accept All Cookies")', { timeout: 4000 });
+    await page.waitForSelector('button:has-text("Accept All Cookies")', {
+      timeout: 4000,
+    });
     // If the button appears, click it.
     await page.getByRole('button', { name: 'Accept All Cookies' }).click();
   } catch (error) {
@@ -32,7 +34,9 @@ setup('authenticate', async ({ page }) => {
   await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.
   await page.getByRole('button', { name: 'Sign in' }).click();
   try {
-    await page.waitForSelector('input[type="submit"][value="Authorize"]', { timeout: 10000 });
+    await page.waitForSelector('input[type="submit"][value="Authorize"]', {
+      timeout: 10000,
+    });
     await page.click('input[type="submit"][value="Authorize"]');
   } catch (error) {
     // 'Authorize' button did not appear within 4 seconds, so just ignore and continue.
@@ -42,18 +46,19 @@ setup('authenticate', async ({ page }) => {
   ).toBeVisible();
 
   const storage = await page.context().storageState();
-    storage.cookies = storage.cookies.map(cookie => {
+  storage.cookies = storage.cookies.map((cookie) => {
     if (cookie.name === 'preferred_language') {
       cookie.httpOnly = false;
       cookie.secure = false;
       cookie.sameSite = 'Lax';
-    }
-    else if (cookie.name === 'known_sign_in' || cookie.name === '_gitlab_session') {
+    } else if (
+      cookie.name === 'known_sign_in' ||
+      cookie.name === '_gitlab_session'
+    ) {
       cookie.httpOnly = true;
       cookie.secure = false;
       cookie.sameSite = 'Lax';
-    }
-    else if (cookie.name === '_cfuvid') {
+    } else if (cookie.name === '_cfuvid') {
       cookie.httpOnly = true;
       cookie.secure = true;
       cookie.sameSite = 'None';

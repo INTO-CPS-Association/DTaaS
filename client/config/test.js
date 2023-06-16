@@ -10,8 +10,8 @@ window.env = {
   REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
   REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
 
-  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-  REACT_APP_AUTH_AUTHORITY: 'https://worker15.lab.cps.digit.au.dk/',
+  REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
   REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
