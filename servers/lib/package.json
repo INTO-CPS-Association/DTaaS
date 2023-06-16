@@ -4,7 +4,7 @@
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "private": false,
-  "license": "The INTO-CPS Association",
+  "license": "SEE LICENSE IN <LICENSE.md>",
   "scripts": {
     "build": "script/build.bash",
     "clean": "script/clean.bash",

@@ -2,8 +2,14 @@ name: Check the server microservices
 
 on:
   push:
+    paths-ignore:
+      - 'docs/**'
   pull_request:
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
+    paths-ignore:
+      - 'docs/**'
 
 jobs:
   test:

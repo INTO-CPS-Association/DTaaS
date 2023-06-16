@@ -1,0 +1,88 @@
+# Reusable Assets
+
+The reusability of digital twin assets makes it easy for users to work with the digital twins. The reusability of assets is a fundamental feature of the platform.
+
+## Kinds of Reusable Assets
+
+The DTaaS software categorizes all the reusable library assets into five categories:
+
+### Functions
+
+The functions responsible for pre- and post-processing of: data inputs, data outputs, control outputs. The data science libraries and functions can be used to create useful function assets for the platform.
+In some cases, Digital Twin models require calibration prior to their use; functions written by domain experts along with right data inputs can make model calibration an achievable goal. Another use of functions is to process the sensor and actuator data of both Physical Twins and Digital Twins.
+
+### Data
+
+The data sources and sinks available to a digital twins. Typical examples of data sources are sensor measurements from  Physical Twins, and test data provided by manufacturers for calibration of models. Typical examples of data sinks are visualization software, external users and data storage services. There exist special outputs such as events, and commands which are akin to control outputs from a Digital Twin. These control outputs usually go to Physical Twins, but they can also go to another Digital Twin.
+
+### Models
+
+The model assets are used to describe different aspects of Physical Twins and their environment, at different levels of abstraction. Therefore, it is possible to have multiple models for the same Physical Twin. For example, a flexible robot used in a car production plant may have structural model(s) which will be useful in tracking the wear and tear of parts. The same robot can have a behavioural model(s) describing the safety guarantees provided by the robot manufacturer. The same robot can also have a functional model(s) describing the part manufacturing capabilities of the robot.
+
+### Tools
+
+The software tool assets are software used to create, evaluate and analyze models. These tools are executed on top of a computing platforms, i.e., an operating system, or virtual machines like Java virtual machine, or inside docker containers. The tools tend to be platform specific, making them less reusable than models. 
+A tool can be packaged to run on a local or distributed virtual machine environments thus allowing selection of most suitable execution environment for a Digital Twin. 
+Most models require tools to evaluate them in the context of data inputs. 
+There exist cases where executable packages are run as binaries in a computing environment. Each of these packages are a pre-packaged combination of models and tools put together to create a ready to use Digital Twins.
+
+### Digital Twins
+
+These are ready to use digital twins created by one or more users. These digital twins can be reconfigured later for specific use cases.
+
+## File System Structure
+
+Each user has their assets put into five different directories named above. In addition, there will also be common library assets that all users have access to. A simplified example of the structure is as follows:
+
+```text
+lib/
+  data/
+    data1/ (ex: sensor)
+      filename (ex: sensor.csv)
+      README.md
+    data2/ (ex: turbine)
+      README.md (remote source; no local file)
+    ...
+  digital twins/
+    digital twin-1/ (ex: incubator)
+      code and config
+      README.md (usage instructions)
+    digital twin-2/ (ex: mass spring damper)
+      code and config
+      README.md (usage instructions)
+    digital twin-3/ (ex: model swap)
+      code and config
+      README.md (usage instructions)
+    ...
+  functions/
+    function1/ (ex: graphs)
+      filename (ex: graphs.py)
+      README.md
+    function2/ (ex: statistics)
+      filename (ex: statistics.py)
+      README.md
+    ...
+  models/
+    model1/ (ex: spring)
+      filename (ex: spring.fmu)
+      README.md
+    model2/ (ex: building)
+      filename (ex: building.skp)
+      README.md
+    model3/ (ex: rabbitmq)
+      filename (ex: rabbitmq.fmu)
+      README.md
+    ...
+  tools/
+    tool1/ (ex: maestro)
+      filename (ex: maestro.jar)
+      README.md
+    ...
+  common/
+    data/
+    functions/
+    models/
+    tools/
+```
+
+A recommended file system structure for storing assets is available in [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples).

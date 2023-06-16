@@ -1,126 +1,88 @@
-# DTaaS Library Microservice
+# Library Microservice
 
-This document provides an overview of the lib microservice and explains its file structure, usage, and setup. The lib microservice is designed to manage and serve files, functions, and models to users, allowing them to access and interact with various resources.
+The lib microservice is responsible for handling and serving the contents of library assets of the DTaaS platform. It provides API endpoints for clients to query, and fetch these assets.
 
-## Overview
+This document provides instructions for using the library microservice.
 
-The lib microservice is responsible for handling and serving the contents of library assets of the DTaaS platform. It provides API endpoints for clients to query, fetch, and interact with these assets.
+Please see [assets](/user/servers/lib/assets.md) for a suggested storage conventions of your library assets.
 
-## File Structure
+Once the assets are stored in the library, you can access the server's endpoint by typing in the following URL: `http://foo.com/lib`.
 
-The DTaaS software categorizes all the reusable library assets into four categories:
+The URL opens a graphql playground. You can check the query schema and try sample queries here. You can also send graphql queries as HTTP POST requests and get responses.
 
-1. **Data** - data files on disk
-2. **Models** - digital twin models that tools can evaluate
-3. **Tools** - algorithms / software tools that evaluate **Models** with the help of **Data**.
-4. **Functions** - data processing and visualization libraries
-5. **Digital Twins** -- Ready to use digital twins
+## The GraphQL Queries
 
-Each user has their assets put into five different directories named above. In addition, there will also be common library assets that all users have access to. A graphical representation is given below.
+The library microservice services two graphql requests:
 
-<img title="File System Layout" src="./file-system-layout.png">
+* Provide a list of contents for a directory
+* Fetch a file from the available files
 
-An simplified example of the structure is as follows:
+The format of the accepted queries are:
 
-```txt
-lib/
-  functions/
-    function1/ (ex: graphs)
-      filename (ex: graphs.py)
-      README.md
-    function2/ (ex: statistics)
-      filename (ex: statistics.py)
-      README.md
-    ...
-  models/
-    model1/ (ex: spring)
-      filename (ex: spring.fmu)
-      README.md
-    model2/ (ex: building)
-      filename (ex: building.skp)
-      README.md
-    ...
+### Provide list of contents for a directory
+
+```graphql
+query {
+  listDirectory(path: "user1") {
+    repository {
+      tree {
+        blobs {
+          edges {
+            node {
+              name
+              type
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
-### Functions
+#### Fetch a file from the available files
 
-Functions are organized in individual folders within the functions directory. Each function folder should contain a Python script implementing the function and a README.md file describing the purpose, inputs, outputs, and usage of the function.
-
-### Models
-
-Models are organized in individual folders within the models directory. Each model folder should contain a file representing the model (e.g., FMU or SKP files) and a README.md file describing the model, its purpose, and its usage.
-
-## Setup Microservice
-
-To set up the lib microservice, follow these steps:
-
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd DTaaS/server/lib
-yarn install   # Install the required dependencies
+```graphql
+query {
+  readFile(path: "/path/to/file") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
+    }
+  }
+}
 ```
 
-### Environment Variables
+The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
 
-To set up the environment variables for the lib microservice, create a new file named _.env_ in the `servers/lib` folder. Then, add the following variables and their respective values. Below you can see and how, with included examples:
+## Example GraphQL Queries
 
-```env
-PORT='4001'
-MODE='local' or 'gitlab'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-GITLAB_GROUP ='dtaas'
-GITLAB_URL='https://gitlab.com/api/graphql'
-TOKEN='123-sample-token'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
-```
+### Provide list of contents for a directory
 
-Replace the default values the appropriate values for your setup.
-
-**NOTE**:
-
-1. When \__MODE=local_, only _LOCAL_PATH_ is used. Other environment variables are unused.
-1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_, and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
-
-### Start Microservice
-
-```bash
-yarn install
-yarn build
-yarn start
-```
-
-The lib microservice is now running and ready to serve files, functions, and models.
-
-You can access the server's endpoint by typing in the following URL: `http://localhost:<PORT>/lib`.
-
-````
-
-### Lib request and response
-
-Documentation of the lib query and responses.
-
-```
-
-HTTP Request:
-
-.....
+#### HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
+```http
 POST /lib
-
 Host: foo.com:<PORT>
-
 Content-Type:application/json
-
 User-Agent:Mozilla
-
 Accept:_/_
 
-{
-
-"query":
 query {
   listDirectory(path: "user2") {
     repository {
@@ -144,102 +106,80 @@ query {
     }
   }
 }
-}
+```
 
-HTTP Response:
+#### HTTP Response:
 
-.....
-
+```http
 200 OK
-
 access-control-allow-origin: \*
-
 connection: keep-alive
-
 content-length: 76
-
 content-type: application/json; charset=utf-8
-
 date: Mon, 15 May 2023 10:13:37 GMT
-
 etag: ................
-
 keep-alive: timeout=5
-
 x-powered-by: Express
 
 {
-    "data": {
-        "listDirectory": {
-            "repository": {
-                "tree": {
-                    "blobs": {
-                        "edges": []
-                    },
-                    "trees": {
-                        "edges": [
-                            {
-                                "node": {
-                                    "name": "data"
-                                }
-                            },
-                            {
-                                "node": {
-                                    "name": "digital twins"
-                                }
-                            },
-                            {
-                                "node": {
-                                    "name": "functions"
-                                }
-                            },
-                            {
-                                "node": {
-                                    "name": "models"
-                                }
-                            },
-                            {
-                                "node": {
-                                    "name": "tools"
-                                }
-                            }
-                        ]
-                    }
+  "data": {
+    "listDirectory": {
+      "repository": {
+        "tree": {
+          "blobs": {
+              "edges": []
+          },
+        "trees": {
+            "edges": [
+              {
+                "node": {
+                    "name": "data"
                 }
-            }
+              },
+              {
+                "node": {
+                    "name": "digital twins"
+                  }
+              },
+              {
+                "node": {
+                    "name": "functions"
+                }
+              },
+              {
+                "node": {
+                    "name": "models"
+                }
+              },
+              {
+                "node": {
+                    "name": "tools"
+                }
+              }
+            ]
+          }
         }
+      }
     }
+  }
 }
-
-````
-
-### Lib request and response
-
-Documentation of the lib query and responses.
 
 ```
 
-HTTP Request:
+### Fetch a file from the available files
 
-.....
+#### HTTP Request:
 
 send the request to: http://foo.com:<PORT>/lib
 
-
-
+```http
 POST /lib
-
 Host: foo.com:<PORT>
-
 Content-Type:application/json
-
 User-Agent:Mozilla
-
 Accept:*/*
 
-
 {
-
 "query":
   query{
     readFile(path:"user2/data/welcome.txt"){
@@ -255,30 +195,20 @@ Accept:*/*
     }
   }
 }
+```
 
+#### HTTP Response:
 
-HTTP Response:
-
-.....
-
+```http
 200 OK
-
 access-control-allow-origin: *
-
 connection: keep-alive
-
 content-length: 76
-
 content-type: application/json; charset=utf-8
-
 date: Mon, 15 May 2023 10:13:37 GMT
-
 etag: ................
-
 keep-alive: timeout=5
-
 x-powered-by: Express
-
 
 {
   "data": {
@@ -299,52 +229,3 @@ x-powered-by: Express
 }
 
 ```
-
-### GraphQL API queries
-
-The accepted queries are:
-
-```graphql
-query {
-  listDirectory(path: "user2") {
-    repository {
-      tree {
-        blobs {
-          edges {
-            node {
-              name
-              type
-            }
-          }
-        }
-        trees {
-          edges {
-            node {
-              name
-              type
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-```graphql
-query {
-  readFile(path: "/path/to/file") {
-    repository {
-      blobs {
-        nodes {
-          name
-          rawBlob
-          rawTextBlob
-        }
-      }
-    }
-  }
-}
-```
-
-The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.

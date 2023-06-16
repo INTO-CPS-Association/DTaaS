@@ -1,0 +1,51 @@
+site_name: Digital Twin as a Service (DTaaS)
+
+repo_url: https://github.com/into-cps-association/DTaaS
+repo_name: DTaaS
+copyright: Copyright &copy; 2022 - 2023 The INTO-CPS Association
+
+theme: 
+  name: material
+  locale: en
+  logo: assets/into-cps-logo.png
+  favicon: assets/into-cps-logo.png
+  features:
+    - navigation.tabs
+    - navigation.footer
+
+nav:
+  - Home: index.md
+  - Admin:
+      - website: admin/client/CLIENT.md
+      - library microservice: admin/servers/lib/LIB-MS.md
+  - User:
+      - Features: user/features.md
+      - Website: user/website/index.md
+      - Library: 
+          - Assets: user/servers/lib/assets.md
+          - Microservice: user/servers/lib/LIB-MS.md
+      - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
+  - FAQ: FAQ.md
+  - Bugs: bugs.md
+
+use_directory_urls: false
+
+extra_css:
+  - docs/assets/css/extra.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
+markdown_extensions:
+  - pymdownx.highlight:
+      linenums: true
+      use_pygments: true
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets      
+  - pymdownx.superfences
+  - pymdownx.details
+  - mdx_math:
+      enable_dollar_delimiter: True
