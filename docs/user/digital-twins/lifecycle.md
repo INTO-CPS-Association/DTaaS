@@ -1,0 +1,1 @@
+Lifecycle image and copy of explanation from the paper.

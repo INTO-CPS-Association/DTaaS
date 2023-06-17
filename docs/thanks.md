@@ -1,0 +1,1 @@
+Put a sitemap and list all the references relative to each page. If sitemap is not possible, just use markdown headlines for pages.

@@ -24,7 +24,7 @@ To host DTaaS client website on your server, follow these steps:
     // Example values with no base URL. Trailing and ending slashes are optional.
     window.env = {
       REACT_APP_ENVIRONMENT: 'dev',
-      REACT_APP_URL: 'https://example.com/',
+      REACT_APP_URL: 'https://foo.com/',
       REACT_APP_URL_BASENAME: '',
       REACT_APP_URL_DTLINK: '/lab',
       REACT_APP_URL_LIBLINK: '',
@@ -43,4 +43,5 @@ To host DTaaS client website on your server, follow these steps:
 
 - Once the files are on your server, you should be able to access your app by visiting your server's IP address or domain name in a web browser.
 
----
+
+:fontawesome-solid-circle-info: The website depends on Traefik and ML Workspace components to be available. Otherwise, you only get a skeleton non-functional website.
