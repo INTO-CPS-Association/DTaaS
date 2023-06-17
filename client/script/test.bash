@@ -24,7 +24,7 @@ if [ "$mode" == "-a" ]; then
     printf "Closing server on port 4000..."
     npx kill-port 4000
     yarn configapp dev
-elif [ "$mode" == "-u" ] or [ "$mode" == "-unit-tests" ]; then
+elif [ "$mode" == "-u" ]; then
     printf "Running unit tests only...\n"
     jest -c ./jest.config.json ../test/unitTests --coverage
 elif [ "$mode" == "-i" ]; then
@@ -41,6 +41,6 @@ elif [ "$mode" == "-e" ]; then
     yarn configapp dev
 else
     printf "Running unit tests only...\n"
-    printf "Use -a for all tests, -u for unit tests or -e for e2e tests"
+    printf "Use -a for all tests, -u for unit tests, -i for integration tests or -e for e2e tests"
     jest -c ./jest.config.json ../test/unitTests --coverage
 fi
