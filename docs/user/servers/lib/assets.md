@@ -85,4 +85,12 @@ lib/
     tools/
 ```
 
-A recommended file system structure for storing assets is available in [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples).
+A recommended file system structure for storing assets is also available in [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples).
+
+## Create Assets
+
+The DTaaS software allows users to create new library assets on the platform.
+
+![Create Library Assets](create.png)
+
+Users can use authoring tools from their own workspace to create and publish new assets. User workspaces are private and are not shared with other users. Thus any licensed software tools installed in their workspace is only available to them.
