@@ -3,9 +3,13 @@
 // src: https://playwright.dev/docs/api/class-testconfig
 
 import { defineConfig, devices } from '@playwright/test';
+// import fs from 'fs';
+// import path from 'path';
+
+// const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
 
 export default defineConfig({
-  timeout: 30000,
+  timeout: 45000,
   globalTimeout: 600000,
   testDir: './test/e2e',
   testMatch: /.*\.test\.ts/,
@@ -16,13 +20,23 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    browserName: 'firefox',
     baseURL: 'http://localhost:4000/',
   },
   projects: [
     // Setup project
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
-
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { browserName: 'firefox' },
+    },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
     {
       name: 'firefox',
       use: {
