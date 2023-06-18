@@ -14,6 +14,7 @@ yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
 yarn build      #build the react app into build/ directory
+yarn relay      #generate graphql relay files - run after modifying graphql schema or queries
 yarn develop    #start the development server without building. Great for live edits.
 
 

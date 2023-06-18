@@ -27,6 +27,9 @@ To host DTaaS client website on your server, follow these steps:
       REACT_APP_REDIRECT_URI: 'URL of the homepage for the logged in users of the website',
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth scopes. These should match with the scopes set in gitlab OAuth provider',
+      
+      REACT_APP_BACKEND_URL_GITLAB: "URL for the GitLab API",
+      REACT_APP_BACKEND_GITLAB_GROUP: "GitLab group name",
     };
 
     // Example values with no base URL. Trailing and ending slashes are optional.
@@ -67,6 +70,9 @@ To host DTaaS client website on your server, follow these steps:
       REACT_APP_REDIRECT_URI: 'https://foo.com/bar/Library',
       REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/bar',
       REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+      
+      REACT_APP_BACKEND_URL_GITLAB: 'https://gitlab.com/api/graphql',
+      REACT_APP_BACKEND_GITLAB_GROUP: 'dtaas1',
     };
     ```
 
