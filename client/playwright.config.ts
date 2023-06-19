@@ -10,7 +10,7 @@ dotenv.config({ path: './test/.env' });
 // import path from 'path';
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
-const BASE_URI = process.env.REACT_APP_URL.toString() ?? ''
+const BASE_URI = process.env.REACT_APP_URL.toString() ?? '';
 
 export default defineConfig({
   timeout: 45000,
