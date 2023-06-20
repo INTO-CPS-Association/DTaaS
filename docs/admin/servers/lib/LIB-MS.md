@@ -9,6 +9,8 @@ This document provides instructions for running the library microservice.
 The users expect the following file system structure for their reusable assets.
 
 ![File System Layout](file-system-layout.png)
+
+There is a skeleton file structure in [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files). You can copy and create file system for your users.
 ## Setup Microservice
 
 To set up the lib microservice, follow these steps:
