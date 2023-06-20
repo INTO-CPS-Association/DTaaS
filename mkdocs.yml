@@ -11,6 +11,7 @@ theme:
   favicon: assets/into-cps-logo.png
   features:
     - navigation.tabs
+    - navigation.tracking
     - navigation.footer
 
 nav:
@@ -24,9 +25,13 @@ nav:
       - Library: 
           - Assets: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
+      - Digital Twins: 
+          - Lifecycle: user/digital-twins/lifecycle.md
+          - Templates: user/digital-twins/templates.md
       - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Bugs: bugs.md
+  - Thanks: thanks.md
 
 use_directory_urls: false
 
@@ -37,6 +42,10 @@ extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
 markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.highlight:
       linenums: true
       use_pygments: true
@@ -47,5 +56,8 @@ markdown_extensions:
   - pymdownx.snippets      
   - pymdownx.superfences
   - pymdownx.details
+  - admonition
+  - pymdownx.tabbed:
+      alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True

@@ -21,211 +21,291 @@ The format of the accepted queries are:
 
 ### Provide list of contents for a directory
 
-```graphql
-query {
-  listDirectory(path: "user1") {
-    repository {
-      tree {
-        blobs {
-          edges {
-            node {
-              name
-              type
-            }
-          }
-        }
-        trees {
-          edges {
-            node {
-              name
-              type
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+send requests to: https://foo.com/lib
 
-#### Fetch a file from the available files
+=== "GraphQL Query"
 
-```graphql
-query {
-  readFile(path: "/path/to/file") {
-    repository {
-      blobs {
-        nodes {
-          name
-          rawBlob
-          rawTextBlob
-        }
-      }
-    }
-  }
-}
-```
-
-The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
-
-## Example GraphQL Queries
-
-### Provide list of contents for a directory
-
-#### HTTP Request:
-
-send the request to: http://foo.com:<PORT>/lib
-
-```http
-POST /lib
-Host: foo.com:<PORT>
-Content-Type:application/json
-User-Agent:Mozilla
-Accept:_/_
-
-query {
-  listDirectory(path: "user2") {
-    repository {
-      tree {
-        blobs {
-          edges {
-            node {
-              name
-
-            }
-          }
-        }
-        trees {
-          edges {
-            node {
-              name
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-#### HTTP Response:
-
-```http
-200 OK
-access-control-allow-origin: \*
-connection: keep-alive
-content-length: 76
-content-type: application/json; charset=utf-8
-date: Mon, 15 May 2023 10:13:37 GMT
-etag: ................
-keep-alive: timeout=5
-x-powered-by: Express
-
-{
-  "data": {
-    "listDirectory": {
-      "repository": {
-        "tree": {
-          "blobs": {
-              "edges": []
-          },
-        "trees": {
-            "edges": [
-              {
-                "node": {
-                    "name": "data"
-                }
-              },
-              {
-                "node": {
-                    "name": "digital twins"
-                  }
-              },
-              {
-                "node": {
-                    "name": "functions"
-                }
-              },
-              {
-                "node": {
-                    "name": "models"
-                }
-              },
-              {
-                "node": {
-                    "name": "tools"
+    ``` graphql-query
+    query {
+      listDirectory(path: "user1") {
+        repository {
+          tree {
+            blobs {
+              edges {
+                node {
+                  name
+                  type
                 }
               }
-            ]
+            }
+            trees {
+              edges {
+                node {
+                  name
+                  type
+                }
+              }
+            }
           }
         }
       }
     }
-  }
-}
+    ```
 
-```
+=== "GraphQL Response"
+
+    ``` graphql-response
+    {
+      "data": {
+        "listDirectory": {
+          "repository": {
+            "tree": {
+              "blobs": {
+                "edges": []
+              },
+              "trees": {
+                "edges": [
+                  {
+                    "node": {
+                      "name": "common",
+                      "type": "tree"
+                    }
+                  },
+                  {
+                    "node": {
+                      "name": "data",
+                      "type": "tree"
+                    }
+                  },
+                  {
+                    "node": {
+                      "name": "digital twins",
+                      "type": "tree"
+                    }
+                  },
+                  {
+                    "node": {
+                      "name": "functions",
+                      "type": "tree"
+                    }
+                  },
+                  {
+                    "node": {
+                      "name": "models",
+                      "type": "tree"
+                    }
+                  },
+                  {
+                    "node": {
+                      "name": "tools",
+                      "type": "tree"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+=== "HTTP Request :warning:"
+
+    ``` http-request
+    POST /lib
+    Host: foo.com:<PORT>
+    Content-Type:application/json
+    User-Agent:Mozilla
+    Accept:_/_
+
+    query {
+      listDirectory(path: "user2") {
+        repository {
+          tree {
+            blobs {
+              edges {
+                node {
+                  name
+
+                }
+              }
+            }
+            trees {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+=== "HTTP Response :warning:"
+
+    ``` http-response
+    200 OK
+    access-control-allow-origin: \*
+    connection: keep-alive
+    content-length: 76
+    content-type: application/json; charset=utf-8
+    date: Mon, 15 May 2023 10:13:37 GMT
+    etag: ................
+    keep-alive: timeout=5
+    x-powered-by: Express
+
+    {
+      "data": {
+        "listDirectory": {
+          "repository": {
+            "tree": {
+              "blobs": {
+                  "edges": []
+              },
+            "trees": {
+                "edges": [
+                  {
+                    "node": {
+                        "name": "data"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "digital twins"
+                      }
+                  },
+                  {
+                    "node": {
+                        "name": "functions"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "models"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "tools"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+
+    ```
+
 
 ### Fetch a file from the available files
 
-#### HTTP Request:
 
-send the request to: http://foo.com:<PORT>/lib
 
-```http
-POST /lib
-Host: foo.com:<PORT>
-Content-Type:application/json
-User-Agent:Mozilla
-Accept:*/*
+=== "GraphQL Request"
 
-{
-"query":
-  query{
-    readFile(path:"user2/data/welcome.txt"){
-      repository{
-        blobs{
-          nodes{
-            name
-            rawBlob
-            rawTextBlob
+    ```graphql-request
+    query {
+      readFile(path: "user2/data/sample.txt") {
+        repository {
+          blobs {
+            nodes {
+              name
+              rawBlob
+              rawTextBlob
+            }
           }
         }
       }
     }
-  }
-}
-```
+    ```
 
-#### HTTP Response:
+=== "GraphQL Response"
 
-```http
-200 OK
-access-control-allow-origin: *
-connection: keep-alive
-content-length: 76
-content-type: application/json; charset=utf-8
-date: Mon, 15 May 2023 10:13:37 GMT
-etag: ................
-keep-alive: timeout=5
-x-powered-by: Express
-
-{
-  "data": {
-    "readFile": {
-      "repository": {
-        "blobs": {
-          "nodes": [
-            {
-              "name": "welcome.txt",
-              "rawBlob": "welcome user",
-              "rawTextBlob": "welcome user"
+    ```graphql-response
+    {
+      "data": {
+        "readFile": {
+          "repository": {
+            "blobs": {
+              "nodes": [
+                {
+                  "name": "sample.txt",
+                  "rawBlob": "hello world",
+                  "rawTextBlob": "hello world"
+                }
+              ]
             }
-          ]
+          }
         }
       }
     }
-  }
-}
+    ```
 
-```
+=== "HTTP Request :warning:"
+
+    ```http-request
+    POST /lib
+    Host: foo.com:<PORT>
+    Content-Type:application/json
+    User-Agent:Mozilla
+    Accept:*/*
+
+    {
+    "query":
+      query{
+        readFile(path:"user2/data/sample.txt"){
+          repository{
+            blobs{
+              nodes{
+                name
+                rawBlob
+                rawTextBlob
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+=== "HTTP Response :warning:"
+
+    ```http-response
+    200 OK
+    access-control-allow-origin: *
+    connection: keep-alive
+    content-length: 76
+    content-type: application/json; charset=utf-8
+    date: Mon, 15 May 2023 10:13:37 GMT
+    etag: ................
+    keep-alive: timeout=5
+    x-powered-by: Express
+
+    {
+      "data": {
+        "readFile": {
+          "repository": {
+            "blobs": {
+              "nodes": [
+                {
+                  "name": "sample.txt",
+                  "rawBlob": "welcome hello world",
+                  "rawTextBlob": "hello world"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+
+    ```
+
+
+The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
