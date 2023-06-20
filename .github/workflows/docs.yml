@@ -26,6 +26,6 @@ jobs:
           configfile: 'mkdocs.yml'
 
 
-      - name: build docs
+      - name: show contents of compiled docs
         run: |
           ls site
