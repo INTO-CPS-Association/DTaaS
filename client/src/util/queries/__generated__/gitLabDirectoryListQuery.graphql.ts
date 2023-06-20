@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bc35fb2ac64b793b84141ff9ada3e704>>
+ * @generated SignedSource<<85b8a42b9b69cfadba1678b7c64d150b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,7 @@ export type gitLabDirectoryListQuery$data = {
               readonly name: string;
               readonly path: string;
             } | null> | null;
-          } | null;
+          };
         } | null> | null;
       };
     } | null;

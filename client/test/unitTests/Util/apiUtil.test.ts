@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import useAssets from 'util/apiUtil';
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import { wrapWithInitialState } from '../testUtils';
 import { mockAssets, testPath } from '../__mocks__/util_mocks';
 

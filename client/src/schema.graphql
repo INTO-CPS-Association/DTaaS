@@ -4,7 +4,7 @@ type Query {
 
 "Represents a GitLab project. Projects are used to manage various resources such as repositories and issues."
 type Project {
-  fullPath: String
+  fullPath: ID!
   webUrl: String
   path: String!
   repository: Repository
@@ -12,7 +12,7 @@ type Project {
 
 "Represents a GitLab repository. Repositories are used to manage a collection of files, as well as the history of changes made to those files."
 type Repository {
-  paginatedTree(path: String!, recursive: Boolean!): TreeConnection!
+  paginatedTree(path: String, recursive: Boolean): TreeConnection!
   blobs(paths: [String!]!): RepositoryBlobConnection
 }
 
@@ -36,7 +36,7 @@ type TreeConnection {
 "Entries can be either a blob (file) or a tree (directory)."
 type Tree {
   blobs: BlobConnection!
-  trees: TreeEntryConnection
+  trees: TreeEntryConnection!
 }
 
 type BlobConnection {
@@ -47,7 +47,7 @@ type BlobConnection {
 "Represents a file in a directory tree."
 type Blob {
   flatPath: String!
-  id: String!
+  id: ID!
   name: String!
   path: String!
   webPath: String
@@ -62,7 +62,7 @@ type TreeEntryConnection {
 "Represents a directory in a repository. Directories contain blobs and other directories."
 type TreeEntry {
   flatPath: String!
-  id: String!
+  # id: ID! # For some reason, the id might not be unique. Seems to be a bug in GitLab.
   name: String!
   path: String!
   webPath: String

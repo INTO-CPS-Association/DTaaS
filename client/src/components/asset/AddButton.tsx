@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from '@mui/material';
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import useCart from 'store/CartAccess';
 
 function AddButton(asset: Asset) {

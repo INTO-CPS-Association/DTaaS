@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 
 export interface CartState {
   assets: Asset[];

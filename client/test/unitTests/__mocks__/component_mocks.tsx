@@ -5,15 +5,15 @@ jest.mock('components/LinkButtons', () => ({
   default: () => <button>Button</button>,
 }));
 
-jest.mock('components/AssetBoard/AssetCard', () => ({
+jest.mock('components/asset/AssetCard', () => ({
   default: () => <div role="card">AssetCard</div>,
 }));
 
-jest.mock('components/AssetBoard/AddButton', () => ({
+jest.mock('components/asset/AddButton', () => ({
   default: () => <button>AddButton</button>,
 }));
 
-jest.mock('components/AssetBoard', () => ({
+jest.mock('components/asset/AssetBoard', () => ({
   default: () => <div>AssetBoard</div>,
 }));
 

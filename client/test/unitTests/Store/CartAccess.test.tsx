@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import useCart from 'store/CartAccess';
 import { wrapWithInitialState } from '../testUtils';
 

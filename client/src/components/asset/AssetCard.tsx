@@ -4,8 +4,8 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { Button, CardActions, Grid, Icon, SxProps, Theme } from '@mui/material';
 import styled from '@emotion/styled';
-import AddButton from 'components/AssetBoard/AddButton';
-import { Asset } from 'models/Asset';
+import AddButton from 'components/asset/AddButton';
+import { Asset } from './Asset';
 
 interface CardProps {
   asset: Asset;

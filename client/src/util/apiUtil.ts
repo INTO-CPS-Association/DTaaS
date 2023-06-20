@@ -1,6 +1,6 @@
 import { useLazyLoadQuery } from 'react-relay';
 import { getGitlabGroup } from 'util/envUtil';
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import useUserData from 'store/UserAccess';
 import {
   gitLabDirectoryListQuery,

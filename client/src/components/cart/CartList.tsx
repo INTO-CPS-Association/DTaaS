@@ -1,14 +1,12 @@
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import React from 'react';
+import useCart from 'store/CartAccess';
 
-interface OwnProps {
-  assets: Asset[];
-}
-
-function CartList(props: OwnProps) {
+function CartList() {
+  const { state } = useCart();
   return (
     <ul>
-      {props.assets.map((a, i) => (
+      {state.assets.map((a, i) => (
         <CartItemRender key={i} asset={a}></CartItemRender>
       ))}
     </ul>

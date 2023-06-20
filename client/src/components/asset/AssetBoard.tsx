@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
-import { Asset } from 'models/Asset';
 import useAssets from 'util/apiUtil';
-import AssetCard from './AssetBoard/AssetCard';
+import { Asset } from './Asset';
+import AssetCard from './AssetCard';
 
 const outerGridContainerProps = {
   container: true,

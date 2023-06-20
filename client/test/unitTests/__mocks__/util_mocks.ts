@@ -1,4 +1,4 @@
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 
 export const mockURLforDT = 'https://example.com/URL_DT';
 export const mockURLforLIB = 'https://example.com/URL_LIB';

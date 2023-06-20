@@ -1,4 +1,4 @@
-import { Asset } from 'models/Asset';
+import { Asset } from 'components/asset/Asset';
 import * as cart from './Redux/slices/cart.slice';
 import { useAppDispatch, useAppSelector } from './Redux/hooks';
 

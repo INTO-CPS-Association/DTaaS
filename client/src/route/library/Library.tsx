@@ -4,7 +4,7 @@ import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import { Paper, Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
-import AssetBoard from 'components/AssetBoard';
+import AssetBoard from 'components/asset/AssetBoard';
 import ShoppingCart from 'components/cart/ShoppingCart';
 import { getAndSetUsername } from '../../util/auth/Authentication';
 import tabs from './LibraryTabData';

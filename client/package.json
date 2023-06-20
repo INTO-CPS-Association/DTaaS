@@ -13,7 +13,7 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "develop": "npx react-scripts start",
+    "develop": "relay-compiler --validate && npx react-scripts start",
     "test": "script/test.bash",
     "syntax": "script/syntax.bash",
     "build": "relay-compiler --validate && script/build.bash",

@@ -13,7 +13,7 @@
     "build",
     "src/index.tsx",
     "src/AppProvider.tsx",
-    "src/store/store.ts",
+    "src/store/Redux/store.ts",
     "src/util/queries/__generated__/",
     "src/RelayEnvironment.ts",
     "src/util/queries/",

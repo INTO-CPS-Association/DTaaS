@@ -5,12 +5,12 @@ import useCart from 'store/CartAccess';
 import CartList from './CartList';
 
 function ShoppingCart() {
-  const { state, actions } = useCart();
+  const { actions } = useCart();
   const navigate = useNavigate();
 
   return (
     <>
-      <CartList assets={state.assets}></CartList>
+      <CartList></CartList>
       <div>
         <Button variant="contained" onClick={() => actions.clear()}>
           Clear Cart
