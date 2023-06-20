@@ -15,7 +15,6 @@
     "src/AppProvider.tsx",
     "src/store/Redux/store.ts",
     "src/util/queries/__generated__/",
-    "src/RelayEnvironment.ts",
     "src/util/queries/",
     "src/react-app-env.d.ts"
   ],

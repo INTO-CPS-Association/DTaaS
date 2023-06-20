@@ -4,7 +4,7 @@
 # https://dev.to/akdevcraft/react-runtime-variables-49dc
 mode=$1
 if [ -z "$mode" ]; then
-    printf "Use yarn configapp with either dev, prod or test:"
+    printf "Use yarn configapp with either dev, prod, test or ci:"
     printf "i.e. \"yarn configapp dev\" "
     exit 1
 fi
@@ -27,8 +27,11 @@ case "$mode" in
     test)
         set_env test
         ;;
+    ci)
+        set_env ci
+        ;;
     *)
-        echo "Invalid mode $mode - use 'dev', 'prod' or 'test'"
+        echo "Invalid mode $mode - use 'dev', 'prod', 'test' or 'ci'"
         exit 1
         ;;
 esac
