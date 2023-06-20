@@ -4,7 +4,7 @@ The lib microservice is responsible for handling and serving the contents of lib
 
 This document provides instructions for using the library microservice.
 
-Please see [assets](/user/servers/lib/assets.md) for a suggested storage conventions of your library assets.
+Please see [assets](assets.md) for a suggested storage conventions of your library assets.
 
 Once the assets are stored in the library, you can access the server's endpoint by typing in the following URL: `http://foo.com/lib`.
 
