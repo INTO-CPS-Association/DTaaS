@@ -103,7 +103,9 @@ The hyperlinks open in new browser tab. The screenshots of pages opened in new b
 
 ![Workbench Tools](workbench_tools.png)
 
-:fontawesome-solid-bug: The Terminal hyperlink does not always work reliably. If you want terminal. Please use the tools dropdown in the Jupyter Notebook.
+!!! Bug
+
+    The Terminal hyperlink does not always work reliably. If you want terminal. Please use the tools dropdown in the Jupyter Notebook.
 
 
 ### Finally logout

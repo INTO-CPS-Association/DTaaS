@@ -81,7 +81,7 @@ The launch program for this digital twin is in `digital twins/mass-spring-damper
     A frequent question arises on the run time characteristics of a digital twin. The natural intuition is to say that a digital twin must operate as long as its physical twin is in operation.
     **If a digital twin runs for a finite time and then ends, can it be called a digital twin?**
 
-    The answer is a resounding YES. The Industry 4.0 usecases seen among SMEs have digital twins that run for a finite time. These digital twins are often run at the discretion of the user.
+    **The answer is a resounding YES**. The Industry 4.0 usecases seen among SMEs have digital twins that run for a finite time. These digital twins are often run at the discretion of the user.
 
 **You can run this digital twin by **
 
