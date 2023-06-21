@@ -69,7 +69,7 @@ In addition to the five directories, there is also **common** directory in which
     The assets common to all users are placed in **common**.
 
 
-The items used by more than one user are placed in **common**. The items in the **common** directory are available to all users. Further explanation of directory structure and placement of reusable assets within the the directory structure is in the [assets page](http://localhost:8000/user/servers/lib/assets.html#file-system-structure)
+The items used by more than one user are placed in **common**. The items in the **common** directory are available to all users. Further explanation of directory structure and placement of reusable assets within the the directory structure is in the [assets page](../servers/lib/assets.md#file-system-structure)
 
 :fontawesome-solid-circle-info: The file manager is based on Jupyter Notebook and all the tasks you can perform in the Jupyter Notebook can be undertaken here.
 
@@ -103,7 +103,9 @@ The hyperlinks open in new browser tab. The screenshots of pages opened in new b
 
 ![Workbench Tools](workbench_tools.png)
 
-:fontawesome-solid-bug: The Terminal hyperlink does not always work reliably. If you want terminal. Please use the tools dropdown in the Jupyter Notebook.
+!!! Bug
+
+    The Terminal hyperlink does not always work reliably. If you want terminal. Please use the tools dropdown in the Jupyter Notebook.
 
 
 ### Finally logout

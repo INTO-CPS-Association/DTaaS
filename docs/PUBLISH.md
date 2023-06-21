@@ -33,7 +33,7 @@ source script/docs.sh [version]
 The command takes an optional version parameter. This version parameter is needed for making a release. Otherwise, the documentation gets published with the latest version tag. This command makes a new commit on `webpage-docs` branch. You need to push the branch to upstream.
 
 ```bash
-manual step: git push -f prasad-public
+git push webpage-docs
 ```
 
 The github pages system serves the [project documentation](https://into-cps-association.github.io/DTaaS/) from this branch.

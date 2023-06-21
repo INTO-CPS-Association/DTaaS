@@ -6,6 +6,9 @@ The reusability of digital twin assets makes it easy for users to work with the 
 
 The DTaaS software categorizes all the reusable library assets into five categories:
 
+![Categories of Library Assets](library-assets.png)
+
+
 ### Functions
 
 The functions responsible for pre- and post-processing of: data inputs, data outputs, control outputs. The data science libraries and functions can be used to create useful function assets for the platform.
@@ -35,7 +38,7 @@ These are ready to use digital twins created by one or more users. These digital
 Each user has their assets put into five different directories named above. In addition, there will also be common library assets that all users have access to. A simplified example of the structure is as follows:
 
 ```text
-lib/
+workspace/
   data/
     data1/ (ex: sensor)
       filename (ex: sensor.csv)
@@ -85,12 +88,24 @@ lib/
     tools/
 ```
 
+!!! tip
+
+    The DTaaS is agnostic to the format of your assets. The only requirement is that they are files which can be uploaded on the Library page. Any directories can be compressed as one file and uploaded. You can decompress the file into a directory from a Terminal or xfce Desktop available on the Workbench page.
+
 A recommended file system structure for storing assets is also available in [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples).
 
 ## Create Assets
 
 The DTaaS software allows users to create new library assets on the platform.
 
-![Create Library Assets](create.png)
+![Create Library Assets](author.png)
 
-Users can use authoring tools from their own workspace to create and publish new assets. User workspaces are private and are not shared with other users. Thus any licensed software tools installed in their workspace is only available to them.
+Users can install asset authoring tools in their own workspace. These authoring tools can then be used to create and publish new assets. User workspaces are private and are not shared with other users. Thus any licensed software tools installed in their workspace is only available to them.
+
+## Upload Assets
+
+Users can upload assets into their workspace using Library page of the website.
+
+![Library Page](../../website/library.png)
+
+You can go into a directory and click on the **upload** button to upload a file or a directory into your workspace. This asset is then available in all the workbench tools you can use. You can also create new assets on the page by clicking on **new** drop down menu. This is a simple web interface which allows you to create text-based files. You need to upload other files using **upload** button.

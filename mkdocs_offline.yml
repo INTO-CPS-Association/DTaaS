@@ -29,8 +29,8 @@ nav:
           - Assets: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
       - Digital Twins: 
+          - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-          - Templates: user/digital-twins/templates.md
       - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Bugs: bugs.md
