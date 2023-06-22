@@ -11,22 +11,33 @@ Install the required dependencies prior to running the tests, use the following 
 sudo npx playwright install-deps
 ```
 
-Inside of the _test_ folder of the project, create a new file and name it .env. So the path should be client/test/.env
+Inside of the _test_ folder of the project, create a new file and name it .env. The path should be client/test/.env
 
 Open the .env file in a text editor and add the following environment variables:
 
 ```
 REACT_APP_TEST_USERNAME=your_username
 REACT_APP_TEST_PASSWORD=your_password
+REACT_APP_URL='foo.com'
 ```
-Replace _your_username_ and _your_password_ with the actual username and password of your GitLab account or the testing account that you intend to use.
+Replace _your_username_ and _your_password_ with the actual username and password of your GitLab account or the testing account that you intend to use. Finally replace _foo.com_ with the URL of your application, as you did in `env.js`.
 
 Here's an example:
 
 ```
 REACT_APP_TEST_USERNAME=TestUsername
 REACT_APP_TEST_PASSWORD=TestPassword123
+REACT_APP_URL='https://example.com/'
 ```
+
+## Supported e2e test environments:
+| Host | gitlab authenticator | result |
+| :--- | :--- | :--- |
+| localhost | foo.gitlab.com | ok |
+| localhost | gitlab | ok |
+| foo.com | foo.gitlab.com | ok |
+| foo.com | gitlab | ok |
+
 ## Configuring the Test.js File
 Before running the end-to-end tests, you might need to make some changes to the `config/test.js` file. You'll find this file in the client directory of the project.
 
