@@ -3,10 +3,14 @@
 // src: https://playwright.dev/docs/api/class-testconfig
 
 import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: './test/.env' });
 // import fs from 'fs';
 // import path from 'path';
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
+const BASE_URI = process.env.REACT_APP_URL.toString() ?? '';
 
 export default defineConfig({
   timeout: 45000,
@@ -20,7 +24,7 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    baseURL: 'http://localhost:4000/',
+    baseURL: BASE_URI,
   },
   projects: [
     // Setup project
