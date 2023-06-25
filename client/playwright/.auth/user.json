@@ -1,0 +1,55 @@
+{
+  "cookies": [
+    {
+      "name": "preferred_language",
+      "value": "en",
+      "domain": "worker15.lab.cps.digit.au.dk",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "known_sign_in",
+      "value": "eXlYdjFtSXRlcStiWHRRc1FLUUZIUXA5SnNHY28rRnRlZEJMSWFTYzZZMVp4VElKVmdBbTk2TE93THlHY2FqV29jcTI1QmRHQ3FJSVE4OHFseXhPQW15bS9QYm1qUzdMU2E3cEp6TXYxVmNzZnJtelFkalVqVU1wd2Y2TEhlRkktLVowZll6dGIrTXk5R1JudStJdm51TUE9PQ%3D%3D--6ee2a48422111195c7aaa17674163ead4c0c7106",
+      "domain": "worker15.lab.cps.digit.au.dk",
+      "path": "/",
+      "expires": 1688906891,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gitlab_session",
+      "value": "a1fb946588337b3d11ad5397f8245f22",
+      "domain": "worker15.lab.cps.digit.au.dk",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_xsrf",
+      "value": "2|51867424|b4d3389be23bff1bb7ee0e4c6bd85516|1687697292",
+      "domain": "worker14.lab.cps.digit.au.dk",
+      "path": "/",
+      "expires": 1690289292,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "U5umsY9NAFjCYwltYVu9BC4Vjwf08W9iY8LRQ.LP3N0-1687697285125-0-604800000",
+      "domain": ".gitlab.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": []
+}
