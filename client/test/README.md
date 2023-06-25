@@ -1,49 +1,107 @@
-# End-to-End (e2e) Testing Setup
-To properly set up your testing environment for running the end-to-end tests in our application you must follow the _configuration setup_ steps.
+# End-to-End (E2E) Tests
 
-## Configuration Setup
-To successfully run the end-to-end tests, you need to create a .env file where you will store your GitLab user credentials. These credentials will be used to simulate real user interactions during the e2e tests.
+The E2E tests require a functional gitlab oauth setup, traefik gateway and a live react client website. The E2E tests do not launch the react client website. So it is important to launch the website using `yarn start`. Keep this server running while performing the E2E tests with `yarn test -e` command.
 
-Follow these steps to create and configure your .env file:
+The E2E tests use playwright test runner. You also need to have the software installed. If it is not installed, you can install with the following command.
 
-Install the required dependencies prior to running the tests, use the following command:
-```
+```bash
 sudo npx playwright install-deps
 ```
 
-Inside of the _test_ folder of the project, create a new file and name it .env. The path should be client/test/.env
+## OAuth Setup
 
-Open the .env file in a text editor and add the following environment variables:
+You can follow the instructions in [authentication page](../../docs/admin/client/auth.md) to setup oauth for the react client website. Remember to add the `http://localhost:4000` as callback URL in the oauth application. The gitlab will still be running on a remote machine. It is not possible to run both the gitlab and react client website on localhost.
+
+## config/test.js file
+
+Before running the E2E tests, you need to update the `config/test.js` file. If you have a live DTaaS client website running, you can copy the `build/env.js` into `config/test.js`.
+
+Open `config/test.js` in a text editor and make sure the configuration matches the details of your testing environment. For instance, you need to adjust:
+
+* `REACT_APP_URL`
+* `REACT_APP_AUTH_AUTHORITY`
+* `REACT_APP_REDIRECT_URI`
+* `REACT_APP_LOGOUT_REDIRECT_URI`
+
+to reflect your test setup. More information on about the environment settings is available in [authentication](../../docs/admin/client/auth.md) and [client deployment](../../docs/admin/client/CLIENT.md) pages.
+
+Here's an example of relevant values for variables. This example is suitable for testing on developer computer.
 
 ```
+REACT_APP_URL="http://localhost:4000"
+REACT_APP_AUTH_AUTHORITY="http://gitlab.foo.com"
+REACT_APP_REDIRECT_URI="http://localhost:4000/Library"
+REACT_APP_LOGOUT_REDIRECT_URI="http://localhost:4000"
+```
+
+## env file
+
+You need to create a `test/.env` file where you will store the GitLab user credentials. These credentials will be used by playwright to simulate real user interactions during the E2E tests.
+
+A template for `test/.env` is given here:
+
+```env
 REACT_APP_TEST_USERNAME=your_username
 REACT_APP_TEST_PASSWORD=your_password
-REACT_APP_URL='foo.com'
+REACT_APP_URL='https://foo.com'
 ```
+
 Replace _your_username_ and _your_password_ with the actual username and password of your GitLab account or the testing account that you intend to use. Finally replace _foo.com_ with the URL of your application, as you did in `env.js`.
 
-Here's an example:
+Here's an example for test setup on the developer machine and on the integration server:
 
 ```
 REACT_APP_TEST_USERNAME=TestUsername
 REACT_APP_TEST_PASSWORD=TestPassword123
-REACT_APP_URL='https://example.com/'
+REACT_APP_URL='http://localhost:4000'
 ```
 
-## Supported e2e test environments:
-| Host | gitlab authenticator | result |
-| :--- | :--- | :--- |
-| localhost | foo.gitlab.com | ok |
-| localhost | gitlab | ok |
-| foo.com | foo.gitlab.com | ok |
-| foo.com | gitlab | ok |
+## Testing on localhost
 
-## Configuring the Test.js File
-Before running the end-to-end tests, you might need to make some changes to the `config/test.js` file. You'll find this file in the client directory of the project.
+There are two possible testing setups you can create.
 
-Open `config/test.js` in a text editor and make sure the configuration matches the details of your testing environment. For instance, you may need to adjust the `REACT_APP_URL` and `REACT_APP_REDIRECT_URI` settings to match the local development URL, or adjust other settings according to your needs.
+1. Host website on the developer computer and test from developer computer
+1. Host website on the integration server and test from the integration server
 
-For more information on about the environment settings go to the `docs/user/client/README.md`
+If you use `localhost` in the `REACT_APP_URL` the above the two mentioned setups are essentially the same. 
+In order to run the tests on the integration server, you need to disable the HTTP authentication (if setup in the first place) on the Traefik server and let the website be accessible without any authenticaiton.
+
+### The configuration files for the test on localhost
+
+The `config/test.js` file is given below. The `build/env.js` also holds the same content.
+
+```js
+window.env = {
+  REACT_APP_ENVIRONMENT: 'dev',
+  REACT_APP_URL: 'http://localhost:4000/',
+  REACT_APP_URL_BASENAME: '',
+  REACT_APP_URL_DTLINK: '/lab',
+  REACT_APP_URL_LIBLINK: '',
+  REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+  REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+  REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+
+  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
+  REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
+  REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
+  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+};
+```
+
+**test/.env**
+
+```ini
+REACT_APP_TEST_USERNAME=TestUsername
+REACT_APP_TEST_PASSWORD=TestPassword123
+REACT_APP_URL='http://localhost:4000'
+```
+
+Please note that the username and password are the user credentials on `gitlab.com`.
+
+**NOTE**: This test FAILS for any non-null basepath.
 
 ## Running the Tests
 Once you've properly set up your .env file, you can now run the end-to-end tests.
@@ -52,3 +110,4 @@ Once you've properly set up your .env file, you can now run the end-to-end tests
 yarn test -e
 ```
 This command launches the test runner and executes all end-to-end tests. Make sure you have an active internet connection while running these tests, as they simulate real user interactions with your GitLab account.
+
