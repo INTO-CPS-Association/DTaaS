@@ -99,8 +99,46 @@ REACT_APP_TEST_PASSWORD=TestPassword123
 REACT_APP_URL='http://localhost:4000'
 ```
 
-Please note that the username and password are the user credentials on `gitlab.com`.
+Please note that the username and password are the user credentials on `gitlab.foo.com`.
 
+## Testing on the integration server
+
+In this test setup, the DTaaS application is running at `https://foo.com` and the gitlab instance is running at `https://gitlab.foo.com`. The E2E test shall be run from the developer computer. The codebase commit should be the same on both the developer computer and integration server.
+
+The `config/test.js` file on the developer computer is given below. The `build/env.js` of the integration server also holds the same content.
+
+```js
+window.env = {
+  REACT_APP_ENVIRONMENT: 'dev',
+  REACT_APP_URL: 'https://foo.com/',
+  REACT_APP_URL_BASENAME: '',
+  REACT_APP_URL_DTLINK: '/lab',
+  REACT_APP_URL_LIBLINK: '',
+  REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+  REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+  REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+
+  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
+  REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
+  REACT_APP_LOGOUT_REDIRECT_UR: 'https://foo.com/',
+  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+};
+```
+
+**test/.env**
+
+```ini
+REACT_APP_TEST_USERNAME=TestUsername
+REACT_APP_TEST_PASSWORD=TestPassword123
+REACT_APP_URL='https://foo.com'
+```
+
+Please note that the username and password are the user credentials on `gitlab.foo.com`.
+
+**NOTE:** The tests from developer computer to the integration server only work with null basename. The test fails if a basename (say `au`) is specified. This might be due to a complex interaction of developer computer, traefik gateway and the client website hosted behind traefik.
 
 ## Running the Tests
 Once you've properly set up your .env file, you can now run the end-to-end tests.
