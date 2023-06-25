@@ -7,3 +7,11 @@
 [![Client CI](https://github.com/into-cps-association/dtaas/actions/workflows/client.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/client.yml/badge.svg)
 
 [![Server CI](https://github.com/into-cps-association/dtaas/actions/workflows/server.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/server.yml/badge.svg)
+
+[![Contributors](https://img.shields.io/github/contributors/INTO-CPS-Association/DTaaS)](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
+
+[![Latest Commit](https://img.shields.io/github/last-commit/INTO-CPS-Association/DTaaS)](https://github.com/INTO-CPS-Association/DTaaS/commits/feature/distributed-demo)
+
+[![INTO-CPS Association](https://img.shields.io/badge/INTO_CPS_Association-white)](https://into-cps.org/)
+
+

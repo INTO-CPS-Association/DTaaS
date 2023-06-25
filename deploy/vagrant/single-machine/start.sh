@@ -4,7 +4,7 @@ git clone https://github.com/INTO-CPS-Association/DTaaS.git DTaaS
 cd DTaaS || exit
 TOP_DIR=`pwd`
 git fetch --all
-git checkout feature/distributed-demo
+git checkout release-v0.2
 
 #-------------
 printf "\n\n start the react website"
@@ -17,7 +17,7 @@ yarn configapp dev
 nohup serve -s build -l 4000 & disown
 
 #-------------
-printf "\n\n start the jupyter notebook server"
+printf "\n\n start the user workspaces"
 docker run -d \
  -p 8090:8080 \
   --name "ml-workspace-user1" \
@@ -25,6 +25,17 @@ docker run -d \
   -v "${TOP_DIR}/files/common:/workspace/common:ro" \
   --env AUTHENTICATE_VIA_JUPYTER="" \
   --env WORKSPACE_BASE_URL="user1" \
+  --shm-size 512m \
+  --restart always \
+  mltooling/ml-workspace:0.13.2
+
+docker run -d \
+ -p 8091:8080 \
+  --name "ml-workspace-user2" \
+  -v "${TOP_DIR}/files/user2:/workspace" \
+  -v "${TOP_DIR}/files/common:/workspace/common:ro" \
+  --env AUTHENTICATE_VIA_JUPYTER="" \
+  --env WORKSPACE_BASE_URL="user2" \
   --shm-size 512m \
   --restart always \
   mltooling/ml-workspace:0.13.2

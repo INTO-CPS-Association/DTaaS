@@ -4,7 +4,7 @@ git clone https://github.com/INTO-CPS-Association/DTaaS.git DTaaS
 cd DTaaS || exit
 TOP_DIR=$(pwd)
 git fetch --all
-git checkout feature/distributed-demo
+git checkout release-v0.2
 
 #-------------
 printf "\n\n start the react website"

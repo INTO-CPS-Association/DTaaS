@@ -1,6 +1,6 @@
 The Digital Twin as a Service (DTaaS) software is useful to create and run digital twins. The digital twins that are running can be used as service by other users. These users need not be members of the DTaaS software platform itself.
 
-A brief overview of the software is available in [this presentation](/developer/system/DTaaS-overview.pdf) and [recorded video](https://www.dropbox.com/s/mgxxf5chp9b130x/DTaaS%20presentation%20and%20brainstorming-20230317.mp4?dl=1). There is also a [research paper](https://arxiv.org/abs/2305.07244) if you are interested in reading the scientific roadmap for this software.
+A brief overview of the software is available in [this presentation](./developer/system/DTaaS-overview.pdf) and [recorded video](https://www.dropbox.com/s/mgxxf5chp9b130x/DTaaS%20presentation%20and%20brainstorming-20230317.mp4?dl=1). There is also a [research paper](https://arxiv.org/abs/2305.07244) if you are interested in reading the scientific roadmap for this software.
 
 ## License
 

@@ -12,7 +12,7 @@ export TOP_DIR
 COMMIT_HASH=$(git rev-parse --short HEAD)
 export COMMIT_HASH
 
-echo ${VERSION}
+echo "${VERSION}"
 printf "generate and publish documents"
 mkdocs build --config-file mkdocs.yml --site-dir "site/online/${VERSION}"
 mkdocs build --config-file mkdocs_offline.yml --site-dir "site/offline/${VERSION}"
@@ -20,7 +20,7 @@ mkdocs build --config-file mkdocs_offline.yml --site-dir "site/offline/${VERSION
 cp docs/redirect-page.html site/index.html
 
 cd site/offline || exit
-zip -r latest.zip latest
+zip -r "${VERSION}.zip" "${VERSION}"
 
 cd "${TOP_DIR}" || exit
 git checkout webpage-docs
@@ -31,9 +31,9 @@ git checkout webpage-docs
 # rm -rf .git-hooks/*
 # rm script/configure-git-hooks.sh script/grafana.sh script/influx.sh script/install.bash
 
-rm -rf latest
-mv site/online/latest . 
-mv site/offline/latest.zip .
+rm -rf ${VERSION}
+mv "site/online/${VERSION}" . 
+mv "site/offline/${VERSION}.zip" .
 mv site/index.html .
 
 git add .
