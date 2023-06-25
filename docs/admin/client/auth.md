@@ -25,6 +25,8 @@ Callback URL: https://foo.com/bar/Library
 Logout URL: https://foo.com/bar
 ```
 
+During the creation of oauth application on gitlab, you need to decide on the scope of this oauth application. Choose `openid profile read_user read_repository api` scopes.
+
 After successful creation of oauth application, gitlab generates an application ID. This application ID is a long string of HEX values. You need to note this down and use in configuration files. An example oauth Client ID is: `934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0`.
 
 The mapping between the oauth URLs and the environment variables in `env.js` is shown below.
