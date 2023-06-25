@@ -2,10 +2,18 @@
 // @ts-check
 // src: https://playwright.dev/docs/api/class-testconfig
 
-import { devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
 
-const config = {
-  timeout: 30000,
+dotenv.config({ path: './test/.env' });
+// import fs from 'fs';
+// import path from 'path';
+
+// const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
+const BASE_URI = process.env.REACT_APP_URL.toString() ?? '';
+
+export default defineConfig({
+  timeout: 45000,
   globalTimeout: 600000,
   testDir: './test/e2e',
   testMatch: /.*\.test\.ts/,
@@ -16,18 +24,31 @@ const config = {
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    baseURL: 'http://localhost:4000/dtaas/',
+    baseURL: BASE_URI,
   },
   projects: [
+    // Setup project
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { browserName: 'firefox' },
+    },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Use prepared auth state.
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
-};
-
-export default config;
+});
