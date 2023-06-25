@@ -107,7 +107,7 @@ window.env = {
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
 ```
 
-Do remember that the oauth application on gitlab needs to have the redirect URI correctly registered.
+Do remember that the oauth application on gitlab needs to have the redirect (callback) URL is correctly registered.
 
 ## Caveat
 

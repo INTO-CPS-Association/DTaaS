@@ -101,7 +101,6 @@ REACT_APP_URL='http://localhost:4000'
 
 Please note that the username and password are the user credentials on `gitlab.com`.
 
-**NOTE**: This test FAILS for any non-null basepath.
 
 ## Running the Tests
 Once you've properly set up your .env file, you can now run the end-to-end tests.
