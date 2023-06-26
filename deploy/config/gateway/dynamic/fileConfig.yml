@@ -1,0 +1,70 @@
+http:
+  routers:
+    dtaas:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`)'
+      middlewares:
+        - basic-auth
+      service: dtaas
+
+    user1:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/user1`)'
+      middlewares:
+        - basic-auth
+      service: user1
+
+    user2:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/user2`)'
+      middlewares:
+        - basic-auth
+      service: user2
+
+    vis:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/vis`)'
+      service: grafana
+
+    lib:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/lib`)'
+      service: lib
+
+  # Middleware: Basic authentication
+  middlewares:
+    basic-auth:
+      basicAuth:
+        usersFile: '/etc/traefik/auth'
+        removeHeader: true
+
+  services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: 'http://localhost:4000'
+
+    user1:
+      loadBalancer:
+        servers:
+          - url: 'http://localhost:8090'
+
+    user2:
+      loadBalancer:
+        servers:
+          - url: 'http://localhost:8091'
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: 'http://localhost:3000'
+
+    lib:
+      loadBalancer:
+        servers:
+          - url: 'http://localhost:4001'

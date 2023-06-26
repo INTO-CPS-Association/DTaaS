@@ -18,10 +18,6 @@ Vagrant.configure(2) do |config|
       vb.cpus = 8
     end
 
-    # remove the incorrect default gateway
-    config.vm.provision "shell",
-    inline: "ip route del default via 10.0.2.2 dev enp0s3"
-
     node.ssh.private_key_path = "vagrant"
     node.vm.provision "shell", privileged: false, path: "start.sh"
   end

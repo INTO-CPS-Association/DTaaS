@@ -1,0 +1,23 @@
+#!/bin/bash
+# Run the client website and lib microservice in background mode
+
+PROJECT_PATH="$1"
+
+nc -z localhost 4000
+PORT_STATUS=$?
+if (( PORT_STATUS == 1 ))
+then
+  echo "starting react website"
+  cd "${PROJECT_PATH}/client"
+  nohup serve -s build -l 4000 & disown
+fi
+
+
+
+nc -z localhost 4001
+PORT_STATUS=$?
+if (( PORT_STATUS == 1 ))
+then
+  cd "${PROJECT_PATH}/servers/lib"
+  nohup yarn start & disown
+fi

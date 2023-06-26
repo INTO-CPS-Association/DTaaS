@@ -6,7 +6,7 @@ To host DTaaS client website on your server, follow these steps:
 
 - Locate the file `build/env.js` and replace the example values to match your infrastructure. The constructed links will be "`REACT_APP_URL`/`REACT_APP_URL_BASENAME`/`{username}`/`{Endpoint}`". See the definitions below:
 
-    ```
+    ```js
     window.env = {
       REACT_APP_ENVIRONMENT: "prod | dev",
       REACT_APP_URL: "URL for the gateway",
@@ -23,7 +23,7 @@ To host DTaaS client website on your server, follow these steps:
 
     // Example values with no base URL. Trailing and ending slashes are optional.
     window.env = {
-      REACT_APP_ENVIRONMENT: 'dev',
+      REACT_APP_ENVIRONMENT: 'prod',
       REACT_APP_URL: 'https://foo.com/',
       REACT_APP_URL_BASENAME: '',
       REACT_APP_URL_DTLINK: '/lab',

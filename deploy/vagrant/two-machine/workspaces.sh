@@ -17,7 +17,7 @@ yarn configapp dev
 nohup serve -s build -l 4000 & disown
 
 #-------------
-printf "\n\n start the jupyter notebook server"
+printf "\n\n start the user workspaces"
 docker run -d \
  -p 8090:8080 \
   --name "ml-workspace-user1" \
@@ -29,8 +29,6 @@ docker run -d \
   --restart always \
   mltooling/ml-workspace:0.13.2
 
-#-------------
-printf "\n\n start the jupyter notebook server"
 docker run -d \
  -p 8091:8080 \
   --name "ml-workspace-user2" \

@@ -2,7 +2,7 @@
 
 git clone https://github.com/INTO-CPS-Association/DTaaS.git DTaaS
 cd DTaaS || exit
-TOP_DIR=`pwd`
+TOP_DIR=$(pwd)
 git fetch --all
 git checkout release-v0.2
 
@@ -14,6 +14,7 @@ yarn build
 
 #one of the environments; specify only one; "dev" used the REACT_APP_ENV is not set
 yarn configapp dev
+cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
 nohup serve -s build -l 4000 & disown
 
 #-------------
@@ -44,6 +45,9 @@ docker run -d \
 printf "\n\n start the traefik gateway server"
 printf ".........................."
 cd "${TOP_DIR}/servers/config/gateway" || exit
+cp "${TOP_DIR}/deploy/config/gateway/auth" auth
+cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
+
 sudo docker run -d \
  --name "traefik-gateway" \
  --network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \

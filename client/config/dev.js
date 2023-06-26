@@ -1,7 +1,7 @@
 window.env = {
   REACT_APP_ENVIRONMENT: 'dev',
   REACT_APP_URL: 'https://foo.com/',
-  REACT_APP_URL_BASENAME: '',
+  REACT_APP_URL_BASENAME: 'dtaas',
   REACT_APP_URL_DTLINK: '/lab',
   REACT_APP_URL_LIBLINK: '',
   REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',

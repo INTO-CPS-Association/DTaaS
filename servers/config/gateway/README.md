@@ -14,6 +14,7 @@ The default configuration uses two services at the following URLs:
 | localhost       | React Website      | localhost:4000 |
 | localhost/lib   | Lib Microservice   | localhost:4001 |
 | localhost/user1 | ML Workspace       | localhost:8090 |
+| localhost/user2 | ML Workspace       | localhost:8091 |
 |                 |
 
 ## Start the Gateway
@@ -59,4 +60,5 @@ The routes / URLs need to be updated for your local setup. The current version o
 | foo.com       | React Website      | localhost:4000 |
 | foo.com/lib   | Lib Microservice   | localhost:4001 |
 | foo.com/user1 | ML Workspace       | localhost:8090 |
+| foo.com/user2 | ML Workspace       | localhost:8091 |
 |               |
