@@ -4,9 +4,15 @@ The Digital Twin as a Service (DTaaS) software shall be used for creating a Digi
 
 This is a mono repo containing code for both the web client and the microservices code base. Only the [web client](client) and [library microservice](servers/lib) components are functional at present. Everything else is a work-in-progress.
 
-### Installation
+## Documentation
 
-The best way to use the DTaaS software is via a vagrant virtual machine. The install instructions for [single node vagrant machine](deploy/vagrant/single-machine/README.md) should help you get started. If you face any issues, please open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
+The software comes with [documentation](https://into-cps-association.github.io/DTaaS/version0.2/index.html) for administrators and users. You are welcome to open an issue if there is a suggestion on improving the documentation.
+
+## Installation
+
+The software can be installed either on Ubuntu Server 22.04 Operating System or on vagrant virtual machine(s). The installation instructions and scripts in `deploy/` should help you get started. If you face any issues, please open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
+
+Some of the services like InfluxDB require a dedicated hostname. Thus successful installation of these services is dependent on your ability to use multiple hostnames for different services. There are dedicated installation scripts for services in `script/`.
 
 ## Development Setup
 
@@ -15,13 +21,21 @@ The rest of the information on this page is aimed at current and potential contr
 To install the development environment, run
 
 ```bash
-bash script/install.bash
+bash script/env.sh
 ```
+
+There is a script to download all the docker containers used in the project. You can download them using
+
+```bash
+bash script/docker.sh
+```
+
+**CAVEAT**: The docker images are large and are likely to consume about 5GB of bandwidth and 15GB of space. You will have to download the docker images on a really good network.
 
 Before you make commits, please install the git hooks provided in the repository.
 
-```shell
-script/configure-git-hooks.sh
+```bash
+bash script/configure-git-hooks.sh
 ```
 
 This will ensure that your commits are formatted correctly and that the unittests pass before you push your changes. Be aware that the tests take a long time to run. If you want to skip the tests or formatting, you can use the `--no-verify` flag on `git commit` or `git push`.

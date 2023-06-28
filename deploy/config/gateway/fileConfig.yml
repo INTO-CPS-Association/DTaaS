@@ -3,7 +3,7 @@ http:
     dtaas:
       entryPoints:
         - http
-      rule: 'Host(`https://foo.com`)'
+      rule: 'Host(`foo.com`)'
       middlewares:
         - basic-auth
       service: dtaas
@@ -11,7 +11,7 @@ http:
     user1:
       entryPoints:
         - http
-      rule: 'Host(`https://foo.com`) && PathPrefix(`/user1`)'
+      rule: 'Host(`foo.com`) && PathPrefix(`/user1`)'
       middlewares:
         - basic-auth
       service: user1
@@ -19,7 +19,7 @@ http:
     user2:
       entryPoints:
         - http
-      rule: 'Host(`https://foo.com`) && PathPrefix(`/user2`)'
+      rule: 'Host(`foo.com`) && PathPrefix(`/user2`)'
       middlewares:
         - basic-auth
       service: user2
@@ -27,7 +27,7 @@ http:
     vis:
       entryPoints:
         - http
-      rule: 'Host(`https://foo.com`) && PathPrefix(`/vis`)'
+      rule: 'Host(`foo.com`) && PathPrefix(`/vis`)'
       service: grafana
 
 

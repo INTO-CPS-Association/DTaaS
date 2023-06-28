@@ -11,8 +11,12 @@ fi
 
 export PROJECT_PATH
 
+printf "Existing crontab for the user\n"
+crontab -l
 crontab -l | sort -u  > temp.cron
-echo "* * * * * ${PROJECT_PATH}/deploy/cron-path.sh ${PROJECT_PATH}" >> temp.cron
-cat temp.cron | sort -u > jobs.cron
+echo "* * * * * ${PROJECT_PATH}/deploy/cron.sh ${PROJECT_PATH}" >> temp.cron
+sort -u temp.cron > jobs.cron
 crontab jobs.cron
 rm jobs.cron temp.cron
+printf "Updated crontab for the user\n"
+crontab -l

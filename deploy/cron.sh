@@ -8,7 +8,7 @@ PORT_STATUS=$?
 if (( PORT_STATUS == 1 ))
 then
   echo "starting react website"
-  cd "${PROJECT_PATH}/client"
+  cd "${PROJECT_PATH}/client" || exit
   nohup serve -s build -l 4000 & disown
 fi
 
@@ -18,6 +18,8 @@ nc -z localhost 4001
 PORT_STATUS=$?
 if (( PORT_STATUS == 1 ))
 then
-  cd "${PROJECT_PATH}/servers/lib"
+  cd "${PROJECT_PATH}/servers/lib" || exit
   nohup yarn start & disown
 fi
+
+docker start traefik-gateway
