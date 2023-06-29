@@ -19,24 +19,11 @@ vagrant up
 vagrant ssh
 ```
 
-The Traefik gateway configuration file will be at `/home/vagrant/DTaaS/servers/config/gateway/dynamic/fileConfig.yml`. Update it as per instructions in this [README](../../../servers/config/gateway/README.md).
-
-Change the React website configuration in _client/build/env.js_.
-
-```js
-window.env = {
-  REACT_APP_ENVIRONMENT: 'development',
-  REACT_APP_URL_LIB: 'http://foo.com/user1/shared/filebrowser/files/workspace/?token=admin',
-  REACT_APP_URL_DT: 'http://foo.com/user1/lab',
-  REACT_APP_URL_WORKBENCH: 'http://foo.com/user1',
-};
-```
-
-Serve the react website. From inside the vagrant machine,
+Set a cronjob inside the vagrant virtual machine to remote the conflicting default route.
 
 ```bash
-cd ~/DTaaS/client
-nohup serve -s build -l 4000 & disown
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/route.sh
+sudo bash route.sh
 ```
 
-Now you should be able to access the DTaaS application at: _http://foo.com_
+Follow the [instructions](../../README.md) of regular server installation setup to complete the installation.

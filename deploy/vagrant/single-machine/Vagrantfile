@@ -19,7 +19,6 @@ Vagrant.configure(2) do |config|
     end
 
     node.ssh.private_key_path = "vagrant"
-    node.vm.provision "shell", privileged: false, path: "start.sh"
   end
 
 end

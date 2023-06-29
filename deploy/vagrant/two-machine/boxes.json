@@ -1,17 +1,15 @@
 [
     {
-        "name" : "server1",
+        "name" : "dtaas",
         "hostname" : "foo.com",
-        "script": "workspaces.sh",
         "mac" : "02163e0d3c28",
         "ssh_port" : 11022,
         "http_port" : 11080,
         "https_port" : 11443
     },
     {
-        "name" : "server2",
-        "hostname" : "server2.foo.com",
-        "script": "services.sh",
+        "name" : "services",
+        "hostname" : "services.foo.com",
         "mac" : "02163e8caced",
         "ssh_port" : 12022,
         "http_port" : 12080,
