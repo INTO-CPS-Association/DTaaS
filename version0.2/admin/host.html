@@ -9,21 +9,21 @@
       
       
       
-        <link rel="prev" href="create.html">
+        <link rel="prev" href="trial.html">
       
       
-        <link rel="next" href="../../FAQ.html">
+        <link rel="next" href="vagrant/base-box.html">
       
-      <link rel="icon" href="../../assets/into-cps-logo.png">
+      <link rel="icon" href="../assets/into-cps-logo.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
-        <title>Lifecycle - Digital Twin as a Service (DTaaS)</title>
+        <title>Production - Digital Twin as a Service (DTaaS)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -39,9 +39,9 @@
       
     
     
-      <link rel="stylesheet" href="../../docs/assets/css/extra.css">
+      <link rel="stylesheet" href="../docs/assets/css/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#examples" class="md-skip">
+        <a href="#dtaas-on-linux-operating-system" class="md-skip">
           Skip to content
         </a>
       
@@ -77,9 +77,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../index.html" title="Digital Twin as a Service (DTaaS)" class="md-header__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
+    <a href="../index.html" title="Digital Twin as a Service (DTaaS)" class="md-header__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
       
-  <img src="../../assets/into-cps-logo.png" alt="logo">
+  <img src="../assets/into-cps-logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -95,7 +95,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lifecycle
+              Production
             
           </span>
         </div>
@@ -170,7 +170,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../index.html" class="md-tabs__link">
+    <a href="../index.html" class="md-tabs__link">
       Home
     </a>
   </li>
@@ -178,6 +178,8 @@
       
         
   
+  
+    
   
 
 
@@ -190,7 +192,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../admin/trial.html" class="md-tabs__link">
+      <a href="trial.html" class="md-tabs__link md-tabs__link--active">
         Admin
       </a>
     </li>
@@ -202,15 +204,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../features.html" class="md-tabs__link md-tabs__link--active">
+      <a href="../user/features.html" class="md-tabs__link">
         User
       </a>
     </li>
@@ -223,7 +223,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../FAQ.html" class="md-tabs__link">
+    <a href="../FAQ.html" class="md-tabs__link">
       FAQ
     </a>
   </li>
@@ -235,7 +235,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../bugs.html" class="md-tabs__link">
+    <a href="../bugs.html" class="md-tabs__link">
       Bugs
     </a>
   </li>
@@ -247,7 +247,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../thanks.html" class="md-tabs__link">
+    <a href="../thanks.html" class="md-tabs__link">
       Thanks
     </a>
   </li>
@@ -274,9 +274,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../index.html" title="Digital Twin as a Service (DTaaS)" class="md-nav__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
+    <a href="../index.html" title="Digital Twin as a Service (DTaaS)" class="md-nav__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
       
-  <img src="../../assets/into-cps-logo.png" alt="logo">
+  <img src="../assets/into-cps-logo.png" alt="logo">
 
     </a>
     Digital Twin as a Service (DTaaS)
@@ -304,7 +304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../index.html" class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         Home
       </a>
     </li>
@@ -317,14 +317,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
       
       
       
@@ -333,7 +335,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_2">
           <span class="md-nav__icon md-icon"></span>
           Admin
@@ -344,14 +346,16 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
       
       
       
@@ -360,7 +364,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_2_1">
           <span class="md-nav__icon md-icon"></span>
           Host Install
@@ -373,7 +377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/trial.html" class="md-nav__link">
+      <a href="trial.html" class="md-nav__link">
         Trial
       </a>
     </li>
@@ -385,11 +389,113 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../admin/host.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Production
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="host.html" class="md-nav__link md-nav__link--active">
         Production
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-traefik-gateway-server" class="md-nav__link">
+    The traefik gateway server
+  </a>
+  
+    <nav class="md-nav" aria-label="The traefik gateway server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-lib-microservice" class="md-nav__link">
+    Configure lib microservice
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-react-website" class="md-nav__link">
+    Configure react website
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-the-installation-script" class="md-nav__link">
+    Update the installation script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#perform-the-installation" class="md-nav__link">
+    Perform the Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#access-the-application" class="md-nav__link">
+    Access the application
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -435,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/vagrant/base-box.html" class="md-nav__link">
+      <a href="vagrant/base-box.html" class="md-nav__link">
         Base Box
       </a>
     </li>
@@ -449,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/vagrant/single-machine.html" class="md-nav__link">
+      <a href="vagrant/single-machine.html" class="md-nav__link">
         Single Machine
       </a>
     </li>
@@ -463,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/vagrant/two-machines.html" class="md-nav__link">
+      <a href="vagrant/two-machines.html" class="md-nav__link">
         Two Machines
       </a>
     </li>
@@ -511,7 +617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/client/CLIENT.html" class="md-nav__link">
+      <a href="client/CLIENT.html" class="md-nav__link">
         website
       </a>
     </li>
@@ -525,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../admin/servers/lib/LIB-MS.html" class="md-nav__link">
+      <a href="servers/lib/LIB-MS.html" class="md-nav__link">
         library microservice
       </a>
     </li>
@@ -552,16 +658,14 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -570,7 +674,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           User
@@ -583,7 +687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features.html" class="md-nav__link">
+      <a href="../user/features.html" class="md-nav__link">
         Features
       </a>
     </li>
@@ -597,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../website/index.html" class="md-nav__link">
+      <a href="../user/website/index.html" class="md-nav__link">
         Website
       </a>
     </li>
@@ -638,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../servers/lib/assets.html" class="md-nav__link">
+      <a href="../user/servers/lib/assets.html" class="md-nav__link">
         Assets
       </a>
     </li>
@@ -652,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../servers/lib/LIB-MS.html" class="md-nav__link">
+      <a href="../user/servers/lib/LIB-MS.html" class="md-nav__link">
         Microservice
       </a>
     </li>
@@ -671,16 +775,14 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
       
       
       
@@ -689,7 +791,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_4">
           <span class="md-nav__icon md-icon"></span>
           Digital Twins
@@ -702,7 +804,7 @@
   
   
     <li class="md-nav__item">
-      <a href="create.html" class="md-nav__link">
+      <a href="../user/digital-twins/create.html" class="md-nav__link">
         Create
       </a>
     </li>
@@ -714,48 +816,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Lifecycle
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="lifecycle.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../user/digital-twins/lifecycle.html" class="md-nav__link">
         Lifecycle
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -796,7 +861,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../FAQ.html" class="md-nav__link">
+      <a href="../FAQ.html" class="md-nav__link">
         FAQ
       </a>
     </li>
@@ -811,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bugs.html" class="md-nav__link">
+      <a href="../bugs.html" class="md-nav__link">
         Bugs
       </a>
     </li>
@@ -826,7 +891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../thanks.html" class="md-nav__link">
+      <a href="../thanks.html" class="md-nav__link">
         Thanks
       </a>
     </li>
@@ -850,6 +915,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -858,8 +925,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-traefik-gateway-server" class="md-nav__link">
+    The traefik gateway server
+  </a>
+  
+    <nav class="md-nav" aria-label="The traefik gateway server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-lib-microservice" class="md-nav__link">
+    Configure lib microservice
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-react-website" class="md-nav__link">
+    Configure react website
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-the-installation-script" class="md-nav__link">
+    Update the installation script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#perform-the-installation" class="md-nav__link">
+    Perform the Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#access-the-application" class="md-nav__link">
+    Access the application
   </a>
   
 </li>
@@ -882,98 +1010,86 @@
   
 
 
-  <h1>Lifecycle</h1>
-
-<p><img alt="Digital Twin Lifecycle" src="lifecycle.png" /></p>
-<p>A DT lifecycle consists of <strong>explore, create, execute, save, analyse, evolve</strong> and <strong>terminate</strong> phases.</p>
-<table>
-<thead>
-<tr>
-<th align="left">Phase</th>
-<th align="left">Main Activities</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><strong>explore</strong></td>
-<td align="left">selection of suitable assets based on the user needs and checking their compatibility for the purposes of creating a DT.</td>
-</tr>
-<tr>
-<td align="left"><strong>create</strong></td>
-<td align="left">specification of DT configuration. If DT already exists, there is no creation phase at the time of reuse.</td>
-</tr>
-<tr>
-<td align="left"><strong>execute</strong></td>
-<td align="left">automated / manual execution of a DT based on its configuration. The DT configuration must checked before starting the execution phase.</td>
-</tr>
-<tr>
-<td align="left"><strong>analyse</strong></td>
-<td align="left">checking the outputs of a DT and making a decision. The outputs can be text files, or visual dashboards.</td>
-</tr>
-<tr>
-<td align="left"><strong>evolve</strong></td>
-<td align="left">reconfigure DT primarily based on analysis.</td>
-</tr>
-<tr>
-<td align="left"><strong>save</strong></td>
-<td align="left">involves saving the state of DT to enable future recovery.</td>
-</tr>
-<tr>
-<td align="left"><strong>terminate</strong></td>
-<td align="left">stop the execution of DT.</td>
-</tr>
-</tbody>
-</table>
-<p>A complete digital twin will support all the phases but it is not mandatory.</p>
-<p>Even though not mandatory, having a coding structure makes it easy to manage DT lifecycle phases. It is recommended to have the following structure</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>workspace/
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>  digital twins/
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>    digital-twin-1/
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>      lifecycle/
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>        analyze
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>        clean
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>        evolve
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a>        execute
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>        save
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a>        terminate
+<h1 id="dtaas-on-linux-operating-system">DTaaS on Linux Operating System</h1>
+<p>These are installation instructions for running DTaaS application on a Ubuntu Server 20.04 Operating System. The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.</p>
+<p>A dummy <strong>foo.com</strong> URL has been used for illustration. Please change this to your unique website URL. It is assumed that you are going to serve the application in only HTTPS mode.</p>
+<p>Please follow these steps to make this work in your local environment. Download the <strong>DTaaS.zip</strong> from the <a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>. Unzip the same into a directory named <strong>DTaaS</strong>. The rest of the instructions assume that your working directory is <strong>DTaaS</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you only want to test the application and are not setting up a production instance, you can follow the instructions of <a href="trial.html">trial installation</a>.</p>
+</div>
+<h2 id="configuration">Configuration</h2>
+<p>You need to configure the Traefik gateway, library microservice and react client website.</p>
+<p>The first step is to decide on the number of users and their usenames. The traefik gateway configuration has a template for two users. You can modify the usernames in the template to the usernames chosen by you.</p>
+<h3 id="the-traefik-gateway-server">The traefik gateway server</h3>
+<p>You can run the Run the Traefik gateway server in both and HTTPS HTTPS mode to experience the DTaaS application. The installation guide assumes that you can run the application in HTTPS mode.</p>
+<p>The Traefik gateway configuration is at <em>deploy/config/gateway/fileConfig.yml</em>. Change <code>foo.com</code> to your local hostname and user1/user2 to the usernames chosen by you.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Do not use <code>http://</code> or <code>https://</code> in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
+</div>
+<h4 id="authentication">Authentication</h4>
+<p>The dummy username is <code>foo</code> and the password is <code>bar</code>.
+Please change this before starting the gateway.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>rm<span class="w"> </span>deploy/config/gateway/auth
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>touch<span class="w"> </span>deploy/config/gateway/auth
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>htpasswd<span class="w"> </span>deploy/config/gateway/auth<span class="w"> </span>&lt;first_username&gt;
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>password:<span class="w"> </span>&lt;your<span class="w"> </span>password&gt;
 </span></code></pre></div></td></tr></table></div>
-<p>A dedicated program exists for each phase of DT lifecycle. Each program can be as simple as a script that launches other programs or sends messages to a live digital twin.</p>
-<h2 id="examples">Examples</h2>
-<p>Here are the programs / scripts to manage three phases in the lifecycle of <strong>mass-spring-damper DT</strong>.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">lifecycle/execute</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<p>The user credentials added in <em>deploy/config/gateway/auth</em> should match the usernames in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
+<h2 id="configure-lib-microservice">Configure lib microservice</h2>
+<p>The first step in this configuration is to prepare the a filesystem for users. An example file system in <code>files/</code> directory. You can rename the top-level user1/user2 to the usernames chosen by you.</p>
+<p>Update the <em>deploy/config/lib</em> of the library microservice. The simplest possibility is to use <code>local</code> mode with the following example. The filepath is the absolute filepath to <code>files/</code> directory.</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
 <span class="normal"><a href="#__codelineno-1-4">4</a></span>
 <span class="normal"><a href="#__codelineno-1-5">5</a></span>
-<span class="normal"><a href="#__codelineno-1-6">6</a></span>
-<span class="normal"><a href="#__codelineno-1-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/workspace/data/mass-spring-damper/output
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="c1">#cd ..</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a>java<span class="w"> </span>-jar<span class="w"> </span>/workspace/common/tools/maestro-2.3.0-jar-with-dependencies.jar<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span>import<span class="w"> </span>-output<span class="w"> </span>/workspace/data/mass-spring-damper/output<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span>--dump-intermediate<span class="w"> </span>sg1<span class="w"> </span>cosim.json<span class="w"> </span>time.json<span class="w"> </span>-i<span class="w"> </span>-vi<span class="w"> </span>FMI2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span>output-dir&gt;debug.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<span class="normal"><a href="#__codelineno-1-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>PORT=&#39;4001&#39;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>MODE=&#39;local&#39;
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>LOCAL_PATH =&#39;filepath&#39;
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a>LOG_LEVEL=&#39;debug&#39;
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>APOLLO_PATH=&#39;/lib&#39;
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a>GRAPHQL_PLAYGROUND=&#39;true&#39;
 </span></code></pre></div></td></tr></table></div>
-<p>The execute phases uses the DT configuration, FMU models and Maestro tool to execute the digital twin. The script also stores the output of cosimulation in <code>/workspace/data/mass-spring-damper/output</code>.</p>
-<p>It is possible for a DT not to support a specific lifecycle phase. This intention can be specified with an empty script and a helpful message if deemed necessary.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">lifecycle/analyze</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;operation is not supported on this digital twin&quot;</span>
+<h2 id="configure-react-website">Configure react website</h2>
+<p>Change the React website configuration in <em>deploy/config/client/env.js</em>.</p>
+<div class="language-js highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="p">};</span>
 </span></code></pre></div></td></tr></table></div>
-<p>The lifecycle programs can call other programs in the code base. In the case of <code>lifecycle/terminate</code> program, it is calling another script to do the necessary job.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">lifecycle/terminate</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>lifecycle/clean
+<h2 id="update-the-installation-script">Update the installation script</h2>
+<p>Open <code>deploy/install.sh</code> and update user1/user2 to usernames chosen by you.</p>
+<h2 id="perform-the-installation">Perform the Installation</h2>
+<p>Go to the DTaaS directory and execute</p>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">source</span><span class="w"> </span>deploy/install.sh
 </span></code></pre></div></td></tr></table></div>
+<p>You can run this script multiple times until the installation is successful.</p>
+<h2 id="access-the-application">Access the application</h2>
+<p>Now you should be able to access the DTaaS application at: <em>https://foo.com</em></p>
 
 
 
@@ -995,7 +1111,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="create.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Create" rel="prev">
+          <a href="trial.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Trial" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
@@ -1004,20 +1120,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Create
+                Trial
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../FAQ.html" class="md-footer__link md-footer__link--next" aria-label="Next: FAQ" rel="next">
+          <a href="vagrant/base-box.html" class="md-footer__link md-footer__link--next" aria-label="Next: Base Box" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                FAQ
+                Base Box
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1053,10 +1169,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tracking", "navigation.footer"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tracking", "navigation.footer"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="../assets/javascripts/bundle.b4d07000.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       
