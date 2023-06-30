@@ -1,6 +1,6 @@
 # DTaaS on Two Vagrant Machines
 
-This directory contains code for running DTaaS application in two vagrant virtual machines (VMs). In this setup, all the user workspaces shall be run on server1 while all the platform services will be run on server2.
+These are installation instructions for running DTaaS application in two vagrant virtual machines (VMs). In this setup, all the user workspaces shall be run on server1 while all the platform services will be run on server2.
 
 The setup requires two server VMs with the following hardware configuration:
 
@@ -8,21 +8,17 @@ The setup requires two server VMs with the following hardware configuration:
 
 **server2**: 6GB RAM, 3 x64 vCPUs and 50GB Hard Disk space
 
-Under the default configuration, two user workspaces are provisioned on server1. The _workspaces.sh_ contains installation commands for provisioning user workspaces. If you desire to have more users, you need to modify this shell script.
-
-The default installation setup also installs InfluxDB, Grafana and RabbitMQ services on server2. If you would like to install more services, you can create shell scripts to install the same on server2. If you have these scripts ready, you can place them in this directory and invoke them from _services.sh_ script.
+Under the default configuration, two user workspaces are provisioned on server1. The default installation setup also installs InfluxDB, Grafana and RabbitMQ services on server2. If you would like to install more services, you can create shell scripts to install the same on server2.
 
 ## Create Base Vagrant Box
 
-If you haven't already done it, create [**dtaas** Vagrant box](../make_boxes/dtaas/README.md). Copy _vagrant_ SSH private key here. This shall be useful for logging into the vagrant machines created for two-machine deployment. You would have created an SSH key pair - _vagrant_ and _vagrant.pub_. The _vagrant_ is the private SSH key and is needed for the next steps.
-
-Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/two-machine`).
+Create [**dtaas** Vagrant box](./base-box.md). You would have created an SSH key pair - _vagrant_ and _vagrant.pub_. The _vagrant_ is the private SSH key and is needed for the next steps. Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/single-machine`). This shall be useful for logging into the vagrant machines created for two-machine deployment.
 
 ## Configure Server Settings
 
 **NOTE**: A dummy **foo.com** and **services.foo.com**  URLs has been used for illustration. Please change these to your unique website URLs.
 
-The first step is to define the network identity of the two VMs. For that, you need _server name_, _hostname_ and _MAC address_. The hostname is the network URL at which the server can be accessed on the WWW. Please follow these steps to make this work in your local environment.
+The first step is to define the network identity of the two VMs. For that, you need _server name_, _hostname_ and _MAC address_. The hostname is the network URL at which the server can be accessed on the web. Please follow these steps to make this work in your local environment.
 
 Update the **boxes.json**. There are entries one for each server. The fields to update are:
 
@@ -73,6 +69,6 @@ wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/d
 sudo bash route.sh
 ```
 
-If you only want to test the application and are not setting up a production instance, you can install using [single script install](../../single-script-install.sh).
+If you only want to test the application and are not setting up a production instance, you can follow the instructions of [single script install](../trial.md).
 
-If you are not in a hurry and would rather have a production instance, follow the [instructions](../../README.md) of regular server installation setup to complete the installation.
+If you are not in a hurry and would rather have a production instance, follow the instructions of [regular server installation](../host.md) setup to complete the installation.

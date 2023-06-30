@@ -28,10 +28,6 @@ docker run -d \
 traefik:v2.5
 ```
 
-## Access
-
-# Run Lib MS at port 4001
-
 ## Authentication
 
 The dummy username is `foo` and the password is `bar`.
