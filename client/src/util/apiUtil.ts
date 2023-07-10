@@ -30,7 +30,7 @@ type TreeNodesArray = NonNullable<Trees['nodes']>;
 function useAssets(dirPath: string, privateRepo?: boolean): Asset[] {
   const groupAndProject = getGroupAndProject(privateRepo);
 
-  const dirData = getDirectoryData(dirPath, groupAndProject);
+  const dirData = useDirectoryData(dirPath, groupAndProject);
   const repository = validateRepository(dirData, groupAndProject);
   const directories = validateDirectories(repository, dirPath);
 
@@ -46,7 +46,7 @@ function getGroupAndProject(privateRepo?: boolean): string {
   }`;
 }
 
-function getDirectoryData(dirPath: string, groupAndProject: string) {
+function useDirectoryData(dirPath: string, groupAndProject: string) {
   return useLazyLoadQuery<gitLabDirectoryListQuery>(getDirectoriesQuery, {
     path: dirPath,
     groupAndProject,

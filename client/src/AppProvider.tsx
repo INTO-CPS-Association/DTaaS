@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme, Theme } from '@mui/material/styles';
 import AuthProvider from 'route/auth/AuthProvider';
 import RelayEnvironment from 'RelayEnvironment';
 import * as React from 'react';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { RelayEnvironmentProvider } from 'react-relay';
 import { setupStore } from 'store/Redux/store';
 
@@ -17,7 +17,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const store = setupStore();
 
   return (
-    <Provider store={store}>
+    <ReduxProvider store={store}>
       <RelayEnvironmentProvider environment={RelayEnvironment}>
         <React.Suspense fallback={<div>Loading...</div>}>
           <ThemeProvider theme={mdTheme}>
@@ -28,7 +28,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           </ThemeProvider>
         </React.Suspense>
       </RelayEnvironmentProvider>
-    </Provider>
+    </ReduxProvider>
   );
 }
 

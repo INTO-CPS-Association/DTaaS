@@ -1,5 +1,5 @@
 import { Paper, Typography } from '@mui/material';
-import LinkButtons from 'components/LinkButtons';
+import LinkButtons from 'components/linkButtons/LinkButtons';
 import Layout from 'page/Layout';
 import * as React from 'react';
 import styled from '@emotion/styled';

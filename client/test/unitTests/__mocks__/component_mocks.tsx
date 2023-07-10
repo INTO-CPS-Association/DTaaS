@@ -1,7 +1,7 @@
 import * as React from 'react';
 // Will contain mocks of relevant components.
 
-jest.mock('components/LinkButtons', () => ({
+jest.mock('components/linkButtons/LinkButtons', () => ({
   default: () => <button>Button</button>,
 }));
 
