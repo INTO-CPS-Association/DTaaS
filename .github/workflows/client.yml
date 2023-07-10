@@ -28,14 +28,14 @@ jobs:
       - name: Run the linting checks
         run: |
           cd client/	
-          yarn install
+          yarn install	
           yarn syntax
       - name: Build the React SPA website
         run: |
           cd client/	
           ./script/install.bash 
           yarn build
-          yarn configapp ci
+          yarn configapp test
       - name: Run client unit and integration tests
         run: |
           cd client/	
