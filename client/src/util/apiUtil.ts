@@ -20,24 +20,38 @@ type TreeNodes = NonNullable<NonNullable<PaginatedTree['nodes']>[0]>;
 type Trees = NonNullable<TreeNodes['trees']>;
 type TreeNodesArray = NonNullable<Trees['nodes']>;
 
+let errorMessage: string;
+
 /**
  * Retrives a list of assets from the given directory path in a GitLab repository.
  * Uses ENV variables to deterimine the group and graphQL endpoint for requests.
  * The project must be the same as the username used for logging in.
  * @param dirPath relative path to the directory in the repository
- * @returns An array of `Asset` objects
+ * @returns data: An array of `Asset` objects. errorMessage: Any potential error messages.
  */
-function useAssets(dirPath: string, privateRepo?: boolean): Asset[] {
+function useAssets(
+  dirPath: string,
+  privateRepo?: boolean
+): { data: Asset[]; errorMessage?: string } {
   const groupAndProject = getGroupAndProject(privateRepo);
 
   const dirData = useDirectoryData(dirPath, groupAndProject);
   const repository = validateRepository(dirData, groupAndProject);
+
+  if (!repository) {
+    return { data: [], errorMessage };
+  }
+
   const directories = validateDirectories(repository, dirPath);
+
+  if (!directories) {
+    return { data: [], errorMessage };
+  }
 
   const assets = createAssets(directories);
 
   const readmeData = getReadmesData(assets, groupAndProject);
-  return mergeAssets(assets, readmeData);
+  return { data: mergeAssets(assets, readmeData) };
 }
 
 function getGroupAndProject(privateRepo?: boolean): string {
@@ -56,29 +70,28 @@ function useDirectoryData(dirPath: string, groupAndProject: string) {
 function validateRepository(
   dirData: gitLabDirectoryListQuery$data,
   groupAndProject: string
-): Repository {
+): Repository | null {
   if (dirData.project && dirData.project.repository) {
     return dirData.project.repository;
   }
-  throw new Error(
-    `Repository not found, check project and group exists on gitlab.
-       Current group/project: ${groupAndProject}`
-  );
+
+  errorMessage = `Repository not found, check project and group exists on gitlab.
+       Current group/project: ${groupAndProject}`;
+  return null;
 }
 
 function validateDirectories(
   repository: Repository,
   dirPath: string
-): TreeNodesArray {
+): TreeNodesArray | null {
   const nodes = repository.paginatedTree?.nodes?.[0]?.trees?.nodes;
 
   if (nodes) {
     return nodes;
   }
 
-  throw new Error(
-    `Directory not found, check directory path. Current path: ${dirPath}`
-  );
+  errorMessage = `Directory not found, check directory path. Current path: ${dirPath}`;
+  return null;
 }
 
 function createAssets(treeNodes: TreeNodesArray): Asset[] {

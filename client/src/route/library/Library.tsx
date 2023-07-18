@@ -10,28 +10,27 @@ import { getAndSetUsername } from '../../util/auth/Authentication';
 import tabs from './LibraryTabData';
 
 function useLibraryData() {
-  const auth = useAuth();
-  getAndSetUsername(auth);
-
-  const assetBoardWithSuspense = (
-    pathToAssets: string,
-    privateRepo?: boolean
-  ) => (
-    <React.Suspense fallback={<AssetBoard />}>
-      <AssetBoard pathToAssets={pathToAssets} privateRepo={privateRepo} />
-    </React.Suspense>
-  );
   const tabsData: TabData[] = tabs.map((tab) => ({
     label: tab.label,
     body: (
       <>
         <Typography variant="body1">{tab.body}</Typography>
-        <TabComponent
-          tabs={[
-            { label: 'Private', body: assetBoardWithSuspense(tab.label, true) },
-            { label: 'Common', body: assetBoardWithSuspense(tab.label) },
-          ]}
-        />
+        <React.Suspense
+          fallback={<em style={{ textAlign: 'center' }}>loading...</em>}
+        >
+          <TabComponent
+            tabs={[
+              {
+                label: 'Private',
+                body: <AssetBoard pathToAssets={tab.label} privateRepo />,
+              },
+              {
+                label: 'Common',
+                body: <AssetBoard pathToAssets={tab.label} />,
+              },
+            ]}
+          />
+        </React.Suspense>
       </>
     ),
   }));
@@ -39,6 +38,9 @@ function useLibraryData() {
 }
 
 function LibraryContent() {
+  const auth = useAuth();
+  getAndSetUsername(auth);
+
   const tabsData = useLibraryData();
   return (
     <Layout>

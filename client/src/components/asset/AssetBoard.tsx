@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import useAssets from 'util/apiUtil';
-import { Asset } from './Asset';
 import AssetCard from './AssetCard';
 
 const outerGridContainerProps = {
@@ -14,24 +13,27 @@ const outerGridContainerProps = {
   },
 };
 
+// TODO: Make it not capital letters.!
+
 /**
  * Displays a board with navigational properties to locate and select assets for DT configuration.
- * @param props Takes relative path to Assets. E.g `Library` for Library assets. OR maybe the full path using `useURLforLIB`?
+ * @param props Takes relative path to Assets. E.g `Functions` for function assets.
  * @returns
  */
-function AssetBoard(props: { pathToAssets?: string; privateRepo?: boolean }) {
-  if (!props.pathToAssets) {
-    return <em style={{ textAlign: 'center' }}>loading...</em>;
-  }
-  const assets: Asset[] = useAssets(props.pathToAssets, props.privateRepo);
+function AssetBoard(props: { pathToAssets: string; privateRepo?: boolean }) {
+  // eslint-disable-next-line no-console
+  console.log(props.pathToAssets);
+  const assetsFetched = useAssets(props.pathToAssets, props.privateRepo);
 
-  if (!assets.length) {
-    return <em style={{ textAlign: 'center' }}>No assets found.</em>;
+  if (!assetsFetched.data.length) {
+    return (
+      <em style={{ textAlign: 'center' }}>{assetsFetched.errorMessage}</em>
+    );
   }
 
   return (
     <Grid {...outerGridContainerProps}>
-      {assets.map((asset, i) => (
+      {assetsFetched.data.map((asset, i) => (
         <Grid key={i} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
           <AssetCard asset={asset} />
         </Grid>
