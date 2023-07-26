@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import * as fs from "fs";
 import { join } from "path";
-import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { Project } from "src/types";
+import { IFilesService } from "../interfaces/files.service.interface";
 
 @Injectable()
 export class LocalFilesService implements IFilesService {
@@ -52,9 +52,9 @@ export class LocalFilesService implements IFilesService {
     const stats = await fs.promises.lstat(join(fullPath, file));
     if (stats.isDirectory()) {
       return { node: { name: file, type: "tree" } };
-    } else {
+    } 
       return { node: { name: file, type: "blob" } };
-    }
+    
   }
 
   private formatResponse(name: string, content: string): Project {
@@ -64,7 +64,7 @@ export class LocalFilesService implements IFilesService {
         blobs: {
           nodes: [
             {
-              name: name,
+              name,
               rawBlob: content,
               rawTextBlob: content,
             },

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigService } from "@nestjs/config";
 import { FilesResolver } from "../../src/files/resolvers/files.resolver";
 import { FilesServiceFactory } from "../../src/files/services/files-service.factory";
 import { LocalFilesService } from "../../src/files/services/local-files.service";
 import { GitlabFilesService } from "../../src/files/services/gitlab-files.service";
-import { ConfigService } from "@nestjs/config";
 import {
   pathToTestDirectory,
   pathToTestFileContent,

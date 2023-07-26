@@ -16,10 +16,10 @@ export class FilesServiceFactory {
     const mode = this.configService.get<string>("MODE");
     if (mode === "local") {
       return this.localFilesService;
-    } else if (mode === "gitlab") {
+    } if (mode === "gitlab") {
       return this.gitlabFilesService;
-    } else {
+    } 
       throw new Error(`Invalid MODE: ${mode}`);
-    }
+    
   }
 }

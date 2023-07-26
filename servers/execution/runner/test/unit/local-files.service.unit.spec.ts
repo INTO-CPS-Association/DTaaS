@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { LocalFilesService } from '../../src/files/services/local-files.service';
 import * as fs from 'fs';
 import { join } from 'path';
+import { LocalFilesService } from '../../src/files/services/local-files.service';
 import {
   fstestFileContent,
   pathToTestDirectory,

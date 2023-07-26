@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { Project } from "src/types";
+import { IFilesService } from "../interfaces/files.service.interface";
 import { getDirectoryQuery, getReadFileQuery } from "../queries";
+
 type QueryFunction = (domain: string, parsedPath: string) => string;
 
 @Injectable()
@@ -27,7 +28,7 @@ export class GitlabFilesService implements IFilesService {
 
     // Only prepend the gitlabGroup if it's not already part of the path
     const domain: string =
-      project === gitlabGroup ? project : gitlabGroup + "/" + project;
+      project === gitlabGroup ? project : `${gitlabGroup  }/${  project}`;
 
     const parsedPath = pathParts.slice(1).join("/");
     return { domain, parsedPath };
@@ -43,7 +44,7 @@ export class GitlabFilesService implements IFilesService {
           Authorization: `Bearer ${this.configService.get("GITLAB_TOKEN")}`,
         },
         data: {
-          query: query,
+          query,
         },
       });
       return response.data.data.project;

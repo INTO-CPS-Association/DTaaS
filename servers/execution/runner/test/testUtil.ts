@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+
 dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
@@ -64,11 +65,11 @@ export class MockConfigService {
       case "MODE":
         if (process.env.MODE === "gitlab") {
           return "gitlab";
-        } else if (process.env.MODE === "local") {
+        } if (process.env.MODE === "local") {
           return "local";
-        } else {
+        } 
           return "unknown";
-        }
+        
       default:
         return undefined;
     }
