@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "declaration": true, //generate declaration '.d.ts' files
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true, //allow experimental decorators for es7
