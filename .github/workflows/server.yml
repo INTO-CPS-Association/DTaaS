@@ -101,7 +101,9 @@ jobs:
           MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
+
       - name: Upload test coverage of runner microservice to Codecov
+        if: always()
         uses: codecov/codecov-action@v3
         with:
           files: servers/execution/runner/coverage/clover.xml
