@@ -75,17 +75,19 @@ jobs:
 
       - name: Run the linting checks
         run: |
-          cd sservers/execution/runner
+          cd servers/execution/runner
           yarn install
           yarn syntax
 
       - name: Build the runner microservice
+        if: always()
         run: |
           cd servers/execution/runner	
           yarn install	
           yarn build
 
       - name: Run runner microservice tests
+        if: always()
         run: |
           cd servers/execution/runner
           yarn install
