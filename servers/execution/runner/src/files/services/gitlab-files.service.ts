@@ -8,7 +8,7 @@ import { getDirectoryQuery, getReadFileQuery } from "../queries";
 type QueryFunction = (domain: string, parsedPath: string) => string;
 
 @Injectable()
-export class GitlabFilesService implements IFilesService {
+export default class GitlabFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {

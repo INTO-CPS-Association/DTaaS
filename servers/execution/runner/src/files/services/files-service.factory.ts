@@ -1,11 +1,11 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { IFilesService } from "../interfaces/files.service.interface";
-import { GitlabFilesService } from "./gitlab-files.service";
-import { LocalFilesService } from "./local-files.service";
+import GitlabFilesService from "./gitlab-files.service";
+import LocalFilesService from "./local-files.service";
 
 @Injectable()
-export class FilesServiceFactory {
+export default class FilesServiceFactory {
   constructor(
     private configService: ConfigService,
     @Inject(GitlabFilesService) private gitlabFilesService: GitlabFilesService,

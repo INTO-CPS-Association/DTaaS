@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 // import { execSync } from "child_process";
-import { AppModule } from "../../src/app.module";
+import AppModule from "../../src/app.module";
 import {
   e2eReadFile,
   e2elistDirectory,

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
-import { GitlabFilesService } from "../../src/files/services/gitlab-files.service";
+import GitlabFilesService from "../../src/files/services/gitlab-files.service";
 import { pathToTestFileContent, testFileContent , MockConfigService, testDirectory } from "../testUtil";
 
 describe("GitlabFilesService", () => {

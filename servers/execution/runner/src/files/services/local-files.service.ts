@@ -6,7 +6,7 @@ import { Project } from "src/types";
 import { IFilesService } from "../interfaces/files.service.interface";
 
 @Injectable()
-export class LocalFilesService implements IFilesService {
+export default class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {

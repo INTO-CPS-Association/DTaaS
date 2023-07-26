@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesResolver } from "../../src/files/resolvers/files.resolver";
+import FilesResolver from "../../src/files/resolvers/files.resolver";
 import {
   testDirectory,
   pathToTestDirectory,
@@ -7,7 +7,7 @@ import {
   testFileContent,
 } from "../testUtil";
 import { IFilesService } from "../../src/files/interfaces/files.service.interface";
-import { FilesServiceFactory } from "../../src/files/services/files-service.factory";
+import FilesServiceFactory from "../../src/files/services/files-service.factory";
 
 describe("Unit tests for FilesResolver", () => {
   let filesResolver: FilesResolver;

@@ -1,10 +1,10 @@
 import { Resolver, Query, Args } from "@nestjs/graphql";
 import { IFilesService } from "../interfaces/files.service.interface";
-import { FilesServiceFactory } from "../services/files-service.factory";
+import FilesServiceFactory from "../services/files-service.factory";
 import { Project } from "../../types";
 
 @Resolver()
-export class FilesResolver {
+export default class FilesResolver {
   private readonly filesService: IFilesService;
 
   constructor(filesServiceFactory: FilesServiceFactory) {
