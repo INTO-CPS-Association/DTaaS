@@ -6,6 +6,7 @@ import LocalFilesService from "./local-files.service";
 
 @Injectable()
 export default class FilesServiceFactory {
+  // eslint-disable-next-line no-useless-constructor
   constructor(
     private configService: ConfigService,
     @Inject(GitlabFilesService) private gitlabFilesService: GitlabFilesService,
