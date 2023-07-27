@@ -42,7 +42,7 @@ export class LocalFilesService implements IFilesService {
 
       const name = path.split("/").pop(); // extract file name from the path
 
-      return this.formatResponse(name, content);
+      return LocalFilesService.formatResponse(name, content);
     } catch (error) {
       throw new InternalServerErrorException("Error reading file");
     }
@@ -57,7 +57,7 @@ export class LocalFilesService implements IFilesService {
     }
   }
 
-  private formatResponse(name: string, content: string): Project {
+  private static formatResponse(name: string, content: string): Project {
     // Construct the response to mimic the structure from GitLab API
     return {
       repository: {

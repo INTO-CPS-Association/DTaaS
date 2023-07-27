@@ -60,11 +60,11 @@ describe('LocalFilesService', () => {
 
     jest
       .spyOn(fs.promises, 'lstat')
-      .mockImplementation((pathToTestDirectory) => {
-        if (typeof pathToTestDirectory === 'string') {
+      .mockImplementation((pathToDirectory) => {
+        if (typeof pathToDirectory === 'string') {
           return Promise.resolve(statsMock as fs.Stats);
         }
-        throw new Error(`Invalid argument: ${pathToTestDirectory}`);
+        throw new Error(`Invalid argument: ${pathToDirectory}`);
       });
     const result = await service.listDirectory(pathToTestDirectory);
     expect(result).toEqual({

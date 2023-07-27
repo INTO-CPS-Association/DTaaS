@@ -17,7 +17,7 @@ export default class LocalFilesService implements IFilesService {
     const files = await fs.promises.readdir(fullPath);
 
     const edges = await Promise.all(
-      files.map((file) => this.getFileStats(fullPath, file))
+      files.map((file) => LocalFilesService.getFileStats(fullPath, file))
     );
 
     const tree = {
@@ -43,13 +43,13 @@ export default class LocalFilesService implements IFilesService {
 
       const name = path.split("/").pop(); // extract file name from the path
 
-      return this.formatResponse(name, content);
+      return LocalFilesService.formatResponse(name, content);
     } catch (error) {
       throw new InternalServerErrorException("Error reading file");
     }
   }
 
-  private async getFileStats(fullPath: string, file: string) {
+  private static async getFileStats(fullPath: string, file: string) {
     const stats = await fs.promises.lstat(join(fullPath, file));
     if (stats.isDirectory()) {
       return { node: { name: file, type: "tree" } };
@@ -58,7 +58,7 @@ export default class LocalFilesService implements IFilesService {
     
   }
 
-  private formatResponse(name: string, content: string): Project {
+  private static formatResponse(name: string, content: string): Project {
     // Construct the response to mimic the structure from GitLab API
     return {
       repository: {
