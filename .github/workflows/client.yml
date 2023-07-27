@@ -42,7 +42,8 @@ jobs:
           yarn install	
           yarn test -u
           yarn test -i
-      - name: Upload unit test coverage to Codecov
+
+      - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: client/coverage/clover.xml
