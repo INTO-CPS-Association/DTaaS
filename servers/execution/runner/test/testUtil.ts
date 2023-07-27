@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { setTimeout } from "timers/promises";
 
 dotenv.config({ path: ".env" });
 
@@ -48,10 +49,12 @@ export const testFileContent = {
 };
 
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  const timer = setTimeout(ms);
+  Promise.resolve(timer);
 }
 
 export class MockConfigService {
+  // eslint-disable-next-line class-methods-use-this
   get(key: string): string {
     switch (key) {
       case "TOKEN":
