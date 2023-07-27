@@ -1,7 +1,7 @@
 import { ApolloDriver } from "@nestjs/apollo";
 import { join } from "path";
 
-export function getApolloDriverConfig() {
+export default function getApolloDriverConfig() {
   return {
     driver: ApolloDriver,
     typePaths: join(process.cwd(), "src/schema.gql"),

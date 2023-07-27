@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { LocalFilesService } from '../../src/files/services/local-files.service';
 import * as fs from 'fs';
 import { join } from 'path';
+import LocalFilesService from '../../src/files/services/local-files.service';
 import {
   fstestFileContent,
   pathToTestDirectory,
@@ -60,11 +60,11 @@ describe('LocalFilesService', () => {
 
     jest
       .spyOn(fs.promises, 'lstat')
-      .mockImplementation((pathToTestDirectory) => {
-        if (typeof pathToTestDirectory === 'string') {
+      .mockImplementation((pathToDirectory) => {
+        if (typeof pathToDirectory === 'string') {
           return Promise.resolve(statsMock as fs.Stats);
         }
-        throw new Error(`Invalid argument: ${pathToTestDirectory}`);
+        throw new Error(`Invalid argument: ${pathToDirectory}`);
       });
     const result = await service.listDirectory(pathToTestDirectory);
     expect(result).toEqual({
