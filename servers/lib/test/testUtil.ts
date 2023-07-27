@@ -1,4 +1,6 @@
 import * as dotenv from "dotenv";
+import { setTimeout } from "timers/promises";
+
 dotenv.config({ path: ".env" });
 
 // actual data for integration and e2e tests
@@ -47,10 +49,12 @@ export const testFileContent = {
 };
 
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  const timer = setTimeout(ms);
+  Promise.resolve(timer);
 }
 
 export class MockConfigService {
+  // eslint-disable-next-line class-methods-use-this
   get(key: string): string {
     switch (key) {
       case "TOKEN":
@@ -64,11 +68,11 @@ export class MockConfigService {
       case "MODE":
         if (process.env.MODE === "gitlab") {
           return "gitlab";
-        } else if (process.env.MODE === "local") {
+        } if (process.env.MODE === "local") {
           return "local";
-        } else {
+        } 
           return "unknown";
-        }
+        
       default:
         return undefined;
     }

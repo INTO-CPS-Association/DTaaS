@@ -1,12 +1,13 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import * as fs from "fs";
 import { join } from "path";
-import { IFilesService } from "../interfaces/files.service.interface";
 import { ConfigService } from "@nestjs/config";
 import { Project } from "src/types";
+import { IFilesService } from "../interfaces/files.service.interface";
 
 @Injectable()
-export class LocalFilesService implements IFilesService {
+export default class LocalFilesService implements IFilesService {
+  // eslint-disable-next-line no-useless-constructor
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {
@@ -16,7 +17,7 @@ export class LocalFilesService implements IFilesService {
     const files = await fs.promises.readdir(fullPath);
 
     const edges = await Promise.all(
-      files.map((file) => this.getFileStats(fullPath, file))
+      files.map((file) => LocalFilesService.getFileStats(fullPath, file))
     );
 
     const tree = {
@@ -48,13 +49,13 @@ export class LocalFilesService implements IFilesService {
     }
   }
 
-  private async getFileStats(fullPath: string, file: string) {
+  private static async getFileStats(fullPath: string, file: string) {
     const stats = await fs.promises.lstat(join(fullPath, file));
     if (stats.isDirectory()) {
       return { node: { name: file, type: "tree" } };
-    } else {
+    } 
       return { node: { name: file, type: "blob" } };
-    }
+    
   }
 
   private static formatResponse(name: string, content: string): Project {
@@ -64,7 +65,7 @@ export class LocalFilesService implements IFilesService {
         blobs: {
           nodes: [
             {
-              name: name,
+              name,
               rawBlob: content,
               rawTextBlob: content,
             },

@@ -1,9 +1,10 @@
 import { ConfigModule } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { FilesModule } from "./files/files.module";
 import * as dotenv from "dotenv";
-import { getApolloDriverConfig } from "../util";
+import FilesModule from "./files/files.module";
+import getApolloDriverConfig from "../util";
+
 dotenv.config({ path: ".env" });
 
 @Module({
@@ -16,4 +17,4 @@ dotenv.config({ path: ".env" });
   ],
   providers: [],
 })
-export class AppModule {}
+export default class AppModule {}
