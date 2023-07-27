@@ -1,8 +1,11 @@
 {
   "name": "lib",
-  "version": "0.0.1",
-  "description": "REST API wrapper for a digital twin",
-  "author": "prasad.talasila@gmail.com",
+  "version": "0.2.0",
+  "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
+  "author": "phillip.boe.jensen@gmail.com",
+  "contributors": [
+    "Prasad Talasila"
+  ],
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "scripts": {
