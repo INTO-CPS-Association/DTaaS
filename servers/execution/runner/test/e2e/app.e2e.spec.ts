@@ -23,6 +23,7 @@ describe("End to End test for the application", () => {
     await app.init(); // Initialize the application
     await app.listen(process.env.PORT);
 
+    // eslint-disable-next-line no-promise-executor-return
     await new Promise((resolve) => setTimeout(resolve, 4000));
   }, 10000);
 

@@ -37,8 +37,10 @@ describe("Integration tests for FilesResolver", () => {
 
   const modes = ["local", "gitlab"];
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const mode of modes) {
-    describe(`when MODE is ${mode}`, () => {
+  // eslint-disable-next-line no-loop-func
+  describe(`when MODE is ${mode}`, () => {
       beforeEach(() => {
         jest.spyOn(mockConfigService, "get").mockReturnValue(mode);
       });
