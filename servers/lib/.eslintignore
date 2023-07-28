@@ -1,6 +1,6 @@
+api/
 build/
+dist/
 node_modules/
 script/
-api/
-dist/
 src/types.ts

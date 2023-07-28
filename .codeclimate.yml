@@ -1,8 +1,7 @@
 ---
 version: "2"
+
 plugins:
-  shellcheck:
-    enabled: true
   csslint:
     enabled: true
   duplication:
@@ -10,24 +9,32 @@ plugins:
     config:
       languages:
         typescript:
-          mass_threshold: 55
         javascript:
         python:
-        php:
+          python_version: 3
   eslint:
     enabled: true
     channel: "eslint-8"
     config:
-      config: client/.eslintrc
+      config: .eslintrc
   fixme:
     enabled: true
+  markdownlint:
+    enabled: true  
+  shellcheck:
+    enabled: true
+
 exclude_patterns:
-  - "**.md"
   - "**.txt"
   - "**.json"
-  - docs/
-  - "**/node_modules/"
+  - "**/api/"
   - "**/build/"
+  - "**/coverage/"
+  - "**/dist/"
+  - "**/node_modules/"
   - "**/public/"
-  - "**/coverage"
-  - "client/config/"
+  - "**/script/"
+  - client/config/
+  - docs/
+  - script/
+  - servers/lib/src/types.ts
