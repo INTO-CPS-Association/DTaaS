@@ -33,8 +33,5 @@ exclude_patterns:
   - "**/dist/"
   - "**/node_modules/"
   - "**/public/"
-  - "**/script/"
   - client/config/
-  - docs/
-  - script/
   - servers/lib/src/types.ts
