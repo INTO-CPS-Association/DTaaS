@@ -47,10 +47,4 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: client/coverage/clover.xml
-          flags: client-unit-test
-
-      - name: Upload browser test coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: client/playwright-report/results.json
-          flags: client-browser-test
+          flags: client-unit-integration-tests

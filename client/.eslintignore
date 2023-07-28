@@ -1,5 +1,5 @@
+api/
 build/
+config/
 node_modules/
 script/
-api/
-config/

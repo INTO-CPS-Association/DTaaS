@@ -1,0 +1,13 @@
+**/api/
+**/build/
+**/config/
+**/coverage/
+**/node_modules/
+**/public/
+**/script/
+**/dist/
+deploy/
+docs/
+files/
+script/
+servers/lib/src/types.ts
