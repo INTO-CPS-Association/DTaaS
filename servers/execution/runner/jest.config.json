@@ -2,14 +2,13 @@
   "preset": "ts-jest",
   "testEnvironment": "node",
   "transform": {
-    "^.+\\.(t|j)sx?$": [
+    "(src|test)/^.+\\.(t|j)sx?$": [
       "ts-jest",
       {
         "useESM": true
       }
     ]
   },
-  "transformIgnorePatterns": ["/node_modules/(?![execa]).+\\.js$"],
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
   "collectCoverageFrom": ["src/**/*.{ts,js}"],
@@ -32,5 +31,5 @@
   },
   "verbose": true,
   "testRegex": "./test/.*\\.spec.tsx?$",
-  "modulePaths": ["<rootDir>/src/"]
+  "modulePaths": ["<rootDir>/src/", "<rootDir>/test/"]
 }
