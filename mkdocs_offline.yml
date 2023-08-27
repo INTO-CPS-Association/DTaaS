@@ -14,9 +14,6 @@ theme:
     - navigation.tracking
     - navigation.footer
 
-plugins:
-  - offline
-
 nav:
   - Home: index.md
   - Admin:
@@ -72,3 +69,11 @@ markdown_extensions:
       alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True
+
+plugins:
+  - offline
+  - with-pdf:
+      cover: true
+      cover_logo: assets/into-cps-logo.png
+      cover_subtitle: ""
+      output_path: pdf/DTaaS-docs.pdf

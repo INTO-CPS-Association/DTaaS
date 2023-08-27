@@ -1,15 +1,71 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Digital Twin as a Service</title>
-</head>
-<body>
-  Please select the version of the documents:
+<html lang="en">
+  <!--src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Styling_tables"-->
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Digital Twin as a Service</title>
+    <style>
+      table {
+        table-layout: fixed;
+        border-collapse: collapse;
+        border: 3px solid purple;
+        font-family: "Helvetica Neue", "Arial", sans-serif;
+        font-style: italic;
+        font-weight: 100;
+        font-variant-ligatures: normal;
+        font-size: 2rem;
+        letter-spacing: 1px;
+      }
 
-  <ol>
-    <li>latest: <a href="latest/index.html">online</a> <a href="latest.zip">offline</a></li>
-    <li> version0.2: <a href="version0.2/index.html">online</a> <a href="version0.2.zip">offline</a></li>
-  </ol> 
+      thead th:nth-child(1) {
+        width: 40%;
+      }
 
-</body>
-</html> 
+      thead th:nth-child(2) {
+        width: 15%;
+      }
+
+      thead th:nth-child(3) {
+        width: 10%;
+      }
+
+      thead th:nth-child(4) {
+        width: 35%;
+      }
+
+      th,
+      td {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col" colspan="3">Digital Twin as a Service (DTaaS)</th>
+        </tr>
+        <tr>
+          <th scope="col" colspan="3">Documentation</th>
+        </tr>
+        <tr>
+          <th scope="col">Version</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Development</th>
+          <td scope="col"><a href="development/index.html">Online</a></td>
+          <td scope="col"><a href="DTaaS-development.pdf">PDF</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Version 0.2.0</th>
+          <td scope="col"><a href="version0.2/index.html">Online</a></td>
+          <td scope="col"><a href="DTaaS-version0.2.pdf">PDF</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
