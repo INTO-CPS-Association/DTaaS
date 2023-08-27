@@ -3,7 +3,7 @@
 if [ -n "$1" ]; then
   VERSION="$1"
 else
-  VERSION="latest"
+  VERSION="development"
 fi
 
 export VERSION
@@ -12,15 +12,16 @@ export TOP_DIR
 COMMIT_HASH=$(git rev-parse --short HEAD)
 export COMMIT_HASH
 
-echo "${VERSION}"
+echo ${VERSION}
+if [ -d site ]
+then
+  rm -rf site
+fi
+
 printf "generate and publish documents"
 mkdocs build --config-file mkdocs.yml --site-dir "site/online/${VERSION}"
-mkdocs build --config-file mkdocs_offline.yml --site-dir "site/offline/${VERSION}"
 
 cp docs/redirect-page.html site/index.html
-
-cd site/offline || exit
-zip -r "${VERSION}.zip" "${VERSION}"
 
 cd "${TOP_DIR}" || exit
 git checkout webpage-docs
@@ -31,10 +32,21 @@ git checkout webpage-docs
 # rm -rf .git-hooks/*
 # rm script/configure-git-hooks.sh script/grafana.sh script/influx.sh script/install.bash
 
-rm -rf ${VERSION}
-mv "site/online/${VERSION}" . 
-mv "site/offline/${VERSION}.zip" .
+cd "${TOP_DIR}" || exit
+if [ -d "${VERSION}" ]; then
+  rm -rf "${VERSION}"
+fi
+
+if [ -d "site/online/${VERSION}" ]
+then
+  cd site/online || exit
+  mv "${VERSION}/pdf/DTaaS-docs.pdf" "${TOP_DIR}/DTaaS-${VERSION}.pdf"
+  mv "${VERSION}" "${TOP_DIR}/."
+fi
+
+cd "${TOP_DIR}" || exit
 mv site/index.html .
+rm -rf site
 
 git add .
 git commit -m "docs for ${COMMIT_HASH} commit"

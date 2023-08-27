@@ -72,7 +72,10 @@ markdown_extensions:
 
 plugins:
   - offline
+  - open-in-new-tab
+  - search
   - with-pdf:
+      author: "DTaaS Development Team"
       cover: true
       cover_logo: assets/into-cps-logo.png
       cover_subtitle: ""
