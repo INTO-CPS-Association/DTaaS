@@ -71,12 +71,5 @@ markdown_extensions:
       enable_dollar_delimiter: True
 
 plugins:
-  - offline
   - open-in-new-tab
   - search
-  - with-pdf:
-      author: "DTaaS Development Team"
-      cover: true
-      cover_logo: assets/into-cps-logo.png
-      cover_subtitle: ""
-      output_path: pdf/DTaaS-docs.pdf

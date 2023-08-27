@@ -17,7 +17,7 @@ The first step is to decide on the number of users and their usenames. The traef
 
 ### The traefik gateway server
 
-You can run the Run the Traefik gateway server in both and HTTPS HTTPS mode to experience the DTaaS application. The installation guide assumes that you can run the application in HTTPS mode.
+You can run the Run the Traefik gateway server in both HTTP and HTTPS mode to experience the DTaaS application. The installation guide assumes that you can run the application in HTTPS mode.
 
 The Traefik gateway configuration is at _deploy/config/gateway/fileConfig.yml_. Change `foo.com` to your local hostname and user1/user2 to the usernames chosen by you.
 

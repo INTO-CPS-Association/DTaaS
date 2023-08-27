@@ -71,7 +71,6 @@ markdown_extensions:
       enable_dollar_delimiter: True
 
 plugins:
-  - offline
   - open-in-new-tab
   - search
   - with-pdf:
@@ -79,4 +78,5 @@ plugins:
       cover: true
       cover_logo: assets/into-cps-logo.png
       cover_subtitle: ""
+      enabled_if_env: MKDOCS_ENABLE_PDF_EXPORT
       output_path: pdf/DTaaS-docs.pdf
