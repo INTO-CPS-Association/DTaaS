@@ -1,0 +1,48 @@
+name: Digital twin runner
+
+on:
+  push:
+    paths:
+      - 'servers/execution/**'
+  pull_request:
+    paths:
+      - 'servers/execution/**'
+  workflow_dispatch:
+    paths:
+      - 'servers/execution/**'
+
+jobs:
+  test-runner:
+    name: Test digital twin runner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+
+      - name: Run linting checks on runner
+        run: |
+          cd servers/execution/runner
+          yarn install
+          yarn syntax
+
+      - name: Build the runner
+        if: success() || failure()
+        run: |
+          cd servers/execution/runner
+          yarn install	
+          yarn build
+
+      - name: Run tests
+        if: success() || failure()
+        run: |
+          cd servers/execution/runner
+          yarn install
+          yarn test

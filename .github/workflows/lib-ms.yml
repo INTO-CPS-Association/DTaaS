@@ -1,18 +1,19 @@
-name: Check the server microservices
+name: Library microservice
 
 on:
   push:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'servers/lib/**'
   pull_request:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'servers/lib/**'
   workflow_dispatch:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'servers/lib/**'
 
 jobs:
   test-lib-ms:
+    name: Test library microservice
     runs-on: ubuntu-latest
 
     steps:
