@@ -13,14 +13,15 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "develop": "npx react-scripts start",
+    "develop": "relay-compiler --validate && npx react-scripts start",
     "test": "script/test.bash",
     "syntax": "script/syntax.bash",
-    "build": "script/build.bash",
+    "build": "relay-compiler --validate && script/build.bash",
     "configapp": "script/config.bash",
     "start": "script/start.bash",
     "clean": "script/clean.bash",
-    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\""
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.{ts,tsx,css,scss}\"",
+    "relay": "relay-compiler"
   },
   "eslintConfig": {
     "extends": [
@@ -39,15 +40,19 @@
     "@reduxjs/toolkit": "^1.9.5",
     "dotenv": "^16.1.4",
     "oidc-client-ts": "^2.2.2",
+    "axios": "^1.4.0",
+    "babel-plugin-relay": "^15.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
     "react-oidc-context": "^2.2.2",
     "react-redux": "^8.0.5",
+    "react-relay": "15.0.0",
     "react-router-dom": "^6.3.0",
     "react-tabs": "^6.0.0",
     "redux": "^4.2.1",
+    "relay-runtime": "15.0.0",
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.0.1",
     "styled-components": "^5.3.9",
@@ -65,6 +70,8 @@
     "@types/jest": "^29.5.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/react-relay": "14.1.3",
+    "@types/relay-runtime": "14.1.10",
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
@@ -81,6 +88,7 @@
     "prettier": "2.7.1",
     "react-iframe": "^1.8.5",
     "react-scripts": "^5.0.1",
+    "relay-compiler": "15.0.0",
     "ts-jest": "^29.0.5"
   },
   "browserslist": {

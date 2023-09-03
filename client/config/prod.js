@@ -1,6 +1,6 @@
 window.env = {
-  REACT_APP_ENVIRONMENT: 'dev',
-  REACT_APP_URL: 'https://foo.com/',
+  REACT_APP_ENVIRONMENT: 'prod',
+  REACT_APP_URL: 'https://foo.com',
   REACT_APP_URL_BASENAME: 'dtaas',
   REACT_APP_URL_DTLINK: '/lab',
   REACT_APP_URL_LIBLINK: '',
@@ -15,4 +15,7 @@ window.env = {
   REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+
+  REACT_APP_BACKEND_URL_GITLAB: 'https://gitlab.foo.com/api/graphql',
+  REACT_APP_BACKEND_GITLAB_GROUP: 'dtaas',
 };

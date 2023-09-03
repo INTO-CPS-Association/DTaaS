@@ -15,7 +15,7 @@ import { signOut } from '../util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
-  drawerWidth: number;
+  drawerwidth: number;
 }
 
 const transition = ({
@@ -34,12 +34,12 @@ const transition = ({
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open, drawerWidth }) => ({
+})<AppBarProps>(({ theme, open, drawerwidth }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: transition({ theme, open }),
   ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerwidth,
+    width: `calc(100% - ${drawerwidth}px)`,
     transition: transition({ theme, open }),
   }),
 }));
@@ -49,13 +49,13 @@ interface MenuToolbarProps {
   handleDrawerOpen: () => void;
   handleOpenUserMenu: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleCloseUserMenu: () => void;
-  drawerWidth: number;
+  drawerwidth: number;
   anchorElUser: HTMLElement | null;
 }
 
 function MenuToolbar({
   open,
-  drawerWidth,
+  drawerwidth,
   handleCloseUserMenu,
   handleOpenUserMenu,
   handleDrawerOpen,
@@ -69,7 +69,7 @@ function MenuToolbar({
     }
   };
   return (
-    <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
+    <AppBar position="fixed" open={open} drawerwidth={drawerwidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <IconButton
           color="inherit"

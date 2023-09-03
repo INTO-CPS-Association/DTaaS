@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
 
 interface TabRenderProps {
   index: number;
@@ -15,11 +14,11 @@ function TabRender(props: TabRenderProps) {
   const { children: tab, index } = props;
 
   return (
-    <Box
+    <div
       role="tabpanel"
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      sx={{
+      style={{
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -27,7 +26,7 @@ function TabRender(props: TabRenderProps) {
       }}
     >
       {tab.body}
-    </Box>
+    </div>
   );
 }
 

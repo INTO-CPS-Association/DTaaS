@@ -13,6 +13,7 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
+yarn relay      #generate graphql relay files - run after modifying graphql schema or queries for updated type syntax
 yarn build      #build the react app into build/ directory
 yarn develop    #start the development server without building. Great for live edits.
 

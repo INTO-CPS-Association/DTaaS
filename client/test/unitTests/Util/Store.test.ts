@@ -1,5 +1,8 @@
-import menuReducer, { openMenu, closeMenu } from 'store/menu.slice';
-import authReducer, { setUserName } from 'store/auth.slice';
+import menuReducer, {
+  openMenu,
+  closeMenu,
+} from 'store/Redux/slices/menu.slice';
+import authReducer, { setUserName } from 'store/Redux/slices/auth.slice';
 
 describe('reducers', () => {
   let initialState: {

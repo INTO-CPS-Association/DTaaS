@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Paper } from '@mui/material';
+import { Paper, SxProps, Theme } from '@mui/material';
 import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
-function TabComponent(props: { tabs: TabData[] }) {
+function TabComponent(props: { tabs: TabData[]; sx?: SxProps<Theme> }) {
   return (
     <Paper
       sx={{
@@ -11,6 +11,7 @@ function TabComponent(props: { tabs: TabData[] }) {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100%',
+        ...props.sx,
       }}
     >
       <Tabs>

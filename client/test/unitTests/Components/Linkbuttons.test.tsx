@@ -1,10 +1,10 @@
 import * as React from 'react';
-import LinkButtons, { LinkIcons } from 'components/LinkButtons';
+import LinkButtons, { LinkIcons } from 'components/linkButtons/LinkButtons';
 import { render, screen } from '@testing-library/react';
 import { KeyLinkPair } from 'util/envUtil';
 import userEvent from '@testing-library/user-event';
 
-jest.deepUnmock('components/LinkButtons');
+jest.deepUnmock('components/linkButtons/LinkButtons');
 
 const buttons: KeyLinkPair[] = [
   { key: 'TERMINAL', link: 'https://example.com/terminal' },

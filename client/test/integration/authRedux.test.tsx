@@ -4,7 +4,7 @@ import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from '../../src/route/auth/PrivateRoute';
 import Library from '../../src/route/library/Library';
-import authReducer from '../../src/store/auth.slice';
+import authReducer from '../../src/store/Redux/slices/auth.slice';
 import { renderWithRouter } from '../unitTests/testUtils';
 
 jest.mock('react-oidc-context', () => ({

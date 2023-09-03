@@ -1,11 +1,14 @@
 import {
   useURLforDT,
   useURLforLIB,
-  getWorkbenchLinkValues,
+  useWorkbenchLinkValues,
   cleanURL,
-  useURLbasename,
+  getURLbasename,
+  getGitlabGroup,
+  getGitlabURL,
 } from 'util/envUtil';
-import { useSelector } from 'react-redux';
+import { renderHook } from '@testing-library/react';
+import { wrapWithInitialState } from '../testUtils';
 
 jest.unmock('util/envUtil');
 
@@ -14,6 +17,8 @@ describe('envUtil', () => {
   const testLIB = '';
   const testAppURL = 'https://example.com';
   const testBasename = 'testBasename';
+  const testGitlabURL = 'testGitlabURL';
+  const testGitlabGroup = 'testGitlabGroup';
   const testWorkbenchEndpoints = [
     'one',
     '/two',
@@ -45,42 +50,71 @@ describe('envUtil', () => {
     REACT_APP_GITLAB_SCOPES: testScopes,
     REACT_APP_REDIRECT_URI: testRedirect,
     REACT_APP_LOGOUT_REDIRECT_URI: testLogoutRedirect,
+
+    REACT_APP_BACKEND_URL_GITLAB: testGitlabURL,
+    REACT_APP_BACKEND_GITLAB_GROUP: testGitlabGroup,
   };
 
-  beforeEach(() => {
-    (useSelector as jest.Mock).mockReturnValue({ userName: testUsername });
+  const renderWithUsername = wrapWithInitialState({
+    auth: {
+      userName: testUsername,
+    },
   });
 
-  test('GetURL should return the correct enviroment variables', () => {
-    expect(useURLforDT()).toBe(
+  test('useURL should return the correct enviroment variables', () => {
+    const { result: resultURLdt } = renderHook(() => useURLforDT(), {
+      wrapper: renderWithUsername,
+    });
+    expect(resultURLdt.current).toBe(
       `${testAppURL}/${testBasename}/${testUsername}/${testDT}`
     );
-    expect(useURLforLIB()).toBe(
+
+    const { result: resultURLlib } = renderHook(() => useURLforLIB(), {
+      wrapper: renderWithUsername,
+    });
+    expect(resultURLlib.current).toBe(
       `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`
     );
-    expect(useURLbasename()).toBe(testBasename);
+
+    const { result: resultURLbasename } = renderHook(() => getURLbasename(), {
+      wrapper: renderWithUsername,
+    });
+    expect(resultURLbasename.current).toBe(testBasename);
   });
 
-  test('GetWorkbenchLinkValues should return an array', () => {
-    const result = getWorkbenchLinkValues();
-    expect(Array.isArray(result)).toBe(true);
+  test('GetGitlabGroup should return the correct enviroment variable', () => {
+    expect(getGitlabGroup()).toBe(testGitlabGroup);
+  });
+
+  test('GetGitlabUrl should return the correct enviroment variable', () => {
+    expect(getGitlabURL()).toBe(testGitlabURL);
+  });
+
+  test('useWorkbenchLinkValues should return an array', () => {
+    const { result } = renderHook(() => useWorkbenchLinkValues(), {
+      wrapper: renderWithUsername,
+    });
+    expect(Array.isArray(result.current)).toBe(true);
   });
 
   // Test that array elements have the expected shape
-  test('GetWorkbenchLinkValues should return an array of objects with "key" and "link" properties', () => {
-    const result = getWorkbenchLinkValues();
+  test('useWorkbenchLinkValues should return an array of objects with "key" and "link" properties', () => {
+    const { result } = renderHook(() => useWorkbenchLinkValues(), {
+      wrapper: renderWithUsername,
+    });
     expect(
-      result.every(
+      result.current.every(
         (el) => typeof el.key === 'string' && typeof el.link === 'string'
       )
     ).toBe(true);
   });
 
   // Test that the links are correctly constructed
-  it('should construct the links correctly', () => {
-    const result = getWorkbenchLinkValues();
-
-    result.forEach((el, i) => {
+  test('should construct the links correctly', () => {
+    const { result } = renderHook(() => useWorkbenchLinkValues(), {
+      wrapper: renderWithUsername,
+    });
+    result.current.forEach((el, i) => {
       expect(el.link).toEqual(
         `${testAppURL}/${testBasename}/${testUsername}/${cleanURL(
           testWorkbenchEndpoints[i]
@@ -89,17 +123,24 @@ describe('envUtil', () => {
     });
   });
 
-  it('cleanURL should remove leading and trailing slashes', () => {
-    expect(cleanURL('/test/')).toBe('test');
-    expect(cleanURL('/test')).toBe('test');
-    expect(cleanURL('test/')).toBe('test');
-    expect(cleanURL('test')).toBe('test');
+  const dirtyTestURLs = ['test', 'test/', '/test', '/test/'];
+
+  test('cleanURL should remove leading and trailing slashes', () => {
+    dirtyTestURLs.forEach((url) => {
+      expect(cleanURL(url)).toBe('test');
+    });
   });
 
-  it('still handles if basename is set to empty string', () => {
+  test('still handles if basename is set to empty string', () => {
     window.env.REACT_APP_URL_BASENAME = '';
-    expect(useURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
-    expect(useURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
-    expect(useURLbasename()).toBe('');
+    const { result: resLIB } = renderHook(() => useURLforLIB(), {
+      wrapper: renderWithUsername,
+    });
+    expect(resLIB.current).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
+    const { result: resDT } = renderHook(() => useURLforDT(), {
+      wrapper: renderWithUsername,
+    });
+    expect(resDT.current).toBe(`${testAppURL}/${testUsername}/${testDT}`);
+    expect(getURLbasename()).toBe('');
   });
 });

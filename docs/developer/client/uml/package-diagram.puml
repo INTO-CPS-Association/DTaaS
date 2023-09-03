@@ -35,25 +35,25 @@ package "Page" {
 package "Util" {
   class APIutil
   class EnvUtil
+  class auth
   
   APIutil -l[hidden]- EnvUtil
+  EnvUtil -l[hidden]- auth
 }
 
 package "Components" {
   class Iframe
-  class LinkButtons
-  class ShoppingCart
-  class AssetBoard
+  class linkButtons
+  class cart
+  class asset
   
-  Iframe -l[hidden] LinkButtons
-  LinkButtons -l[hidden] ShoppingCart
-  ShoppingCart -l[hidden] AssetBoard
+  Iframe -l[hidden] linkButtons
+  linkButtons -l[hidden] cart
+  cart -l[hidden] asset
 }
 
 package "Store" {
-  class AuthAcess {
-   + useAuthToken()
-  }
+  
   class AppAcess {
     + useApp()
   }
@@ -64,7 +64,6 @@ package "Store" {
     + useUserData()
   }
   
-  AuthAcess -l[hidden] AppAcess
   AppAcess -l[hidden] CartAcess
   CartAcess -l[hidden] UserAcess
 }

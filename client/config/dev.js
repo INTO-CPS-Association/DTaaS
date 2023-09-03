@@ -15,4 +15,7 @@ window.env = {
   REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  
+  REACT_APP_BACKEND_URL_GITLAB: 'gitlab.foo.com',
+  REACT_APP_BACKEND_GITLAB_GROUP: 'dtaas1',
 };

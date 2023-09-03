@@ -1,6 +1,6 @@
 import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
-import { setUserName } from 'store/auth.slice';
+import { setUserName } from 'store/Redux/slices/auth.slice';
 import { useAuth } from 'react-oidc-context';
 import { getLogoutRedirectURI } from '../envUtil';
 

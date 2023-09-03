@@ -25,6 +25,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: BASE_URI,
+    trace: 'retain-on-failure',
   },
   projects: [
     // Setup project
