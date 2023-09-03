@@ -1,11 +1,12 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { IFilesService } from "../interfaces/files.service.interface";
-import { GitlabFilesService } from "./gitlab-files.service";
-import { LocalFilesService } from "./local-files.service";
+import GitlabFilesService from "./gitlab-files.service";
+import LocalFilesService from "./local-files.service";
 
 @Injectable()
-export class FilesServiceFactory {
+export default class FilesServiceFactory {
+  // eslint-disable-next-line no-useless-constructor
   constructor(
     private configService: ConfigService,
     @Inject(GitlabFilesService) private gitlabFilesService: GitlabFilesService,
@@ -16,10 +17,10 @@ export class FilesServiceFactory {
     const mode = this.configService.get<string>("MODE");
     if (mode === "local") {
       return this.localFilesService;
-    } else if (mode === "gitlab") {
+    } if (mode === "gitlab") {
       return this.gitlabFilesService;
-    } else {
+    } 
       throw new Error(`Invalid MODE: ${mode}`);
-    }
+    
   }
 }

@@ -13,7 +13,7 @@ This is a mono repo containing code for both the web client and the microservice
 
 ## Documentation
 
-The software comes with [documentation](https://into-cps-association.github.io/DTaaS/version0.2/index.html) for administrators and users. You are welcome to open an issue if there is a suggestion on improving the documentation.
+The software comes with [documentation](https://into-cps-association.github.io/DTaaS/) for administrators and users. You are welcome to open an issue if there is a suggestion on improving the documentation.
 
 ## Installation
 

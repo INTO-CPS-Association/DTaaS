@@ -1,9 +1,9 @@
 // files-service.factory.spec.ts
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
-import { FilesServiceFactory } from "../../src/files/services/files-service.factory";
-import { LocalFilesService } from "../../src/files/services/local-files.service";
-import { GitlabFilesService } from "../../src/files/services/gitlab-files.service";
+import FilesServiceFactory from "../../src/files/services/files-service.factory";
+import LocalFilesService from "../../src/files/services/local-files.service";
+import GitlabFilesService from "../../src/files/services/gitlab-files.service";
 import { IFilesService } from "../../src/files/interfaces/files.service.interface";
 
 describe("FilesServiceFactory", () => {
