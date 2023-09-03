@@ -1,6 +1,6 @@
-import { Phase, DTLifeCycle } from "./lifecycle";
-import ExecaCMDRunner from "./execaCMDRunner";
-import Queue from "./queue";
+import { Phase, DTLifeCycle } from './lifecycle';
+import ExecaCMDRunner from './execaCMDRunner';
+import Queue from './queue';
 
 export default class LifeCycleManager implements DTLifeCycle {
   private phaseQueue: Queue = new Queue();
@@ -8,8 +8,8 @@ export default class LifeCycleManager implements DTLifeCycle {
   async changePhase(name: string): Promise<[boolean, Map<string, string>]> {
     const phase: Phase = {
       name,
-      status: "invalid",
-      task: new ExecaCMDRunner("")
+      status: 'invalid',
+      task: new ExecaCMDRunner(''),
       // task attribute is deliberately left empty
     };
 
@@ -17,21 +17,18 @@ export default class LifeCycleManager implements DTLifeCycle {
 
     phase.task = new ExecaCMDRunner(name);
     this.phaseQueue.enqueue(phase);
-    await phase.task
-            .run()
-            .then((value) => { 
-              success = value
-              if (success) phase.status = "valid"; 
-            });
-    return [ success, phase.task.checkLogs() ];
+    await phase.task.run().then((value) => {
+      success = value;
+      if (success) phase.status = 'valid';
+    });
+    return [success, phase.task.checkLogs()];
   }
 
   checkPhase(): Phase | undefined {
-   return this.phaseQueue.activePhase(); 
+    return this.phaseQueue.activePhase();
   }
 
   checkHistory(): Array<string> {
     return this.phaseQueue.phaseHistory();
   }
-  
 }

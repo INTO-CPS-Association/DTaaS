@@ -1,4 +1,4 @@
-import {execa} from 'execa';
+import { execa } from 'execa';
 import getStream from 'get-stream';
 import CMDRunner from './CMDRunner';
 
@@ -12,8 +12,8 @@ export default class ExecaCMDRunner implements CMDRunner {
   stderr?: string;
 
   constructor(command: string) {
-      this.command = command;
-    }
+    this.command = command;
+  }
 
   async run(): Promise<boolean> {
     let status: boolean = false;
@@ -30,21 +30,18 @@ export default class ExecaCMDRunner implements CMDRunner {
   checkLogs(): Map<string, string> {
     const logs: Map<string, string> = new Map<string, string>();
 
-    if(this.stdout !== undefined) {
-      logs.set("stdout", this.stdout);
-    }
-    else {
-      logs.set("stdout", "");
+    if (this.stdout !== undefined) {
+      logs.set('stdout', this.stdout);
+    } else {
+      logs.set('stdout', '');
     }
 
-    if(this.stderr !== undefined) {
-      logs.set("stderr", this.stderr);
-    }
-    else {
-      logs.set("stderr", "");
+    if (this.stderr !== undefined) {
+      logs.set('stderr', this.stderr);
+    } else {
+      logs.set('stderr', '');
     }
 
     return logs;
   }
-
 }
