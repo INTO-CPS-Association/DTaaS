@@ -17,8 +17,16 @@ theme:
 nav:
   - Home: index.md
   - Admin:
-      - website: admin/client/CLIENT.md
-      - library microservice: admin/servers/lib/LIB-MS.md
+      - Host Install:
+        - Trial: admin/trial.md
+        - Production: admin/host.md
+      - Vagrant:
+        - Base Box: admin/vagrant/base-box.md
+        - Single Machine: admin/vagrant/single-machine.md
+        - Two Machines: admin/vagrant/two-machines.md
+      - Separate Packages:
+        - website: admin/client/CLIENT.md
+        - library microservice: admin/servers/lib/LIB-MS.md
   - User:
       - Features: user/features.md
       - Website: user/website/index.md
@@ -61,3 +69,14 @@ markdown_extensions:
       alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True
+
+plugins:
+  - open-in-new-tab
+  - search
+  - with-pdf:
+      author: "DTaaS Development Team"
+      cover: true
+      cover_logo: assets/into-cps-logo.png
+      cover_subtitle: ""
+      enabled_if_env: MKDOCS_ENABLE_PDF_EXPORT
+      output_path: pdf/DTaaS-docs.pdf

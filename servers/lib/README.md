@@ -1,14 +1,21 @@
 # Overview
 
-This **lib microservice** takes a query from the user that asks for content within a given specified directory. This microservices handles request by fetching and returning the file-names and folders within that respective directory. This microservice provides gitlab graphql compliant API.
+The **lib microservice** is a simplified file manager providing graphQL API. It has three features:
+
+* provide a listing of directory contents.
+* transfer a file to user.
+* Source files can either come from local file system or from a gitlab instance.
 
 ## Gitlab setup
 
-For this microserivce to be functional, a certain directory or gitlab project structure is expected. The microservice expects that the gitlab consisting of one group, DTaaS, and within that group, all of the projects be located, **user1**, **user2**, ... , as well as a **commons** project. A sample file structure can be seen in `files/` directory.
+For this microserivce to be functional, a certain directory or gitlab project structure is expected. The microservice expects that the gitlab consisting of one group, DTaaS, and within that group, all of the projects be located, **user1**, **user2**, ... , as well as a **commons** project. Each project corresponds to files of one user.
+A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas). You can visit the gitlab documentation on [groups](https://docs.gitlab.com/ee/user/group/) for help on the management of gitlab groups.
 
-On how to create groups, visit the [gitlab documentation](https://docs.gitlab.com/ee/user/group/)
+You can clone the git repositories from the `dtaas` group to get a sample file system structure for the lib microservice.
 
 ## Configuration setup
+
+The microservices uses `.env` environment files to receive configuration.
 
 In order to create this environment, you need to create a `.env` file, wherein you create the following environment variables,
 and insert with the correct-information relevant for your setup:
@@ -21,21 +28,31 @@ GITLAB_GROUP ='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
 LOG_LEVEL='debug'
-TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
-
 ```
 
-The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, visit:
-https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html
+The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
 
 Once you've generated a token, copy it and replace the value of `TOKEN` with your token for the gitlab group, can be found.
 
 ## Developer Commands
 
 ```bash
-cd server/lib
+yarn install    # Install dependencies for the microservice
+yarn build      # build the application
+yarn start      # start the application
+```
+
+You can press `Ctl+C` to halt the application. If you wish to run the microservice in the background, use
+
+```bash
+nohup yarn start & disown
+```
+
+## Developer Commands
+
+```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
@@ -51,89 +68,133 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 The URL endpoint for this microservice is located at: `localhost:PORT/lib`
 
-### Lib request and response
+## GraphQL API Calls
 
-Documentation of the lib query and responses.
+The lib microservice takes two distinct GraphQL queries.
 
-The provided HTTP request is a POST request sent to the endpoint http://foo.com:<PORT>/lib. It contains a JSON payload in the body. The request includes headers such as Content-Type, User-Agent, and Accept.
+### Directory Listing
 
-The request is using a POST method because it is sending a GraphQL query. GraphQL queries are usually sent as POST requests because they can be complex and include a JSON payload, allowing for more flexibility in the query structure and variables
+This query receives directory path and provides list of files in that directory. A sample query and response are given here.
 
-```
-
-HTTP Request:
-
-.....
-
-send the request to: http://foo.com:<PORT>/lib
-
-POST /lib
-
-Host: foo.com:<PORT>
-
-Content-Type:application/json
-
-User-Agent:Mozilla
-
-Accept:*/*
-
-{
-
-"query": "{ getFiles(path: \"common\")}"
-
-}
-
-HTTP Response:
-
-.....
-
-200 OK
-
-access-control-allow-origin: *
-
-connection: keep-alive
-
-content-length: 76
-
-content-type: application/json; charset=utf-8
-
-date: Mon, 15 May 2023 10:13:37 GMT
-
-etag: ................
-
-keep-alive: timeout=5
-
-x-powered-by: Express
-
-{'data':{'getFiles':['data','digital twins','functions','models','tools']}}
-
-```
-
-### GraphQL API queries
-
-The only accepted query is:
-
-```graphql
-query directoryList($path: String!, $domain: ID!) {
-  project(fullPath: $domain) {
-    webUrl
-    path
+``` graphql
+query {
+  listDirectory(path: "user1") {
     repository {
-      paginatedTree(path: $path, recursive: false) {
-        nodes {
-          trees {
-            nodes {
+      tree {
+        blobs {
+          edges {
+            node {
               name
+              type
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
             }
           }
         }
       }
-      diskPath
     }
   }
 }
 ```
 
-The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
+``` graphql
+{
+  "data": {
+    "listDirectory": {
+      "repository": {
+        "tree": {
+          "blobs": {
+            "edges": []
+          },
+          "trees": {
+            "edges": [
+              {
+                "node": {
+                  "name": "common",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "data",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "digital twins",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "functions",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "models",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "tools",
+                  "type": "tree"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+```
 
-The _$domain_ refers to gitlab project to lookup. This information is ignored by the microservice. Instead, the microservice takes the _$domain_ variable value from `.env` file.
+### Fetch a file
+
+This query receives directory path and send the file contents to user in response. A sample query and response are given here.
+
+```graphql
+query {
+  readFile(path: "user2/data/sample.txt") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
+    }
+  }
+}
+```
+
+```graphql
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
+            {
+              "name": "sample.txt",
+              "rawBlob": "hello world",
+              "rawTextBlob": "hello world"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```

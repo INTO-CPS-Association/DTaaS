@@ -21,9 +21,7 @@ Vagrant.configure(2) do |config|
 
 
       node.ssh.private_key_path = "vagrant"
-      # remove the incorrect default gateway
-      node.vm.provision "shell", path: "route.sh"
-      node.vm.provision "shell", privileged: false, path: opts["script"]
+      #node.vm.provision "shell", privileged: false, path: opts["script"]
     end
   end
 

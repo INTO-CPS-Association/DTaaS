@@ -28,13 +28,21 @@ The rest of the information on this page is aimed at current and potential contr
 To install the development environment, run
 
 ```bash
-bash script/install.bash
+bash script/env.sh
 ```
+
+There is a script to download all the docker containers used in the project. You can download them using
+
+```bash
+bash script/docker.sh
+```
+
+**CAVEAT**: The docker images are large and are likely to consume about 5GB of bandwidth and 15GB of space. You will have to download the docker images on a really good network.
 
 Before you make commits, please install the git hooks provided in the repository.
 
-```shell
-script/configure-git-hooks.sh
+```bash
+bash script/configure-git-hooks.sh
 ```
 
 This will ensure that your commits are formatted correctly and that the unittests pass before you push your changes. Be aware that the tests take a long time to run. If you want to skip the tests or formatting, you can use the `--no-verify` flag on `git commit` or `git push`.

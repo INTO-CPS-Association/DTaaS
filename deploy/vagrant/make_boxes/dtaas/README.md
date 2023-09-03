@@ -55,7 +55,3 @@ vagrant box add --name dtaas ./dtaas.vagrant
 # You can use this box in other vagrant boxes using
 #config.vm.box = "dtaas"
 ```
-
-## TODO
-1. Write a script for automating the above steps
-1. Generate the ssh keys from ssl/certificates.bash

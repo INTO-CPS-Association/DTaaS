@@ -5,7 +5,7 @@
 
 ## Users
 
-Cláudio Ângelo Gonçalves Gomes, Hao Feng, Tanusree Roy
+Cláudio Ângelo Gonçalves Gomes, Dmitri Tcherniak, Elif Ecem Bas, Giuseppe Abbiati, Hao Feng, Henrik Ejersbo, Tanusree Roy
 
 ## Documentation
 

@@ -1,3 +1,6 @@
 mkdocs
 mkdocs-material
 python-markdown-math
+mkdocs-open-in-new-tab
+mkdocs-with-pdf
+qrcode
