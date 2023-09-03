@@ -33,18 +33,29 @@ jobs:
       - name: Build the React SPA website
         run: |
           cd client/	
-          yarn install	
+          ./script/install.bash 
           yarn build
-          yarn configapp dev
+          yarn configapp test
       - name: Run client unit and integration tests
         run: |
           cd client/	
           yarn install	
           yarn test -u
           yarn test -i
-
-      - name: Upload unit and integration test coverage to Codecov
+      - name: 'Upload Artifact'
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: E2E-error-trace
+          path: client/test-results
+      - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: client/coverage/clover.xml
-          flags: client-unit-integration-tests
+          flags: client-unit-test
+
+      - name: Upload browser test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: client/playwright-report/results.json
+          flags: client-browser-test

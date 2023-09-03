@@ -1,5 +1,8 @@
-api/
 build/
-config/
 node_modules/
 script/
+api/
+config/
+*.graphql.ts
+test-results/
+playwright-report/
