@@ -1,4 +1,4 @@
-import { Phase} from "./lifecycle";
+import { Phase } from './lifecycle';
 
 export default class Queue {
   private queue: Array<Phase>;
@@ -13,12 +13,10 @@ export default class Queue {
   }
 
   phaseHistory(): Array<string> {
-    return this.queue
-            .map((phase) => phase.name);
+    return this.queue.map((phase) => phase.name);
   }
 
   activePhase(): Phase | undefined {
     return this.queue.at(this.queue.length - 1);
   }
 }
-

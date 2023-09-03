@@ -2,31 +2,28 @@
 
 /* eslint-disable no-console */
 
-import ExecaCMDRunner from "./execaCMDRunner";
-import CMDRunner from "./CMDRunner";
-import LifeCycleManager from "./lifecycleManager";
-import { DTLifeCycle, Phase } from "./lifecycle";
+import ExecaCMDRunner from './execaCMDRunner';
+import CMDRunner from './CMDRunner';
+import LifeCycleManager from './lifecycleManager';
+import { DTLifeCycle, Phase } from './lifecycle';
 
-const command: CMDRunner = new ExecaCMDRunner("date");
+const command: CMDRunner = new ExecaCMDRunner('date');
 
-command.run().
-  then((value) => {
-    console.log("Check the functionality of ExecaCMDRunner:\n");
-    console.log(`The return status of date command is: ${value}`);
-    const logs: Map<string, string> = command.checkLogs();
-    console.log(`The output of date command is: ${logs.get("stdout")}`);
-  });
-
+command.run().then((value) => {
+  console.log('Check the functionality of ExecaCMDRunner:\n');
+  console.log(`The return status of date command is: ${value}`);
+  const logs: Map<string, string> = command.checkLogs();
+  console.log(`The output of date command is: ${logs.get('stdout')}`);
+});
 
 // Check the functionality of LifeCycleManager
 const dt: DTLifeCycle = new LifeCycleManager();
 
-dt.changePhase("whoami").
-  then(([status, logs]) => {
-    console.log("LifeCycleManager First command: whoami");
-    console.log(`command execution status: ${status}`);
-    console.log(`command logs: ${logs.get("stdout")}`);
-  });
+dt.changePhase('whoami').then(([status, logs]) => {
+  console.log('LifeCycleManager First command: whoami');
+  console.log(`command execution status: ${status}`);
+  console.log(`command logs: ${logs.get('stdout')}`);
+});
 console.log(`Past phases after first command: ${dt.checkHistory()}`);
 let phase: Phase | undefined = dt.checkPhase();
 
@@ -35,19 +32,17 @@ await sleep(1000);
 
 if (phase !== undefined) {
   console.log(`${phase.name} is ${phase.status}`);
-  if (phase.status === "valid") {
+  if (phase.status === 'valid') {
     const tasklogs = phase.task.checkLogs();
-    console.log(`Logs for ${phase.name} : ${ tasklogs.get("stdout")}`);
-
+    console.log(`Logs for ${phase.name} : ${tasklogs.get('stdout')}`);
   }
 }
 
-dt.changePhase("ls").
-  then(([status, logs]) => {
-    console.log("LifeCycleManager Second command: ls");
-    console.log(`command execution status: ${status}`);
-    console.log(`command logs: ${logs.get("stdout")}`);
-  });
+dt.changePhase('ls').then(([status, logs]) => {
+  console.log('LifeCycleManager Second command: ls');
+  console.log(`command execution status: ${status}`);
+  console.log(`command logs: ${logs.get('stdout')}`);
+});
 console.log(dt.checkHistory());
 console.log(`Past phases after second command: ${dt.checkHistory()}`);
 await sleep(1000);
@@ -55,5 +50,5 @@ await sleep(1000);
 phase = dt.checkPhase();
 
 if (phase !== undefined) {
-console.log(`${phase.name} is ${phase.status}`);
+  console.log(`${phase.name} is ${phase.status}`);
 }
