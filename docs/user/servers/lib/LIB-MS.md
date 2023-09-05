@@ -113,7 +113,102 @@ send requests to: https://foo.com/lib
     }
     ```
 
+=== "HTTP Request :warning:"
+
+    ``` http-request
+    POST /lib
+    Host: foo.com:<PORT>
+    Content-Type:application/json
+    User-Agent:Mozilla
+    Accept:_/_
+
+    query {
+      listDirectory(path: "user2") {
+        repository {
+          tree {
+            blobs {
+              edges {
+                node {
+                  name
+
+                }
+              }
+            }
+            trees {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+=== "HTTP Response :warning:"
+
+    ``` http-response
+    200 OK
+    access-control-allow-origin: \*
+    connection: keep-alive
+    content-length: 76
+    content-type: application/json; charset=utf-8
+    date: Mon, 15 May 2023 10:13:37 GMT
+    etag: ................
+    keep-alive: timeout=5
+    x-powered-by: Express
+
+    {
+      "data": {
+        "listDirectory": {
+          "repository": {
+            "tree": {
+              "blobs": {
+                  "edges": []
+              },
+            "trees": {
+                "edges": [
+                  {
+                    "node": {
+                        "name": "data"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "digital twins"
+                      }
+                  },
+                  {
+                    "node": {
+                        "name": "functions"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "models"
+                    }
+                  },
+                  {
+                    "node": {
+                        "name": "tools"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+
+    ```
+
+
 ### Fetch a file from the available files
+
+
 
 === "GraphQL Request"
 
@@ -153,6 +248,67 @@ send requests to: https://foo.com/lib
         }
       }
     }
+   ```
+
+=== "HTTP Request :warning:"
+
+    ```http-request
+    POST /lib
+    Host: foo.com:<PORT>
+    Content-Type:application/json
+    User-Agent:Mozilla
+    Accept:*/*
+
+    {
+    "query":
+      query{
+        readFile(path:"user2/data/sample.txt"){
+          repository{
+            blobs{
+              nodes{
+                name
+                rawBlob
+                rawTextBlob
+              }
+            }
+          }
+        }
+      }
+    }
     ```
+
+=== "HTTP Response :warning:"
+
+    ```http-response
+    200 OK
+    access-control-allow-origin: *
+    connection: keep-alive
+    content-length: 76
+    content-type: application/json; charset=utf-8
+    date: Mon, 15 May 2023 10:13:37 GMT
+    etag: ................
+    keep-alive: timeout=5
+    x-powered-by: Express
+
+    {
+      "data": {
+        "readFile": {
+          "repository": {
+            "blobs": {
+              "nodes": [
+                {
+                  "name": "sample.txt",
+                  "rawBlob": "welcome hello world",
+                  "rawTextBlob": "hello world"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+
+    ```
+
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
