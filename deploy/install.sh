@@ -4,7 +4,7 @@ set -eu
 printf "NOTE\n"
 printf "....\n"
 printf "This script installs DTaaS application for two users.\n"
-printf "Remember to configuration the application before proceeding further....\n"
+printf "Remember to configure the application before proceeding further....\n"
 printf "All the configuration instructions are in deploy/README.md file.\n"
 printf ".........\n\n\n"
 
