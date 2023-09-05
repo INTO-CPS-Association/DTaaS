@@ -76,6 +76,6 @@ npx playwright install-deps
 #-------------
 printf "\n\n Installing required python packages...."
 apt install -y python3-pip
-sudo -H pip install mkdocs
+sudo -H pip3 install mkdocs
 sudo -H pip3 install mkdocs-material
 sudo -H pip3 install python-markdown-math
