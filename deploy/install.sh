@@ -16,7 +16,7 @@ printf "\n\n Install the system dependencies...\n"
 printf "....\n"
 bash script/env.sh || exit
 
-printf "\n\nDownloading the required docker images...\n"
+printf "\n\nDownload the required docker images...\n"
 printf ".........\n"
 source script/docker.sh || exit
 
@@ -46,7 +46,7 @@ cp "${TOP_DIR}/deploy/config/lib" .env
 nohup yarn start & disown
 
 #-------------
-printf "\n\n start the user workspaces\n"
+printf "\n\n Start the user workspaces\n"
 printf "...........\n"
 docker run -d \
  -p 8090:8080 \
@@ -71,7 +71,7 @@ docker run -d \
   mltooling/ml-workspace:0.13.2 || true
 
 #-------------
-printf "\n\n start the traefik gateway server\n"
+printf "\n\n Start the traefik gateway server\n"
 printf "...........\n"
 cd "${TOP_DIR}/servers/config/gateway" || exit
 cp "${TOP_DIR}/deploy/config/gateway/auth" auth
