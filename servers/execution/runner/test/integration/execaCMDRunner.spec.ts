@@ -6,6 +6,6 @@ describe('check Execa CMD Runner instantiation', () => {
   it('should be defined', async () => {
     const cmdrunner: CMDRunner = new ExecaCMDRunner('date');
 
-    expect(cmdrunner.run()).toBe(true);
+    expect(await cmdrunner.run()).toBe(true);
   });
 });
