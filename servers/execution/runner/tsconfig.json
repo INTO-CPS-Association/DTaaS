@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "sourceMap": true, //generate .map files
     "strict": true, //enable all strict type-checking options
-    "target": "es2022",
+    "target": "ES2022",
     "types": ["node", "jest"], //use node and jest types
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
