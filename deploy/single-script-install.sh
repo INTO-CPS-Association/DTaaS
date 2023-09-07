@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-printf "Installation script for DTaaS software platform.\n"
+printf "Install script for DTaaS software platform.\n"
 printf "You can run the script multiple times until the installation succeeds.\n"
 printf ".........\n\n\n"
 
