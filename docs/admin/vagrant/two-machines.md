@@ -42,9 +42,9 @@ Execute the following commands from terminal to start the machine.
 ```bash
 vagrant up --provision services
 vagrant ssh services
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/two-machine/services.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
 bash services.sh
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/route.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
@@ -65,7 +65,7 @@ Execute the following commands from terminal
 ```bash
 vagrant up --provision dtaas
 vagrant ssh dtaas
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/route.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
