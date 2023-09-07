@@ -49,6 +49,9 @@ sudo -H pip install jupyterlab
 sudo -H pip install mkdocs
 sudo -H pip3 install mkdocs-material
 sudo -H pip3 install python-markdown-math
+sudo -H pip3 install mkdocs-open-in-new-tab
+sudo -H pip3 install mkdocs-with-pdf
+sudo -H pip3 install qrcode
 
 # Install minimal Kubernetes cluster
 snap install microk8s --classic
