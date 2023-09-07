@@ -40,12 +40,11 @@ To set up the environment variables for the lib microservice, create a new file 
 ```ini
 PORT='4001'
 MODE='local' or 'gitlab'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-GITLAB_GROUP ='dtaas'
+LOCAL_PATH='/Users/<Username>/DTaaS/files'
+GITLAB_GROUP='dtaas'
 GITLAB_URL='https://gitlab.com/api/graphql'
 TOKEN='123-sample-token'
 LOG_LEVEL='debug'
-TEST_PATH='/Users/<Username>/DTaaS/servers/lib/test/data/test_assets'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
