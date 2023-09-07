@@ -102,7 +102,7 @@ else
   git clone https://github.com/INTO-CPS-Association/DTaaS.git DTaaS
   cd DTaaS || exit
   git fetch --all
-  git checkout release-v0.2
+  git checkout feature/distributed-demo
 fi
 
 TOP_DIR=$(pwd)
