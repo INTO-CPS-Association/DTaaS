@@ -38,7 +38,7 @@ The user credentials added in [auth](../config/gateway/auth) should match the us
 
 The first step in this configuration is to prepare the a filesystem for users. An example file system in `files/` directory. You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Update the [environment file](../config/lib) of the library microservice. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory.
+Add an environment file named .env in lib for the library microservice. A sample .env file is given below. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory.
 
 ```env
 PORT='4001'
