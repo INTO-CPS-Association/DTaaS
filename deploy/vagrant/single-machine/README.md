@@ -21,7 +21,7 @@ vagrant ssh
 Set a cronjob inside the vagrant virtual machine to remote the conflicting default route.
 
 ```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/route.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
