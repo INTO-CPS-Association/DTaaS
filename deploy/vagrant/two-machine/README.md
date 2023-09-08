@@ -83,4 +83,5 @@ If you only want to test the application and are not setting up a production ins
 you can install using [single script install](../../single-script-install.sh).
 
 If you are not in a hurry and would rather have a production instance,
-follow the [instructions](../../README.md) of regular server installation setup to complete the installation.
+follow the [instructions](../../README.md) of
+regular server installation setup to complete the installation.

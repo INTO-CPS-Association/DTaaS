@@ -12,7 +12,8 @@
 ??? Question "What is DTaaS?"
 
     DTaaS is software platform on which you can create and run digital twins.
-    Please see the [features](user/features.md) page to get a sense of the things you can do in DaaS.
+    Please see the [features](user/features.md) page
+    to get a sense of the things you can do in DaaS.
 
 
 ??? Question "Are there any Key Performance / Capability Indicators for DTaaS?"
@@ -33,7 +34,8 @@
 ??? Question "Do you provide licensed software like Matlab?"
 
     The licensed software are not available on the software platform.
-    But users have private workspaces which are based on Linux-based xfce Desktop environment.
+    But users have private workspaces which are based
+    on Linux-based xfce Desktop environment.
     Users can install software in their workspaces. The licensed software
     installed by one user is not available to another user.
 

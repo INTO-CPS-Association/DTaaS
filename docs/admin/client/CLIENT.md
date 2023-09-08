@@ -4,13 +4,13 @@ To host DTaaS client website on your server, follow these steps:
 
 - Download the **DTaaS-client.zip** from the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
 - Inside the `DTaaS-client` directory, there is `site` directory.
-The `site` directory contains all the optimized static files that are ready for deployment.
+  The `site` directory contains all the optimized static files that are ready for deployment.
 
 - Setup the oauth application on gitlab instance.
-See the instructions in [authentication page](auth.md) for completing this task.
+  See the instructions in [authentication page](auth.md) for completing this task.
 - Locate the file `site/env.js` and replace the example values to match your infrastructure.
-The constructed links will be "`REACT_APP_URL`/`REACT_APP_URL_BASENAME`/`{username}`/`{Endpoint}`".
-See the definitions below:
+  The constructed links will be "`REACT_APP_URL`/`REACT_APP_URL_BASENAME`/`{username}`/`{Endpoint}`".
+  See the definitions below:
 
     ```js
     window.env = {
@@ -89,7 +89,8 @@ components to be available. Otherwise, you only get a skeleton non-functional we
 
 The website requires background services for providing actual functionality.
 The minimum background service required is atleast
-one [ML Workspace](https://github.com/ml-tooling/ml-workspace) serving the following routes.
+one [ML Workspace](https://github.com/ml-tooling/ml-workspace)
+serving the following routes.
 
 ```js
 https:foo.com/<username>/lab
@@ -100,7 +101,8 @@ https:foo.com/<username>/tools/vscode/
 
 The `username` is the user workspace created using ML Workspace docker container.
 Please follow the instructions in [README](https://github.com/ml-tooling/ml-workspace/blob/main/README.md).
-You can create as many user workspaces as you want. If you have two users - alice and bob - on your system,
+You can create as many user workspaces as you want.
+If you have two users - alice and bob - on your system,
 then the following the commands in  will instantiate the required user workspaces.
 
 ```bash

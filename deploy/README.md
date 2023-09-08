@@ -1,13 +1,18 @@
 # DTaaS on Linux Operating System
 
-This directory contains code for running DTaaS application on a Ubuntu Server 20.04 Operating System.
-The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.
+This directory contains code for running DTaaS application
+on a Ubuntu Server 20.04 Operating System.
+The setup requires a machine which can spare 16GB
+RAM, 8 vCPUs and 50GB Hard Disk space.
 
 A dummy **foo.com** URL has been used for illustration.
 Please change this to your unique website URL.
 It is assumed that you are going to serve the application in only HTTPS mode.
 
-Please follow these steps to make this work in your local environment. Download the codebase as zip file into your computer and unzip the same into a directory named **DTaaS**. The rest of the instructions assume that your working directory is **DTaaS**.
+Please follow these steps to make this work in your local environment.
+Download the codebase as zip file into your computer and unzip the same
+into a directory named **DTaaS**. The rest of the instructions assume
+that your working directory is **DTaaS**.
 
 ## Configuration
 

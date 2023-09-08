@@ -22,7 +22,8 @@ Create [**dtaas** Vagrant box](./base-box.md).
 You would have created an SSH key pair - _vagrant_ and _vagrant.pub_.
 The _vagrant_ is the private SSH key and is needed for the next steps.
 Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/single-machine`).
-This shall be useful for logging into the vagrant machines created for two-machine deployment.
+This shall be useful for logging into the vagrant
+machines created for two-machine deployment.
 
 ## Configure Server Settings
 
@@ -44,7 +45,9 @@ The fields to update are:
   based on MAC address. Otherwise, you can leave this field unchanged.
   1. `name` - name of server2 (`"name" = "services"`)
   1. `hostname` - hostname of server2 (`"name" = "services.foo.com"`)
-  1. MAC address (`:mac => "xxxxxxxx"`). This change is required if you have a DHCP server assigning domain names based on MAC address. Otherwise, you can leave this field unchanged.
+  1. MAC address (`:mac => "xxxxxxxx"`).
+     This change is required if you have a DHCP server assigning domain
+     names based on MAC address. Otherwise, you can leave this field unchanged.
   1. Other adjustments are optional.
 
 ## Launch platform default services

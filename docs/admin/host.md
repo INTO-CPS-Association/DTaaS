@@ -2,7 +2,8 @@
 
 These are installation instructions for running DTaaS application
 on a Ubuntu Server 20.04 Operating System.
-The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.
+The setup requires a machine which can
+spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.
 
 A dummy **foo.com** URL has been used for illustration.
 Please change this to your unique website URL.
@@ -15,7 +16,8 @@ Unzip the same into a directory named **DTaaS**.
 The rest of the instructions assume that your working directory is **DTaaS**.
 
 !!! note
-    If you only want to test the application and are not setting up a production instance,
+    If you only want to test the application
+    and are not setting up a production instance,
     you can follow the instructions of [trial installation](trial.md).
 
 ## Configuration

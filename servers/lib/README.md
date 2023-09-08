@@ -17,7 +17,8 @@ and within that group, all of the projects be located,
 Each project corresponds to files of one user.
 A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
 You can visit the gitlab documentation on
-[groups](https://docs.gitlab.com/ee/user/group/) for help on the management of gitlab groups.
+[groups](https://docs.gitlab.com/ee/user/group/)
+for help on the management of gitlab groups.
 
 You can clone the git repositories from the `dtaas` group
 to get a sample file system structure for the lib microservice.
