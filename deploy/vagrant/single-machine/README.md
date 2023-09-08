@@ -9,12 +9,12 @@ A dummy **foo.com** URL has been used for illustration. Please change this to yo
 Please follow these steps to make this work in your local environment.
 
 1. Create [**dtaas** Vagrant box](../make_boxes/dtaas/README.md).
-You would have created an SSH key pair - _vagrant_ and
-_vagrant.pub_ for the vagrant box.
-The _vagrant_ is the private SSH key and is needed for the next steps.
-Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/single-machine`).
-This shall be useful for logging into the vagrant machine
-created for single-machine deployment.
+   You would have created an SSH key pair - _vagrant_ and
+   _vagrant.pub_ for the vagrant box.
+   The _vagrant_ is the private SSH key and is needed for the next steps.
+   Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/single-machine`).
+   This shall be useful for logging into the vagrant machine
+   created for single-machine deployment.
 
 1. Update the **Vagrantfile**. Fields to update are:
     1. Hostname (`node.vm.hostname = "foo.com"`)

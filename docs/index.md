@@ -1,14 +1,15 @@
-The Digital Twin as a Service (DTaaS) software is useful to create and run digital twins.
+The Digital Twin as a Service (DTaaS) software is useful
+to create and run digital twins.
 The digital twins that are running can be used as service by other users.
 These users need not be members of the DTaaS software platform itself.
 
 There is an overview of the software available for:
 
-* General users -[overview slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf)
-and [overview video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
-[feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.2.0-demo.mp4)
-* Developers -[slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf)
-and [video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv).
+* General users : [overview slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf)
+  and [overview video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
+  [feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.2.0-demo.mp4)
+* Developers : [slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf)
+  and [video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv).
 
 There is also a [research paper draft](https://arxiv.org/abs/2305.07244)
 if you are interested in reading the scientific roadmap for this software.

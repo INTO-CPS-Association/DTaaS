@@ -4,7 +4,8 @@ To host DTaaS client website on your server, follow these steps:
 
 - Download the **DTaaS-client.zip** from the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
 - Inside the `DTaaS-client` directory, there is `site` directory.
-  The `site` directory contains all the optimized static files that are ready for deployment.
+  The `site` directory contains all the optimized
+  static files that are ready for deployment.
 
 - Setup the oauth application on gitlab instance.
   See the instructions in [authentication page](auth.md) for completing this task.
