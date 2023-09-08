@@ -31,13 +31,16 @@ To install the development environment, run
 bash script/env.sh
 ```
 
-There is a script to download all the docker containers used in the project. You can download them using
+There is a script to download all the docker containers used in the project.
+You can download them using
 
 ```bash
 bash script/docker.sh
 ```
 
-**CAVEAT**: The docker images are large and are likely to consume about 5GB of bandwidth and 15GB of space. You will have to download the docker images on a really good network.
+**CAVEAT**: The docker images are large and are likely to consume
+about 5GB of bandwidth and 15GB of space.
+You will have to download the docker images on a really good network.
 
 Before you make commits, please install the git hooks provided in the repository.
 
