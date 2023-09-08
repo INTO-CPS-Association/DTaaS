@@ -12,5 +12,4 @@ bash single-script-install.sh
 ```
 
 !!! warning
-
     This test installation has default credentials and is thus highly insecure.

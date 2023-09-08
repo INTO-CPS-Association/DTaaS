@@ -41,7 +41,6 @@ Change `foo.com` to your local hostname and user1/user2 to
 the usernames chosen by you.
 
 !!! tip
-
     Do not use `http://` or `https://` in _deploy/config/gateway/fileConfig.yml_.
 
 #### Authentication
