@@ -18,7 +18,7 @@ You can run the Run the Traefik gateway server in both and HTTPS and HTTPS mode 
 
 The Traefik gateway configuration is at [fileConfig](../config/gateway/fileConfig.yml). Change `localhost` to `foo.com` and user1/user2 to the usernames chosen by you. 
 
-**A NOTE**: Do not use `http://` or `https://` in [fileConfig](../config/gateway/fileConfig.yml).
+**NOTE**: Do not use `http://` or `https://` in [fileConfig](../config/gateway/fileConfig.yml).
 
 #### Authentication
 
@@ -35,11 +35,11 @@ password: <your password>
 The user credentials added in [auth](../config/gateway/auth) should match the usernames in [fileConfig](../config/gateway/fileConfig.yml).
 
 ## Configure lib microservice
+The library microservice requires configuration. A template of this configuration file is given in _config/lib_ file. Please modify this file as per your needs. 
 
 The first step in this configuration is to prepare the a filesystem for users. An example file system in `files/` directory. You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Add an environment file named .env in lib for the library microservice. A sample .env file is given below. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory.
-
+Add an environment file named .env in lib for the library microservice. An example `.env` file is given below. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory. You can copy this configuration into _config/lib_ file to get started.
 ```env
 PORT='4001'
 MODE='local'
