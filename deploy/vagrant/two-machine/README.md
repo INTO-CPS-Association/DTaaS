@@ -48,7 +48,7 @@ vagrant up --provision services
 vagrant ssh services
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
 bash services.sh
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
