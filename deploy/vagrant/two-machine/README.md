@@ -20,7 +20,8 @@ Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/two-m
 
 ## Configure Server Settings
 
-**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs has been used for illustration. Please change these to your unique website URLs.
+**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs has been used for illustration.
+Please change these to your unique website URLs.
 
 The first step is to define the network identity of the two VMs. For that, you need _server name_, _hostname_ and _MAC address_. The hostname is the network URL at which the server can be accessed on the WWW. Please follow these steps to make this work in your local environment.
 
@@ -37,9 +38,14 @@ Update the **boxes.json**. There are entries one for each server. The fields to 
 ## Launch platform default services
 
 RabbitMQ, Grafana and InfluxDB services are provisioned on this server. 
-InfluxDB webUI will be available at: _services.foo.com_. The RabbitMQ service and its management interface shall be available at 5672 and 15672 TCP ports respectively. The Grafana service shall be available at TCP port 3000.
+InfluxDB webUI will be available at: _services.foo.com_.
+The RabbitMQ service and its management interface shall be available
+at 5672 and 15672 TCP ports respectively.
+The Grafana service shall be available at TCP port 3000.
 
-The firewall and network access settings of corporate / cloud network need to be configured to allow external access to the services. Otherwise the users of DTaaS will not be able to utilize these services from their user workspaces.
+The firewall and network access settings of corporate / cloud network need to be
+configured to allow external access to the services. Otherwise the users of DTaaS
+will not be able to utilize these services from their user workspaces.
 
 Execute the following commands from terminal to start the machine.
 
@@ -73,6 +79,8 @@ wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distri
 sudo bash route.sh
 ```
 
-If you only want to test the application and are not setting up a production instance, you can install using [single script install](../../single-script-install.sh).
+If you only want to test the application and are not setting up a production instance,
+you can install using [single script install](../../single-script-install.sh).
 
-If you are not in a hurry and would rather have a production instance, follow the [instructions](../../README.md) of regular server installation setup to complete the installation.
+If you are not in a hurry and would rather have a production instance,
+follow the [instructions](../../README.md) of regular server installation setup to complete the installation.

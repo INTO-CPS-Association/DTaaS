@@ -1,6 +1,11 @@
 # Vagrant Box for DTaaS
 
-There are some good vagrant boxes on [vagrant website](https://app.vagrantup.com/boxes/search). But these boxes require too many installations that take a long time and network bandwidth. So it is efficient to create one local vagrant box for DTaaS application and reuse the same in all installations.
+There are some good vagrant boxes on
+[vagrant website](https://app.vagrantup.com/boxes/search).
+But these boxes require too many installations that take a
+long time and network bandwidth. So it is efficient to
+create one local vagrant box for DTaaS application and reuse
+the same in all installations.
 
 ## Installed Software
 
@@ -37,13 +42,13 @@ vagrant ssh
 
 # install the oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# install plugins: history, autosuggestions, 
+# install plugins: history, autosuggestions,
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 # inside ~/.zshrc, modify the following line
 plugins=(git zsh-autosuggestions history cp tmux)
 
-# remove the vagrant default public key - first line of 
+# remove the vagrant default public key - first line of
 # /home/vagrant/.ssh/authorized_keys
 
 # exit vagrant guest machine and then
@@ -51,7 +56,7 @@ plugins=(git zsh-autosuggestions history cp tmux)
 cp vagrant .vagrant/machines/default/virtualbox/private_key
 
 # check
-vagrant ssh	#should work
+vagrant ssh #should work
 
 vagrant halt
 

@@ -1,11 +1,14 @@
+# Few issues in the Software
 
 ## Some limitations
 
-* The complete DTaaS software requires multiple docker containers and one client website. All of these can work together only on a server with a proper domain name. The complete application does not work on localhost.
+- The complete DTaaS software requires multiple docker containers and one client website.
+All of these can work together only on a server with a proper domain name.
+The complete application does not work on localhost.
 
 ## Third-Party Software
 
-We use third-party software which have certain known issues. Some of the issues are listed below.
+- We use third-party software which have certain known issues. Some of the issues are listed below.
 
 ### ML Workspace
 
@@ -15,4 +18,12 @@ We use third-party software which have certain known issues. Some of the issues 
 
 ## Gitlab
 
-- The gilab oauth authentication service does not have a way to sign out of a third-party application. Even if you sign out of DTaaS, the gitlab still shows user as signed in. The next time you click on the sign in button on the DTaaS page, user is not shown the login page. Instead user is directly taken to the **Library** page. So close the brower window after you are done. Another way to overcome this limitation is to open your gitlab instance (`https://gitlab.foo.com`) and signout from there. Thus user needs to sign out of two places, namely DTaaS and gitlab, in order to completely exit the DTaaS application.
+- The gilab oauth authentication service does not have a way to sign out of a third-party application.
+Even if you sign out of DTaaS, the gitlab still shows user as signed in.
+The next time you click on the sign in button on the DTaaS page, user is not shown the login page.
+Instead user is directly taken to the **Library** page.
+So close the brower window after you are done.
+Another way to overcome this limitation is to open your
+gitlab instance (`https://gitlab.foo.com`) and signout from there.
+Thus user needs to sign out of two places, namely DTaaS and gitlab,
+in order to completely exit the DTaaS application.

@@ -1,6 +1,7 @@
 # Host Library Microservice
 
-The **lib microservice** is a simplified file manager providing graphQL API. It has three features:
+The **lib microservice** is a simplified file manager providing graphQL API.
+It has three features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
@@ -20,10 +21,18 @@ There is a skeleton file structure in [DTaaS codebase](https://github.com/INTO-C
 
 ## Gitlab setup (optional)
 
-For this microserivce to be functional, a certain directory or gitlab project structure is expected. The microservice expects that the gitlab consisting of one group, DTaaS, and within that group, all of the projects be located, **user1**, **user2**, ... , as well as a **commons** project. Each project corresponds to files of one user.
-A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas). You can visit the gitlab documentation on [groups](https://docs.gitlab.com/ee/user/group/) for help on the management of gitlab groups.
+For this microserivce to be functional,
+a certain directory or gitlab project structure is expected.
+The microservice expects that the gitlab consisting of one group,
+DTaaS, and within that group, all of the projects be located,
+**user1**, **user2**, ... , as well as a **commons** project.
+Each project corresponds to files of one user.
+A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
+You can visit the gitlab documentation on [groups](https://docs.gitlab.com/ee/user/group/)
+for help on the management of gitlab groups.
 
-You can clone the git repositories from the `dtaas` group to get a sample file system structure for the lib microservice.
+You can clone the git repositories from the `dtaas` group
+to get a sample file system structure for the lib microservice.
 
 ## Setup Microservice
 
@@ -35,7 +44,10 @@ Download the **lib-microservice.zip** from the [releases page](https://github.co
 
 The microservices uses `.env` environment files to receive configuration.
 
-To set up the environment variables for the lib microservice, create a new file named _.env_ in the `lib-ms` directory. Then, add the following variables and their respective values. Below you can see and how, with included examples:
+To set up the environment variables for the lib microservice,
+create a new file named _.env_ in the `lib-ms` directory.
+Then, add the following variables and their respective values.
+Below you can see and how, with included examples:
 
 ```ini
 PORT='4001'
@@ -49,11 +61,17 @@ APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
 
-The `LOCAL_PATH` variable is the absolute filepath to the location of the local directory which will be served to users by the Library microservice.
+The `LOCAL_PATH` variable is the absolute filepath to the
+location of the local directory which will be served to users
+by the Library microservice.
 
-The `GITLAB_URL`, `GITLAB_GROUP` and `TOKEN` are only relevant for `gitlab` mode. The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
+The `GITLAB_URL`, `GITLAB_GROUP` and `TOKEN` are only relevant for `gitlab` mode.
+The `TOKEN` should be set to your GitLab Group access API token.
+For more information on how to create and use your access token,
+[gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
 
-Once you've generated a token, copy it and replace the value of `TOKEN` with your token for the gitlab group, can be found.
+Once you've generated a token, copy it and replace
+the value of `TOKEN` with your token for the gitlab group, can be found.
 
 Replace the default values the appropriate values for your setup.
 
@@ -70,7 +88,8 @@ yarn build      # build the application
 yarn start      # start the application
 ```
 
-You can press `Ctl+C` to halt the application. If you wish to run the microservice in the background, use
+You can press `Ctl+C` to halt the application.
+If you wish to run the microservice in the background, use
 
 ```bash
 nohup yarn start & disown

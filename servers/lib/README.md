@@ -1,6 +1,7 @@
 # Overview
 
-The **lib microservice** is a simplified file manager providing graphQL API. It has three features:
+The **lib microservice** is a simplified file manager providing graphQL API.
+It has three features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
@@ -8,10 +9,18 @@ The **lib microservice** is a simplified file manager providing graphQL API. It 
 
 ## Gitlab setup
 
-For this microserivce to be functional, a certain directory or gitlab project structure is expected. The microservice expects that the gitlab consisting of one group, DTaaS, and within that group, all of the projects be located, **user1**, **user2**, ... , as well as a **commons** project. Each project corresponds to files of one user.
-A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas). You can visit the gitlab documentation on [groups](https://docs.gitlab.com/ee/user/group/) for help on the management of gitlab groups.
+For this microserivce to be functional,
+a certain directory or gitlab project structure is expected.
+The microservice expects that the gitlab consisting of one group, DTaaS,
+and within that group, all of the projects be located,
+**user1**, **user2**, ... , as well as a **commons** project.
+Each project corresponds to files of one user.
+A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
+You can visit the gitlab documentation on
+[groups](https://docs.gitlab.com/ee/user/group/) for help on the management of gitlab groups.
 
-You can clone the git repositories from the `dtaas` group to get a sample file system structure for the lib microservice.
+You can clone the git repositories from the `dtaas` group
+to get a sample file system structure for the lib microservice.
 
 ## Configuration setup
 
@@ -32,7 +41,9 @@ APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
 
-The `TOKEN` should be set to your GitLab Group access API token. For more information on how to create and use your access token, [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
+The `TOKEN` should be set to your GitLab Group access API token.
+For more information on how to create and use your access token,
+[gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
 
 Once you've generated a token, copy it and replace the value of `TOKEN` with your token for the gitlab group, can be found.
 
@@ -44,7 +55,8 @@ yarn build      # build the application
 yarn start      # start the application
 ```
 
-You can press `Ctl+C` to halt the application. If you wish to run the microservice in the background, use
+You can press `Ctl+C` to halt the application.
+If you wish to run the microservice in the background, use
 
 ```bash
 nohup yarn start & disown
@@ -74,7 +86,8 @@ The lib microservice takes two distinct GraphQL queries.
 
 ### Directory Listing
 
-This query receives directory path and provides list of files in that directory. A sample query and response are given here.
+This query receives directory path and provides list of files
+in that directory. A sample query and response are given here.
 
 ``` graphql
 query {
@@ -161,7 +174,8 @@ query {
 
 ### Fetch a file
 
-This query receives directory path and send the file contents to user in response. A sample query and response are given here.
+This query receives directory path and send the file contents to user in response.
+A sample query and response are given here.
 
 ```graphql
 query {
