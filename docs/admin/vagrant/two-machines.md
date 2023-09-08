@@ -33,7 +33,7 @@ Update the **boxes.json**. There are entries one for each server. The fields to 
 ## Launch platform default services
 
 RabbitMQ, Grafana and InfluxDB services are provisioned on this server. 
-InfluxDB webUI will be available at: _services.foo.com_. The RabbitMQ service and its management interface shall be available at 5672 and 15672 TCP ports respectively. The Grafana service shall be available at TCP port 3000.
+InfluxDB and visualization service will be available at: _services.foo.com_. The RabbitMQ service and its management interface shall be available at 5672 and 15672 TCP ports respectively. The Grafana service shall be available at TCP port 3000.
 
 The firewall and network access settings of corporate / cloud network need to be configured to allow external access to the services. Otherwise the users of DTaaS will not be able to utilize these services from their user workspaces.
 
@@ -52,7 +52,7 @@ After the server is up and running, you can see the following services active wi
 
 | service | external url |
 |:---|:---|
-| Influx visualization service | services.foo.com |
+| InfluxDB and visualization service | services.foo.com |
 | Grafana visualization service | services.foo.com:3000 |
 | RabbitMQ communication service | services.foo.com:5672 |
 | RabbitMQ management service | services.foo.com:15672 |
