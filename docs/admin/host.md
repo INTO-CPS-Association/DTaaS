@@ -40,10 +40,11 @@ password: <your password>
 The user credentials added in _deploy/config/gateway/auth_ should match the usernames in _deploy/config/gateway/fileConfig.yml_.
 
 ## Configure lib microservice
+The library microservice requires configuration. A template of this configuration file is given in _deploy/config/lib_ file. Please modify this file as per your needs. 
 
 The first step in this configuration is to prepare the a filesystem for users. An example file system in `files/` directory. You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Update the _deploy/config/lib_ of the library microservice. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory.
+An example `.env` file is given below. The simplest possibility is to use `local` mode with the following example. The filepath is the absolute filepath to `files/` directory. You can copy this configuration into _deploy/config/lib_ file to get started.
 
 ```env
 PORT='4001'
