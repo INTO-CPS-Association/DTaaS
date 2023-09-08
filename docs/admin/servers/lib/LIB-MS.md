@@ -80,20 +80,6 @@ The lib microservice is now running and ready to serve files, functions, and mod
 
 Users can access the library microservice at URL: `http://localhost:<PORT>/lib`.
 
-## Developer Commands
-
-```bash
-yarn install    # Install dependencies for the microservice
-yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
-yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
-yarn test -a      # run all tests
-yarn test -e      # run end-to-end tests
-yarn test -i      # run integration tests
-yarn test -u      # run unit tests
-yarn start      # start the application
-yarn clean      # deletes directories "build", "coverage", and "dist"
-```
-
 ## Service Endpoint
 
 The URL endpoint for this microservice is located at: `localhost:PORT/lib`
