@@ -85,7 +85,7 @@ The website requires background services for providing actual functionality. The
 
 ```js
 https:foo.com/<username>/lab
-https:foo.com/<username>/terminals/main'
+https:foo.com/<username>/terminals/main
 https:foo.com/<username>/tools/vnc/?password=vncpassword
 https:foo.com/<username>/tools/vscode/
 ```
