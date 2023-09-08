@@ -36,7 +36,7 @@ The `TOKEN` should be set to your GitLab Group access API token. For more inform
 
 Once you've generated a token, copy it and replace the value of `TOKEN` with your token for the gitlab group, can be found.
 
-## Developer Commands
+## User Commands
 
 ```bash
 yarn install    # Install dependencies for the microservice
