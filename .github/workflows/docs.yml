@@ -23,8 +23,8 @@ jobs:
         uses: Tiryoh/actions-mkdocs@v0
         with:
           mkdocs_version: 'latest'
-          requirements: 'docs/requirements.txt'
-          configfile: 'mkdocs.yml'
+          requirements: 'docs/requirements-github.txt'
+          configfile: 'mkdocs-github.yml'
 
 
       - name: show contents of compiled docs
