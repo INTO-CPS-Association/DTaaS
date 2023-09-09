@@ -1,15 +1,29 @@
-This is a box that has the following items:
+# Vagrant Box for DTaaS
+
+There are some good vagrant boxes on
+[vagrant website](https://app.vagrantup.com/boxes/search).
+But these boxes require too many installations that take a
+long time and network bandwidth. So it is efficient to
+create one local vagrant box for DTaaS application and reuse
+the same in all installations.
+
+## Installed Software
+
+This base DTaaS vagrant box, when it is successfully created, has the following software:
+
 * docker
 * nodejs and yarn
 * jupyter
 * microk8s
 * containers
-    * mltooling/ml-workspace:0.13.2
-    * traefik2.5
-    * influxdb2.4
-    * grafana
-    * telegraf
-    * gitlab
+  * mltooling/ml-workspace:0.13.2
+  * traefik2.5
+  * influxdb2.4
+  * grafana
+  * telegraf
+  * gitlab
+
+## Create the vagrant box
 
 Publish a base virtualbox package to be used by
 vagrant to publish all other virtualbox packages
@@ -28,13 +42,13 @@ vagrant ssh
 
 # install the oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# install plugins: history, autosuggestions, 
+# install plugins: history, autosuggestions,
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 # inside ~/.zshrc, modify the following line
 plugins=(git zsh-autosuggestions history cp tmux)
 
-# remove the vagrant default public key - first line of 
+# remove the vagrant default public key - first line of
 # /home/vagrant/.ssh/authorized_keys
 
 # exit vagrant guest machine and then
@@ -42,7 +56,7 @@ plugins=(git zsh-autosuggestions history cp tmux)
 cp vagrant .vagrant/machines/default/virtualbox/private_key
 
 # check
-vagrant ssh	#should work
+vagrant ssh #should work
 
 vagrant halt
 
@@ -55,7 +69,3 @@ vagrant box add --name dtaas ./dtaas.vagrant
 # You can use this box in other vagrant boxes using
 #config.vm.box = "dtaas"
 ```
-
-## TODO
-1. Write a script for automating the above steps
-1. Generate the ssh keys from ssl/certificates.bash

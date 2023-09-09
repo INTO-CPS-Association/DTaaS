@@ -30,13 +30,9 @@ docker run hello-world
 systemctl enable docker.service
 systemctl enable containerd.service
 
-# get the required docker images
-docker pull traefik:v2.5
-docker pull influxdb:2.4
-docker pull mltooling/ml-workspace:0.13.2
-docker pull grafana/grafana
-docker pull telegraf
-docker pull gitlab/gitlab-ce:15.10.0-ce.0
+#install docker-compose from https://docs.docker.com/compose/install/other/
+sudo curl -SL "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
@@ -46,8 +42,16 @@ apt-get update -y
 apt-get install -y yarn
 npm install -g serve
 
-apt install -y python3-pip
+#-------------
+printf "\n\n Install jupyter toolchain"
+sudo apt-get install -y python3-pip
 sudo -H pip install jupyterlab
+sudo -H pip install mkdocs
+sudo -H pip3 install mkdocs-material
+sudo -H pip3 install python-markdown-math
+sudo -H pip3 install mkdocs-open-in-new-tab
+sudo -H pip3 install mkdocs-with-pdf
+sudo -H pip3 install qrcode
 
 # Install minimal Kubernetes cluster
 snap install microk8s --classic
@@ -59,4 +63,11 @@ cat /vagrant/vagrant.pub >> /home/vagrant/.ssh/authorized_keys
 mkdir -p /root/.ssh
 cat /vagrant/vagrant.pub >> /root/.ssh/authorized_keys
 
-printf "vagrant ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
+# get the required docker images
+docker pull traefik:v2.5
+docker pull influxdb:2.4
+docker pull mltooling/ml-workspace:0.13.2
+docker pull grafana/grafana
+docker pull telegraf
+docker pull gitlab/gitlab-ce:15.10.0-ce.0
+
