@@ -40,8 +40,13 @@
 ## Digital Twin Models
 
 ??? Question "Can DTaaS create new DT models?"
-    DTaaS is not a model creation  tool. You can put model creation tool inside DTaaS and create new models.
-    The DTaaS itself does not create digital twin models. But you can run Linux desktop / terminal tools  inside the DTaaS. So you can create models inside DTaaS and run them using tools that can run in Linux. The Windows only tools can not run in DTaaS.
+    DTaaS is not a model creation  tool. You can put model creation tool
+    inside DTaaS and create new models.
+
+    The DTaaS itself does not create digital twin models. But you can run
+    Linux desktop / terminal tools  inside the DTaaS. So you can create
+    models inside DTaaS and run them using tools that can run in Linux.
+    The Windows only tools can not run in DTaaS.
 
 
 ??? Question "How can DTaaS help to design geometric model? Does it support 3D modeling and simulation?"
@@ -49,9 +54,21 @@
     In summary, DTaaS is neither a modeling nor simulation tool. If you need these kinds of tools, you need to bring them onto the platform. For example, if you need Matlab for your work, you need to bring the licensed Matlab software. 
 
 
-??? Question "DTaas is not able to do any modelling or simulation in this case, like other platforms in market provide modelling and simulation alongside integration and UI. Is this a correct understanding?"
+??? Question "Commercial DT platforms in market provide modelling and simulation alongside integration and UI. DTaas is not able to do any modelling or simulation on its own like other commercial platforms. Is this a correct understanding?"
     Yes, you are right
 
+??? Question "Can DTaaS support only the information models (or behavioral models) or some other kind of models?"
+    The DTaaS as such is agnostic to the kind of models you use. DTaaS can
+    run all kinds of models. This includes behavioral and data models.
+
+    As long as you have models and the matching solvers that can run in
+    Linux OS, you are good to go in DTaaS.
+
+    In some cases, models and solvers (tools) are bundled together
+    to form monolithic DTs. The DTaaS does not limit you from running
+    such DTs as well.
+
+    DTaaS does not provide dedicated solvers. But if you can install a solver in your workspace, then you don't need the platform to provide one. 
 
 ??? Question "Does it support XML-based representation and ontology representation?"
     Currently No. **We are looking for users needing this capability. If you have concrete requirements and an example, we can discuss a way of realizing it in DTaaS**. 
@@ -99,8 +116,43 @@
 ??? Question "Is DTaaS able to transmit data to cloud in real time?"
     Yes
 
-    
 ## Platform Native Services on DTaaS Platform
 
 ??? Question "Is DTaaS able to detect the anomalies about-to-fail components and prescribe solutions?"
     This is the job of a digital twin. If you have a ready to use digital twin that does the job, DTaaS allows others to use your solution.
+
+## Comparison with other DT Platforms
+
+??? Question "All the DT platforms seem to provide different features. Is there a comparison chart?"
+
+    Here is a qualitative comparison of different DT integration platforms:
+
+    Legend: high performance (**H**), mid performance (**M**) and low performance (**L**)
+
+    | DT Platforms | License | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualization | Modeling and Simulation |
+    |:---|:---|:---|:---|:---|:---|:---|:---|:---|
+    | Microsoft Azure DT | Commercial Cloud | H | H | H | M | H | H | H |
+    | AWS IOT Greengrass | Open source commercial | H | H | H | M | H | H | H |
+    | Eclipse Ditto | Open source | M | H | M | H | H | L | L |
+    | Asset Administration Shell | Open source | H | H | L | H | M | L | M |
+    | PTC Thingworx | Commercial | H | H | H | H | H | M | M |
+    | GE Predix | Commercial | M | H | H | M | L | M | L |
+    | AU's DTaaS | Open source | H | H | L | L | M | M | M |
+
+    Adopted by Tanusree Roy from Table 4 and 5 of the following paper.
+
+    Ref: Naseri, F., Gil, S., Barbu, C., Cetkin, E., Yarimca, G., Jensen, A. C.,
+    ... & Gomes, C. (2023). Digital twin of electric vehicle battery systems:
+    Comprehensive review of the use cases, requirements, and platforms. 
+    Renewable and Sustainable Energy Reviews, 179, 113280.
+
+??? Question "All the comparisons between DT platforms seems so confusing. Why?"
+    The fundamental confusion comes from the fact that different DT platforms
+    (Azure DT, GE Predix) provide different kind of DT capabilities. You can
+    run all kinds of models natively in GE Predix. In fact you can run models
+    even next to (on) PTs using GE Predix. But you cannot natively do that in
+    Azure DT service. You have to do the leg work of integrating with other
+    Azure services or third-party services to get the kind of capabilities
+    that GE Predix natively provides in one interface.
+
+    **The takeaway is that we pick horses for the courses.**

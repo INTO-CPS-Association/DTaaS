@@ -13,6 +13,7 @@ on:
 
 jobs:
   docs:
+    name: Build html docs only
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,8 +23,8 @@ jobs:
         uses: Tiryoh/actions-mkdocs@v0
         with:
           mkdocs_version: 'latest'
-          requirements: 'docs/requirements-github.txt'
-          configfile: 'mkdocs-github.yml'
+          requirements: 'docs/requirements.txt'
+          configfile: 'mkdocs.yml'
 
 
       - name: show contents of compiled docs
