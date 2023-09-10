@@ -40,6 +40,7 @@ nav:
   - FAQ: FAQ.md
   - Bugs: bugs.md
   - Thanks: thanks.md
+  - License: LICENSE.md
 
 use_directory_urls: false
 

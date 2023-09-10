@@ -82,3 +82,6 @@ sudo -H pip3 install python-markdown-math
 sudo -H pip3 install mkdocs-open-in-new-tab
 sudo -H pip3 install mkdocs-with-pdf
 sudo -H pip3 install qrcode
+
+# Install markdownlint
+sudo gem install mdl

@@ -1,18 +1,19 @@
-name: Make quality checks on the client react SPA application
+name: React website
 
 on:
   push:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'client/**'
   pull_request:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'client/**'
   workflow_dispatch:
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - 'client/**'
 
 jobs:
   client:
+    name: Test react website
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
