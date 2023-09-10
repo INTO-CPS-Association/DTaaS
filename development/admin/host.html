@@ -253,6 +253,18 @@
   </li>
 
       
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../LICENSE.html" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
     </ul>
   </div>
 </nav>
@@ -898,6 +910,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LICENSE.html" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1011,19 +1038,38 @@
 
 
 <h1 id="dtaas-on-linux-operating-system">DTaaS on Linux Operating System</h1>
-<p>These are installation instructions for running DTaaS application on a Ubuntu Server 20.04 Operating System. The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.</p>
-<p>A dummy <strong>foo.com</strong> URL has been used for illustration. Please change this to your unique website URL. It is assumed that you are going to serve the application in only HTTPS mode.</p>
-<p>Please follow these steps to make this work in your local environment. Download the <strong>DTaaS.zip</strong> from the <a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>. Unzip the same into a directory named <strong>DTaaS</strong>. The rest of the instructions assume that your working directory is <strong>DTaaS</strong>.</p>
+<p>These are installation instructions for running DTaaS application
+on a Ubuntu Server 20.04 Operating System.
+The setup requires a machine which can
+spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.</p>
+<p>A dummy <strong>foo.com</strong> URL has been used for illustration.
+Please change this to your unique website URL.
+It is assumed that you are going to serve the application in only HTTPS mode.</p>
+<p>Please follow these steps to make this work in your local environment.
+Download the <strong>DTaaS.zip</strong> from the
+<a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.
+Unzip the same into a directory named <strong>DTaaS</strong>.
+The rest of the instructions assume that your working directory is <strong>DTaaS</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you only want to test the application and are not setting up a production instance, you can follow the instructions of <a href="trial.html">trial installation</a>.</p>
+<p>If you only want to test the application
+and are not setting up a production instance,
+you can follow the instructions of <a href="trial.html">trial installation</a>.</p>
 </div>
 <h2 id="configuration">Configuration</h2>
-<p>You need to configure the Traefik gateway, library microservice and react client website.</p>
-<p>The first step is to decide on the number of users and their usenames. The traefik gateway configuration has a template for two users. You can modify the usernames in the template to the usernames chosen by you.</p>
+<p>You need to configure the Traefik gateway,
+library microservice and react client website.</p>
+<p>The first step is to decide on the number of users and their usenames.
+The traefik gateway configuration has a template for two users.
+You can modify the usernames in the template to the usernames chosen by you.</p>
 <h3 id="the-traefik-gateway-server">The traefik gateway server</h3>
-<p>You can run the Run the Traefik gateway server in both HTTP and HTTPS mode to experience the DTaaS application. The installation guide assumes that you can run the application in HTTPS mode.</p>
-<p>The Traefik gateway configuration is at <em>deploy/config/gateway/fileConfig.yml</em>. Change <code>foo.com</code> to your local hostname and user1/user2 to the usernames chosen by you.</p>
+<p>You can run the Run the Traefik gateway server in both
+HTTP and HTTPS mode to experience the DTaaS application.
+The installation guide assumes that you can run the application in HTTPS mode.</p>
+<p>The Traefik gateway configuration is
+at <em>deploy/config/gateway/fileConfig.yml</em>.
+Change <code>foo.com</code> to your local hostname and user1/user2 to
+the usernames chosen by you.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Do not use <code>http://</code> or <code>https://</code> in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
@@ -1039,10 +1085,19 @@ Please change this before starting the gateway.</p>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>htpasswd<span class="w"> </span>deploy/config/gateway/auth<span class="w"> </span>&lt;first_username&gt;
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>password:<span class="w"> </span>&lt;your<span class="w"> </span>password&gt;
 </span></code></pre></div></td></tr></table></div>
-<p>The user credentials added in <em>deploy/config/gateway/auth</em> should match the usernames in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
+<p>The user credentials added in <em>deploy/config/gateway/auth</em> should
+match the usernames in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
 <h2 id="configure-lib-microservice">Configure lib microservice</h2>
-<p>The first step in this configuration is to prepare the a filesystem for users. An example file system in <code>files/</code> directory. You can rename the top-level user1/user2 to the usernames chosen by you.</p>
-<p>Update the <em>deploy/config/lib</em> of the library microservice. The simplest possibility is to use <code>local</code> mode with the following example. The filepath is the absolute filepath to <code>files/</code> directory.</p>
+<p>The library microservice requires configuration.
+A template of this configuration file is given in <em>deploy/config/lib</em> file.
+Please modify this file as per your needs.</p>
+<p>The first step in this configuration is to prepare the a filesystem for users.
+An example file system in <code>files/</code> directory.
+You can rename the top-level user1/user2 to the usernames chosen by you.</p>
+<p>An example <code>.env</code> file is given below.
+The simplest possibility is to use <code>local</code> mode with the following example.
+The filepath is the absolute filepath to <code>files/</code> directory.
+You can copy this configuration into <em>deploy/config/lib</em> file to get started.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
@@ -1068,18 +1123,30 @@ Please change this before starting the gateway.</p>
 <span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-2-10">10</a></span>
 <span class="normal"><a href="#__codelineno-2-11">11</a></span>
-<span class="normal"><a href="#__codelineno-2-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="p">};</span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span>
+<span class="normal"><a href="#__codelineno-2-17">17</a></span>
+<span class="normal"><a href="#__codelineno-2-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;dev&#39;</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;dtaas&#39;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="p">};</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="update-the-installation-script">Update the installation script</h2>
 <p>Open <code>deploy/install.sh</code> and update user1/user2 to usernames chosen by you.</p>
@@ -1089,7 +1156,7 @@ Please change this before starting the gateway.</p>
 </span></code></pre></div></td></tr></table></div>
 <p>You can run this script multiple times until the installation is successful.</p>
 <h2 id="access-the-application">Access the application</h2>
-<p>Now you should be able to access the DTaaS application at: <em>https://foo.com</em></p>
+<p>Now you should be able to access the DTaaS application at: <http:><em>https://foo.com</em></http:></p>
 
 
 

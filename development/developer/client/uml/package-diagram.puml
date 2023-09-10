@@ -1,0 +1,78 @@
+@startuml
+hide empty members
+
+
+package "Routes" { 
+  class "Workbench"
+  class "Library" 
+  class "Digital Twins" as DT
+  
+  Workbench -l[hidden]- Library
+  Library -l[hidden]- DT
+}
+
+package "Page" {
+  package "StructualComponent" {
+    class Layout
+    class Tabs
+    class PrivateRoute
+    
+    Layout -l[hidden]- Tabs
+    Tabs -l[hidden]- PrivateRoute
+  }
+  package "BaseComponent" {
+    class Footer
+    class Menu
+    class Title
+    
+    Title -l[hidden]- Menu
+    Menu -l[hidden]- Footer
+  }
+  
+  StructualComponent --[hidden] BaseComponent
+}
+
+package "Util" {
+  class APIutil
+  class EnvUtil
+  
+  APIutil -l[hidden]- EnvUtil
+}
+
+package "Components" {
+  class Iframe
+  class LinkButtons
+  class ShoppingCart
+  class AssetBoard
+  
+  Iframe -l[hidden] LinkButtons
+  LinkButtons -l[hidden] ShoppingCart
+  ShoppingCart -l[hidden] AssetBoard
+}
+
+package "Store" {
+  class AuthAcess {
+   + useAuthToken()
+  }
+  class AppAcess {
+    + useApp()
+  }
+  class CartAcess {
+    + useCart()
+  }
+  class UserAcess {
+    + useUserData()
+  }
+  
+  AuthAcess -l[hidden] AppAcess
+  AppAcess -l[hidden] CartAcess
+  CartAcess -l[hidden] UserAcess
+}
+
+Routes ..> Page : <<imports>>
+Routes ..> Util : <<uses>>
+Routes ..> Components : <<uses>>
+Util ..> Store
+Components ..> Util : <<uses>>
+Components ..> Store : <<uses>>
+@enduml

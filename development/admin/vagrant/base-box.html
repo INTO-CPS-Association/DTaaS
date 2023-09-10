@@ -253,6 +253,18 @@
   </li>
 
       
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../LICENSE.html" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
     </ul>
   </div>
 </nav>
@@ -844,6 +856,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE.html" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -903,7 +930,12 @@
 
 
 <h1 id="vagrant-box-for-dtaas">Vagrant Box for DTaaS</h1>
-<p>There are some good vagrant boxes on <a href="https://app.vagrantup.com/boxes/search">vagrant website</a>. But these boxes require too many installations that take a long time and network bandwidth. So it is efficient to create one local vagrant box for DTaaS application and reuse the same in all installations.</p>
+<p>There are some good vagrant boxes on
+<a href="https://app.vagrantup.com/boxes/search">vagrant website</a>.
+But these boxes require too many installations that take a
+long time and network bandwidth. So it is efficient to
+create one local vagrant box for DTaaS application and reuse
+the same in all installations.</p>
 <h2 id="installed-software">Installed Software</h2>
 <p>This base DTaaS vagrant box, when it is successfully created, has the following software:</p>
 <ul>
@@ -973,13 +1005,13 @@ vagrant to publish all other virtualbox packages</p>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="c1"># install the oh-my-zsh</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="c1"># install plugins: history, autosuggestions, </span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="c1"># install plugins: history, autosuggestions,</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/zsh-users/zsh-autosuggestions<span class="w"> </span><span class="si">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="si">}</span>/plugins/zsh-autosuggestions
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="c1"># inside ~/.zshrc, modify the following line</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="nv">plugins</span><span class="o">=(</span>git<span class="w"> </span>zsh-autosuggestions<span class="w"> </span><span class="nb">history</span><span class="w"> </span>cp<span class="w"> </span>tmux<span class="o">)</span>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="c1"># remove the vagrant default public key - first line of </span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="c1"># remove the vagrant default public key - first line of</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="c1"># /home/vagrant/.ssh/authorized_keys</span>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="c1"># exit vagrant guest machine and then</span>

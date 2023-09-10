@@ -253,6 +253,18 @@
   </li>
 
       
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../LICENSE.html" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
     </ul>
   </div>
 </nav>
@@ -837,6 +849,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE.html" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -893,10 +920,18 @@
 <ul>
 <li>Download the <strong>DTaaS-client.zip</strong> from the <a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.</li>
 <li>
-<p>Inside the <code>DTaaS-client</code> directory, there is <code>site</code> directory. The <code>site</code> directory contains all the optimized static files that are ready for deployment.</p>
+<p>Inside the <code>DTaaS-client</code> directory, there is <code>site</code> directory.
+  The <code>site</code> directory contains all the optimized
+  static files that are ready for deployment.</p>
 </li>
 <li>
-<p>Locate the file <code>site/env.js</code> and replace the example values to match your infrastructure. See the definitions below:</p>
+<p>Setup the oauth application on gitlab instance.
+  See the instructions in <a href="auth.html">authentication page</a> for completing this task.</p>
+</li>
+<li>
+<p>Locate the file <code>site/env.js</code> and replace the example values to match your infrastructure.
+  The constructed links will be "<code>REACT_APP_URL</code>/<code>REACT_APP_URL_BASENAME</code>/<code>{username}</code>/<code>{Endpoint}</code>".
+  See the definitions below:</p>
 <div class="language-js highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -923,7 +958,39 @@
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;prod | dev&quot;</span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;URL for the gateway&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Base URL for the client website&quot;</span><span class="p">(</span><span class="nx">optional</span><span class="p">),</span>
@@ -935,21 +1002,53 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the Jupyter Lab link&quot;</span><span class="p">,</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="s2">&quot;Endpoint for the Jupyter Notebook link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="p">};</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="c1">// Example values with no base URL. Trailing and ending slashes are optional.</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="p">};</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;AppID genereated by the gitlab OAuth provider&#39;</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the private gitlab instance&#39;</span><span class="p">,</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the logged in users of the website&#39;</span><span class="p">,</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the anonymous users of the website&#39;</span><span class="p">,</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;OAuth scopes. These should match with the scopes set in gitlab OAuth provider&#39;</span><span class="p">,</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="p">};</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="c1">// Example values with no base URL. Trailing and ending slashes are optional.</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="p">};</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="c1">// Example values with &quot;bar&quot; as basename URL. Trailing and ending slashes are optional.</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar&#39;</span><span class="p">,</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="p">};</span>
 </span></code></pre></div></td></tr></table></div>
 </li>
 <li>
@@ -962,18 +1061,27 @@
 <p>Once the files are on your server, you should be able to access your app by visiting your server's IP address or domain name in a web browser.</p>
 </li>
 </ul>
-<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm-40-176h24v-64h-24c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-80c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span> The website depends on <strong>Traefik gateway</strong> and <strong>ML Workspace</strong> components to be available. Otherwise, you only get a skeleton non-functional website.</p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm-40-176h24v-64h-24c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-80c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span>
+The website depends on <strong>Traefik gateway</strong> and <strong>ML Workspace</strong>
+components to be available. Otherwise, you only get a skeleton non-functional website.</p>
 <h2 id="complementary-components">Complementary Components</h2>
-<p>The website requires background services for providing actual functionality. The minimum background service required is atleast one <a href="https://github.com/ml-tooling/ml-workspace">ML Workspace</a> serving the following routes.</p>
+<p>The website requires background services for providing actual functionality.
+The minimum background service required is atleast
+one <a href="https://github.com/ml-tooling/ml-workspace">ML Workspace</a>
+serving the following routes.</p>
 <div class="language-js highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
 <span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nx">https</span><span class="o">:</span><span class="nx">foo</span><span class="p">.</span><span class="nx">com</span><span class="o">/&lt;</span><span class="nx">username</span><span class="o">&gt;</span><span class="err">/lab</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nx">https</span><span class="o">:</span><span class="nx">foo</span><span class="p">.</span><span class="nx">com</span><span class="o">/&lt;</span><span class="nx">username</span><span class="o">&gt;</span><span class="err">/terminals/main&#39;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nx">https</span><span class="o">:</span><span class="nx">foo</span><span class="p">.</span><span class="nx">com</span><span class="o">/&lt;</span><span class="nx">username</span><span class="o">&gt;</span><span class="err">/terminals/main</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="nx">https</span><span class="o">:</span><span class="nx">foo</span><span class="p">.</span><span class="nx">com</span><span class="o">/&lt;</span><span class="nx">username</span><span class="o">&gt;</span><span class="err">/tools/vnc/?password=vncpassword</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nx">https</span><span class="o">:</span><span class="nx">foo</span><span class="p">.</span><span class="nx">com</span><span class="o">/&lt;</span><span class="nx">username</span><span class="o">&gt;</span><span class="err">/tools/vscode/</span>
 </span></code></pre></div></td></tr></table></div>
-<p>The <code>username</code> is the user workspace created using ML Workspace docker container. Please follow the instructions in <a href="https://github.com/ml-tooling/ml-workspace/blob/main/README.md">README</a>. You can create as many user workspaces as you want. If you have two users - alice and bob - on your system, then the following the commands in  will instantiate the required user workspaces.</p>
+<p>The <code>username</code> is the user workspace created using ML Workspace docker container.
+Please follow the instructions in <a href="https://github.com/ml-tooling/ml-workspace/blob/main/README.md">README</a>.
+You can create as many user workspaces as you want.
+If you have two users - alice and bob - on your system,
+then the following the commands in  will instantiate the required user workspaces.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
@@ -1026,7 +1134,9 @@
 </span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25"></a><span class="w">  </span>--restart<span class="w"> </span>always<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26"></a><span class="w">  </span>mltooling/ml-workspace:0.13.2
 </span></code></pre></div></td></tr></table></div>
-<p>Given that multiple services are running at different routes, a reverse proxy is needed to map the background services to external routes. You can use Apache, NGINX, Traefik or any other software to work as reverse proxy.</p>
+<p>Given that multiple services are running at different routes,
+a reverse proxy is needed to map the background services to external routes.
+You can use Apache, NGINX, Traefik or any other software to work as reverse proxy.</p>
 
 
 

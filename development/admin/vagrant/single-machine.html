@@ -253,6 +253,18 @@
   </li>
 
       
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../LICENSE.html" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
     </ul>
   </div>
 </nav>
@@ -806,6 +818,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE.html" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -843,14 +870,26 @@
 
 
 <h1 id="dtaas-on-single-vagrant-machine">DTaaS on Single Vagrant Machine</h1>
-<p>These are installation instructions for running DTaaS application inside one vagrant Virtual Machine.  The setup requires a machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space to the vagrant box.</p>
-<p>A dummy <strong>foo.com</strong> URL has been used for illustration. Please change this to your unique website URL.</p>
+<p>These are installation instructions for running DTaaS application
+inside one vagrant Virtual Machine.  The setup requires a
+machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
+space to the vagrant box.</p>
+<p>A dummy <strong>foo.com</strong> URL has been used for illustration.
+Please change this to your unique website URL.</p>
 <p>Please follow these steps to make this work in your local environment.</p>
 <ol>
-<li>Create <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>. Copy <em>vagrant</em> SSH private key into <em>deploy/vagrant/single-machine</em>. This shall be useful for logging into the vagrant machine created for single-machine deployment. You would have created an SSH key pair - <em>vagrant</em> and <em>vagrant.pub</em>. The <em>vagrant</em> is the private SSH key and is needed for the next steps.</li>
+<li>Create <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>.
+   You would have created an SSH key pair - <em>vagrant</em> and
+   <em>vagrant.pub</em> for the vagrant box.
+   The <em>vagrant</em> is the private SSH key; Copy <em>vagrant</em> SSH private key into
+   the current directory (<code>deploy/vagrant/single-machine</code>).
+   This shall be useful for logging into the vagrant
+   machine created for single-machine deployment.</li>
 <li>Update the <strong>Vagrantfile</strong>. Fields to update are:<ol>
 <li>Hostname (<code>node.vm.hostname = "foo.com"</code>)</li>
-<li>MAC address (<code>:mac =&gt; "xxxxxxxx"</code>). This change is required if you have a DHCP server assigning domain names based on MAC address. Otherwise, you can leave this field unchanged.</li>
+<li>MAC address (<code>:mac =&gt; "xxxxxxxx"</code>).
+This change is required if you have a DHCP server assigning domain names
+based on MAC address. Otherwise, you can leave this field unchanged.</li>
 <li>Other adjustments are optional.</li>
 </ol>
 </li>
@@ -860,13 +899,18 @@
 <span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>vagrant<span class="w"> </span>up
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>vagrant<span class="w"> </span>ssh
 </span></code></pre></div></td></tr></table></div>
-<p>Set a cronjob inside the vagrant virtual machine to remote the conflicting default route.</p>
+<p>Set a cronjob inside the vagrant virtual
+machine to remote the conflicting default route.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.2/deploy/vagrant/route.sh
+<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>sudo<span class="w"> </span>bash<span class="w"> </span>route.sh
 </span></code></pre></div></td></tr></table></div>
-<p>If you only want to test the application and are not setting up a production instance, you can follow the instructions of <a href="../trial.html">single script install</a>.</p>
-<p>If you are not in a hurry and would rather have a production instance, follow the instructions of <a href="../host.html">regular server installation</a> setup to complete the installation.</p>
+<p>If you only want to test the application and
+are not setting up a production instance, you can
+follow the instructions of <a href="../trial.html">single script install</a>.</p>
+<p>If you are not in a hurry and would rather have a production
+instance, follow the instructions of <a href="../host.html">regular server installation</a>
+setup to complete the installation.</p>
 
 
 

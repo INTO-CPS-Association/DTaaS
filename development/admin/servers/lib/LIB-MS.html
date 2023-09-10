@@ -253,6 +253,18 @@
   </li>
 
       
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../LICENSE.html" class="md-tabs__link">
+      License
+    </a>
+  </li>
+
+      
     </ul>
   </div>
 </nav>
@@ -604,13 +616,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#developer-commands" class="md-nav__link">
-    Developer Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#service-endpoint" class="md-nav__link">
     Service Endpoint
   </a>
@@ -885,6 +890,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LICENSE.html" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -953,13 +973,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#developer-commands" class="md-nav__link">
-    Developer Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#service-endpoint" class="md-nav__link">
     Service Endpoint
   </a>
@@ -985,7 +998,8 @@
 
 
 <h1 id="host-library-microservice">Host Library Microservice</h1>
-<p>The <strong>lib microservice</strong> is a simplified file manager providing graphQL API. It has three features:</p>
+<p>The <strong>lib microservice</strong> is a simplified file manager providing graphQL API.
+It has three features:</p>
 <ul>
 <li>provide a listing of directory contents.</li>
 <li>transfer a file to user.</li>
@@ -998,38 +1012,53 @@
 <p><img alt="File System Layout" src="file-system-layout.png" /></p>
 <p>There is a skeleton file structure in <a href="https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files">DTaaS codebase</a>. You can copy and create file system for your users.</p>
 <h2 id="gitlab-setup-optional">Gitlab setup (optional)</h2>
-<p>For this microserivce to be functional, a certain directory or gitlab project structure is expected. The microservice expects that the gitlab consisting of one group, DTaaS, and within that group, all of the projects be located, <strong>user1</strong>, <strong>user2</strong>, ... , as well as a <strong>commons</strong> project. Each project corresponds to files of one user.
-A sample file structure can be seen in <a href="https://gitlab.com/dtaas">gitlab dtaas group</a>. You can visit the gitlab documentation on <a href="https://docs.gitlab.com/ee/user/group/">groups</a> for help on the management of gitlab groups.</p>
-<p>You can clone the git repositories from the <code>dtaas</code> group to get a sample file system structure for the lib microservice.</p>
+<p>For this microserivce to be functional,
+a certain directory or gitlab project structure is expected.
+The microservice expects that the gitlab consisting of one group,
+DTaaS, and within that group, all of the projects be located,
+<strong>user1</strong>, <strong>user2</strong>, ... , as well as a <strong>commons</strong> project.
+Each project corresponds to files of one user.
+A sample file structure can be seen in <a href="https://gitlab.com/dtaas">gitlab dtaas group</a>.
+You can visit the gitlab documentation on <a href="https://docs.gitlab.com/ee/user/group/">groups</a>
+for help on the management of gitlab groups.</p>
+<p>You can clone the git repositories from the <code>dtaas</code> group
+to get a sample file system structure for the lib microservice.</p>
 <h2 id="setup-microservice">Setup Microservice</h2>
 <p>To set up the lib microservice, follow these steps:</p>
 <p>Download the <strong>lib-microservice.zip</strong> from the <a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.</p>
 <h2 id="configuration-setup">Configuration setup</h2>
 <p>The microservices uses <code>.env</code> environment files to receive configuration.</p>
-<p>To set up the environment variables for the lib microservice, create a new file named <em>.env</em> in the <code>lib-ms</code> directory. Then, add the following variables and their respective values. Below you can see and how, with included examples:</p>
-<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="na">PORT</span><span class="o">=</span><span class="s">&#39;4001&#39;</span>
+<p>To set up the environment variables for the lib microservice,
+create a new file named <em>.env</em> in the <code>lib-ms</code> directory.
+Then, add the following variables and their respective values.
+Below you can see and how, with included examples:</p>
+<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span>
+<span class="normal"><a href="#__codelineno-0-6">6</a></span>
+<span class="normal"><a href="#__codelineno-0-7">7</a></span>
+<span class="normal"><a href="#__codelineno-0-8">8</a></span>
+<span class="normal"><a href="#__codelineno-0-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="na">PORT</span><span class="o">=</span><span class="s">&#39;4001&#39;</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="na">MODE</span><span class="o">=</span><span class="s">&#39;local&#39; or &#39;gitlab&#39;</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="na">LOCAL_PATH</span><span class="w"> </span><span class="o">=</span><span class="s">&#39;/Users/&lt;Username&gt;/DTaaS/files&#39;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="na">GITLAB_GROUP</span><span class="w"> </span><span class="o">=</span><span class="s">&#39;dtaas&#39;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="na">LOCAL_PATH</span><span class="o">=</span><span class="s">&#39;/Users/&lt;Username&gt;/DTaaS/files&#39;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="na">GITLAB_GROUP</span><span class="o">=</span><span class="s">&#39;dtaas&#39;</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="na">GITLAB_URL</span><span class="o">=</span><span class="s">&#39;https://gitlab.com/api/graphql&#39;</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="na">TOKEN</span><span class="o">=</span><span class="s">&#39;123-sample-token&#39;</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="na">LOG_LEVEL</span><span class="o">=</span><span class="s">&#39;debug&#39;</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="na">TEST_PATH</span><span class="o">=</span><span class="s">&#39;/Users/&lt;Username&gt;/DTaaS/servers/lib/test/data/test_assets&#39;</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="na">APOLLO_PATH</span><span class="o">=</span><span class="s">&#39;/lib&#39; or &#39;&#39;</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="na">GRAPHQL_PLAYGROUND</span><span class="o">=</span><span class="s">&#39;false&#39; or &#39;true&#39;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="na">APOLLO_PATH</span><span class="o">=</span><span class="s">&#39;/lib&#39; or &#39;&#39;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="na">GRAPHQL_PLAYGROUND</span><span class="o">=</span><span class="s">&#39;false&#39; or &#39;true&#39;</span>
 </span></code></pre></div></td></tr></table></div>
-<p>The <code>LOCAL_PATH</code> variable is the absolute filepath to the location of the local directory which will be served to users by the Library microservice.</p>
-<p>The <code>GITLAB_URL</code>, <code>GITLAB_GROUP</code> and <code>TOKEN</code> are only relevant for <code>gitlab</code> mode. The <code>TOKEN</code> should be set to your GitLab Group access API token. For more information on how to create and use your access token, <a href="https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html">gitlab page</a>.</p>
-<p>Once you've generated a token, copy it and replace the value of <code>TOKEN</code> with your token for the gitlab group, can be found.</p>
+<p>The <code>LOCAL_PATH</code> variable is the absolute filepath to the
+location of the local directory which will be served to users
+by the Library microservice.</p>
+<p>The <code>GITLAB_URL</code>, <code>GITLAB_GROUP</code> and <code>TOKEN</code> are only relevant for <code>gitlab</code> mode.
+The <code>TOKEN</code> should be set to your GitLab Group access API token.
+For more information on how to create and use your access token,
+<a href="https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html">gitlab page</a>.</p>
+<p>Once you've generated a token, copy it and replace
+the value of <code>TOKEN</code> with your token for the gitlab group, can be found.</p>
 <p>Replace the default values the appropriate values for your setup.</p>
 <p><strong>NOTE</strong>:</p>
 <ol>
@@ -1043,30 +1072,12 @@ A sample file structure can be seen in <a href="https://gitlab.com/dtaas">gitlab
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>yarn<span class="w"> </span>build<span class="w">      </span><span class="c1"># build the application</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>yarn<span class="w"> </span>start<span class="w">      </span><span class="c1"># start the application</span>
 </span></code></pre></div></td></tr></table></div>
-<p>You can press <code>Ctl+C</code> to halt the application. If you wish to run the microservice in the background, use</p>
+<p>You can press <code>Ctl+C</code> to halt the application.
+If you wish to run the microservice in the background, use</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>nohup<span class="w"> </span>yarn<span class="w"> </span>start<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">disown</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The lib microservice is now running and ready to serve files, functions, and models.</p>
 <p>Users can access the library microservice at URL: <code>http://localhost:&lt;PORT&gt;/lib</code>.</p>
-<h2 id="developer-commands">Developer Commands</h2>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span>
-<span class="normal"><a href="#__codelineno-3-5">5</a></span>
-<span class="normal"><a href="#__codelineno-3-6">6</a></span>
-<span class="normal"><a href="#__codelineno-3-7">7</a></span>
-<span class="normal"><a href="#__codelineno-3-8">8</a></span>
-<span class="normal"><a href="#__codelineno-3-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>yarn<span class="w"> </span>install<span class="w">    </span><span class="c1"># Install dependencies for the microservice</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>yarn<span class="w"> </span>syntax<span class="w">     </span><span class="c1"># analyzes source code for potential errors, style violations, and other issues,</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a>yarn<span class="w"> </span>build<span class="w">      </span><span class="c1"># compile ES6 files into ES5 javascript files and copy all JS files into build/ directory</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>yarn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-a<span class="w">      </span><span class="c1"># run all tests</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a>yarn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-e<span class="w">      </span><span class="c1"># run end-to-end tests</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a>yarn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-i<span class="w">      </span><span class="c1"># run integration tests</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a>yarn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-u<span class="w">      </span><span class="c1"># run unit tests</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a>yarn<span class="w"> </span>start<span class="w">      </span><span class="c1"># start the application</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a>yarn<span class="w"> </span>clean<span class="w">      </span><span class="c1"># deletes directories &quot;build&quot;, &quot;coverage&quot;, and &quot;dist&quot;</span>
-</span></code></pre></div></td></tr></table></div>
 <h2 id="service-endpoint">Service Endpoint</h2>
 <p>The URL endpoint for this microservice is located at: <code>localhost:PORT/lib</code></p>
 
