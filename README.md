@@ -9,7 +9,7 @@ the DTaaS software platform itself.
 
 There is an overview of the software available for:
 
-* General users - 
+* General users -
   [overview slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf)
   and
   [overview video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
@@ -116,6 +116,6 @@ The DTaaS software platform uses
 [ML Workspace](https://github.com/ml-tooling/ml-workspace),
 [Grafana](https://github.com/grafana/grafana),
 [InfluxDB](https://github.com/influxdata/influxdb) and
-[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server) 
-open-source components. 
+[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)
+open-source components.
 These software components have their own licenses.
