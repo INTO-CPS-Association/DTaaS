@@ -27,7 +27,10 @@ dt.changePhase('whoami').then(([status, logs]) => {
 console.log(`Past phases after first command: ${dt.checkHistory()}`);
 let phase: Phase | undefined = dt.checkPhase();
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) =>
+  new Promise((r) => {
+    setTimeout(r, ms);
+  });
 await sleep(1000);
 
 if (phase !== undefined) {
