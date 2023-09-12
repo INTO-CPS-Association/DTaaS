@@ -1,5 +1,5 @@
 {
-  "preset": "ts-jest",
+  "preset": "ts-jest/presets/default-esm",
   "testEnvironment": "node",
   "transform": {
     "(src|test)/^.+\\.(t|j)sx?$": [
