@@ -1,11 +1,9 @@
-import { Phase } from './lifecycle';
+import { Injectable } from '@nestjs/common';
+import { Phase } from './interfaces/lifecycle.interface';
 
+@Injectable()
 export default class Queue {
-  private queue: Array<Phase>;
-
-  constructor() {
-    this.queue = new Array<Phase>();
-  }
+  private queue: Phase[] = [];
 
   enqueue(phase: Phase): boolean {
     this.queue.push(phase);

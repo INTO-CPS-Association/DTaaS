@@ -19,6 +19,11 @@
     "../src/main.ts"
   ],
   "extensionsToTreatAsEsm": [".ts"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
   "modulePathIgnorePatterns": ["config"],
   "coverageDirectory": "<rootDir>/coverage/",
   "coverageThreshold": {
@@ -31,5 +36,16 @@
   },
   "verbose": true,
   "testRegex": "./test/.*\\.spec.tsx?$",
-  "modulePaths": ["<rootDir>/src/", "<rootDir>/test/"]
+  "modulePaths": ["<rootDir>", "<rootDir>/src/", "<rootDir>/test/"],
+  "moduleDirectories": [
+    "node_modules",
+    "src",
+    "test"
+  ],
+  "rootDir": "./",
+  "roots": [
+    "<rootDir>",
+    "src/",
+    "test/"
+  ]
 }
