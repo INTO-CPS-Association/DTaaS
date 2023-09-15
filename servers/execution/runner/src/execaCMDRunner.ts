@@ -1,6 +1,6 @@
 import { execa } from 'execa';
 import getStream from 'get-stream';
-import CMDRunner from './CMDRunner';
+import CMDRunner from './interfaces/CMDRunner.interface';
 
 export default class ExecaCMDRunner implements CMDRunner {
   command: string;

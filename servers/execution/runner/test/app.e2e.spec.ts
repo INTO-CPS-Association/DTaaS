@@ -19,6 +19,15 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () =>
-    supertest(app.getHttpServer()).get('/').expect(200).expect('["hello"]'));
+  it('/phase (GET)', () =>
+    supertest(app.getHttpServer())
+      .get('/phase')
+      .expect(200)
+      .expect('["hello"]'));
+
+  it('/lifecycle/phase (GET)', () =>
+    supertest(app.getHttpServer())
+      .get('/lifecycle/phase')
+      .expect(200)
+      .expect('true'));
 });

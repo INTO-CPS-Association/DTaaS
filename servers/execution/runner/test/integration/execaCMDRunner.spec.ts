@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import CMDRunner from 'src/CMDRunner';
+import CMDRunner from 'src/interfaces/CMDRunner.interface';
 import ExecaCMDRunner from 'src/execaCMDRunner';
 
 describe('check Execa CMD Runner instantiation', () => {
