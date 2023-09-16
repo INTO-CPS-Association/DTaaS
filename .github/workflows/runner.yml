@@ -46,3 +46,9 @@ jobs:
           cd servers/execution/runner
           yarn install
           yarn test
+
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: servers/execution/runner/coverage/clover.xml
+          flags: dt-runner

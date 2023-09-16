@@ -14,7 +14,8 @@
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "script/start.bash",
     "syntax": "script/syntax.bash",
-    "test": "script/test.bash"
+    "test": "script/test.bash",
+    "test:watchAll": "script/test.bash  --watchAll"
   },
   "bin": {
     "runner": "./dist/src/runner.js"
@@ -59,7 +60,6 @@
     "@nestjs/platform-express": "^10.2.4",
     "cross-env": "^7.0.3",
     "execa": "^7.2.0",
-    "get-stream": "^7.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   }
