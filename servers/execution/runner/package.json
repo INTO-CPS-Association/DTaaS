@@ -15,7 +15,8 @@
     "start": "script/start.bash",
     "syntax": "script/syntax.bash",
     "test": "script/test.bash",
-    "test:watchAll": "script/test.bash  --watchAll"
+    "test:nocov": "script/test.bash nocoverage",
+    "test:watchAll": "script/test.bash watchAll"
   },
   "bin": {
     "runner": "./dist/src/runner.js"
