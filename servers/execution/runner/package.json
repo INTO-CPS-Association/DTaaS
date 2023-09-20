@@ -19,7 +19,7 @@
     "test:watchAll": "script/test.bash watchAll"
   },
   "bin": {
-    "runner": "./dist/src/runner.js"
+    "runner": "./dist/src/main.js"
   },
   "files": [
     "dist/",
