@@ -215,10 +215,10 @@ query {
 ```
 
 ## HTTP API Calls
+The lib microservice also supports making API calls using HTTP POST requests. Simply send a POST request to the URL endpoint with the GraphQL query in the request body. Make sure to set the Content-Type header to "application/json". 
 
-The GraphQL queries can be sent as HTTP post queries over the same API connection.
+Here are examples of the HTTP requests and responses for the GraphQL API calls.
 
-Samples of the lib microservice HTTP requests and responses are given here.
 ### Directory listing
 
 ```
