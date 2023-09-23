@@ -213,3 +213,103 @@ query {
   }
 }
 ```
+
+## HTTP API Calls
+
+The GraphQL queries can be sent as HTTP post queries over the same API connection.
+
+Samples of the lib microservice HTTP requests and responses are given here.
+### Directory listing
+
+```
+POST /lib HTTP/1.1
+Host: localhost:4001
+Content-Type: application/json
+Content-Length: 388
+
+{
+    "query": "query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+}
+```
+
+```
+{
+    "data": {
+        "listDirectory": {
+            "repository": {
+                "tree": {
+                    "blobs": {
+                        "edges": []
+                    },
+                    "trees": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "name": "data",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "digital twins",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "functions",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "models",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "tools",
+                                    "type": "tree"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+### Fetch a file
+```
+POST /lib HTTP/1.1
+Host: localhost:4001
+Content-Type: application/json
+Content-Length: 217
+
+{
+    "query": "query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
+}
+```
+
+```
+{
+    "data": {
+        "readFile": {
+            "repository": {
+                "blobs": {
+                    "nodes": [
+                        {
+                            "name": "sample.txt",
+                            "rawBlob": "hello world",
+                            "rawTextBlob": "hello world"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
