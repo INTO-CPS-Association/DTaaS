@@ -103,3 +103,242 @@ Users can access the library microservice at URL: `http://localhost:<PORT>/lib`.
 
 The URL endpoint for this microservice is located at: `localhost:PORT/lib`
 
+## GraphQL API Calls
+
+The lib microservice supports two GraphQL queries.
+
+### Directory Listing
+
+#### Query:
+To retrieve a list of files in a directory, use the following GraphQL query. Replace `path` with the desired directory path.
+```
+query {
+  listDirectory(path: "user1") {
+    repository {
+      tree {
+        blobs {
+          edges {
+            node {
+              name
+              type
+            }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+#### Response:
+This query returns the list of files and subdirectories in the specified directory. The response will include the name and type of each item.
+
+```
+{
+  "data": {
+    "listDirectory": {
+      "repository": {
+        "tree": {
+          "blobs": {
+            "edges": []
+          },
+          "trees": {
+            "edges": [
+              {
+                "node": {
+                  "name": "common",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "data",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "digital twins",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "functions",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "models",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "tools",
+                  "type": "tree"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+```
+### Fetching a File
+
+#### Query:
+To retrieve the contents of a file, use the following GraphQL query. Replace `path` with the desired file path.
+
+```graphql
+query {
+  readFile(path: "user2/data/sample.txt") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
+        }
+      }
+    }
+  }
+}
+```
+
+#### Response:
+This query returns the name, raw binary blob, and raw text blob of the specified file. The `rawBlob` field contains the file contents in binary format, while the `rawTextBlob` field contains the file contents as plain text.
+
+```graphql
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
+            {
+              "name": "sample.txt",
+              "rawBlob": "hello world",
+              "rawTextBlob": "hello world"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+## HTTP API Calls
+
+The lib microservice also supports making API calls using HTTP POST requests. Simply send a POST request to the URL endpoint with the GraphQL query in the request body. Make sure to set the Content-Type header to "application/json". 
+
+Here are examples of the HTTP requests and responses for the GraphQL API calls.
+### Directory Listing
+
+#### Request:
+```
+POST /lib HTTP/1.1
+Host: localhost:4001
+Content-Type: application/json
+Content-Length: 388
+
+{
+  "query": "query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+}
+```
+
+#### Response:
+```
+{
+    "data": {
+        "listDirectory": {
+            "repository": {
+                "tree": {
+                    "blobs": {
+                        "edges": []
+                    },
+                    "trees": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "name": "data",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "digital twins",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "functions",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "models",
+                                    "type": "tree"
+                                }
+                            },
+                            {
+                                "node": {
+                                    "name": "tools",
+                                    "type": "tree"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+```
+### Fetching a File
+
+#### Request:
+```
+POST /lib HTTP/1.1
+Host: localhost:4001
+Content-Type: application/json
+Content-Length: 217
+
+{
+    "query": "query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
+}
+```
+
+#### Response:
+```
+{
+    "data": {
+        "readFile": {
+            "repository": {
+                "blobs": {
+                    "nodes": [
+                        {
+                            "name": "sample.txt",
+                            "rawBlob": "hello world",
+                            "rawTextBlob": "hello world"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
