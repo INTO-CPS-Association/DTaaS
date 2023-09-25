@@ -11,7 +11,9 @@ export default class FilesServiceFactory {
     private configService: ConfigService,
     @Inject(GitlabFilesService) private gitlabFilesService: GitlabFilesService,
     @Inject(LocalFilesService) private localFilesService: LocalFilesService
-  ) {}
+  ) {
+	// Empty constructor
+  }
 
   create(): IFilesService {
     const mode = this.configService.get<string>("MODE");
