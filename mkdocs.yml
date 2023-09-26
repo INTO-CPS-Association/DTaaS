@@ -31,7 +31,7 @@ nav:
       - System:
         - Architecture: developer/system/architecture.md
         - Library Microservice: developer/system/lib-ms.md
-        - Client: docs/developer/system/client.md
+        - Client: developer/system/client.md
       - Testing:
         - Introduction: developer/testing/intro.md
       - Index: developer/index.md
