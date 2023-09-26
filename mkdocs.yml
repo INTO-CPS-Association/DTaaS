@@ -27,14 +27,6 @@ nav:
       - Separate Packages:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
-  - Developer:
-      - System:
-        - Architecture: developer/system/architecture.md
-        - Library Microservice: developer/system/lib-ms.md
-        - Client: developer/system/client.md
-      - Testing:
-        - Introduction: developer/testing/intro.md
-      - Index: developer/index.md
   - User:
       - Features: user/features.md
       - Website: user/website/index.md
@@ -46,6 +38,13 @@ nav:
           - Lifecycle: user/digital-twins/lifecycle.md
       - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
+  - Developer: 
+      - Overview: developer/index.md 
+      - System:
+        - Architecture: developer/system/architecture.md
+        - Library Microservice: developer/system/lib-ms.md
+        - Client: developer/system/client.md
+      - Testing: developer/testing/intro.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: LICENSE.md
@@ -71,7 +70,11 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets      
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.details
   - admonition
   - pymdownx.tabbed:

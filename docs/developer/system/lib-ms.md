@@ -63,7 +63,7 @@ sequenceDiagram
     actor Client
     actor Traefik
     
-    box Aqua RAMS
+    box Aqua Library Microservice
     participant FR as FilesResolver
     participant FSF as FilesServiceFactory
     participant CS as ConfigService 
@@ -75,7 +75,7 @@ sequenceDiagram
     participant FS as Local File System DB
     participant GAPI as GitLab API DB
 
-    Client -> Traefik : HTTP request
+    Client ->> Traefik : HTTP request
     Traefik -> FR : GraphQL query
     activate FR
 

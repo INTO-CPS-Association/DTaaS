@@ -1,19 +1,18 @@
 # A Developer's Guide
 
-This guide is to help developers get familiar with the project. 
-
-## Software Overview
-
-* [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf)
-* [Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv)
-* [Research paper draft](https://arxiv.org/abs/2305.07244)
+This guide is to help developers get familiar with the project. Please see
+developer-specific
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf),
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv),
+and [Research paper](https://arxiv.org/abs/2305.07244).
 
 ## Operating Softwares
 
 Ideally, developers should work on Ubuntu/Linux. Other operating systems are not supported inherently and may require additional steps.
 
 ## Code Editing
-Any popular code editors can be used to work on the project. VS Code, Sublime Text are a few examples. 
+
+Any popular code editors can be used to work on the project. VS Code, Sublime Text are a few examples.
 
 ## Development Workflow
 
@@ -25,8 +24,6 @@ To manage collaboration by multiple developers on the software, a simple [Fork, 
     git clone https://github.com/<yourgithubusername>/DTaaS.git
     ```
 1. Work on your issue/feature on your personal computer. 
-
-1. Once changes are made, they should be tested on personal systems or the [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server) .
 
 1. Any updates/additions to the software should first be committed to your personal fork.
     
@@ -47,16 +44,15 @@ To manage collaboration by multiple developers on the software, a simple [Fork, 
     git push
     ```
 
-1. Any issues taht arise codeclimate should also be resolved. 
+1. Any issues that arise codeclimate should also be resolved.
+
+1. Once changes are made, they should be tested on personal systems or the [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server) .
+
 1. Once changes are verified, a PR should be made to the appropriate branch of the main repository.
-1. Any issues raised in the PR review should be resolved. 
+1. Any issues raised in the PR review should be resolved.
 1. Finally, the PR will be merged.
 
 Remember that every commit should be meaningful and satisfies the requirements.
-
-Additionally, please go through the two workflows specified in the diagram below:
-
-![Alt text](workflow.png)
 
 ## Code Quality
 
@@ -68,14 +64,8 @@ It is highly recommended that any code you add does not introduce new quality is
 
 ## Testing
 
-For information about testing and workflow related to that, please see the [testing folder](docs\developer\testing).
+For information about testing and workflow related to that, please see the [testing page](testing/intro.md).
 
 ## Live Demo Server
 
-A demo server is up and running at [https://sandbox.cps.digit.au.dk/](https://sandbox.cps.digit.au.dk/). Developers will need credentials to log in. 
-
-## License
-
-This software is owned by [The INTO-CPS Association](https://into-cps.org/) and is available under [the INTO-CPS License](LICENSE.md).
-
-The DTaaS software platform uses [Træfik](https://github.com/traefik/traefik), [ML Workspace](https://github.com/ml-tooling/ml-workspace), [Grafana](https://github.com/grafana/grafana), [InfluxDB](https://github.com/influxdata/influxdb) and [RabbitMQ](https://github.com/rabbitmq/rabbitmq-server) open-source components. These software components have their own licenses.
+A demo server is up and running at [https://sandbox.cps.digit.au.dk/](https://sandbox.cps.digit.au.dk/). Developers will need credentials to log in.
