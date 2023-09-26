@@ -16,7 +16,6 @@ BDD stands for “Behaviour Driven Development”. It is a software development 
 
 We follow a testing workflow in accordance with [The Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html#TheTestPyramid), starting with isolated tests and moving towards complete integration for any new feature changes. The different types of tests (in the order that they should be performed) are explained below:
 
-TODO -> DOnt link. 
 ## [Unit Tests](https://martinfowler.com/articles/practical-test-pyramid.html#UnitTests) 
 
 Unit testing is a level of software testing where individual units/ components of a software are tested. The objective of Unit Testing is to isolate a section of code and verify its correctness.

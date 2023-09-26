@@ -67,7 +67,12 @@ While any new issues introduced in your code would be shown in the PR page itsel
 It is highly recommended that any code you add does not introduce new quality issues. If they are introduced, they should be fixed immediately using the appropriate suggestions from CodeClimate, or in worst case, adding a ignore flag (To be used with caution).
 
 ## Testing
+
 For information about testing and workflow related to that, please see the [testing folder](docs\developer\testing).
+
+## Live Demo Server
+
+A demo server is up and running at [https://sandbox.cps.digit.au.dk/](https://sandbox.cps.digit.au.dk/). Developers will need credentials to log in. 
 
 ## License
 

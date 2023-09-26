@@ -1,5 +1,5 @@
 # System  Architecture
-![Alt text](architecture.png)
+![System architecture](architecture.png)
 ##  User Requirements
 
 The DTaaS software platform users expect a single platform
@@ -32,14 +32,16 @@ perform scientifically valid experiments.
 
 The figure shows the system architecture of the the DTaaS software platform. The main domains of this architecture are:
 
-1. [Website](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/client#readme) - The users interact with the software platform using a website. This is the Client side (frontend) for Digital Twin as a Service (DTaaS) software. The software provides a React single page web application for the Digital Twin support platform.
+1. [The Website](docs\developer\system\client.md)
 
-2. [Gateway](https://github.com/astitva1905/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) - This is the single point of entry for direct access to the platform services. The gateway is responsible for controlling user access to the microservice components.
+2. [The Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) - This is the single point of entry for direct access to the platform services. The gateway is responsible for controlling user access to the microservice components.
 
-3. [Library Microservice](https://github.com/astitva1905/DTaaS/tree/feature/distributed-demo/servers/lib#readme) - The microservices are complementary and composable; they fulfil core requirements of the system. The service mesh enables discovery of microservices, load balancing and authentication functionalities. There are microservices for catering to author, store, explore, configure, execute and scenario analysis requirements.
+3. [The Library Microservice](docs\developer\system\lib-ms.md)
 
-The detailed C4 architecture is shown below, which includes all the atomic components of the system:
+## C4 architecture Level 1
+![Alt text](c4l1.png)
 
-![Detailed C4 architecture](c4.png)
+## C4 architecture Level 3 
+![Detailed C4 architecture](c4l3.png)
 
 
