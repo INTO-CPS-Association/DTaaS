@@ -27,6 +27,7 @@ nav:
       - Separate Packages:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
+      - Guides: admin/guides/guide.md
   - User:
       - Features: user/features.md
       - Website: user/website/index.md
