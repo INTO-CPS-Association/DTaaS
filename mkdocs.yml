@@ -78,6 +78,11 @@ markdown_extensions:
       alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - open-in-new-tab

@@ -6,6 +6,4 @@ This is the Client side (frontend) for Digital Twin as a Service (DTaaS) softwar
 
 ## Client Architecture
 
-```mermaid
-
-```
+![Client architecture](package-diagram.png)

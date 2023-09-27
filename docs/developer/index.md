@@ -54,10 +54,6 @@ To manage collaboration by multiple developers on the software, a simple [Fork, 
 
 Remember that every commit should be meaningful and satisfies the requirements.
 
-Additionally, please go through the two workflows specified in the diagram below:
-
-![Alt text](workflow.png)
-
 ## Code Quality
 
 Quality checks are performed by CodeClimate to ensure the best possible quality of code to add to our project.
