@@ -1,6 +1,10 @@
 
 # Trial Installation
 
+The software can be installed either on
+Ubuntu Server 22.04 Operating System or
+on vagrant virtual machine(s).
+
 A single step install script is helpful in performing a
 trial run of the software. This script installs DTaaS software
 with default credentials and users on a Ubuntu server OS.

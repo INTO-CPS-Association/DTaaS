@@ -1,4 +1,4 @@
-# A Developer's Guide
+# :technologist: Developers Guide
 
 This guide is to help developers get familiar with the project. Please see
 developer-specific
@@ -6,53 +6,61 @@ developer-specific
 [Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv),
 and [Research paper](https://arxiv.org/abs/2305.07244).
 
-## Operating Softwares
+## Development Environment
 
-Ideally, developers should work on Ubuntu/Linux. Other operating systems are not supported inherently and may require additional steps.
+Ideally, developers should work on Ubuntu/Linux.Other operating systems
+are not supported inherently and may require additional steps.
 
-## Code Editing
+To start with, install the required software and git-hooks.
 
-Any popular code editors can be used to work on the project. VS Code, Sublime Text are a few examples.
+```bash
+bash script/env.sh
+bash script/configure-git-hooks.sh
+```
+
+The git-hooks will ensure that your commits are formatted
+correctly and that the tests pass before you
+push your changes.
+
+Be aware that the tests may take a long time to run.
+If you want to skip the tests or formatting,
+you can use the `--no-verify` flag
+on `git commit` or `git push`. Please use this
+option with care.
+
+There is a script to download all the docker containers
+used in the project. You can download them using
+
+```bash
+bash script/docker.sh
+```
+
+:warning: The docker images are large and are likely to consume
+about 5GB of bandwidth and 15GB of space.
+You will have to download the docker images on a really good network.
 
 ## Development Workflow
 
-To manage collaboration by multiple developers on the software, a simple [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/) development workflow is in place. Each developer should follow these steps:
+To manage collaboration by multiple developers on the software,
+a development workflow is in place. Each developer should follow these steps:
 
-1. Have an updated fork of the main repository on their account. This should also be added to codeclimate. 
-1. Clone your personal fork onto your computer.
-    ```
-    git clone https://github.com/<yourgithubusername>/DTaaS.git
-    ```
-1. Work on your issue/feature on your personal computer. 
+1. Fork of the main repository on into your github account.
+1. Setup codeclimate and codecov for your fork.
+1. Install git-hooks for the project.
+1. Use
+[Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
+workflow.
+1. Work in your fork and open a PR from your working branch to your main branch.
+The PR will run all the github actions, code climate and codecov checks.
+1. Resolve all the issues identified in the previous step.
+1. If you have access to the
+[integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server)
+try your working branch on the integration server.
+1. Once changes are verified, a PR should be made to the main branch of the upstream DTaaS repository.
+1. The PR will be merged after checks by either the project administrators or the maintainers.
 
-1. Any updates/additions to the software should first be committed to your personal fork.
-    
-    1. To check status of your changes:
-        ```
-        git status
-        ```
-    2. Add the changes to the commit:
-        ```
-        git add --all *
-        ```
-    3. Finally, commit these to the repository on your PC.
-        ```
-        git commit -m <commit message>
-        ```
-1. Push any commits onto your fork of the repository
-    ```
-    git push
-    ```
-
-1. Any issues that arise codeclimate should also be resolved.
-
-1. Once changes are made, they should be tested on personal systems or the [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server) .
-
-1. Once changes are verified, a PR should be made to the appropriate branch of the main repository.
-1. Any issues raised in the PR review should be resolved.
-1. Finally, the PR will be merged.
-
-Remember that every commit should be meaningful and satisfies the requirements.
+Remember that every PR should be meaningful and satisfies a well-defined user story or improve
+the code quality.
 
 ## Code Quality
 
