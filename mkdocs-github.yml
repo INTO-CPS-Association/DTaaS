@@ -27,6 +27,14 @@ nav:
       - Separate Packages:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
+  - Developer:
+      - System:
+        - Architecture: developer/system/architecture.md
+        - Library Microservice: developer/system/lib-ms.md
+        - Client: developer/system/client.md
+      - Testing:
+        - Introduction: developer/testing/intro.md
+      - Index: developer/index.md
   - User:
       - Features: user/features.md
       - Website: user/website/index.md
@@ -70,6 +78,11 @@ markdown_extensions:
       alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - open-in-new-tab
