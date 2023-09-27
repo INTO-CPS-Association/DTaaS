@@ -63,7 +63,7 @@ sequenceDiagram
     actor Client
     actor Traefik
     
-    box LightGreen RAMS
+    box LightGreen Library Microservice
     participant FR as FilesResolver
     participant FSF as FilesServiceFactory
     participant CS as ConfigService 
