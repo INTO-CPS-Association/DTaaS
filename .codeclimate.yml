@@ -20,7 +20,7 @@ plugins:
   fixme:
     enabled: true
   markdownlint:
-    enabled: true  
+    enabled: true
   shellcheck:
     enabled: true
 
