@@ -3,7 +3,7 @@
 This guide is to help developers get familiar with the project. Please see
 developer-specific
 [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf),
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv),
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mp4),
 and [Research paper](https://arxiv.org/abs/2305.07244).
 
 ## :computer: Development Environment

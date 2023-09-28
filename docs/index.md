@@ -1,14 +1,14 @@
-# What is DTaaS
+# :factory: :left_right_arrow: :busts_in_silhouette: What is DTaaS
 
 The Digital Twin as a Service (DTaaS) software platform is useful
 to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 
-<font color="orange">**Build**</font>: The DTs are built on the software platform
+:mechanical_arm: <font color="orange">**Build**</font>: The DTs are built on the software platform
 using the reusable DT components available on the platform.
 
-<font color="orange">**Use**</font>: Use the DTs on the software platform.
+:office_worker: :factory_worker: <font color="orange">**Use**</font>: Use the DTs on the software platform.
 
-<font color="orange">**Share**</font>: Share ready to use DTs with other users.
+:handshake: <font color="orange">**Share**</font>: Share ready to use DTs with other users.
 It is also possible to share the services offered by one DT with other users.
 
 There is an overview of the software available in the form of

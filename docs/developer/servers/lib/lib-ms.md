@@ -1,12 +1,22 @@
 # Library Microservice
 
-[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme) - fulfil the core requirements of the system. The microservices are complementary and composable. 
+[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme) -
+provides users with access to files in user workspaces via API.
+This microservice will interface with local file system and Gitlab
+to provide uniform Gitlab-compliant API access to files.
 
-The service mesh enables discovery of microservices, load balancing and authentication functionalities. There are microservices for catering to author, store, explore, configure, execute and scenario analysis requirements.
+!!! warning
+    This microservice is still under heavy development. It is still not
+    a good replacement for file server we are using now.
 
-## Lib-MS Architecture
+## Architecture and Design
 
-### Class Architecture
+The C4 level 2 diagram of this microservice is:
+
+![Library Microservice](lib-ms.png)
+
+### Class Diagram
+
 ```mermaid
 classDiagram
     class FilesResolver {
@@ -56,7 +66,7 @@ classDiagram
     ConfigService <|-- LocalFilesService: uses
 ```
 
-### Sequence Architecture
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram

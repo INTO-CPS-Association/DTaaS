@@ -68,6 +68,11 @@ systems or on client browsers do not need to interact with
 this microservice. They can directly use the data provided by
 the data microservice.
 
+The service mesh enables discovery of microservices, load balancing
+and authentication functionalities. There are microservices for catering
+to author, store, explore, configure, execute and scenario
+analysis requirements.
+
 ## C4 Architectural Diagrams
 
 The C4 architectural diagrams of the DTaaS software are presented here.
