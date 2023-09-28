@@ -1,7 +1,9 @@
+# Digital Twin Lifecycle
 
 ![Digital Twin Lifecycle](lifecycle.png)
 
-A DT lifecycle consists of **explore, create, execute, save, analyse, evolve** and **terminate** phases.
+A DT lifecycle consists of **explore, create, execute, save, analyse, evolve**
+and **terminate** phases.
 
 | Phase | Main Activities |
 |:----|:----|
@@ -15,7 +17,8 @@ A DT lifecycle consists of **explore, create, execute, save, analyse, evolve** a
 
 A complete digital twin will support all the phases but it is not mandatory.
 
-Even though not mandatory, having a coding structure makes it easy to manage DT lifecycle phases. It is recommended to have the following structure
+Even though not mandatory, having a coding structure makes it easy
+to manage DT lifecycle phases. It is recommended to have the following structure
 
 ```text
 workspace/
@@ -30,11 +33,14 @@ workspace/
         terminate
 ```
 
-A dedicated program exists for each phase of DT lifecycle. Each program can be as simple as a script that launches other programs or sends messages to a live digital twin.
+A dedicated program exists for each phase of DT lifecycle.
+Each program can be as simple as a script that launches other
+programs or sends messages to a live digital twin.
 
 ## Examples
 
-Here are the programs / scripts to manage three phases in the lifecycle of **mass-spring-damper DT**.
+Here are the programs / scripts to manage three phases
+in the lifecycle of **mass-spring-damper DT**.
 
 ```bash title="lifecycle/execute"
 #!/bin/bash
@@ -46,16 +52,22 @@ java -jar /workspace/common/tools/maestro-2.3.0-jar-with-dependencies.jar \
     output-dir>debug.log 2>&1
 ```
 
-The execute phases uses the DT configuration, FMU models and Maestro tool to execute the digital twin. The script also stores the output of cosimulation in `/workspace/data/mass-spring-damper/output`.
+The execute phases uses the DT configuration, FMU models and Maestro
+tool to execute the digital twin. The script also stores the output of
+cosimulation in `/workspace/data/mass-spring-damper/output`.
 
-It is possible for a DT not to support a specific lifecycle phase. This intention can be specified with an empty script and a helpful message if deemed necessary.
+It is possible for a DT not to support a specific lifecycle phase.
+This intention can be specified with an empty script and a helpful
+message if deemed necessary.
 
 ```bash title="lifecycle/analyze"
 #!/bin/bash
 printf "operation is not supported on this digital twin"
 ```
 
-The lifecycle programs can call other programs in the code base. In the case of `lifecycle/terminate` program, it is calling another script to do the necessary job.
+The lifecycle programs can call other programs in the code base.
+In the case of `lifecycle/terminate` program, it is calling another
+script to do the necessary job.
 
 ```bash title="lifecycle/terminate"
 #!/bin/bash

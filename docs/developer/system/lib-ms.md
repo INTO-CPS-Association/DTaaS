@@ -1,12 +1,17 @@
 # Library Microservice
 
-[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme) - fulfil the core requirements of the system. The microservices are complementary and composable. 
+[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme)
+fulfil the core requirements of the system. The microservices are complementary and composable. 
 
-The service mesh enables discovery of microservices, load balancing and authentication functionalities. There are microservices for catering to author, store, explore, configure, execute and scenario analysis requirements.
+The service mesh enables discovery of microservices,
+load balancing and authentication functionalities.
+There are microservices for catering to author, store, explore,
+configure, execute and scenario analysis requirements.
 
 ## Lib-MS Architecture
 
 ### Class Architecture
+
 ```mermaid
 classDiagram
     class FilesResolver {
@@ -62,11 +67,11 @@ classDiagram
 sequenceDiagram
     actor Client
     actor Traefik
-    
+
     box LightGreen Library Microservice
     participant FR as FilesResolver
     participant FSF as FilesServiceFactory
-    participant CS as ConfigService 
+    participant CS as ConfigService
     participant IFS as IFilesService
     participant LFS as LocalFilesService
     participant GFS as GitlabFilesService
