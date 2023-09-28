@@ -29,6 +29,7 @@ nav:
         - library microservice: admin/servers/lib/LIB-MS.md
       - Services: admin/services.md
   - User:
+      - Motivation: user/motivation.md
       - Features: user/features.md
       - Website: user/website/index.md
       - Library: 
@@ -43,8 +44,10 @@ nav:
       - Overview: developer/index.md 
       - System:
         - Architecture: developer/system/architecture.md
-        - Library Microservice: developer/system/lib-ms.md
-        - Client: developer/system/client.md
+        - Current Status: developer/system/current-status.md
+      - Components:
+        - Client: developer/client/client.md
+        - Library Microservice: developer/servers/lib/lib-ms.md
       - Testing: developer/testing/intro.md
   - Bugs: bugs.md
   - Thanks: thanks.md

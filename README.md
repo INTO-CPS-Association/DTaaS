@@ -2,14 +2,16 @@
 
 ## :grinning: Motivation
 
-The Digital Twin as a Service (DTaaS) software is useful
-to create and run digital twins.
+The Digital Twin as a Service (DTaaS) software platform is useful
+to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 
-The digital twins that are running can be used as service
-by other users.
+<font color="orange">**Build**</font>: The DTs are built on the software platform
+using the reusable DT components available on the platform.
 
-These users of digital twins need not be members of
-the DTaaS software platform itself.
+<font color="orange">**Use**</font>: Use the DTs on the software platform.
+
+<font color="orange">**Share**</font>: Share ready to use DTs with other users.
+It is also possible to share the services offered by one DT with other users.
 
 ## :rocket: Install and Use
 

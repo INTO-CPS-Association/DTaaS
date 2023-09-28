@@ -1,5 +1,8 @@
+# :recycle: Digital Twin Lifecycle
 
-![Digital Twin Lifecycle](lifecycle.png)
+![DT-PT Lifecycle](lifecycle-four-stages.png)
+
+## Lifecycle Phases
 
 A DT lifecycle consists of **explore, create, execute, save, analyse, evolve** and **terminate** phases.
 
@@ -15,7 +18,15 @@ A DT lifecycle consists of **explore, create, execute, save, analyse, evolve** a
 
 A complete digital twin will support all the phases but it is not mandatory.
 
-Even though not mandatory, having a coding structure makes it easy to manage DT lifecycle phases. It is recommended to have the following structure
+![Digital Twin Lifecycle](lifecycle.png)
+
+It is possible to map the lifecycle phases identified so far with the **Build-Use-Share** approach
+of the DTaaS software platform.
+
+![DT Lifecycle and Build-Use-Share](build-use-share.png)
+
+Even though not mandatory, having a coding structure makes it easy to
+manage DT lifecycle phases. It is recommended to have the following structure
 
 ```text
 workspace/

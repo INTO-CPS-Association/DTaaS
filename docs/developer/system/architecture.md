@@ -30,19 +30,20 @@ perform scientifically valid experiments.
 
 ## System Architecture
 
+The figure shows the system architecture of the the DTaaS software platform.
+
 ![System architecture](architecture.png)
 
-## System Components
+### System Components
 
-The figure shows the system architecture of the the DTaaS software platform. The main domains of this architecture are:
+A working installation of the DTaaS software comes with the following
+system components.
 
-1. [The Website](./client.md)
+1. The Website
 
-1. [The Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) - This is the single point of entry for direct access to the platform services. The gateway is responsible for controlling user access to the microservice components.
+1. This is the single point of entry for direct access to the platform services. The gateway is responsible for controlling user access to the microservice components.
 
 1. [The Library Microservice (Reusable Assets)](./lib-ms.md)
-
-### Microservices
 
 1. **The security microservice** implements
 role-based access control (RBAC) in the platform.
@@ -73,30 +74,37 @@ The C4 architectural diagrams of the DTaaS software are presented here.
 
 ### Level 1
 
-This Level 1 diagram only shows the users and the roles they play in the DTaaS software.
+This Level 1 diagram only shows the users and the roles
+they play in the DTaaS software.
 
-![Alt text](c4l1.png)
+<img src="C4-L1_diagram.png" alt="C4 Level 1 diagram" width="70%"/>
 
 ### Level 2
 
-This Level 2 diagram shows the software containers of the DTaaS software.
+This simplified version of Level 2 diagram shows
+the software containers of the DTaaS software.
 
-![Detailed C4 architecture](c4l3.png)
+![C4 Level 2 diagram](C4-L2_diagram_simplified.png)
 
-A mapping of containers to system components is also available in the table.
+If you are interested, please take a look at
+the [detailed diagram](C4-L2_diagram_detailed.png).
+
+Please note that the given diagram only
+covers DT Lifecycle, Reusable Assets and Execution Manager.
+
+## Mapping
+
+A mapping of the C4 level 2 containers to components
+identified in the system architecture is also available in the table.
 
 | System Component | Container(s) |
 |:---|:---|
-| Gateway | Service Router |
-| Unified Interface | React Webapplication |
-| Reusable Assets | Library Microservice |
+| Gateway | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
+| Unified Interface | [React Webapplication](./client.md) |
+| Reusable Assets | [Library Microservice](./lib-ms.md) |
 | Data | MQTT, InfluxDB, and RabbitMQ (not shown in the C4 Level 2 diagram) |
 | Visualization | InfluxDB (not shown in the C4 Level 2 diagram) |
 | DT Lifecycle | DT Lifecycle Manager and DT Configuration Validator |
-| Security | Gitlab |
+| Security | [Gitlab OAuth](../../admin/client/auth.md) |
 | Accounting | None |
 | Execution Manager | Execution Manager |
-
-## Disclaimer
-Only the web client and library microservice components are functional at present.
-Everything else is a work-in-progress.

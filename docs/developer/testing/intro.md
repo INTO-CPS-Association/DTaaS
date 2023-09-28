@@ -70,14 +70,34 @@ the unintended impact of changes to any code is less.
 * The cost, in terms of time, effort and money, of fixing a defect detected during
 unit testing is lesser in comparison to that of defects detected at higher levels.
 
-## [Integration tests](https://martinfowler.com/articles/practical-test-pyramid.html#IntegrationTests) 
+#### Unit Tests in DTaaS
+
+Each component DTaaS project uses unique technology stack. Thus the packages
+used for unit tests are different. Please check the `test/` directory of
+a component to figure out the unit test packages used.
+
+### [Integration tests](https://martinfowler.com/articles/practical-test-pyramid.html#IntegrationTests) 
 
 Integration testing is the phase in software testing in which individual
 software modules are combined and tested as a group. In DTaaS, we use
 an [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server)
 for software development as well as such tests.
 
-## Feature Tests
+The existing integration tests are done at the component level.
+There are no integration tests between the components.
+This task has been postponed to future.
+
+### [End-to-End tests](https://martinfowler.com/articles/practical-test-pyramid.html#End-to-endTests)
+
+Testing any code changes through the end user interface of your software
+is essential to verify if your code has the desired effect for the user.
+[End-to-End tests in DTaaS](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md)
+a functional setup. For more information
+[visit here](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md).
+
+There are end-to-end tests in the DTaaS. This task has been postponed to future.
+
+### Feature Tests
 
 A Software feature can be defined as the changes made in the system to add
 new functionality or modify the existing functionality. Each feature is said to have
@@ -86,10 +106,6 @@ It is important to test a new feature when it has been added. We also need to
 make sure that it does not break the functionality of already existing features.
 Hence feature tests prove to be useful.
 
-## [End-to-End tests](https://martinfowler.com/articles/practical-test-pyramid.html#End-to-endTests)
-
-Testing any code changes through the end user interface of your software
-is essential to verify if your code has the desired effect for the user.
-[End-to-End tests in DTaaS](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md)
-a functional setup. For more information
-[visit here](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md).
+The DTaaS project does not have any feature tests yet.
+[Cucumber](https://github.com/cucumber/cucumber-js) shall be used
+in future to implement feature tests.
