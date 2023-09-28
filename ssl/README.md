@@ -1,6 +1,8 @@
 # Generate SSL Certificates for DTaaS application
 
-Set the required passwords for private certificates in the **password** file. The first line will be used for the input password and the next line for the output password.
+Set the required passwords for private certificates
+in the **password** file. The first line will be used
+for the input password and the next line for the output password.
 
 ## Using the shell script
 
@@ -22,7 +24,7 @@ to **servers/gateway/certs** directory.
 1) Take private/client.key.p12 certificate for the next steps
 1) open firefox browser in regular, non-private mode.
 1) open preferences (about:preferences)
-1) search for "certificates" --> Certificate Manager --> 
+1) search for "certificates" --> Certificate Manager -->
     1) Authorities --> import ca.cert.pem and checkmark
          Trust this CA to identify websites
          Trust this CA to identify email users
@@ -30,15 +32,16 @@ to **servers/gateway/certs** directory.
     1) Your Certificates --> Import --> Add PKCS12 format client certificate (client.key.p12)
             The password for this certificate is "dtaas"
 
-    It's important to add the certificates inthe same order. Otherwise, certificate errors are shown.
+    It's important to add the certificates inthe same order.
+    Otherwise, certificate errors are shown.
 
-1) Setting default client SSL certificate for mTLS  
-    a) Open an empty tab and type `about:config`  
-    b) Accept the risk and continue  
+1) Setting default client SSL certificate for mTLS
+    a) Open an empty tab and type `about:config`
+    b) Accept the risk and continue
     c) In the search bar, type: `security.default_personal_cert = Select Automatically`
 
 ### References
 
-1. https://kb.mit.edu/confluence/display/istcontrib/Default+Certificate+Selection+in+Firefox
-1. https://unix.stackexchange.com/questions/644176/how-to-permanently-add-self-signed-certificate-in-firefox
-1. https://www.jscape.com/blog/firefox-client-certificate
+1. <http:>https://kb.mit.edu/confluence/display/istcontrib/Default+Certificate+Selection+in+Firefox</http:>
+1. <http:>https://unix.stackexchange.com/questions/644176/how-to-permanently-add-self-signed-certificate-in-firefox</http:>
+1. <http:>https://www.jscape.com/blog/firefox-client-certificate</http:>

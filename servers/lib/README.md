@@ -27,10 +27,11 @@ to get a sample file system structure for the lib microservice.
 
 The microservices uses `.env` environment files to receive configuration.
 
-In order to create this environment, you need to create a `.env` file, wherein you create the following environment variables,
+In order to create this environment, you need to create a `.env` file,
+wherein you create the following environment variables,
 and insert with the correct-information relevant for your setup:
 
-```
+```env
 PORT='4001'
 MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
@@ -46,7 +47,8 @@ The `TOKEN` should be set to your GitLab Group access API token.
 For more information on how to create and use your access token,
 [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
 
-Once you've generated a token, copy it and replace the value of `TOKEN` with your token for the gitlab group, can be found.
+Once you've generated a token, copy it and replace
+the value of `TOKEN` with your token for the gitlab group, can be found.
 
 ## User Commands
 
