@@ -13,7 +13,12 @@ to provide uniform Gitlab-compliant API access to files.
 
 The C4 level 2 diagram of this microservice is:
 
-![Library Microservice](lib-ms.png)
+<img src="lib-ms.png" alt="Library Microservice" width="70%"/>
+
+The GraphQL API provided by the library microservice shall be compliant
+with the Gitlab GraphQL service.
+
+## UML Diagrams
 
 ### Class Diagram
 

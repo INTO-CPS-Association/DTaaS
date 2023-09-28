@@ -36,42 +36,45 @@ The figure shows the system architecture of the the DTaaS software platform.
 
 ### System Components
 
-A working installation of the DTaaS software comes with the following
-system components.
+The users interact with the software platform using a website.
+The gateway is a single point of entry for direct access to the platform
+services. The gateway is responsible for controlling user access to
+the microservice components. The service mesh
+enables discovery of microservices, load balancing and authentication
+functionalities.  
 
-1. The Website
+In addition, there are microservices for catering to author, store,
+explore, configure, execute and scenario analysis requirements.
+The microservices are complementary and composable; they fulfil
+core requirements of the system.
 
-1. This is the single point of entry for direct access to the platform services. The gateway is responsible for controlling user access to the microservice components.
-
-1. [The Library Microservice (Reusable Assets)](./lib-ms.md)
+The microservices responsible for satisfying the user requirements are:
 
 1. **The security microservice** implements
 role-based access control (RBAC) in the platform.
 1. **The accounting microservice** is responsible for keeping track of the
 platform, DT asset and infrastructure usage. Any licensing,
 usage restrictions need to be enforced by the accounting
-microservice. Accounting is a pre-requisite to commercialisation of the platform.
-Due to significant use of external
+microservice. Accounting is a pre-requisite to commercialisation of
+the platform.
+
+    Due to significant use of external
 infrastructure and resources via the platform, the accounting
 microservice needs to interface with accounting systems of
 the external services.
+
 1. **The data microservice** is a frontend to all the databases
 integrated into the platform. A time-series database and a
 graph database are essential. These two databases store timeseries
 data from PT, events on PT/DT, commands sent by
 DT to PT. The PTs uses these databases even when their
 respective DTs are not in the execute phase.
-1. **The visualisation microservice** is again a frontend to 
+1. **The visualisation microservice** is again a frontend to
 visualisation software that are natively supported inside the platform.
 Any visualisation software running either on external
 systems or on client browsers do not need to interact with
 this microservice. They can directly use the data provided by
 the data microservice.
-
-The service mesh enables discovery of microservices, load balancing
-and authentication functionalities. There are microservices for catering
-to author, store, explore, configure, execute and scenario
-analysis requirements.
 
 ## C4 Architectural Diagrams
 

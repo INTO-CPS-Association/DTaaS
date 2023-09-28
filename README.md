@@ -16,7 +16,9 @@ It is also possible to share the services offered by one DT with other users.
 ## :rocket: Install and Use
 
 Please use the latest release available on
-the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases) and its [documentation](https://into-cps-association.github.io/DTaaS/) to install and use the DTaaS software platform.
+the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases)
+and its [documentation](https://into-cps-association.github.io/DTaaS/)
+to install and use the DTaaS software platform.
 
 You are welcome to open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose)
 if there is a suggestion to improve the software.
@@ -30,7 +32,9 @@ Only the [web client](client) and
 components are functional at present.
 Everything else is a work-in-progress.
 
-Please see the [developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html) for more details.
+Please see the
+[developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html)
+for more details.
 
 ## :balance_scale: License
 
