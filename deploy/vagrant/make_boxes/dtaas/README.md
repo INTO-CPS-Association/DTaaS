@@ -7,12 +7,12 @@ This is a box that has the following items:
 * jupyter
 * microk8s
 * containers
-    * mltooling/ml-workspace:0.13.2
-    * traefik2.5
-    * influxdb2.4
-    * grafana
-    * telegraf
-    * gitlab
+  * mltooling/ml-workspace:0.13.2
+  * traefik2.5
+  * influxdb2.4
+  * grafana
+  * telegraf
+  * gitlab
 
 Publish a base virtualbox package to be used by
 vagrant to publish all other virtualbox packages

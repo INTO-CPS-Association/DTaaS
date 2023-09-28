@@ -1,6 +1,7 @@
 --- Start of Definition of INTO-CPS Association Public License ---
 
 /*
+
  * This file is part of the INTO-CPS Association.
  *
  * Copyright (c) 2017-CurrentYear, INTO-CPS Association (ICA),
@@ -12,14 +13,14 @@
  * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
  * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE (ICAPL) VERSION 1.0.
  * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE INTO-CPS ASSOCIATION PUBLIC LICENSE OR 
+ * RECIPIENT'S ACCEPTANCE OF THE INTO-CPS ASSOCIATION PUBLIC LICENSE OR
  * THE GPL VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
  *
- * The INTO-CPS tool suite software and the INTO-CPS Association 
- * Public License (ICAPL) are obtained from the INTO-CPS Association, either 
- * from the above address, from the URLs: http://www.into-cps.org or
+ * The INTO-CPS tool suite software and the INTO-CPS Association
+ * Public License (ICAPL) are obtained from the INTO-CPS Association, either
+ * from the above address, from the URLs: <http:>http://www.into-cps.org</http:> or
  * in the INTO-CPS tool suite distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ * GNU version 3 is obtained from: <http:>http://www.gnu.org/copyleft/gpl.html</http:>.
  *
  * This program is distributed WITHOUT ANY WARRANTY; without
  * even the implied warranty of  MERCHANTABILITY or FITNESS
@@ -29,6 +30,7 @@
  *
  * See the full ICAPL conditions for more details.
  *
+ 
  */
 
 --- End of INTO-CPS Association Public License Header ---
@@ -44,7 +46,7 @@ in source and/or binary/object-code form:
 * Silver Level members of the INTO-CPS Association may also use and
   redistribute the INTO-CPS tool suite under ICA-Internal-EPL conditions.
 
-* Gold Level members of the INTO-CPS Association may also use and redistribute 
+* Gold Level members of the INTO-CPS Association may also use and redistribute
   The INTO-CPS tool suite under ICA-Internal-EPL or ICA-External-EPL conditions.
 
 Definitions of the INTO-CPS Association Public license modes:
@@ -58,7 +60,7 @@ Definitions of the INTO-CPS Association Public license modes:
  allowed within the INTO-CPS Association member's own organization
  (i.e., its own legal entity),
  or for a member of the INTO-CPS Association paying a membership fee
- corresponding to 
+ corresponding to
  the size of the organization including all its affiliates,
  use and redistribution
  is allowed within/between its affiliates.
@@ -66,7 +68,7 @@ Definitions of the INTO-CPS Association Public license modes:
 * ICA-External-EPL = These INTO-CPA Association Public license conditions
  together with
  Externally restricted EPL, i.e., EPL version 1.0 with the Additional
- Condition 
+ Condition
  that use and redistribution by a member of the INTO-CPS Association, or
  by a Licensed
  Third Party Distributor having a redistribution agreement with that member,
@@ -198,12 +200,12 @@ with ICAPL.
 including all Contributors.
 
 "Licensed Third Party Distributor" means a reseller/distributor having signed
-a redistribution/resale agreement in accordance with ICAPL and the INTO-CPS 
-Association Bylaws, with a Gold Level organizational member which is not an 
-Affiliate of the reseller/distributor, for distributing a product containing 
-part(s) of the INTO-CPS tool suite. The Licensed Third Party Distributor shall 
-only be allowed further redistribution to other resellers if the Gold Level 
-member is granting such a right to it in the redistribution/resale agreement 
+a redistribution/resale agreement in accordance with ICAPL and the INTO-CPS
+Association Bylaws, with a Gold Level organizational member which is not an
+Affiliate of the reseller/distributor, for distributing a product containing
+part(s) of the INTO-CPS tool suite. The Licensed Third Party Distributor shall
+only be allowed further redistribution to other resellers if the Gold Level
+member is granting such a right to it in the redistribution/resale agreement
 between the Gold Level member and the Licensed Third Party Distributor.
 
 "Affiliate" shall mean any legal entity, directly or indirectly, through one
@@ -239,12 +241,12 @@ SHALL HAVE ANY LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
 EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING WITHOUT LIMITATION
 LOST PROFITS), HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE INTO-CPS TOOL 
-SUITE OR THE EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED 
+ARISING IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE INTO-CPS TOOL
+SUITE OR THE EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGES.
 
 A Contributor licensing the INTO-CPS tool suite under ICA-Internal-EPL or
-ICA-External-EPL may choose to distribute (parts of) the INTO-CPS tool suite 
+ICA-External-EPL may choose to distribute (parts of) the INTO-CPS tool suite
 in object code form under its own license agreement, provided that:
 
 a) it complies with the terms and conditions of ICAPL; or for the case of
@@ -288,11 +290,13 @@ This Agreement is governed by the laws of Denmark. The place of jurisdiction
 for all disagreements related to this Agreement, is Aarhus, Denmark.
 
 The EPL 1.0 license definition has been obtained from:
-http://www.eclipse.org/legal/epl-v10.html. It is also reproduced in the INTO-CPS
+<http:>http://www.eclipse.org/legal/epl-v10.html</http:>.
+It is also reproduced in the INTO-CPS
 distribution.
 
 The GPL Version 3 license definition has been obtained from
-http://www.gnu.org/copyleft/gpl.html. It is also reproduced in the INTO-CPS
+<http:>http://www.gnu.org/copyleft/gpl.html</http:>.
+It is also reproduced in the INTO-CPS
 distribution.
 
 --- End of Definition of INTO-CPS Association Public License ---

@@ -36,6 +36,7 @@ yarn test -u   #run unit tests
 yarn test -i   #run integration tests
 yarn test -e   #run end-to-end tests
 ```
+
 ---
 
 ## Authentication
@@ -61,7 +62,7 @@ file from `client/config/` to the `build` directory.
 
 1. Save the file as `client/config/<config-name>.js`.
 1. Run the config command to copy the file to the `public` directory
-and the `build` directory, if a build is present.
+   and the `build` directory, if a build is present.
 
 ```bash
 yarn configapp <config-name>

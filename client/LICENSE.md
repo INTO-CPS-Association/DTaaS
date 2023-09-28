@@ -1,6 +1,7 @@
 --- Start of Definition of INTO-CPS Association Public License ---
 
 /*
+
  * This file is part of the INTO-CPS Association.
  *
  * Copyright (c) 2017-CurrentYear, INTO-CPS Association (ICA),
@@ -29,6 +30,7 @@
  *
  * See the full ICAPL conditions for more details.
  *
+
  */
 
 --- End of INTO-CPS Association Public License Header ---
@@ -294,11 +296,13 @@ This Agreement is governed by the laws of Denmark. The place of jurisdiction
 for all disagreements related to this Agreement, is Aarhus, Denmark.
 
 The EPL 1.0 license definition has been obtained from:
-<http:>http://www.eclipse.org/legal/epl-v10.html</http:>. It is also reproduced in the
+<http:>http://www.eclipse.org/legal/epl-v10.html</http:>.
+It is also reproduced in the
 INTO-CPS distribution.
 
 The GPL Version 3 license definition has been obtained from
-<http:>http://www.gnu.org/copyleft/gpl.html</http:>. It is also reproduced in the INTO-CPS
+<http:>http://www.gnu.org/copyleft/gpl.html</http:>.
+It is also reproduced in the INTO-CPS
 distribution.
 
 --- End of Definition of INTO-CPS Association Public License ---

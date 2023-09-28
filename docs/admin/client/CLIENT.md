@@ -57,7 +57,8 @@ To host DTaaS client website on your server, follow these steps:
       REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
     };
 
-    // Example values with "bar" as basename URL. Trailing and ending slashes are optional.
+    // Example values with "bar" as basename URL.
+    //Trailing and ending slashes are optional.
     window.env = {
       REACT_APP_ENVIRONMENT: "dev",
       REACT_APP_URL: 'https://foo.com/',
