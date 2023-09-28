@@ -2,15 +2,18 @@
 
 To host DTaaS client website on your server, follow these steps:
 
-- Download the **DTaaS-client.zip** from the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
+- Download the **DTaaS-client.zip** from the
+  [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
 - Inside the `DTaaS-client` directory, there is `site` directory.
   The `site` directory contains all the optimized
   static files that are ready for deployment.
 
 - Setup the oauth application on gitlab instance.
   See the instructions in [authentication page](auth.md) for completing this task.
-- Locate the file `site/env.js` and replace the example values to match your infrastructure.
-  The constructed links will be "`REACT_APP_URL`/`REACT_APP_URL_BASENAME`/`{username}`/`{Endpoint}`".
+- Locate the file `site/env.js` and replace the example values to
+  match your infrastructure.
+  The constructed links will be
+  "`REACT_APP_URL`/`REACT_APP_URL_BASENAME`/`{username}`/`{Endpoint}`".
   See the definitions below:
 
     ```js
@@ -75,11 +78,16 @@ To host DTaaS client website on your server, follow these steps:
     };
     ```
 
-- Copy the entire contents of the build folder to the root directory of your server where you want to deploy the app. You can use FTP, SFTP, or any other file transfer protocol to transfer the files.
+- Copy the entire contents of the build folder to the root directory of your
+  server where you want to deploy the app. You can use FTP, SFTP, or any
+  other file transfer protocol to transfer the files.
 
-- Make sure your server is configured to serve static files. This can vary depending on the server technology you are using, but typically you will need to configure your server to serve files from a specific directory.
+- Make sure your server is configured to serve static files. This can vary
+  depending on the server technology you are using, but typically you will
+  need to configure your server to serve files from a specific directory.
 
-- Once the files are on your server, you should be able to access your app by visiting your server's IP address or domain name in a web browser.
+- Once the files are on your server, you should be able to access your app
+  by visiting your server's IP address or domain name in a web browser.
 
 
 :fontawesome-solid-circle-info:
@@ -101,7 +109,8 @@ https:foo.com/<username>/tools/vscode/
 ```
 
 The `username` is the user workspace created using ML Workspace docker container.
-Please follow the instructions in [README](https://github.com/ml-tooling/ml-workspace/blob/main/README.md).
+Please follow the instructions in
+[README](https://github.com/ml-tooling/ml-workspace/blob/main/README.md).
 You can create as many user workspaces as you want.
 If you have two users - alice and bob - on your system,
 then the following the commands in  will instantiate the required user workspaces.
@@ -121,8 +130,6 @@ docker run -d \
   --restart always \
   mltooling/ml-workspace:0.13.2
 
-
-
 docker run -d \
  -p 8091:8080 \
   --name "ml-workspace-bob" \
@@ -137,4 +144,5 @@ docker run -d \
 
 Given that multiple services are running at different routes,
 a reverse proxy is needed to map the background services to external routes.
-You can use Apache, NGINX, Traefik or any other software to work as reverse proxy.
+You can use Apache, NGINX, Traefik or any other software to work
+as reverse proxy.

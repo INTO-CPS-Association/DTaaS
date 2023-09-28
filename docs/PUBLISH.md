@@ -1,4 +1,3 @@
-
 # Project Documentation
 
 This file contains instructions for creation, compilation and publication of
@@ -8,7 +7,8 @@ The documentation system is based on
 [Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/).
 The documentation is generated based on the configuration files:
 
-* **mkdocs.yml**: used for generating online documentation which is hosted on the web
+* **mkdocs.yml**: used for generating online
+documentation which is hosted on the web
 * **mkdocs-github.yml**: used for generating documentation in github actions
 
 Install Mkdocs using the following command.

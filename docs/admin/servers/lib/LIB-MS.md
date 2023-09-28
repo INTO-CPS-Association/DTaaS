@@ -7,7 +7,9 @@ It has three features:
 * transfer a file to user.
 * Source files can either come from local file system or from a gitlab instance.
 
-The library microservice is designed to manage and serve files, functions, and models to users, allowing them to access and interact with various resources.
+The library microservice is designed to manage and serve files,
+functions, and models to users, allowing them to access and interact
+with various resources.
 
 This document provides instructions for running a stand alone library microservice.
 
@@ -17,7 +19,9 @@ The users expect the following file system structure for their reusable assets.
 
 ![File System Layout](file-system-layout.png)
 
-There is a skeleton file structure in [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files). You can copy and create file system for your users.
+There is a skeleton file structure in
+[DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
+You can copy and create file system for your users.
 
 ## Gitlab setup (optional)
 
@@ -38,7 +42,8 @@ to get a sample file system structure for the lib microservice.
 
 To set up the lib microservice, follow these steps:
 
-Download the **lib-microservice.zip** from the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
+Download the **lib-microservice.zip** from the
+[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
 
 ## Configuration setup
 
@@ -77,8 +82,10 @@ Replace the default values the appropriate values for your setup.
 
 **NOTE**:
 
-1. When \__MODE=local_, only _LOCAL_PATH_ is used. Other environment variables are unused.
-1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_, and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
+1. When \__MODE=local_, only _LOCAL_PATH_ is used.
+   Other environment variables are unused.
+1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
+   and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
 ### Start Microservice
 

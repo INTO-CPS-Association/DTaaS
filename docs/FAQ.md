@@ -25,7 +25,9 @@
     | Data Security | Yes |
     | Data Privacy | Yes |
     | Redundancy | None |
-    | Availability | It is a matter of human resources. If you have human resources to maintain DTaaS round the clock, upwards 95% is easily possible. |
+    | Availability | It is a matter of human resources. If you have human
+    resources to maintain DTaaS round the clock,
+    upwards 95% is easily possible. |
 
 ??? Question "Do you provide licensed software like Matlab?"
     The licensed software are not available on the software platform.

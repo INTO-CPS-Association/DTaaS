@@ -1,4 +1,3 @@
-
 # Trial Installation
 
 A single step install script is helpful in performing a
