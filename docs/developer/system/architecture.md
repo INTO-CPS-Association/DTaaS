@@ -108,8 +108,8 @@ identified in the system architecture is also available in the table.
 | System Component | Container(s) |
 |:---|:---|
 | Gateway | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Unified Interface | [React Webapplication](./client.md) |
-| Reusable Assets | [Library Microservice](./lib-ms.md) |
+| Unified Interface | [React Webapplication](../client/client.md) |
+| Reusable Assets | [Library Microservice](../servers/lib/lib-ms.md) |
 | Data | MQTT, InfluxDB, and RabbitMQ (not shown in the C4 Level 2 diagram) |
 | Visualization | InfluxDB (not shown in the C4 Level 2 diagram) |
 | DT Lifecycle | DT Lifecycle Manager and DT Configuration Validator |

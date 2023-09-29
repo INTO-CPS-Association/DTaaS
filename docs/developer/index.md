@@ -1,4 +1,4 @@
-# :technologist: Developers Guide
+# Developers Guide
 
 This guide is to help developers get familiar with the project. Please see
 developer-specific

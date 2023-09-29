@@ -1,4 +1,4 @@
-# :eye: Testing
+# Testing
 
 ## :question: Common Questions on Testing
 

@@ -1,5 +1,5 @@
 
-# Setting up OAuth Authentication for the client website
+# OAuth Authentication for React Website
 
 The react client website uses OAuth authentication protocol for user authentication. The PKCE authentication flow of OAuth protocol is used for the client website. The authentication has to be setup on a gitlab server. **An oauth application needs to be created on a gitlab instance under admin user**. Then all other users can use the same gitlab instance for oauth authentication. This means commercial gitlab.com can not be used for multi-user authentication system required by DTaaS. The simplest way to make this work is to setup OAuth application as [instance wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
