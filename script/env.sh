@@ -85,3 +85,7 @@ sudo -H pip3 install qrcode
 
 # Install markdownlint
 sudo gem install mdl
+
+# Install madge for generating dependency graphs of typescript projects
+sudo apt-get install graphviz
+sudo npm install -g madge

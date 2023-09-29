@@ -20,7 +20,8 @@
     "configapp": "script/config.bash",
     "start": "script/start.bash",
     "clean": "script/clean.bash",
-    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\""
+    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
+    "graph": "script/graph.bash"
   },
   "eslintConfig": {
     "extends": [
