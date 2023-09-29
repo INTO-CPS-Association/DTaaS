@@ -1,18 +1,20 @@
-The Digital Twin as a Service (DTaaS) software is useful
-to create and run digital twins.
-The digital twins that are running can be used as service by other users.
-These users need not be members of the DTaaS software platform itself.
+# :factory: :left_right_arrow: :busts_in_silhouette: What is DTaaS
 
-There is an overview of the software available for:
+The Digital Twin as a Service (DTaaS) software platform is useful
+to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 
-* General users : [overview slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf)
-  and [overview video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
-  [feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.2.0-demo.mp4)
-* Developers : [slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-overview.pdf)
-  and [video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-overview.mkv).
+:mechanical_arm: <font color="orange">**Build**</font>: The DTs are built on the software platform
+using the reusable DT components available on the platform.
 
-There is also a [research paper draft](https://arxiv.org/abs/2305.07244)
-if you are interested in reading the scientific roadmap for this software.
+:office_worker: :factory_worker: <font color="orange">**Use**</font>: Use the DTs on the software platform.
+
+:handshake: <font color="orange">**Share**</font>: Share ready to use DTs with other users.
+It is also possible to share the services offered by one DT with other users.
+
+There is an overview of the software available in the form of
+[slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf),
+[video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
+and [feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.2.0-demo.mp4).
 
 ## License
 

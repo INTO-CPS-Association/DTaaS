@@ -1,0 +1,18 @@
+{
+	"fontSize": "10px",
+  "tsconfig": "tsconfig.json",
+  "fileExtensions": ["ts", "tsx", "js", "jsx"],
+  "backgroundColor": "#FFFFFF",
+  "textColor": "#FFFFFF",
+  "nodeColor": "black",
+  "noDependencyColor": "green",
+  "cyclicNodeColor": "red",
+  "edgeColor": "green",
+	"graphVizOptions": {
+		"G": {
+			"rankdir": "TB",
+      "layout": "neato",
+      "splines": "curved"
+		}
+	}
+}
