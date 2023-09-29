@@ -8,7 +8,7 @@ The documentation system is based on
 The documentation is generated based on the configuration files:
 
 * **mkdocs.yml**: used for generating online
-documentation which is hosted on the web
+  documentation which is hosted on the web
 * **mkdocs-github.yml**: used for generating documentation in github actions
 
 Install Mkdocs using the following command.

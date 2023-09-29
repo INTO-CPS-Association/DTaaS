@@ -66,7 +66,7 @@ Replace _your_username_ and _your_password_ with the actual username and passwor
 of your GitLab account or the testing account that you intend to use. Finally
 replace _foo.com_ with the URL of your application, as you did in `env.js`.
 
-Here's an example for test setup on the developer machine and on the 
+Here's an example for test setup on the developer machine and on the
 integration server:
 
 ```env
@@ -178,6 +178,7 @@ Once you've properly set up your .env file, you can now run the end-to-end tests
 ```bash
 yarn test -e
 ```
+
 This command launches the test runner and executes all end-to-end tests.
 Make sure you have an active internet connection while running these tests,
 as they simulate real user interactions with your GitLab account.

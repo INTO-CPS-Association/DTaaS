@@ -60,7 +60,7 @@ The fields to update are:
 
 ## Launch platform default services
 
-RabbitMQ, Grafana and InfluxDB services are provisioned on this server. 
+RabbitMQ, Grafana and InfluxDB services are provisioned on this server.
 InfluxDB webUI will be available at: _services.foo.com_.
 The RabbitMQ service and its management interface shall be available
 at 5672 and 15672 TCP ports respectively.

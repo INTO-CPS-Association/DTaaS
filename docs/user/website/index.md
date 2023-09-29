@@ -2,7 +2,7 @@
 
 This page contains a screenshot driven preview of the website.
 
-### Login to enter the DTaaS software platform
+## Login to enter the DTaaS software platform
 
 ![Login](login.png)
 
@@ -11,14 +11,14 @@ You can enter the user credentials.
 You will be using HTTPS secure communication so the
 username and password are secure.
 
-### Enter username again
+## Enter username again
 
 ![Username](username.png)
 
 You are now logged into the server.
 You can enter the same username again to log into your workspace.
 
-### Overview of menu items
+## Overview of menu items
 
 The menu is hidden by default.
 Only the icons of menu items are visible.
@@ -40,7 +40,7 @@ run the digital twins.
 within Jupyter Lab. You have more tools at your disposal
 on this page.
 
-### Library tabs and their help text
+## Library tabs and their help text
 
 ![Menu](library.png)
 
@@ -48,7 +48,7 @@ You can see the file manager and five tabs above the library manager.
 Each tab provides help text to guide users in the use of different
 directories in their workspace.
 
-??? Functions tip 
+??? Functions tip
     The functions responsible for pre- and post-processing of:
     data inputs, data outputs, control outputs.
     The data science libraries and functions can
@@ -59,7 +59,6 @@ directories in their workspace.
     along with right data inputs can make model calibration
     an achievable goal. Another use of functions is to process
     the sensor and actuator data of both Physical Twins and Digital Twins.
-    ```
 
 ??? Data tip
     The data sources and sinks available to a digital twins.
@@ -131,7 +130,7 @@ assets within the the directory structure is in the
 Notebook and all the tasks you can perform in the Jupyter Notebook
 can be undertaken here.
 
-### Digital Twins page
+## Digital Twins page
 
 ![Menu](digital_twins.png)
 
@@ -170,7 +169,7 @@ In addition, there is a git plugin installed in the Jupyter
 Lab using which you can link your files with the external git
 repositories.
 
-### Workbench
+## Workbench
 
 The **workbench** page provides links to four integrated tools.
 
@@ -186,7 +185,7 @@ The screenshots of pages opened in new browser are:
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
 
-### Finally logout
+## Finally logout
 
 ![Logout](logout.png)
 

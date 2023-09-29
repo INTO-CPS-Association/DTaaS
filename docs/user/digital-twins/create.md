@@ -19,7 +19,7 @@ $$
 
 where D denotes data, M denotes models, F denotes functions,
 T denotes tools, $C_{dt}$ denotes DT configuration and $D_t$
-is a symbolic notation for a digital twin itself. The 
+is a symbolic notation for a digital twin itself. The
 $\{ D{^*},M^{*},(FT)^{+} \}C_{dt}$ expression denotes
 composition of DT from D,M,T and F assets. The $*$
 indicates zero or one more instances of an asset and
@@ -90,7 +90,8 @@ workspace/
         maestro-2.3.0-jar-with-dependencies.jar
 ```
 
-The `workspace/data/mass-spring-damper/` contains `input` and `output` data for the mass-spring-damper digital twin.
+The `workspace/data/mass-spring-damper/` contains
+`input` and `output` data for the mass-spring-damper digital twin.
 
 The two FMU models needed for this digital twin are in `models/` directory.
 
@@ -113,12 +114,10 @@ are responsible for lifecycle management of this digital twin.
 The [lifecycle page](lifecycle.md) provides more explanation on these programs.
 
 !!! Abstract "Execution of a Digital Twin"
-
     A frequent question arises on the run time characteristics of a digital twin.
     The natural intuition is to say that a digital twin must operate as long as
     its physical twin is in operation.
     **If a digital twin runs for a finite time and then ends, can it be called a digital twin?**
-
     **The answer is a resounding YES**.
     The Industry 4.0 usecases seen among SMEs have digital twins
     that run for a finite time.
@@ -135,21 +134,21 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
    and type the following commands.
 1. Download the [example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
 
-    ```
-    $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-    $unzip main.zip
-    ```
+   ```
+   $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
+   $unzip main.zip
+   ```
 
 1. Open a file browser and copy the files from this uncompressed
    folder into your workspace folder (`/workspace`).
    Make sure that the file placement matches the one given above.
 1. Go to the digital twin directory and run
 
-    ```
-    $cd /workspace/digital twins/mass-spring-damper
-    $lifecycle/execute
-    ```
+   ```
+   $cd /workspace/digital twins/mass-spring-damper
+   $lifecycle/execute
+   ```
 
-    The last command executes the mass-spring-damper
-    digital twin and stores the co-simulation output
-    in `data/mass-spring-damper/output`.
+   The last command executes the mass-spring-damper
+   digital twin and stores the co-simulation output
+   in `data/mass-spring-damper/output`.

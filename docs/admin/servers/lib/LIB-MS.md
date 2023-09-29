@@ -116,7 +116,7 @@ The lib microservice supports two GraphQL queries.
 
 ### Directory Listing
 
-#### Query
+#### Query: List of Files
 
 To retrieve a list of files in a directory, use the following GraphQL query.
 Replace `path` with the desired directory path.
@@ -148,7 +148,7 @@ query {
 }
 ```
 
-#### Response
+#### Response: List of Files
 
 This query returns the list of files and subdirectories in the specified directory.
 The response will include the name and type of each item.
@@ -211,7 +211,7 @@ The response will include the name and type of each item.
 
 ### Fetching a File
 
-#### Query
+#### Query: Get File Contents
 
 This query receives directory path and send the file contents to user in response.
 
@@ -234,7 +234,7 @@ query {
 }
 ```
 
-#### Response
+#### Response: Get File Contents
 
 This query returns the name, raw binary blob, and raw text blob of
 the specified file. The `rawBlob` field contains the file contents
@@ -260,7 +260,6 @@ as plain text.
   }
 }
 ```
-
 
 ## HTTP API Calls
 
@@ -289,7 +288,6 @@ POST /lib HTTP/1.1
 Host: localhost:4001
 Content-Type: application/json
 Content-Length: 388
-
 {
    "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
 }
@@ -305,7 +303,6 @@ Content-Length: 306
 Content-Type: application/json; charset=utf-8
 Date: Tue, 26 Sep 2023 20:26:49 GMT
 X-Powered-By: Express
-
 {"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
 ```
 
@@ -321,7 +318,6 @@ POST /lib HTTP/1.1
 Host: localhost:4001
 Content-Type: application/json
 Content-Length: 217
-
 {
    "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
 }
@@ -335,6 +331,5 @@ Content-Length: 134
 Content-Type: application/json; charset=utf-8
 Date: Wed, 27 Sep 2023 09:17:18 GMT
 X-Powered-By: Express
-
 {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
 ```

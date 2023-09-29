@@ -28,13 +28,10 @@ to **servers/gateway/certs** directory.
     1) Authorities --> import ca.cert.pem and checkmark
          Trust this CA to identify websites
          Trust this CA to identify email users
-
     1) Your Certificates --> Import --> Add PKCS12 format client certificate (client.key.p12)
             The password for this certificate is "dtaas"
-
     It's important to add the certificates inthe same order.
     Otherwise, certificate errors are shown.
-
 1) Setting default client SSL certificate for mTLS
     a) Open an empty tab and type `about:config`
     b) Accept the risk and continue

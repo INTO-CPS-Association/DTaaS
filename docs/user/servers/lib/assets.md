@@ -10,7 +10,6 @@ The DTaaS software categorizes all the reusable library assets into five categor
 
 ![Categories of Library Assets](library-assets.png)
 
-
 ### Functions
 
 The functions responsible for pre- and post-processing of:

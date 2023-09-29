@@ -1,3 +1,4 @@
+# FAQs
 
 ## Abreviations
 
@@ -41,7 +42,6 @@
 ??? Question "Can DTaaS create new DT models?"
     DTaaS is not a model creation  tool. You can put model creation tool
     inside DTaaS and create new models.
-
     The DTaaS itself does not create digital twin models. But you can run
     Linux desktop / terminal tools  inside the DTaaS. So you can create
     models inside DTaaS and run them using tools that can run in Linux.
@@ -63,21 +63,18 @@
 ??? Question "Can DTaaS support only the information models (or behavioral models) or some other kind of models?"
     The DTaaS as such is agnostic to the kind of models you use. DTaaS can
     run all kinds of models. This includes behavioral and data models.
-
     As long as you have models and the matching solvers that can run in
     Linux OS, you are good to go in DTaaS.
-
     In some cases, models and solvers (tools) are bundled together
     to form monolithic DTs. The DTaaS does not limit you from running
     such DTs as well.
-
     DTaaS does not provide dedicated solvers. But if you can install
     a solver in your workspace, then you don't need the platform
     to provide one.
 
 ??? Question "Does it support XML-based representation and ontology representation?"
-    Currently No. **We are looking for users needing this capability. If you have concrete requirements and an example, we can discuss a way of realizing it in DTaaS**. 
-
+    Currently No. **We are looking for users needing this capability.**
+    **If you have concrete requirements and an example, we can discuss a way of realizing it in DTaaS**.
 
 ## Communication Between Physical Twin and Digital Twin
 
@@ -88,7 +85,6 @@
     from physical twin. The DTaaS provides InfluxDB, RabbitMQ and Mosquitto
     services for this purpose. These three are probably most widely used
     services for digital twin communication.
-
     Having said that, DTaaS allows you to utilize other communication
     technologies and services hosted elsewhere on the Internet.
 
@@ -96,16 +92,13 @@
     DTaaS can not understand the static or dynamic nature of data.
     It can facilitate storing names, units and any other text description
     of interesting quantities (weight of batter, voltage output etc).
-
     It can also store the data being sent by the physical twin.
     The distinction between static and dynamic data needs to be made by
     the user.
-
     Only metadata of the data can reveal such more information about
     the nature of data. A tool can probably help in very specific cases,
     but you need metadata. If there is a human being making this distinction,
     then the need for metadata goes down but does not completely go away.
-
     In some of the DT platforms supported by manufacturers, there is a tight
     integration between data and model. In this case, the tool itself is
     taking care of the metadata. The DTaaS is a generic platform which can
@@ -119,7 +112,6 @@
     should happen is decided by the person designing the digital entity.
     The DTaaS can provide communication services that can help you do this
     communication with relative ease.
-
     You can use InfluxDB, RabbitMQ and Mosquitto services hosted on DTaaS for
     two communication between digital and physical entities.
 
@@ -128,11 +120,9 @@
 ??? Question "Does DTaaS support data collection from different sources like hardware, software and network? Is there any user interface or any tracking instruments used for data collection?"
     The DTaaS provids InfluxDB, RabbitMQ, MQTT  services. Both the physical twin
     and digital twin can utilize these protocols for communication.
-
     The IoT (time-series) data can be collected using InfluxDB and MQTT
     broker services. There is a user interface for InfluxDB which can be
     used to analyze the data collected.
-
     Users can also manually upload their data files into DTaaS.
 
 ??? Question "Which transmission protocol does DTaaS allow?"
@@ -165,10 +155,8 @@
 
 ??? Question "All the DT platforms seem to provide different features. Is there a comparison chart?"
     Here is a qualitative comparison of different DT integration platforms:
-
     Legend: high performance (**H**), mid performance (**M**)
     and low performance (**L**)
-
     | DT Platforms | License | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualization | Modeling and Simulation |
     |:---|:---|:---|:---|:---|:---|:---|:---|:---|
     | Microsoft Azure DT | Commercial Cloud | H | H | H | M | H | H | H |
@@ -178,9 +166,7 @@
     | PTC Thingworx | Commercial | H | H | H | H | H | M | M |
     | GE Predix | Commercial | M | H | H | M | L | M | L |
     | AU's DTaaS | Open source | H | H | L | L | M | M | M |
-
     Adopted by Tanusree Roy from Table 4 and 5 of the following paper.
-
     Ref: Naseri, F., Gil, S., Barbu, C., Cetkin, E., Yarimca, G., Jensen, A. C.,
     ... & Gomes, C. (2023). Digital twin of electric vehicle battery systems:
     Comprehensive review of the use cases, requirements, and platforms.
@@ -194,5 +180,4 @@
     Azure DT service. You have to do the leg work of integrating with other
     Azure services or third-party services to get the kind of capabilities
     that GE Predix natively provides in one interface.
-
     The takeaway is that we pick horses for the courses.

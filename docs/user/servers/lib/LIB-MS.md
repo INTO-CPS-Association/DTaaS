@@ -139,18 +139,16 @@ send requests to: <http:>https://foo.com/lib</http:>
     ```
 
 === "HTTP Response"
-    ``` http-response
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: *
-    Connection: close
-    Content-Length: 306
-    Content-Type: application/json; charset=utf-8
-    Date: Tue, 26 Sep 2023 20:26:49 GMT
-    X-Powered-By: Express
-
-    {"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
-
-    ```
+``` http-response
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Connection: close
+Content-Length: 306
+Content-Type: application/json; charset=utf-8
+Date: Tue, 26 Sep 2023 20:26:49 GMT
+X-Powered-By: Express
+{"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
+```
 
 ### Fetch a file from the available files
 
@@ -161,68 +159,68 @@ with content of `hello world`.
 
 === "GraphQL Request"
 
-    ```graphql-request
-    query {
-      readFile(path: "user2/data/sample.txt") {
-        repository {
-          blobs {
-            nodes {
-              name
-              rawBlob
-              rawTextBlob
-            }
-          }
+```graphql-request
+query {
+  readFile(path: "user2/data/sample.txt") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
         }
       }
     }
-    ```
+  }
+}
+```
 
 === "GraphQL Response"
-    ```graphql-response
-    {
-      "data": {
-        "readFile": {
-          "repository": {
-            "blobs": {
-              "nodes": [
-                {
-                  "name": "sample.txt",
-                  "rawBlob": "hello world",
-                  "rawTextBlob": "hello world"
-                }
-              ]
+
+```graphql-response
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
+            {
+              "name": "sample.txt",
+              "rawBlob": "hello world",
+              "rawTextBlob": "hello world"
             }
-          }
+          ]
         }
       }
     }
-    ```
+  }
+}
+```
 
 === "HTTP Request"
-    ```http-request
-    POST /lib HTTP/1.1
-    Host: foo.com
-    Content-Type: application/json
-    Content-Length: 217
 
-    {
-      "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
-    }
-    ```
+```http-request
+POST /lib HTTP/1.1
+Host: foo.com
+Content-Type: application/json
+Content-Length: 217
+{
+  "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
+}
+```
 
 === "HTTP Response"
-    ```http-response
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: *
-    Connection: close
-    Content-Length: 134
-    Content-Type: application/json; charset=utf-8
-    Date: Wed, 27 Sep 2023 09:17:18 GMT
-    X-Powered-By: Express
 
-    {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
-
-    ```
+```http-response
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Connection: close
+Content-Length: 134
+Content-Type: application/json; charset=utf-8
+Date: Wed, 27 Sep 2023 09:17:18 GMT
+X-Powered-By: Express
+{"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
+```
 
 The _path_ refers to the file path to look at:
 For example, _user1_ looks at files of

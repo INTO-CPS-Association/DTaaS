@@ -1,35 +1,38 @@
+# License
+
 --- Start of Definition of INTO-CPS Association Public License ---
 
 /*
 
  * This file is part of the INTO-CPS Association.
- *
+
  * Copyright (c) 2017-CurrentYear, INTO-CPS Association (ICA),
  * c/o Peter Gorm Larsen, Aarhus University, Department of Engineering,
  * Finlandsgade 22, 8200 Aarhus N, Denmark.
- *
+ 
  * All rights reserved.
- *
+ 
  * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
  * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE (ICAPL) VERSION 1.0.
  * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
  * RECIPIENT'S ACCEPTANCE OF THE INTO-CPS ASSOCIATION PUBLIC LICENSE OR
  * THE GPL VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
- *
+ 
  * The INTO-CPS tool suite software and the INTO-CPS Association
  * Public License (ICAPL) are obtained from the INTO-CPS Association, either
- * from the above address, from the URLs: <http:>http://www.into-cps.org</http:> or
+ * from the above address, from the URLs:
+ * <http:>http://www.into-cps.org</http:> or
  * in the INTO-CPS tool suite distribution.
- * GNU version 3 is obtained from: <http:>http://www.gnu.org/copyleft/gpl.html</http:>.
- *
+ * GNU version 3 is obtained from:
+ * <http:>http://www.gnu.org/copyleft/gpl.html</http:>.
+ 
  * This program is distributed WITHOUT ANY WARRANTY; without
  * even the implied warranty of  MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
  * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
  * THE INTO-CPS ASSOCIATION PUBLIC LICENSE.
- *
+ 
  * See the full ICAPL conditions for more details.
- *
 
  */
 
@@ -70,17 +73,17 @@ Definitions of the INTO-CPS Association Public license modes:
   redistribution is allowed within/between its affiliates.
 
 * ICA-External-EPL = These INTO-CPA Association Public license
- conditions together with
- Externally restricted EPL, i.e., EPL version 1.0 with the Additional
- Condition
- that use and redistribution by a member of the INTO-CPS Association,
- or by a Licensed
- Third Party Distributor having a redistribution agreement with that member,
- to parties external to the INTO-CPS Association member’s own organization
- (i.e., its own legal entity) is only allowed in binary/object-code
- form, except the case of
- redistribution to other members the INTO-CPS Association to which
- source is also allowed to be distributed.
+  conditions together with
+  Externally restricted EPL, i.e., EPL version 1.0 with the Additional
+  Condition
+  that use and redistribution by a member of the INTO-CPS Association,
+  or by a Licensed
+  Third Party Distributor having a redistribution agreement with that member,
+  to parties external to the INTO-CPS Association member’s own organization
+  (i.e., its own legal entity) is only allowed in binary/object-code
+  form, except the case of
+  redistribution to other members the INTO-CPS Association to which
+  source is also allowed to be distributed.
 
 [This has the consequence that an external party who wishes to use
 the INTO-CPS Association in source form together with its own
