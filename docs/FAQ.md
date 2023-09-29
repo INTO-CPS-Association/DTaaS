@@ -1,3 +1,4 @@
+# Frequently Asked Questions
 
 ## Abreviations
 
@@ -40,7 +41,8 @@
     DTaaS is not a model creation  tool. You can put model creation tool
     inside DTaaS and create new models.
 
-    The DTaaS itself does not create digital twin models. But you can run
+    The DTaaS itself does not create digital twin models but it can help
+    users create digital twin models. You can run
     Linux desktop / terminal tools  inside the DTaaS. So you can create
     models inside DTaaS and run them using tools that can run in Linux.
     The Windows only tools can not run in DTaaS.
@@ -74,8 +76,9 @@
     to provide one.
 
 ??? Question "Does it support XML-based representation and ontology representation?"
-    Currently No. **We are looking for users needing this capability. If you have concrete requirements and an example, we can discuss a way of realizing it in DTaaS**. 
-
+    Currently No. **We are looking for users needing this capability.**
+    **If you have concrete requirements and an example, we can discuss a way**
+    **of realizing it in DTaaS**.
 
 ## Communication Between Physical Twin and Digital Twin
 

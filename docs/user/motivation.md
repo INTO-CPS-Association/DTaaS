@@ -24,7 +24,7 @@ this problem. Some of them are:
 * Scale DT / execution of DT / ensemble of related DTs
 * Support for PT product lifecycle
 
-## What is Our Approach?
+## Our Approach
 
 * Support for transition from existing workflows to DT frameworks
 * Create DTs from reusable assets
