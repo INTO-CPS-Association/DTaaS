@@ -1,0 +1,43 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "octocat"      
+    commit-message:
+      prefix: "client-npm: "
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "prasadtalasila"      
+
+  - package-ecosystem: "npm"
+    directory: "/servers/lib"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "octocat"      
+    commit-message:
+      prefix: "libms-npm: "
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "prasadtalasila"      
+
+  - package-ecosystem: "npm"
+    directory: "/servers/execution/runner"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "octocat"      
+    commit-message:
+      prefix: "runner-npm: "
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "prasadtalasila"      
