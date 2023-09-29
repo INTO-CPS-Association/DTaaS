@@ -9,10 +9,8 @@ type QueryFunction = (domain: string, parsedPath: string) => string;
 
 @Injectable()
 export default class GitlabFilesService implements IFilesService {
-  // eslint-disable-next-line no-useless-constructor
-  constructor(private configService: ConfigService) {
-	// Empty constructor
-  }
+  // eslint-disable-next-line no-useless-constructor, no-empty-function
+  constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {
     return this.executeQuery(path, getDirectoryQuery);
