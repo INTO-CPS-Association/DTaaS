@@ -6,4 +6,14 @@ being developed as a React single page web application.
 
 A dependency graph for the entire codebase of the react application is:
 
-![React website dependency graph](client-dep-graph.svg)
+## Dependency Graphs
+
+The figures are the dependency graphs generated from the code.
+
+### src directory
+
+![src dependency graph](src.svg)
+
+### test directory
+
+![test dependency graph](test.svg)

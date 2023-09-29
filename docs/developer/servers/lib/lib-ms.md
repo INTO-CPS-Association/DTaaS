@@ -175,3 +175,15 @@ sequenceDiagram
     deactivate FR
 
 ```
+
+## Dependency Graphs
+
+The figures are the dependency graphs generated from the code.
+
+### src directory
+
+![src dependency graph](src.svg)
+
+### test directory
+
+![test dependency graph](test.svg)
