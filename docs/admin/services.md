@@ -1,4 +1,4 @@
-# :electric_plug: Third-party Services
+# Third-party Services
 
 The DTaaS software platform uses third-party software services
 to provide enhanced value to users.
