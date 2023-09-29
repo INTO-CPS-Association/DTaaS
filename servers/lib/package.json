@@ -60,5 +60,4 @@
   "peerDependencies": {
     "graphql-scalars": "^1.22.2"
   },
-  "packageManager": "yarn@3.6.3"
 }
