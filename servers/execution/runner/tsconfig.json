@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
+    "baseUrl": "./",
+    "declaration": true, //generate declaration '.d.ts' files
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true, //allow experimental decorators for es7
+    "forceConsistentCasingInFileNames": false,
+    "incremental": true,
+    "lib": [
+      "ES2022"
+    ],
+    "module": "ES2022", //use node module system
+    "moduleResolution": "node", //use node module resolution strategy node
+    "noImplicitReturns": true, //raise error on implicit returns
+    "noUnusedLocals": true, //raise error on unused locals
+    "noUnusedParameters": true, //raise no error on unused parameters
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist",
+    "removeComments": true, //remove comments from build
+    "skipLibCheck": true,
+    "sourceMap": true, //generate .map files
+    "strict": true, //enable all strict type-checking options
+    "target": "ES2022",
+    "types": ["node", "jest"], //use node and jest types
+    "typeRoots": [
+      "node_modules/@types" //use node_modules/@types for type definitions
+    ],
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["**/node_modules/*", "./dist"]
+}

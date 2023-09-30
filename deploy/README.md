@@ -114,4 +114,4 @@ You can run this script multiple times until the installation is successful.
 
 ## Access the application
 
-Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>
+Now you should be able to access the DTaaS application at: _https://foo.com_

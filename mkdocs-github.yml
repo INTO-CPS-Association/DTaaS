@@ -17,6 +17,7 @@ theme:
 nav:
   - Home: index.md
   - Admin:
+      - Authentication: admin/client/auth.md
       - Host Install:
         - Trial: admin/trial.md
         - Production: admin/host.md
@@ -27,7 +28,9 @@ nav:
       - Separate Packages:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
+      - Services: admin/services.md
   - User:
+      - Motivation: user/motivation.md
       - Features: user/features.md
       - Website: user/website/index.md
       - Library: 
@@ -38,6 +41,15 @@ nav:
           - Lifecycle: user/digital-twins/lifecycle.md
       - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
+  - Developer: 
+      - Overview: developer/index.md 
+      - System:
+        - Architecture: developer/system/architecture.md
+        - Current Status: developer/system/current-status.md
+      - Components:
+        - Client: developer/client/client.md
+        - Library Microservice: developer/servers/lib/lib-ms.md
+      - Testing: developer/testing/intro.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: LICENSE.md
@@ -63,13 +75,22 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets      
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.details
   - admonition
   - pymdownx.tabbed:
       alternate_style: true   
   - mdx_math:
       enable_dollar_delimiter: True
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - open-in-new-tab
