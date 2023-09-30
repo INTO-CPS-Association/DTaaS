@@ -105,13 +105,11 @@ data, functions, models, tools and digital twins.
 
 ??? Common Assets tip
     The common directory again has four sub-directories:
-
     * data
     * functions
     * models
     * tools
     * digital twins
-    
     The assets common to all users are placed in **common**.
 
 The items used by more than one user are placed in **common**. The items in
@@ -150,6 +148,13 @@ the [life cycle phases of digital twin](../digital-twins/lifecycle.md).
     in the data directory.
 
 ??? Analyze tip
+    The analysis of digital twins requires running
+    of digital twin script from user workspace.
+    The execution results placed within data directory
+    are processed by analysis scripts and results are placed
+    back in the data directory. These scripts can either be
+    executed from VSCode and graphical results or can be
+    executed from VNC GUI.
 
     The analysis of digital twins requires running of digital twin script
     from user workspace. The execution results placed within data directory
@@ -174,6 +179,9 @@ in new browser are:
 ![Workbench Tools](workbench_tools.png)
 
 !!! Bug
+    The Terminal hyperlink does not always work reliably.
+    If you want terminal. Please use the tools dropdown
+    in the Jupyter Notebook.
 
     The Terminal hyperlink does not always work reliably. If you want
     terminal. Please use the tools dropdown in the Jupyter Notebook.
