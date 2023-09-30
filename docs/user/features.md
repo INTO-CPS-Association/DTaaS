@@ -1,7 +1,19 @@
-# Features
+# Overview
 
-Each installation of DTaaS platform comes with
-the features highlighted in the following picture.
+## Advantages
+
+The DTaaS software platform provides certain advantages to users:
+
+* Support for different kinds of Digital Twins - CFD, Simulink, co-simulation, FEM, ROM, ML etc.
+* Integrates with other Digital Twin frameworks
+* Facilitate availability of Digital Twin as a service
+* Collaboration and reuse
+* Private workspaces for authoring and verification of reusable assets, trial run DTs
+* Cost effectiveness
+
+## Software Features
+
+Each installation of DTaaS platform comes with the features highlighted in the following picture.
 
 ![Features](current-status.png)
 
@@ -31,9 +43,10 @@ The currently available services are:
 
 | Service | Advantage |
 |:---|:---|
-| InfluxDB | time-series database primarly for storing time-series data from physical twins. The digital twins can use an already existing data. Users can also create visualization dashboards for their digital twins. |
-| RabbitMQ | communication broker for communication between physical and digital twins |
-| Grafana | Users can create visualization dashboards for their digital twins. |
+| InfluxDB | Time-series database primarly for storing time-series data from physical twins. The digital twins can use an already existing data. Users can also create visualization dashboards for their digital twins. |
+| RabbitMQ | Communication broker for communication between physical and digital twins |
+| Grafana | Visualization dashboards for their digital twins. |
+| MQTT | Lightweight data transfer broker for IoT devices / physical twins feeding data into digital twins. |
 
 In addition, the workspaces are connected to the Internet so
 all the Digital Twins run within their workspace can interact

@@ -16,6 +16,7 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
+yarn graph       # generate dependency graphs in the code
 yarn build      #build the react app into build/ directory
 yarn develop    #start the development server without building. Great for live edits.
 
@@ -42,9 +43,14 @@ yarn test -e   #run end-to-end tests
 ## Authentication
 
 The react client website uses OAuth authentication.
+<<<<<<< HEAD
 The [authentication page](../docs/admin/client/auth.md)
 provides details on setting up oauth authentication for
 the client application.
+=======
+The [authentication page](../docs/admin/client/auth.md) provides details
+on setting up oauth authentication for the client application.
+>>>>>>> feature/distributed-demo
 
 ## Custom configuration
 

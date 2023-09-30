@@ -23,6 +23,7 @@ One digital twin runner is responsible for execution of a digital twin.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
+yarn graph       # generate dependency graphs in the code
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
 yarn test       # run tests
 yarn test:nocov  # run the tests but do not report coverage

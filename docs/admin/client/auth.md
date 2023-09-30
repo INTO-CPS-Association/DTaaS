@@ -1,4 +1,4 @@
-# Setting up OAuth Authentication for the client website
+# OAuth Authentication for React Website
 
 The react client website uses OAuth authentication protocol for user
 authentication. The PKCE authentication flow of OAuth protocol is used

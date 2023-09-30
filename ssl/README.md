@@ -39,6 +39,6 @@ to **servers/gateway/certs** directory.
 
 ### References
 
-1. <http:>https://kb.mit.edu/confluence/display/istcontrib/Default+Certificate+Selection+in+Firefox</http:>
-1. <http:>https://unix.stackexchange.com/questions/644176/how-to-permanently-add-self-signed-certificate-in-firefox</http:>
-1. <http:>https://www.jscape.com/blog/firefox-client-certificate</http:>
+1. [MIT knowledgebase article on default certificate selection in Firefox browser](https://kb.mit.edu/confluence/display/istcontrib/Default+Certificate+Selection+in+Firefox),
+1. [Stackoverflow question on certificate installation in Firefox browser](https://unix.stackexchange.com/questions/644176/how-to-permanently-add-self-signed-certificate-in-firefox)
+1. [Import client certificate into Firefox browser](https://www.jscape.com/blog/firefox-client-certificate)

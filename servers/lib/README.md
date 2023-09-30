@@ -70,6 +70,7 @@ nohup yarn start & disown
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
+yarn graph       # generate dependency graphs in the code
 yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
 yarn test -a      # run all tests
 yarn test -e      # run end-to-end tests
