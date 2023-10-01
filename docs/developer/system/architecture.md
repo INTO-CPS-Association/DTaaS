@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# System Overview
-=======
 # :european_castle: System Overview
->>>>>>> feature/distributed-demo
 
 ## User Requirements
 

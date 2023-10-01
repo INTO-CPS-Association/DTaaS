@@ -43,14 +43,9 @@ yarn test -e   #run end-to-end tests
 ## Authentication
 
 The react client website uses OAuth authentication.
-<<<<<<< HEAD
 The [authentication page](../docs/admin/client/auth.md)
 provides details on setting up oauth authentication for
 the client application.
-=======
-The [authentication page](../docs/admin/client/auth.md) provides details
-on setting up oauth authentication for the client application.
->>>>>>> feature/distributed-demo
 
 ## Custom configuration
 
