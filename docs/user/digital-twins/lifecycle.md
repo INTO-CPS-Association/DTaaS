@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-# Digital Twin Lifecycle
-=======
 # :recycle: Digital Twin Lifecycle
->>>>>>> feature/distributed-demo
 
 The physical products in the real world have product lifecycle.
 A simplified four-stage product life is illustrated here.
 
-<<<<<<< HEAD
-A DT lifecycle consists of **explore, create, execute, save, analyse, evolve**
-and **terminate** phases.
-=======
 A digital twin tracking the physical products (twins) need
 to track and evolve in conjunction with the corresponding
 physical twin.
@@ -28,7 +20,6 @@ undertaken in each phase are outlined in this section.
 
  A DT lifecycle consists of **explore, create, execute, save, analyse, evolve**
  and **terminate** phases.
->>>>>>> feature/distributed-demo
 
 | Phase | Main Activities |
 |:----|:----|
@@ -45,10 +36,6 @@ support all the phases. It is also possible for digital twin engineers to add
 more phases to digital they are developing. Thus it is important for
 the DTaaS software platform needs to accommodate needs of different DTs.
 
-<<<<<<< HEAD
-Even though not mandatory, having a coding structure makes it easy
-to manage DT lifecycle phases. It is recommended to have the following structure
-=======
 A potential linear representation of the tasks undertaken in
 a digital twin lifecycle are shown here.
 
@@ -66,7 +53,6 @@ of the DTaaS software platform.
 Even though not mandatory, having a matching coding structure makes it easy to
 for users to create and manage their DTs within the DTaaS.
 It is recommended to have the following structure:
->>>>>>> feature/distributed-demo
 
 ```text
 workspace/
@@ -81,16 +67,6 @@ workspace/
         terminate
 ```
 
-<<<<<<< HEAD
-A dedicated program exists for each phase of DT lifecycle.
-Each program can be as simple as a script that launches other
-programs or sends messages to a live digital twin.
-
-## Examples
-
-Here are the programs / scripts to manage three phases
-in the lifecycle of **mass-spring-damper DT**.
-=======
 A dedicated program exists for each phase of DT lifecycle. Each program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
@@ -99,7 +75,6 @@ to a live digital twin.
 
 Here are the programs / scripts to manage three phases in
 the lifecycle of **mass-spring-damper DT**.
->>>>>>> feature/distributed-demo
 
 ```bash title="lifecycle/execute"
 #!/bin/bash
@@ -111,15 +86,6 @@ java -jar /workspace/common/tools/maestro-2.3.0-jar-with-dependencies.jar \
     output-dir>debug.log 2>&1
 ```
 
-<<<<<<< HEAD
-The execute phases uses the DT configuration, FMU models and Maestro
-tool to execute the digital twin. The script also stores the output of
-cosimulation in `/workspace/data/mass-spring-damper/output`.
-
-It is possible for a DT not to support a specific lifecycle phase.
-This intention can be specified with an empty script and a helpful
-message if deemed necessary.
-=======
 The execute phases uses the DT configuration, FMU models and Maestro tool
 to execute the digital twin. The script also stores the output of
 cosimulation in `/workspace/data/mass-spring-damper/output`.
@@ -127,21 +93,15 @@ cosimulation in `/workspace/data/mass-spring-damper/output`.
 It is possible for a DT not to support a specific lifecycle phase.
 This intention can be specified with an empty script and a helpful message
 if deemed necessary.
->>>>>>> feature/distributed-demo
 
 ```bash title="lifecycle/analyze"
 #!/bin/bash
 printf "operation is not supported on this digital twin"
 ```
 
-<<<<<<< HEAD
 The lifecycle programs can call other programs in the code base.
 In the case of `lifecycle/terminate` program, it is calling another
 script to do the necessary job.
-=======
-The lifecycle programs can call other programs in the code base. In the case of
-`lifecycle/terminate` program, it is calling another script to do the necessary job.
->>>>>>> feature/distributed-demo
 
 ```bash title="lifecycle/terminate"
 #!/bin/bash
