@@ -13,7 +13,8 @@
     "clean": "script/clean.bash",
     "start": "script/start.bash",
     "syntax": "script/syntax.bash",
-    "test": "script/test.bash"
+    "test": "script/test.bash",
+    "graph": "script/graph.bash"
   },
   "dependencies": {
     "@apollo/client": "^3.8.4",

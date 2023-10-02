@@ -13,6 +13,7 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
+yarn graph       # generate dependency graphs in the code
 yarn build      #build the react app into build/ directory
 yarn develop    #start the development server without building. Great for live edits.
 
@@ -24,18 +25,23 @@ yarn start      #start the application
 yarn clean      #clean the directory of temporary files
 ```
 
-It is also possible to run different types of tests using the yarn test command by passing different flags:
+It is also possible to run different types of tests using the yarn
+test command by passing different flags:
+
 ```bash
 yarn test -a   #run all tests
 yarn test -u   #run unit tests
 yarn test -i   #run integration tests
 yarn test -e   #run end-to-end tests
 ```
+
 ---
 
 ## Authentication
 
-The react client website uses OAuth authentication. The [authentication page](../docs/admin/client/auth.md) provides details on setting up oauth authentication for the client application.
+The react client website uses OAuth authentication.
+The [authentication page](../docs/admin/client/auth.md) provides details
+on setting up oauth authentication for the client application.
 
 ## Custom configuration
 

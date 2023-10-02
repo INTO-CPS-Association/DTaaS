@@ -13,16 +13,20 @@ Once the assets are stored in the library, you can access the server's endpoint 
 
 The URL opens a graphql playground. You can check the query schema and try sample queries here. You can also send graphql queries as HTTP POST requests and get responses.
 
-## The GraphQL Queries
+## API Queries
 
-The library microservice services two graphql requests:
+The library microservice services two API calls:
 
 * Provide a list of contents for a directory
 * Fetch a file from the available files
 
-The format of the accepted queries are:
+The API calls are accepted over GraphQL and HTTP API end points. The format of the accepted queries are:
 
 ### Provide list of contents for a directory
+
+To retrieve a list of files in a directory, use the following GraphQL query.
+
+Replace `path` with the desired directory path.
 
 send requests to: https://foo.com/lib
 
@@ -113,102 +117,40 @@ send requests to: https://foo.com/lib
     }
     ```
 
-=== "HTTP Request :warning:"
+=== "HTTP Request"
 
     ``` http-request
-    POST /lib
-    Host: foo.com:<PORT>
-    Content-Type:application/json
-    User-Agent:Mozilla
-    Accept:_/_
-
-    query {
-      listDirectory(path: "user2") {
-        repository {
-          tree {
-            blobs {
-              edges {
-                node {
-                  name
-
-                }
-              }
-            }
-            trees {
-              edges {
-                node {
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    ```
-
-=== "HTTP Response :warning:"
-
-    ``` http-response
-    200 OK
-    access-control-allow-origin: \*
-    connection: keep-alive
-    content-length: 76
-    content-type: application/json; charset=utf-8
-    date: Mon, 15 May 2023 10:13:37 GMT
-    etag: ................
-    keep-alive: timeout=5
-    x-powered-by: Express
+    POST /lib HTTP/1.1
+    Host: foo.com
+    Content-Type: application/json
+    Content-Length: 388
 
     {
-      "data": {
-        "listDirectory": {
-          "repository": {
-            "tree": {
-              "blobs": {
-                  "edges": []
-              },
-            "trees": {
-                "edges": [
-                  {
-                    "node": {
-                        "name": "data"
-                    }
-                  },
-                  {
-                    "node": {
-                        "name": "digital twins"
-                      }
-                  },
-                  {
-                    "node": {
-                        "name": "functions"
-                    }
-                  },
-                  {
-                    "node": {
-                        "name": "models"
-                    }
-                  },
-                  {
-                    "node": {
-                        "name": "tools"
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
+      "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
     }
-
     ```
 
+=== "HTTP Response"
+
+    ``` http-response
+    HTTP/1.1 200 OK
+    Access-Control-Allow-Origin: *
+    Connection: close
+    Content-Length: 306
+    Content-Type: application/json; charset=utf-8
+    Date: Tue, 26 Sep 2023 20:26:49 GMT
+    X-Powered-By: Express
+
+    {"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
+
+    ```
 
 ### Fetch a file from the available files
 
+This query receives directory path and send the file contents to user in response.
 
+To check this query, create a file `files/user2/data/welcome.txt`
+with content of `hello world`.
 
 === "GraphQL Request"
 
@@ -248,67 +190,34 @@ send requests to: https://foo.com/lib
         }
       }
     }
-   ```
+    ```
 
-=== "HTTP Request :warning:"
+=== "HTTP Request"
 
     ```http-request
-    POST /lib
-    Host: foo.com:<PORT>
-    Content-Type:application/json
-    User-Agent:Mozilla
-    Accept:*/*
+    POST /lib HTTP/1.1
+    Host: foo.com
+    Content-Type: application/json
+    Content-Length: 217
 
     {
-    "query":
-      query{
-        readFile(path:"user2/data/sample.txt"){
-          repository{
-            blobs{
-              nodes{
-                name
-                rawBlob
-                rawTextBlob
-              }
-            }
-          }
-        }
-      }
+      "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
     }
     ```
 
-=== "HTTP Response :warning:"
+=== "HTTP Response"
 
     ```http-response
-    200 OK
-    access-control-allow-origin: *
-    connection: keep-alive
-    content-length: 76
-    content-type: application/json; charset=utf-8
-    date: Mon, 15 May 2023 10:13:37 GMT
-    etag: ................
-    keep-alive: timeout=5
-    x-powered-by: Express
+    HTTP/1.1 200 OK
+    Access-Control-Allow-Origin: *
+    Connection: close
+    Content-Length: 134
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 27 Sep 2023 09:17:18 GMT
+    X-Powered-By: Express
 
-    {
-      "data": {
-        "readFile": {
-          "repository": {
-            "blobs": {
-              "nodes": [
-                {
-                  "name": "sample.txt",
-                  "rawBlob": "welcome hello world",
-                  "rawTextBlob": "hello world"
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
+    {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
 
     ```
-
 
 The _path_ refers to the file path to look at: For example, _user1_ looks at files of **user1**; _user1/functions_ looks at contents of _functions/_ directory.
