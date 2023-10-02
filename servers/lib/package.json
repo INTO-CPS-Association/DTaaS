@@ -6,6 +6,7 @@
   "contributors": [
     "Prasad Talasila"
   ],
+  "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "scripts": {
     "build": "script/build.bash",
@@ -57,6 +58,6 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "graphql-scalars": "*"
+    "graphql-scalars": "^1.22.2"
   }
 }
