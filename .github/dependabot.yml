@@ -11,6 +11,7 @@ updates:
       prefix: "client-npm: "
     pull-request-branch-name:
       separator: "-"
+    open-pull-requests-limit: 5
     reviewers:
       - "prasadtalasila"      
 
@@ -25,6 +26,7 @@ updates:
       prefix: "libms-npm: "
     pull-request-branch-name:
       separator: "-"
+    open-pull-requests-limit: 5
     reviewers:
       - "prasadtalasila"      
 
@@ -39,5 +41,6 @@ updates:
       prefix: "runner-npm: "
     pull-request-branch-name:
       separator: "-"
+    open-pull-requests-limit: 5
     reviewers:
       - "prasadtalasila"      
