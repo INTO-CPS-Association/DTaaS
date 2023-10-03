@@ -16,7 +16,6 @@ async function bootstrap() {
     const configBuffer = fs.readFileSync(configFilePath);
     dotenv.parse(configBuffer);
   } else {
-    console.error("Please provide a configuration file using -c or --config flag.");
     return;
   }
 
