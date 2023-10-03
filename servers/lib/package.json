@@ -16,6 +16,9 @@
     "test": "script/test.bash",
     "graph": "script/graph.bash"
   },
+  "bin": {
+    "libms": "./dist/src/main.js"
+  },
   "dependencies": {
     "@apollo/client": "^3.8.4",
     "@apollo/server": "^4.9.3",
