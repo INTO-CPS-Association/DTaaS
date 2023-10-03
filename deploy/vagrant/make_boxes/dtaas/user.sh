@@ -30,12 +30,6 @@ docker run hello-world
 systemctl enable docker.service
 systemctl enable containerd.service
 
-#install docker-compose from https://docs.docker.com/compose/install/other/
-curl -SL "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64" \
-  -o /usr/local/bin/docker-compose
-ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
-
 apt-get update
 apt-get install -y ca-certificates curl gnupg
 mkdir -p /etc/apt/keyrings
@@ -56,23 +50,6 @@ apt-get update -y
 apt-get install -y yarn
 npm install -g serve
 
-#-------------
-printf "\n\n Install jupyterlab and mkdocs"
-apt-get install -y python3-pip
-pip install jupyterlab
-pip install mkdocs
-pip3 install mkdocs-material
-pip3 install python-markdown-math
-pip3 install mkdocs-open-in-new-tab
-pip3 install mkdocs-with-pdf
-pip3 install qrcode
-
-# Install minimal Kubernetes cluster
-snap install microk8s --classic
-usermod -a -G microk8s vagrant
-chown -f -R vagrant ~/.kube
-newgrp microk8s
-
 cat /vagrant/vagrant.pub >> /home/vagrant/.ssh/authorized_keys
 mkdir -p /root/.ssh
 cat /vagrant/vagrant.pub >> /root/.ssh/authorized_keys
@@ -82,7 +59,6 @@ docker pull traefik:v2.10
 docker pull mltooling/ml-workspace:0.13.2
 docker pull grafana/grafana:10.1.4
 docker pull influxdb:2.7
-docker pull telegraf:1.28.2
 docker pull rabbitmq:3-management
 docker pull eclipse-mosquitto:2
 docker pull gitlab/gitlab-ce:16.4.1-ce.0
