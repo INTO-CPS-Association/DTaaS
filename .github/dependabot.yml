@@ -9,6 +9,7 @@ updates:
       - "octocat"      
     commit-message:
       prefix: "client-npm: "
+    target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
     reviewers:
@@ -23,6 +24,7 @@ updates:
       - "octocat"      
     commit-message:
       prefix: "libms-npm: "
+    target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
     reviewers:
@@ -37,6 +39,7 @@ updates:
       - "octocat"      
     commit-message:
       prefix: "runner-npm: "
+    target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
     reviewers:
