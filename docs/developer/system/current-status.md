@@ -81,7 +81,7 @@ based on these services.
 The development priorities for the DTaaS software development team are:
 
 * [DT Runner](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/execution/runner)
-(API Interface to DT)
+  (API Interface to DT)
 * Multi-user and microservice security
 * Increased automation of installation procedures
 * DT Configuration DSL ín the form of YAML schema

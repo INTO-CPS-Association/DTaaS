@@ -37,7 +37,6 @@ The only requirement is the ability to run the DT from either commandline
 or desktop.
 
 !!! tip
-
     If you are stepping into the world of Digital Twins, you might not
     have distinct digital twin assets. You are likely to have one directory
     of everything in which you run your digital twin. In such a case we
@@ -116,14 +115,11 @@ responsible for lifecycle management of this digital twin.
 The [lifecycle page](lifecycle.md) provides more explanation on these programs.
 
 !!! Abstract "Execution of a Digital Twin"
-
     A frequent question arises on the run time characteristics of
     a digital twin. The natural intuition is to say that a digital twin must
     operate as long as its physical twin is in operation.
-
     **If a digital twin runs for a finite time and then ends, can it be
     called a digital twin?**
-
     **The answer is a resounding YES**. The Industry 4.0 usecases seen among
     SMEs have digital twins that run for a finite time. These digital twins
     are often run at the discretion of the user.
@@ -131,28 +127,24 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
 **You can run this digital twin by**,
 
 1. Go to Workbench tools page of the DTaaS website and open VNC Desktop.
-This opens a new tab in your browser
+   This opens a new tab in your browser
 1. A page with VNC Desktop and a connect button comes up. Click on Connect.
-You are now connected to the Linux Desktop of your workspace.
+   You are now connected to the Linux Desktop of your workspace.
 1. Open a Terminal (black rectangular icon in the top left region of your tab)
-and type the following commands.
+   and type the following commands.
 1. Download the
-[example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
-
-    ```sh
-    $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-    $unzip main.zip
-    ```
-
+   [example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
+   ```sh
+   $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
+   $unzip main.zip
+   ```
 1. Open a file browser and copy the files from this uncompressed folder
-into your workspace folder (`/workspace`). Make sure that the file placement
-matches the one given above.
+   into your workspace folder (`/workspace`). Make sure that the file placement
+   matches the one given above.
 1. Go to the digital twin directory and run
-
-    ```
-    $cd /workspace/digital twins/mass-spring-damper
-    $lifecycle/execute
-    ```
-
-    The last command executes the mass-spring-damper digital twin and stores
-    the co-simulation output in `data/mass-spring-damper/output`.
+   ```
+   $cd /workspace/digital twins/mass-spring-damper
+   $lifecycle/execute
+   ```
+   The last command executes the mass-spring-damper digital twin and stores
+   the co-simulation output in `data/mass-spring-damper/output`.

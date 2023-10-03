@@ -41,6 +41,7 @@ Replace `path` with the desired directory path.
 send requests to: <http:>https://foo.com/lib</http:>
 
 === "GraphQL Query"
+
     ``` graphql-query
     query {
       listDirectory(path: "user1") {
@@ -66,9 +67,11 @@ send requests to: <http:>https://foo.com/lib</http:>
         }
       }
     }
+
     ```
 
 === "GraphQL Response"
+
     ``` graphql-response
     {
       "data": {
@@ -123,6 +126,7 @@ send requests to: <http:>https://foo.com/lib</http:>
         }
       }
     }
+
     ```
 
 === "HTTP Request"
@@ -136,6 +140,7 @@ send requests to: <http:>https://foo.com/lib</http:>
     {
       "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
     }
+
     ```
 
 === "HTTP Response"

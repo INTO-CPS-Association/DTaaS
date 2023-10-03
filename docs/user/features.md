@@ -4,16 +4,19 @@
 
 The DTaaS software platform provides certain advantages to users:
 
-* Support for different kinds of Digital Twins - CFD, Simulink, co-simulation, FEM, ROM, ML etc.
+* Support for different kinds of Digital Twins
+  - CFD, Simulink, co-simulation, FEM, ROM, ML etc.
 * Integrates with other Digital Twin frameworks
 * Facilitate availability of Digital Twin as a service
 * Collaboration and reuse
-* Private workspaces for authoring and verification of reusable assets, trial run DTs
+* Private workspaces for authoring and verification
+  of reusable assets, trial run DTs
 * Cost effectiveness
 
 ## Software Features
 
-Each installation of DTaaS platform comes with the features highlighted in the following picture.
+Each installation of DTaaS platform comes with
+the features highlighted in the following picture.
 
 ![Features](current-status.png)
 

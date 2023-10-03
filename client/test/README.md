@@ -114,7 +114,7 @@ window.env = {
 };
 ```
 
-## test/.env
+## test/.env - localhost
 
 ```ini
 REACT_APP_TEST_USERNAME=TestUsername
@@ -156,7 +156,7 @@ window.env = {
 };
 ```
 
-## test/.env
+## test/.env - Integration server
 
 ```ini
 REACT_APP_TEST_USERNAME=TestUsername

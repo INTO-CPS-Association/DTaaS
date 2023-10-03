@@ -49,18 +49,15 @@ in their workspace.
     The functions responsible for pre- and post-processing of: data inputs,
     data outputs, control outputs. The data science libraries and functions
     can be used to create useful function assets for the platform.
-
     In some cases, Digital Twin models require calibration prior to their use;
     functions written by domain experts along with right data inputs can make
     model calibration an achievable goal. Another use of functions is to process
     the sensor and actuator data of both Physical Twins and Digital Twins.
-    ```
 
 ??? Data tip
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
-
     Typical examples of data sinks are visualization software, external users
     and data storage services. There exist special outputs such as events, and
     commands which are akin to control outputs from a Digital Twin.
@@ -84,11 +81,9 @@ in their workspace.
     platforms, i.e., an operating system, or virtual machines like
     Java virtual machine, or inside docker containers. The tools tend
     to be platform specific, making them less reusable than models.
-
     A tool can be packaged to run on a local or distributed virtual machine
     environments thus allowing selection of most suitable execution
-    environment for a Digital Twin. 
-
+    environment for a Digital Twin.
     Most models require tools to evaluate them in the context of data inputs.
     There exist cases where executable packages are run as binaries in
     a computing environment. Each of these packages are a pre-packaged
@@ -132,7 +127,6 @@ digital twin. You can see more explanation on
 the [life cycle phases of digital twin](../digital-twins/lifecycle.md).
 
 ??? Create tip
-
     Create digital twins from tools provided within user workspaces.
     Each digital twin will have one directory. It is suggested that user
     provide one bash shell script to run their digital twin. Users can
@@ -140,7 +134,6 @@ the [life cycle phases of digital twin](../digital-twins/lifecycle.md).
     Workbench page.
 
 ??? Execute tip
-
     Digital twins are executed from within user workspaces. The given
     bash script gets executed from digital twin directory. Terminal-based
     digital twins can be executed from VSCode and graphical digital twins
@@ -155,7 +148,6 @@ the [life cycle phases of digital twin](../digital-twins/lifecycle.md).
     back in the data directory. These scripts can either be
     executed from VSCode and graphical results or can be
     executed from VNC GUI.
-
     The analysis of digital twins requires running of digital twin script
     from user workspace. The execution results placed within data directory
     are processed by analysis scripts and results are placed back in
@@ -182,7 +174,6 @@ in new browser are:
     The Terminal hyperlink does not always work reliably.
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
-
     The Terminal hyperlink does not always work reliably. If you want
     terminal. Please use the tools dropdown in the Jupyter Notebook.
 

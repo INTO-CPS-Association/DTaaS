@@ -2,14 +2,14 @@
 
 ## :question: Common Questions on Testing
 
-### What is Software Testing?
+### What is Software Testing
 
 Software testing is a procedure to investigate the quality of a software product
 in different scenarios. It can also be stated as the process of verifying and
 validating that a software program or application works as expected and meets
 the business and technical requirements that guided design and development.
 
-### Why Software Testing?
+### Why Software Testing
 
 Software testing is required to point out the defects and errors that were made
 during different development phases. Software testing also ensures that
@@ -19,7 +19,7 @@ One important benefit of software testing is that it facilitates the developers
 to make incremental changes to source code and make sure that the current
 changes are not breaking the functionality of the previously existing code.
 
-### What is TDD?
+### What is TDD
 
 TDD stands for **Test Driven Development**. It is a software development process
 that relies on the repetition of a very short development cycle: first
@@ -30,7 +30,7 @@ The goal of TDD can be viewed as specification and not validation.
 In other words, it’s one way to think through your requirements or design
 before your write your functional code.
 
-### What is BDD?
+### What is BDD
 
 BDD stands for “Behaviour Driven Development”. It is a software development
 process that emerged from TDD. It includes the practice of writing tests first,
@@ -63,12 +63,17 @@ method stubs, mock objects, and spies can be used to assist testing a module in 
 #### Benefits of Unit Testing
 
 * Unit testing increases confidence in changing/ maintaining code.
-If good unit tests are written and if they are run every time any code is changed,
-we will be able to promptly catch any defects introduced due to the change.
-* If codes are already made less interdependent to make unit testing possible,
-the unintended impact of changes to any code is less.
-* The cost, in terms of time, effort and money, of fixing a defect detected during
-unit testing is lesser in comparison to that of defects detected at higher levels.
+  If good unit tests are written and if they are run every time
+  any code is changed,
+  we will be able to promptly catch any defects introduced due
+  to the change.
+* If codes are already made less interdependent to make unit
+  testing possible,
+  the unintended impact of changes to any code is less.
+* The cost, in terms of time, effort and money, of fixing a
+  defect detected during
+  unit testing is lesser in comparison to that of defects
+  detected at higher levels.
 
 #### Unit Tests in DTaaS
 
@@ -76,7 +81,7 @@ Each component DTaaS project uses unique technology stack. Thus the packages
 used for unit tests are different. Please check the `test/` directory of
 a component to figure out the unit test packages used.
 
-### [Integration tests](https://martinfowler.com/articles/practical-test-pyramid.html#IntegrationTests) 
+### [Integration tests](https://martinfowler.com/articles/practical-test-pyramid.html#IntegrationTests)
 
 Integration testing is the phase in software testing in which individual
 software modules are combined and tested as a group. In DTaaS, we use

@@ -77,11 +77,11 @@ classDiagram
 sequenceDiagram
     actor Client
     actor Traefik
-    
+
     box LightGreen Library Microservice
     participant FR as FilesResolver
     participant FSF as FilesServiceFactory
-    participant CS as ConfigService 
+    participant CS as ConfigService
     participant IFS as IFilesService
     participant LFS as LocalFilesService
     participant GFS as GitlabFilesService

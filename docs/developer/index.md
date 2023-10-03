@@ -46,27 +46,28 @@ a development workflow is in place. Each developer should follow these steps:
 
 1. Fork of the main repository into your github account.
 1. Setup
-[Code Climate](https://docs.codeclimate.com/docs/getting-started-with-code-climate)
-and
-[Codecov](https://docs.codecov.com/docs/quick-start)
-for your fork. The codecov does not require secret token
-for public repositories.
+   [Code Climate](https://docs.codeclimate.com/docs/getting-started-with-code-climate)
+   and
+   [Codecov](https://docs.codecov.com/docs/quick-start)
+   for your fork. The codecov does not require secret token
+   for public repositories.
 1. Install git-hooks for the project.
 1. Use
-[Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
-workflow.
+   [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
+   workflow.
 1. Work in your fork and open a PR from your working branch to your `feature/distributed-demo` branch.
-The PR will run all the github actions, code climate and codecov checks.
+   The PR will run all the github actions, code climate and codecov checks.
 1. Resolve all the issues identified in the previous step.
 1. If you have access to the
-[integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server),
-try your working branch on the integration server.
+   [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server),
+   try your working branch on the integration server.
 1. Once changes are verified, a PR should be made to the `feature/distributed-demo` branch of
-the upstream
-[DTaaS repository](https://github.com/into-cps-association/DTaaS).
+   the upstream
+   [DTaaS repository](https://github.com/into-cps-association/DTaaS).
 1. The PR will be merged after checks by either the project administrators or the maintainers.
 
-Remember that every PR should be meaningful and satisfies a well-defined user story or improve
+Remember that every PR should be meaningful and satisfies
+a well-defined user story or improve
 the code quality.
 
 ## :eye: Code Quality
@@ -74,23 +75,32 @@ the code quality.
 The project code qualities are measured based on:
 
 * Linting issues identified by
-[Code Climate](https://codeclimate.com/github/INTO-CPS-Association/DTaaS)
+  [Code Climate](https://codeclimate.com/github/INTO-CPS-Association/DTaaS)
 * Test coverage report collected by
-[Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
+  [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
 * Successful [github actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
 
 ### Code Climate
 
-Code Climate performs static analysis, linting and style checks. Quality checks are performed by codeclimate are to ensure the best possible quality of code to add to our project.
+Code Climate performs static analysis, linting and style checks.
+Quality checks are performed by codeclimate are to ensure the best
+possible quality of code to add to our project.
 
-While any new issues introduced in your code would be shown in the PR page itself, to address any specific issue, you can visit the issues or code section of the codeclimate page.
+While any new issues introduced in your code would be
+shown in the PR page itself, to address any specific issue,
+you can visit the issues or code section of the codeclimate page.
 
-It is highly recommended that any code you add does not introduce new quality issues. If they are introduced, they should be fixed immediately using the appropriate suggestions from Code Climate, or in worst case, adding a ignore flag (To be used with caution).
+It is highly recommended that any code you add does
+not introduce new quality issues. If they are introduced,
+they should be fixed immediately using the appropriate suggestions
+from Code Climate, or in worst case, adding a ignore flag
+(To be used with caution).
 
 ### Codecov
 
 Codecov keeps track of the test coverage for the entire project.
-For information about testing and workflow related to that, please see the [testing page](testing/intro.md).
+For information about testing and workflow related to that,
+please see the [testing page](testing/intro.md).
 
 ### Github Actions
 

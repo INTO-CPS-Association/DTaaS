@@ -29,7 +29,6 @@ To host DTaaS client website on your server, follow these steps:
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: "Endpoint for the Jupyter Lab link",
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK:
       "Endpoint for the Jupyter Notebook link",
-
     REACT_APP_CLIENT_ID: 'AppID genereated by the gitlab OAuth provider',
     REACT_APP_AUTH_AUTHORITY: 'URL of the private gitlab instance',
     REACT_APP_REDIRECT_URI: 'URL of the homepage for the logged in users of the website',
@@ -49,7 +48,6 @@ To host DTaaS client website on your server, follow these steps:
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-
     REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
     REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
@@ -70,7 +68,6 @@ To host DTaaS client website on your server, follow these steps:
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-
     REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
     REACT_APP_REDIRECT_URI: 'https://foo.com/bar/Library',

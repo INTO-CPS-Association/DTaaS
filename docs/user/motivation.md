@@ -17,7 +17,8 @@ In addition, how can the DT software platforms:
 There are quite a few solutions proposed in the recent past to solve
 this problem. Some of them are:
 
-* Focus on data from Physical Twins (PTs) to perform analysis, diagnosis, planning etc…
+* Focus on data from Physical Twins (PTs) to
+  perform analysis, diagnosis, planning etc…
 * Share DT assets across the upstream, downstream etc….
 * Evaluate different models of PT
 * DevOps for Cyber Physical Systems (CPS)
