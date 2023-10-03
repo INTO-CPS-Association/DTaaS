@@ -59,7 +59,7 @@
   "dependencies": {
     "@nestjs/common": "^10.2.6",
     "@nestjs/core": "^10.2.6",
-    "@nestjs/platform-express": "^10.2.4",
+    "@nestjs/platform-express": "^10.2.6",
     "cross-env": "^7.0.3",
     "execa": "^8.0.1",
     "reflect-metadata": "^0.1.13",
