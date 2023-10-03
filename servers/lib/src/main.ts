@@ -2,8 +2,8 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import AppModule from "./app.module";
-import * as dotenv from "dotenv";
-import * as fs from "fs";
+import { parse } from "dotenv";
+import { readFileSync } from "fs";
 
 async function bootstrap() {
   // Parse command-line arguments
@@ -13,8 +13,8 @@ async function bootstrap() {
   // Read configuration from the specified file
   if (configFileIndex !== -1 && args[configFileIndex + 1]) {
     const configFilePath = args[configFileIndex + 1];
-    const configBuffer = fs.readFileSync(configFilePath);
-    dotenv.parse(configBuffer);
+    const configBuffer = readFileSync(configFilePath);
+    parse(configBuffer);
   } else {
     return;
   }
