@@ -49,7 +49,9 @@ You can update the configuration in this file to reflect your local setup.
 See [Traefik help docs](https://doc.traefik.io/traefik/providers/file/)
 for more information.
 
-The routes / URLs need to be updated for your local setup. The current version of software only works for non-localhost setting, i.e. URL other than the localhost. Here is an example,
+The routes / URLs need to be updated for your local setup.
+The current version of software only works for non-localhost
+setting, i.e. URL other than the localhost. Here is an example,
 
 | Route / URL   | Background Service | Service URL    |
 | :------------ | :----------------- | :------------- |

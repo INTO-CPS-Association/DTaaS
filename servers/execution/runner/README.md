@@ -1,15 +1,18 @@
 # :runner: Digital Twin Runner
 
-A utility service to manage the [lifecycle of one digital twin](../../../docs/user/digital-twins/lifecycle.md).
-The lifecycle of a digital twin is made of multiple phases. This digital twin runner utility
-helps with the managing the execution of lifecycle phases. This utility can be
+A utility service to manage the
+[lifecycle of one digital twin](../../../docs/user/digital-twins/lifecycle.md).
+The lifecycle of a digital twin is made of multiple phases.
+This digital twin runner utility
+helps with the managing the execution of lifecycle phases.
+This utility can be
 launched in two scenarios:
 
 1. User launches this from commandline and let the utility
-manage the lifecycle of one digital twin.
-2. Execution infrastructure of Digital Twin as a Service (DTaaS)
-launches this utility and instructs it to manage the lifecycle of
-one digital twin.
+   manage the lifecycle of one digital twin.
+1. Execution infrastructure of Digital Twin as a Service (DTaaS)
+   launches this utility and instructs it to manage the lifecycle of
+   one digital twin.
 
 The digital twin runner utility runs as a service and will provide
 REST API interface to execute lifecycle scripts of a digital twin.
@@ -36,7 +39,7 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 This package need to be published to an npm registry. There after, the package
 can be installed as a system command. Since publishing to npmjs.org is
 irrevocable and public, developers are encouraged to setup their own private
-npm registry for local development. We recommend using 
+npm registry for local development. We recommend using
 [verdaccio](https://verdaccio.org) for this task. The following commands
 help you create a working private npm registry for development.
 
@@ -47,7 +50,7 @@ npm set registry http://localhost:4873/
 yarn config set registry "http://localhost:4873"
 ```
 
-You can open `http://localhost:4873` in your browser, login with 
+You can open `http://localhost:4873` in your browser, login with
 the user credentials to see the packages published.
 
 ### Publish to private registry
@@ -70,7 +73,7 @@ for more information.
 If there is a need to unpublish a package, ex: `@dtaas/runner@0.0.2`, do:
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2 
+npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2
 ```
 
 To install / uninstall this utility for all users, do:
@@ -78,7 +81,7 @@ To install / uninstall this utility for all users, do:
 ```bash
 sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
 sudo npm list -g # should list @dtaas/runner in the packages
-sudo npm remove --global @dtaas/runner 
+sudo npm remove --global @dtaas/runner
 ```
 
 ## :rocket: Access the service
@@ -103,7 +106,6 @@ for these two sources are:
 | localhost:3000/phase | [ hello ] | The array get appended with each invocation. All the elements of are _array_. |
 | localhost:3000/lifecycle/phase | _true_ | Always returns _true_ |
 |||
-
 
 ## :balance_scale: License
 

@@ -99,8 +99,9 @@ if deemed necessary.
 printf "operation is not supported on this digital twin"
 ```
 
-The lifecycle programs can call other programs in the code base. In the case of
-`lifecycle/terminate` program, it is calling another script to do the necessary job.
+The lifecycle programs can call other programs in the code base.
+In the case of `lifecycle/terminate` program, it is calling another
+script to do the necessary job.
 
 ```bash title="lifecycle/terminate"
 #!/bin/bash

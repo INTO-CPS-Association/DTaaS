@@ -51,7 +51,8 @@ docker exec rabbitmq-server rabbitmqctl set_permissions -p "/<vhost>" <username>
 ```
 
 The RabbitMQ service requires raw TCP/UDP protocol access to network.
-The default Traefik configuration of DTaaS does not permit TCP/UDP traffic. There are two possible choices here:
+The default Traefik configuration of DTaaS does not permit
+TCP/UDP traffic. There are two possible choices here:
 
 * Configure Traefik gateway to permit TCP/UDP traffic
 * Bypass Traefik altogether for RabbitMQ service
@@ -94,7 +95,7 @@ printf "Complete the setup from GUI"
 
 The user credentials have also been set in the command as:
 
-**username**: admin  
+**username**: admin
 **password**: DTaaSGrafana
 
 Remember to change these credentials before starting the docker container.
@@ -122,7 +123,7 @@ docker run -d -p 80:8086 \
 
 The user credentials have also been set in the command as:
 
-**username**: dtaas  
+**username**: dtaas
 **password**: dtaas1357
 
 Remember to change these credentials before starting the docker container.

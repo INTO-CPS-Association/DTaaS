@@ -1,4 +1,3 @@
-
 # Trial Installation
 
 The software can be installed either on
