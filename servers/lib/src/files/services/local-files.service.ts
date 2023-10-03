@@ -7,7 +7,7 @@ import { IFilesService } from "../interfaces/files.service.interface";
 
 @Injectable()
 export default class LocalFilesService implements IFilesService {
-  // eslint-disable-next-line no-useless-constructor
+  // eslint-disable-next-line no-useless-constructor, no-empty-function 
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {
