@@ -51,7 +51,7 @@
     "redux": "^4.2.1",
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.0.1",
-    "styled-components": "^5.3.9",
+    "styled-components": "^6.0.8",
     "typescript": "^4.9.5"
   },
   "devDependencies": {
