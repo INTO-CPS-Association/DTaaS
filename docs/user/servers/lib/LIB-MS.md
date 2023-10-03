@@ -144,6 +144,7 @@ send requests to: <http:>https://foo.com/lib</http:>
     ```
 
 === "HTTP Response"
+
 ``` http-response
 HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *

@@ -51,7 +51,7 @@ starting with isolated tests and moving towards complete integration for
 any new feature changes. The different types of tests (in the order that they
 should be performed) are explained below:
 
-### [Unit Tests](https://martinfowler.com/articles/practical-test-pyramid.html#UnitTests) 
+### [Unit Tests](https://martinfowler.com/articles/practical-test-pyramid.html#UnitTests)
 
 Unit testing is a level of software testing where individual units/ components
 of a software are tested. The objective of Unit Testing is to isolate

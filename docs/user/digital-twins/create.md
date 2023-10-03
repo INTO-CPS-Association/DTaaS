@@ -134,17 +134,21 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
    and type the following commands.
 1. Download the
    [example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
+
    ```sh
    $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
    $unzip main.zip
    ```
+
 1. Open a file browser and copy the files from this uncompressed folder
    into your workspace folder (`/workspace`). Make sure that the file placement
    matches the one given above.
 1. Go to the digital twin directory and run
+
    ```
    $cd /workspace/digital twins/mass-spring-damper
    $lifecycle/execute
    ```
+
    The last command executes the mass-spring-damper digital twin and stores
    the co-simulation output in `data/mass-spring-damper/output`.

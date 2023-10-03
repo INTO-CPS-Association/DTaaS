@@ -55,16 +55,19 @@ a development workflow is in place. Each developer should follow these steps:
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
-1. Work in your fork and open a PR from your working branch to your `feature/distributed-demo` branch.
+1. Work in your fork and open a PR from your working
+   branch to your `feature/distributed-demo` branch.
    The PR will run all the github actions, code climate and codecov checks.
 1. Resolve all the issues identified in the previous step.
 1. If you have access to the
    [integration server](https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server),
    try your working branch on the integration server.
-1. Once changes are verified, a PR should be made to the `feature/distributed-demo` branch of
+1. Once changes are verified, a PR should be made to
+   the `feature/distributed-demo` branch of
    the upstream
    [DTaaS repository](https://github.com/into-cps-association/DTaaS).
-1. The PR will be merged after checks by either the project administrators or the maintainers.
+1. The PR will be merged after checks by either the
+   project administrators or the maintainers.
 
 Remember that every PR should be meaningful and satisfies
 a well-defined user story or improve
