@@ -16,11 +16,6 @@ function constructURL(tab: string, subTab: string, LIBURL: any) {
   const formattedTab = tab.toLowerCase();
   const formattedSubTab = subTab.toLowerCase();
 
-  // if subtab is "." it means we only need to go to tab
-  if (formattedSubTab === ".") {
-    return `${LIBURL}tree/${formattedTab}`;
-  }
-
   // otherwise we have to appendix both tab and subtab
   return `${LIBURL}tree/${formattedTab}/${formattedSubTab}`;
 }
