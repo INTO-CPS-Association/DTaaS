@@ -18,11 +18,11 @@ function constructURL(tab: string, subTab: string, LIBURL: any) {
 
   // if subtab is "." it means we only need to go to tab
   if (formattedSubTab === ".") {
-    return `${LIBURL}${formattedTab}`;
+    return `${LIBURL}tree/${formattedTab}`;
   }
 
   // otherwise we have to appendix both tab and subtab
-  return `${LIBURL}${formattedTab}/${formattedSubTab}`;
+  return `${LIBURL}tree/${formattedTab}/${formattedSubTab}`;
 }
 
 /*
