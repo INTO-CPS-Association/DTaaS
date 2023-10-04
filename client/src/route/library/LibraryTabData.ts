@@ -1,6 +1,6 @@
 import { ITabs } from 'route/IData';
 
-const tabs: ITabs[] = [
+export const tabs1: ITabs[] = [
   {
     label: 'Functions',
     body: `The functions responsible for pre- and post-processing of: data inputs, data outputs, control outputs. The data science libraries and functions can be used to create useful function assets for the platform.
@@ -27,4 +27,18 @@ const tabs: ITabs[] = [
   },
 ];
 
-export default tabs;
+// This type of Array Tabs is for the second line of Tabs
+export const tabs2: ITabs[] = [
+    {
+      label: '.',
+      body: ``,
+    },
+    {
+      label: 'Private',
+      body: `This is the PRIVATE TAB`,
+    },
+    {
+      label: 'Common',
+      body: `This is the COMMON TAB`,
+    },
+  ];
