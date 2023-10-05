@@ -16,8 +16,18 @@ function constructURL(tab: string, subTab: string, LIBURL: any) {
   const formattedTab = tab.toLowerCase();
   const formattedSubTab = subTab.toLowerCase();
 
-  // otherwise we have to appendix both tab and subtab
-  return `${LIBURL}tree/${formattedTab}/${formattedSubTab}`;
+  let url = `${LIBURL}tree/`;
+
+  if (formattedSubTab === "common") {
+    url = `${url}${formattedSubTab}/`;
+  } 
+  
+  if (formattedTab === "digital twins") {
+    return `${url}digital_twins`;
+  } 
+  
+  return `${url}${formattedTab}`;
+
 }
 
 /*
