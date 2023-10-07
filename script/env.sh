@@ -68,8 +68,10 @@ then
     sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 fi
 NODE_MAJOR=18
-printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | \
+printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
+  https://deb.nodesource.com/node_%s.x nodistro main" "$NODE_MAJOR" | \
   sudo tee /etc/apt/sources.list.d/nodesource.list
+
 sudo apt-get update
 sudo apt-get install -y nodejs
 sudo npm install -g npm@10.2.0

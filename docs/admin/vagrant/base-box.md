@@ -4,9 +4,7 @@ This README provides instructions on creating a custom Operating System
 virtual disk for running the DTaaS software. The virtual disk is managed
 by **vagrant**. The purpose is two fold:
 
-* Provide cross-platform installation of the DTaaS application. Any operating
-system supporting use of vagrant software utility can support installation of
-the DTaaS software.
+* Provide cross-platform installation of the DTaaS application. Any operating system supporting use of vagrant software utility can support installation of the DTaaS software.
 * Create a ready to use development environment for code contributors.
 
 There are two scripts in this directory:
@@ -17,10 +15,10 @@ There are two scripts in this directory:
 | `developer.sh` | developer installation | :x: |
 
 If you are installing the DTaaS for developers, the default installation
-caters to your needs. You can skip the next step and continue with the 
+caters to your needs. You can skip the next step and continue with the
 creation of vagrant box.
 
-If you are a developer and would like additional software installed, you need 
+If you are a developer and would like additional software installed, you need
 to modify `Vagrantfile`. The existing `Vagrantfile` has two lines:
 
 ```sh
@@ -44,7 +42,7 @@ This vagrant box installed for users will have the following items:
   * influxdb v2.7
   * grafana v10.1
   * rabbitmq v3-management
-  * eclipse-mosquitto (mqtt) v2 
+  * eclipse-mosquitto (mqtt) v2
 
 This vagrant box installed for developers will have
 the following items additional items:
