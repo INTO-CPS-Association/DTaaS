@@ -10,6 +10,8 @@
 
 ## General Questions
 
+<!-- markdownlint-disable MD046 -->
+
 ??? Question "What is DTaaS?"
 
     DTaaS is software platform on which you can create and run digital twins.
@@ -207,3 +209,5 @@
     Azure services or third-party services to get the kind of capabilities
     that GE Predix natively provides in one interface.
     The takeaway is that we pick horses for the courses.
+
+<!-- markdownlint-enable MD046 -->
