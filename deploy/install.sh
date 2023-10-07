@@ -14,11 +14,13 @@ sleep 60
 
 printf "\n \n Install the system dependencies...\n "
 printf "....\n "
-bash script/env.sh || exit
+bash deploy/make_boxes/dtaas/user.sh || exit
 
 printf "\n \n Download the required docker images...\n "
 printf ".........\n "
-source script/docker.sh || exit
+docker pull traefik:v2.10
+docker pull mltooling/ml-workspace:0.13.2
+printf "\n\n docker images successfully downloaded...\n \n \n "
 
 
 printf "\n \n Continue with the DTaaS installation...\n "
@@ -83,7 +85,7 @@ sudo docker run -d \
  -v "$PWD/auth:/etc/traefik/auth" \
  -v "$PWD/dynamic:/etc/traefik/dynamic" \
  -v /var/run/docker.sock:/var/run/docker.sock \
- traefik:v2.5 || true
+ traefik:v2.10 || true
 
 #----------
 printf "\n \n Create crontabs to run the application in daemon mode.\n "

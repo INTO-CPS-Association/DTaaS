@@ -15,16 +15,12 @@ multiple hostnames for different services. You can download the required
 services using the docker commands.
 
 ```sh
-docker pull traefik:v2.5
-docker pull influxdb:2.4
-docker pull mltooling/ml-workspace:0.13.2
-docker pull grafana/grafana
-docker pull gitlab/gitlab-ce:15.10.0-ce.0
+docker pull grafana/grafana:10.1.4
+docker pull influxdb:2.7
+docker pull telegraf:1.28.2
+docker pull rabbitmq:3-management
+docker pull eclipse-mosquitto:2
 ```
-
-:warning: The docker images are large and are likely to consume
-about 5GB of bandwidth and 15GB of space.
-You will have to download the docker images on a really good network.
 
 The two-machine vagrant deployment scenario installs the RabbitMQ, Grafana, and
 InfluxDB services on the second vagrant machine.
@@ -96,6 +92,7 @@ printf "Complete the setup from GUI"
 The user credentials have also been set in the command as:
 
 **username**: admin
+
 **password**: DTaaSGrafana
 
 Remember to change these credentials before starting the docker container.
@@ -124,6 +121,7 @@ docker run -d -p 80:8086 \
 The user credentials have also been set in the command as:
 
 **username**: dtaas
+
 **password**: dtaas1357
 
 Remember to change these credentials before starting the docker container.

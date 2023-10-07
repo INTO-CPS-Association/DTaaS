@@ -9,6 +9,13 @@ apt-get upgrade -y
 curl -SL "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64" \
   -o /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+# Install openssl for certificate generation
+apt-get install -y wget openssl
+
+# Install playwright tool for integration tests on browsers
+npx playwright install-deps
 
 #-------------
 printf "\n\n Install jupyterlab and mkdocs"
@@ -28,3 +35,10 @@ newgrp microk8s
 
 # get the required docker images
 docker pull telegraf:1.28.2
+
+# Install markdownlint
+sudo gem install mdl
+
+# Install madge for generating dependency graphs of typescript projects
+sudo apt-get install graphviz
+sudo npm install -g madge

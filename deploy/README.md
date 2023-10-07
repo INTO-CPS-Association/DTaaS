@@ -1,7 +1,7 @@
 # DTaaS on Linux Operating System
 
 This directory contains code for running DTaaS application
-on a Ubuntu Server 20.04 Operating System.
+on a Ubuntu Server 22.04 Operating System.
 The setup requires a machine which can spare 16GB
 RAM, 8 vCPUs and 50GB Hard Disk space.
 

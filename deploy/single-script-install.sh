@@ -26,9 +26,11 @@ sudo mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/docker.gpg ]
 then
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  sudo printf \
-  "deb [arch=%s signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  %s stable" "$(dpkg --print-architecture)" "$(lsb_release -cs)"  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  printf \
+    "deb [arch=%s signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu %s stable" \
+    "$(dpkg --print-architecture)" "$(lsb_release -cs)"  | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 fi
 
 sudo apt-get update -y
@@ -58,14 +60,30 @@ sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
 
-# Install nodejs environment
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash -
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+if [ ! -f /etc/apt/keyrings/nodesource.gpg ]
+then
+  curl -fsSL "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key" | \
+    sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+fi
+NODE_MAJOR=18
+printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
+  https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | \
+  sudo tee /etc/apt/sources.list.d/nodesource.list
+sudo apt-get update
 sudo apt-get install -y nodejs
+sudo npm install -g npm@10.2.0
+
 
 if [ ! -f /usr/share/keyrings/yarnkey.gpg ]
 then
-  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-  printf "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" | gpg --dearmor | \
+    sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+  printf "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] \
+    https://dl.yarnpkg.com/debian stable main \n" | \
+    sudo tee /etc/apt/sources.list.d/yarn.list
 fi
 
 sudo apt-get update -y
@@ -78,12 +96,8 @@ printf "\n\n End of installing dependencies...\n\n\n "
 # get the required docker images
 printf "Download the required docker images...\n "
 printf ".........\n\n\n "
-docker pull traefik:v2.5
-docker pull influxdb:2.4
+docker pull traefik:v2.10
 docker pull mltooling/ml-workspace:0.13.2
-docker pull grafana/grafana
-docker pull telegraf
-docker pull gitlab/gitlab-ce:15.10.0-ce.0
 printf "\n\n docker images successfully downloaded...\n \n \n "
 #----
 
@@ -128,7 +142,7 @@ yarn build
 {
   printf "PORT='4001'\n "
   printf "MODE='local'\n "
-  printf "LOCAL_PATH ='%s'\n " "$TOP_DIR"
+  printf "LOCAL_PATH ='%s/files'\n " "$TOP_DIR"
   printf "GITLAB_GROUP ='dtaas'\n "
   printf "GITLAB_URL='https://gitlab.com/api/graphql'\n "
   printf "TOKEN='123-sample-token'\n "
@@ -146,7 +160,7 @@ docker run -d \
  -p 8090:8080 \
   --name "ml-workspace-user1" \
   -v "${TOP_DIR}/files/user1:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common:ro" \
+  -v "${TOP_DIR}/files/common:/workspace/common" \
   --env AUTHENTICATE_VIA_JUPYTER="" \
   --env WORKSPACE_BASE_URL="user1" \
   --shm-size 512m \
@@ -157,7 +171,7 @@ docker run -d \
  -p 8091:8080 \
   --name "ml-workspace-user2" \
   -v "${TOP_DIR}/files/user2:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common:ro" \
+  -v "${TOP_DIR}/files/common:/workspace/common" \
   --env AUTHENTICATE_VIA_JUPYTER="" \
   --env WORKSPACE_BASE_URL="user2" \
   --shm-size 512m \
@@ -177,7 +191,7 @@ docker run -d \
  -v "$PWD/auth:/etc/traefik/auth" \
  -v "$PWD/dynamic:/etc/traefik/dynamic" \
  -v /var/run/docker.sock:/var/run/docker.sock \
- traefik:v2.5 || true
+ traefik:v2.10 || true
 
 
 #----------
