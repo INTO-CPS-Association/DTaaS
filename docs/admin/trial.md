@@ -10,7 +10,7 @@ with default credentials and users on a Ubuntu server OS.
 You can use it to check a test installation of DTaaS.
 
 ```bash
-wget https://github.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
 bash single-script-install.sh
 ```
 
