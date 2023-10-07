@@ -13,8 +13,8 @@ There are two scripts in this directory:
 
 | Script name | Purpose | Default |
 |:---|:---|:---|
-| `user.sh` | user installation | :checkmark: |
-| `developer.sh` | developer installation | :cross: |
+| `user.sh` | user installation | :white_check_mark: |
+| `developer.sh` | developer installation | :x: |
 
 If you are installing the DTaaS for developers, the default installation
 caters to your needs. You can skip the next step and continue with the 
