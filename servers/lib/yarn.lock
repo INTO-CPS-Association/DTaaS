@@ -1365,9 +1365,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^10.2.6":
-  version: 10.2.6
-  resolution: "@nestjs/core@npm:10.2.6"
+"@nestjs/core@npm:^10.2.7":
+  version: 10.2.7
+  resolution: "@nestjs/core@npm:10.2.7"
   dependencies:
     "@nuxtjs/opencollective": 0.3.2
     fast-safe-stringify: 2.1.1
@@ -1389,7 +1389,7 @@ __metadata:
       optional: true
     "@nestjs/websockets":
       optional: true
-  checksum: 1872330100bbe81bb80f8802c795460085ed928d7cc0081dfca395192356ac32a8a7398272caa62f1f8e4d412bccca440a171e6d105e9d5c7ab257e5078304d4
+  checksum: 7e180d9eb014bb5867ef9476e414ab497a145f3966871155eac08da6b6a75709cae1bbf43bd74bc855316f565396457ccef224ad173a5c5614e4032c59cb9e3c
   languageName: node
   linkType: hard
 
@@ -6235,7 +6235,7 @@ __metadata:
     "@nestjs/cli": ^10.1.18
     "@nestjs/common": ^10.2.6
     "@nestjs/config": ^3.1.1
-    "@nestjs/core": ^10.2.6
+    "@nestjs/core": ^10.2.7
     "@nestjs/graphql": ^12.0.9
     "@nestjs/platform-express": ^10.2.6
     "@nestjs/schematics": ^10.0.2
@@ -6268,7 +6268,7 @@ __metadata:
     type-graphql: ^2.0.0-beta.3
     typescript: ^5.2.2
   peerDependencies:
-    graphql-scalars: "*"
+    graphql-scalars: ^1.22.2
   languageName: unknown
   linkType: soft
 
