@@ -54,7 +54,7 @@ docker run -d \
  -p 8090:8080 \
   --name "ml-workspace-user1" \
   -v "${TOP_DIR}/files/user1:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common:ro" \
+  -v "${TOP_DIR}/files/common:/workspace/common" \
   --env AUTHENTICATE_VIA_JUPYTER="" \
   --env WORKSPACE_BASE_URL="user1" \
   --shm-size 512m \
@@ -65,7 +65,7 @@ docker run -d \
  -p 8091:8080 \
   --name "ml-workspace-user2" \
   -v "${TOP_DIR}/files/user2:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common:ro" \
+  -v "${TOP_DIR}/files/common:/workspace/common" \
   --env AUTHENTICATE_VIA_JUPYTER="" \
   --env WORKSPACE_BASE_URL="user2" \
   --shm-size 512m \
