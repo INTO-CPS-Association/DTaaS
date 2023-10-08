@@ -205,6 +205,7 @@ printf "\n\n The installation is complete.\n\n\n "
 
 printf "Continue with the application configuration.\n "
 printf ".........\n\n\n "
-printf "Remember to change foo.com to your local hostname in the following files.\n "
+printf "Remember to change foo.com and Gitlab OAuth details to your \
+local settings in the following files.\n "
 printf "1. %s/client/build/env.js\n " "$TOP_DIR"
 printf "2. %s/servers/config/gateway/dynamic/fileConfig.yml\n " "$TOP_DIR"
