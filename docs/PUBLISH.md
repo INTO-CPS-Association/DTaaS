@@ -17,6 +17,18 @@ Install Mkdocs using the following command.
 pip install -r docs/requirements.txt
 ```
 
+## Fix Linting Errors
+
+This project uses **markdownlint** linter tool for identifying the formatting
+issues in markdown files. Run
+
+```sh
+mdl docs
+```
+
+from top-directory of the project and fix any identified issues. This needs
+to be done before committing changes to the documentation.
+
 ## Create documentation
 
 The document generation pipeline can generate both **html** and **pdf**
