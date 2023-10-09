@@ -1,32 +1,63 @@
-# Vagrant Box for DTaaS
+# DTaaS Vagrant Box
 
-There are some good vagrant boxes on
-[vagrant website](https://app.vagrantup.com/boxes/search).
-But these boxes require too many installations that take a
-long time and network bandwidth. So it is efficient to
-create one local vagrant box for DTaaS application and reuse
-the same in all installations.
+This README provides instructions on creating a custom Operating System
+virtual disk for running the DTaaS software. The virtual disk is managed
+by **vagrant**. The purpose is two fold:
 
-## Installed Software
+* Provide cross-platform installation of the DTaaS application.
+  Any operating system supporting use of vagrant software utility
+  can support installation of the DTaaS software.
+* Create a ready to use development environment for code contributors.
 
-This base DTaaS vagrant box, when it is successfully created, has the following software:
+There are two scripts in this directory:
 
-* docker
-* nodejs and yarn
-* jupyter
-* microk8s
+| Script name | Purpose | Default |
+|:---|:---|:---|
+| `user.sh` | user installation | :white_check_mark: |
+| `developer.sh` | developer installation | :x: |
+
+If you are installing the DTaaS for developers, the default installation
+caters to your needs. You can skip the next step and continue with the
+creation of vagrant box.
+
+If you are a developer and would like additional software installed, you need
+to modify `Vagrantfile`. The existing `Vagrantfile` has two lines:
+
+```sh
+    config.vm.provision "shell", path: "user.sh"
+    #config.vm.provision "shell", path: "developer.sh"
+```
+
+Uncomment the second line to have more software components installed. If you
+are not a developer, no changes are required to the `Vagrantfile`.
+
+This vagrant box installed for users will have the following items:
+
+* docker v24.0
+* nodejs v18.8
+* yarn v1.22
+* npm v10.2
 * containers
-  * mltooling/ml-workspace:0.13.2
-  * traefik2.5
-  * influxdb2.4
-  * grafana
-  * telegraf
-  * gitlab
+  * ml-workspace v0.13
+  * traefik v2.10
+  * gitlab-ce v16.4
+  * influxdb v2.7
+  * grafana v10.1
+  * rabbitmq v3-management
+  * eclipse-mosquitto (mqtt) v2
 
-## Create the vagrant box
+This vagrant box installed for developers will have
+the following items additional items:
 
-Publish a base virtualbox package to be used by
-vagrant to publish all other virtualbox packages
+* docker-compose v2.20
+* microk8s v1.27
+* jupyterlab
+* mkdocs
+* containers
+  * telegraf v1.28
+
+The upcoming instructions will help with the creation of
+base vagrant box.
 
 ```bash
 #create a key pair

@@ -1,4 +1,4 @@
-# OAuth Authentication for React Website
+# OAuth Authentication for React Client Website
 
 The react client website uses OAuth authentication protocol for user
 authentication. The PKCE authentication flow of OAuth protocol is used
@@ -7,8 +7,10 @@ server.
 **An oauth application needs to be created on a gitlab instance under admin user**.
 Then all other users can use the same gitlab instance for oauth authentication.
 This means commercial gitlab.com can not be used for multi-user authentication
-system required by DTaaS. The simplest way to make this work is to setup OAuth
-application as
+system required by DTaaS. You will need to run an on-premise instance of gitlab.
+You can use
+[gitlab omnibus docker](https://docs.gitlab.com/ee/install/docker.html) for
+this purpose. Please setup OAuth application as
 [instance wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
 Before setting up oauth application on gitlab, you need to first decide on the
@@ -30,34 +32,23 @@ Callback URL: https://foo.com/Library
 Logout URL: https://foo.com
 ```
 
-If you choose to host your DTaaS application with a basename (say bar), then the
-URLs change to:
-
-```txt
-DTaaS application URL: https://foo.com/bar
-Gitlab instance URL: https://foo.gitlab.com
-Callback URL: https://foo.com/bar/Library
-Logout URL: https://foo.com/bar
-```
-
 During the creation of oauth application on gitlab, you need to decide on the
 scope of this oauth application.
 Choose `openid profile read_user read_repository api` scopes.
 
 After successful creation of oauth application, gitlab generates an application
 ID. This application ID is a long string of HEX values. You need to note this
-down and use in configuration files. An example oauth Client ID is: `934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0`.
+down and use in configuration files. An example oauth Client ID is:
+`934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0`.
 
-The mapping between the oauth URLs and the environment variables in `env.js`
-is shown below.
+You need the following information from the OAuth application registered on Gitlab:
 
-| URL | Variable name in env.js |
-|:---|:---|
-| DTaaS application URL | REACT_APP_URL |
-| Gitlab instance URL | REACT_APP_AUTH_AUTHORITY |
-| Callback URL | REACT_APP_REDIRECT_URI |
-| Logout URL | REACT_APP_LOGOUT_REDIRECT_URI |
-||
+| Gitlab Variable Name | Variable name in Client env.js | Default Value |
+|:---|:---|:---|
+| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
+| Application ID | REACT_APP_CLIENT_ID |
+| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
+| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
 
 The same **URLs** and **Client ID** are useful for both the regular hosting of
 DTaaS application and also as the CI/CD server to be used for the development work.
@@ -104,3 +95,13 @@ If you are hosting multiple DTaaS instances on the same server,
 do not a DTaaS with a null basename on the same server.
 Even though it works well, the setup is confusing to setup
 and may lead to maintenance issues.
+
+If you choose to host your DTaaS application with a basename (say bar), then the
+URLs in `env.js` change to:
+
+```txt
+DTaaS application URL: https://foo.com/bar
+Gitlab instance URL: https://foo.gitlab.com
+Callback URL: https://foo.com/bar/Library
+Logout URL: https://foo.com/bar
+```
