@@ -70,7 +70,7 @@ They are:
 [Grafana](https://github.com/grafana/grafana),
 [RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)
 and
-[MQTT](https://mqtt.org/).
+[MQTT](https://github.com/eclipse/mosquitto).
 
 These services can be used by DTs and PTs for communication, storing and
 visualization of data. There can also be monitoring services setup

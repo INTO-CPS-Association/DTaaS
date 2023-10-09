@@ -28,6 +28,8 @@ and is available under [the INTO-CPS License](LICENSE.md).
 The DTaaS software platform uses [Træfik](https://github.com/traefik/traefik),
 [ML Workspace](https://github.com/ml-tooling/ml-workspace),
 [Grafana](https://github.com/grafana/grafana),
-[InfluxDB](https://github.com/influxdata/influxdb) and
-[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server) open-source components.
+[InfluxDB](https://github.com/influxdata/influxdb),
+[MQTT](https://github.com/eclipse/mosquitto) and
+[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)
+open-source components.
 These software components have their own licenses.
