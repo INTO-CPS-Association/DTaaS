@@ -14,7 +14,7 @@ sleep 60
 
 printf "\n \n Install the system dependencies...\n "
 printf "....\n "
-bash deploy/make_boxes/dtaas/user.sh || exit
+bash script/base.sh || exit
 
 printf "\n \n Download the required docker images...\n "
 printf ".........\n "
