@@ -20,7 +20,7 @@ to a relevant one.
 
 ### Gitlab OAuth application
 
-The DTaaS react website requires Gitlab OAuth provider. 
+The DTaaS react website requires Gitlab OAuth provider.
 If you need more help with this step, please see
 the [Authentication page](client/auth.md).
 
