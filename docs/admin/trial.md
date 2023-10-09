@@ -6,11 +6,41 @@ on vagrant virtual machine(s).
 
 A single step install script is helpful in performing a
 trial run of the software. This script installs DTaaS software
-with default credentials and users on a Ubuntu server OS.
-You can use it to check a test installation of DTaaS.
+with default credentials and users on a Ubuntu server 22.04
+Operating System.
+You can use it to check a test installation of DTaaS software.
+
+## Pre-requisites
+
+### Domain name
+
+You need a domain name to run the application. The install script
+assumes **foo.com** to be your domain name. Please change it
+to a relevant one.
+
+### Gitlab OAuth application
+
+The DTaaS react website requires Gitlab OAuth provider.
+If you need more help with this step, please see
+the [Authentication page](client/auth.md).
+
+You need the following information from the OAuth application registered on Gitlab:
+
+| Gitlab Variable Name | Variable name in Client env.js | Default Value |
+|:---|:---|:---|
+| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
+| Application ID | REACT_APP_CLIENT_ID |
+| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
+| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+
+You can also see
+[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+for getting the Gitlab OAuth application details.
+
+### Install
 
 ```bash
-wget https://github.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
 bash single-script-install.sh
 ```
 

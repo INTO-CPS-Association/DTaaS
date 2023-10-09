@@ -136,8 +136,8 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
    [example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
 
    ```sh
-   $wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-   $unzip main.zip
+   wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
+   unzip main.zip
    ```
 
 1. Open a file browser and copy the files from this uncompressed folder
@@ -145,9 +145,9 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
    matches the one given above.
 1. Go to the digital twin directory and run
 
-   ```
-   $cd /workspace/digital twins/mass-spring-damper
-   $lifecycle/execute
+   ```sh
+   cd /workspace/digital twins/mass-spring-damper
+   lifecycle/execute
    ```
 
    The last command executes the mass-spring-damper digital twin and stores

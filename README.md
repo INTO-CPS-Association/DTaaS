@@ -27,9 +27,10 @@ if there is a suggestion to improve the software.
 
 This is a mono repo containing code for
 both the web client and the microservices code base.
-Only the [web client](client) and
-[library microservice](servers/lib)
-components are functional at present.
+The [web client](client),
+[library](servers/lib) and
+[runner](servers/execution/runner)
+microservices are functional at present.
 Everything else is a work-in-progress.
 
 Please see the
@@ -46,7 +47,8 @@ The DTaaS software platform uses
 [Træfik](https://github.com/traefik/traefik),
 [ML Workspace](https://github.com/ml-tooling/ml-workspace),
 [Grafana](https://github.com/grafana/grafana),
-[InfluxDB](https://github.com/influxdata/influxdb) and
+[InfluxDB](https://github.com/influxdata/influxdb),
+[MQTT](https://github.com/eclipse/mosquitto) and
 [RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)
 open-source components.
 These software components have their own licenses.
