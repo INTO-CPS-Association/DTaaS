@@ -15,7 +15,7 @@ chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
 apt-get install -y wget openssl
 
 # Install playwright tool for integration tests on browsers
-npx playwright install-deps
+npx --yes playwright install-deps
 
 #-------------
 printf "\n\n Install jupyterlab and mkdocs"
@@ -41,5 +41,5 @@ sudo apt-get install -y rubygems
 sudo gem install mdl
 
 # Install madge for generating dependency graphs of typescript projects
-sudo apt-get install graphviz
+sudo apt-get install -y graphviz
 sudo npm install -g madge
