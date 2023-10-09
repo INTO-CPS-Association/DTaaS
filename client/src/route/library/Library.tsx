@@ -74,7 +74,7 @@ function LibraryContent() {
                   <br />
                   <Typography variant="body1">{tab22.body}</Typography>
                   <br />
-                  <Iframe title={`JupyterLight-Demo-${tab22.label}`} url={constructURL(tab11.label, tab22.label, LIBurl)} />
+                  <Iframe title={`Digital Twin as a Service`} url={constructURL(tab11.label, tab22.label, LIBurl)} />
                 </TabPanel>
               ))}
             </Tabs>
