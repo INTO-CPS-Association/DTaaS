@@ -12,7 +12,9 @@ sudo apt-get install -y \
     lsb-release \
     zsh \
     apache2-utils \
-    net-tools
+    net-tools \
+    python3-dev \
+    python3-pip
 
 sudo mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/docker.gpg ]
@@ -107,6 +109,7 @@ sudo -H pip3 install mkdocs-with-pdf
 sudo -H pip3 install qrcode
 
 # Install markdownlint
+sudo apt-get install -y rubygems
 sudo gem install mdl
 
 # Install madge for generating dependency graphs of typescript projects

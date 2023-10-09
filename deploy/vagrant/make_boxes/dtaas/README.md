@@ -4,7 +4,9 @@ This README provides instructions on creating a custom Operating System
 virtual disk for running the DTaaS software. The virtual disk is managed
 by **vagrant**. The purpose is two fold:
 
-* Provide cross-platform installation of the DTaaS application. Any operating system supporting use of vagrant software utility can support installation of the DTaaS software.
+* Provide cross-platform installation of the DTaaS application.
+  Any operating system supporting use of vagrant software utility can
+  support installation of the DTaaS software.
 * Create a ready to use development environment for code contributors.
 
 There are two scripts in this directory:

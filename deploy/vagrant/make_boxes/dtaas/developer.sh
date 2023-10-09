@@ -37,6 +37,7 @@ newgrp microk8s
 docker pull telegraf:1.28.2
 
 # Install markdownlint
+sudo apt-get install -y rubygems
 sudo gem install mdl
 
 # Install madge for generating dependency graphs of typescript projects

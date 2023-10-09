@@ -13,7 +13,9 @@ apt-get install -y \
     lsb-release \
     zsh \
     apache2-utils \
-    net-tools
+    net-tools \
+    python3-dev \
+    python3-pip
 
 mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/docker.gpg ]

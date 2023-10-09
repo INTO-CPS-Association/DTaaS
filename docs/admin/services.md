@@ -28,7 +28,7 @@ InfluxDB services on the second vagrant machine.
 If you would like to install some of these services for native OS
 installation or single vagrant machine, you can do this as well.
 
-## RabbitMQ Service
+## RabbitMQ
 
 Start the RabbitMQ service with
 
@@ -56,7 +56,7 @@ TCP/UDP traffic. There are two possible choices here:
 Unless you are an informed user of Traefik, we recommend bypassing traefik
 for RabbitMQ service.
 
-## Grafana Service
+## Grafana
 
 Grafana service can run well behind Traefik gateway. Here is a sample docker
 command to run Grafana service at port 3000:
@@ -97,7 +97,7 @@ The user credentials have also been set in the command as:
 
 Remember to change these credentials before starting the docker container.
 
-## InfluxDB Service
+## InfluxDB
 
 The barebones InfluxDB service can be installed using:
 
