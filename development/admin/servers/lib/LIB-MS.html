@@ -662,15 +662,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#query" class="md-nav__link">
-    Query
+  <a href="#query-list-of-files" class="md-nav__link">
+    Query: List of Files
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#response" class="md-nav__link">
-    Response
+  <a href="#response-list-of-files" class="md-nav__link">
+    Response: List of Files
   </a>
   
 </li>
@@ -689,15 +689,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#query_1" class="md-nav__link">
-    Query
+  <a href="#query-get-file-contents" class="md-nav__link">
+    Query: Get File Contents
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#response_1" class="md-nav__link">
-    Response
+  <a href="#response-get-file-contents" class="md-nav__link">
+    Response: Get File Contents
   </a>
   
 </li>
@@ -1328,15 +1328,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#query" class="md-nav__link">
-    Query
+  <a href="#query-list-of-files" class="md-nav__link">
+    Query: List of Files
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#response" class="md-nav__link">
-    Response
+  <a href="#response-list-of-files" class="md-nav__link">
+    Response: List of Files
   </a>
   
 </li>
@@ -1355,15 +1355,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#query_1" class="md-nav__link">
-    Query
+  <a href="#query-get-file-contents" class="md-nav__link">
+    Query: Get File Contents
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#response_1" class="md-nav__link">
-    Response
+  <a href="#response-get-file-contents" class="md-nav__link">
+    Response: Get File Contents
   </a>
   
 </li>
@@ -1431,12 +1431,16 @@ It has three features:</p>
 <li>transfer a file to user.</li>
 <li>Source files can either come from local file system or from a gitlab instance.</li>
 </ul>
-<p>The library microservice is designed to manage and serve files, functions, and models to users, allowing them to access and interact with various resources.</p>
+<p>The library microservice is designed to manage and serve files,
+functions, and models to users, allowing them to access and interact
+with various resources.</p>
 <p>This document provides instructions for running a stand alone library microservice.</p>
 <h2 id="setup-the-file-system">Setup the File System</h2>
 <p>The users expect the following file system structure for their reusable assets.</p>
 <p><img alt="File System Layout" src="file-system-layout.png" /></p>
-<p>There is a skeleton file structure in <a href="https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files">DTaaS codebase</a>. You can copy and create file system for your users.</p>
+<p>There is a skeleton file structure in
+<a href="https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files">DTaaS codebase</a>.
+You can copy and create file system for your users.</p>
 <h2 id="gitlab-setup-optional">Gitlab setup (optional)</h2>
 <p>For this microserivce to be functional,
 a certain directory or gitlab project structure is expected.
@@ -1451,7 +1455,8 @@ for help on the management of gitlab groups.</p>
 to get a sample file system structure for the lib microservice.</p>
 <h2 id="setup-microservice">Setup Microservice</h2>
 <p>To set up the lib microservice, follow these steps:</p>
-<p>Download the <strong>lib-microservice.zip</strong> from the <a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.</p>
+<p>Download the <strong>lib-microservice.zip</strong> from the
+<a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.</p>
 <h2 id="configuration-setup">Configuration setup</h2>
 <p>The microservices uses <code>.env</code> environment files to receive configuration.</p>
 <p>To set up the environment variables for the lib microservice,
@@ -1488,8 +1493,10 @@ the value of <code>TOKEN</code> with your token for the gitlab group, can be fou
 <p>Replace the default values the appropriate values for your setup.</p>
 <p><strong>NOTE</strong>:</p>
 <ol>
-<li>When _<em>MODE=local</em>, only <em>LOCAL_PATH</em> is used. Other environment variables are unused.</li>
-<li>When <em>MODE=gitlab</em>, <em>GITLAB_URL, TOKEN</em>, and <em>GITLAB_GROUP</em> are used; <em>LOCAL_PATH</em> is unused.</li>
+<li>When _<em>MODE=local</em>, only <em>LOCAL_PATH</em> is used.
+   Other environment variables are unused.</li>
+<li>When <em>MODE=gitlab</em>, <em>GITLAB_URL, TOKEN</em>,
+   and <em>GITLAB_GROUP</em> are used; <em>LOCAL_PATH</em> is unused.</li>
 </ol>
 <h3 id="start-microservice">Start Microservice</h3>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
@@ -1509,7 +1516,7 @@ If you wish to run the microservice in the background, use</p>
 <h2 id="graphql-api-calls">GraphQL API Calls</h2>
 <p>The lib microservice supports two GraphQL queries.</p>
 <h3 id="directory-listing">Directory Listing</h3>
-<h4 id="query">Query</h4>
+<h4 id="query-list-of-files">Query: List of Files</h4>
 <p>To retrieve a list of files in a directory, use the following GraphQL query.
 Replace <code>path</code> with the desired directory path.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
@@ -1560,7 +1567,7 @@ Replace <code>path</code> with the desired directory path.</p>
 </span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23"></a>  }
 </span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24"></a>}
 </span></code></pre></div></td></tr></table></div>
-<h4 id="response">Response</h4>
+<h4 id="response-list-of-files">Response: List of Files</h4>
 <p>This query returns the list of files and subdirectories in the specified directory.
 The response will include the name and type of each item.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
@@ -1670,7 +1677,7 @@ The response will include the name and type of each item.</p>
 </span><span id="__span-4-53"><a id="__codelineno-4-53" name="__codelineno-4-53"></a>}
 </span></code></pre></div></td></tr></table></div>
 <h3 id="fetching-a-file">Fetching a File</h3>
-<h4 id="query_1">Query</h4>
+<h4 id="query-get-file-contents">Query: Get File Contents</h4>
 <p>This query receives directory path and send the file contents to user in response.</p>
 <p>To check this query, create a file <code>files/user2/data/welcome.txt</code>
 with content of <code>hello world</code>.</p>
@@ -1700,7 +1707,7 @@ with content of <code>hello world</code>.</p>
 </span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a>  }
 </span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13"></a>}
 </span></code></pre></div></td></tr></table></div>
-<h4 id="response_1">Response</h4>
+<h4 id="response-get-file-contents">Response: Get File Contents</h4>
 <p>This query returns the name, raw binary blob, and raw text blob of
 the specified file. The <code>rawBlob</code> field contains the file contents
 in binary format, while the <code>rawTextBlob</code> field contains the file contents
@@ -1761,17 +1768,11 @@ You can download the Ubuntu AppImage and run it. Select the following options:</
 <span class="normal"><a href="#__codelineno-8-2">2</a></span>
 <span class="normal"><a href="#__codelineno-8-3">3</a></span>
 <span class="normal"><a href="#__codelineno-8-4">4</a></span>
-<span class="normal"><a href="#__codelineno-8-5">5</a></span>
-<span class="normal"><a href="#__codelineno-8-6">6</a></span>
-<span class="normal"><a href="#__codelineno-8-7">7</a></span>
-<span class="normal"><a href="#__codelineno-8-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nf">POST</span> <span class="nn">/lib</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="normal"><a href="#__codelineno-8-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nf">POST</span> <span class="nn">/lib</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="na">Host</span><span class="o">:</span> <span class="l">localhost:4001</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="na">Content-Length</span><span class="o">:</span> <span class="l">388</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="p">{</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">   </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="s2">&quot;query {\n  listDirectory(path: \&quot;user1\&quot;) {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}&quot;</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="p">}</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="na">{&quot;query&quot;</span><span class="o">:</span><span class="l">&quot;query {\n  listDirectory(path: \&quot;user1\&quot;) {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}&quot;}</span>
 </span></code></pre></div></td></tr></table></div>
 <p>This HTTP POST request will generate the following HTTP response message.</p>
 <div class="language-http highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
@@ -1781,16 +1782,14 @@ You can download the Ubuntu AppImage and run it. Select the following options:</
 <span class="normal"><a href="#__codelineno-9-5">5</a></span>
 <span class="normal"><a href="#__codelineno-9-6">6</a></span>
 <span class="normal"><a href="#__codelineno-9-7">7</a></span>
-<span class="normal"><a href="#__codelineno-9-8">8</a></span>
-<span class="normal"><a href="#__codelineno-9-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="normal"><a href="#__codelineno-9-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="na">Access-Control-Allow-Origin</span><span class="o">:</span> <span class="l">*</span>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="na">Connection</span><span class="o">:</span> <span class="l">close</span>
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="na">Content-Length</span><span class="o">:</span> <span class="l">306</span>
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json; charset=utf-8</span>
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="na">Date</span><span class="o">:</span> <span class="l">Tue, 26 Sep 2023 20:26:49 GMT</span>
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="na">X-Powered-By</span><span class="o">:</span> <span class="l">Express</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="p">{</span><span class="nt">&quot;data&quot;</span><span class="p">:{</span><span class="nt">&quot;listDirectory&quot;</span><span class="p">:{</span><span class="nt">&quot;repository&quot;</span><span class="p">:{</span><span class="nt">&quot;tree&quot;</span><span class="p">:{</span><span class="nt">&quot;blobs&quot;</span><span class="p">:{</span><span class="nt">&quot;edges&quot;</span><span class="p">:[]},</span><span class="nt">&quot;trees&quot;</span><span class="p">:{</span><span class="nt">&quot;edges&quot;</span><span class="p">:[{</span><span class="nt">&quot;node&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;data&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;tree&quot;</span><span class="p">}},{</span><span class="nt">&quot;node&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;digital twins&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;tree&quot;</span><span class="p">}},{</span><span class="nt">&quot;node&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;functions&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;tree&quot;</span><span class="p">}},{</span><span class="nt">&quot;node&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;models&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;tree&quot;</span><span class="p">}},{</span><span class="nt">&quot;node&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;tools&quot;</span><span class="p">,</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;tree&quot;</span><span class="p">}}]}}}}}}</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="na">{&quot;data&quot;</span><span class="o">:</span><span class="l">{&quot;listDirectory&quot;:{&quot;repository&quot;:{&quot;tree&quot;:{&quot;blobs&quot;:{&quot;edges&quot;:[]},&quot;trees&quot;:{&quot;edges&quot;:[{&quot;node&quot;:{&quot;name&quot;:&quot;data&quot;,&quot;type&quot;:&quot;tree&quot;}},{&quot;node&quot;:{&quot;name&quot;:&quot;digital twins&quot;,&quot;type&quot;:&quot;tree&quot;}},{&quot;node&quot;:{&quot;name&quot;:&quot;functions&quot;,&quot;type&quot;:&quot;tree&quot;}},{&quot;node&quot;:{&quot;name&quot;:&quot;models&quot;,&quot;type&quot;:&quot;tree&quot;}},{&quot;node&quot;:{&quot;name&quot;:&quot;tools&quot;,&quot;type&quot;:&quot;tree&quot;}}]}}}}}}</span>
 </span></code></pre></div></td></tr></table></div>
 <h3 id="fetch-a-file">Fetch a file</h3>
 <p>This query receives directory path and send the file contents to user in response.</p>
@@ -1800,17 +1799,11 @@ with content of <code>hello world</code>.</p>
 <span class="normal"><a href="#__codelineno-10-2">2</a></span>
 <span class="normal"><a href="#__codelineno-10-3">3</a></span>
 <span class="normal"><a href="#__codelineno-10-4">4</a></span>
-<span class="normal"><a href="#__codelineno-10-5">5</a></span>
-<span class="normal"><a href="#__codelineno-10-6">6</a></span>
-<span class="normal"><a href="#__codelineno-10-7">7</a></span>
-<span class="normal"><a href="#__codelineno-10-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="nf">POST</span> <span class="nn">/lib</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="normal"><a href="#__codelineno-10-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="nf">POST</span> <span class="nn">/lib</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="na">Host</span><span class="o">:</span> <span class="l">localhost:4001</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="na">Content-Length</span><span class="o">:</span> <span class="l">217</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="p">{</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="w">   </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="s2">&quot;query {\n  readFile(path: \&quot;user2/data/welcome.txt\&quot;) {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}&quot;</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8"></a><span class="p">}</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="na">{&quot;query&quot;</span><span class="o">:</span><span class="l">&quot;query {\n  readFile(path: \&quot;user2/data/welcome.txt\&quot;) {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}&quot;}</span>
 </span></code></pre></div></td></tr></table></div>
 <div class="language-http highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
 <span class="normal"><a href="#__codelineno-11-2">2</a></span>
@@ -1819,16 +1812,14 @@ with content of <code>hello world</code>.</p>
 <span class="normal"><a href="#__codelineno-11-5">5</a></span>
 <span class="normal"><a href="#__codelineno-11-6">6</a></span>
 <span class="normal"><a href="#__codelineno-11-7">7</a></span>
-<span class="normal"><a href="#__codelineno-11-8">8</a></span>
-<span class="normal"><a href="#__codelineno-11-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="normal"><a href="#__codelineno-11-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="na">Access-Control-Allow-Origin</span><span class="o">:</span> <span class="l">*</span>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="na">Connection</span><span class="o">:</span> <span class="l">close</span>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="na">Content-Length</span><span class="o">:</span> <span class="l">134</span>
 </span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json; charset=utf-8</span>
 </span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 27 Sep 2023 09:17:18 GMT</span>
 </span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="na">X-Powered-By</span><span class="o">:</span> <span class="l">Express</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8"></a>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="p">{</span><span class="nt">&quot;data&quot;</span><span class="p">:{</span><span class="nt">&quot;readFile&quot;</span><span class="p">:{</span><span class="nt">&quot;repository&quot;</span><span class="p">:{</span><span class="nt">&quot;blobs&quot;</span><span class="p">:{</span><span class="nt">&quot;nodes&quot;</span><span class="p">:[{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;welcome.txt&quot;</span><span class="p">,</span><span class="nt">&quot;rawBlob&quot;</span><span class="p">:</span><span class="s2">&quot;hello world&quot;</span><span class="p">,</span><span class="nt">&quot;rawTextBlob&quot;</span><span class="p">:</span><span class="s2">&quot;hello world&quot;</span><span class="p">}]}}}}}</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8"></a><span class="na">{&quot;data&quot;</span><span class="o">:</span><span class="l">{&quot;readFile&quot;:{&quot;repository&quot;:{&quot;blobs&quot;:{&quot;nodes&quot;:[{&quot;name&quot;:&quot;welcome.txt&quot;,&quot;rawBlob&quot;:&quot;hello world&quot;,&quot;rawTextBlob&quot;:&quot;hello world&quot;}]}}}}}</span>
 </span></code></pre></div></td></tr></table></div>
 
 

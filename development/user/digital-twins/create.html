@@ -1154,10 +1154,11 @@
 
 
 <h1 id="create-a-digital-twin">Create a Digital Twin</h1>
-<p>The first step in digital twin creation is to use the available assets
-in your workspace. If you have assets / files in your computer that need
-to be available in the DTaaS workspace, then please follow the instructions
-provided in <a href="../servers/lib/assets.html">library assets</a>.</p>
+<p>The first step in digital twin creation is to use the available
+assets in your workspace. If you have assets / files
+in your computer that need to be available in the DTaaS workspace,
+then please follow the instructions provided in
+<a href="../servers/lib/assets.html">library assets</a>.</p>
 <p>There are dependencies among the library assets. These dependencies
 are shown below.</p>
 <p><img alt="Relation between reusable assets" src="asset-relationship.png" /></p>
@@ -1286,44 +1287,40 @@ The <a href="lifecycle.html">lifecycle page</a> provides more explanation on the
 <p class="admonition-title">Execution of a Digital Twin</p>
 <p>A frequent question arises on the run time characteristics of
 a digital twin. The natural intuition is to say that a digital twin must
-operate as long as its physical twin is in operation.</p>
-<p><strong>If a digital twin runs for a finite time and then ends, can it be
-called a digital twin?</strong></p>
-<p><strong>The answer is a resounding YES</strong>. The Industry 4.0 usecases seen among
+operate as long as its physical twin is in operation.
+<strong>If a digital twin runs for a finite time and then ends, can it be
+called a digital twin?</strong>
+<strong>The answer is a resounding YES</strong>. The Industry 4.0 usecases seen among
 SMEs have digital twins that run for a finite time. These digital twins
 are often run at the discretion of the user.</p>
 </div>
 <p><strong>You can run this digital twin by</strong>,</p>
 <ol>
 <li>Go to Workbench tools page of the DTaaS website and open VNC Desktop.
-This opens a new tab in your browser</li>
+   This opens a new tab in your browser</li>
 <li>A page with VNC Desktop and a connect button comes up. Click on Connect.
-You are now connected to the Linux Desktop of your workspace.</li>
+   You are now connected to the Linux Desktop of your workspace.</li>
 <li>Open a Terminal (black rectangular icon in the top left region of your tab)
-and type the following commands.</li>
-<li>
-<p>Download the
-<a href="https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip">example files</a></p>
+   and type the following commands.</li>
+<li>Download the
+   <a href="https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip">example files</a></li>
+</ol>
 <div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nv">$wget</span><span class="w"> </span>https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nv">$unzip</span><span class="w"> </span>main.zip
+<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>wget<span class="w"> </span>https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>unzip<span class="w"> </span>main.zip
 </span></code></pre></div></td></tr></table></div>
-</li>
-<li>
-<p>Open a file browser and copy the files from this uncompressed folder
-into your workspace folder (<code>/workspace</code>). Make sure that the file placement
-matches the one given above.</p>
-</li>
-<li>
-<p>Go to the digital twin directory and run</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>$cd /workspace/digital twins/mass-spring-damper
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>$lifecycle/execute
+<ol>
+<li>Open a file browser and copy the files from this uncompressed folder
+   into your workspace folder (<code>/workspace</code>). Make sure that the file placement
+   matches the one given above.</li>
+<li>Go to the digital twin directory and run</li>
+</ol>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/digital<span class="w"> </span>twins/mass-spring-damper
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>lifecycle/execute
 </span></code></pre></div></td></tr></table></div>
 <p>The last command executes the mass-spring-damper digital twin and stores
-the co-simulation output in <code>data/mass-spring-damper/output</code>.</p>
-</li>
-</ol>
+   the co-simulation output in <code>data/mass-spring-damper/output</code>.</p>
 
 
 

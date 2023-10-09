@@ -15,7 +15,7 @@
     
     
       
-        <title>Index - Digital Twin as a Service (DTaaS)</title>
+        <title>Incubator Demo - Digital Twin as a Service (DTaaS)</title>
       
     
     
@@ -58,6 +58,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#incubator-demo" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -86,7 +91,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Index
+              Incubator Demo
             
           </span>
         </div>
@@ -1063,6 +1068,8 @@
   
   
   
+    
+  
   
 </nav>
                   </div>
@@ -1080,8 +1087,7 @@
   
 
 
-  <h1>Index</h1>
-
+<h1 id="incubator-demo">Incubator Demo</h1>
 <p>Installation of required python packages for the Incubator demo</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -1094,43 +1100,37 @@
 <span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyhocon
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>influxdb_client
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>scipy<span class="w"> </span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w">  </span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>pip<span class="w"> </span>install<span class="w"> </span>pika<span class="w">  </span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>pip<span class="w"> </span>install<span class="w"> </span>oomodelling<span class="w"> </span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>pip<span class="w"> </span>install<span class="w"> </span>control<span class="w">  </span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a>pip<span class="w"> </span>install<span class="w"> </span>filterpy<span class="w"> </span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>pip<span class="w"> </span>install<span class="w"> </span>sympy<span class="w">  </span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a>pip<span class="w"> </span>install<span class="w"> </span>docker<span class="w">  </span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>scipy
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>pip<span class="w"> </span>install<span class="w"> </span>pandas
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>pip<span class="w"> </span>install<span class="w"> </span>pika
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>pip<span class="w"> </span>install<span class="w"> </span>oomodelling
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>pip<span class="w"> </span>install<span class="w"> </span>control
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a>pip<span class="w"> </span>install<span class="w"> </span>filterpy
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>pip<span class="w"> </span>install<span class="w"> </span>sympy
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a>pip<span class="w"> </span>install<span class="w"> </span>docker
 </span></code></pre></div></td></tr></table></div>
 <p>start rabbitmq server and create a rabbitmq account with,</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>name: incubator  
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>password:incubator   
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>name: incubator
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>password:incubator
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>with access to the virtual host &quot;/&quot;
 </span></code></pre></div></td></tr></table></div>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span>
-<span class="normal"><a href="#__codelineno-2-4">4</a></span>
-<span class="normal"><a href="#__codelineno-2-5">5</a></span>
-<span class="normal"><a href="#__codelineno-2-6">6</a></span>
-<span class="normal"><a href="#__codelineno-2-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w"> </span>--name<span class="w"> </span>rabbitmq-server<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w"> </span>rabbitmq:3-management
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>add_user<span class="w"> </span>incubator<span class="w"> </span>incubator
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>set_permissions<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span>incubator<span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>rabbitmq-server<span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span>rabbitmq:3-management
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>add_user<span class="w"> </span>incubator<span class="w"> </span>incubator
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>set_permissions<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span>incubator<span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span>
 </span></code></pre></div></td></tr></table></div>
-<p>Access InfluxDB running on another machine. Remember that InfluxDB works only on a distinct sub-domain name like <code>influx.foo.com</code>, but not on <code>foo.com/influx</code>.</p>
+<p>Access InfluxDB running on another machine.
+Remember that InfluxDB works only on a distinct sub-domain
+name like <code>influx.foo.com</code>, but not on <code>foo.com/influx</code>.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/vagrant/vagrant<span class="w"> </span>-fNT<span class="w"> </span>-L<span class="w"> </span><span class="m">40000</span>:localhost:80<span class="w"> </span>vagrant@influx.server2.com
 </span></code></pre></div></td></tr></table></div>
-<p>Update the rabbitmq-server and influxdb configuration in </p>
+<p>Update the rabbitmq-server and influxdb configuration in</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>/home/vagrant/dt/1/incubator/example_digital-twin_incubator/software/startup.conf
 </span></code></pre></div></td></tr></table></div>
-<p>select (comment / uncomment) functions in  </p>
+<p>select (comment / uncomment) functions in</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>/home/vagrant/dt/1/incubator/example_digital-twin_incubator/software/startup/start_all_services.py
 </span></code></pre></div></td></tr></table></div>
 <p>Start the program</p>

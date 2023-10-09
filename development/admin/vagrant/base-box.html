@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vagrant-box-for-dtaas" class="md-skip">
+        <a href="#dtaas-vagrant-box" class="md-skip">
           Skip to content
         </a>
       
@@ -483,47 +483,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Base Box
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="base-box.html" class="md-nav__link md-nav__link--active">
         Base Box
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installed-software" class="md-nav__link">
-    Installed Software
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#create-the-vagrant-box" class="md-nav__link">
-    Create the vagrant box
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1129,28 +1091,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installed-software" class="md-nav__link">
-    Installed Software
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#create-the-vagrant-box" class="md-nav__link">
-    Create the vagrant box
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1167,108 +1107,153 @@
   
 
 
-<h1 id="vagrant-box-for-dtaas">Vagrant Box for DTaaS</h1>
-<p>There are some good vagrant boxes on
-<a href="https://app.vagrantup.com/boxes/search">vagrant website</a>.
-But these boxes require too many installations that take a
-long time and network bandwidth. So it is efficient to
-create one local vagrant box for DTaaS application and reuse
-the same in all installations.</p>
-<h2 id="installed-software">Installed Software</h2>
-<p>This base DTaaS vagrant box, when it is successfully created, has the following software:</p>
+<h1 id="dtaas-vagrant-box">DTaaS Vagrant Box</h1>
+<p>This README provides instructions on creating a custom Operating System
+virtual disk for running the DTaaS software. The virtual disk is managed
+by <strong>vagrant</strong>. The purpose is two fold:</p>
 <ul>
-<li>docker</li>
-<li>nodejs and yarn</li>
-<li>jupyter</li>
-<li>microk8s</li>
-<li>containers</li>
-<li>mltooling/ml-workspace:0.13.2</li>
-<li>traefik2.5</li>
-<li>influxdb2.4</li>
-<li>grafana</li>
-<li>telegraf</li>
-<li>gitlab</li>
+<li>Provide cross-platform installation of the DTaaS application.
+  Any operating system supporting use of vagrant software utility
+  can support installation of the DTaaS software.</li>
+<li>Create a ready to use development environment for code contributors.</li>
 </ul>
-<h2 id="create-the-vagrant-box">Create the vagrant box</h2>
-<p>Publish a base virtualbox package to be used by
-vagrant to publish all other virtualbox packages</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1">#create a key pair</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>ssh-keygen<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-f<span class="w"> </span>key<span class="w"> </span>-q<span class="w"> </span>-N<span class="w"> </span><span class="s2">&quot;&quot;</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>mv<span class="w"> </span>key<span class="w"> </span>vagrant
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>mv<span class="w"> </span>key.pub<span class="w"> </span>vagrant.pub
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>vagrant<span class="w"> </span>up
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="c1"># let the provisioning be complete</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="c1"># replace the vagrant ssh key-pair with personal one</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a>vagrant<span class="w"> </span>ssh
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="c1"># install the oh-my-zsh</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="c1"># install plugins: history, autosuggestions,</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/zsh-users/zsh-autosuggestions<span class="w"> </span><span class="si">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="si">}</span>/plugins/zsh-autosuggestions
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="c1"># inside ~/.zshrc, modify the following line</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="nv">plugins</span><span class="o">=(</span>git<span class="w"> </span>zsh-autosuggestions<span class="w"> </span><span class="nb">history</span><span class="w"> </span>cp<span class="w"> </span>tmux<span class="o">)</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="c1"># remove the vagrant default public key - first line of</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="c1"># /home/vagrant/.ssh/authorized_keys</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="c1"># exit vagrant guest machine and then</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="c1"># copy own private key to vagrant private key location</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>cp<span class="w"> </span>vagrant<span class="w"> </span>.vagrant/machines/default/virtualbox/private_key
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="c1"># check</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>vagrant<span class="w"> </span>ssh<span class="w"> </span><span class="c1">#should work</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>vagrant<span class="w"> </span>halt
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>vagrant<span class="w"> </span>package<span class="w"> </span>--base<span class="w"> </span>dtaas<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>--info<span class="w"> </span><span class="s2">&quot;info.json&quot;</span><span class="w"> </span>--output<span class="w"> </span>dtaas.vagrant
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="c1"># Add box to the vagrant cache in ~/.vagrant.d/boxes directory</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>vagrant<span class="w"> </span>box<span class="w"> </span>add<span class="w"> </span>--name<span class="w"> </span>dtaas<span class="w"> </span>./dtaas.vagrant
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="c1"># You can use this box in other vagrant boxes using</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="c1">#config.vm.box = &quot;dtaas&quot;</span>
+<p>There are two scripts in this directory:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Script name</th>
+<th align="left">Purpose</th>
+<th align="left">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>user.sh</code></td>
+<td align="left">user installation</td>
+<td align="left"><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+</tr>
+<tr>
+<td align="left"><code>developer.sh</code></td>
+<td align="left">developer installation</td>
+<td align="left"><img alt="❌" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/274c.svg" title=":x:" /></td>
+</tr>
+</tbody>
+</table>
+<p>If you are installing the DTaaS for developers, the default installation
+caters to your needs. You can skip the next step and continue with the
+creation of vagrant box.</p>
+<p>If you are a developer and would like additional software installed, you need
+to modify <code>Vagrantfile</code>. The existing <code>Vagrantfile</code> has two lines:</p>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="w">    </span>config.vm.provision<span class="w"> </span><span class="s2">&quot;shell&quot;</span>,<span class="w"> </span>path:<span class="w"> </span><span class="s2">&quot;user.sh&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="c1">#config.vm.provision &quot;shell&quot;, path: &quot;developer.sh&quot;</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Uncomment the second line to have more software components installed. If you
+are not a developer, no changes are required to the <code>Vagrantfile</code>.</p>
+<p>This vagrant box installed for users will have the following items:</p>
+<ul>
+<li>docker v24.0</li>
+<li>nodejs v18.8</li>
+<li>yarn v1.22</li>
+<li>npm v10.2</li>
+<li>containers</li>
+<li>ml-workspace v0.13</li>
+<li>traefik v2.10</li>
+<li>gitlab-ce v16.4</li>
+<li>influxdb v2.7</li>
+<li>grafana v10.1</li>
+<li>rabbitmq v3-management</li>
+<li>eclipse-mosquitto (mqtt) v2</li>
+</ul>
+<p>This vagrant box installed for developers will have
+the following items additional items:</p>
+<ul>
+<li>docker-compose v2.20</li>
+<li>microk8s v1.27</li>
+<li>jupyterlab</li>
+<li>mkdocs</li>
+<li>containers</li>
+<li>telegraf v1.28</li>
+</ul>
+<p>The upcoming instructions will help with the creation of
+base vagrant box.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span>
+<span class="normal"><a href="#__codelineno-1-24">24</a></span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span>
+<span class="normal"><a href="#__codelineno-1-26">26</a></span>
+<span class="normal"><a href="#__codelineno-1-27">27</a></span>
+<span class="normal"><a href="#__codelineno-1-28">28</a></span>
+<span class="normal"><a href="#__codelineno-1-29">29</a></span>
+<span class="normal"><a href="#__codelineno-1-30">30</a></span>
+<span class="normal"><a href="#__codelineno-1-31">31</a></span>
+<span class="normal"><a href="#__codelineno-1-32">32</a></span>
+<span class="normal"><a href="#__codelineno-1-33">33</a></span>
+<span class="normal"><a href="#__codelineno-1-34">34</a></span>
+<span class="normal"><a href="#__codelineno-1-35">35</a></span>
+<span class="normal"><a href="#__codelineno-1-36">36</a></span>
+<span class="normal"><a href="#__codelineno-1-37">37</a></span>
+<span class="normal"><a href="#__codelineno-1-38">38</a></span>
+<span class="normal"><a href="#__codelineno-1-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1">#create a key pair</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>ssh-keygen<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-f<span class="w"> </span>key<span class="w"> </span>-q<span class="w"> </span>-N<span class="w"> </span><span class="s2">&quot;&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>mv<span class="w"> </span>key<span class="w"> </span>vagrant
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a>mv<span class="w"> </span>key.pub<span class="w"> </span>vagrant.pub
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a>vagrant<span class="w"> </span>up
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="c1"># let the provisioning be complete</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="c1"># replace the vagrant ssh key-pair with personal one</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a>vagrant<span class="w"> </span>ssh
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="c1"># install the oh-my-zsh</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="c1"># install plugins: history, autosuggestions,</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/zsh-users/zsh-autosuggestions<span class="w"> </span><span class="si">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="si">}</span>/plugins/zsh-autosuggestions
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="c1"># inside ~/.zshrc, modify the following line</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="nv">plugins</span><span class="o">=(</span>git<span class="w"> </span>zsh-autosuggestions<span class="w"> </span><span class="nb">history</span><span class="w"> </span>cp<span class="w"> </span>tmux<span class="o">)</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="c1"># remove the vagrant default public key - first line of</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="c1"># /home/vagrant/.ssh/authorized_keys</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="c1"># exit vagrant guest machine and then</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="c1"># copy own private key to vagrant private key location</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a>cp<span class="w"> </span>vagrant<span class="w"> </span>.vagrant/machines/default/virtualbox/private_key
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26"></a>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27"></a><span class="c1"># check</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28"></a>vagrant<span class="w"> </span>ssh<span class="w"> </span><span class="c1">#should work</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29"></a>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30"></a>vagrant<span class="w"> </span>halt
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31"></a>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32"></a>vagrant<span class="w"> </span>package<span class="w"> </span>--base<span class="w"> </span>dtaas<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33"></a>--info<span class="w"> </span><span class="s2">&quot;info.json&quot;</span><span class="w"> </span>--output<span class="w"> </span>dtaas.vagrant
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34"></a>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35"></a><span class="c1"># Add box to the vagrant cache in ~/.vagrant.d/boxes directory</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36"></a>vagrant<span class="w"> </span>box<span class="w"> </span>add<span class="w"> </span>--name<span class="w"> </span>dtaas<span class="w"> </span>./dtaas.vagrant
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37"></a>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38"></a><span class="c1"># You can use this box in other vagrant boxes using</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39"></a><span class="c1">#config.vm.box = &quot;dtaas&quot;</span>
 </span></code></pre></div></td></tr></table></div>
 
 

@@ -1268,44 +1268,57 @@ a development workflow is in place. Each developer should follow these steps:</p
 <ol>
 <li>Fork of the main repository into your github account.</li>
 <li>Setup
-<a href="https://docs.codeclimate.com/docs/getting-started-with-code-climate">Code Climate</a>
-and
-<a href="https://docs.codecov.com/docs/quick-start">Codecov</a>
-for your fork. The codecov does not require secret token
-for public repositories.</li>
+   <a href="https://docs.codeclimate.com/docs/getting-started-with-code-climate">Code Climate</a>
+   and
+   <a href="https://docs.codecov.com/docs/quick-start">Codecov</a>
+   for your fork. The codecov does not require secret token
+   for public repositories.</li>
 <li>Install git-hooks for the project.</li>
 <li>Use
-<a href="https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/">Fork, Branch, PR</a>
-workflow.</li>
-<li>Work in your fork and open a PR from your working branch to your <code>feature/distributed-demo</code> branch.
-The PR will run all the github actions, code climate and codecov checks.</li>
+   <a href="https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/">Fork, Branch, PR</a>
+   workflow.</li>
+<li>Work in your fork and open a PR from your working
+   branch to your <code>feature/distributed-demo</code> branch.
+   The PR will run all the github actions, code climate and codecov checks.</li>
 <li>Resolve all the issues identified in the previous step.</li>
 <li>If you have access to the
-<a href="https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server">integration server</a>,
-try your working branch on the integration server.</li>
-<li>Once changes are verified, a PR should be made to the <code>feature/distributed-demo</code> branch of
-the upstream
-<a href="https://github.com/into-cps-association/DTaaS">DTaaS repository</a>.</li>
-<li>The PR will be merged after checks by either the project administrators or the maintainers.</li>
+   <a href="https://github.com/INTO-CPS-Association/DTaaS/wiki/DTaaS-Integration-Server">integration server</a>,
+   try your working branch on the integration server.</li>
+<li>Once changes are verified, a PR should be made to
+   the <code>feature/distributed-demo</code> branch of
+   the upstream
+   <a href="https://github.com/into-cps-association/DTaaS">DTaaS repository</a>.</li>
+<li>The PR will be merged after checks by either the
+   project administrators or the maintainers.</li>
 </ol>
-<p>Remember that every PR should be meaningful and satisfies a well-defined user story or improve
+<p>Remember that every PR should be meaningful and satisfies
+a well-defined user story or improve
 the code quality.</p>
 <h2 id="code-quality"><img alt="👁" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f441.svg" title=":eye:" /> Code Quality</h2>
 <p>The project code qualities are measured based on:</p>
 <ul>
 <li>Linting issues identified by
-<a href="https://codeclimate.com/github/INTO-CPS-Association/DTaaS">Code Climate</a></li>
+  <a href="https://codeclimate.com/github/INTO-CPS-Association/DTaaS">Code Climate</a></li>
 <li>Test coverage report collected by
-<a href="https://codecov.io/gh/INTO-CPS-Association/DTaaS">Codecov</a></li>
+  <a href="https://codecov.io/gh/INTO-CPS-Association/DTaaS">Codecov</a></li>
 <li>Successful <a href="https://github.com/INTO-CPS-Association/DTaaS/actions">github actions</a></li>
 </ul>
 <h3 id="code-climate">Code Climate</h3>
-<p>Code Climate performs static analysis, linting and style checks. Quality checks are performed by codeclimate are to ensure the best possible quality of code to add to our project.</p>
-<p>While any new issues introduced in your code would be shown in the PR page itself, to address any specific issue, you can visit the issues or code section of the codeclimate page.</p>
-<p>It is highly recommended that any code you add does not introduce new quality issues. If they are introduced, they should be fixed immediately using the appropriate suggestions from Code Climate, or in worst case, adding a ignore flag (To be used with caution).</p>
+<p>Code Climate performs static analysis, linting and style checks.
+Quality checks are performed by codeclimate are to ensure the best
+possible quality of code to add to our project.</p>
+<p>While any new issues introduced in your code would be
+shown in the PR page itself, to address any specific issue,
+you can visit the issues or code section of the codeclimate page.</p>
+<p>It is highly recommended that any code you add does
+not introduce new quality issues. If they are introduced,
+they should be fixed immediately using the appropriate suggestions
+from Code Climate, or in worst case, adding a ignore flag
+(To be used with caution).</p>
 <h3 id="codecov">Codecov</h3>
 <p>Codecov keeps track of the test coverage for the entire project.
-For information about testing and workflow related to that, please see the <a href="testing/intro.html">testing page</a>.</p>
+For information about testing and workflow related to that,
+please see the <a href="testing/intro.html">testing page</a>.</p>
 <h3 id="github-actions">Github Actions</h3>
 <p>The project has multiple
 <a href="https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/.github/workflows">github actions</a>

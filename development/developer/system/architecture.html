@@ -1264,29 +1264,33 @@
 <h1 id="system-overview"><img alt="🏰" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f3f0.svg" title=":european_castle:" /> System Overview</h1>
 <h2 id="user-requirements">User Requirements</h2>
 <p>The DTaaS software platform users expect a single platform
-to support the complete DT lifecycle. To be more precise, the platform users expect the following features:</p>
+to support the complete DT lifecycle. To be more precise,
+the platform users expect the following features:</p>
 <ol>
 <li><strong>Author</strong> – create different assets of the DT on the
-platform itself. This step requires use of some software
-frameworks and tools whose sole purpose is to author
-DT assets.</li>
+   platform itself. This step requires use of some software
+   frameworks and tools whose sole purpose is to author
+   DT assets.</li>
 <li><strong>Consolidate</strong> – consolidate the list of available DT assets
-and authoring tools so that user can navigate the library
-of reusable assets. This functionality requires support
-for discovery of available assets.</li>
+   and authoring tools so that user can navigate the library
+   of reusable assets. This functionality requires support
+   for discovery of available assets.</li>
 <li><strong>Configure</strong> – support selection and configuration of
-DTs. This functionality also requires support for validation of a given configuration.</li>
-<li><strong>Execute</strong> – provision computing infrastructure on demand to support execution of a DT.</li>
+   DTs. This functionality also requires support for validation
+   of a given configuration.</li>
+<li><strong>Execute</strong> – provision computing infrastructure on demand to
+   support execution of a DT.</li>
 <li><strong>Explore</strong> – interact with a DT and explore the results
-stored both inside and outside the platform. Exploration
-may lead to analytical insights.</li>
+   stored both inside and outside the platform. Exploration
+   may lead to analytical insights.</li>
 <li><strong>Save</strong> – save the state of a DT that’s already in the
-execution phase. This functionality is required for ondemand saving and re-spawning of DTs.</li>
+   execution phase. This functionality is required for on
+   demand saving and re-spawning of DTs.</li>
 <li><strong>What-if analysis</strong> – explore alternative scenarios to (i)
-plan for an optimal next step, (ii) recalibrate new DT
-assets, (iii) automated creation of new DTs or their
-assets; these newly created DT assets may be used to
-perform scientifically valid experiments.</li>
+   plan for an optimal next step, (ii) recalibrate new DT
+   assets, (iii) automated creation of new DTs or their
+   assets; these newly created DT assets may be used to
+   perform scientifically valid experiments.</li>
 <li><strong>Share</strong> – share a DT with other users of their organisation.</li>
 </ol>
 <h2 id="system-architecture">System Architecture</h2>
@@ -1298,7 +1302,7 @@ The gateway is a single point of entry for direct access to the platform
 services. The gateway is responsible for controlling user access to
 the microservice components. The service mesh
 enables discovery of microservices, load balancing and authentication
-functionalities.  </p>
+functionalities.</p>
 <p>In addition, there are microservices for catering to author, store,
 explore, configure, execute and scenario analysis requirements.
 The microservices are complementary and composable; they fulfil
@@ -1306,32 +1310,32 @@ core requirements of the system.</p>
 <p>The microservices responsible for satisfying the user requirements are:</p>
 <ol>
 <li><strong>The security microservice</strong> implements
-role-based access control (RBAC) in the platform.</li>
+   role-based access control (RBAC) in the platform.</li>
 <li>
 <p><strong>The accounting microservice</strong> is responsible for keeping track of the
-platform, DT asset and infrastructure usage. Any licensing,
-usage restrictions need to be enforced by the accounting
-microservice. Accounting is a pre-requisite to commercialisation of
-the platform.</p>
-<p>Due to significant use of external
-infrastructure and resources via the platform, the accounting
-microservice needs to interface with accounting systems of
-the external services.</p>
+   platform, DT asset and infrastructure usage. Any licensing,
+   usage restrictions need to be enforced by the accounting
+   microservice. Accounting is a pre-requisite to commercialisation of
+   the platform.
+   Due to significant use of external
+   infrastructure and resources via the platform, the accounting
+   microservice needs to interface with accounting systems of
+   the external services.</p>
 </li>
 <li>
 <p><strong>The data microservice</strong> is a frontend to all the databases
-integrated into the platform. A time-series database and a
-graph database are essential. These two databases store timeseries
-data from PT, events on PT/DT, commands sent by
-DT to PT. The PTs uses these databases even when their
-respective DTs are not in the execute phase.</p>
+   integrated into the platform. A time-series database and a
+   graph database are essential. These two databases store timeseries
+   data from PT, events on PT/DT, commands sent by
+   DT to PT. The PTs uses these databases even when their
+   respective DTs are not in the execute phase.</p>
 </li>
 <li><strong>The visualisation microservice</strong> is again a frontend to
-visualisation software that are natively supported inside the platform.
-Any visualisation software running either on external
-systems or on client browsers do not need to interact with
-this microservice. They can directly use the data provided by
-the data microservice.</li>
+   visualisation software that are natively supported inside the platform.
+   Any visualisation software running either on external
+   systems or on client browsers do not need to interact with
+   this microservice. They can directly use the data provided by
+   the data microservice.</li>
 </ol>
 <h2 id="c4-architectural-diagrams">C4 Architectural Diagrams</h2>
 <p>The C4 architectural diagrams of the DTaaS software are presented here.</p>

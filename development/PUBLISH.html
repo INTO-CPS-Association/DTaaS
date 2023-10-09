@@ -1078,6 +1078,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#fix-linting-errors" class="md-nav__link">
+    Fix Linting Errors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#create-documentation" class="md-nav__link">
     Create documentation
   </a>
@@ -1116,40 +1123,48 @@ project documentation.</p>
 <a href="https://squidfunk.github.io/mkdocs-material/">Material for Mkdocs</a>.
 The documentation is generated based on the configuration files:</p>
 <ul>
-<li><strong>mkdocs.yml</strong>: used for generating online documentation which is hosted on the web</li>
+<li><strong>mkdocs.yml</strong>: used for generating online
+  documentation which is hosted on the web</li>
 <li><strong>mkdocs-github.yml</strong>: used for generating documentation in github actions</li>
 </ul>
 <p>Install Mkdocs using the following command.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>docs/requirements.txt
 </span></code></pre></div></td></tr></table></div>
+<h2 id="fix-linting-errors">Fix Linting Errors</h2>
+<p>This project uses <strong>markdownlint</strong> linter tool for identifying the formatting
+issues in markdown files. Run</p>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>mdl<span class="w"> </span>docs
+</span></code></pre></div></td></tr></table></div>
+<p>from top-directory of the project and fix any identified issues. This needs
+to be done before committing changes to the documentation.</p>
 <h2 id="create-documentation">Create documentation</h2>
 <p>The document generation pipeline can generate both <strong>html</strong> and <strong>pdf</strong>
 versions of documentation.</p>
 <p>The generation of <strong>pdf</strong> version of documentation is controlled via
 a shell variable.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="c1">#disables generation of pdf document</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1">#enables generation of pdf document</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="c1">#disables generation of pdf document</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1">#enables generation of pdf document</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The <code>mkdocs</code> utility allows for live editing of documentation
 on the developer computer.</p>
 <p>You can add, and edit the markdown files in <code>docs/</code> directory to update
 the documentation. There is a facility to check the status of your
 documentation by using:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>mkdocs<span class="w"> </span>serve<span class="w"> </span>--config-file<span class="w"> </span>mkdocs.yml
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>mkdocs<span class="w"> </span>serve<span class="w"> </span>--config-file<span class="w"> </span>mkdocs.yml
 </span></code></pre></div></td></tr></table></div>
 <h2 id="publish-documentation">Publish documentation</h2>
 <p>You can compile and place the html version of documentation on
 the <code>webpage-docs</code> branch of the codebase.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1">#enable generation of pdf document</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nb">source</span><span class="w"> </span>script/docs.sh<span class="w"> </span><span class="o">[</span>version<span class="o">]</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MKDOCS_ENABLE_PDF_EXPORT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1">#enable generation of pdf document</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nb">source</span><span class="w"> </span>script/docs.sh<span class="w"> </span><span class="o">[</span>version<span class="o">]</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The command takes an optional version parameter. This version parameter is needed
 for making a release. Otherwise, the documentation gets published with
 the latest version tag. This command makes a new commit on <code>webpage-docs</code> branch.
 You need to push the branch to upstream.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>git<span class="w"> </span>push<span class="w"> </span>webpage-docs
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>git<span class="w"> </span>push<span class="w"> </span>webpage-docs
 </span></code></pre></div></td></tr></table></div>
 <p>The github pages system serves the
 <a href="https://into-cps-association.github.io/DTaaS/">project documentation</a> from

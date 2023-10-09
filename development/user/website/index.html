@@ -1268,19 +1268,18 @@ in their workspace.</p>
 <summary>Functions</summary>
 <p>The functions responsible for pre- and post-processing of: data inputs,
 data outputs, control outputs. The data science libraries and functions
-can be used to create useful function assets for the platform.</p>
-<p>In some cases, Digital Twin models require calibration prior to their use;
+can be used to create useful function assets for the platform.
+In some cases, Digital Twin models require calibration prior to their use;
 functions written by domain experts along with right data inputs can make
 model calibration an achievable goal. Another use of functions is to process
-the sensor and actuator data of both Physical Twins and Digital Twins.
-```</p>
+the sensor and actuator data of both Physical Twins and Digital Twins.</p>
 </details>
 <details class="data tip">
 <summary>Data</summary>
 <p>The data sources and sinks available to a digital twins. Typical examples
 of data sources are sensor measurements from  Physical Twins, and
-test data provided by manufacturers for calibration of models.</p>
-<p>Typical examples of data sinks are visualization software, external users
+test data provided by manufacturers for calibration of models.
+Typical examples of data sinks are visualization software, external users
 and data storage services. There exist special outputs such as events, and
 commands which are akin to control outputs from a Digital Twin.
 These control outputs usually go to Physical Twins, but they can also
@@ -1304,11 +1303,11 @@ capabilities of the robot.</p>
 analyze models. These tools are executed on top of a computing
 platforms, i.e., an operating system, or virtual machines like
 Java virtual machine, or inside docker containers. The tools tend
-to be platform specific, making them less reusable than models.</p>
-<p>A tool can be packaged to run on a local or distributed virtual machine
+to be platform specific, making them less reusable than models.
+A tool can be packaged to run on a local or distributed virtual machine
 environments thus allowing selection of most suitable execution
-environment for a Digital Twin. </p>
-<p>Most models require tools to evaluate them in the context of data inputs.
+environment for a Digital Twin.
+Most models require tools to evaluate them in the context of data inputs.
 There exist cases where executable packages are run as binaries in
 a computing environment. Each of these packages are a pre-packaged
 combination of models and tools put together to create a ready to
@@ -1324,15 +1323,13 @@ in which five sub-directories exist. These sub-directories are:
 data, functions, models, tools and digital twins.</p>
 <details class="common assets tip">
 <summary>Common</summary>
-<p>The common directory again has four sub-directories:</p>
-<ul>
-<li>data</li>
-<li>functions</li>
-<li>models</li>
-<li>tools</li>
-<li>digital twins</li>
-</ul>
-<p>The assets common to all users are placed in <strong>common</strong>.</p>
+<p>The common directory again has four sub-directories:
+* data
+* functions
+* models
+* tools
+* digital twins
+The assets common to all users are placed in <strong>common</strong>.</p>
 </details>
 <p>The items used by more than one user are placed in <strong>common</strong>. The items in
 the <strong>common</strong> directory are available to all users. Further explanation of
@@ -1366,7 +1363,14 @@ in the data directory.</p>
 </details>
 <details class="analyze tip">
 <summary>Analyze</summary>
-<p>The analysis of digital twins requires running of digital twin script
+<p>The analysis of digital twins requires running
+of digital twin script from user workspace.
+The execution results placed within data directory
+are processed by analysis scripts and results are placed
+back in the data directory. These scripts can either be
+executed from VSCode and graphical results or can be
+executed from VNC GUI.
+The analysis of digital twins requires running of digital twin script
 from user workspace. The execution results placed within data directory
 are processed by analysis scripts and results are placed back in
 the data directory. These scripts can either be executed from VSCode
@@ -1384,7 +1388,10 @@ in new browser are:</p>
 <p><img alt="Workbench Tools" src="workbench_tools.png" /></p>
 <div class="admonition bug">
 <p class="admonition-title">Bug</p>
-<p>The Terminal hyperlink does not always work reliably. If you want
+<p>The Terminal hyperlink does not always work reliably.
+If you want terminal. Please use the tools dropdown
+in the Jupyter Notebook.
+The Terminal hyperlink does not always work reliably. If you want
 terminal. Please use the tools dropdown in the Jupyter Notebook.</p>
 </div>
 <h2 id="finally-logout">Finally logout</h2>

@@ -617,22 +617,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rabbitmq-service" class="md-nav__link">
-    RabbitMQ Service
+  <a href="#rabbitmq" class="md-nav__link">
+    RabbitMQ
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#grafana-service" class="md-nav__link">
-    Grafana Service
+  <a href="#grafana" class="md-nav__link">
+    Grafana
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#influxdb-service" class="md-nav__link">
-    InfluxDB Service
+  <a href="#influxdb" class="md-nav__link">
+    InfluxDB
   </a>
   
 </li>
@@ -1141,22 +1141,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rabbitmq-service" class="md-nav__link">
-    RabbitMQ Service
+  <a href="#rabbitmq" class="md-nav__link">
+    RabbitMQ
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#grafana-service" class="md-nav__link">
-    Grafana Service
+  <a href="#grafana" class="md-nav__link">
+    Grafana
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#influxdb-service" class="md-nav__link">
-    InfluxDB Service
+  <a href="#influxdb" class="md-nav__link">
+    InfluxDB
   </a>
   
 </li>
@@ -1194,20 +1194,17 @@ services using the docker commands.</p>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
 <span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span>pull<span class="w"> </span>traefik:v2.5
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>docker<span class="w"> </span>pull<span class="w"> </span>influxdb:2.4
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>docker<span class="w"> </span>pull<span class="w"> </span>mltooling/ml-workspace:0.13.2
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>docker<span class="w"> </span>pull<span class="w"> </span>grafana/grafana
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>docker<span class="w"> </span>pull<span class="w"> </span>gitlab/gitlab-ce:15.10.0-ce.0
+<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span>pull<span class="w"> </span>grafana/grafana:10.1.4
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>docker<span class="w"> </span>pull<span class="w"> </span>influxdb:2.7
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>docker<span class="w"> </span>pull<span class="w"> </span>telegraf:1.28.2
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>docker<span class="w"> </span>pull<span class="w"> </span>rabbitmq:3-management
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>docker<span class="w"> </span>pull<span class="w"> </span>eclipse-mosquitto:2
 </span></code></pre></div></td></tr></table></div>
-<p><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/26a0.svg" title=":warning:" /> The docker images are large and are likely to consume
-about 5GB of bandwidth and 15GB of space.
-You will have to download the docker images on a really good network.</p>
 <p>The two-machine vagrant deployment scenario installs the RabbitMQ, Grafana, and
 InfluxDB services on the second vagrant machine.</p>
 <p>If you would like to install some of these services for native OS
 installation or single vagrant machine, you can do this as well.</p>
-<h2 id="rabbitmq-service">RabbitMQ Service</h2>
+<h2 id="rabbitmq">RabbitMQ</h2>
 <p>Start the RabbitMQ service with</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -1223,14 +1220,15 @@ installation or single vagrant machine, you can do this as well.</p>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>set_permissions<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/&lt;vhost&gt;&quot;</span><span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The RabbitMQ service requires raw TCP/UDP protocol access to network.
-The default Traefik configuration of DTaaS does not permit TCP/UDP traffic. There are two possible choices here:</p>
+The default Traefik configuration of DTaaS does not permit
+TCP/UDP traffic. There are two possible choices here:</p>
 <ul>
 <li>Configure Traefik gateway to permit TCP/UDP traffic</li>
 <li>Bypass Traefik altogether for RabbitMQ service</li>
 </ul>
 <p>Unless you are an informed user of Traefik, we recommend bypassing traefik
 for RabbitMQ service.</p>
-<h2 id="grafana-service">Grafana Service</h2>
+<h2 id="grafana">Grafana</h2>
 <p>Grafana service can run well behind Traefik gateway. Here is a sample docker
 command to run Grafana service at port 3000:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
@@ -1284,10 +1282,10 @@ command to run Grafana service at port 3000:</p>
 </span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;Complete the setup from GUI&quot;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The user credentials have also been set in the command as:</p>
-<p><strong>username</strong>: admin<br />
-<strong>password</strong>: DTaaSGrafana</p>
+<p><strong>username</strong>: admin</p>
+<p><strong>password</strong>: DTaaSGrafana</p>
 <p>Remember to change these credentials before starting the docker container.</p>
-<h2 id="influxdb-service">InfluxDB Service</h2>
+<h2 id="influxdb">InfluxDB</h2>
 <p>The barebones InfluxDB service can be installed using:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
@@ -1318,8 +1316,8 @@ command to run Grafana service at port 3000:</p>
 </span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">  </span>influxdb:2.4
 </span></code></pre></div></td></tr></table></div>
 <p>The user credentials have also been set in the command as:</p>
-<p><strong>username</strong>: dtaas<br />
-<strong>password</strong>: dtaas1357</p>
+<p><strong>username</strong>: dtaas</p>
+<p><strong>password</strong>: dtaas1357</p>
 <p>Remember to change these credentials before starting the docker container.</p>
 
 
