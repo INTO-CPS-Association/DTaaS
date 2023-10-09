@@ -20,18 +20,22 @@ to a relevant one.
 
 ### Gitlab OAuth application
 
-The DTaaS software requires Gitlab OAuth provider. Please see
-[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-for getting the Gitlab OAuth application details.
+The DTaaS react website requires Gitlab OAuth provider. 
+If you need more help with this step, please see
+the [Authentication page](client/auth.md).
 
 You need the following information from the OAuth application registered on Gitlab:
 
-| Gitlab Variable Name | Variable name in DTaaS React Client | Default Value |
+| Gitlab Variable Name | Variable name in Client env.js | Default Value |
 |:---|:---|:---|
 | OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
 | Application ID | REACT_APP_CLIENT_ID |
 | Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
 | Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+
+You can also see
+[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+for getting the Gitlab OAuth application details.
 
 ### Install
 

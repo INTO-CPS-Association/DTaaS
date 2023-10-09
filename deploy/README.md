@@ -31,7 +31,8 @@ The installation guide assumes that you can run the application in HTTPS mode.
 The Traefik gateway configuration is at [fileConfig](../config/gateway/fileConfig.yml).
 Change `localhost` to `foo.com` and user1/user2 to the usernames chosen by you.
 
-**NOTE**: Do not use `http://` or `https://` in [fileConfig](../config/gateway/fileConfig.yml).
+**NOTE**: Do not use `http://` or `https://`
+in [fileConfig](../config/gateway/fileConfig.yml).
 
 #### Authentication
 
@@ -73,13 +74,38 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
-## Configure react website
+## Configure React Client Website
+
+### Gitlab OAuth application
+
+The DTaaS react website requires Gitlab OAuth provider.
+If you need more help with this step, please see
+the [Authentication page](../docs/admin/client/auth.md).
+
+You need the following information from the OAuth application
+registered on Gitlab:
+
+| Gitlab Variable Name | Variable name in Client env.js | Default Value |
+|:---|:---|:---|
+| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
+| Application ID | REACT_APP_CLIENT_ID |
+| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
+| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+
+You can also see
+[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+for getting the Gitlab OAuth application details.
+
+If you need more help with this step, please see
+the [Authentication page](client/auth.md).
+
+### Update Client Config
 
 Change the React website configuration in _deploy/config/client/env.js_.
 
 ```js
 window.env = {
-  REACT_APP_ENVIRONMENT: 'prod',
+  REACT_APP_ENVIRONMENT: 'dev',
   REACT_APP_URL: 'https://foo.com/',
   REACT_APP_URL_BASENAME: 'dtaas',
   REACT_APP_URL_DTLINK: '/lab',

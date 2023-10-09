@@ -41,10 +41,19 @@ Change `foo.com` to your local hostname and user1/user2 to
 the usernames chosen by you.
 
 !!! tip
-    Do not use `http://` or `https://` in _deploy/config/gateway/fileConfig.yml_.
+    Do not use `http://` or `https://`
+    in _deploy/config/gateway/fileConfig.yml_.
 
 #### Authentication
 
+This step requires `htpasswd` commandline utility. If
+it is not available on your system, please install the same by using
+
+```bash
+sudo apt-get install -y apache2-utils
+```
+
+You can now proceed with update of the gateway authentication setup.
 The dummy username is `foo` and the password is `bar`.
 Please change this before starting the gateway.
 
@@ -82,7 +91,28 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
-## Configure react website
+## Configure React Client Website
+
+### Gitlab OAuth application
+
+The DTaaS react website requires Gitlab OAuth provider.
+If you need more help with this step, please see
+the [Authentication page](client/auth.md).
+
+You need the following information from the OAuth application registered on Gitlab:
+
+| Gitlab Variable Name | Variable name in Client env.js | Default Value |
+|:---|:---|:---|
+| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
+| Application ID | REACT_APP_CLIENT_ID |
+| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
+| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+
+You can also see
+[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+for getting the Gitlab OAuth application details.
+
+### Update Client Config
 
 Change the React website configuration in _deploy/config/client/env.js_.
 

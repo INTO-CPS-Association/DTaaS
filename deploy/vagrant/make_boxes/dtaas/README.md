@@ -89,6 +89,7 @@ cp vagrant .vagrant/machines/default/virtualbox/private_key
 # check
 vagrant ssh #should work
 
+# exit vagrant guest machine and then
 vagrant halt
 
 vagrant package --base dtaas \
