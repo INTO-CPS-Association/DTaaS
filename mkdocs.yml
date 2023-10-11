@@ -17,6 +17,7 @@ theme:
 nav:
   - Home: index.md
   - Admin:
+      - Overview: admin/overview.md
       - Authentication: admin/client/auth.md
       - Host Install:
         - Trial: admin/trial.md
