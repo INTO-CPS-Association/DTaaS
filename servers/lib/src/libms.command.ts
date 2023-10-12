@@ -6,7 +6,7 @@ import { parse } from 'dotenv';
     name: 'libms'
 })
 
-export class LibmsCommand extends CommandRunner {
+export default class LibmsCommand extends CommandRunner {
     async run(_inputs: string[], options: Record<string, string>): Promise<void> 
     {
         const configFile = this.parseConfigFile(options.config);
@@ -17,7 +17,7 @@ export class LibmsCommand extends CommandRunner {
         flags: '-c, --config <config-file>',
         description: 'Configuration file',
     })
-    parseConfigFile(configFile: string): string {
+    parseConfigFile(this: LibmsCommand, configFile: string): string {
         return configFile;
     }
 }
