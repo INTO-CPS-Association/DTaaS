@@ -1,13 +1,20 @@
 # Overview
 ## What is the goal
-The goal is to set up the DTaaS infrastructure in order to enable your users to use the DTaaS' services.
+The goal is to set up the DTaaS infrastructure in order to enable your users to use the DTaaS.
 As an admin you'll administrate the users and the servers of the system. !maybe this is different for the other ways to install?
 
 ## What are the requirements
+- OAuth Provider
+You need to have an OAuth Provider running, which the DTaaS Web Application can use for authentication. This is described further in the [authentication section](./client/auth.md).
 
 
-- Authorization
-You need to have an OAuth Provider running, which the DTaaS Web Application can use for authentication. This is described further in the [authentication section]()
+# What to install
 
+The DTaaS can be installed in different ways. Each version is for different purposes:
 
-decide wheter you want to install the trial or production
+- Trial
+- Production
+- Vagrant
+- Seperater Packages
+
+Following the installation that fit your usecase.
