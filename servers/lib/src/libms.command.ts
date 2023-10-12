@@ -17,7 +17,7 @@ export default class LibmsCommand extends CommandRunner {
         flags: '-c, --config <config-file>',
         description: 'Configuration file',
     })
-    parseConfigFile(this: LibmsCommand, configFile: string): string {
+    parseConfigFile(configFile: string): string {
         return configFile;
     }
 }
