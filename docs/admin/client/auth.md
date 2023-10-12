@@ -1,57 +1,41 @@
-# OAuth Authentication for React Client Website
+## Setting Up OAuth
 
-The react client website uses OAuth authentication protocol for user
-authentication. The PKCE authentication flow of OAuth protocol is used
-for the client website. The authentication has to be setup on a gitlab
-server.
-**An oauth application needs to be created on a gitlab instance under admin user**.
-Then all other users can use the same gitlab instance for oauth authentication.
-This means commercial gitlab.com can not be used for multi-user authentication
-system required by DTaaS. You will need to run an on-premise instance of gitlab.
-You can use
-[gitlab omnibus docker](https://docs.gitlab.com/ee/install/docker.html) for
-this purpose. Please setup OAuth application as
-[instance wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+To enable user authentication on DTaaS React client website, you'll use the OAuth authentication protocol, specifically the PKCE authentication flow. Here are the steps to get started:
 
-Before setting up oauth application on gitlab, you need to first decide on the
-hostname for your website. We recommend using a self-hosted gitlab instance which
-will be used in the other parts of the DTaaS application.
+**1. Choose Your GitLab Server:**
 
-Two more URLs are required for the PKCE authentication flow to work properly.
-They are the **callback URL** and **logout URL**. The callback URL tells the oauth
-provider the URL of the page that all the signed in users are shown. This URL will
-be different from the landing homepage of the DTaaS application. The logout URL is
-the URL that will be shown after a user logs out.
+- You need to set up OAuth authentication on a GitLab server. The commercial gitlab.com is not suitable for multi-user authentication (DTaaS requires this), so you'll need an on-premise GitLab instance.
+- You can use [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
+- Configure the OAuth application as an [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
-Here is an example for hosting a DTaaS application without any basename.
+**2. Determine Your Website's Hostname:**
 
-```txt
-DTaaS application URL: https://foo.com
-Gitlab instance URL: https://foo.gitlab.com
-Callback URL: https://foo.com/Library
-Logout URL: https://foo.com
-```
+- Before setting up OAuth on GitLab, decide on the hostname for your website. It's recommended to use a self-hosted GitLab instance, which you'll use in other parts of the DTaaS application.
 
-During the creation of oauth application on gitlab, you need to decide on the
-scope of this oauth application.
-Choose `openid profile read_user read_repository api` scopes.
+**3. Define Callback and Logout URLs:**
 
-After successful creation of oauth application, gitlab generates an application
-ID. This application ID is a long string of HEX values. You need to note this
-down and use in configuration files. An example oauth Client ID is:
-`934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0`.
+- For the PKCE authentication flow to function correctly, you need two URLs: a callback URL and a logout URL.
+- The callback URL informs the OAuth provider of the page where signed-in users should be redirected. It's different from the landing homepage of the DTaaS application.
+- The logout URL is where users will be directed after logging out.
 
-You need the following information from the OAuth application registered on Gitlab:
+**4. OAuth Application Creation:**
 
-| Gitlab Variable Name | Variable name in Client env.js | Default Value |
-|:---|:---|:---|
-| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
-| Application ID | REACT_APP_CLIENT_ID |
-| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
-| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+- During the creation of the OAuth application on GitLab, you need to specify the scope. Choose openid, profile, read_user, read_repository, and api scopes.
 
-The same **URLs** and **Client ID** are useful for both the regular hosting of
-DTaaS application and also as the CI/CD server to be used for the development work.
+**5. Application ID:**
+
+- After successfully creating the OAuth application, GitLab generates an application ID. This is a long string of HEX values that you'll need for your configuration files.
+
+**6. Required Information from OAuth Application:**
+
+- You'll need the following information from the OAuth application registered on GitLab:
+
+|GitLab Variable Name|Variable Name in Client env.js|Default Value|
+|---|---|---|
+|OAuth Provider|REACT_APP_AUTH_AUTHORITY|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
+|Application ID|REACT_APP_CLIENT_ID||
+|Callback URL|REACT_APP_REDIRECT_URI|[https://foo.com/Library](https://foo.com/Library)|
+|Scopes|REACT_APP_GITLAB_SCOPES|openid, profile, read_user, read_repository, api|
 
 ## Development Environment
 
