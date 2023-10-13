@@ -35,7 +35,7 @@ try {
 }
 
 log(chalk.green("Start new InfluxDB server docker container"));
-await $$`docker run -d -p 80:8086 \
+await $$`docker run -d -p ${influxdbConfig.port}:8086 \
 --name influxdb \
 -v ${influxdbConfig.datapath}/data:/var/lib/influxdb2 \
 -v ${influxdbConfig.datapath}/config:/etc/influxdb2 \
@@ -60,7 +60,7 @@ try {
 }
 log(chalk.green("Start new Grafana server docker container"));
 await $$`docker run -d \
-  -p 3000:3000 \
+  -p ${grafanaConfig.port}:3000 \
   --name=grafana \
   -e "GF_SERVER_SERVE_FROM_SUB_PATH=true" \
   -e "GF_SERVER_DOMAIN=${grafanaConfig.hostname}" \
@@ -104,8 +104,9 @@ try {
 }
 //await $$`docker run -d --name rabbitmq-server -p 5672:5672  -p 15672:15672 rabbitmq:3-management`;
 log(chalk.green("Start RabbitMQ server docker container"));
-await $$`docker run -d --name \
-rabbitmq-server -p 5672:5672  -p 15672:15672 rabbitmq:3-management`;
+await $$`docker run -d --name rabbitmq-server \
+  -p ${rabbitmqConfig.ports.main}:5672 \
+  -p ${rabbitmqConfig.ports.management}:15672 rabbitmq:3-management`;
 log(chalk.green("RabbitMQ server docker container started successfully\n"));
 
 console.log(chalk.blue("Wait 2 minutes for RabbitMQ server to bootstrap"));
