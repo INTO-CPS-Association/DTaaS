@@ -1,0 +1,19 @@
+kind: deployment
+services:
+    rabbitmq:
+        username: "dtaas"
+        password: "dtaas"
+        vhost: "/"
+        ports:
+            main: 5672
+            management: 15672
+    grafana:
+        hostname: "localhost"
+        username: "admin"   # do not change
+        password: "dtaas"
+        port: 3000
+    influxdb:
+        username: "dtaas"
+        password: "dtaas1357"   # need to have letters and numbers
+        datapath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/vagrant/two-machine/influx" #no spaces in the path
+        port: 80
