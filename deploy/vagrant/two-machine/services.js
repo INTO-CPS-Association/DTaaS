@@ -81,7 +81,7 @@ await $$`docker run -d \
   -e "GF_PATHS_PLUGINS=/var/lib/grafana/plugins" \
   -e "GF_PATHS_PROVISIONING=/etc/grafana/provisioning" \
   -e "HOME=/home/grafana" \
-  grafana/grafana`;
+  grafana/grafana:10.1.4`;
 log(chalk.green("Grafana server docker container started successfully"));
 
 console.log(chalk.blue("Wait one minute for Grafana server to bootstrap"));
