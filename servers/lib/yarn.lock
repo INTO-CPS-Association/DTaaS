@@ -1809,7 +1809,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4.17.13, @types/express@npm:^4.17.18":
+"@types/express@npm:^4.17.13":
   version: 4.17.18
   resolution: "@types/express@npm:4.17.18"
   dependencies:
@@ -1818,6 +1818,18 @@ __metadata:
     "@types/qs": "*"
     "@types/serve-static": "*"
   checksum: 8c178da4f0edff1f006d871fbdc3f849620986ff10bad252f3dfd45b57554e26aaa28c602285df028930d5216e257a06fbaf795070f8bb42f7d87e3b689cba50
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^4.17.19":
+  version: 4.17.19
+  resolution: "@types/express@npm:4.17.19"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/express-serve-static-core": ^4.17.33
+    "@types/qs": "*"
+    "@types/serve-static": "*"
+  checksum: 3d39d0655eb0825d96fec100985a38737767ddd6da2dbda1e330a3adf36c98a9b7cd8d9539db32876d1fbb47a09343cad7b38c30c8dd7c291271fcb9b85cb21b
   languageName: node
   linkType: hard
 
@@ -6240,7 +6252,7 @@ __metadata:
     "@nestjs/platform-express": ^10.2.6
     "@nestjs/schematics": ^10.0.2
     "@nestjs/testing": ^10.2.6
-    "@types/express": ^4.17.18
+    "@types/express": ^4.17.19
     "@types/jest": ^29.5.5
     "@types/node": 20.7.2
     "@types/supertest": ^2.0.13
@@ -6268,7 +6280,7 @@ __metadata:
     type-graphql: ^2.0.0-beta.3
     typescript: ^5.2.2
   peerDependencies:
-    graphql-scalars: "*"
+    graphql-scalars: ^1.22.2
   languageName: unknown
   linkType: soft
 
