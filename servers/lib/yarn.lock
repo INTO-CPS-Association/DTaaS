@@ -1329,9 +1329,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^10.2.6":
-  version: 10.2.6
-  resolution: "@nestjs/common@npm:10.2.6"
+"@nestjs/common@npm:^10.2.7":
+  version: 10.2.7
+  resolution: "@nestjs/common@npm:10.2.7"
   dependencies:
     iterare: 1.2.1
     tslib: 2.6.2
@@ -1346,7 +1346,7 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 4fbfbd48a047cd76619b5cc8b56972fc665c502691b878b2ccc44928529d17ac5b46a1fcc57abbd93478555174cd11892560582aa77ef686a8e625fbf402a8c9
+  checksum: b0a498eae3bc5c84659064830eab57583caaddef15ed1137768d73e986dabe2e1a04f61d8c0181b1c538e8c5f4ea3342a1f342e7a19a59e46d306ea3b53f3342
   languageName: node
   linkType: hard
 
@@ -6233,7 +6233,7 @@ __metadata:
     "@apollo/server": ^4.9.3
     "@nestjs/apollo": ^12.0.9
     "@nestjs/cli": ^10.1.18
-    "@nestjs/common": ^10.2.6
+    "@nestjs/common": ^10.2.7
     "@nestjs/config": ^3.1.1
     "@nestjs/core": ^10.2.6
     "@nestjs/graphql": ^12.0.9
@@ -6268,7 +6268,7 @@ __metadata:
     type-graphql: ^2.0.0-beta.3
     typescript: ^5.2.2
   peerDependencies:
-    graphql-scalars: "*"
+    graphql-scalars: ^1.22.2
   languageName: unknown
   linkType: soft
 
