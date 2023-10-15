@@ -1,13 +1,23 @@
 #!/usr/bin/env node
-import { ConfigService } from "@nestjs/config";
-import { NestFactory } from "@nestjs/core";
-import AppModule from "./app.module";
+import { Command } from "commander";
+import bootstrap from "./bootstrap";
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>("PORT");
-  await app.listen(port);
+type ProgramOptions = {
+  config?: string
 }
 
-bootstrap();
+const program = new Command();
+
+program
+    .description("Start libms")
+    .option('-c, --config <path>', "If not specified it will assume '.env' is the path")
+
+program.parse(process.argv);
+
+const options: ProgramOptions = program.opts();
+
+if (options.config) {
+    bootstrap({config: options.config})
+} else {
+    bootstrap();
+}
