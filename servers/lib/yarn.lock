@@ -1917,10 +1917,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:20.7.2":
+"@types/node@npm:*":
   version: 20.7.2
   resolution: "@types/node@npm:20.7.2"
   checksum: 5baa09368c8daa50ad1eaa2499b988b2f4c06cacf8b251d1e63f68ad32df97b21d8104f1ac06889481f1d3e84056842732bb848dd1136164d823c1d4a6baf435
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:20.8.6":
+  version: 20.8.6
+  resolution: "@types/node@npm:20.8.6"
+  dependencies:
+    undici-types: ~5.25.1
+  checksum: ccfb7ac482c5a96edeb239893c5c099f5257fcc2ed9ae62fefdfbc782b79e16dbc2af9a85b379665237bf759904b44ca2be68e75d239e0297882aad42f61905c
   languageName: node
   linkType: hard
 
@@ -6242,7 +6251,7 @@ __metadata:
     "@nestjs/testing": ^10.2.6
     "@types/express": ^4.17.18
     "@types/jest": ^29.5.5
-    "@types/node": 20.7.2
+    "@types/node": 20.8.6
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^6.7.3
     "@typescript-eslint/parser": ^6.7.3
@@ -6268,7 +6277,7 @@ __metadata:
     type-graphql: ^2.0.0-beta.3
     typescript: ^5.2.2
   peerDependencies:
-    graphql-scalars: "*"
+    graphql-scalars: ^1.22.2
   languageName: unknown
   linkType: soft
 
@@ -8717,6 +8726,13 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.25.1":
+  version: 5.25.3
+  resolution: "undici-types@npm:5.25.3"
+  checksum: ec9d2cc36520cbd9fbe3b3b6c682a87fe5be214699e1f57d1e3d9a2cb5be422e62735f06e0067dc325fd3dd7404c697e4d479f9147dc8a804e049e29f357f2ff
   languageName: node
   linkType: hard
 
