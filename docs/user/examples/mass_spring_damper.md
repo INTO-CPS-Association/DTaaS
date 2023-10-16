@@ -10,19 +10,25 @@ The mass spring damper study comprises two mass spring dampers and demonstrates 
 
 # Example Structure
 
-There are two simulators included in the study, each representing a mass spring damper system. The first simulator calculates the mass displacement and speed of *m1* for a given force *Fk* acting on mass *m1*. The second simulator calculates force *Fk* given a displacement and speed of mass *m1*. By coupling these simulators, the evolution of the position of the two masses is computed.
+There are two simulators included in the study, each representing a mass spring damper system. The first simulator calculates the mass displacement and speed of $m_1$ for a given force $F_k$ acting on mass $m_1$. The second simulator calculates force $F_k$ given a displacement and speed of mass $m_1$. By coupling these simulators, the evolution of the position of the two masses is computed.
 
 ![Mass Spring Damper Structure](mass_spring_structure.png)
 
 ## Configuration of assets
 
-![Configuration](cosimconfig.png)
+This example uses two models and one tool. The specific assets used are:
+
+| Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
+|:---|:---|:---|:---|
+| Models | MassSpringDamper1.fmu | Private | Yes |
+|  | MassSpringDamper2.fmu | Private | Yes |
+| Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
 ## Lifecycle Phases
 
 | Lifecycle Phase    | Completed Tasks |
 | -------- | ------- |
-| Create  | Installs JDK    |
+| Create  | Installs Java Development Kit for Maestro tool    |
 | Execute | Produces and stores output in data/mass-spring-damper/output directory|
 | Clean   | Clears run logs and outputs |
 
@@ -56,7 +62,7 @@ lifecycle/execute
 
 ## Examine the results
 
-The results can be found in the _workspace/examples/data/mass-spring-damper/output directory_. 
+The results can be found in the _workspace/examples/data/mass-spring-damper/output directory_.
 
 You can also view run logs in the _workspace/examples/digital_twins/mass-spring-damper_.
   
