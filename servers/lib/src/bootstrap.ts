@@ -10,6 +10,7 @@ type BootstrapOptions = {
 export default async function bootstrap(options?: BootstrapOptions) {
   const configFile = dotenv.config({path: options?.config ?? ".env", override: true})
   if (configFile.error) {
+    // eslint-disable-next-line
     console.error(configFile.error);
     process.exit(1);
   };
