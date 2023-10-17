@@ -1,3 +1,3 @@
 #!/bin/bash
-printf "starting the node application"
-node dist/src/main.js
+printf "starting the node application\n"
+node dist/src/main.js $*
