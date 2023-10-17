@@ -9,15 +9,15 @@ type ProgramOptions = {
 const program = new Command();
 
 program
-    .description("Start libms")
-    .option('-c, --config <path>', "If not specified it will assume '.env' is the path")
+    .description("The lib microservice is responsible for handling and serving the contents of library assets of the DTaaS platform. It provides API endpoints for clients to query, and fetch these assets.")
+    .option('-c, --config <path>', "(default .env)")
 
 program.parse(process.argv);
 
 const options: ProgramOptions = program.opts();
 
-if (options.config) {
+if (options.config) { 
     bootstrap({config: options.config})
 } else {
-    bootstrap();
+    program.help();
 }
