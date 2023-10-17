@@ -8,7 +8,11 @@ type BootstrapOptions = {
 }
 
 export default async function bootstrap(options?: BootstrapOptions) {
-  dotenv.config({path: options?.config ?? ".env", override: true});
+  const configFile = dotenv.config({path: options?.config ?? ".env", override: true})
+  if (configFile.error) {
+    console.error(configFile.error);
+    process.exit(1);
+  };
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>("PORT");
