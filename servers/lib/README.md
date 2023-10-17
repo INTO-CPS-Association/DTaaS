@@ -43,6 +43,8 @@ APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
 
+If your environment file is named something other than `.env`, you need to specify the path with the command `-c, --config <path>`, when starting the application. For instance `yarn start -c ".env.development"`.
+
 The `TOKEN` should be set to your GitLab Group access API token.
 For more information on how to create and use your access token,
 [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
@@ -77,6 +79,7 @@ yarn test -e      # run end-to-end tests
 yarn test -i      # run integration tests
 yarn test -u      # run unit tests
 yarn start      # start the application
+yarn start -h   # list of all the CLI commands
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
 
