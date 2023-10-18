@@ -21,7 +21,7 @@ The second simulator calculates force $F_k$ given a displacement and speed of
 mass $m_1$. By coupling these simulators, the evolution of the position of
 the two masses is computed.
 
-![Mass Spring Damper Structure](mass_spring_structure.png)
+![Mass Spring Damper Structure](dt-structure.png)
 
 ## Configuration of assets
 
@@ -32,6 +32,8 @@ This example uses two models and one tool. The specific assets used are:
 | Models | MassSpringDamper1.fmu | Private | Yes |
 |  | MassSpringDamper2.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
+
+This is a co-simulation based digital twin. The `co-sim.json` and `time.json` are two configuration files used for executing the digital twin.
 
 ## Lifecycle Phases
 

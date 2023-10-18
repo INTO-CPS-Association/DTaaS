@@ -1,9 +1,17 @@
 # DTaaS Examples
 
-## Code setup
+There are some example digital twins created for the DTaaS software.
+These examples are hosted in a dedicated
+[DTaaS examples github repository](https://github.com/INTO-CPS-Association/DTaaS-examples).
 
-Pull all the code for all examples simply by
-executing the script below:
+Use the examples and follow the steps given in the **Examples** section to experience
+features of the DTaaS software platform and understand best practices for managing
+digital twins within the platform.
+
+## Copy Examples
+
+The first step is to copy all the example code into your user workspace within the DTaaS.
+Use these shell commands to copy all the examples iinto `/workspace/examples` directory.
 
 ```bash
 #!/bin/bash
@@ -14,9 +22,9 @@ mv workspace/DTaaS-examples-main workspace/examples
 rm workspace/main.zip
 ```
 
-The code for all examples is now
-setup in the workspace/examples folder
-and is ready for creation and execution.
+## Example List
 
-The examples are hosted in
-[DTaaS examples repository](https://github.com/INTO-CPS-Association/DTaaS-examples)
+The digital twins provided in examples vary in their complexity. It is best
+to use the examples in the following order.
+
+1. [Mass Spring Damper](./mass-spring-damper/README.md)
