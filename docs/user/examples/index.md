@@ -10,8 +10,10 @@ digital twins within the platform.
 
 ## Copy Examples
 
-The first step is to copy all the example code into your user workspace within the DTaaS.
-Use these shell commands to copy all the examples iinto `/workspace/examples` directory.
+The first step is to copy all the example code into your
+user workspace within the DTaaS.
+Use these shell commands to copy all the examples
+into `/workspace/examples` directory.
 
 ```bash
 #!/bin/bash

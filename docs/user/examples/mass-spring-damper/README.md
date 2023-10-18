@@ -33,7 +33,8 @@ This example uses two models and one tool. The specific assets used are:
 |  | MassSpringDamper2.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
-This is a co-simulation based digital twin. The `co-sim.json` and `time.json` are two configuration files used for executing the digital twin.
+This is a co-simulation based digital twin. The `co-sim.json` and `time.json`
+are two configuration files used for executing the digital twin.
 
 ## Lifecycle Phases
 

@@ -11,7 +11,8 @@ You can use it to check a test installation of DTaaS software.
 ### 1. Domain name
 
 You need a domain name to run the application. The install script
-assumes **foo.com** to be your domain name. You will change this after running the script.
+assumes **foo.com** to be your domain name. You will change this
+after running the script.
 
 ### 2. Gitlab OAuth application
 
@@ -42,16 +43,17 @@ bash single-script-install.sh
 !!! warning
     This test installation has default credentials and is thus highly insecure.
 
-
 ## Post install
 
-After the install-script. Please change **foo.com** and Gitlab OAuth details to your local settings in the following files.
+After the install-script. Please change **foo.com** and Gitlab OAuth details
+to your local settings in the following files.
 
 ```txt
 ~/DTaaS/client/build/env.js
-~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml 
+~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 ```
 
 ## Sanity check
 
-Now when you visit your domain, you should be able to login through your OAuth Provider and be able to access the DTaas web UI.
+Now when you visit your domain, you should be able to login through your
+OAuth Provider and be able to access the DTaas web UI.
