@@ -1,16 +1,25 @@
 # Mass Spring Damper
 
 ## Overview
-The mass spring damper study comprises two mass spring dampers and demonstrates how the sucessive substitution technique can be used to ensure that a co-simulation is stable. More information about successive substitution and other co-simulation stabilization techniques, please see [this paper](https://arxiv.org/pdf/1702.00686v1).
 
+The mass spring damper study comprises two mass spring dampers
+and demonstrates how the sucessive substitution technique can
+be used to ensure that a co-simulation is stable. More information
+about successive substitution and other co-simulation stabilization
+techniques, please see [this paper](https://arxiv.org/pdf/1702.00686v1).
 
-# Example Diagram
+## Example Diagram
 
 ![Mass Spring Damper System](mass-spring-damper_multibody_system.png)
 
-# Example Structure
+## Example Structure
 
-There are two simulators included in the study, each representing a mass spring damper system. The first simulator calculates the mass displacement and speed of $m_1$ for a given force $F_k$ acting on mass $m_1$. The second simulator calculates force $F_k$ given a displacement and speed of mass $m_1$. By coupling these simulators, the evolution of the position of the two masses is computed.
+There are two simulators included in the study, each representing a
+mass spring damper system. The first simulator calculates the mass
+displacement and speed of $m_1$ for a given force $F_k$ acting on mass $m_1$.
+The second simulator calculates force $F_k$ given a displacement and speed of
+mass $m_1$. By coupling these simulators, the evolution of the position of
+the two masses is computed.
 
 ![Mass Spring Damper Structure](mass_spring_structure.png)
 
@@ -42,7 +51,7 @@ cd workspace/examples/digital_twins/mass-spring-damper
 
 If required, change the permission of files you need to execute, for example:
 
-```
+```bash
 chmod +x lifecycle/create
 ```
 
@@ -50,13 +59,13 @@ Now, run the following scripts:
 
 ### Create
 
-```
+```bash
 lifecycle/create
 ```
 
 ### Execute
 
-```
+```bash
 lifecycle/execute
 ```
 
