@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../../index.html">
+        <link rel="prev" href="../overview.html">
       
       
         <link rel="next" href="../trial.html">
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#oauth-authentication-for-react-client-website" class="md-skip">
+        <a href="#setting-up-oauth" class="md-skip">
           Skip to content
         </a>
       
@@ -187,7 +187,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="auth.html" class="md-tabs__link md-tabs__link--active">
+      <a href="../overview.html" class="md-tabs__link md-tabs__link--active">
         Admin
       </a>
     </li>
@@ -367,6 +367,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../overview.html" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -436,17 +450,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
       
       
       
-        <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
           Host Install
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_2_2">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_3">
           <span class="md-nav__icon md-icon"></span>
           Host Install
         </label>
@@ -498,17 +512,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
       
       
       
-        <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
           Vagrant
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_2_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_4">
           <span class="md-nav__icon md-icon"></span>
           Vagrant
         </label>
@@ -574,17 +588,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
       
       
       
-        <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
           Separate Packages
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_2_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_5">
           <span class="md-nav__icon md-icon"></span>
           Separate Packages
         </label>
@@ -845,10 +859,72 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/index.html" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/mass-spring-damper/index.html" class="md-nav__link">
+        Mass Spring Damper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="https://github.com/INTO-CPS-Association/DTaaS-examples" class="md-nav__link">
-        Examples
+        Codebase
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -1165,77 +1241,81 @@
   
 
 
-<h1 id="oauth-authentication-for-react-client-website">OAuth Authentication for React Client Website</h1>
-<p>The react client website uses OAuth authentication protocol for user
-authentication. The PKCE authentication flow of OAuth protocol is used
-for the client website. The authentication has to be setup on a gitlab
-server.
-<strong>An oauth application needs to be created on a gitlab instance under admin user</strong>.
-Then all other users can use the same gitlab instance for oauth authentication.
-This means commercial gitlab.com can not be used for multi-user authentication
-system required by DTaaS. You will need to run an on-premise instance of gitlab.
-You can use
-<a href="https://docs.gitlab.com/ee/install/docker.html">gitlab omnibus docker</a> for
-this purpose. Please setup OAuth application as
-<a href="https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application">instance wide authentication type</a>.</p>
-<p>Before setting up oauth application on gitlab, you need to first decide on the
-hostname for your website. We recommend using a self-hosted gitlab instance which
-will be used in the other parts of the DTaaS application.</p>
-<p>Two more URLs are required for the PKCE authentication flow to work properly.
-They are the <strong>callback URL</strong> and <strong>logout URL</strong>. The callback URL tells the oauth
-provider the URL of the page that all the signed in users are shown. This URL will
-be different from the landing homepage of the DTaaS application. The logout URL is
-the URL that will be shown after a user logs out.</p>
-<p>Here is an example for hosting a DTaaS application without any basename.</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>DTaaS application URL: https://foo.com
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>Gitlab instance URL: https://foo.gitlab.com
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>Callback URL: https://foo.com/Library
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>Logout URL: https://foo.com
-</span></code></pre></div></td></tr></table></div>
-<p>During the creation of oauth application on gitlab, you need to decide on the
-scope of this oauth application.
-Choose <code>openid profile read_user read_repository api</code> scopes.</p>
-<p>After successful creation of oauth application, gitlab generates an application
-ID. This application ID is a long string of HEX values. You need to note this
-down and use in configuration files. An example oauth Client ID is:
-<code>934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0</code>.</p>
-<p>You need the following information from the OAuth application registered on Gitlab:</p>
+<h1 id="setting-up-oauth">Setting Up OAuth</h1>
+<p>To enable user authentication on DTaaS React client website, you will use
+the OAuth authentication protocol, specifically the PKCE authentication flow.
+Here are the steps to get started:</p>
+<p><strong>1. Choose Your GitLab Server:</strong></p>
+<ul>
+<li>You need to set up OAuth authentication on a GitLab server.
+  The commercial gitlab.com is not suitable for multi-user authentication
+  (DTaaS requires this), so you'll need an on-premise GitLab instance.</li>
+<li>You can use
+  <a href="https://docs.gitlab.com/ee/install/docker.html">GitLab Omnibus Docker for this purpose</a>.</li>
+<li>Configure the OAuth application as
+  an <a href="https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application">instance-wide authentication type</a>.</li>
+</ul>
+<p><strong>2. Determine Your Website's Hostname:</strong></p>
+<ul>
+<li>Before setting up OAuth on GitLab, decide on the hostname for your website.
+  It's recommended to use a self-hosted GitLab instance, which you will use in
+  other parts of the DTaaS application.</li>
+</ul>
+<p><strong>3. Define Callback and Logout URLs:</strong></p>
+<ul>
+<li>For the PKCE authentication flow to function correctly, you need two URLs:
+  a callback URL and a logout URL.</li>
+<li>The callback URL informs the OAuth provider of the page where
+  signed-in users should be redirected. It's different from the landing
+  homepage of the DTaaS application.</li>
+<li>The logout URL is where users will be directed after logging out.</li>
+</ul>
+<p><strong>4. OAuth Application Creation:</strong></p>
+<ul>
+<li>During the creation of the OAuth application on GitLab, you need to specify
+  the scope. Choose openid, profile, read_user, read_repository, and api scopes.</li>
+</ul>
+<p><strong>5. Application ID:</strong></p>
+<ul>
+<li>After successfully creating the OAuth application, GitLab generates
+  an application ID. This is a long string of HEX values that you will need for
+  your configuration files.</li>
+</ul>
+<p><strong>6. Required Information from OAuth Application:</strong></p>
+<ul>
+<li>You will need the following information from the OAuth application registered on GitLab:</li>
+</ul>
 <table>
 <thead>
 <tr>
-<th align="left">Gitlab Variable Name</th>
-<th align="left">Variable name in Client env.js</th>
-<th align="left">Default Value</th>
+<th>GitLab Variable Name</th>
+<th>Variable Name in Client env.js</th>
+<th>Default Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">OAuth Provider</td>
-<td align="left">REACT_APP_AUTH_AUTHORITY</td>
-<td align="left">https://gitlab.foo.com/</td>
+<td>OAuth Provider</td>
+<td>REACT_APP_AUTH_AUTHORITY</td>
+<td><a href="https://gitlab.foo.com/">https://gitlab.foo.com/</a></td>
 </tr>
 <tr>
-<td align="left">Application ID</td>
-<td align="left">REACT_APP_CLIENT_ID</td>
-<td align="left"></td>
+<td>Application ID</td>
+<td>REACT_APP_CLIENT_ID</td>
+<td></td>
 </tr>
 <tr>
-<td align="left">Callback URL</td>
-<td align="left">REACT_APP_REDIRECT_URI</td>
-<td align="left">https://foo.com/Library</td>
+<td>Callback URL</td>
+<td>REACT_APP_REDIRECT_URI</td>
+<td><a href="https://foo.com/Library">https://foo.com/Library</a></td>
 </tr>
 <tr>
-<td align="left">Scopes</td>
-<td align="left">REACT_APP_GITLAB_SCOPES</td>
-<td align="left">openid, profile, read_user, read_repository, api</td>
+<td>Scopes</td>
+<td>REACT_APP_GITLAB_SCOPES</td>
+<td>openid, profile, read_user, read_repository, api</td>
 </tr>
 </tbody>
 </table>
-<p>The same <strong>URLs</strong> and <strong>Client ID</strong> are useful for both the regular hosting of
-DTaaS application and also as the CI/CD server to be used for the development work.</p>
 <h2 id="development-environment">Development Environment</h2>
 <p>There needs to be a valid callback and logout URLs for development and testing
 purposes. You can use the same oauth application id for both development, testing
@@ -1243,22 +1323,22 @@ and deployment scenarios. Only the callback and logout URLs change. It is possib
 to register multiple callback URLs in one oauth application. In order to use oauth
 for development and testing on developer computer (localhost), you need to add the
 following to oauth callback URL.</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>DTaaS application URL: http://localhost:4000
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>Callback URL: http://localhost:4000/Library
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>Logout URL: http://localhost:4000
+<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>DTaaS application URL: http://localhost:4000
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>Callback URL: http://localhost:4000/Library
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>Logout URL: http://localhost:4000
 </span></code></pre></div></td></tr></table></div>
 <p>The port 4000 is the default port for running the client website.</p>
 <h2 id="multiple-dtaas-applications">Multiple DTaaS applications</h2>
 <p>The DTaaS is a regular web application. It is possible to host multiple DTaaS
 applications on the same server. The only requirement is to have a distinct URLs.
 You can have three DTaaS applications running at the following URLs.</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>https://foo.com/au
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>https://foo.com/acme
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>https://foo.com/bar
+<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>https://foo.com/au
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>https://foo.com/acme
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>https://foo.com/bar
 </span></code></pre></div></td></tr></table></div>
 <p>All of these instances can use the same gitlab instance for authentication.</p>
 <table>
@@ -1303,18 +1383,18 @@ You can have three DTaaS applications running at the following URLs.</p>
 </tbody>
 </table>
 <p>If you are hosting multiple DTaaS instances on the same server,
-do not a DTaaS with a null basename on the same server.
+do not install DTaaS with a null basename on the same server.
 Even though it works well, the setup is confusing to setup
 and may lead to maintenance issues.</p>
 <p>If you choose to host your DTaaS application with a basename (say bar), then the
 URLs in <code>env.js</code> change to:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>DTaaS application URL: https://foo.com/bar
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>Gitlab instance URL: https://foo.gitlab.com
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a>Callback URL: https://foo.com/bar/Library
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>Logout URL: https://foo.com/bar
+<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>DTaaS application URL: https://foo.com/bar
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>Gitlab instance URL: https://foo.gitlab.com
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>Callback URL: https://foo.com/bar/Library
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a>Logout URL: https://foo.com/bar
 </span></code></pre></div></td></tr></table></div>
 
 
@@ -1337,7 +1417,7 @@ URLs in <code>env.js</code> change to:</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../index.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <a href="../overview.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
@@ -1346,7 +1426,7 @@ URLs in <code>env.js</code> change to:</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Home
+                Overview
               </div>
             </div>
           </a>
@@ -1401,6 +1481,10 @@ URLs in <code>env.js</code> change to:</p>
       <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
         <script src="../../js/open_in_new_tab.js"></script>
       
