@@ -71,7 +71,8 @@ lifecycle/execute
 
 ## Examine the results
 
-The results can be found in the _workspace/examples/data/mass-spring-damper/output directory_.
+The results can be found in the
+_workspace/examples/data/mass-spring-damper/output directory_.
 
-You can also view run logs in the _workspace/examples/digital_twins/mass-spring-damper_.
-  
+You can also view run logs in the
+_workspace/examples/digital_twins/mass-spring-damper_.
