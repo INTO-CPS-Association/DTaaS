@@ -1,0 +1,52 @@
+<mxfile host="Electron" modified="2023-10-18T15:37:26.172Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/15.8.7 Chrome/91.0.4472.164 Electron/13.6.2 Safari/537.36" etag="wfgJs0YuYlC6-XLanwKg" compressed="false" version="15.8.7" type="device">
+  <diagram id="jLFWp5vPmYcwOU4BX7Fm" name="examples">
+    <mxGraphModel dx="-1292" dy="636" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-0" />
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-1" parent="VsSiiwDWSvhPQYji7nPq-0" />
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-2" value="&lt;font color=&quot;#ff0000&quot; style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;Mass Spring Damper&lt;/b&gt;&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="VsSiiwDWSvhPQYji7nPq-1" vertex="1">
+          <mxGeometry x="2349.305263157895" y="80" width="187.78947368421055" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="YsSumCsWpL5JwZorpIQ9-1" value="" style="group" vertex="1" connectable="0" parent="VsSiiwDWSvhPQYji7nPq-1">
+          <mxGeometry x="2400" y="150" width="386.1199999999999" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-3" value="Maestro" style="rounded=1;whiteSpace=wrap;html=1;" parent="YsSumCsWpL5JwZorpIQ9-1" vertex="1">
+          <mxGeometry x="130.41176470588243" y="80" width="104.94117647058825" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-4" value="MassSpringDamper1.fmu&lt;br&gt;(FMU&lt;sub&gt;1&lt;/sub&gt;)" style="rounded=1;whiteSpace=wrap;html=1;" parent="YsSumCsWpL5JwZorpIQ9-1" vertex="1">
+          <mxGeometry width="176.12" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-6" value="" style="endArrow=none;html=1;rounded=0;" parent="YsSumCsWpL5JwZorpIQ9-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="90" y="60" as="sourcePoint" />
+            <mxPoint x="295.0588235294117" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-7" value="" style="endArrow=none;html=1;rounded=0;" parent="YsSumCsWpL5JwZorpIQ9-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="90" y="40" as="sourcePoint" />
+            <mxPoint x="90" y="60" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="90" y="40" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-8" value="" style="endArrow=none;html=1;rounded=0;exitX=0.375;exitY=1.057;exitDx=0;exitDy=0;exitPerimeter=0;" parent="YsSumCsWpL5JwZorpIQ9-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="182.55441176470595" y="60.27999999999997" as="sourcePoint" />
+            <mxPoint x="182.88235294117658" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VsSiiwDWSvhPQYji7nPq-9" value="" style="endArrow=none;html=1;rounded=0;exitX=0.375;exitY=1.057;exitDx=0;exitDy=0;exitPerimeter=0;" parent="YsSumCsWpL5JwZorpIQ9-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="294.7308823529411" y="40.27999999999997" as="sourcePoint" />
+            <mxPoint x="295.0588235294117" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YsSumCsWpL5JwZorpIQ9-0" value="MassSpringDamper2.fmu&lt;br&gt;(FMU&lt;sub&gt;2&lt;/sub&gt;)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="YsSumCsWpL5JwZorpIQ9-1">
+          <mxGeometry x="210" width="176.12" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

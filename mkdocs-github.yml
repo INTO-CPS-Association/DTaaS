@@ -17,6 +17,7 @@ theme:
 nav:
   - Home: index.md
   - Admin:
+      - Overview: admin/overview.md
       - Authentication: admin/client/auth.md
       - Host Install:
         - Trial: admin/trial.md
@@ -39,7 +40,10 @@ nav:
       - Digital Twins: 
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-      - Examples: https://github.com/INTO-CPS-Association/DTaaS-examples
+      - Examples:
+          - Overview: user/examples/index.md
+          - Mass Spring Damper: user/examples/mass-spring-damper/README.md
+          - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 
       - Overview: developer/index.md 
@@ -61,6 +65,8 @@ extra_css:
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
   - attr_list
