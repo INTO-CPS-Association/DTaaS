@@ -54,6 +54,7 @@ nav:
         - Client: developer/client/client.md
         - Library Microservice: developer/servers/lib/lib-ms.md
       - Testing: developer/testing/intro.md
+      - Publish NPM Packages: developer/npm-packages.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: LICENSE.md
