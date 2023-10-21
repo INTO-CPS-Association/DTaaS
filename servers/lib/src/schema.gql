@@ -33,19 +33,19 @@ type Tree {
   trees: TreeConnection!
 }
 
-type RepositoryBlobConnection {
-  nodes: [RepositoryBlob]
-}
-
-type Repository {
-  tree: Tree
-  blobs: RepositoryBlobConnection
-}
-
 type RepositoryBlob {
   name: String!
   rawBlob: String!
   rawTextBlob: String!
+}
+
+type RepositoryBlobConnection {
+  nodes: [RepositoryBlob!]!
+}
+
+type Repository {
+  tree: Tree!
+  blobs: RepositoryBlobConnection!
 }
 
 type Project {

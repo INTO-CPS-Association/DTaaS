@@ -15,7 +15,7 @@ export const testDirectory = {
       trees: {
         edges: [
           { node: { name: "data", type: "tree" } },
-          { node: { name: "digital twins", type: "tree" } },
+          { node: { name: "digital_twins", type: "tree" } },
           { node: { name: "functions", type: "tree" } },
           { node: { name: "models", type: "tree" } },
           { node: { name: "tools", type: "tree" } },
@@ -29,7 +29,7 @@ export const fstestFileContent = "content123";
 export const pathToTestFileContent = "user2/tools/README.md";
 export const testFileArray = [
   "data",
-  "digital twins",
+  "digital_twins",
   "functions",
   "models",
   "tools",
@@ -112,7 +112,7 @@ export const expectedListDirectoryResponse = {
               },
               {
                 node: {
-                  name: "digital twins",
+                  name: "digital_twins",
                 },
               },
               {
