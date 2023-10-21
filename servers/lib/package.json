@@ -1,6 +1,6 @@
 {
   "name": "@dtaas/libms",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -17,9 +17,6 @@
     "graph": "script/graph.bash"
   },
   "bin": "./dist/src/main.js",
-  "files": [
-    "./src/schema.gql"
-  ],
   "dependencies": {
     "@apollo/client": "^3.8.4",
     "@apollo/server": "^4.9.3",
