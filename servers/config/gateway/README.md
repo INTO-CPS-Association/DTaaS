@@ -21,9 +21,10 @@ The default configuration uses two services at the following URLs:
 
 ```bash
 docker run -d \
- --name "traefik-gateway" \
---network=host -v $PWD/traefik.yml:/etc/traefik/traefik.yml \
--v $PWD/dynamic:/etc/traefik/dynamic \
+--name "traefik-gateway" \
+--network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \
+-v "$PWD/auth:/etc/traefik/auth" \
+-v "$PWD/dynamic:/etc/traefik/dynamic" \
 -v /var/run/docker.sock:/var/run/docker.sock \
 traefik:v2.10
 ```
