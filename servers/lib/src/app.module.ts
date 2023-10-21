@@ -13,7 +13,7 @@ import FilesModule from "./files/files.module";
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
       useFactory: (configService: ConfigService) => ({
-        typePaths: [join(process.cwd(), "src/schema.gql")],
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         path: configService.get<string>("APOLLO_PATH")
       }),
       inject: [ConfigService]
