@@ -143,3 +143,6 @@ Given that multiple services are running at different routes,
 a reverse proxy is needed to map the background services to external routes.
 You can use Apache, NGINX, Traefik or any other software to work
 as reverse proxy.
+
+The website screenshots and usage information is available in
+[user page](../../user/website/index.md).
