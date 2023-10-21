@@ -34,7 +34,8 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 ## :package: :ship: NPM package
 
-Use the instructions in [publish npm package](../../../docs/developer/npm-packages.md) for help
+Use the instructions in
+[publish npm package](../../../docs/developer/npm-packages.md) for help
 with publishing **runner npm package**.
 
 Application of the advice given on that page for **runner** will require
