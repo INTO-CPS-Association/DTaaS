@@ -52,7 +52,8 @@ To run the example, change your present directory.
 cd workspace/examples/digital_twins/mass-spring-damper
 ```
 
-If required, change the permission of files you need to execute, for example:
+If required, change the execute permission of lifecycle scripts
+you need to execute, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -62,20 +63,36 @@ Now, run the following scripts:
 
 ### Create
 
+Installs Open Java Development Kit 17 in the workspace.
+
 ```bash
 lifecycle/create
 ```
 
 ### Execute
 
+Run the co-simulation. Generate the co-simulation output.csv file
+at `data/mass-spring-damper/output/output.csv`.
+
+There are also debug and maestro log files stored in
+`data/mass-spring-damper/output` directory.
+
 ```bash
 lifecycle/execute
 ```
 
-## Examine the results
+#### Examine the results
 
 The results can be found in the
 _workspace/examples/data/mass-spring-damper/output directory_.
 
 You can also view run logs in the
 _workspace/examples/digital_twins/mass-spring-damper_.
+
+### Terminate phase
+
+Terminate to clean up the debug files and co-simulation output files.
+
+```bash
+lifecycle/terminate
+```

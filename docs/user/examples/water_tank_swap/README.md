@@ -1,27 +1,28 @@
-# Water Tank Swap
+# Water Tank Model Swap
 
 ## Overview
 
-This example is a water-tank model swap experiment for DTaaS.
-The experiment uses the Maestro co-orchestration engine for
-FMI-based co-simulation with the Model Swap feature including
-a FaultInject extension. This demonstrates a Docker-less
-version of the experiment at
-<http:>https://github.com/lausdahl/fmiSwap</http:>
-for use on the DTaaS platform.
+This example shows multi-step execution and dynamic reconfiguration
+of a digital twin (DT). Two features of DTs are demonstrated here:
 
-The model swap mechanism demonstrated by
-the experiment is detailed in the paper "Dynamic Runtime
-Integration of New Models in Digital Twins"
-[H. Ejersbo, K. Lausdahl, M. Frasheri, L. Esterle]
-presented at the
-[SEAMS 2023 conference](https://conf.researchr.org/home/seams-2023).
-The water-tank experiment is further detailed here:
-[Ejersbo, H., Lausdahl, K., Frasheri, M., & Esterle, L. (2023). fmiSwap: Run-time Swapping of Models for Co-simulation and Digital Twins. arXiv preprint arXiv:2304.07328.](https://arxiv.org/abs/2304.07328).
+* Fault injection into live DT
+* Dynamic auto-reconfiguration of live DT
 
-## Example Diagram
+The co-simulation methodology is used to construct this DT.
 
-![FMI Swap Diagram](fmi_swap.png)
+The runtime model (FMU) swap mechanism demonstrated by the experiment
+is detailed in the paper:
+
+```Ejersbo, Henrik, et al. "fmiSwap: Run-time Swapping of Models for
+Co-simulation and Digital Twins." arXiv preprint arXiv:2304.07328 (2023).```
+
+The runtime reconfiguration of co-simulation by modifying the Functional
+Mockup Units (FMUs) used is further detailed in the paper:
+
+```Ejersbo, Henrik, et al. "Dynamic Runtime Integration of
+New Models in Digital Twins." 2023 IEEE/ACM 18th Symposium on
+Software Engineering for Adaptive and Self-Managing Systems
+(SEAMS). IEEE, 2023.```
 
 ## Example Structure
 
@@ -33,10 +34,10 @@ This example uses four models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
 |:---|:---|:---|:---|
-| Models | watertankcontroller-c.fmu | Private | Yes |
-|  | singlewatertank-20sim.fmu | Private | Yes |
-|  | leak_detector.fmu | Private | Yes |
-|  | leak_controller.fmu | Private | Yes |
+| Models | Watertankcontroller-c.fmu | Private | Yes |
+|  | Singlewatertank-20sim.fmu | Private | Yes |
+|  | Leak_detector.fmu | Private | No |
+|  | Leak_controller.fmu | Private | No |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
 ## Lifecycle Phases
@@ -44,8 +45,9 @@ This example uses four models and one tool. The specific assets used are:
 | Lifecycle Phase    | Completed Tasks |
 | -------- | ------- |
 | Create  | Installs Java Development Kit for Maestro tool    |
-| Execute | Produces and stores output in data/water_tank_swap/output directory|
-| Clean   | Clears run logs and outputs |
+| Execute | Produces and stores output in data/water_tank_swap/output directory |
+| Analyze | Process the co-simulation output and produce plots |
+| Clean   | Clears run logs, outputs and plots |
 
 ## Run the example
 
@@ -65,20 +67,59 @@ Now, run the following scripts:
 
 ### Create
 
+Installs Open Java Development Kit 17 and pip dependencies.
+The matplotlib pip package is also installated.
+
 ```bash
 lifecycle/create
 ```
 
 ### Execute
 
+This DT has two-stage execution. In the first-stage, a co-simulation is
+executed. The Watertankcontroller-c.fmu and Singlewatertank-20sim.fmu
+models are used to execute the DT.
+During this stage, faults are injected into one of the models
+(Watertankcontroller-c.fmu) and the system performance is checked.
+
+In the second-stage, another co-simulation is run in which three FMUs
+are used. The FMUs used are: watertankcontroller, singlewatertank-20sim,
+and leak_detector. There is an in-built monitor in the Maestro tool.
+This monitor is enabled during the stage and a swap condition is set
+at the beginning of the second-stage.
+When the swap condition is satisfied, the Maestro swaps out
+Watertankcontroller-c.fmu model and swaps in Leakcontroller.fmu model.
+This swapping of FMU models demonstrates the dynamic reconfiguration
+of a DT.
+
+The end of execution phase generates the co-simulation output.csv file
+at `/workspace/examples/data/water_tank_swap/output`.
+
 ```bash
 lifecycle/execute
 ```
 
-## Examine the results
+### Analyze phase
+
+Process the output of co-simulation to produce a plot at:
+`/workspace/examples/data/water_tank_FI/output/plots/`.
+
+```bash
+lifecycle/analyze
+```
+
+#### Examine the results
 
 The results can be found in the
 _workspace/examples/data/water_tank_swap/output directory_.
 
 You can also view run logs in the
 _workspace/examples/digital_twins/water_tank_swap_.
+
+### Terminate phase
+
+Clean up the temporary files and delete output plot
+
+```bash
+lifecycle/terminate
+```
