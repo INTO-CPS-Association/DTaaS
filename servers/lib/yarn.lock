@@ -1481,9 +1481,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:^10.2.6":
-  version: 10.2.6
-  resolution: "@nestjs/testing@npm:10.2.6"
+"@nestjs/testing@npm:^10.2.7":
+  version: 10.2.7
+  resolution: "@nestjs/testing@npm:10.2.7"
   dependencies:
     tslib: 2.6.2
   peerDependencies:
@@ -1496,7 +1496,7 @@ __metadata:
       optional: true
     "@nestjs/platform-express":
       optional: true
-  checksum: 9b1004ef15ff1e70e562a76c718ccdd886b9f51c022f31dae6b7fc9e6fcc06d551cc82c1c54d89586515b7a6ca6024bd5d6c4b8ed61e8b7b3e89e04754bdd042
+  checksum: 598f6b206d4dad0e03ef78fd5579df07212443983dfa2c7036f56e1f865f5175ee6d44aadca873e9f75c04550b0cb375d03b9f1343db9b55f4765bdb277cf95d
   languageName: node
   linkType: hard
 
@@ -6239,7 +6239,7 @@ __metadata:
     "@nestjs/graphql": ^12.0.9
     "@nestjs/platform-express": ^10.2.6
     "@nestjs/schematics": ^10.0.2
-    "@nestjs/testing": ^10.2.6
+    "@nestjs/testing": ^10.2.7
     "@types/express": ^4.17.18
     "@types/jest": ^29.5.5
     "@types/node": 20.7.2
@@ -6268,7 +6268,7 @@ __metadata:
     type-graphql: ^2.0.0-beta.3
     typescript: ^5.2.2
   peerDependencies:
-    graphql-scalars: "*"
+    graphql-scalars: ^1.22.2
   languageName: unknown
   linkType: soft
 
