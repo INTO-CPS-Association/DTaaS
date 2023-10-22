@@ -41,7 +41,7 @@ or desktop.
     have distinct digital twin assets. You are likely to have one directory
     of everything in which you run your digital twin. In such a case we
     recommend that you upload this monolithic digital twin into
-    **digital twin/your_digital_twin_name** directory.
+    **digital_twin/your_digital_twin_name** directory.
 
 ## Example
 
@@ -62,7 +62,7 @@ workspace/
         input/
         output/
 
-  digital twins/
+  digital_twins/
     mass-spring-damper/
       cosim.json
       time.json
@@ -81,7 +81,6 @@ workspace/
     MassSpringDamper2.fmu
 
   tools/
-
   common/
     data/
     functions/
@@ -132,21 +131,13 @@ The [lifecycle page](lifecycle.md) provides more explanation on these programs.
    You are now connected to the Linux Desktop of your workspace.
 1. Open a Terminal (black rectangular icon in the top left region of your tab)
    and type the following commands.
-1. Download the
-   [example files](https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip)
+1. Download the example files by following the instructions given on
+   [examples overview](../examples/index.md).
 
-   ```sh
-   wget https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-   unzip main.zip
-   ```
-
-1. Open a file browser and copy the files from this uncompressed folder
-   into your workspace folder (`/workspace`). Make sure that the file placement
-   matches the one given above.
 1. Go to the digital twin directory and run
 
    ```sh
-   cd /workspace/digital twins/mass-spring-damper
+   cd /workspace/examples/digital_twins/mass-spring-damper
    lifecycle/execute
    ```
 

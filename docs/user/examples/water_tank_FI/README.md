@@ -16,13 +16,6 @@ from 12 to 20 time units, such that
 the tank output is closed for a period of time, leading to the water level
 increasing in the tank beyond the desired level (```Level-2```).
 
-More details on this case-study can be found in the paper:
-
-```M. Frasheri, C. Thule, H. D. Macedo, K. Lausdahl, P. G. Larsen and
-L. Esterle, "Fault Injecting Co-simulations for Safety,"
-2021 5th International Conference on System Reliability and Safety (ICSRS),
-Palermo, Italy, 2021.```
-
 ## Example Diagram
 
 ![Water Tank System](watertank.png)
@@ -41,6 +34,9 @@ The specific assets used are:
 | Models | watertankcontroller-c.fmu | Private | Yes |
 |  | singlewatertank-20sim.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
+
+The `multimodelFI.json` and `simulation-config.json`
+are two DT configuration files used for executing the digital twin.
 
 :fontawesome-solid-circle-info: The faults are defined in **wt_fault.xml**.
 
@@ -111,3 +107,12 @@ Clean up the temporary files and delete output plot
 ```bash
 lifecycle/terminate
 ```
+
+## References
+
+More details on this case-study can be found in the paper:
+
+```M. Frasheri, C. Thule, H. D. Macedo, K. Lausdahl, P. G. Larsen and
+L. Esterle, "Fault Injecting Co-simulations for Safety,"
+2021 5th International Conference on System Reliability and Safety (ICSRS),
+Palermo, Italy, 2021.```
