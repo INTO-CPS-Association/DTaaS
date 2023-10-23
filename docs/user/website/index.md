@@ -8,15 +8,37 @@ the DTaaS software platform.
 ![Login](login.png)
 
 The screen presents with HTTP authentication form. You can enter the user
-credentials. You will be using HTTPS secure communication so the username
-and password are secure.
+credentials. If the DTaaS is being served over HTTPS secure communication
+protocol, the username and password are secure.
 
-## Enter username again
+## Start the Authentication
 
-![Username](username.png)
+You are now logged into the DTaaS server. The DTaaS uses third-party authentication
+protocol known as OAuth. This protocol provides secure access to a DTaaS
+installation if users have a working active accounts at the selected OAuth
+service provider. The DTaaS uses Gitlab as OAuth provider.
 
-You are now logged into the server. You can enter the same username again
-to log into your workspace.
+![Gitlab signin button](gitlab-sso-1.png)
+
+You can see the Gitlab signin button. A click on this button takes you to
+Gitlab instance providing authentication for DTaaS.
+
+## Authenticate at Gitlab
+
+The username and password authentication takes place on the gitlab website.
+Enter your username and password in the login form.
+
+![Gitlab login form](gitlab-sso-2.png)
+
+## Permit DTaaS to Use Gitlab
+
+The DTaaS application needs your permission to use your Gitlab account for
+authentication. Click on **Authorize** button.
+
+![Gitlab OAuth permission](gitlab-sso-3.png)
+
+After successful authentication, you will be redirected to the **Library**
+page of the DTaaS website.
 
 ## Overview of menu items
 

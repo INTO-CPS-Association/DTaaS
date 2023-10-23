@@ -71,7 +71,7 @@ A dedicated program exists for each phase of DT lifecycle. Each program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
 
-## Examples
+## Example Lifecycle Scripts
 
 Here are the example programs / scripts to manage three phases in
 the lifecycle of **mass-spring-damper DT**.

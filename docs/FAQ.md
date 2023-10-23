@@ -210,4 +210,21 @@
     that GE Predix natively provides in one interface.
     The takeaway is that we pick horses for the courses.
 
+## Create Assets
+
+??? Question "Can DTaaS be used to create new DT assets?"
+
+    The core feature of DTaaS software is to help users create DTs from
+    assets already available in the library.
+
+    ![Create Library Assets](./user/servers/lib/author.png)
+
+    However, it is possible for users to take advantage of services
+    available in their workspace to install asset authoring tools
+    in their own workspace.
+    These authoring tools can then be used to create and publish new assets.
+    User workspaces are private and are not shared with other users.
+    Thus any licensed software tools installed in their workspace is
+    only available to them.
+
 <!-- markdownlint-enable MD046 -->
