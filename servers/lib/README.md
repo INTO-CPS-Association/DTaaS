@@ -79,7 +79,7 @@ nohup yarn start & disown
 yarn install    # Install dependencies for the microservice
 yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
 yarn graph       # generate dependency graphs in the code
-yarn build      # compile ES6 files into ES5 javascript files and copy all JS files into build/ directory
+yarn build      # compile ES6 files into ES5 javascript files and copy them into dist/ directory
 yarn test -a      # run all tests
 yarn test -e      # run end-to-end tests
 yarn test -i      # run integration tests
@@ -91,7 +91,12 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 ## :package: :ship: NPM package
 
+<<<<<<< HEAD
 Use the instructions in [publish npm package](../../docs/developer/npm-packages.md) for help
+=======
+Use the instructions in
+[publish npm package](../../docs/developer/npm-packages.md) for help
+>>>>>>> feature/distributed-demo
 with publishing **libms npm package**.
 
 Application of the advice given on that page for **libms** will require

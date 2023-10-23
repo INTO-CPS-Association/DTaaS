@@ -56,7 +56,7 @@ It is recommended to have the following structure:
 
 ```text
 workspace/
-  digital twins/
+  digital_twins/
     digital-twin-1/
       lifecycle/
         analyze
@@ -73,7 +73,7 @@ to a live digital twin.
 
 ## Examples
 
-Here are the programs / scripts to manage three phases in
+Here are the example programs / scripts to manage three phases in
 the lifecycle of **mass-spring-damper DT**.
 
 ```bash title="lifecycle/execute"
