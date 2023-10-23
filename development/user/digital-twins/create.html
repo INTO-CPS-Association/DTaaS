@@ -910,6 +910,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../examples/water_tank_FI/index.html" class="md-nav__link">
+        Water Tank Fault Injection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/water_tank_swap/index.html" class="md-nav__link">
+        Water Tank Model Swap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="https://github.com/INTO-CPS-Association/DTaaS-examples" class="md-nav__link">
         Codebase
       </a>
@@ -1127,6 +1155,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/npm-packages.html" class="md-nav__link">
+        Publish NPM Packages
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1266,14 +1308,12 @@ or desktop.</p>
 have distinct digital twin assets. You are likely to have one directory
 of everything in which you run your digital twin. In such a case we
 recommend that you upload this monolithic digital twin into
-<strong>digital twin/your_digital_twin_name</strong> directory.</p>
+<strong>digital_twin/your_digital_twin_name</strong> directory.</p>
 </div>
 <h2 id="example">Example</h2>
 <p>The <a href="https://github.com/INTO-CPS-Association/DTaaS-examples">Examples</a>
 repository contains a co-simulation setup for mass spring damper.
-The complete details on this example are available on
-<a href="https://github.com/INTO-CPS-Association/example-mass_spring_damper">github</a>.</p>
-<p>This example illustrates the potential of using co-simulation
+This example illustrates the potential of using co-simulation
 for digital twins.</p>
 <p>The file system contents for this example are:</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
@@ -1306,14 +1346,13 @@ for digital twins.</p>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>workspace/
+<span class="normal"><a href="#__codelineno-0-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>workspace/
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>  data/
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>    mass-spring-damper
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>        input/
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>        output/
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>  digital twins/
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>  digital_twins/
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a>    mass-spring-damper/
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>      cosim.json
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a>      time.json
@@ -1332,13 +1371,12 @@ for digital twins.</p>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    MassSpringDamper2.fmu
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>  tools/
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>  common/
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    data/
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>    functions/
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>    models/
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    tools/
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>        maestro-2.3.0-jar-with-dependencies.jar
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>  common/
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    data/
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    functions/
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>    models/
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>    tools/
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>        maestro-2.3.0-jar-with-dependencies.jar
 </span></code></pre></div></td></tr></table></div>
 <p>The <code>workspace/data/mass-spring-damper/</code> contains <code>input</code> and
 <code>output</code> data for the mass-spring-damper digital twin.</p>
@@ -1378,22 +1416,17 @@ are often run at the discretion of the user.</p>
    You are now connected to the Linux Desktop of your workspace.</li>
 <li>Open a Terminal (black rectangular icon in the top left region of your tab)
    and type the following commands.</li>
-<li>Download the
-   <a href="https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip">example files</a></li>
+<li>
+<p>Download the example files by following the instructions given on
+   <a href="../examples/index.html">examples overview</a>.</p>
+</li>
+<li>
+<p>Go to the digital twin directory and run</p>
+</li>
 </ol>
 <div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>wget<span class="w"> </span>https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>unzip<span class="w"> </span>main.zip
-</span></code></pre></div></td></tr></table></div>
-<ol>
-<li>Open a file browser and copy the files from this uncompressed folder
-   into your workspace folder (<code>/workspace</code>). Make sure that the file placement
-   matches the one given above.</li>
-<li>Go to the digital twin directory and run</li>
-</ol>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/digital<span class="w"> </span>twins/mass-spring-damper
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>lifecycle/execute
+<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/examples/digital_twins/mass-spring-damper
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>lifecycle/execute
 </span></code></pre></div></td></tr></table></div>
 <p>The last command executes the mass-spring-damper digital twin and stores
    the co-simulation output in <code>data/mass-spring-damper/output</code>.</p>
