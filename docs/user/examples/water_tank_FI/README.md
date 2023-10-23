@@ -112,7 +112,9 @@ lifecycle/terminate
 
 More details on this case-study can be found in the paper:
 
-```M. Frasheri, C. Thule, H. D. Macedo, K. Lausdahl, P. G. Larsen and
+```txt
+M. Frasheri, C. Thule, H. D. Macedo, K. Lausdahl, P. G. Larsen and
 L. Esterle, "Fault Injecting Co-simulations for Safety,"
 2021 5th International Conference on System Reliability and Safety (ICSRS),
-Palermo, Italy, 2021.```
+Palermo, Italy, 2021.
+```

@@ -126,13 +126,17 @@ lifecycle/terminate
 The runtime model (FMU) swap mechanism demonstrated by the experiment
 is detailed in the paper:
 
-```Ejersbo, Henrik, et al. "fmiSwap: Run-time Swapping of Models for
-Co-simulation and Digital Twins." arXiv preprint arXiv:2304.07328 (2023).```
+```txt
+Ejersbo, Henrik, et al. "fmiSwap: Run-time Swapping of Models for
+Co-simulation and Digital Twins." arXiv preprint arXiv:2304.07328 (2023).
+```
 
 The runtime reconfiguration of co-simulation by modifying the Functional
 Mockup Units (FMUs) used is further detailed in the paper:
 
-```Ejersbo, Henrik, et al. "Dynamic Runtime Integration of
+```txt
+Ejersbo, Henrik, et al. "Dynamic Runtime Integration of
 New Models in Digital Twins." 2023 IEEE/ACM 18th Symposium on
 Software Engineering for Adaptive and Self-Managing Systems
-(SEAMS). IEEE, 2023.```
+(SEAMS). IEEE, 2023.
+```

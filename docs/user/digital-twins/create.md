@@ -47,9 +47,6 @@ or desktop.
 
 The [Examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
 repository contains a co-simulation setup for mass spring damper.
-The complete details on this example are available on
-[github](https://github.com/INTO-CPS-Association/example-mass_spring_damper).
-
 This example illustrates the potential of using co-simulation
 for digital twins.
 

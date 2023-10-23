@@ -99,5 +99,7 @@ lifecycle/terminate
 More information about co-simulation techniques and mass spring damper
 case study are available in:
 
+```txt
 Gomes, Cláudio, et al. "Co-simulation: State of the art."
 arXiv preprint arXiv:1702.00686 (2017).
+```
