@@ -82,14 +82,14 @@ workspace/
     data2/ (ex: turbine)
       README.md (remote source; no local file)
     ...
-  digital twins/
-    digital twin-1/ (ex: incubator)
+  digital_twins/
+    digital_twin-1/ (ex: incubator)
       code and config
       README.md (usage instructions)
-    digital twin-2/ (ex: mass spring damper)
+    digital_twin-2/ (ex: mass spring damper)
       code and config
       README.md (usage instructions)
-    digital twin-3/ (ex: model swap)
+    digital_twin-3/ (ex: model swap)
       code and config
       README.md (usage instructions)
     ...
