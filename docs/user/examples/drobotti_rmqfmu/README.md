@@ -50,8 +50,8 @@ This example uses two models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
 |:---|:---|:---|:---|
-| Models | rabbitmq.fmu | Private | Yes |
-|  | distance.fmu | Private | Yes |
+| Models | rmqfmu.fmu | Private | Yes |
+|  | distance_from_zero.fmu | Private | Yes |
 | Servers | RabbitMQ server | Private | No |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
@@ -59,7 +59,7 @@ This example uses two models and one tool. The specific assets used are:
 
 | Lifecycle Phase    | Completed Tasks |
 | -------- | ------- |
-| Create  | Installs Java Development Kit for Maestro tool    |
+| Create  | Installs Python Packages and Java Development Kit for Maestro tool |
 | Execute | Produces and stores output in data/drobotti_rmqfmu/output directory|
 | Clean   | Clears run logs and outputs |
 
