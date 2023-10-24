@@ -45,6 +45,9 @@ nav:
           - Mass Spring Damper: user/examples/mass-spring-damper/README.md
           - Water Tank Fault Injection: user/examples/water_tank_FI/README.md
           - Water Tank Model Swap: user/examples/water_tank_swap/README.md
+          - Desktop Robotti: user/examples/drobotti_rmqfmu/README.md
+          - Flex Cell: user/examples/flex-cell/README.md
+          - Three Tank: user/examples/three-tank/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 
