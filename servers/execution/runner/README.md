@@ -32,30 +32,16 @@ yarn start      # start the application
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
 
-## :package: :ship: Publish Package
+## :package: :ship: NPM package
 
-### Setup private npm registry
+Use the instructions in
+[publish npm package](../../../docs/developer/npm-packages.md) for help
+with publishing **runner npm package**.
 
-This package need to be published to an npm registry. There after, the package
-can be installed as a system command. Since publishing to npmjs.org is
-irrevocable and public, developers are encouraged to setup their own private
-npm registry for local development. We recommend using
-[verdaccio](https://verdaccio.org) for this task. The following commands
-help you create a working private npm registry for development.
+Application of the advice given on that page for **runner** will require
+running the following commands.
 
-```bash
-docker run -d --name verdaccio -p 4873:4873 verdaccio/verdaccio
-npm adduser --registry http://localhost:4873 #create a user on the verdaccio registry
-npm set registry http://localhost:4873/
-yarn config set registry "http://localhost:4873"
-```
-
-You can open `http://localhost:4873` in your browser, login with
-the user credentials to see the packages published.
-
-### Publish to private registry
-
-To publish a package to your local registry, do:
+### Publish
 
 ```bash
 yarn install
@@ -64,24 +50,10 @@ yarn publish --no-git-tag-version #increments version in package.json, publishes
 yarn publish #increments version in package.json, publishes to registry and adds a git tag
 ```
 
-The package version in package.json gets updated as well. You can
-open `http://localhost:4873` in your browser, login with the user credentials
-to see the packages published. Please see
-[verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
-for more information.
-
-If there is a need to unpublish a package, ex: `@dtaas/runner@0.0.2`, do:
+### Unpublish
 
 ```bash
 npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2
-```
-
-To install / uninstall this utility for all users, do:
-
-```bash
-sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
-sudo npm list -g # should list @dtaas/runner in the packages
-sudo npm remove --global @dtaas/runner
 ```
 
 ## :rocket: Access the service
