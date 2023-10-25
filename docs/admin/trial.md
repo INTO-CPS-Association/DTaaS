@@ -1,7 +1,16 @@
 # Trial Installation
 
-To try out the software, you can install it on either an Ubuntu Server 22.04 Operating System or within a Vagrant virtual machine.
-Provided is a one-step installation script. This script sets up the DTaaS software with default credentials and users.
+To try out the software, you can install it on Ubuntu Server 22.04
+Operating System.  The setup requires a
+machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
+space to the vagrant box.
+A successful installation will create a setup
+similar to the one shown in the figure.
+
+![Single host install](./single-host.png)
+
+A one-step installation script is provided on this page. This script sets up
+the DTaaS software with default credentials and users.
 You can use it to check a test installation of DTaaS software.
 
 ## Pre-requisites
@@ -9,7 +18,8 @@ You can use it to check a test installation of DTaaS software.
 ### 1. Domain name
 
 You need a domain name to run the application. The install script
-assumes **foo.com** to be your domain name. You will change this after running the script.
+assumes **foo.com** to be your domain name. You will change this
+after running the script.
 
 ### 2. Gitlab OAuth application
 
@@ -40,17 +50,26 @@ bash single-script-install.sh
 !!! warning
     This test installation has default credentials and is thus highly insecure.
 
-
 ## Post install
 
-After the install-script. Please change **foo.com** and Gitlab OAuth details to your local settings in the following files.
+After the install-script. Please change **foo.com** and Gitlab OAuth details
+to your local settings in the following files.
+
 ```txt
 ~/DTaaS/client/build/env.js
-~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml 
+~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 ```
 
 ## Sanity check
 
-Now when you visit your domain, you should be able to login through your OAuth Provider and be able to access the DTaas web UI.
+Now when you visit your domain, you should be able to login through your
+OAuth Provider and be able to access the DTaas web UI.
 
-**! Q: Do we need more here? Should they be able to see a model/algoritm and run it?**
+## References
+
+Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
+[reactjs](https://krify.co/about-reactjs/),
+[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)

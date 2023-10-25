@@ -1,34 +1,48 @@
-## Setting Up OAuth
+# Setting Up OAuth
 
-To enable user authentication on DTaaS React client website, you'll use the OAuth authentication protocol, specifically the PKCE authentication flow. Here are the steps to get started:
+To enable user authentication on DTaaS React client website, you will use
+the OAuth authentication protocol, specifically the PKCE authentication flow.
+Here are the steps to get started:
 
 **1. Choose Your GitLab Server:**
 
-- You need to set up OAuth authentication on a GitLab server. The commercial gitlab.com is not suitable for multi-user authentication (DTaaS requires this), so you'll need an on-premise GitLab instance.
-- You can use [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
-- Configure the OAuth application as an [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+- You need to set up OAuth authentication on a GitLab server.
+  The commercial gitlab.com is not suitable for multi-user authentication
+  (DTaaS requires this), so you'll need an on-premise GitLab instance.
+- You can use
+  [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
+- Configure the OAuth application as
+  an [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
 **2. Determine Your Website's Hostname:**
 
-- Before setting up OAuth on GitLab, decide on the hostname for your website. It's recommended to use a self-hosted GitLab instance, which you'll use in other parts of the DTaaS application.
+- Before setting up OAuth on GitLab, decide on the hostname for your website.
+  It's recommended to use a self-hosted GitLab instance, which you will use in
+  other parts of the DTaaS application.
 
 **3. Define Callback and Logout URLs:**
 
-- For the PKCE authentication flow to function correctly, you need two URLs: a callback URL and a logout URL.
-- The callback URL informs the OAuth provider of the page where signed-in users should be redirected. It's different from the landing homepage of the DTaaS application.
+- For the PKCE authentication flow to function correctly, you need two URLs:
+  a callback URL and a logout URL.
+- The callback URL informs the OAuth provider of the page where
+  signed-in users should be redirected. It's different from the landing
+  homepage of the DTaaS application.
 - The logout URL is where users will be directed after logging out.
 
 **4. OAuth Application Creation:**
 
-- During the creation of the OAuth application on GitLab, you need to specify the scope. Choose openid, profile, read_user, read_repository, and api scopes.
+- During the creation of the OAuth application on GitLab, you need to specify
+  the scope. Choose openid, profile, read_user, read_repository, and api scopes.
 
 **5. Application ID:**
 
-- After successfully creating the OAuth application, GitLab generates an application ID. This is a long string of HEX values that you'll need for your configuration files.
+- After successfully creating the OAuth application, GitLab generates
+  an application ID. This is a long string of HEX values that you will need for
+  your configuration files.
 
 **6. Required Information from OAuth Application:**
 
-- You'll need the following information from the OAuth application registered on GitLab:
+- You will need the following information from the OAuth application registered on GitLab:
 
 |GitLab Variable Name|Variable Name in Client env.js|Default Value|
 |---|---|---|
@@ -76,7 +90,7 @@ All of these instances can use the same gitlab instance for authentication.
 ||
 
 If you are hosting multiple DTaaS instances on the same server,
-do not a DTaaS with a null basename on the same server.
+do not install DTaaS with a null basename on the same server.
 Even though it works well, the setup is confusing to setup
 and may lead to maintenance issues.
 

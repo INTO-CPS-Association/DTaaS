@@ -1,11 +1,25 @@
-import { ConfigService } from "@nestjs/config";
-import { NestFactory } from "@nestjs/core";
-import AppModule from "./app.module";
+#!/usr/bin/env node
+import { Command } from "commander";
+import bootstrap from "./bootstrap";
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>("PORT");
-  await app.listen(port);
+type ProgramOptions = {
+  config?: string
 }
-bootstrap();
+
+const program = new Command();
+
+program
+    .description("The lib microservice is responsible for handling and serving the contents of library assets of the DTaaS platform. It provides API endpoints for clients to query, and fetch these assets.")
+    .option('-c, --config <path>', "set the config path (default .env)")
+    .helpOption('-h, --help', 'display help for libms')
+    .showHelpAfterError();
+    
+program.parse(process.argv);
+
+const options: ProgramOptions = program.opts();
+
+if (options.config) { 
+    bootstrap({config: options.config, runHelp: () => program.help()})
+} else {
+    bootstrap({runHelp: () => program.help()});
+}

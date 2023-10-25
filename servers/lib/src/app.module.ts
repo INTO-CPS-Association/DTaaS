@@ -1,20 +1,25 @@
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import * as dotenv from "dotenv";
+import { ApolloDriver } from "@nestjs/apollo";
+import { join } from "path";
 import FilesModule from "./files/files.module";
-import getApolloDriverConfig from "../util";
-
-dotenv.config({ path: ".env" });
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true
     }),
-    GraphQLModule.forRoot(getApolloDriverConfig()),
+    GraphQLModule.forRootAsync({
+      driver: ApolloDriver,
+      useFactory: (configService: ConfigService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        path: configService.get<string>("APOLLO_PATH")
+      }),
+      inject: [ConfigService]
+    }),
     FilesModule,
-  ],
-  providers: [],
+  ]
 })
+
 export default class AppModule {}

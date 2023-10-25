@@ -12,6 +12,11 @@ are illustrated in the figure.
 
 ![DT-PT Lifecycle](lifecycle-four-stages.png)
 
+(Ref: Minerva, R, Lee, GM and Crespi, N (2020) Digital Twin
+in the IoT context: a survey on technical features, scenarios
+and architectural models. Proceedings of the IEEE, 108 (10).
+pp. 1785-1824. ISSN 0018-9219.)
+
 ## Lifecycle Phases
 
 The four phase lifecycle has been extended to a lifecycle with
@@ -56,7 +61,7 @@ It is recommended to have the following structure:
 
 ```text
 workspace/
-  digital twins/
+  digital_twins/
     digital-twin-1/
       lifecycle/
         analyze
@@ -71,9 +76,9 @@ A dedicated program exists for each phase of DT lifecycle. Each program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
 
-## Examples
+## Example Lifecycle Scripts
 
-Here are the programs / scripts to manage three phases in
+Here are the example programs / scripts to manage three phases in
 the lifecycle of **mass-spring-damper DT**.
 
 ```bash title="lifecycle/execute"
