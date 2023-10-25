@@ -557,6 +557,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#target-installation-setup" class="md-nav__link">
+    Target Installation Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure-server-settings" class="md-nav__link">
     Configure Server Settings
   </a>
@@ -564,15 +571,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#launch-platform-default-services" class="md-nav__link">
-    Launch platform default services
+  <a href="#installation-steps" class="md-nav__link">
+    Installation Steps
   </a>
+  
+    <nav class="md-nav" aria-label="Installation Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launch-dtaas-platform-default-services" class="md-nav__link">
+    Launch DTaaS Platform Default Services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-dtaas-application" class="md-nav__link">
+    Install DTaaS Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#launch-dtaas-application" class="md-nav__link">
-    Launch DTaaS application
+  <a href="#references" class="md-nav__link">
+    References
   </a>
   
 </li>
@@ -1275,6 +1302,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#target-installation-setup" class="md-nav__link">
+    Target Installation Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure-server-settings" class="md-nav__link">
     Configure Server Settings
   </a>
@@ -1282,15 +1316,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#launch-platform-default-services" class="md-nav__link">
-    Launch platform default services
+  <a href="#installation-steps" class="md-nav__link">
+    Installation Steps
   </a>
+  
+    <nav class="md-nav" aria-label="Installation Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launch-dtaas-platform-default-services" class="md-nav__link">
+    Launch DTaaS Platform Default Services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-dtaas-application" class="md-nav__link">
+    Install DTaaS Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#launch-dtaas-application" class="md-nav__link">
-    Launch DTaaS application
+  <a href="#references" class="md-nav__link">
+    References
   </a>
   
 </li>
@@ -1322,18 +1376,42 @@ shall be run on server1 while all the platform services will be run on server2.<
 <p><strong>server2</strong>: 6GB RAM, 3 x64 vCPUs and 50GB Hard Disk space</p>
 <p>Under the default configuration, two user workspaces are provisioned on server1.
 The default installation setup also installs
-InfluxDB, Grafana and RabbitMQ services on server2.
+InfluxDB, Grafana, RabbitMQ and MQTT services on server2.
 If you would like to install more services,
 you can create shell scripts to install the same on server2.</p>
 <h2 id="create-base-vagrant-box">Create Base Vagrant Box</h2>
 <p>Create <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>.
 You would have created an SSH key pair - <em>vagrant</em> and <em>vagrant.pub</em>.
 The <em>vagrant</em> is the private SSH key and is needed for the next steps.
-Copy <em>vagrant</em> SSH private key into the current directory (<code>deploy/vagrant/single-machine</code>).
+Copy <em>vagrant</em> SSH private key into the current directory (<code>deploy/vagrant/two-machine</code>).
 This shall be useful for logging into the vagrant
 machines created for two-machine deployment.</p>
+<h2 id="target-installation-setup">Target Installation Setup</h2>
+<p>The goal is to use this <a href="base-box.html"><strong>dtaas</strong> vagrant box</a>
+to install the DTaaS software on server1 and
+the default platform services on server2. Both the servers
+are vagrant machines.</p>
+<p><img alt="DTaaS vagrant box package use" src="two-machine-use-legend.png" /></p>
+<p>There are many unused software packages/docker containers within
+the dtaas base box.
+The used packages/docker containers are highlighed in blue and red color.</p>
+<p>A graphical illustration of a successful installation can be
+seen here.</p>
+<p><img alt="Two vagrant machine" src="two-machine.png" /></p>
+<p>In this case, both the vagrant boxes are spawed on one server using
+two vagrant configuration files, namely <em>boxes.json</em> and <em>Vagrantfile</em>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The illustration shows hosting of gitlab on the same
+vagrant machine with <http:><em>http(s)://gitlab.foo.com</em></http:>
+The gitlab setup is outside the scope this installation
+guide. Please refer to
+<a href="https://docs.gitlab.com/ee/install/docker.html">gitlab docker install</a>
+for gitlab installation.</p>
+</div>
 <h2 id="configure-server-settings">Configure Server Settings</h2>
-<p><strong>NOTE</strong>: A dummy <strong>foo.com</strong> and <strong>services.foo.com</strong>  URLs has been used for illustration.
+<p><strong>NOTE</strong>: A dummy <strong>foo.com</strong> and <strong>services.foo.com</strong>  URLs
+has been used for illustration.
 Please change these to your unique website URLs.</p>
 <p>The first step is to define the network identity of the two VMs.
 For that, you need <em>server name</em>, <em>hostname</em> and <em>MAC address</em>.
@@ -1354,12 +1432,14 @@ The fields to update are:</p>
      names based on MAC address. Otherwise, you can leave this field unchanged.</li>
 <li>Other adjustments are optional.</li>
 </ol>
-<h2 id="launch-platform-default-services">Launch platform default services</h2>
-<p>RabbitMQ, Grafana and InfluxDB services are provisioned on this server.
+<h2 id="installation-steps">Installation Steps</h2>
+<h3 id="launch-dtaas-platform-default-services">Launch DTaaS Platform Default Services</h3>
+<p>RabbitMQ, Grafana, InfluxDB and MQTT services are provisioned on this server.
 InfluxDB and visualization service will be available at: <em>services.foo.com</em>.
+The Grafana service shall be available at TCP port 3000.
+The MQTT service shall be available at TCP port 1833.
 The RabbitMQ service and its management interface shall be available at
-5672 and 15672 TCP ports respectively.
-The Grafana service shall be available at TCP port 3000.</p>
+5672 and 15672 TCP ports respectively.</p>
 <p>The firewall and network access settings of corporate / cloud network
 need to be configured to allow external access to the services.
 Otherwise the users of DTaaS will not be able to utilize these
@@ -1396,6 +1476,10 @@ you can see the following services active within server2.</p>
 <td align="left">services.foo.com:3000</td>
 </tr>
 <tr>
+<td align="left">MQTT communication service</td>
+<td align="left">services.foo.com:1883</td>
+</tr>
+<tr>
 <td align="left">RabbitMQ communication service</td>
 <td align="left">services.foo.com:5672</td>
 </tr>
@@ -1403,13 +1487,9 @@ you can see the following services active within server2.</p>
 <td align="left">RabbitMQ management service</td>
 <td align="left">services.foo.com:15672</td>
 </tr>
-<tr>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
 </tbody>
 </table>
-<h2 id="launch-dtaas-application">Launch DTaaS application</h2>
+<h3 id="install-dtaas-application">Install DTaaS Application</h3>
 <p>Execute the following commands from terminal</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -1425,6 +1505,13 @@ follow the instructions of <a href="../trial.html">single script install</a>.</p
 <p>If you are not in a hurry and would rather have a production instance,
 follow the instructions of <a href="../host.html">regular server installation</a>
 setup to complete the installation.</p>
+<h2 id="references">References</h2>
+<p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a>,
+<a href="https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container">Traefik logo</a>,
+<a href="https://github.com/ml-tooling/ml-workspace">ml-workspace</a>,
+<a href="https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/">nodejs</a>,
+<a href="https://krify.co/about-reactjs/">reactjs</a>,
+<a href="https://camunda.com/blog/2019/10/nestjs-tx-email/">nestjs</a></p>
 
 
 

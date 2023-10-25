@@ -511,9 +511,68 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Single Machine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="single-machine.html" class="md-nav__link md-nav__link--active">
         Single Machine
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-base-vagrant-box" class="md-nav__link">
+    Create Base Vagrant Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-installation-setup" class="md-nav__link">
+    Target Installation Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-server-settings" class="md-nav__link">
+    Configure Server Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-steps" class="md-nav__link">
+    Installation Steps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1209,6 +1268,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-base-vagrant-box" class="md-nav__link">
+    Create Base Vagrant Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-installation-setup" class="md-nav__link">
+    Target Installation Setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-server-settings" class="md-nav__link">
+    Configure Server Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-steps" class="md-nav__link">
+    Installation Steps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1226,31 +1328,55 @@
 
 
 <h1 id="dtaas-on-single-vagrant-machine">DTaaS on Single Vagrant Machine</h1>
-<p>These are installation instructions for running DTaaS application
-inside one vagrant Virtual Machine.  The setup requires a
+<p>These are installation instructions for running DTaaS software
+inside one vagrant Virtual Machine. The setup requires a
 machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
 space to the vagrant box.</p>
+<h2 id="create-base-vagrant-box">Create Base Vagrant Box</h2>
+<p>Create <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>.
+You would have created an SSH key pair - <em>vagrant</em> and <em>vagrant.pub</em>.
+The <em>vagrant</em> is the private SSH key and is needed for the next steps.
+Copy <em>vagrant</em> SSH private key into the current directory
+(<code>deploy/vagrant/single-machine</code>).
+This shall be useful for logging into the vagrant
+machines created for two-machine deployment.</p>
+<h2 id="target-installation-setup">Target Installation Setup</h2>
+<p>The goal is to use the <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>
+to install the DTaaS software on one single vagrant machine.
+A graphical illustration of a successful installation can be
+seen here.</p>
+<p><img alt="Single vagrant machine" src="single-machine.png" /></p>
+<p>There are many unused software packages/docker containers within
+the dtaas base box.
+The used packages/docker containers are highlighed in blue color.</p>
+<!-- markdownlint-disable MD046 -->
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The illustration shows hosting of gitlab on the same
+vagrant machine with <http:><em>http(s)://gitlab.foo.com</em></http:>
+The gitlab setup is outside the scope this installation
+guide. Please refer to
+<a href="https://docs.gitlab.com/ee/install/docker.html">gitlab docker install</a>
+for gitlab installation.</p>
+</div>
+<!-- markdownlint-enable MD046 -->
+
+<h2 id="configure-server-settings">Configure Server Settings</h2>
 <p>A dummy <strong>foo.com</strong> URL has been used for illustration.
 Please change this to your unique website URL.</p>
-<p>Please follow these steps to make this work in your local environment.</p>
+<p>Please follow the next steps to make this installation work
+in your local environment.</p>
+<p>Update the <strong>Vagrantfile</strong>. Fields to update are:</p>
 <ol>
-<li>Create <a href="base-box.html"><strong>dtaas</strong> Vagrant box</a>.
-   You would have created an SSH key pair - <em>vagrant</em> and
-   <em>vagrant.pub</em> for the vagrant box.
-   The <em>vagrant</em> is the private SSH key; Copy <em>vagrant</em> SSH private key into
-   the current directory (<code>deploy/vagrant/single-machine</code>).
-   This shall be useful for logging into the vagrant
-   machine created for single-machine deployment.</li>
-<li>Update the <strong>Vagrantfile</strong>. Fields to update are:<ol>
 <li>Hostname (<code>node.vm.hostname = "foo.com"</code>)</li>
 <li>MAC address (<code>:mac =&gt; "xxxxxxxx"</code>).
-This change is required if you have a DHCP server assigning domain names
-based on MAC address. Otherwise, you can leave this field unchanged.</li>
+   This change is required if you have a DHCP server assigning domain names
+   based on MAC address. Otherwise, you can leave this field unchanged.</li>
 <li>Other adjustments are optional.</li>
 </ol>
-</li>
-<li>Execute the following commands from terminal</li>
-</ol>
+<h2 id="installation-steps">Installation Steps</h2>
+<p>Execute the following commands from terminal</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>vagrant<span class="w"> </span>up
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>vagrant<span class="w"> </span>ssh
@@ -1267,6 +1393,13 @@ follow the instructions of <a href="../trial.html">single script install</a>.</p
 <p>If you are not in a hurry and would rather have a production
 instance, follow the instructions of <a href="../host.html">regular server installation</a>
 setup to complete the installation.</p>
+<h2 id="references">References</h2>
+<p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a>,
+<a href="https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container">Traefik logo</a>,
+<a href="https://github.com/ml-tooling/ml-workspace">ml-workspace</a>,
+<a href="https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/">nodejs</a>,
+<a href="https://krify.co/about-reactjs/">reactjs</a>,
+<a href="https://camunda.com/blog/2019/10/nestjs-tx-email/">nestjs</a></p>
 
 
 

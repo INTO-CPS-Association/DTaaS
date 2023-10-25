@@ -497,9 +497,40 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Base Box
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="base-box.html" class="md-nav__link md-nav__link--active">
         Base Box
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1209,6 +1240,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1269,20 +1315,15 @@ to modify <code>Vagrantfile</code>. The existing <code>Vagrantfile</code> has tw
 <p>Uncomment the second line to have more software components installed. If you
 are not a developer, no changes are required to the <code>Vagrantfile</code>.</p>
 <p>This vagrant box installed for users will have the following items:</p>
-<ul>
+<ol>
 <li>docker v24.0</li>
 <li>nodejs v18.8</li>
 <li>yarn v1.22</li>
 <li>npm v10.2</li>
-<li>containers</li>
-<li>ml-workspace v0.13</li>
-<li>traefik v2.10</li>
-<li>gitlab-ce v16.4</li>
-<li>influxdb v2.7</li>
-<li>grafana v10.1</li>
-<li>rabbitmq v3-management</li>
-<li>eclipse-mosquitto (mqtt) v2</li>
-</ul>
+<li>containers - ml-workspace v0.13, traefik v2.10, gitlab-ce v16.4,
+   influxdb v2.7, grafana v10.1, rabbitmq v3-management,
+   eclipse-mosquitto (mqtt) v2</li>
+</ol>
 <p>This vagrant box installed for developers will have
 the following items additional items:</p>
 <ul>
@@ -1290,9 +1331,12 @@ the following items additional items:</p>
 <li>microk8s v1.27</li>
 <li>jupyterlab</li>
 <li>mkdocs</li>
-<li>containers</li>
-<li>telegraf v1.28</li>
+<li>container - telegraf v1.28</li>
 </ul>
+<p>At the end of installation, the software stack created
+in vagrant box can be visualised as shown in the following
+figure.</p>
+<p><img alt="vagrant base box" src="basebox.png" /></p>
 <p>The upcoming instructions will help with the creation of
 base vagrant box.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
@@ -1373,6 +1417,8 @@ base vagrant box.</p>
 </span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38"></a><span class="c1"># You can use this box in other vagrant boxes using</span>
 </span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39"></a><span class="c1">#config.vm.box = &quot;dtaas&quot;</span>
 </span></code></pre></div></td></tr></table></div>
+<h2 id="references">References</h2>
+<p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a></p>
 
 
 

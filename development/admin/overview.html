@@ -424,6 +424,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#domain-name" class="md-nav__link">
+    Domain name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reverse-proxy" class="md-nav__link">
+    Reverse Proxy
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1293,6 +1307,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#domain-name" class="md-nav__link">
+    Domain name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reverse-proxy" class="md-nav__link">
+    Reverse Proxy
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1333,6 +1361,18 @@ As an admin you will administrate the users and the servers of the system.</p>
 <p>You need to have an OAuth Provider running, which the DTaaS can use for
 authentication. This is described further in
 the <a href="client/auth.html">authentication section</a>.</p>
+<h3 id="domain-name">Domain name</h3>
+<p>The DTaaS software can only be hosted on a server with a domain name
+like <http:><em>foo.com</em></http:>.</p>
+<h3 id="reverse-proxy">Reverse Proxy</h3>
+<p>The installation setup assumes that the foo.com server is behind a reverse
+proxy / load balancer that provides https termination. You can still use
+the DTaaS software even if you do not have this reverse proxy. If you do
+not have a reverse proxy, please replace <http:><em>https://foo.com</em></http:>
+with <http:><em>http://foo.com</em></http:> in
+<a href="client/CLIENT.html">client .env file</a> and in
+<a href="client/auth.html">OAuth registration</a>. Other installation configuration
+remains the same.</p>
 <h2 id="what-to-install">What to install</h2>
 <p>The DTaaS can be installed in different ways. Each version is for different purposes:</p>
 <ul>

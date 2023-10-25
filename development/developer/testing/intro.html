@@ -1239,6 +1239,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1441,6 +1448,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1495,8 +1509,11 @@ domain-specific language (DSL) using natural language constructs
 outcomes. Mocha and Cucumber testing libraries are built around
 the concepts of BDD.</p>
 <h2 id="testing-workflow"><img alt="🏗" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f3d7.svg" title=":building_construction:" /> Testing workflow</h2>
-<p>We follow a testing workflow in accordance with
-<a href="https://martinfowler.com/articles/practical-test-pyramid.html#TheTestPyramid">The Test Pyramid</a>,
+<p><img alt="Gitlab signin button" src="testPyramid.png" /></p>
+<p>(Ref: Ham Vocke,
+<a href="https://martinfowler.com/articles/practical-test-pyramid.html">The Practical Test Pyramid</a>)</p>
+<p>We follow a testing workflow in accordance with the test pyramid diagram
+given above,
 starting with isolated tests and moving towards complete integration for
 any new feature changes. The different types of tests (in the order that they
 should be performed) are explained below:</p>
@@ -1550,6 +1567,13 @@ Hence feature tests prove to be useful.</p>
 <p>The DTaaS project does not have any feature tests yet.
 <a href="https://github.com/cucumber/cucumber-js">Cucumber</a> shall be used
 in future to implement feature tests.</p>
+<h2 id="references">References</h2>
+<p>Justin Searls and Kevin Buchanan,
+<a href="https://github.com/testdouble/contributing-tests/wiki">Contributing Tests wiki</a>.
+This wiki has goog explanation of
+<a href="https://github.com/testdouble/contributing-tests/wiki/Test-Driven-Development">TDD</a>
+and
+<a href="https://github.com/testdouble/contributing-tests/wiki/Test-Double">test doubles</a>.</p>
 
 
 
