@@ -14,7 +14,9 @@ protocol, the username and password are secure.
 ## Start the Authentication
 
 You are now logged into the DTaaS server. The DTaaS uses third-party authentication
-protocol known as OAuth. This protocol provides secure access to a DTaaS
+protocol known as
+[OAuth](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
+This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
 service provider. The DTaaS uses Gitlab as OAuth provider.
 

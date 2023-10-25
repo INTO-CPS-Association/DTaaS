@@ -9,6 +9,11 @@ A dummy **foo.com** URL has been used for illustration.
 Please change this to your unique website URL.
 It is assumed that you are going to serve the application in only HTTPS mode.
 
+A successful installation will create a setup
+similar to the one shown in the figure.
+
+![Single host install](./single-host.png)
+
 Please follow these steps to make this work in your local environment.
 Download the **DTaaS.zip** from the
 [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
@@ -154,3 +159,12 @@ You can run this script multiple times until the installation is successful.
 ## Access the application
 
 Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>
+
+## References
+
+Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
+[reactjs](https://krify.co/about-reactjs/),
+[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)

@@ -12,6 +12,11 @@ are illustrated in the figure.
 
 ![DT-PT Lifecycle](lifecycle-four-stages.png)
 
+(Ref: Minerva, R, Lee, GM and Crespi, N (2020) Digital Twin
+in the IoT context: a survey on technical features, scenarios
+and architectural models. Proceedings of the IEEE, 108 (10).
+pp. 1785-1824. ISSN 0018-9219.)
+
 ## Lifecycle Phases
 
 The four phase lifecycle has been extended to a lifecycle with

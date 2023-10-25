@@ -52,7 +52,7 @@ The currently available services are:
 | MQTT | Lightweight data transfer broker for IoT devices / physical twins feeding data into digital twins. |
 
 In addition, the workspaces are connected to the Internet so
-all the Digital Twins run within their workspace can interact
+all the Digital Twins running in the workspace can interact
 with both the internal and external services.
 
 The users can publish and reuse the digital twin assets

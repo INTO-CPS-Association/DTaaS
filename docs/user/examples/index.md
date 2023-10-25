@@ -9,16 +9,12 @@ digital twins within the platform.
 
 The first step is to copy all the example code into your
 user workspace within the DTaaS.
-Use these shell commands to copy all the examples
+Use the given shell script to copy all the examples
 into `/workspace/examples` directory.
 
 ```bash
-#!/bin/bash
-cd /root/Desktop/
-wget -P workspace https://github.com/INTO-CPS-Association/DTaaS-examples/archive/refs/heads/main.zip
-unzip workspace/main.zip -d workspace
-mv workspace/DTaaS-examples-main workspace/examples
-rm workspace/main.zip
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/getExamples.sh
+bash getExamples.sh
 ```
 
 ## Example List
