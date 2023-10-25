@@ -20,10 +20,14 @@ Download the **DTaaS.zip** from the
 Unzip the same into a directory named **DTaaS**.
 The rest of the instructions assume that your working directory is **DTaaS**.
 
+<!-- markdownlint-disable MD046 -->
+
 !!! note
     If you only want to test the application
     and are not setting up a production instance,
     you can follow the instructions of [trial installation](trial.md).
+
+<!-- markdownlint-enable MD046 -->
 
 ## Configuration
 
@@ -45,9 +49,13 @@ at _deploy/config/gateway/fileConfig.yml_.
 Change `foo.com` to your local hostname and user1/user2 to
 the usernames chosen by you.
 
+<!-- markdownlint-disable MD046 -->
+
 !!! tip
     Do not use `http://` or `https://`
     in _deploy/config/gateway/fileConfig.yml_.
+
+<!-- markdownlint-enable MD046 -->
 
 #### Authentication
 

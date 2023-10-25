@@ -28,6 +28,8 @@ There are many unused software packages/docker containers within
 the dtaas base box.
 The used packages/docker containers are highlighed in blue color.
 
+<!-- markdownlint-disable MD046 -->
+
 !!! tip
     The illustration shows hosting of gitlab on the same
     vagrant machine with <http:>_http(s)://gitlab.foo.com_</http:>
@@ -35,6 +37,8 @@ The used packages/docker containers are highlighed in blue color.
     guide. Please refer to
     [gitlab docker install](https://docs.gitlab.com/ee/install/docker.html)
     for gitlab installation.
+
+<!-- markdownlint-enable MD046 -->
 
 ## Configure Server Settings
 
