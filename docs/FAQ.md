@@ -214,8 +214,8 @@
 
 ??? Question "Can DTaaS be used to create new DT assets?"
 
-    The core feature of DTaaS software is to help users create DTs from
-    assets already available in the library.
+    The core feature of DTaaS software is to help users
+    create DTs from assets already available in the library.
 
     ![Create Library Assets](./user/servers/lib/author.png)
 
