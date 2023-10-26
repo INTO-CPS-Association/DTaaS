@@ -216,9 +216,7 @@
 
     The core feature of DTaaS software is to help users
     create DTs from assets already available in the library.
-
     ![Create Library Assets](./user/servers/lib/author.png)
-
     However, it is possible for users to take advantage of services
     available in their workspace to install asset authoring tools
     in their own workspace.

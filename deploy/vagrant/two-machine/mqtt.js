@@ -44,5 +44,5 @@ await $$`docker run -d -p 1883:1883 -p 9001:9001 \
     eclipse-mosquitto:2.0`;
 log(chalk.green("MQTT server docker container started successfully"));
 
-await $$`docker exec mqtt mosquitto_passwd -U /mosquitto/config/password`;
+await $$`docker exec -u 1883 mqtt mosquitto_passwd -U /mosquitto/config/password`;
 log(chalk.redBright("Credentials encrypted"));
