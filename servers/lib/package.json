@@ -9,7 +9,7 @@
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "publishConfig": {
-    "@lindot11:registry": "https://npm.pkg.github.com"
+    "@into-cps-association:registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "script/build.bash",
