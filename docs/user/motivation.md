@@ -30,6 +30,6 @@ this problem. Some of them are:
 * Support for transition from existing workflows to DT frameworks
 * Create DTs from reusable assets
 * Enable users to share DT assets
-* Offer DTs as a service
+* Offer DTs as a Service
 * Integrate the DTs with external software systems
 * Separate configurations of independent DT components

@@ -5,7 +5,8 @@ It has three features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
-* Source files can either come from local file system or from a gitlab instance.
+* Source files can either come from local file system or from
+  a gitlab instance.
 
 The library microservice is designed to manage and serve files,
 functions, and models to users, allowing them to access and interact
