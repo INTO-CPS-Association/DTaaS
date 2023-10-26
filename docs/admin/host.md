@@ -164,9 +164,14 @@ source deploy/install.sh
 
 You can run this script multiple times until the installation is successful.
 
-## Access the application
 
-Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>
+!!! note
+    While installing you might encounter multiple dialogs asking, which services should be restarted. Just click **OK** to all of those.
+
+## Post-install Check
+Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>.
+
+If you can following all the screenshots from [user website](../user/website/index.md). Everything is correctly setup. 
 
 ## References
 

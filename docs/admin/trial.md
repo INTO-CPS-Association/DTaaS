@@ -42,6 +42,11 @@ for getting the Gitlab OAuth application details.
 
 ## Install
 
+!!! note
+    While installing you might encounter multiple dialogs asking, which services should be restarted. Just click **OK** to all of those.
+
+Run the following scripts.
+
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
 bash single-script-install.sh
@@ -60,10 +65,12 @@ to your local settings in the following files.
 ~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 ```
 
-## Sanity check
+## Post-install Check
 
 Now when you visit your domain, you should be able to login through your
 OAuth Provider and be able to access the DTaas web UI.
+
+If you can following all the screenshots from [user website](../user/website/index.md). Everything is correctly setup. 
 
 ## References
 
