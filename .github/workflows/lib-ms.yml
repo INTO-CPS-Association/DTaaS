@@ -77,7 +77,6 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           registry-url: https://npm.pkg.github.com/
-          scope: '@into-cps-association'
 
       - name: Publish package
         run: |
