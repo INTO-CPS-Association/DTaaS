@@ -45,8 +45,13 @@ the concepts of BDD.
 
 ## :building_construction: Testing workflow
 
-We follow a testing workflow in accordance with
-[The Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html#TheTestPyramid),
+![Gitlab signin button](testPyramid.png)
+
+(Ref: Ham Vocke,
+[The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html))
+
+We follow a testing workflow in accordance with the test pyramid diagram
+given above,
 starting with isolated tests and moving towards complete integration for
 any new feature changes. The different types of tests (in the order that they
 should be performed) are explained below:
@@ -114,3 +119,12 @@ Hence feature tests prove to be useful.
 The DTaaS project does not have any feature tests yet.
 [Cucumber](https://github.com/cucumber/cucumber-js) shall be used
 in future to implement feature tests.
+
+## References
+
+Justin Searls and Kevin Buchanan,
+[Contributing Tests wiki](https://github.com/testdouble/contributing-tests/wiki).
+This wiki has goog explanation of
+[TDD](https://github.com/testdouble/contributing-tests/wiki/Test-Driven-Development)
+and
+[test doubles](https://github.com/testdouble/contributing-tests/wiki/Test-Double).

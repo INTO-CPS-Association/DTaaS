@@ -12,7 +12,7 @@ The setup requires two server VMs with the following hardware configuration:
 
 Under the default configuration, two user workspaces are provisioned on server1.
 The default installation setup also installs
-InfluxDB, Grafana and RabbitMQ services on server2.
+InfluxDB, Grafana, RabbitMQ and MQTT services on server2.
 If you would like to install more services,
 you can create shell scripts to install the same on server2.
 
@@ -21,13 +21,43 @@ you can create shell scripts to install the same on server2.
 Create [**dtaas** Vagrant box](./base-box.md).
 You would have created an SSH key pair - _vagrant_ and _vagrant.pub_.
 The _vagrant_ is the private SSH key and is needed for the next steps.
-Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/single-machine`).
+Copy _vagrant_ SSH private key into the current directory (`deploy/vagrant/two-machine`).
 This shall be useful for logging into the vagrant
 machines created for two-machine deployment.
 
+## Target Installation Setup
+
+The goal is to use this [**dtaas** vagrant box](./base-box.md)
+to install the DTaaS software on server1 and
+the default platform services on server2. Both the servers
+are vagrant machines.
+
+![DTaaS vagrant box package use](./two-machine-use-legend.png)
+
+There are many unused software packages/docker containers within
+the dtaas base box.
+The used packages/docker containers are highlighed in blue and red color.
+
+A graphical illustration of a successful installation can be
+seen here.
+
+![Two vagrant machine](./two-machine.png)
+
+In this case, both the vagrant boxes are spawed on one server using
+two vagrant configuration files, namely _boxes.json_ and _Vagrantfile_.
+
+!!! tip
+    The illustration shows hosting of gitlab on the same
+    vagrant machine with <http:>_http(s)://gitlab.foo.com_</http:>
+    The gitlab setup is outside the scope this installation
+    guide. Please refer to
+    [gitlab docker install](https://docs.gitlab.com/ee/install/docker.html)
+    for gitlab installation.
+
 ## Configure Server Settings
 
-**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs has been used for illustration.
+**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs
+has been used for illustration.
 Please change these to your unique website URLs.
 
 The first step is to define the network identity of the two VMs.
@@ -50,13 +80,16 @@ The fields to update are:
      names based on MAC address. Otherwise, you can leave this field unchanged.
   1. Other adjustments are optional.
 
-## Launch platform default services
+## Installation Steps
 
-RabbitMQ, Grafana and InfluxDB services are provisioned on this server.
+### Launch DTaaS Platform Default Services
+
+RabbitMQ, Grafana, InfluxDB and MQTT services are provisioned on this server.
 InfluxDB and visualization service will be available at: _services.foo.com_.
+The Grafana service shall be available at TCP port 3000.
+The MQTT service shall be available at TCP port 1833.
 The RabbitMQ service and its management interface shall be available at
 5672 and 15672 TCP ports respectively.
-The Grafana service shall be available at TCP port 3000.
 
 The firewall and network access settings of corporate / cloud network
 need to be configured to allow external access to the services.
@@ -81,11 +114,11 @@ you can see the following services active within server2.
 |:---|:---|
 | InfluxDB and visualization service | services.foo.com |
 | Grafana visualization service | services.foo.com:3000 |
+| MQTT communication service | services.foo.com:1883 |
 | RabbitMQ communication service | services.foo.com:5672 |
 | RabbitMQ management service | services.foo.com:15672 |
-||
 
-## Launch DTaaS application
+### Install DTaaS Application
 
 Execute the following commands from terminal
 
@@ -103,3 +136,12 @@ follow the instructions of [single script install](../trial.md).
 If you are not in a hurry and would rather have a production instance,
 follow the instructions of [regular server installation](../host.md)
 setup to complete the installation.
+
+## References
+
+Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
+[reactjs](https://krify.co/about-reactjs/),
+[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)
