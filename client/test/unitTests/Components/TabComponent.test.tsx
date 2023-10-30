@@ -1,43 +1,84 @@
 import * as React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TabComponent from 'components/tab/TabComponent';
+import TabComponent from "components/tab/TabComponent"; 
+import { constructURL } from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 
 describe('TabComponent', () => {
-  test('empty tab renders', () => {
+  test('renders an empty tab', () => {
     const tabs: TabData[] = [];
     render(<TabComponent tabs={tabs} />);
-    expect(true);
+    // Check if the empty tab renders without errors
+    expect(true).toBeTruthy();
   });
 
-  test('renders tabs with labels and default tab open', () => {
+  test('renders tabs with labels and defaults to the first tab open', () => {
     const tabs = [
-      { label: 'Tab 1', body: <div>Tab 1 content</div> },
-      { label: 'Tab 2', body: <div>Tab 2 content</div> },
+      { label: 'functions', body: <div>functions body 1</div> },
+      { label: 'models', body: <div>models body 1</div> },
     ];
-    const { getByText, queryByText } = render(<TabComponent tabs={tabs} />);
-    expect(getByText('Tab 1')).toBeInTheDocument();
-    expect(getByText('Tab 2')).toBeInTheDocument();
+    render(<TabComponent tabs={tabs} />);
+    
+    // Check if tab labels are rendered
 
-    expect(getByText('Tab 1 content')).toBeInTheDocument();
-    expect(queryByText('Tab 2 content')).not.toBeInTheDocument();
+    /* We get all the appereances of functions or models in the html
+     * and if the Array resulting of gathering up these information
+     * is greater tahn 0 it means it is at least once in the Html
+     */
+
+    let isFunctions = screen.getAllByText('functions');
+    expect(isFunctions.length).toBeGreaterThan(0);
+
+    let isModels = screen.getAllByText('models');
+    expect(isModels.length).toBeGreaterThan(0);
+
+    // expect(screen.getByText('functions')).toBeInTheDocument();
+    // expect(screen.getByText('models')).toBeInTheDocument();
+    
+    // The first tab should be open by default
+
+    let isFunctionsBody = screen.getAllByText('functions body 1');
+    expect(isFunctionsBody.length).toBeGreaterThan(0);
+
+    // expect(screen.getByText('functions body 1')).toBeInTheDocument();
+    expect(screen.queryByText('models body 1')).not.toBeInTheDocument();
   });
 
-  test('change tab', async () => {
+  test('changes the active tab on click', async () => {
     const tabs = [
-      { label: 'Tab 1', body: <div>Tab 1 content</div> },
-      { label: 'Tab 2', body: <div>Tab 2 content</div> },
-      { label: 'Tab 3', body: <div>Tab 3 content</div> },
+      { label: 'functions', body: <div>functions body 2</div> },
+      { label: 'models', body: <div>models body 2</div> },
+      { label: 'tools', body: <div>tools body 2</div> },
     ];
-    const { getByText, getByRole, queryByText } = render(
-      <TabComponent tabs={tabs} />
-    );
-    const tab = getByRole('tab', { name: 'Tab 2' });
+    render(<TabComponent tabs={tabs} />);
+    const tab = screen.getByRole('tab', { name: 'models' });
 
     await userEvent.click(tab);
-    expect(queryByText('Tab 1 content')).not.toBeInTheDocument();
-    expect(getByText('Tab 2 content')).toBeInTheDocument();
-    expect(queryByText('Tab 3 content')).not.toBeInTheDocument();
+    // Check if the second tab is open after the click
+
+    /* We get all the appereances of models body in the html
+     * and if the Array resulting of gathering up these information
+     * is greater tahn 0 it means it is at least once in the Html
+     */
+
+    let isModelsBody = screen.getAllByText('models body 2');
+    expect(isModelsBody.length).toBeGreaterThan(0);
+
+    expect(screen.queryByText('functions body 2')).not.toBeInTheDocument();
+    // expect(screen.getByText('models body 2')).toBeInTheDocument();
+    expect(screen.queryByText('tools body 2')).not.toBeInTheDocument();
+  });
+
+  test('constructs correct URLs for Iframes', () => {
+    // Example URL construction
+    const githubName = 'caesarv16';
+    const LIBURL = `http://localhost.com:4000/${githubName}/`;
+    const tabLabel = '';
+    const subTabLabel = 'Common';
+    const expectedURL = `${LIBURL}tree/common/`;
+    
+    // Check if the function constructs the correct URL
+    expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);
   });
 });

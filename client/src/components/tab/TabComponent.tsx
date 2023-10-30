@@ -11,7 +11,7 @@ import {tabs2 as scope} from '../../route/library/LibraryTabData';
 
 
 
-function constructURL(tab: string, subTab: string, LIBURL: any) {
+export function constructURL(tab: string, subTab: string, LIBURL: any) {
   // tab and subtab to lowercase
   const formattedTab = tab.toLowerCase();
   const formattedSubTab = subTab.toLowerCase();
@@ -71,7 +71,7 @@ function TabComponent(props: { tabs: TabData[] }) {
 
                 <TabRender index={index}>{tab}</TabRender>
 
-                <Iframe title={`Digital Twin as a Service`} url={constructURL(tab.label, subTab.label, LIBurl)} />
+                <Iframe title={`${tab.label}`} url={constructURL(tab.label, subTab.label, LIBurl)} />
 
               </TabPanel>
               ))}

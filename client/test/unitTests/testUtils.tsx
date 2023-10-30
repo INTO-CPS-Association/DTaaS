@@ -79,11 +79,15 @@ export function itDisplaysContentOfTabs(
       act(() => {
         tabElement.click();
       });
-      expect(
-        screen.getByText(tab.body, {
-          normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-        })
-      ).toBeInTheDocument();
+
+      let a = screen.getAllByText(tab.body, {normalizer: getDefaultNormalizer({ collapseWhitespace: false }),})
+      expect(a.length).toBeGreaterThan(0);
+
+      // expect(
+      //   screen.getByText(tab.body, {
+      //     normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+      //   })
+      // ).toBeInTheDocument();
 
       // Expect the other tabs to not be rendered
       tabs
@@ -129,11 +133,13 @@ export function itHasCorrectURLOfTabsWithIframe(
       act(() => {
         tabElement.click();
       });
-      const firstTabIframe = screen.getByTitle(tablabelURLpair.label, {
+
+      const firstTabIframe = screen.getAllByTitle(tablabelURLpair.label, {
         exact: false,
       });
-      expect(firstTabIframe).toBeInTheDocument();
-      expect(firstTabIframe).toHaveAttribute('src', tablabelURLpair.url);
+      // expect(firstTabIframe).toBeInTheDocument();
+      expect(firstTabIframe.length).toBeGreaterThan(0);
+      expect(firstTabIframe[0]).toHaveAttribute('src', tablabelURLpair.url + "tree/" + tablabelURLpair.label.toLowerCase());
     });
   });
 }

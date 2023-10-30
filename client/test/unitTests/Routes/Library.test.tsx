@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Library from 'route/library/Library';
-import tabs from 'route/library/LibraryTabData';
+import {tabs1 as tabs} from 'route/library/LibraryTabData';
 import { mockURLforLIB } from '../__mocks__/global_mocks';
 import {
   InitRouteTests,
