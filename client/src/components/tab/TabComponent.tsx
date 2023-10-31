@@ -33,15 +33,9 @@ export function constructURL(tab: string, subTab: string, LIBURL: any) {
 
 export function TabComponent(props: { tabs: TabData[] }) {
   const LIBurl = useURLforLIB();
-
   return (
     <Paper
-      sx={{
-        p: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100%',
-      }}
+      sx={{ p: 2, display: 'flex', flexDirection: 'column', minHeight: '100%' }}
     >
       <Tabs>
         <TabList>
@@ -51,19 +45,15 @@ export function TabComponent(props: { tabs: TabData[] }) {
         </TabList>
         {props.tabs.map((tab, index) => (
           <TabPanel key={index}>
-            {/* New from here */}
-
             <Tabs forceRenderTabPanel>
               <TabList>
                 {scope.map((subTab, subIndex) => (
                   <Tab key={subIndex}>{subTab.label}</Tab>
-                ))}
+                ))}{' '}
               </TabList>
-
               {scope.map((subTab, subIndex) => (
                 <TabPanel key={subIndex}>
                   <TabRender index={index}>{tab}</TabRender>
-
                   <Iframe
                     title={`${tab.label}`}
                     url={constructURL(tab.label, subTab.label, LIBurl)}
@@ -71,8 +61,6 @@ export function TabComponent(props: { tabs: TabData[] }) {
                 </TabPanel>
               ))}
             </Tabs>
-
-            {/* Ends New */}
           </TabPanel>
         ))}
       </Tabs>
