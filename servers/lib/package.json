@@ -8,9 +8,6 @@
   ],
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/INTO-CPS-Association"
-  },
   "scripts": {
     "build": "script/build.bash",
     "clean": "script/clean.bash",

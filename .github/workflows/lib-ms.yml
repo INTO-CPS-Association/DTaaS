@@ -80,7 +80,8 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           always-auth: true
-          registry-url: https://npm.pkg.github.com/
+          scope: '@INTO-CPS-Association'
+          registry-url: 'https://npm.pkg.github.com/'
 
       - name: Publish package
         run: |
@@ -89,4 +90,5 @@ jobs:
           yarn build
           yarn publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+       
