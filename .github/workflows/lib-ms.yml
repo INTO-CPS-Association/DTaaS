@@ -62,7 +62,7 @@ jobs:
           flags: lib-microservice-tests
 
   publish-package:
-    name: Publish package to GitHub Packages
+    name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     needs: test-lib-ms
 
