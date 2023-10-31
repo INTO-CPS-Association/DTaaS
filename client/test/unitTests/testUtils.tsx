@@ -80,7 +80,9 @@ export function itDisplaysContentOfTabs(
         tabElement.click();
       });
 
-      let a = screen.getAllByText(tab.body, {normalizer: getDefaultNormalizer({ collapseWhitespace: false }),})
+      const a = screen.getAllByText(tab.body, {
+        normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+      });
       expect(a.length).toBeGreaterThan(0);
 
       // expect(
@@ -135,11 +137,14 @@ export function itHasCorrectURLOfTabsWithIframe(
       });
 
       const firstTabIframe = screen.getAllByTitle(tablabelURLpair.label, {
-        exact: false,
+        exact: true,
       });
       // expect(firstTabIframe).toBeInTheDocument();
+      const tree = 'tree/';
+      const urlUsed =
+        tablabelURLpair.url + tree + tablabelURLpair.label.toLowerCase();
       expect(firstTabIframe.length).toBeGreaterThan(0);
-      expect(firstTabIframe[0]).toHaveAttribute('src', tablabelURLpair.url + "tree/" + tablabelURLpair.label.toLowerCase());
+      expect(firstTabIframe[0]).toHaveAttribute('src', urlUsed);
     });
   });
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import { mockURLforDT } from '../__mocks__/global_mocks';
+import { mockURLforLIB } from '../__mocks__/global_mocks';
 import {
   InitRouteTests,
   itDisplaysContentOfTabs,
@@ -14,6 +14,6 @@ describe('Digital Twins', () => {
   itDisplaysContentOfTabs(tabs);
 
   itHasCorrectURLOfTabsWithIframe([
-    { label: tabs[0].label, url: mockURLforDT },
+    { label: tabs[0].label, url: mockURLforLIB },
   ]);
 });

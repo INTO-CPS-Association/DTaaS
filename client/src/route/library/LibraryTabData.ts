@@ -29,12 +29,12 @@ export const tabs1: ITabs[] = [
 
 // This type of Array Tabs is for the second line of Tabs
 export const tabs2: ITabs[] = [
-    {
-      label: 'Private',
-      body: `This is the PRIVATE TAB`,
-    },
-    {
-      label: 'Common',
-      body: `This is the COMMON TAB`,
-    },
-  ];
+  {
+    label: 'Private',
+    body: `This is the PRIVATE TAB`,
+  },
+  {
+    label: 'Common',
+    body: `This is the COMMON TAB`,
+  },
+];

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TabComponent from "components/tab/TabComponent"; 
-import { constructURL } from 'components/tab/TabComponent';
+import { TabComponent, constructURL } from 'components/tab/TabComponent';
+// import { constructURL } from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 
 describe('TabComponent', () => {
@@ -19,7 +19,7 @@ describe('TabComponent', () => {
       { label: 'models', body: <div>models body 1</div> },
     ];
     render(<TabComponent tabs={tabs} />);
-    
+
     // Check if tab labels are rendered
 
     /* We get all the appereances of functions or models in the html
@@ -27,18 +27,18 @@ describe('TabComponent', () => {
      * is greater tahn 0 it means it is at least once in the Html
      */
 
-    let isFunctions = screen.getAllByText('functions');
+    const isFunctions = screen.getAllByText('functions');
     expect(isFunctions.length).toBeGreaterThan(0);
 
-    let isModels = screen.getAllByText('models');
+    const isModels = screen.getAllByText('models');
     expect(isModels.length).toBeGreaterThan(0);
 
     // expect(screen.getByText('functions')).toBeInTheDocument();
     // expect(screen.getByText('models')).toBeInTheDocument();
-    
+
     // The first tab should be open by default
 
-    let isFunctionsBody = screen.getAllByText('functions body 1');
+    const isFunctionsBody = screen.getAllByText('functions body 1');
     expect(isFunctionsBody.length).toBeGreaterThan(0);
 
     // expect(screen.getByText('functions body 1')).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('TabComponent', () => {
      * is greater tahn 0 it means it is at least once in the Html
      */
 
-    let isModelsBody = screen.getAllByText('models body 2');
+    const isModelsBody = screen.getAllByText('models body 2');
     expect(isModelsBody.length).toBeGreaterThan(0);
 
     expect(screen.queryByText('functions body 2')).not.toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('TabComponent', () => {
     const tabLabel = '';
     const subTabLabel = 'Common';
     const expectedURL = `${LIBURL}tree/common/`;
-    
+
     // Check if the function constructs the correct URL
     expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);
   });
