@@ -76,14 +76,13 @@ jobs:
           node-version: 18
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
-          registry-url: https://npm.pkg.github.com/
 
       - name: Publish package
         run: |
           cd servers/lib
           yarn install
           yarn build
-          yarn publish
+          yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
