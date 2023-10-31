@@ -79,6 +79,7 @@ jobs:
           node-version: 18
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
+          always-auth: true
           registry-url: https://npm.pkg.github.com/
 
       - name: Publish package
@@ -88,5 +89,4 @@ jobs:
           yarn build
           yarn publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
