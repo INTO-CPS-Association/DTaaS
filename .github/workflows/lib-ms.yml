@@ -88,7 +88,7 @@ jobs:
           cd servers/lib
           yarn install
           yarn build
-          yarn publish
+          yarn publish --registry https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
        
