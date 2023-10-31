@@ -80,7 +80,6 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           always-auth: true
-          scope: '@lindot11'
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: Publish package
@@ -88,7 +87,7 @@ jobs:
           cd servers/lib
           yarn install
           yarn build
-          yarn publish --registry https://npm.pkg.github.com/
+          yarn publish --access restricted
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
        
