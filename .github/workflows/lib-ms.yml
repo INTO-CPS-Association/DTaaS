@@ -80,7 +80,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           always-auth: true
-          scope: '@INTO-CPS-Association'
+          scope: '@lindot11'
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: Publish package
