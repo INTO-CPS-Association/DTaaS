@@ -8,7 +8,7 @@ import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 import { tabs2 as scope } from '../../route/library/LibraryTabData';
 
-export function constructURL(tab: string, subTab: string, LIBURL: any) {
+export function constructURL(tab: string, subTab: string, LIBURL: string) {
   // tab and subtab to lowercase
   const formattedTab = tab.toLowerCase();
   const formattedSubTab = subTab.toLowerCase();
