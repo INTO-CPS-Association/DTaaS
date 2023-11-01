@@ -9,6 +9,12 @@ import {
   expectedFileContentResponse,
   expectedListDirectoryResponse,
 } from "../testUtil";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: `http://localhost:4001${process.env.APOLLO_PATH}`,
+  cache: new InMemoryCache({addTypename:false})
+});
 
 describe("End to End test for the application", () => {
   let app: INestApplication;
@@ -41,7 +47,14 @@ describe("End to End test for the application", () => {
     expect(response.body).toEqual(expectedListDirectoryResponse);
   }, 10000);
 
-  it("should return the content of a file given in the query ", async () => {
+  it("should return the filename corresponding to the directory given in the query |GraphQL|", async () => {
+    const query =  gql(e2elistDirectory);
+
+    const {data} = await client.query({query});
+    expect({data}).toEqual(expectedListDirectoryResponse);
+  }, 10000);
+
+  it("should return the content of a file given in the query", async () => {
     const query = e2eReadFile;
 
     const response = await request("http://localhost:4001")
@@ -49,6 +62,14 @@ describe("End to End test for the application", () => {
       .send({ query });
     expect(response.body).toEqual(expectedFileContentResponse);
   }, 10000);
+
+  it("should return the content of a file given in the query |GraphQL|", async () => {
+    const query = gql(e2eReadFile);
+
+    const {data} = await client.query({query})
+    expect({data}).toEqual(expectedFileContentResponse);
+  }, 10000);
+
 });
 
 /*
