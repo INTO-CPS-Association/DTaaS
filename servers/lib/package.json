@@ -1,5 +1,5 @@
 {
-  "name": "@into-cps-association/libms",
+  "name": "@prasadtalasila/libms",
   "version": "0.2.1",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
