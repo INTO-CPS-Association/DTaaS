@@ -1,4 +1,11 @@
-## Developer Commands
+# Developer Instructions
+
+## :gear: Configuration
+
+This microservice needs library assets and configuration
+file. Please see [README](./README.md) for this information.
+
+## :hammer_and_wrench: Developer Commands
 
 ```bash
 yarn install    # Install dependencies for the microservice
@@ -13,6 +20,7 @@ yarn start      # start the application
 yarn start -h   # list of all the CLI commands
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
+
 
 ## :package: :ship: NPM package
 
