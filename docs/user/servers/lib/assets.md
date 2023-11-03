@@ -136,18 +136,6 @@ A recommended file system structure for storing assets is also
 available in
 [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples).
 
-## Create Assets
-
-The DTaaS software allows users to create new library assets on the platform.
-
-![Create Library Assets](author.png)
-
-Users can install asset authoring tools in their own workspace.
-These authoring tools can then be used to create and publish new assets.
-User workspaces are private and are not shared with other users.
-Thus any licensed software tools installed in their workspace is
-only available to them.
-
 ## Upload Assets
 
 Users can upload assets into their workspace using Library page of the website.
@@ -161,3 +149,16 @@ You can also create new assets on the page by
 clicking on **new** drop down menu. This is a simple web interface
 which allows you to create text-based files.
 You need to upload other files using **upload** button.
+
+The user workbench has the following services:
+
+* Jupyter Notebook and Lab
+* VS Code
+* XFCE Desktop Environment available via VNC
+* Terminal
+
+Users can also bring their DT assets into user workspaces from outside
+using any of the above mentioned services. The developers using _git_
+repositories can clone from and push to remote git servers. Users can
+also use widely used file transfer protocols such as FTP, and SCP to
+bring the required DT assets into their workspaces.

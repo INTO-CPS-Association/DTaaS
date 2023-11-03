@@ -33,18 +33,13 @@ are not a developer, no changes are required to the `Vagrantfile`.
 
 This vagrant box installed for users will have the following items:
 
-* docker v24.0
-* nodejs v18.8
-* yarn v1.22
-* npm v10.2
-* containers
-  * ml-workspace v0.13
-  * traefik v2.10
-  * gitlab-ce v16.4
-  * influxdb v2.7
-  * grafana v10.1
-  * rabbitmq v3-management
-  * eclipse-mosquitto (mqtt) v2
+1. docker v24.0
+1. nodejs v18.8
+1. yarn v1.22
+1. npm v10.2
+1. containers - ml-workspace v0.13, traefik v2.10, gitlab-ce v16.4,
+   influxdb v2.7, grafana v10.1, rabbitmq v3-management,
+   eclipse-mosquitto (mqtt) v2
 
 This vagrant box installed for developers will have
 the following items additional items:
@@ -53,8 +48,13 @@ the following items additional items:
 * microk8s v1.27
 * jupyterlab
 * mkdocs
-* containers
-  * telegraf v1.28
+* container - telegraf v1.28
+
+At the end of installation, the software stack created
+in vagrant box can be visualised as shown in the following
+figure.
+
+![vagrant base box](./basebox.png)
 
 The upcoming instructions will help with the creation of
 base vagrant box.
@@ -100,3 +100,7 @@ vagrant box add --name dtaas ./dtaas.vagrant
 # You can use this box in other vagrant boxes using
 #config.vm.box = "dtaas"
 ```
+
+## References
+
+Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu)

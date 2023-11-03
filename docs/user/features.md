@@ -7,9 +7,9 @@ The DTaaS software platform provides certain advantages to users:
 * Support for different kinds of Digital Twins
   * CFD, Simulink, co-simulation, FEM, ROM, ML etc.
 * Integrates with other Digital Twin frameworks
-* Facilitate availability of Digital Twin as a service
+* Facilitate availability of Digital Twin as a Service
 * Collaboration and reuse
-* Private workspaces for authoring and verification
+* Private workspaces for verification
   of reusable assets, trial run DTs
 * Cost effectiveness
 
@@ -52,7 +52,7 @@ The currently available services are:
 | MQTT | Lightweight data transfer broker for IoT devices / physical twins feeding data into digital twins. |
 
 In addition, the workspaces are connected to the Internet so
-all the Digital Twins run within their workspace can interact
+all the Digital Twins running in the workspace can interact
 with both the internal and external services.
 
 The users can publish and reuse the digital twin assets
