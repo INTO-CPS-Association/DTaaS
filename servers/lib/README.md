@@ -23,7 +23,7 @@ for help on the management of gitlab groups.
 You can clone the git repositories from the `dtaas` group
 to get a sample file system structure for the lib microservice.
 
-## Configuration setup
+## Configure
 
 The microservices uses `.env` environment files to receive configuration.
 
@@ -58,47 +58,38 @@ For more information on how to create and use your access token,
 Once you've generated a token, copy it and replace
 the value of `TOKEN` with your token for the gitlab group, can be found.
 
-## User Commands
+## Use
+
+### Publish NPM packages
+
+The DTaaS software is developed as a monorepo with multiple npm packages.
+Since publishing to [npmjs](https://www.npmjs.com/) is
+irrevocable and public, developers are encouraged to setup their own private
+npm registry for local development.
+
+A private npm registry will help with local publish and unpublish steps.
+
+### Setup private npm registry
+
+We recommend using [verdaccio](https://verdaccio.org) for this task.
+The following commands help you create a working private npm registry
+for development.
 
 ```bash
-yarn install    # Install dependencies for the microservice
-yarn build      # build the application
-yarn start      # start the application
+docker run -d --name verdaccio -p 4873:4873 verdaccio/verdaccio
+npm adduser --registry http://localhost:4873 #create a user on the verdaccio registry
+npm set registry http://localhost:4873/
+yarn config set registry "http://localhost:4873"
+yarn login --registry "http://localhost:4873" #login with the credentials for yarn utility
+npm login #login with the credentials for npm utility
 ```
 
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
+You can open `http://localhost:4873` in your browser, login with
+the user credentials to see the packages published.
 
-```bash
-nohup yarn start & disown
-```
+### Publish to private npm registry
 
-## Developer Commands
-
-```bash
-yarn install    # Install dependencies for the microservice
-yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
-yarn graph       # generate dependency graphs in the code
-yarn build      # compile ES6 files into ES5 javascript files and copy them into dist/ directory
-yarn test -a      # run all tests
-yarn test -e      # run end-to-end tests
-yarn test -i      # run integration tests
-yarn test -u      # run unit tests
-yarn start      # start the application
-yarn start -h   # list of all the CLI commands
-yarn clean      # deletes directories "build", "coverage", and "dist"
-```
-
-## :package: :ship: NPM package
-
-Use the instructions in
-[publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing **libms npm package**.
-
-Application of the advice given on that page for **libms** will require
-running the following commands.
-
-### Publish
+To publish a package to your local registry, do:
 
 ```bash
 yarn install
@@ -107,14 +98,39 @@ yarn publish --no-git-tag-version #increments version in package.json, publishes
 yarn publish #increments version in package.json, publishes to registry and adds a git tag
 ```
 
-### Unpublish
+The package version in package.json gets updated as well. You can
+open `http://localhost:4873` in your browser, login with the user credentials
+to see the packages published. Please see
+[verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
+for more information.
+
+If there is a need to unpublish a package, ex: `@dtaas/runner@0.0.2`, do:
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @dtaas/libms@0.2.0
+npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2
 ```
 
-## Service Endpoint
+To install / uninstall this utility for all users, do:
 
-The URL endpoint for this microservice is located at: `localhost:PORT/lib`
+```bash
+sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
+sudo npm list -g # should list @dtaas/runner in the packages
+sudo npm remove --global @dtaas/runner
+```
 
-The [API](./API.md) page shows sample queries and responses.
+### :rocket: Use the packages
+
+The packages available in private npm registry can be used like
+the regular npm packages installed from [npmjs](https://www.npmjs.com/).
+
+For example, to use `@dtaas/runner@0.0.2` package, do:
+
+```bash
+sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
+runner # launch the digital twin runner
+```
+
+The microservice is available at: http://localhost:PORT/lib
+
+The [API](https://into-cps-association.github.io/DTaaS/development/user/servers/lib/LIB-MS.html) page shows sample queries and responses.
+
