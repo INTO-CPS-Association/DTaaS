@@ -62,7 +62,9 @@ jobs:
           flags: lib-microservice-tests
 
   publish-package:
-    if: github.ref == 'refs/heads/feature/distributed-demo'
+    if: | 
+      github.ref == 'refs/heads/feature/distributed-demo' ||
+      'refs/head/release-v*'
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     needs: test-lib-ms
