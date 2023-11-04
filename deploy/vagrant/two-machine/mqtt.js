@@ -26,23 +26,20 @@ const sleep = (ms) =>
 //---------------
 log(chalk.blue("Start MQTT server"));
 log(chalk.blue("Remember to set the user credentials in services/mqtt/config/password file"));
-log(chalk.blue("If this file was previously encrypted, do reset it to plain text format"));
 const mqttConfig = config.services.mqtt;
 
-try {
-  log(chalk.green("Attempt to delete any existing MQTT server docker container"));
-  await $$`docker stop mqtt`;
-  await $$`docker rm mqtt`;  
-} catch (e) {
-}
+await $$`sudo apt-get install -y mosquitto mosquitto-clients`;
+await $$`mosquitto_passwd -cb /etc/mosquitto/passwd ${mqttConfig.username} ${mqttConfig.password}`;
+await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
+await $$`sudo chmod 660 /etc/mosquitto/passwd`;
+await $$`sudo {
+  printf "listener ${mqttConfig.port}\n"
+  printf "password_file /etc/mosquitto/passwd\n"
+} > mosquitto.conf`;
 
-log(chalk.green("Start new MQTT server docker container"));
-await $$`docker run -d -p 1883:1883 -p 9001:9001 \
-  --name mqtt \
-  -v ${mqttConfig.configpath}/mosquitto-no-auth.conf:/mosquitto-no-auth.conf \
-  -v ${mqttConfig.configpath}/config:/mosquitto/config \
-    eclipse-mosquitto:2.0`;
-log(chalk.green("MQTT server docker container started successfully"));
+await $$`chmod 664 mosquitto.conf`;
+await $$`sudo mv mosquitto.conf /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo systemctl restart mosquitto`;
+await $$`sudo systemctl status mosquitto`;
 
-await $$`docker exec -u 1883 mqtt mosquitto_passwd -U /mosquitto/config/password`;
 log(chalk.redBright("Credentials encrypted"));

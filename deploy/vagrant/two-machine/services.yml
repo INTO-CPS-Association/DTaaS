@@ -18,7 +18,6 @@ services:
         datapath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/vagrant/two-machine/influx" #no spaces in the path
         port: 80
     mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
-        configpath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/config/services/mqtt" #no spaces in the path
-        ports:
-            main: 1883  # plain MQTT protocol
-            websockets: 9001
+        username: "dtaas"
+        password: "dtaas"
+        port: 1883  # plain MQTT protocol
