@@ -113,7 +113,9 @@ log(chalk.blue("Wait 2 minutes for RabbitMQ server to bootstrap"));
 await sleep(120000);  //120 seconds
 
 let args = [rabbitmqConfig.username, rabbitmqConfig.password];
-log(chalk.blue("Add %s user and give permission to ${rabbitmqConfig.vhost} vhost"), ${rabbitmqConfig.username});
+log(chalk.blue(
+  "Add %s user and give permission to %s vhost"),
+  rabbitmqConfig.username, rabbitmqConfig.vhost);
 await $$`docker exec rabbitmq-server rabbitmqctl add_user ${args}`;
 await $$`docker exec rabbitmq-server rabbitmqctl set_permissions -p ${rabbitmqConfig.vhost} ${rabbitmqConfig.username} ".*" ".*" ".*"`;
 
@@ -129,7 +131,7 @@ await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
 await $$`sudo chmod 660 /etc/mosquitto/passwd`;
 
 log(chalk.blue("Set MQTT listening port configuration"));
-await $$`sudo cp mosquitto-default.conf /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo cp mqtt-default.conf /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo systemctl restart mosquitto`;
