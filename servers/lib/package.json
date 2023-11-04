@@ -1,6 +1,6 @@
 {
   "name": "@prasadtalasila/libms",
-  "version": "0.2.3",
+  "version": "0.2.2",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
