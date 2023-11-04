@@ -21,7 +21,6 @@ yarn start -h   # list of all the CLI commands
 yarn clean      # deletes directories "build", "coverage", and "dist"
 ```
 
-
 ## :package: :ship: NPM package
 
 Use the instructions in
