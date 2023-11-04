@@ -20,4 +20,3 @@ services:
     mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
         username: "dtaas"
         password: "dtaas"
-        port: 1883  # plain MQTT protocol
