@@ -102,7 +102,7 @@ try {
   await $$`docker rm rabbitmq-server`;  
 } catch (e) {
 }
-//await $$`docker run -d --name rabbitmq-server -p 5672:5672  -p 15672:15672 rabbitmq:3-management`;
+
 log(chalk.green("Start RabbitMQ server docker container"));
 await $$`docker run -d --name rabbitmq-server \
   -p ${rabbitmqConfig.ports.main}:5672 \
@@ -116,3 +116,24 @@ let args = [rabbitmqConfig.username, rabbitmqConfig.password];
 //console.log(chalk.blue("Add ${rabbitmqConfig.username} user and give permission to ${rabbitmqConfig.vhost} vhost"));
 await $$`docker exec rabbitmq-server rabbitmqctl add_user ${args}`;
 await $$`docker exec rabbitmq-server rabbitmqctl set_permissions -p ${rabbitmqConfig.vhost} ${rabbitmqConfig.username} ".*" ".*" ".*"`;
+
+//---------------
+log(chalk.blue("Install and start MQTT server"));
+const mqttConfig = config.services.mqtt;
+
+log(chalk.blue("Attempt to install mosquitto MQTT server using apt-get package manager"));
+await $$`sudo apt-get install -y mosquitto mosquitto-clients`;
+log(chalk.blue("Create user account for ${mqttConfig.username} in MQTT server"));
+await $$`mosquitto_passwd -cb /etc/mosquitto/passwd ${mqttConfig.username} ${mqttConfig.password}`;
+await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
+await $$`sudo chmod 660 /etc/mosquitto/passwd`;
+log(chalk.blue("Set the MQTT listening port to ${mqttConfig.port}"));
+await $$`sudo {
+  printf "listener ${mqttConfig.port}\n"
+  printf "password_file /etc/mosquitto/passwd\n"
+} > mosquitto.conf`;
+
+await $$`chmod 664 mosquitto.conf`;
+await $$`sudo mv mosquitto.conf /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo systemctl restart mosquitto`;
+await $$`sudo systemctl status mosquitto`;
