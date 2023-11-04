@@ -127,8 +127,8 @@ log(chalk.blue("Create user account for %s in MQTT server"), mqttConfig.username
 await $$`sudo sudo mosquitto_passwd -c -b /etc/mosquitto/passwd ${mqttConfig.username} ${mqttConfig.password}`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
 await $$`sudo chmod 660 /etc/mosquitto/passwd`;
-log(chalk.blue("Set MQTT listening port configuration"));
 
+log(chalk.blue("Set MQTT listening port configuration"));
 await $$`sudo cp mosquitto-default.conf /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
