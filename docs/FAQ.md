@@ -10,7 +10,7 @@
 
 ## General Questions
 
-<!-- markdownlint-disable MD046 -->
+<!-- markdownlint-disable-file MD046 -->
 
 ??? Question "What is DTaaS?"
 
@@ -267,5 +267,3 @@
 
     There are two roles for users on the platform. One is the administrator
     and the other one is user. The user roles are managed by the administrator.
-
-<!-- markdownlint-enable MD046 -->
