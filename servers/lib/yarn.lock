@@ -131,10 +131,10 @@
   dependencies:
     "@apollographql/graphql-playground-html" "1.6.29"
 
-"@apollo/server@^4.9.3":
-  version "4.9.4"
-  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.9.4.tgz#fde57e984beef1b2962354a492d3bca072c1067c"
-  integrity sha512-lopNDM3sZerTcYH/P85QX5HqSNV4HoVbtX3zOrf0ak7eplhPDiGVyF0jQWRbL64znG6KXW+nMuLDTyFTMQnvgA==
+"@apollo/server@^4.9.5":
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.9.5.tgz#388b3e00bef370fbdb89dd22d5a56127afaf87ba"
+  integrity sha512-eDBfArYbZaTm1AGa82M1aL7lOscVhnZsH85+OWmHMIR98qntzEjNpWpQPYDTru63Qxs4kHcY29NUx/kMGZfGEA==
   dependencies:
     "@apollo/cache-control-types" "^1.0.3"
     "@apollo/server-gateway-interface" "^1.1.1"
