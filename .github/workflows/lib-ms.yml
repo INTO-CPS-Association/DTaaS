@@ -63,7 +63,8 @@ jobs:
 
   publish-package:
     if: | 
-      github.ref == 'refs/heads/feature/distributed-demo'
+      github.ref == 'refs/heads/feature/distributed-demo' ||
+      'refs/heads/release-v*'
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     needs: test-lib-ms
