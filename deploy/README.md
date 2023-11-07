@@ -1,6 +1,6 @@
 # DTaaS on Linux Operating System
 
-This directory contains code for running DTaaS application
+These are installation instructions for running DTaaS application
 on a Ubuntu Server 22.04 Operating System.
 The setup requires a machine which can spare 16GB
 RAM, 8 vCPUs and 50GB Hard Disk space.
@@ -9,9 +9,16 @@ A dummy **foo.com** URL has been used for illustration.
 Please change this to your unique website URL.
 It is assumed that you are going to serve the application in only HTTPS mode.
 
+A successful installation will create a setup
+similar to the one shown in the figure.
+
+![Single host install](../docs/admin/single-host.png)
+
 Please follow these steps to make this work in your local environment.
 Download the codebase as zip file into your computer and unzip the same
-into a directory named **DTaaS**. The rest of the instructions assume
+into a directory named **DTaaS**.
+Alternatively, clone this git repository into your computer.
+The rest of the instructions assume
 that your working directory is **DTaaS**.
 
 ## Configuration
@@ -22,20 +29,28 @@ The first step is to decide on the number of users and their usenames.
 The traefik gateway configuration has a template for two users.
 You can modify the usernames in the template to the usernames chosen by you.
 
-### The traefik gateway server
+### Traefik gateway server
 
-You can run the Run the Traefik gateway server in both and
+You can run the Traefik gateway server in both and
 HTTPS and HTTPS mode to experience the DTaaS application.
 The installation guide assumes that you can run the application in HTTPS mode.
 
-The Traefik gateway configuration is at [fileConfig](../config/gateway/fileConfig.yml).
-Change `localhost` to `foo.com` and user1/user2 to the usernames chosen by you.
+The Traefik gateway configuration is at _[fileConfig](config/gateway/fileConfig.yml)_.
+Change `foo.com` to your local hostname and user1/user2 to the usernames chosen by you.
 
 **NOTE**: Do not use `http://` or `https://`
-in [fileConfig](../config/gateway/fileConfig.yml).
+in [fileConfig](config/gateway/fileConfig.yml).
 
 #### Authentication
 
+This step requires `htpasswd` commandline utility. If
+it is not available on your system, please install the same by using
+
+```bash
+sudo apt-get install -y apache2-utils
+```
+
+You can now proceed with update of the gateway authentication setup.
 The dummy username is `foo` and the password is `bar`.
 Please change this before starting the gateway.
 
@@ -46,24 +61,25 @@ htpasswd deploy/config/gateway/auth <first_username>
 password: <your password>
 ```
 
-The user credentials added in [auth](../config/gateway/auth) should match
-the usernames in [fileConfig](../config/gateway/fileConfig.yml).
+The user credentials added in _[config/gateway/auth](config/gateway/auth)_
+should match the usernames in
+_[config/gateway/fileConfig](config/gateway/fileConfig.yml)_.
 
-## Configure lib microservice
+## Lib microservice
 
 The library microservice requires configuration.
-A template of this configuration file is given in _config/lib_ file.
+A template of this configuration file is given in _[config/lib](config/lib)_ file.
 Please modify this file as per your needs.
 
 The first step in this configuration is to prepare the a filesystem for users.
 An example file system in `files/` directory.
 You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Add an environment file named .env in lib for the library microservice.
+Add an environment file named `.env` in lib for the library microservice.
 An example `.env` file is given below.
 The simplest possibility is to use `local` mode with the following example.
 The filepath is the absolute filepath to `files/` directory.
-You can copy this configuration into _config/lib_ file to get started.
+You can copy this configuration into _[config/lib](config/lib)_ file to get started.
 
 ```env
 PORT='4001'
@@ -74,7 +90,7 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
-## Configure React Client Website
+## React Client Website
 
 ### Gitlab OAuth application
 
@@ -101,11 +117,11 @@ the [Authentication page](client/auth.md).
 
 ### Update Client Config
 
-Change the React website configuration in _deploy/config/client/env.js_.
+Change the React website configuration in _[config/client/env.js](config/client/env.js)_.
 
 ```js
 window.env = {
-  REACT_APP_ENVIRONMENT: 'dev',
+  REACT_APP_ENVIRONMENT: 'prod',
   REACT_APP_URL: 'https://foo.com/',
   REACT_APP_URL_BASENAME: 'dtaas',
   REACT_APP_URL_DTLINK: '/lab',
@@ -141,3 +157,12 @@ You can run this script multiple times until the installation is successful.
 ## Access the application
 
 Now you should be able to access the DTaaS application at: _<http:>https://foo.com</http:>_
+
+## References
+
+Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
+[reactjs](https://krify.co/about-reactjs/),
+[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)

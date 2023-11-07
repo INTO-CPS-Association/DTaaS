@@ -99,7 +99,6 @@ you can see the following services active within server2 (_services.foo.com_).
 | MQTT communication service | services.foo.com:1883 |
 | RabbitMQ communication service | services.foo.com:5672 |
 | RabbitMQ management service | services.foo.com:15672 |
-||
 
 ### Install DTaaS Application
 
@@ -108,7 +107,7 @@ Execute the following commands from terminal
 ```bash
 vagrant up --provision dtaas
 vagrant ssh dtaas
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.3/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 

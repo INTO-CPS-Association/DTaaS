@@ -43,7 +43,7 @@ for getting the Gitlab OAuth application details.
 ## Install
 
 ```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.3/deploy/single-script-install.sh
 bash single-script-install.sh
 ```
 

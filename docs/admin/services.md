@@ -63,7 +63,6 @@ at the following ports / URLs.
 | RabbitMQ Broker | services.foo.com:5672 |
 | RabbitMQ Broker Management Website | services.foo.com:15672 |
 | MQTT Broker | services.foo.com:1883 |
-||
 
 The firewall and network access settings of corporate / cloud network need to be
 configured to allow external access to the services. Otherwise the users of DTaaS
