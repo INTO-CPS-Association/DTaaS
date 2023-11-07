@@ -3,125 +3,68 @@
 The DTaaS software platform uses third-party software services
 to provide enhanced value to users.
 
-InfluxDB, RabbitMQ and Grafana are default services
+InfluxDB, Grafana, RabbitMQ and Mosquitto are default services
 integrated into the DTaaS software platform.
+
+## Pre-requisites
+
+All these services run on raw TCP/UDP ports. Thus a direct network
+access to these services is required for both the DTs running inside
+the DTaaS software and the PT located outside the DTaaS software.
+
+There are two possible choices here:
+
+* Configure Traefik gateway to permit TCP/UDP traffic
+* Bypass Traefik altogether
+
+Unless you are an informed user of Traefik, we recommend bypassing traefik
+and provide raw TCP/UDP access to these services from the Internet.
 
 _The InfluxDB service requires a dedicated hostname. The management
 interface of RabbitMQ service requires a dedicated hostname as well._
 
-Thus successful installation of these services
-is dependent on your ability to use
-multiple hostnames for different services. You can download the required
-services using the docker commands.
+Grafana service can run well behind Traefik gateway. The default Traefik
+configuration makes permits access to Grafana at URL: http(s): _foo.com/vis_.
 
-```sh
-docker pull grafana/grafana:10.1.4
-docker pull influxdb:2.7
-docker pull telegraf:1.28.2
-docker pull rabbitmq:3-management
-docker pull eclipse-mosquitto:2
-```
+## Configure and Install
 
-The two-machine vagrant deployment scenario installs the RabbitMQ, Grafana, and
-InfluxDB services on the second vagrant machine.
-
-If you would like to install some of these services for native OS
-installation or single vagrant machine, you can do this as well.
-
-## RabbitMQ
-
-Start the RabbitMQ service with
+If you have not cloned the DTaaS git repository, cloning would be
+the first step.
+In case you already have the codebase, you can skip the cloning step.
+To clone, do:
 
 ```bash
-docker run -d \
- --name rabbitmq-server \
- -p 15672:15672 -p 5672:5672 \
- rabbitmq:3-management
+git clone https://github.com/into-cps-association/DTaaS.git
+cd DTaaS/deploy/services
 ```
 
-Users and the vhosts need to be setup on the server. Sample commands to do so are:
+The next step in installation is to specify the config of the services.
+There are two configuration files. The __services.yml__ contains most
+of configuration settings. The __mqtt-default.conf__ file contains
+the MQTT listening port. Update these two config files before proceeding
+with the installation of the services.
+
+Now continue with the installation of services.
 
 ```bash
-docker exec rabbitmq-server rabbitmqctl add_user <username> <password>
-docker exec rabbitmq-server rabbitmqctl set_permissions -p "/<vhost>" <username> ".*" ".*" ".*"
+yarn install
+node services.js
 ```
 
-The RabbitMQ service requires raw TCP/UDP protocol access to network.
-The default Traefik configuration of DTaaS does not permit
-TCP/UDP traffic. There are two possible choices here:
+## Use
 
-* Configure Traefik gateway to permit TCP/UDP traffic
-* Bypass Traefik altogether for RabbitMQ service
+After the installation is complete, you can see the following services active
+at the following ports / URLs.
 
-Unless you are an informed user of Traefik, we recommend bypassing traefik
-for RabbitMQ service.
+| service | external url |
+|:---|:---|
+| Influx | services.foo.com |
+| Grafana | services.foo.com:3000 |
+| RabbitMQ Broker | services.foo.com:5672 |
+| RabbitMQ Broker Management Website | services.foo.com:15672 |
+| MQTT Broker | services.foo.com:1883 |
+||
 
-## Grafana
-
-Grafana service can run well behind Traefik gateway. Here is a sample docker
-command to run Grafana service at port 3000:
-
-```bash
-docker run -d \
- -p 3000:3000 \
- --name=grafana \
- -e "GF_SERVER_SERVE_FROM_SUB_PATH=true" \
- -e "GF_SERVER_DOMAIN=localhost" \
- -e "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s" \
- -e "GF_AUTH_BASIC_ENABLED=false" \
- -e "GF_AUTH_PROXY_ENABLED=false" \
- -e "GF_SECURITY_ADMIN_PASSWORD=DTaaSGrafana" \
- -e "GF_SECURITY_ALLOW_EMBEDDING=true" \
- -e "GF_SECURITY_ALLOW_EMBEDDING=true" \
- -e "GF_AUTH_ANONYMOUS_ENABLED=true" \
- -e "GF_AUTH_ANONYMOUS_ORG_NAME=Main" \
- -e "GF_AUTH_ANONYMOUS_ORG_ROLE=Editor" \
- -e "GF_USERS_ALLOW_SIGN_UP=false" \
- -e "GF_FEATURE_TOGGLES_ENABLE=publicDashboards" \
- -e "GF_PATHS_CONFIG=/etc/grafana/grafana.ini"  \
- -e "GF_PATHS_DATA=/var/lib/grafana" \
- -e "GF_PATHS_HOME=/usr/share/grafana" \
- -e "GF_PATHS_LOGS=/var/log/grafana" \
- -e "GF_PATHS_PLUGINS=/var/lib/grafana/plugins" \
- -e "GF_PATHS_PROVISIONING=/etc/grafana/provisioning" \
- -e "HOME=/home/grafana" \
- grafana/grafana
-printf "Complete the setup from GUI"
-```
-
-The user credentials have also been set in the command as:
-
-**username**: admin
-
-**password**: DTaaSGrafana
-
-Remember to change these credentials before starting the docker container.
-
-## InfluxDB
-
-The barebones InfluxDB service can be installed using:
-
-```bash
-INFLUXDB_DATA="${PWD}/data/influxdb2"
-mkdir -p "$INFLUXDB_DATA"
-
-# Remember to change the settings
-docker run -d -p 80:8086 \
-  --name influxdb24 \
-  -v "$INFLUXDB_DATA/data":/var/lib/influxdb2 \
-  -v "$INFLUXDB_DATA/config":/etc/influxdb2 \
-  -e DOCKER_INFLUXDB_INIT_MODE=setup \
-  -e DOCKER_INFLUXDB_INIT_USERNAME=dtaas \
-  -e DOCKER_INFLUXDB_INIT_PASSWORD=dtaas1357 \
-  -e DOCKER_INFLUXDB_INIT_ORG=dtaas \
-  -e DOCKER_INFLUXDB_INIT_BUCKET=dtaas \
-  influxdb:2.4
-```
-
-The user credentials have also been set in the command as:
-
-**username**: dtaas
-
-**password**: dtaas1357
-
-Remember to change these credentials before starting the docker container.
+The firewall and network access settings of corporate / cloud network need to be
+configured to allow external access to the services. Otherwise the users of DTaaS
+will not be able to utilize these services from their user workspaces.
