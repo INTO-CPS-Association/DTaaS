@@ -631,22 +631,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rabbitmq" class="md-nav__link">
-    RabbitMQ
+  <a href="#pre-requisites" class="md-nav__link">
+    Pre-requisites
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#grafana" class="md-nav__link">
-    Grafana
+  <a href="#configure-and-install" class="md-nav__link">
+    Configure and Install
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#influxdb" class="md-nav__link">
-    InfluxDB
+  <a href="#use" class="md-nav__link">
+    Use
   </a>
   
 </li>
@@ -1259,22 +1259,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rabbitmq" class="md-nav__link">
-    RabbitMQ
+  <a href="#pre-requisites" class="md-nav__link">
+    Pre-requisites
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#grafana" class="md-nav__link">
-    Grafana
+  <a href="#configure-and-install" class="md-nav__link">
+    Configure and Install
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#influxdb" class="md-nav__link">
-    InfluxDB
+  <a href="#use" class="md-nav__link">
+    Use
   </a>
   
 </li>
@@ -1300,143 +1300,82 @@
 <h1 id="third-party-services">Third-party Services</h1>
 <p>The DTaaS software platform uses third-party software services
 to provide enhanced value to users.</p>
-<p>InfluxDB, RabbitMQ and Grafana are default services
+<p>InfluxDB, Grafana, RabbitMQ and Mosquitto are default services
 integrated into the DTaaS software platform.</p>
-<p><em>The InfluxDB service requires a dedicated hostname. The management
-interface of RabbitMQ service requires a dedicated hostname as well.</em></p>
-<p>Thus successful installation of these services
-is dependent on your ability to use
-multiple hostnames for different services. You can download the required
-services using the docker commands.</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span>pull<span class="w"> </span>grafana/grafana:10.1.4
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>docker<span class="w"> </span>pull<span class="w"> </span>influxdb:2.7
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>docker<span class="w"> </span>pull<span class="w"> </span>telegraf:1.28.2
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>docker<span class="w"> </span>pull<span class="w"> </span>rabbitmq:3-management
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>docker<span class="w"> </span>pull<span class="w"> </span>eclipse-mosquitto:2
-</span></code></pre></div></td></tr></table></div>
-<p>The two-machine vagrant deployment scenario installs the RabbitMQ, Grafana, and
-InfluxDB services on the second vagrant machine.</p>
-<p>If you would like to install some of these services for native OS
-installation or single vagrant machine, you can do this as well.</p>
-<h2 id="rabbitmq">RabbitMQ</h2>
-<p>Start the RabbitMQ service with</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span>
-<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w"> </span>--name<span class="w"> </span>rabbitmq-server<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w"> </span>rabbitmq:3-management
-</span></code></pre></div></td></tr></table></div>
-<p>Users and the vhosts need to be setup on the server. Sample commands to do so are:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>add_user<span class="w"> </span>&lt;username&gt;<span class="w"> </span>&lt;password&gt;
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq-server<span class="w"> </span>rabbitmqctl<span class="w"> </span>set_permissions<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/&lt;vhost&gt;&quot;</span><span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span><span class="w"> </span><span class="s2">&quot;.*&quot;</span>
-</span></code></pre></div></td></tr></table></div>
-<p>The RabbitMQ service requires raw TCP/UDP protocol access to network.
-The default Traefik configuration of DTaaS does not permit
-TCP/UDP traffic. There are two possible choices here:</p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<p>All these services run on raw TCP/UDP ports. Thus a direct network
+access to these services is required for both the DTs running inside
+the DTaaS software and the PT located outside the DTaaS software.</p>
+<p>There are two possible choices here:</p>
 <ul>
 <li>Configure Traefik gateway to permit TCP/UDP traffic</li>
-<li>Bypass Traefik altogether for RabbitMQ service</li>
+<li>Bypass Traefik altogether</li>
 </ul>
 <p>Unless you are an informed user of Traefik, we recommend bypassing traefik
-for RabbitMQ service.</p>
-<h2 id="grafana">Grafana</h2>
-<p>Grafana service can run well behind Traefik gateway. Here is a sample docker
-command to run Grafana service at port 3000:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-3-10">10</a></span>
-<span class="normal"><a href="#__codelineno-3-11">11</a></span>
-<span class="normal"><a href="#__codelineno-3-12">12</a></span>
-<span class="normal"><a href="#__codelineno-3-13">13</a></span>
-<span class="normal"><a href="#__codelineno-3-14">14</a></span>
-<span class="normal"><a href="#__codelineno-3-15">15</a></span>
-<span class="normal"><a href="#__codelineno-3-16">16</a></span>
-<span class="normal"><a href="#__codelineno-3-17">17</a></span>
-<span class="normal"><a href="#__codelineno-3-18">18</a></span>
-<span class="normal"><a href="#__codelineno-3-19">19</a></span>
-<span class="normal"><a href="#__codelineno-3-20">20</a></span>
-<span class="normal"><a href="#__codelineno-3-21">21</a></span>
-<span class="normal"><a href="#__codelineno-3-22">22</a></span>
-<span class="normal"><a href="#__codelineno-3-23">23</a></span>
-<span class="normal"><a href="#__codelineno-3-24">24</a></span>
-<span class="normal"><a href="#__codelineno-3-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w"> </span>-p<span class="w"> </span><span class="m">3000</span>:3000<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w"> </span>--name<span class="o">=</span>grafana<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SERVER_SERVE_FROM_SUB_PATH=true&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SERVER_DOMAIN=localhost&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_AUTH_BASIC_ENABLED=false&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_AUTH_PROXY_ENABLED=false&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SECURITY_ADMIN_PASSWORD=DTaaSGrafana&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SECURITY_ALLOW_EMBEDDING=true&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_SECURITY_ALLOW_EMBEDDING=true&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_AUTH_ANONYMOUS_ENABLED=true&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_AUTH_ANONYMOUS_ORG_NAME=Main&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_AUTH_ANONYMOUS_ORG_ROLE=Editor&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_USERS_ALLOW_SIGN_UP=false&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_FEATURE_TOGGLES_ENABLE=publicDashboards&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_CONFIG=/etc/grafana/grafana.ini&quot;</span><span class="w">  </span><span class="se">\</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_DATA=/var/lib/grafana&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_HOME=/usr/share/grafana&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_LOGS=/var/log/grafana&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_PLUGINS=/var/lib/grafana/plugins&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;GF_PATHS_PROVISIONING=/etc/grafana/provisioning&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;HOME=/home/grafana&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24"></a><span class="w"> </span>grafana/grafana
-</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;Complete the setup from GUI&quot;</span>
+and provide raw TCP/UDP access to these services from the Internet.</p>
+<p><em>The InfluxDB service requires a dedicated hostname. The management
+interface of RabbitMQ service requires a dedicated hostname as well.</em></p>
+<p>Grafana service can run well behind Traefik gateway. The default Traefik
+configuration makes permits access to Grafana at URL: http(s): <em>foo.com/vis</em>.</p>
+<h2 id="configure-and-install">Configure and Install</h2>
+<p>If you have not cloned the DTaaS git repository, cloning would be
+the first step.
+In case you already have the codebase, you can skip the cloning step.
+To clone, do:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/into-cps-association/DTaaS.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>DTaaS/deploy/services
 </span></code></pre></div></td></tr></table></div>
-<p>The user credentials have also been set in the command as:</p>
-<p><strong>username</strong>: admin</p>
-<p><strong>password</strong>: DTaaSGrafana</p>
-<p>Remember to change these credentials before starting the docker container.</p>
-<h2 id="influxdb">InfluxDB</h2>
-<p>The barebones InfluxDB service can be installed using:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-4-10">10</a></span>
-<span class="normal"><a href="#__codelineno-4-11">11</a></span>
-<span class="normal"><a href="#__codelineno-4-12">12</a></span>
-<span class="normal"><a href="#__codelineno-4-13">13</a></span>
-<span class="normal"><a href="#__codelineno-4-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nv">INFLUXDB_DATA</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">/data/influxdb2&quot;</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$INFLUXDB_DATA</span><span class="s2">&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Remember to change the settings</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:8086<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">  </span>--name<span class="w"> </span>influxdb24<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$INFLUXDB_DATA</span><span class="s2">/data&quot;</span>:/var/lib/influxdb2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$INFLUXDB_DATA</span><span class="s2">/config&quot;</span>:/etc/influxdb2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DOCKER_INFLUXDB_INIT_MODE</span><span class="o">=</span>setup<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DOCKER_INFLUXDB_INIT_USERNAME</span><span class="o">=</span>dtaas<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DOCKER_INFLUXDB_INIT_PASSWORD</span><span class="o">=</span>dtaas1357<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DOCKER_INFLUXDB_INIT_ORG</span><span class="o">=</span>dtaas<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DOCKER_INFLUXDB_INIT_BUCKET</span><span class="o">=</span>dtaas<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">  </span>influxdb:2.4
+<p>The next step in installation is to specify the config of the services.
+There are two configuration files. The <strong>services.yml</strong> contains most
+of configuration settings. The <strong>mqtt-default.conf</strong> file contains
+the MQTT listening port. Update these two config files before proceeding
+with the installation of the services.</p>
+<p>Now continue with the installation of services.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>yarn<span class="w"> </span>install
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>node<span class="w"> </span>services.js
 </span></code></pre></div></td></tr></table></div>
-<p>The user credentials have also been set in the command as:</p>
-<p><strong>username</strong>: dtaas</p>
-<p><strong>password</strong>: dtaas1357</p>
-<p>Remember to change these credentials before starting the docker container.</p>
+<h2 id="use">Use</h2>
+<p>After the installation is complete, you can see the following services active
+at the following ports / URLs.</p>
+<table>
+<thead>
+<tr>
+<th align="left">service</th>
+<th align="left">external url</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Influx</td>
+<td align="left">services.foo.com</td>
+</tr>
+<tr>
+<td align="left">Grafana</td>
+<td align="left">services.foo.com:3000</td>
+</tr>
+<tr>
+<td align="left">RabbitMQ Broker</td>
+<td align="left">services.foo.com:5672</td>
+</tr>
+<tr>
+<td align="left">RabbitMQ Broker Management Website</td>
+<td align="left">services.foo.com:15672</td>
+</tr>
+<tr>
+<td align="left">MQTT Broker</td>
+<td align="left">services.foo.com:1883</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p>The firewall and network access settings of corporate / cloud network need to be
+configured to allow external access to the services. Otherwise the users of DTaaS
+will not be able to utilize these services from their user workspaces.</p>
 
 
 

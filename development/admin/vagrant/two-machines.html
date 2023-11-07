@@ -1433,32 +1433,12 @@ The fields to update are:</p>
 <li>Other adjustments are optional.</li>
 </ol>
 <h2 id="installation-steps">Installation Steps</h2>
+<p>The installation instructions are given separately for each vagrant machine.</p>
 <h3 id="launch-dtaas-platform-default-services">Launch DTaaS Platform Default Services</h3>
-<p>RabbitMQ, Grafana, InfluxDB and MQTT services are provisioned on this server.
-InfluxDB and visualization service will be available at: <em>services.foo.com</em>.
-The Grafana service shall be available at TCP port 3000.
-The MQTT service shall be available at TCP port 1833.
-The RabbitMQ service and its management interface shall be available at
-5672 and 15672 TCP ports respectively.</p>
-<p>The firewall and network access settings of corporate / cloud network
-need to be configured to allow external access to the services.
-Otherwise the users of DTaaS will not be able to utilize these
-services from their user workspaces.</p>
-<p>Execute the following commands from terminal to start the machine.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span>
-<span class="normal"><a href="#__codelineno-0-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>vagrant<span class="w"> </span>up<span class="w"> </span>--provision<span class="w"> </span>services
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>vagrant<span class="w"> </span>ssh<span class="w"> </span>services
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>bash<span class="w"> </span>services.sh
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>sudo<span class="w"> </span>bash<span class="w"> </span>route.sh
-</span></code></pre></div></td></tr></table></div>
-<p>After the server is up and running,
-you can see the following services active within server2.</p>
+<p>Follow the installation guide for <a href="../services.html">services</a>
+to install the DTaaS platform services.</p>
+<p>After the services are up and running,
+you can see the following services active within server2 (<em>services.foo.com</em>).</p>
 <table>
 <thead>
 <tr>
@@ -1487,17 +1467,21 @@ you can see the following services active within server2.</p>
 <td align="left">RabbitMQ management service</td>
 <td align="left">services.foo.com:15672</td>
 </tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
 </tbody>
 </table>
 <h3 id="install-dtaas-application">Install DTaaS Application</h3>
 <p>Execute the following commands from terminal</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span>
-<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>vagrant<span class="w"> </span>up<span class="w"> </span>--provision<span class="w"> </span>dtaas
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>vagrant<span class="w"> </span>ssh<span class="w"> </span>dtaas
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a>sudo<span class="w"> </span>bash<span class="w"> </span>route.sh
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>vagrant<span class="w"> </span>up<span class="w"> </span>--provision<span class="w"> </span>dtaas
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>vagrant<span class="w"> </span>ssh<span class="w"> </span>dtaas
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>sudo<span class="w"> </span>bash<span class="w"> </span>route.sh
 </span></code></pre></div></td></tr></table></div>
 <p>If you only want to test the application and are
 not setting up a production instance, you can
