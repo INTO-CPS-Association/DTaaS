@@ -17,3 +17,6 @@ services:
         password: "dtaas1357"   # need to have letters and numbers
         datapath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/vagrant/two-machine/influx" #no spaces in the path
         port: 80
+    mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
+        username: "dtaas"
+        password: "dtaas"
