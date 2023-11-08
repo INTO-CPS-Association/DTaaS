@@ -93,7 +93,7 @@ jobs:
           cd servers/lib
           yarn install
           yarn build
-          yarn publish --access restricted
+          yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
