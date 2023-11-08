@@ -57,7 +57,7 @@ bash single-script-install.sh
 
 ## Post install
 
-After the install-script. Please change **foo.com** and Gitlab OAuth details
+After the install-script. Please change **foo.com** and [Gitlab OAuth](#2-gitlab-oauth-application) details
 to your local settings in the following files.
 
 ```txt
