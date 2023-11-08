@@ -35,8 +35,10 @@ You can run the Traefik gateway server in both
 HTTP and HTTPS mode to experience the DTaaS application.
 The installation guide assumes that you can run the application in HTTPS mode.
 
-The Traefik gateway configuration is at _[fileConfig](config/gateway/fileConfig.yml)_.
-Change `foo.com` to your local hostname and user1/user2 to the usernames chosen by you.
+The Traefik gateway configuration is at
+_[fileConfig](config/gateway/fileConfig.yml)_.
+Change `foo.com` to your local hostname and user1/user2 to the usernames
+chosen by you.
 
 **NOTE**: Do not use `http://` or `https://`
 in [fileConfig](config/gateway/fileConfig.yml).
