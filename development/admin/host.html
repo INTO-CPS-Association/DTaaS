@@ -482,11 +482,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-traefik-gateway-server" class="md-nav__link">
-    The traefik gateway server
+  <a href="#traefik-gateway-server" class="md-nav__link">
+    Traefik gateway server
   </a>
   
-    <nav class="md-nav" aria-label="The traefik gateway server">
+    <nav class="md-nav" aria-label="Traefik gateway server">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -507,18 +507,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-lib-microservice" class="md-nav__link">
-    Configure lib microservice
+  <a href="#lib-microservice" class="md-nav__link">
+    Lib microservice
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-react-client-website" class="md-nav__link">
-    Configure React Client Website
+  <a href="#react-client-website" class="md-nav__link">
+    React Client Website
   </a>
   
-    <nav class="md-nav" aria-label="Configure React Client Website">
+    <nav class="md-nav" aria-label="React Client Website">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1343,11 +1343,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-traefik-gateway-server" class="md-nav__link">
-    The traefik gateway server
+  <a href="#traefik-gateway-server" class="md-nav__link">
+    Traefik gateway server
   </a>
   
-    <nav class="md-nav" aria-label="The traefik gateway server">
+    <nav class="md-nav" aria-label="Traefik gateway server">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1368,18 +1368,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-lib-microservice" class="md-nav__link">
-    Configure lib microservice
+  <a href="#lib-microservice" class="md-nav__link">
+    Lib microservice
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-react-client-website" class="md-nav__link">
-    Configure React Client Website
+  <a href="#react-client-website" class="md-nav__link">
+    React Client Website
   </a>
   
-    <nav class="md-nav" aria-label="Configure React Client Website">
+    <nav class="md-nav" aria-label="React Client Website">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1479,8 +1479,8 @@ library microservice and react client website.</p>
 <p>The first step is to decide on the number of users and their usenames.
 The traefik gateway configuration has a template for two users.
 You can modify the usernames in the template to the usernames chosen by you.</p>
-<h3 id="the-traefik-gateway-server">The traefik gateway server</h3>
-<p>You can run the Run the Traefik gateway server in both
+<h3 id="traefik-gateway-server">Traefik gateway server</h3>
+<p>You can run the Traefik gateway server in both
 HTTP and HTTPS mode to experience the DTaaS application.
 The installation guide assumes that you can run the application in HTTPS mode.</p>
 <p>The Traefik gateway configuration is
@@ -1514,14 +1514,15 @@ Please change this before starting the gateway.</p>
 </span></code></pre></div></td></tr></table></div>
 <p>The user credentials added in <em>deploy/config/gateway/auth</em> should
 match the usernames in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
-<h2 id="configure-lib-microservice">Configure lib microservice</h2>
+<h2 id="lib-microservice">Lib microservice</h2>
 <p>The library microservice requires configuration.
 A template of this configuration file is given in <em>deploy/config/lib</em> file.
 Please modify this file as per your needs.</p>
 <p>The first step in this configuration is to prepare the a filesystem for users.
 An example file system in <code>files/</code> directory.
 You can rename the top-level user1/user2 to the usernames chosen by you.</p>
-<p>An example <code>.env</code> file is given below.
+<p>Add an environment file named <code>.env</code> in lib for the library microservice.
+An example <code>.env</code> file is given below.
 The simplest possibility is to use <code>local</code> mode with the following example.
 The filepath is the absolute filepath to <code>files/</code> directory.
 You can copy this configuration into <em>deploy/config/lib</em> file to get started.</p>
@@ -1537,7 +1538,7 @@ You can copy this configuration into <em>deploy/config/lib</em> file to get star
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>APOLLO_PATH=&#39;/lib&#39;
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>GRAPHQL_PLAYGROUND=&#39;true&#39;
 </span></code></pre></div></td></tr></table></div>
-<h2 id="configure-react-client-website">Configure React Client Website</h2>
+<h2 id="react-client-website">React Client Website</h2>
 <h3 id="gitlab-oauth-application">Gitlab OAuth application</h3>
 <p>The DTaaS react website requires Gitlab OAuth provider.
 If you need more help with this step, please see
@@ -1597,7 +1598,7 @@ for getting the Gitlab OAuth application details.</p>
 <span class="normal"><a href="#__codelineno-3-16">16</a></span>
 <span class="normal"><a href="#__codelineno-3-17">17</a></span>
 <span class="normal"><a href="#__codelineno-3-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;dev&#39;</span><span class="p">,</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;dtaas&#39;</span><span class="p">,</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>

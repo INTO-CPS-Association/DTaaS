@@ -645,6 +645,19 @@
     Start Microservice
   </a>
   
+    <nav class="md-nav" aria-label="Start Microservice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config-flag" class="md-nav__link">
+    Config flag
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1321,6 +1334,19 @@
     Start Microservice
   </a>
   
+    <nav class="md-nav" aria-label="Start Microservice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config-flag" class="md-nav__link">
+    Config flag
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1436,9 +1462,15 @@ the value of <code>TOKEN</code> with your token for the gitlab group, can be fou
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>yarn<span class="w"> </span>build<span class="w">      </span><span class="c1"># build the application</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>yarn<span class="w"> </span>start<span class="w">      </span><span class="c1"># start the application</span>
 </span></code></pre></div></td></tr></table></div>
+<h4 id="config-flag">Config flag</h4>
+<p>If the environment file is named something other than <code>.env</code>,
+the filename must be specifed with the command <code>-c, --config &lt;path&gt;</code>,
+when starting the application. For instance,</p>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>yarn<span class="w"> </span>start<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;.env.development&quot;</span>
+</span></code></pre></div></td></tr></table></div>
 <p>You can press <code>Ctl+C</code> to halt the application.
 If you wish to run the microservice in the background, use</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>nohup<span class="w"> </span>yarn<span class="w"> </span>start<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">disown</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>nohup<span class="w"> </span>yarn<span class="w"> </span>start<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">disown</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The lib microservice is now running and ready to serve files, functions, and models.</p>
 <p>Users can access the library microservice at URL: <code>http://localhost:&lt;PORT&gt;/lib</code>.</p>
