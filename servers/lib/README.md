@@ -27,17 +27,10 @@ to get a sample file system structure for the lib microservice.
 
 The package is available in github packages registry.
 
-You must use a personal access token (classic) with the `read:packages` scope to be able to install the package. See this guide for [creating a personal acces token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic).
-
-After retrieving the token, log in to npm with the following command using your github username and the token as password.
-
+Set the registry and install the package with the following commands
 ```bash
-npm login --auth-type=legacy --registry=https://npm.pkg.github.com
-```
-Now in the cloned repository, navigate to the `/DTaaS/servers/lib` folder where the package.json file is located. You can then install the library microservice package using
-
-```bash
-sudo npm install -g --scope=@into-cps-association/libms --registry=https://npm.pkg.github.com/
+sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm install -g @into-cps-association/libms
 ```
 
 ## :gear: Configure
