@@ -96,6 +96,16 @@ yarn build      # build the application
 yarn start      # start the application
 ```
 
+#### Config flag
+
+If the environment file is named something other than `.env`,
+the filename must be specifed with the command `-c, --config <path>`,
+when starting the application. For instance,
+
+```sh
+yarn start -c ".env.development"
+```
+
 You can press `Ctl+C` to halt the application.
 If you wish to run the microservice in the background, use
 

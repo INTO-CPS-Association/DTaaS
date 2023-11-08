@@ -99,10 +99,10 @@ one [ML Workspace](https://github.com/ml-tooling/ml-workspace)
 serving the following routes.
 
 ```js
-https:foo.com/<username>/lab
-https:foo.com/<username>/terminals/main
-https:foo.com/<username>/tools/vnc/?password=vncpassword
-https:foo.com/<username>/tools/vscode/
+https://foo.com/<username>/lab
+https://foo.com/<username>/terminals/main
+https://foo.com/<username>/tools/vnc/?password=vncpassword
+https://foo.com/<username>/tools/vscode/
 ```
 
 The `username` is the user workspace created using ML Workspace docker container.
