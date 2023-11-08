@@ -29,7 +29,7 @@ The package is available in github packages registry.
 You can install the package using
 
 ```bash
-sudo npm install -g @into-cps-association/libms
+sudo npm install -g @into-cps-association/libms --registry=https://npm.pkg.github.com/
 ```
 
 ## :gear: Configure
