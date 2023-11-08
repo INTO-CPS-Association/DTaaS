@@ -65,8 +65,7 @@ jobs:
 
     if: | 
       github.event_name == 'push' &&
-      (github.ref == 'refs/heads/feature/distributed-demo' ||
-      'refs/heads/release-v*')
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest
