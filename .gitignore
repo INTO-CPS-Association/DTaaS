@@ -152,3 +152,6 @@ site/
 
 # yarn cache
 .yarn
+
+# Auth creds
+servers/auth/auth_dtaas/client.yaml
