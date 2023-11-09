@@ -11,25 +11,31 @@ It has three features:
 
 For this microserivce to be functional,
 a certain directory or gitlab project structure is expected.
-The microservice expects that the gitlab consisting of one group, DTaaS,
+The microservice expects that the gitlab consisting of one group, dtaas (by convention),
 and within that group, all of the projects be located,
-**user1**, **user2**, ... , as well as a **commons** project.
+**user1**, **user2**, ... , as well as a **commons** projects.
 Each project corresponds to files of one user.
 A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
 You can visit the gitlab documentation on
 [groups](https://docs.gitlab.com/ee/user/group/)
 for help on the management of gitlab groups.
 
-You can clone the git repositories from the `dtaas` group
+You can clone the git repositories from the [gitlab dtaas](https://gitlab.com/dtaas) group
 to get a sample file system structure for the lib microservice.
 
-## Configuration setup
+## :arrow_down: Install
 
-The microservices uses `.env` environment files to receive configuration.
+The package is available in github packages registry.
 
-In order to create this environment, you need to create a `.env` file,
-wherein you create the following environment variables,
-and insert with the correct-information relevant for your setup:
+Set the registry and install the package with the following commands
+```bash
+sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm install -g @into-cps-association/libms
+```
+
+## :gear: Configure
+
+The microservices requires config specified in INI format. The template configuration file is:
 
 ```env
 PORT='4001'
@@ -53,7 +59,7 @@ For more information on how to create and use your access token,
 [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
 
 Once you've generated a token, copy it and replace
-the value of `TOKEN` with your token for the gitlab group, can be found.
+the value of `TOKEN` with your token for the gitlab group,
 
 Replace the default values the appropriate values for your setup.
 
@@ -66,11 +72,7 @@ Replace the default values the appropriate values for your setup.
 
 ## User Commands
 
-```bash
-yarn install    # Install dependencies for the microservice
-yarn build      # build the application
-yarn start      # start the application
-```
+This config is saved `.env` file by convention. The __libms__ looks for `.env` file in the working directory from which it is run.
 
 If the environment file is named something other than `.env`,
 the filename must be specifed with the command `-c, --config <path>`,
@@ -83,24 +85,12 @@ yarn start -c ".env.development"
 You can press `Ctl+C` to halt the application.
 If you wish to run the microservice in the background, use
 
-```bash
-nohup yarn start & disown
-```
+## :rocket: Use
 
-## Developer Commands
+Display help.
 
 ```bash
-yarn install    # Install dependencies for the microservice
-yarn syntax     # analyzes source code for potential errors, style violations, and other issues,
-yarn graph       # generate dependency graphs in the code
-yarn build      # compile ES6 files into ES5 javascript files and copy them into dist/ directory
-yarn test -a      # run all tests
-yarn test -e      # run end-to-end tests
-yarn test -i      # run integration tests
-yarn test -u      # run unit tests
-yarn start      # start the application
-yarn start -h   # list of all the CLI commands
-yarn clean      # deletes directories "build", "coverage", and "dist"
+libms -h
 ```
 
 ## :package: :ship: NPM package
@@ -112,23 +102,17 @@ with publishing and using **libms npm package**.
 Application of the advice given on that page for **libms** will require
 running the following commands.
 
-### Publish
-
 ```bash
-yarn install
-yarn build #the dist/ directory is needed for publishing step
-yarn publish --no-git-tag-version #increments version in package.json, publishes to registry
-yarn publish #increments version in package.json, publishes to registry and adds a git tag
+libms
 ```
 
-### Unpublish
+Run __libms__ with a custom config file.
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @dtaas/libms@0.2.0
+libms -c FILE-PATH
+libms --config FILE-PATH
 ```
 
-## Service Endpoint
+The microservice is available at: http://localhost:PORT/lib
 
-The URL endpoint for this microservice is located at: `localhost:PORT/lib`
-
-The [API](./API.md) page shows sample queries and responses.
+The [API](https://into-cps-association.github.io/DTaaS/development/user/servers/lib/LIB-MS.html) page shows sample queries and responses.

@@ -1,10 +1,12 @@
 {
-  "name": "@dtaas/libms",
-  "version": "0.2.0",
+  "name": "@into-cps-association/libms",
+  "version": "0.3.1",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
-    "Prasad Talasila"
+    "Prasad Talasila",
+    "Mads Kelberg",
+    "Linda Nguyen"
   ],
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
