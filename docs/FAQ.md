@@ -10,7 +10,7 @@
 
 ## General Questions
 
-<!-- markdownlint-disable MD046 -->
+<!-- markdownlint-disable-file MD046 -->
 
 ??? Question "What is DTaaS?"
 
@@ -216,9 +216,7 @@
 
     The core feature of DTaaS software is to help users
     create DTs from assets already available in the library.
-
     ![Create Library Assets](./user/servers/lib/author.png)
-
     However, it is possible for users to take advantage of services
     available in their workspace to install asset authoring tools
     in their own workspace.
@@ -227,4 +225,45 @@
     Thus any licensed software tools installed in their workspace is
     only available to them.
 
-<!-- markdownlint-enable MD046 -->
+## GDPR Concerns
+
+??? Question "Does your platform adhere to GDPR compliance standards? If so, how?"
+
+    The DTaaS software platform does not store any personal information
+    of users. It only stores username to identify users and these
+    usernames do not contain enough information to deduce the true
+    identify of users.
+
+??? Question "Which security measures are deployed? How is data encrypted (if exists)?"
+
+    The default installation requires a HTTPS terminating reverse proxy server
+    from user to the DTaaS software installation. The administrators of DTaaS
+    software can also install HTTPS certificates into the application.
+    The codebase can generate HTTPS application and the users also have
+    the option of installing their own certificates obtained from
+    certification agencies such as LetsEncrypt.
+
+??? Question "What security measures does your cloud provider offer?"
+
+    The current installation of DTaaS software runs on Aarhus University
+    servers. The university network offers firewall access control to servers
+    so that only permitted user groups have access to the network and
+    physical access to the server.
+
+??? Question "How is user access controlled and authenticated?"
+
+    There is a two-level authentication mechanism in place in each default
+    installation of DTaaS. The first-level is HTTP basic authentication
+    over secure HTTPS connection. The second-level is the OAuth PKCE
+    authentication flow for each user. The OAuth authentication is provider
+    by a Gitlab instance. The DTaaS does not store the account and
+    authentication information of users.
+
+??? Question "Does you platform manage personal data? How is data classified and tagged based on the sensitivity? Who has access to the critical data?"
+
+    The platform does not store personal data of users.
+
+??? Question "How are identities and roles managed within the platform?"
+
+    There are two roles for users on the platform. One is the administrator
+    and the other one is user. The user roles are managed by the administrator.

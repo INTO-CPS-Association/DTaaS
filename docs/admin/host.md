@@ -38,9 +38,9 @@ The first step is to decide on the number of users and their usenames.
 The traefik gateway configuration has a template for two users.
 You can modify the usernames in the template to the usernames chosen by you.
 
-### The traefik gateway server
+### Traefik gateway server
 
-You can run the Run the Traefik gateway server in both
+You can run the Traefik gateway server in both
 HTTP and HTTPS mode to experience the DTaaS application.
 The installation guide assumes that you can run the application in HTTPS mode.
 
@@ -80,7 +80,7 @@ password: <your password>
 The user credentials added in _deploy/config/gateway/auth_ should
 match the usernames in _deploy/config/gateway/fileConfig.yml_.
 
-## Configure lib microservice
+## Lib microservice
 
 The library microservice requires configuration.
 A template of this configuration file is given in _deploy/config/lib_ file.
@@ -90,6 +90,7 @@ The first step in this configuration is to prepare the a filesystem for users.
 An example file system in `files/` directory.
 You can rename the top-level user1/user2 to the usernames chosen by you.
 
+Add an environment file named `.env` in lib for the library microservice.
 An example `.env` file is given below.
 The simplest possibility is to use `local` mode with the following example.
 The filepath is the absolute filepath to `files/` directory.
@@ -104,7 +105,7 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
-## Configure React Client Website
+## React Client Website
 
 ### Gitlab OAuth application
 
@@ -131,7 +132,7 @@ Change the React website configuration in _deploy/config/client/env.js_.
 
 ```js
 window.env = {
-  REACT_APP_ENVIRONMENT: 'dev',
+  REACT_APP_ENVIRONMENT: 'prod',
   REACT_APP_URL: 'https://foo.com/',
   REACT_APP_URL_BASENAME: 'dtaas',
   REACT_APP_URL_DTLINK: '/lab',

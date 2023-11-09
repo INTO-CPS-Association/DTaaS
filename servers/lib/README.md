@@ -43,14 +43,11 @@ APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
 ```
 
-If the environment file is named something other than `.env`,
-the filename must be specifed with the command `-c, --config <path>`,
-when starting the application. For instance,
+The `LOCAL_PATH` variable is the absolute filepath to the
+location of the local directory which will be served to users
+by the Library microservice.
 
-```sh
-yarn start -c ".env.development"
-```
-
+The `GITLAB_URL`, `GITLAB_GROUP` and `TOKEN` are only relevant for `gitlab` mode.
 The `TOKEN` should be set to your GitLab Group access API token.
 For more information on how to create and use your access token,
 [gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
@@ -58,12 +55,29 @@ For more information on how to create and use your access token,
 Once you've generated a token, copy it and replace
 the value of `TOKEN` with your token for the gitlab group, can be found.
 
+Replace the default values the appropriate values for your setup.
+
+**NOTE**:
+
+1. When \__MODE=local_, only _LOCAL_PATH_ is used.
+   Other environment variables are unused.
+1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
+   and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
+
 ## User Commands
 
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn build      # build the application
 yarn start      # start the application
+```
+
+If the environment file is named something other than `.env`,
+the filename must be specifed with the command `-c, --config <path>`,
+when starting the application. For instance,
+
+```sh
+yarn start -c ".env.development"
 ```
 
 You can press `Ctl+C` to halt the application.
@@ -93,7 +107,7 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 Use the instructions in
 [publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing **libms npm package**.
+with publishing and using **libms npm package**.
 
 Application of the advice given on that page for **libms** will require
 running the following commands.
