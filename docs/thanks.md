@@ -15,6 +15,6 @@ Henrik Ejersbo, Tanusree Roy, Farshid Naseri
    Digital Twin as a Service (DTaaS): A Platform for
    Digital Twin Developers and Users
    [arXiv preprint arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
-1. Astitva Sehgal
-1. Tanusree Roy
-1. Farshid Naseri
+1. Astitva Sehgal for developer and example documentation.
+1. Tanusree Roy and Farshid Naseri for asking interesting questions
+   that ended up in FAQs.

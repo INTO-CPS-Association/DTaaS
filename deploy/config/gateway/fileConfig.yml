@@ -24,11 +24,11 @@ http:
         - basic-auth
       service: user2
 
-    vis:
+    libms:
       entryPoints:
         - http
-      rule: 'Host(`foo.com`) && PathPrefix(`/vis`)'
-      service: grafana
+      rule: 'Host(`foo.com`) && PathPrefix(`/lib`)'
+      service: libms
 
 
   # Middleware: Basic authentication
@@ -55,8 +55,7 @@ http:
         servers:
           - url: "http://localhost:8091"
 
-    grafana:
+    libms:
       loadBalancer:
         servers:
-          - url: "http://localhost:3000"
-
+          - url: "http://localhost:4001"

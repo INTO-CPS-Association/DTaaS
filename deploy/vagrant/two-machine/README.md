@@ -15,10 +15,11 @@ server1. The _workspaces.sh_ contains installation commands for provisioning
 user workspaces. If you desire to have more users, you need to modify this
 shell script.
 
-The default installation setup also installs InfluxDB, Grafana and RabbitMQ
-services on server2. If you would like to install more services, you can create
-shell scripts to install the same on server2. If you have these scripts ready,
-you can place them in this directory and invoke them from _services.sh_ script.
+The default installation setup also installs InfluxDB, Grafana, RabbitMQ
+and MQTT services on server2. If you would like to install more services,
+you can create
+scripts to install the same on server2. If you have these scripts ready,
+you can place them in this directory and invoke them from _services.js_ script.
 
 ## Create Base Vagrant Box
 
@@ -60,37 +61,19 @@ The fields to update are:
 
 ## Launch platform default services
 
-RabbitMQ, Grafana and InfluxDB services are provisioned on this server.
-InfluxDB webUI will be available at: _services.foo.com_.
-The RabbitMQ service and its management interface shall be available
-at 5672 and 15672 TCP ports respectively.
-The Grafana service shall be available at TCP port 3000.
-
-The firewall and network access settings of corporate / cloud network need to be
-configured to allow external access to the services. Otherwise the users of DTaaS
-will not be able to utilize these services from their user workspaces.
+RabbitMQ, Grafana, InfluxDB and MQTT services are provisioned on this server.
 
 Execute the following commands from terminal to start the machine.
 
 ```bash
 vagrant up --provision services
 vagrant ssh services
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
-bash services.sh
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
-After the server is up and running, you can see the following services active
-within server2.
-
-| service | external url |
-|:---|:---|
-| Influx visualization service | services.foo.com |
-| Grafana visualization service | services.foo.com:3000 |
-| RabbitMQ communication service | services.foo.com:5672 |
-| RabbitMQ management service | services.foo.com:15672 |
-||
+Follow the instructions in [services](../../services/README.md) to install
+the platform default services on this vagrant machine.
 
 ## Launch DTaaS application
 
@@ -99,6 +82,11 @@ Execute the following commands from terminal
 ```bash
 vagrant up --provision dtaas
 vagrant ssh dtaas
+```
+
+Once inside the vagrant box, execute
+
+```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```

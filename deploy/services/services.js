@@ -15,7 +15,7 @@ const sleep = (ms) =>
   });
 
   try {
-  console.log(chalk.blue("Load services configuration"));
+  log(chalk.blue("Load services configuration"));
   config = await yaml.load(fs.readFileSync('services.yml', 'utf8'));
   log(chalk.green("configuration loading is successful and config is a valid yaml file"));
 } catch (e) {
@@ -84,7 +84,7 @@ await $$`docker run -d \
   grafana/grafana:10.1.4`;
 log(chalk.green("Grafana server docker container started successfully"));
 
-console.log(chalk.blue("Wait one minute for Grafana server to bootstrap"));
+log(chalk.blue("Wait one minute for Grafana server to bootstrap"));
 await sleep(60000);  //60 seconds
 
 await $$`docker exec grafana grafana-cli admin reset-admin-password ${grafanaConfig.password}`;
@@ -102,17 +102,37 @@ try {
   await $$`docker rm rabbitmq-server`;  
 } catch (e) {
 }
-//await $$`docker run -d --name rabbitmq-server -p 5672:5672  -p 15672:15672 rabbitmq:3-management`;
+
 log(chalk.green("Start RabbitMQ server docker container"));
 await $$`docker run -d --name rabbitmq-server \
   -p ${rabbitmqConfig.ports.main}:5672 \
   -p ${rabbitmqConfig.ports.management}:15672 rabbitmq:3-management`;
 log(chalk.green("RabbitMQ server docker container started successfully\n"));
 
-console.log(chalk.blue("Wait 2 minutes for RabbitMQ server to bootstrap"));
+log(chalk.blue("Wait 2 minutes for RabbitMQ server to bootstrap"));
 await sleep(120000);  //120 seconds
 
 let args = [rabbitmqConfig.username, rabbitmqConfig.password];
-//console.log(chalk.blue("Add ${rabbitmqConfig.username} user and give permission to ${rabbitmqConfig.vhost} vhost"));
+log(chalk.blue(
+  "Add %s user and give permission to %s vhost"),
+  rabbitmqConfig.username, rabbitmqConfig.vhost);
 await $$`docker exec rabbitmq-server rabbitmqctl add_user ${args}`;
 await $$`docker exec rabbitmq-server rabbitmqctl set_permissions -p ${rabbitmqConfig.vhost} ${rabbitmqConfig.username} ".*" ".*" ".*"`;
+
+//---------------
+log(chalk.blue("Install and start MQTT server"));
+const mqttConfig = config.services.mqtt;
+
+log(chalk.blue("Attempt to install mosquitto MQTT server using apt-get package manager"));
+await $$`sudo apt-get install -y mosquitto mosquitto-clients`;
+log(chalk.blue("Create user account for %s in MQTT server"), mqttConfig.username);
+await $$`sudo sudo mosquitto_passwd -c -b /etc/mosquitto/passwd ${mqttConfig.username} ${mqttConfig.password}`;
+await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
+await $$`sudo chmod 660 /etc/mosquitto/passwd`;
+
+log(chalk.blue("Set MQTT listening port configuration"));
+await $$`sudo cp mqtt-default.conf /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo systemctl restart mosquitto`;
+await $$`sudo systemctl status mosquitto`;
