@@ -1,6 +1,6 @@
 import { ITabs } from 'route/IData';
 
-export const tabs1: ITabs[] = [
+export const assetType: ITabs[] = [
   {
     label: 'Functions',
     body: `The functions responsible for pre- and post-processing of: data inputs, data outputs, control outputs. The data science libraries and functions can be used to create useful function assets for the platform.
@@ -22,19 +22,19 @@ export const tabs1: ITabs[] = [
     body: `The data sources and sinks available to a digital twins. Typical examples of data sources are sensor measurements from Physical Twins, and test data provided by manufacturers for calibration of models. Typical examples of data sinks are visualization software, external users and data storage services. There exist special outputs such as events, and commands which are akin to control outputs from a Digital Twin. These control outputs usually go to Physical Twins, but they can also go to another Digital Twin.`,
   },
   {
-    label: 'Digital_Twins',
+    label: 'Digital Twins',
     body: `These are ready to use digital twins created by one or more users. These digital twins can be reconfigured later for specific use cases.`,
   },
 ];
 
 // This type of Array Tabs is for the second line of Tabs
-export const tabs2: ITabs[] = [
+export const scope: ITabs[] = [
   {
     label: 'Private',
-    body: `This is the PRIVATE TAB`,
+    body: `These reusable assets are only visible to you. Other users can not use these assets in their digital twins.`,
   },
   {
     label: 'Common',
-    body: `This is the COMMON TAB`,
+    body: `These reusable assets are only visible to all users. Other users can use these assets in their digital twins.`,
   },
 ];

@@ -72,11 +72,11 @@ describe('TabComponent', () => {
 
   test('constructs correct URLs for Iframes', () => {
     // Example URL construction
-    const githubName = 'caesarv16';
-    const LIBURL = `http://localhost.com:4000/${githubName}/`;
-    const tabLabel = '';
+    const githubName = 'user1';
+    const LIBURL = `http://localhost.com:4000/${githubName}`;
+    const tabLabel = 'functions';
     const subTabLabel = 'Common';
-    const expectedURL = `${LIBURL}tree/common/`;
+    const expectedURL = `${LIBURL}/tree/common/`;
 
     // Check if the function constructs the correct URL
     expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);
