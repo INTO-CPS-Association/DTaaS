@@ -25,7 +25,7 @@ function DTContent() {
   }));
   return (
     <Layout>
-      <TabComponent tabs={tabData} />
+      <TabComponent assetType={tabData} scope={[]}/>
     </Layout>
   );
 }

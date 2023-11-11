@@ -1,29 +1,31 @@
 import * as React from 'react';
 
-import { Paper } from '@mui/material';
-// import { scope } from 'route/library/LibraryTabData';
+import Iframe from 'react-iframe';
+import { cleanURL, useURLforLIB } from 'util/envUtil';
+
+import { Paper, Typography } from '@mui/material';
 import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
-// import { scope } from 'route/library/LibraryTabData';
-// import { scope} from '../../route/library/LibraryTabData';
 
+export function constructURL(assetType: string, scope: string, libURL: string) {
+  const formattedTab = assetType.toLowerCase();
+  const formattedSubTab = scope.toLowerCase();
 
-export function constructURL(tab: string, subTab: string, LIBURL: string) {
-  // tab and subtab to lowercase
-  const formattedTab = tab.toLowerCase();
-  const formattedSubTab = subTab.toLowerCase();
-
-  let url = `${LIBURL}tree/`;
-
-  if (formattedSubTab === 'common') {
-    url = `${url}${formattedSubTab}/`;
-  }
+  let url = cleanURL(libURL);
+  url += "/tree/";
 
   if (formattedTab === 'digital twins') {
-    return `${url}digital_twins`;
+    url += 'digital_twins';
+    if (formattedSubTab === 'private') {
+      url += '/private';
+    }
+  } else if (formattedSubTab === 'private') {
+    url += `${formattedTab}/${formattedSubTab}`;
+  } else {
+    url += formattedTab;
   }
 
-  return `${url}${formattedTab}`;
+  return url;
 }
 
 /*
@@ -31,27 +33,49 @@ export function constructURL(tab: string, subTab: string, LIBURL: string) {
  * TabRender component will show the text information from the main tab and Iframe will make sure the url is the correct
  */
 
-export function TabComponent(props: { tabs: TabData[]}) {
+
+// removed import from LibraryTabData, added scope as a prop to TabComponent. changed two lvl tabs to Tab -> Text -> Tab -> Text
+
+
+export function TabComponent(props: { assetType: TabData[], scope: TabData[] }) {
+  const LIBurl = useURLforLIB();
+
   return (
     <Paper
       sx={{ p: 2, display: 'flex', flexDirection: 'column', minHeight: '100%' }}
     >
       <Tabs>
         <TabList>
-          {props.tabs.map((tab, index) => (
+          {props.assetType.map((tab, index) => (
             <Tab key={index}>{tab.label}</Tab>
           ))}
         </TabList>
-        {props.tabs.map((tab, index) => (
+        {props.assetType.map((tab, index) => (
           <TabPanel key={index}>
-            <TabRender index={index}>{tab}</TabRender>
-
-            
+            <Typography>{tab.body}</Typography>
+            <Tabs forceRenderTabPanel>
+              <TabList>
+                {props.scope.map((subTab, subIndex) => (
+                  <Tab key={subIndex}>{subTab.label}</Tab>
+                ))}
+              </TabList>
+              {props.scope.map((subTab, subIndex) => (
+                <TabPanel key={subIndex}>
+                  <TabRender index={subIndex}>{subTab}</TabRender>
+                  <Iframe
+                    title={`${tab.label}`}
+                    url={constructURL(tab.label, subTab.label, LIBurl)}
+                  />
+                </TabPanel>
+              ))}
+            </Tabs>
           </TabPanel>
         ))}
       </Tabs>
     </Paper>
   );
 }
+
+
 
 export default TabComponent;

@@ -14,7 +14,7 @@ const tabs: TabData[] = [
 ];
 
 function AccountTabs() {
-  return <TabComponent tabs={tabs} />;
+  return <TabComponent assetType={tabs} scope={[]}/>;
 }
 
 export default AccountTabs;
