@@ -10,7 +10,7 @@ import tabs from './DigitalTwinTabData';
 function DTContent() {
   const DTurl = useURLforDT();
 
-  const tabData: TabData[] = tabs.map((tab, i) => ({
+  const tabData1: TabData[] = tabs.map((tab, i) => ({
     label: tab.label,
     body: (
       <>
@@ -23,9 +23,26 @@ function DTContent() {
       </>
     ),
   }));
+
+  const tabData: TabData[][] = Array(2).fill(
+    tabs.map((tab, i) => ({
+      label: tab.label,
+      body: (
+        <>
+          <Typography variant="body1">{tab.body}</Typography>
+          {i === 0 && (
+            <>
+              <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />
+            </>
+          )}
+        </>
+      ),
+    }))
+  );  
+
   return (
     <Layout>
-      <TabComponent assetType={tabData} scope={[]}/>
+      <TabComponent tabs1={tabData1} tabs={tabData} />
     </Layout>
   );
 }
