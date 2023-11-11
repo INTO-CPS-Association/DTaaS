@@ -13,14 +13,10 @@ const tabs1: TabData[] = [
   },
 ];
 
-// Convierte tabs en un array bidimensional
 const tabs: TabData[][] = tabs1.map(tab => [tab]);
 
-// Resultado: [[{ label: 'Profile', body: ... }], [{ label: 'Settings', body: ... }]]
-
-
 function AccountTabs() {
-  return <TabComponent tabs1={tabs1} tabs={tabs}/>;
+  return <TabComponent assetType={tabs1} scope={tabs}/>;
 }
 
 export default AccountTabs;

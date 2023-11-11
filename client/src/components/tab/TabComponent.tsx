@@ -4,26 +4,30 @@ import * as React from 'react';
 // import { useURLforLIB } from 'util/envUtil';
 
 import { Paper } from '@mui/material';
+import { cleanURL } from 'util/envUtil';
 import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 // import { assetType } from '../../route/library/LibraryTabData';
 
-export function constructURL(tab: string, subTab: string, LIBURL: string) {
-  // tab and subtab to lowercase
-  const formattedTab = tab.toLowerCase();
-  const formattedSubTab = subTab.toLowerCase();
+export function constructURL(assetType: string, scope: string, libURL: string) {
+  const formattedTab = assetType.toLowerCase();
+  const formattedSubTab = scope.toLowerCase();
 
-  let url = `${LIBURL}tree/`;
-
-  if (formattedSubTab === 'common') {
-    url = `${url}${formattedSubTab}/`;
-  }
+  let url = cleanURL(libURL);
+  url += "/tree/";
 
   if (formattedTab === 'digital twins') {
-    return `${url}digital_twins`;
+    url += 'digital_twins';
+    if (formattedSubTab === 'private') {
+      url += '/private';
+    }
+  } else if (formattedSubTab === 'private') {
+    url += `${formattedTab}/${formattedSubTab}`;
+  } else {
+    url += formattedTab;
   }
 
-  return `${url}${formattedTab}`;
+  return url;
 }
 
 /*
@@ -31,7 +35,7 @@ export function constructURL(tab: string, subTab: string, LIBURL: string) {
  * TabRender component will show the text information from the main tab and Iframe will make sure the url is the correct
  */
 
-export function TabComponent(props: { tabs1: TabData[], tabs: TabData[][] }) {
+export function TabComponent(props: { assetType: TabData[], scope: TabData[][] }) {
   // const LIBurl = useURLforLIB();
   return (
     <Paper
@@ -39,21 +43,21 @@ export function TabComponent(props: { tabs1: TabData[], tabs: TabData[][] }) {
     >
       <Tabs>
         <TabList>
-          {props.tabs1.map((tab, index) => (
+          {props.assetType.map((tab, index) => (
             <Tab key={index}>{tab.label}</Tab>
           ))}
         </TabList>
-        {props.tabs1.map((tab1, index1) => (
+        {props.assetType.map((tab1, index1) => (
           <TabPanel key={index1}>
             <TabRender index={index1}>{tab1}</TabRender>
 
             <Tabs forceRenderTabPanel>
               <TabList>
-                {props.tabs[index1].map((tab, index) => (
+                {props.scope[index1].map((tab, index) => (
                   <Tab key={index}>{tab.label}</Tab>
                 ))}
               </TabList>
-              {props.tabs[index1].map((tab, index) => (
+              {props.scope[index1].map((tab, index) => (
                 <TabPanel key={index}>
                   <TabRender index={index}>{tab}</TabRender>
                 </TabPanel>
