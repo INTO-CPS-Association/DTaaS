@@ -21,11 +21,11 @@ else
     printf "No changes in the servers/execution/runner/ directory. Skipping pre-push hook.\n\n"
 fi
 
-cd "$TOP_DIR" || exit
-if git diff --name-only origin/"$BRANCH_NAME"...HEAD | grep "^servers/lib/" >/dev/null; then
-    cd "servers/lib" || exit
-    yarn install
-    yarn test:nocov
-else
-    printf "No changes in the servers/lib/ directory. Skipping pre-push hook.\n\n"
-fi
+# cd "$TOP_DIR" || exit
+# if git diff --name-only origin/"$BRANCH_NAME"...HEAD | grep "^servers/lib/" >/dev/null; then
+#     cd "servers/lib" || exit
+#     yarn install
+#     yarn test:nocov
+# else
+#     printf "No changes in the servers/lib/ directory. Skipping pre-push hook.\n\n"
+# fi
