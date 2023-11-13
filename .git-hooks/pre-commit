@@ -19,3 +19,12 @@ if git diff --cached --name-only | grep "^servers/execution/runner/" >/dev/null;
 else
     printf "No changes in the servers/execution/runner directory. Skipping pre-commit hook.\n\n"
 fi
+
+cd "$TOP_DIR" || exit
+if git diff --cached --name-only | grep "^servers/lib/" >/dev/null; then
+    cd "servers/lib" || exit
+    yarn install
+    yarn format && yarn syntax
+else
+    printf "No changes in the servers/lib directory. Skipping pre-commit hook.\n\n"
+fi
