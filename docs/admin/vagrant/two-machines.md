@@ -82,33 +82,15 @@ The fields to update are:
 
 ## Installation Steps
 
+The installation instructions are given separately for each vagrant machine.
+
 ### Launch DTaaS Platform Default Services
 
-RabbitMQ, Grafana, InfluxDB and MQTT services are provisioned on this server.
-InfluxDB and visualization service will be available at: _services.foo.com_.
-The Grafana service shall be available at TCP port 3000.
-The MQTT service shall be available at TCP port 1833.
-The RabbitMQ service and its management interface shall be available at
-5672 and 15672 TCP ports respectively.
+Follow the installation guide for [services](../services.md)
+to install the DTaaS platform services.
 
-The firewall and network access settings of corporate / cloud network
-need to be configured to allow external access to the services.
-Otherwise the users of DTaaS will not be able to utilize these
-services from their user workspaces.
-
-Execute the following commands from terminal to start the machine.
-
-```bash
-vagrant up --provision services
-vagrant ssh services
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/two-machine/services.sh
-bash services.sh
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
-sudo bash route.sh
-```
-
-After the server is up and running,
-you can see the following services active within server2.
+After the services are up and running,
+you can see the following services active within server2 (_services.foo.com_).
 
 | service | external url |
 |:---|:---|
@@ -117,6 +99,7 @@ you can see the following services active within server2.
 | MQTT communication service | services.foo.com:1883 |
 | RabbitMQ communication service | services.foo.com:5672 |
 | RabbitMQ management service | services.foo.com:15672 |
+||
 
 ### Install DTaaS Application
 
