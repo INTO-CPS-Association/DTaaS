@@ -46,7 +46,7 @@ describe('LocalFilesService', () => {
   it('should list directory', async () => {
     const fullPath = join(
       mockConfigService.get('LOCAL_PATH'),
-      pathToTestDirectory
+      pathToTestDirectory,
     );
 
     // Mock Stats value for lstat
@@ -58,14 +58,12 @@ describe('LocalFilesService', () => {
       .spyOn(fs.promises, 'readdir')
       .mockResolvedValue(testFileArray as unknown as Promise<[]>);
 
-    jest
-      .spyOn(fs.promises, 'lstat')
-      .mockImplementation((pathToDirectory) => {
-        if (typeof pathToDirectory === 'string') {
-          return Promise.resolve(statsMock as fs.Stats);
-        }
-        throw new Error(`Invalid argument: ${pathToDirectory}`);
-      });
+    jest.spyOn(fs.promises, 'lstat').mockImplementation((pathToDirectory) => {
+      if (typeof pathToDirectory === 'string') {
+        return Promise.resolve(statsMock as fs.Stats);
+      }
+      throw new Error(`Invalid argument: ${pathToDirectory}`);
+    });
     const result = await service.listDirectory(pathToTestDirectory);
     expect(result).toEqual({
       repository: {
@@ -86,7 +84,7 @@ describe('LocalFilesService', () => {
   it('should read file', async () => {
     const fullPath = join(
       mockConfigService.get('LOCAL_PATH'),
-      pathToTestFileContent
+      pathToTestFileContent,
     );
 
     jest.spyOn(fs.promises, 'readFile').mockResolvedValue(fstestFileContent);

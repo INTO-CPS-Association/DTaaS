@@ -1,16 +1,16 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
 // import { execSync } from "child_process";
-import AppModule from "../../src/app.module";
+import AppModule from '../../src/app.module';
 import {
   e2eReadFile,
   e2elistDirectory,
   expectedFileContentResponse,
   expectedListDirectoryResponse,
-} from "../testUtil";
+} from '../testUtil';
 
-describe("End to End test for the application", () => {
+describe('End to End test for the application', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -32,19 +32,19 @@ describe("End to End test for the application", () => {
     await app.close();
   }, 10000);
 
-  it("should return the filename corresponding to the directory given in the query", async () => {
+  it('should return the filename corresponding to the directory given in the query', async () => {
     const query = e2elistDirectory;
 
-    const response = await request("http://localhost:4001")
+    const response = await request('http://localhost:4001')
       .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedListDirectoryResponse);
   }, 10000);
 
-  it("should return the content of a file given in the query ", async () => {
+  it('should return the content of a file given in the query ', async () => {
     const query = e2eReadFile;
 
-    const response = await request("http://localhost:4001")
+    const response = await request('http://localhost:4001')
       .post(process.env.APOLLO_PATH)
       .send({ query });
     expect(response.body).toEqual(expectedFileContentResponse);
