@@ -17,7 +17,7 @@ It is also possible to share the services offered by one DT with other users.
 There is an overview of the software available in the form of
 [slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-short-intro.pdf),
 [video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-short-intro.mp4),
-and [feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.2.0-demo.mp4).
+and [feature walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/dtaas-v0.3-demo.mp4).
 
 ## License
 
