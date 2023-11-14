@@ -9,15 +9,15 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "build": "script/build.bash",
+    "build": "npx tsc",
     "clean": "script/clean.bash",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "script/start.bash",
-    "syntax": "script/syntax.bash",
+    "syntax": "npx eslint . --fix",
     "test": "script/test.bash",
     "test:nocov": "script/test.bash nocoverage",
     "test:watchAll": "script/test.bash watchAll",
-    "graph": "script/graph.bash"
+    "graph": "npx madge --image src.svg src && npx madge --image test.svg test"
   },
   "bin": {
     "runner": "./dist/src/main.js"
@@ -26,6 +26,9 @@
     "dist/",
     "script/"
   ],
+  "prettier": {
+    "singleQuote": true
+  },
   "devDependencies": {
     "@jest/globals": "^29.6.2",
     "@nestjs/cli": "^10.1.18",
@@ -41,12 +44,12 @@
     "@typescript-eslint/parser": "^6.8.0",
     "eslint": "^8.52.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.9.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.0",
     "eslint-plugin-jest": "^27.3.0",
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.6.2",
-    "prettier": "^3.0.0",
+    "prettier": "^3.1.0",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",

@@ -152,3 +152,7 @@ site/
 
 # yarn cache
 .yarn
+
+# madge dependency graphs
+src.svg
+test.svg
