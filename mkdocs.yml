@@ -30,7 +30,9 @@ nav:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
       - Services: admin/services.md
-      - Guides: admin/guides/guide.md
+      - Guides: 
+        - Add a new user: admin/guides/add_user.md
+        - Add other services: admin/guides/add_service.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
