@@ -8,9 +8,6 @@
   "license": "SEE LICENSE IN <LICENSE.md>",
   "private": false,
   "type": "module",
-  "config": {
-    "NODE_OPTIONS": "--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node"
-  },
   "scripts": {
     "build": "npx tsc",
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
@@ -25,7 +22,7 @@
   "script-unused": {
     "runner": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/runner.js"
   },
-"bin": {
+  "bin": {
     "runner": "./dist/src/main.js"
   },
   "files": [
