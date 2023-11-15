@@ -1,5 +1,5 @@
 {
-  "name": "@dtaas/runner",
+  "name": "@prasadtalasila/runner",
   "version": "0.0.1",
   "description": "DT Runner",
   "main": "dist/src/runner.js",
