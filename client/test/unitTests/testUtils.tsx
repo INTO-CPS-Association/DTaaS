@@ -139,10 +139,14 @@ export function itHasCorrectURLOfTabsWithIframe(
       const firstTabIframe = screen.getAllByTitle(tablabelURLpair.label, {
         exact: true,
       });
-      // expect(firstTabIframe).toBeInTheDocument();
+
+      let tabUsed = tablabelURLpair.label.toLowerCase();
+      if (tabUsed === 'digital twins') {
+        tabUsed = 'digital_twins';
+      }
       const tree = 'tree/';
-      const urlUsed =
-        tablabelURLpair.url + tree + tablabelURLpair.label.toLowerCase();
+      const privateTab = '/private';
+      const urlUsed = tablabelURLpair.url + tree + tabUsed + privateTab;
       expect(firstTabIframe.length).toBeGreaterThan(0);
       expect(firstTabIframe[0]).toHaveAttribute('src', urlUsed);
     });

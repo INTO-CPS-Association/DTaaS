@@ -38,7 +38,7 @@ function DTContent() {
         </>
       ),
     }))
-  );  
+  );
 
   return (
     <Layout>

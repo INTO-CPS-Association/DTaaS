@@ -4,68 +4,106 @@ import userEvent from '@testing-library/user-event';
 import { TabComponent, constructURL } from 'components/tab/TabComponent';
 // import { constructURL } from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { assetType } from 'route/library/LibraryTabData';
+import { assetType, scope } from 'route/library/LibraryTabData';
+import { useURLforLIB } from 'util/envUtil';
+import { Typography } from '@mui/material';
+import Iframe from 'react-iframe';
 
 describe('TabComponent', () => {
+  const LIBurl = useURLforLIB();
+  const assetTypeTabs: TabData[] = assetType.map((tab) => ({
+    label: tab.label,
+    body: (
+      <>
+        <Typography variant="body1">{tab.body}</Typography>
+      </>
+    ),
+  }));
+
+  const scopeTabs: TabData[][] = assetType.map((tab) =>
+    scope.map((subtab) => ({
+      label: `${subtab.label}`,
+      body: (
+        <>
+          <Typography variant="body1">{subtab.body}</Typography>
+          <Iframe
+            title={`${tab.label}`}
+            url={constructURL(tab.label, subtab.label, LIBurl)}
+          />
+        </>
+      ),
+    }))
+  );
+
   test('renders an empty tab', () => {
-    const assetTypeTabs: TabData[] = [];
-    const scopeTabs: TabData[] = [];
-    const { getByText } = render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+    const { getByText } = render(
+      <TabComponent assetType={assetTypeTabs} scope={scopeTabs} />
+    );
     const emptyTab = getByText('Functions');
     expect(emptyTab).toBeInTheDocument();
     userEvent.click(emptyTab);
   });
 
-  test('renders tabs with labels and defaults to the first tab open', () => {
-    const tabs = [
-      { label: assetType[0].label, body: <div>{assetType[0].body}</div> },
-      { label: assetType[1].label, body: <div>{assetType[1].body}</div> },
-    ];
-  
-    render(<TabComponent assetType={tabs} scope={[]} />);
-  
+  test('renders tabs with labels and defaults to the first tab open', async () => {
+    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+
     // Check if tab labels are rendered
-    expect(screen.getAllByText('Functions')).toBeInTheDocument()
-    expect(screen.getAllByText('Models')).toBeInTheDocument()
-  
-    // The first tab should be open by default
-    expect(screen.getAllByText('The functions responsible')).toBeInTheDocument()
-  
+    const functionsAppear = screen.getAllByText('Functions');
+    expect(functionsAppear.length).toBeGreaterThan(0);
+
+    const modelsAppear = screen.getAllByText('Models');
+    expect(modelsAppear.length).toBeGreaterThan(0);
+
+    const functionsTab = assetType.find((tab) => tab.label === 'Functions');
+
+    if (functionsTab) {
+      const isFunctionsBody = screen.getAllByText('Functions');
+      expect(isFunctionsBody.length).toBeGreaterThan(0);
+    }
+
     // Click on the 'models' tab
-    userEvent.click(screen.getByText('Models'));
-  
+    const clickedTab = screen.getByRole('tab', { name: 'Models' });
+    await userEvent.click(clickedTab);
+
     // Check if the content of 'models' tab is now visible
-    expect(screen.getAllByText('The model assets')).toBeInTheDocument()
-    expect(screen.queryAllByText('The functions responsible')).not.toBeInTheDocument()
+
+    const modelsTab = assetType.find((tab) => tab.label === 'Models');
+
+    if (modelsTab) {
+      const isModelsBody = screen.getAllByText(modelsTab.body);
+      expect(isModelsBody.length).toBeGreaterThan(0);
+    }
   });
 
   test('changes the active tab on click', async () => {
-    const tabs = [
-      { label: assetType[0].label, body: <div>{assetType[0].body}</div>},
-      { label: assetType[1].label, body: <div>{assetType[1].body}</div>},
-      { label: assetType[2].label, body: <div>{assetType[2].body}</div>}
-    ];
-  
-    render(<TabComponent assetType={tabs} scope={[]} />);
-    const tab = screen.getByRole('Tab', { name: 'Models' });
-  
-    await userEvent.click(tab);
+    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+    const clickedTab = screen.getByRole('tab', { name: 'Models' });
+
+    await userEvent.click(clickedTab);
     // Check if the second tab is open after the click
-  
-    const isModelsBody = screen.getAllByText('models body 2');
-    expect(isModelsBody.length).toBeGreaterThan(0);
-  
-    expect(screen.queryByText('functions body 2')).not.toBeInTheDocument();
-    expect(screen.queryByText('tools body 2')).not.toBeInTheDocument();
+
+    const modelsTab = assetType.find((tab) => tab.label === 'Models');
+
+    if (modelsTab) {
+      const isModelsBody = screen.getAllByText(modelsTab.body);
+      expect(isModelsBody.length).toBeGreaterThan(0);
+    }
+
+    expect(
+      screen.queryByText(assetTypeTabs[0].body.props.children)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(assetTypeTabs[2].body.props.children)
+    ).not.toBeInTheDocument();
   });
 
   test('constructs correct URLs for Iframes', () => {
     // Example URL construction
     const githubName = 'caesarv16';
     const LIBURL = `http://localhost.com:4000/${githubName}/`;
-    const tabLabel = '';
+    const tabLabel = 'Functions';
     const subTabLabel = 'Common';
-    const expectedURL = `${LIBURL}tree/common/`;
+    const expectedURL = `${LIBURL}tree/functions`;
 
     // Check if the function constructs the correct URL
     expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);

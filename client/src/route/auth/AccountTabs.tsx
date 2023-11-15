@@ -13,10 +13,10 @@ const tabs1: TabData[] = [
   },
 ];
 
-const tabs: TabData[][] = tabs1.map(tab => [tab]);
+const tabs: TabData[][] = [];
 
 function AccountTabs() {
-  return <TabComponent assetType={tabs1} scope={tabs}/>;
+  return <TabComponent assetType={tabs1} scope={tabs} />;
 }
 
 export default AccountTabs;
