@@ -20,7 +20,8 @@ You can visit the gitlab documentation on
 [groups](https://docs.gitlab.com/ee/user/group/)
 for help on the management of gitlab groups.
 
-You can clone the git repositories from the [gitlab dtaas](https://gitlab.com/dtaas) group
+You can clone the git repositories from
+the [gitlab dtaas](https://gitlab.com/dtaas) group
 to get a sample file system structure for the lib microservice.
 
 ## :arrow_down: Install
@@ -28,14 +29,22 @@ to get a sample file system structure for the lib microservice.
 The package is available in github packages registry.
 
 Set the registry and install the package with the following commands
+
 ```bash
 sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
 sudo npm install -g @into-cps-association/libms
 ```
 
+The _npm install_ command asks for username and password. The username is
+your Github username and the password is your Github
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+In order for the npm to download the package, your personal access token
+needs to have _read:packages_ scope.
+
 ## :gear: Configure
 
-The microservices requires config specified in INI format. The template configuration file is:
+The microservices requires config specified in INI format.
+The template configuration file is:
 
 ```env
 PORT='4001'
@@ -72,7 +81,8 @@ Replace the default values the appropriate values for your setup.
 
 ## User Commands
 
-This config is saved `.env` file by convention. The __libms__ looks for `.env` file in the working directory from which it is run.
+This config is saved `.env` file by convention. The __libms__ looks for
+`.env` file in the working directory from which it is run.
 
 If the environment file is named something other than `.env`,
 the filename must be specifed with the command `-c, --config <path>`,
