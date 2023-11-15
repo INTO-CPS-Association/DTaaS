@@ -8,9 +8,11 @@
   "license": "SEE LICENSE IN <LICENSE.md>",
   "private": false,
   "type": "module",
+  "config": {
+    "NODE_OPTIONS": "--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node"
+  },
   "scripts": {
     "build": "npx tsc",
-<<<<<<< HEAD
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/main.js",
@@ -22,18 +24,8 @@
   },
   "script-unused": {
     "runner": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/runner.js"
-=======
-    "clean": "script/clean.bash",
-    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "start": "script/start.bash",
-    "syntax": "npx eslint . --fix",
-    "test": "script/test.bash",
-    "test:nocov": "script/test.bash nocoverage",
-    "test:watchAll": "script/test.bash watchAll",
-    "graph": "npx madge --image src.svg src && npx madge --image test.svg test"
->>>>>>> dba0c46 (  Cleans up yarn commands of runner)
   },
-  "bin": {
+"bin": {
     "runner": "./dist/src/main.js"
   },
   "files": [
