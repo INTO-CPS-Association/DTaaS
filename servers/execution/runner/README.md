@@ -34,11 +34,19 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 ## :package: :ship: NPM package
 
+### Github Package Registry
+
+The Github actions workflow of
+[lib microservice](../../../.github/workflows/runner.yml) publishes the __runner__
+into [public packages](https://github.com/orgs/INTO-CPS-Association/packages).
+
+### Verdaccio - Local Package Registry
+
 Use the instructions in
 [publish npm package](../../../docs/developer/npm-packages.md) for help
-with publishing **runner npm package**.
+with publishing __runner npm package__.
 
-Application of the advice given on that page for **runner** will require
+Application of the advice given on that page for __runner__ will require
 running the following commands.
 
 ### Publish
@@ -53,7 +61,7 @@ yarn publish #increments version in package.json, publishes to registry and adds
 ### Unpublish
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2
+npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.0.2
 ```
 
 ## :rocket: Access the service

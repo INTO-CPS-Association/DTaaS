@@ -1,6 +1,6 @@
 # Library Microservice
 
-[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme) -
+[The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme)
 provides users with access to files in user workspaces via API.
 This microservice will interface with local file system and Gitlab
 to provide uniform Gitlab-compliant API access to files.

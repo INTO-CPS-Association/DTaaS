@@ -1,4 +1,4 @@
-# Testing File Structure
+# File Structure
 
 Inorder to test the lib-MS, a specific file structure must be configured.
 
@@ -10,7 +10,7 @@ your working gitlab repository, as depicted below...
 
 local file system:
 
-```
+```txt
 files/
   user2/
     data/
@@ -22,7 +22,7 @@ files/
 
 gitlab repository:
 
-```
+```txt
 {Your-Gitlab-Group}/
   user2/
     data/
