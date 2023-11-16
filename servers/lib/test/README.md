@@ -1,4 +1,4 @@
-# Testing File Structure
+# File Structure
 
 Inorder to test the lib-MS, a specific file structure must be configured.
 

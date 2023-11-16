@@ -1,6 +1,6 @@
 # Developer Instructions
 
-## :gear: Configuration
+## :gear: Configure
 
 This microservice needs library assets and configuration
 file. Please see [README](./README.md) for this information.
@@ -23,9 +23,17 @@ yarn clean      # deletes directories "build", "coverage", and "dist"
 
 ## :package: :ship: NPM package
 
+### Github Package Registry
+
+The Github actions workflow of
+[lib microservice](../../.github/workflows/lib-ms.yml) publishes the libms
+into [public packages](https://github.com/orgs/INTO-CPS-Association/packages).
+
+### Verdaccio - Local Package Registry
+
 Use the instructions in
 [publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing **libms npm package**.
+with publishing **libms npm package** in local computer.
 
 Application of the advice given on that page for **libms** will require
 running the following commands.

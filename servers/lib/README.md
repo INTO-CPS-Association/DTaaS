@@ -26,7 +26,8 @@ to get a sample file system structure for the lib microservice.
 
 ## :arrow_down: Install
 
-The package is available in github packages registry.
+The package is available in Github
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
 Set the registry and install the package with the following commands
 
@@ -46,7 +47,7 @@ needs to have _read:packages_ scope.
 The microservices requires config specified in INI format.
 The template configuration file is:
 
-```env
+```ini
 PORT='4001'
 MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
@@ -79,22 +80,6 @@ Replace the default values the appropriate values for your setup.
 1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
    and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
-## User Commands
-
-This config is saved `.env` file by convention. The __libms__ looks for
-`.env` file in the working directory from which it is run.
-
-If the environment file is named something other than `.env`,
-the filename must be specifed with the command `-c, --config <path>`,
-when starting the application. For instance,
-
-```sh
-yarn start -c ".env.development"
-```
-
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
-
 ## :rocket: Use
 
 Display help.
@@ -103,25 +88,30 @@ Display help.
 libms -h
 ```
 
-## :package: :ship: NPM package
-
-Use the instructions in
-[publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing and using **libms npm package**.
-
-Application of the advice given on that page for **libms** will require
-running the following commands.
+The config is saved `.env` file by convention. The __libms__ looks for
+`.env` file in the working directory from which it is run.
+If you want to run __libms__ without explicitly specifying the configuration
+file, run
 
 ```bash
 libms
 ```
 
-Run __libms__ with a custom config file.
+To run __libms__ with a custom config file,
 
 ```bash
 libms -c FILE-PATH
 libms --config FILE-PATH
 ```
+
+If the environment file is named something other than `.env`,
+for example as `.env.development`, you can run
+
+```sh
+libms -c ".env.development"
+```
+
+You can press `Ctl+C` to halt the application.
 
 The microservice is available at: http://localhost:PORT/lib
 
