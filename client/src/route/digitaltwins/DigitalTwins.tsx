@@ -16,9 +16,7 @@ function DTContent() {
       <>
         <Typography variant="body1">{tab.body}</Typography>
         {i === 0 && (
-          <>
-            <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />
-          </>
+          <> <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} /> </>
         )}
       </>
     ),
