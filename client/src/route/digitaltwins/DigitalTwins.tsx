@@ -27,15 +27,7 @@ function DTContent() {
   const tabData: TabData[][] = Array(2).fill(
     tabs.map((tab, i) => ({
       label: tab.label,
-      body: (
-        <>
-          <Typography variant="body1">{tab.body}</Typography>
-          {i === 0 && (
-            <>
-              <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />
-            </>
-          )}
-        </>
+      body: (<></>
       ),
     }))
   );
