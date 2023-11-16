@@ -2,38 +2,19 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TabComponent, constructURL } from 'components/tab/TabComponent';
-import { TabData } from 'components/tab/subcomponents/TabRender';
-import { assetType, scope } from 'route/library/LibraryTabData';
-import { useURLforLIB } from 'util/envUtil';
-import { Typography } from '@mui/material';
-import Iframe from 'react-iframe';
+// import { TabData } from 'components/tab/subcomponents/TabRender';
+import { assetType } from 'route/library/LibraryTabData';
+// import { useURLforLIB } from 'util/envUtil';
+// import { Typography } from '@mui/material';
+// import Iframe from 'react-iframe';
+import { createCombinedTabs, createTabs } from 'route/library/Library';
 
 describe('TabComponent', () => {
-  const LIBurl = useURLforLIB();
+  // const LIBurl = useURLforLIB();
 
-  const assetTypeTabs: TabData[] = assetType.map((tab) => ({
-    label: tab.label,
-    body: (
-      <>
-        <Typography variant="body1">{tab.body}</Typography>
-      </>
-    ),
-  }));
+  const assetTypeTabs = createTabs();
 
-  const scopeTabs: TabData[][] = assetType.map((tab) =>
-    scope.map((subtab) => ({
-      label: `${subtab.label}`,
-      body: (
-        <>
-          <Typography variant="body1">{subtab.body}</Typography>
-          <Iframe
-            title={`${tab.label}`}
-            url={constructURL(tab.label, subtab.label, LIBurl)}
-          />
-        </>
-      ),
-    }))
-  );
+  const scopeTabs = createCombinedTabs();
 
   test('renders an empty tab', () => {
     const { getByText } = render(
