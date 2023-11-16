@@ -2,7 +2,6 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TabComponent, constructURL } from 'components/tab/TabComponent';
-// import { constructURL } from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import { assetType, scope } from 'route/library/LibraryTabData';
 import { useURLforLIB } from 'util/envUtil';
@@ -77,23 +76,23 @@ describe('TabComponent', () => {
 
   test('changes the active tab on click', async () => {
     render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
-    const clickedTab = screen.getByRole('tab', { name: 'Models' });
+    const clickedTab = screen.getByRole('tab', { name: 'Data' });
 
     await userEvent.click(clickedTab);
-    // Check if the second tab is open after the click
+    // Check if the tab is open after the click
 
-    const modelsTab = assetType.find((tab) => tab.label === 'Models');
+    const dataTab = assetType.find((tab) => tab.label === 'Data');
 
-    if (modelsTab) {
-      const isModelsBody = screen.getAllByText(modelsTab.body);
-      expect(isModelsBody.length).toBeGreaterThan(0);
+    if (dataTab) {
+      const isDataBody = screen.getAllByText(dataTab.body);
+      expect(isDataBody.length).toBeGreaterThan(0);
     }
 
     expect(
       screen.queryByText(assetTypeTabs[0].body.props.children)
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(assetTypeTabs[2].body.props.children)
+      screen.queryByText(assetTypeTabs[1].body.props.children)
     ).not.toBeInTheDocument();
   });
 
