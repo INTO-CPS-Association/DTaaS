@@ -8,11 +8,10 @@ import { assetType } from 'route/library/LibraryTabData';
 // import { Typography } from '@mui/material';
 // import Iframe from 'react-iframe';
 
-import { tabsData, combinedData} from "route/library/Library";
+import { tabsData, combinedData } from 'route/library/Library';
 
 describe('TabComponent', () => {
   // const LIBurl = useURLforLIB();
-
 
   // const assetTypeTabs: TabData[] = assetType.map((tab) => ({
   //   label: tab.label,
@@ -37,9 +36,6 @@ describe('TabComponent', () => {
   //     ),
   //   }))
   // );
-
-
-
 
   test('renders an empty tab', () => {
     const { getByText } = render(

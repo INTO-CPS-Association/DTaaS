@@ -39,14 +39,21 @@ export function TabComponent(props: {
         {props.assetType.map((tab, index) => (
           <Tab key={index}>{tab.label}</Tab>
         ))}
-      </TabList> {props.assetType.map((subtab, subIndex) => (
+      </TabList>{' '}
+      {props.assetType.map((subtab, subIndex) => (
         <TabPanel key={subIndex}>
           <TabRender index={subIndex}>{subtab}</TabRender>
           <Tabs>
-            <TabList>{props.scope && props.scope[subIndex] && props.scope[subIndex].map((tab, index) => (
+            <TabList>
+              {props.scope &&
+                props.scope[subIndex] &&
+                props.scope[subIndex].map((tab, index) => (
                   <Tab key={index}>{tab.label}</Tab>
                 ))}
-            </TabList>{props.scope && props.scope[subIndex] && props.scope[subIndex].map((tab, index) => (
+            </TabList>
+            {props.scope &&
+              props.scope[subIndex] &&
+              props.scope[subIndex].map((tab, index) => (
                 <TabPanel key={index}>
                   <TabRender index={index}>{tab}</TabRender>
                 </TabPanel>
