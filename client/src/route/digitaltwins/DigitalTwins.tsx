@@ -23,16 +23,9 @@ function DTContent() {
     ),
   }));
 
-  const tabData: TabData[][] = Array(2).fill(
-    tabs.map((tab, i) => ({
-      label: tab.label,
-      body: i,
-    }))
-  );
-
   return (
     <Layout>
-      <TabComponent assetType={tabData1} scope={tabData} />
+      <TabComponent assetType={tabData1} scope={[]} />
     </Layout>
   );
 }

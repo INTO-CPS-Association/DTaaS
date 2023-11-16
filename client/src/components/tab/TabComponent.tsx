@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import { cleanURL } from 'util/envUtil';
 import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
@@ -7,7 +6,7 @@ export function constructURL(assetType: string, scope: string, libURL: string) {
   const formattedTab = assetType.toLowerCase();
   const formattedSubTab = scope.toLowerCase();
 
-  let url = libURL; // cleanURL(libURL);
+  let url = libURL;
   url += 'tree/';
 
   if (formattedTab === 'digital twins') {
@@ -24,10 +23,35 @@ export function constructURL(assetType: string, scope: string, libURL: string) {
   return url;
 }
 
-/*
- * Ive only added the subtabs for the private and common and the Iframe with the correct url
- * TabRender component will show the text information from the main tab and Iframe will make sure the url is the correct
- */
+function renderScopeTabList(
+  scope: TabData[][] | undefined,
+  subIndex: number
+): JSX.Element {
+  return (
+    <TabList>
+      {scope &&
+        scope[subIndex] &&
+        scope[subIndex].map((tab, index) => <Tab key={index}>{tab.label}</Tab>)}
+    </TabList>
+  );
+}
+
+function renderScopeTabPanels(
+  scope: TabData[][] | undefined,
+  subIndex: number
+): JSX.Element {
+  return (
+    <>
+      {scope &&
+        scope[subIndex] &&
+        scope[subIndex].map((tab, index) => (
+          <TabPanel key={index}>
+            <TabRender index={index}>{tab}</TabRender>
+          </TabPanel>
+        ))}
+    </>
+  );
+}
 
 export function TabComponent(props: {
   assetType: TabData[];
@@ -44,20 +68,8 @@ export function TabComponent(props: {
         <TabPanel key={subIndex}>
           <TabRender index={subIndex}>{subtab}</TabRender>
           <Tabs>
-            <TabList>
-              {props.scope &&
-                props.scope[subIndex] &&
-                props.scope[subIndex].map((tab, index) => (
-                  <Tab key={index}>{tab.label}</Tab>
-                ))}
-            </TabList>
-            {props.scope &&
-              props.scope[subIndex] &&
-              props.scope[subIndex].map((tab, index) => (
-                <TabPanel key={index}>
-                  <TabRender index={index}>{tab}</TabRender>
-                </TabPanel>
-              ))}
+            {renderScopeTabList(props.scope, subIndex)}
+            {renderScopeTabPanels(props.scope, subIndex)}
           </Tabs>
         </TabPanel>
       ))}
