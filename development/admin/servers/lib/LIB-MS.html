@@ -626,42 +626,23 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup-microservice" class="md-nav__link">
-    Setup Microservice
+  <a href="#install" class="md-nav__link">
+    Install
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-setup" class="md-nav__link">
-    Configuration setup
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#start-microservice" class="md-nav__link">
-    Start Microservice
-  </a>
-  
-    <nav class="md-nav" aria-label="Start Microservice">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#config-flag" class="md-nav__link">
-    Config flag
+  <a href="#configure" class="md-nav__link">
+    Configure
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#use" class="md-nav__link">
+    Use
+  </a>
   
 </li>
       
@@ -980,6 +961,20 @@
     <li class="md-nav__item">
       <a href="../../../user/examples/water_tank_swap/index.html" class="md-nav__link">
         Water Tank Model Swap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/examples/drobotti-rmqfmu/index.html" class="md-nav__link">
+        Desktop Robotti and RabbitMQ
       </a>
     </li>
   
@@ -1315,42 +1310,23 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup-microservice" class="md-nav__link">
-    Setup Microservice
+  <a href="#install" class="md-nav__link">
+    Install
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-setup" class="md-nav__link">
-    Configuration setup
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#start-microservice" class="md-nav__link">
-    Start Microservice
-  </a>
-  
-    <nav class="md-nav" aria-label="Start Microservice">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#config-flag" class="md-nav__link">
-    Config flag
+  <a href="#configure" class="md-nav__link">
+    Configure
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#use" class="md-nav__link">
+    Use
+  </a>
   
 </li>
       
@@ -1410,33 +1386,39 @@ You can visit the gitlab documentation on <a href="https://docs.gitlab.com/ee/us
 for help on the management of gitlab groups.</p>
 <p>You can clone the git repositories from the <code>dtaas</code> group
 to get a sample file system structure for the lib microservice.</p>
-<h2 id="setup-microservice">Setup Microservice</h2>
-<p>To set up the lib microservice, follow these steps:</p>
-<p>Download the <strong>lib-microservice.zip</strong> from the
-<a href="https://github.com/INTO-CPS-Association/DTaaS/releases">releases page</a>.</p>
-<h2 id="configuration-setup">Configuration setup</h2>
-<p>The microservices uses <code>.env</code> environment files to receive configuration.</p>
-<p>To set up the environment variables for the lib microservice,
-create a new file named <em>.env</em> in the <code>lib-ms</code> directory.
-Then, add the following variables and their respective values.
-Below you can see and how, with included examples:</p>
-<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span>
-<span class="normal"><a href="#__codelineno-0-6">6</a></span>
-<span class="normal"><a href="#__codelineno-0-7">7</a></span>
-<span class="normal"><a href="#__codelineno-0-8">8</a></span>
-<span class="normal"><a href="#__codelineno-0-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="na">PORT</span><span class="o">=</span><span class="s">&#39;4001&#39;</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="na">MODE</span><span class="o">=</span><span class="s">&#39;local&#39; or &#39;gitlab&#39;</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="na">LOCAL_PATH</span><span class="o">=</span><span class="s">&#39;/Users/&lt;Username&gt;/DTaaS/files&#39;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="na">GITLAB_GROUP</span><span class="o">=</span><span class="s">&#39;dtaas&#39;</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="na">GITLAB_URL</span><span class="o">=</span><span class="s">&#39;https://gitlab.com/api/graphql&#39;</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="na">TOKEN</span><span class="o">=</span><span class="s">&#39;123-sample-token&#39;</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="na">LOG_LEVEL</span><span class="o">=</span><span class="s">&#39;debug&#39;</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="na">APOLLO_PATH</span><span class="o">=</span><span class="s">&#39;/lib&#39; or &#39;&#39;</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="na">GRAPHQL_PLAYGROUND</span><span class="o">=</span><span class="s">&#39;false&#39; or &#39;true&#39;</span>
+<h2 id="install"><img alt="⬇" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/2b07.svg" title=":arrow_down:" /> Install</h2>
+<p>The package is available in Github
+<a href="https://github.com/orgs/INTO-CPS-Association/packages">packages registry</a>.</p>
+<p>Set the registry and install the package with the following commands</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>sudo<span class="w"> </span>npm<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>@into-cps-association:registry<span class="w"> </span>https://npm.pkg.github.com
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>sudo<span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>@into-cps-association/libms
+</span></code></pre></div></td></tr></table></div>
+<p>The <em>npm install</em> command asks for username and password. The username is
+your Github username and the password is your Github
+<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">personal access token</a>.
+In order for the npm to download the package, your personal access token
+needs to have <em>read:packages</em> scope.</p>
+<h2 id="configure"><img alt="⚙" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/2699.svg" title=":gear:" /> Configure</h2>
+<p>The microservices requires config specified in INI format.
+The template configuration file is:</p>
+<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span>
+<span class="normal"><a href="#__codelineno-1-5">5</a></span>
+<span class="normal"><a href="#__codelineno-1-6">6</a></span>
+<span class="normal"><a href="#__codelineno-1-7">7</a></span>
+<span class="normal"><a href="#__codelineno-1-8">8</a></span>
+<span class="normal"><a href="#__codelineno-1-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="na">PORT</span><span class="o">=</span><span class="s">&#39;4001&#39;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="na">MODE</span><span class="o">=</span><span class="s">&#39;local&#39; or &#39;gitlab&#39;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="na">LOCAL_PATH</span><span class="o">=</span><span class="s">&#39;/Users/&lt;Username&gt;/DTaaS/files&#39;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="na">GITLAB_GROUP</span><span class="o">=</span><span class="s">&#39;dtaas&#39;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="na">GITLAB_URL</span><span class="o">=</span><span class="s">&#39;https://gitlab.com/api/graphql&#39;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="na">TOKEN</span><span class="o">=</span><span class="s">&#39;123-sample-token&#39;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="na">LOG_LEVEL</span><span class="o">=</span><span class="s">&#39;debug&#39;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="na">APOLLO_PATH</span><span class="o">=</span><span class="s">&#39;/lib&#39; or &#39;&#39;</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="na">GRAPHQL_PLAYGROUND</span><span class="o">=</span><span class="s">&#39;false&#39; or &#39;true&#39;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The <code>LOCAL_PATH</code> variable is the absolute filepath to the
 location of the local directory which will be served to users
@@ -1455,25 +1437,30 @@ the value of <code>TOKEN</code> with your token for the gitlab group, can be fou
 <li>When <em>MODE=gitlab</em>, <em>GITLAB_URL, TOKEN</em>,
    and <em>GITLAB_GROUP</em> are used; <em>LOCAL_PATH</em> is unused.</li>
 </ol>
-<h3 id="start-microservice">Start Microservice</h3>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>yarn<span class="w"> </span>install<span class="w">    </span><span class="c1"># Install dependencies for the microservice</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>yarn<span class="w"> </span>build<span class="w">      </span><span class="c1"># build the application</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>yarn<span class="w"> </span>start<span class="w">      </span><span class="c1"># start the application</span>
+<h2 id="use"><img alt="🚀" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f680.svg" title=":rocket:" /> Use</h2>
+<p>Display help.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>libms<span class="w"> </span>-h
 </span></code></pre></div></td></tr></table></div>
-<h4 id="config-flag">Config flag</h4>
+<p>The config is saved <code>.env</code> file by convention. The <strong>libms</strong> looks for
+<code>.env</code> file in the working directory from which it is run.
+If you want to run <strong>libms</strong> without explicitly specifying the configuration
+file, run</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>libms
+</span></code></pre></div></td></tr></table></div>
+<p>To run <strong>libms</strong> with a custom config file,</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>libms<span class="w"> </span>-c<span class="w"> </span>FILE-PATH
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a>libms<span class="w"> </span>--config<span class="w"> </span>FILE-PATH
+</span></code></pre></div></td></tr></table></div>
 <p>If the environment file is named something other than <code>.env</code>,
-the filename must be specifed with the command <code>-c, --config &lt;path&gt;</code>,
-when starting the application. For instance,</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>yarn<span class="w"> </span>start<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;.env.development&quot;</span>
+for example as <code>.env.development</code>, you can run</p>
+<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>libms<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;.env.development&quot;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>You can press <code>Ctl+C</code> to halt the application.
 If you wish to run the microservice in the background, use</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>nohup<span class="w"> </span>yarn<span class="w"> </span>start<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">disown</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>nohup<span class="w"> </span>libms<span class="w"> </span><span class="o">[</span>-c<span class="w"> </span>FILE-PATH<span class="o">]</span><span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="nb">disown</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The lib microservice is now running and ready to serve files, functions, and models.</p>
-<p>Users can access the library microservice at URL: <code>http://localhost:&lt;PORT&gt;/lib</code>.</p>
 <h2 id="service-endpoint">Service Endpoint</h2>
 <p>The URL endpoint for this microservice is located at: <code>localhost:PORT/lib</code></p>
 <p>The service API documentation is available on
