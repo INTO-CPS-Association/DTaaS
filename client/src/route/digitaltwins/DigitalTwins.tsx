@@ -9,7 +9,6 @@ import tabs from './DigitalTwinTabData';
 
 function DTContent() {
   const DTurl = useURLforDT();
-
   const tabData1: TabData[] = tabs.map((tab, i) => ({
     label: tab.label,
     body: (
