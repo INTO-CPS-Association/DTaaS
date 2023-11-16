@@ -2,41 +2,48 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TabComponent, constructURL } from 'components/tab/TabComponent';
-import { TabData } from 'components/tab/subcomponents/TabRender';
-import { assetType, scope } from 'route/library/LibraryTabData';
-import { useURLforLIB } from 'util/envUtil';
-import { Typography } from '@mui/material';
-import Iframe from 'react-iframe';
+// import { TabData } from 'components/tab/subcomponents/TabRender';
+import { assetType } from 'route/library/LibraryTabData';
+// import { useURLforLIB } from 'util/envUtil';
+// import { Typography } from '@mui/material';
+// import Iframe from 'react-iframe';
+
+import { tabsData, combinedData} from "route/library/Library";
 
 describe('TabComponent', () => {
-  const LIBurl = useURLforLIB();
-  const assetTypeTabs: TabData[] = assetType.map((tab) => ({
-    label: tab.label,
-    body: (
-      <>
-        <Typography variant="body1">{tab.body}</Typography>
-      </>
-    ),
-  }));
+  // const LIBurl = useURLforLIB();
 
-  const scopeTabs: TabData[][] = assetType.map((tab) =>
-    scope.map((subtab) => ({
-      label: `${subtab.label}`,
-      body: (
-        <>
-          <Typography variant="body1">{subtab.body}</Typography>
-          <Iframe
-            title={`${tab.label}`}
-            url={constructURL(tab.label, subtab.label, LIBurl)}
-          />
-        </>
-      ),
-    }))
-  );
+
+  // const assetTypeTabs: TabData[] = assetType.map((tab) => ({
+  //   label: tab.label,
+  //   body: (
+  //     <>
+  //       <Typography variant="body1">{tab.body}</Typography>
+  //     </>
+  //   ),
+  // }));
+
+  // const scopeTabs: TabData[][] = assetType.map((tab) =>
+  //   scope.map((subtab) => ({
+  //     label: `${subtab.label}`,
+  //     body: (
+  //       <>
+  //         <Typography variant="body1">{subtab.body}</Typography>
+  //         <Iframe
+  //           title={`${tab.label}`}
+  //           url={constructURL(tab.label, subtab.label, LIBurl)}
+  //         />
+  //       </>
+  //     ),
+  //   }))
+  // );
+
+
+
 
   test('renders an empty tab', () => {
     const { getByText } = render(
-      <TabComponent assetType={assetTypeTabs} scope={scopeTabs} />
+      <TabComponent assetType={tabsData} scope={combinedData} />
     );
     const emptyTab = getByText('Functions');
     expect(emptyTab).toBeInTheDocument();
@@ -44,7 +51,7 @@ describe('TabComponent', () => {
   });
 
   test('renders tabs with labels and defaults to the first tab open', async () => {
-    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+    render(<TabComponent assetType={tabsData} scope={combinedData} />);
 
     // Check if tab labels are rendered
     const functionsAppear = screen.getAllByText('Functions');
@@ -75,7 +82,7 @@ describe('TabComponent', () => {
   });
 
   test('changes the active tab on click', async () => {
-    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+    render(<TabComponent assetType={tabsData} scope={combinedData} />);
     const clickedTab = screen.getByRole('tab', { name: 'Data' });
 
     await userEvent.click(clickedTab);
@@ -89,10 +96,10 @@ describe('TabComponent', () => {
     }
 
     expect(
-      screen.queryByText(assetTypeTabs[0].body.props.children)
+      screen.queryByText(tabsData[0].body.props.children)
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(assetTypeTabs[1].body.props.children)
+      screen.queryByText(tabsData[1].body.props.children)
     ).not.toBeInTheDocument();
   });
 

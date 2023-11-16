@@ -15,35 +15,35 @@ import { assetType, scope } from './LibraryTabData';
  *
  * Also I've changed the import of LibraryTabData to match the data tipes names
  */
+const LIBurl = useURLforLIB();
 
-function LibraryContent() {
-  const LIBurl = useURLforLIB();
-  const auth = useAuth();
-  getAndSetUsername(auth);
+export const tabsData: TabData[] = assetType.map((tab) => ({
+  label: tab.label,
+  body: (
+    <>
+      <Typography variant="body1">{tab.body}</Typography>
+    </>
+  ),
+}));
 
-  const tabsData: TabData[] = assetType.map((tab) => ({
-    label: tab.label,
+export const combinedData: TabData[][] = assetType.map((tab) =>
+  scope.map((subtab) => ({
+    label: `${subtab.label}`,
     body: (
       <>
-        <Typography variant="body1">{tab.body}</Typography>
+        <Typography variant="body1">{subtab.body}</Typography>
+        <Iframe
+          title={`${tab.label}`}
+          url={constructURL(tab.label, subtab.label, LIBurl)}
+        />
       </>
     ),
-  }));
+  }))
+);
 
-  const combinedData: TabData[][] = assetType.map((tab) =>
-    scope.map((subtab) => ({
-      label: `${subtab.label}`,
-      body: (
-        <>
-          <Typography variant="body1">{subtab.body}</Typography>
-          <Iframe
-            title={`${tab.label}`}
-            url={constructURL(tab.label, subtab.label, LIBurl)}
-          />
-        </>
-      ),
-    }))
-  );
+function LibraryContent() {
+  const auth = useAuth();
+  getAndSetUsername(auth);
 
   return (
     <Layout>
