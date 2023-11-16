@@ -9,17 +9,16 @@ import tabs from './DigitalTwinTabData';
 
 function DTContent() {
   const DTurl = useURLforDT();
-  const tabData1: TabData[] = tabs.map((tab, i) => ({
+
+  const tabData1: TabData[] = tabs.map((tab) => ({
     label: tab.label,
     body: (
       <>
         <Typography variant="body1">{tab.body}</Typography>
-        {i === 0 && (
-          <>
-            {' '}
-            <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />{' '}
-          </>
-        )}
+        <>
+          {' '}
+          <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />{' '}
+        </>
       </>
     ),
   }));
