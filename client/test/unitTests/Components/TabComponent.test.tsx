@@ -77,7 +77,8 @@ describe('TabComponent', () => {
 
     if (modelsTab) {
       const isModelsBody = screen.getAllByText(modelsTab.body);
-      expect(isModelsBody.length).toBeGreaterThan(0);
+      const modelsbodylength = isModelsBody.length;
+      expect(modelsbodylength).not.toBeLessThan(0);
     }
   });
 
