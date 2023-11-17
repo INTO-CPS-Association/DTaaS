@@ -1,14 +1,14 @@
 # Add a new user
 
-This page will guide you on, how to add more users to the DTaas. Please do the following: 
+This page will guide you on, how to add more users to the DTaas. Please do the following:
 
 !!! important
-    Make sure to replace **<username\>** and **<port\>** 
-    Select a port that is not already being used by the system.
+Make sure to replace **<username\>** and **<port\>**
+Select a port that is not already being used by the system.
 
 ## 1. Setup a new workspace
 
-The above code creates a new workspace for the user based on "user2".
+The above code creates a new workspace for the new user based on "user2".
 
 ```bash
 cd DTaaS/files
@@ -26,11 +26,13 @@ docker run -d \
   mltooling/ml-workspace:0.13.2
 
 ```
+
 ## 2. Add username and password
 
 The following code adds basic authentication for the new user.
+
 ```bash
-cd servers/config/gateway
+cd DTaaS/servers/config/gateway
 htpasswd auth <username>
 ```
 
@@ -39,13 +41,15 @@ htpasswd auth <username>
 Now we just need to add a new route to the servers ingress.
 
 Open the following file with your preffered editor (e.g. VIM/nano).
+
 ```bash
-vi dynamic/fileConfig.yml
+vi DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 ```
+
 Now add the new route and service for the user.
 
 !!! important
-    foo.com should be replaced with your own domain.
+foo.com should be replaced with your own domain.
 
 ```yml
 http:
