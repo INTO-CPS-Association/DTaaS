@@ -40,7 +40,7 @@ The distance FMU is responsible for calculating the distance between
 _(0,0)_ and _(x,y)_. The RMQ FMU and distance FMU exchange values
 during co-simulation.
 
-## Configuration of assets
+## Digital Twin Configuration
 
 This example uses two models, one tool, one data, and two scripts to create
 mock physical twin. The specific assets used are:
@@ -57,9 +57,11 @@ mock physical twin. The specific assets used are:
 This DT has many configuration files.
 The `coe.json` and `multimodel.json`
 are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.
 
+The RabbitMQ access credentials need to be provided in `multimodel.json`.
 The `rabbitMQ-credentials.json` provides RabbitMQ access credentials
-for mock PT python scripts.
+for mock PT python scripts. Please add your credentials in both these files.
 
 ## Lifecycle Phases
 
@@ -74,7 +76,7 @@ for mock PT python scripts.
 To run the example, change your present directory.
 
 ```bash
-cd workspace/examples/digital_twins/drobotti_rmqfmu
+cd /workspace/examples/digital_twins/drobotti_rmqfmu
 ```
 
 If required, change the execute permission of lifecycle scripts
@@ -98,8 +100,10 @@ lifecycle/create
 
 ### Execute
 
-Run the python scripts to start mock physical twin. Also run the co-simulation for
-the digital twin.
+Run the python scripts to start mock physical twin.
+Also run the the Digital Twin. Since this is a co-simulation based
+digital twin, the Maestro co-simulation tool executes co-simulation
+using the two FMU models.
 
 ```bash
 lifecycle/execute
@@ -108,7 +112,7 @@ lifecycle/execute
 #### Examine the results
 
 The results can be found in the
-_workspace/examples/digital\_twins/drobotti\_rmqfmu directory_.
+_/workspace/examples/digital\_twins/drobotti\_rmqfmu directory_.
 
 ### Terminate phase
 
@@ -119,6 +123,10 @@ lifecycle/terminate
 ```
 
 ## References
+
+The [RabbitMQ FMU](https://github.com/INTO-CPS-Association/fmu-rabbitmq)
+github repository contains complete documentation and source code of
+the rmq-vhost.fmu.
 
 More information about the case study is available in:
 
