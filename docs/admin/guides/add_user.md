@@ -2,9 +2,10 @@
 
 This page will guide you on, how to add more users to the DTaas. Please do the following:
 
+<!-- prettier-ignore -->
 !!! important
-Make sure to replace **<username\>** and **<port\>**
-Select a port that is not already being used by the system.
+  Make sure to replace **<username\>** and **<port\>**
+  Select a port that is not already being used by the system.
 
 ## 1. Setup a new workspace
 
@@ -48,8 +49,9 @@ vi DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 
 Now add the new route and service for the user.
 
+<!-- prettier-ignore -->
 !!! important
-foo.com should be replaced with your own domain.
+  foo.com should be replaced with your own domain.
 
 ```yml
 http:
