@@ -1,12 +1,12 @@
 # Overview
 
-## What is the goal
+## What is the goal?
 
 The goal is to set up the DTaaS infrastructure in order to enable
 your users to use the DTaaS.
 As an admin you will administrate the users and the servers of the system.
 
-## What are the requirements
+## What are the requirements?
 
 ### OAuth Provider
 
@@ -30,7 +30,7 @@ with <http:>_http://foo.com_</http:> in
 [OAuth registration](./client/auth.md). Other installation configuration
 remains the same.
 
-## What to install
+## What to install?
 
 The DTaaS can be installed in different ways. Each version is for different purposes:
 
@@ -41,4 +41,4 @@ The DTaaS can be installed in different ways. Each version is for different purp
 - Seperater Packages: [client website](client/CLIENT.md) and
   [lib microservice](servers/lib/LIB-MS.md)
 
-Following the installation that fit your usecase.
+Follow the installation that fits your usecase.
