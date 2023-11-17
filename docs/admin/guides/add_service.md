@@ -1,15 +1,12 @@
 # Add other services
 
-Add note about requirements on ram
-
-moved to seperate js file mongodb.js
-
+<!-- prettier-ignore -->
 !!! Pre-requisite
-You should read the documentation about the already available [services](../services.md)
-
-<!-- You should be running the DTaaS with the [vagrant-two-machines](../vagrant/two-machines.md7) configuration.  -->
+    You should read the documentation about the already available [services](../services.md)
 
 This guide will show you how to add more services. In the following example we will be adding **mongodb** as a service, but this could be used for other services as well.
+
+:fontawesome-solid-circle-info: **Adding other services requires more RAM and CPU power. Please make sure the host machine meets the hardware requirements for running all the services.**
 
 ## 1. Add the configuration
 
