@@ -1,10 +1,18 @@
 # Link services to local ports
 
-To link a port from the service machine (server2) to the local port on the user workspace (server1). You can make a ssh link between these two.
+<!-- prettier-ignore -->
+!!! Requirements
+    - User needs to have an account on server2.
+    - SSH server must be running on server2
+
+To link a port from the service machine (server2)
+to the local port on the user workspace.
+You can make a ssh link between these two.
 
 #### 1. Step
 
-Go to the user workspace, on which you want to map from localhost to the services machine
+Go to the user workspace, on which you want to map
+from localhost to the services machine
 
 - e.g. `foo.com/user1`
 

@@ -1,4 +1,3 @@
 # Hosting site without https
-
-The default setup is http. In order to host your site without https,
-please also see the [reverse proxy section on the overview page](../overview.md#reverse-proxy).
+In the default setup, the https connection is provided by the reverse proxy. 
+The DTaaS application runs in http mode. So removing the reverse proxy removes the https mode.

@@ -7,7 +7,11 @@ This page will guide you on, how to add more users to the DTaas. Please do the f
   Make sure to replace **<username\>** and **<port\>**
   Select a port that is not already being used by the system.
 
-## 1. Setup a new workspace
+## 1. Add user
+
+Add the new user on the Gitlab instance.
+
+## 2. Setup a new workspace
 
 The above code creates a new workspace for the new user based on "user2".
 
@@ -28,7 +32,7 @@ docker run -d \
 
 ```
 
-## 2. Add username and password
+## 3. Add username and password
 
 The following code adds basic authentication for the new user.
 
@@ -37,7 +41,7 @@ cd DTaaS/servers/config/gateway
 htpasswd auth <username>
 ```
 
-## 3. Add 'route' for new user
+## 4. Add 'route' for new user
 
 Now we just need to add a new route to the servers ingress.
 
@@ -73,6 +77,6 @@ http:
           - url: 'http://localhost:<port>'
 ```
 
-## 4. Access the new user
+## 5. Access the new user
 
-Now the user should be accessible under `<yourdomain.com>/<username>` with the chosen credentials.
+Log into the DTaaS application as new user
