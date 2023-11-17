@@ -924,8 +924,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1015,6 +1015,20 @@
     <li class="md-nav__item">
       <a href="../water_tank_swap/index.html" class="md-nav__link">
         Water Tank Model Swap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../drobotti-rmqfmu/index.html" class="md-nav__link">
+        Desktop Robotti and RabbitMQ
       </a>
     </li>
   
@@ -1357,8 +1371,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1467,7 +1481,7 @@ increasing in the tank beyond the desired level (<code>Level-2</code>).</p>
 <p><img alt="Water Tank System" src="watertank.png" /></p>
 <h2 id="example-structure">Example Structure</h2>
 <p><img alt="Water Tank Structure" src="dt_structure.png" /></p>
-<h2 id="configuration-of-assets">Configuration of assets</h2>
+<h2 id="digital-twin-configuration">Digital Twin Configuration</h2>
 <p>This example uses two models and one tool.
 The specific assets used are:</p>
 <table>
@@ -1501,7 +1515,8 @@ The specific assets used are:</p>
 </tbody>
 </table>
 <p>The <code>multimodelFI.json</code> and <code>simulation-config.json</code>
-are two DT configuration files used for executing the digital twin.</p>
+are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.</p>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm-40-176h24v-64h-24c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-80c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span> The faults are defined in <strong>wt_fault.xml</strong>.</p>
 <h2 id="lifecycle-phases">Lifecycle Phases</h2>
 <table>
@@ -1528,7 +1543,7 @@ are two DT configuration files used for executing the digital twin.</p>
 </table>
 <h2 id="run-the-example">Run the example</h2>
 <p>To run the example, change your present directory.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>workspace/examples/digital_twins/water_tank_FI
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/examples/digital_twins/water_tank_FI
 </span></code></pre></div></td></tr></table></div>
 <p>If required, change the execute permission of lifecycle scripts
 you need to execute, for example:</p>
@@ -1552,9 +1567,9 @@ at <code>/workspace/examples/data/water_tank_FI/output</code>.</p>
 </span></code></pre></div></td></tr></table></div>
 <h4 id="examine-the-results">Examine the results</h4>
 <p>The results can be found in the
-<em>workspace/examples/data/water_tank_FI/output directory</em>.</p>
+<em>/workspace/examples/data/water_tank_FI/output directory</em>.</p>
 <p>You can also view run logs in the
-<em>workspace/examples/digital_twins/water_tank_FI</em>.</p>
+<em>/workspace/examples/digital_twins/water_tank_FI</em>.</p>
 <h3 id="terminate-phase">Terminate phase</h3>
 <p>Clean up the temporary files and delete output plot</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>lifecycle/terminate
@@ -1569,6 +1584,14 @@ at <code>/workspace/examples/data/water_tank_FI/output</code>.</p>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a>2021 5th International Conference on System Reliability and Safety (ICSRS),
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a>Palermo, Italy, 2021.
 </span></code></pre></div></td></tr></table></div>
+<p>The fault-injection plugin is an extension to the Maestro co-orchestration
+engine that enables injecting inputs and outputs of FMUs in an FMI-based
+co-simulation with tampered values.
+More details on the plugin can be found in
+<a href="https://github.com/INTO-CPS-Association/fault-injection-maestro">fault injection</a>
+git repository. The source code for this example is also in the same github
+repository in a
+<a href="https://github.com/INTO-CPS-Association/fault-injection-maestro/blob/development/fi_example/README.md">example directory</a>.</p>
 
 
 
