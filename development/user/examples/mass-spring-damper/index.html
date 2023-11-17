@@ -910,8 +910,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1364,8 +1364,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1463,7 +1463,7 @@ The second simulator calculates force <script type="math/tex">F_k</script> given
 mass <script type="math/tex">m_1</script>. By coupling these simulators, the evolution of the position of
 the two masses is computed.</p>
 <p><img alt="Mass Spring Damper Structure" src="dt-structure.png" /></p>
-<h2 id="configuration-of-assets">Configuration of assets</h2>
+<h2 id="digital-twin-configuration">Digital Twin Configuration</h2>
 <p>This example uses two models and one tool. The specific assets used are:</p>
 <table>
 <thead>
@@ -1496,7 +1496,8 @@ the two masses is computed.</p>
 </tbody>
 </table>
 <p>The <code>co-sim.json</code> and <code>time.json</code>
-are two DT configuration files used for executing the digital twin.</p>
+are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.</p>
 <h2 id="lifecycle-phases">Lifecycle Phases</h2>
 <table>
 <thead>
@@ -1522,7 +1523,7 @@ are two DT configuration files used for executing the digital twin.</p>
 </table>
 <h2 id="run-the-example">Run the example</h2>
 <p>To run the example, change your present directory.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>workspace/examples/digital_twins/mass-spring-damper
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/examples/digital_twins/mass-spring-damper
 </span></code></pre></div></td></tr></table></div>
 <p>If required, change the execute permission of lifecycle scripts
 you need to execute, for example:</p>
@@ -1534,17 +1535,16 @@ you need to execute, for example:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>lifecycle/create
 </span></code></pre></div></td></tr></table></div>
 <h3 id="execute">Execute</h3>
-<p>Run the co-simulation. Generate the co-simulation output.csv file
-at <code>data/mass-spring-damper/output/output.csv</code>.</p>
-<p>There are also debug and maestro log files stored in
-<code>data/mass-spring-damper/output</code> directory.</p>
+<p>Run the the Digital Twin. Since this is a co-simulation based
+digital twin, the Maestro co-simulation tool executes co-simulation
+using the two FMU models.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>lifecycle/execute
 </span></code></pre></div></td></tr></table></div>
 <h4 id="examine-the-results">Examine the results</h4>
 <p>The results can be found in the
-<em>workspace/examples/data/mass-spring-damper/output directory</em>.</p>
+<em>/workspace/examples/data/mass-spring-damper/output directory</em>.</p>
 <p>You can also view run logs in the
-<em>workspace/examples/digital_twins/mass-spring-damper</em>.</p>
+<em>/workspace/examples/digital_twins/mass-spring-damper</em>.</p>
 <h3 id="terminate-phase">Terminate phase</h3>
 <p>Terminate to clean up the debug files and co-simulation output files.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>lifecycle/terminate
@@ -1556,6 +1556,9 @@ case study are available in:</p>
 <span class="normal"><a href="#__codelineno-5-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>Gomes, Cláudio, et al. &quot;Co-simulation: State of the art.&quot;
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a>arXiv preprint arXiv:1702.00686 (2017).
 </span></code></pre></div></td></tr></table></div>
+<p>The source code for the models used in this DT are available in
+<a href="https://github.com/INTO-CPS-Association/example-mass_spring_damper">mass spring damper</a>
+github repository.</p>
 
 
 

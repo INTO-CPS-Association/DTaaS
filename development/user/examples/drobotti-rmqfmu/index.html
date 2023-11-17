@@ -945,8 +945,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1350,8 +1350,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-of-assets" class="md-nav__link">
-    Configuration of assets
+  <a href="#digital-twin-configuration" class="md-nav__link">
+    Digital Twin Configuration
   </a>
   
 </li>
@@ -1467,7 +1467,7 @@ RabbitMQ broker for communication with the mock mobile robot, i.e.,
 The distance FMU is responsible for calculating the distance between
 <em>(0,0)</em> and <em>(x,y)</em>. The RMQ FMU and distance FMU exchange values
 during co-simulation.</p>
-<h2 id="configuration-of-assets">Configuration of assets</h2>
+<h2 id="digital-twin-configuration">Digital Twin Configuration</h2>
 <p>This example uses two models, one tool, one data, and two scripts to create
 mock physical twin. The specific assets used are:</p>
 <table>
@@ -1520,9 +1520,11 @@ mock physical twin. The specific assets used are:</p>
 </table>
 <p>This DT has many configuration files.
 The <code>coe.json</code> and <code>multimodel.json</code>
-are two DT configuration files used for executing the digital twin.</p>
-<p>The <code>rabbitMQ-credentials.json</code> provides RabbitMQ access credentials
-for mock PT python scripts.</p>
+are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.</p>
+<p>The RabbitMQ access credentials need to be provided in <code>multimodel.json</code>.
+The <code>rabbitMQ-credentials.json</code> provides RabbitMQ access credentials
+for mock PT python scripts. Please add your credentials in both these files.</p>
 <h2 id="lifecycle-phases">Lifecycle Phases</h2>
 <table>
 <thead>
@@ -1548,7 +1550,7 @@ for mock PT python scripts.</p>
 </table>
 <h2 id="run-the-example">Run the example</h2>
 <p>To run the example, change your present directory.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>workspace/examples/digital_twins/drobotti_rmqfmu
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/examples/digital_twins/drobotti_rmqfmu
 </span></code></pre></div></td></tr></table></div>
 <p>If required, change the execute permission of lifecycle scripts
 you need to execute, for example:</p>
@@ -1562,18 +1564,23 @@ the required python pip packages for <em>rmq-publisher.py</em> and
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>lifecycle/create
 </span></code></pre></div></td></tr></table></div>
 <h3 id="execute">Execute</h3>
-<p>Run the python scripts to start mock physical twin. Also run the co-simulation for
-the digital twin.</p>
+<p>Run the python scripts to start mock physical twin.
+Also run the the Digital Twin. Since this is a co-simulation based
+digital twin, the Maestro co-simulation tool executes co-simulation
+using the two FMU models.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>lifecycle/execute
 </span></code></pre></div></td></tr></table></div>
 <h4 id="examine-the-results">Examine the results</h4>
 <p>The results can be found in the
-<em>workspace/examples/digital_twins/drobotti_rmqfmu directory</em>.</p>
+<em>/workspace/examples/digital_twins/drobotti_rmqfmu directory</em>.</p>
 <h3 id="terminate-phase">Terminate phase</h3>
 <p>Terminate to clean up the debug files and co-simulation output files.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>lifecycle/terminate
 </span></code></pre></div></td></tr></table></div>
 <h2 id="references">References</h2>
+<p>The <a href="https://github.com/INTO-CPS-Association/fmu-rabbitmq">RabbitMQ FMU</a>
+github repository contains complete documentation and source code of
+the rmq-vhost.fmu.</p>
 <p>More information about the case study is available in:</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
 <span class="normal"><a href="#__codelineno-5-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>Frasheri, Mirgita, et al. &quot;Addressing time discrepancy between digital
