@@ -60,7 +60,7 @@ bash single-script-install.sh
 
 ## Post install
 
-After the install-script. Please change **foo.com** 
+After the install-script. Please change **foo.com**
 and [Gitlab OAuth](#2-gitlab-oauth-application) details
 to your local settings in the following files.
 
@@ -74,7 +74,8 @@ to your local settings in the following files.
 Now when you visit your domain, you should be able to login through your
 OAuth Provider and be able to access the DTaas web UI.
 
-If you can following all the screenshots from [user website](../user/website/index.md). 
+If you can following all the screenshots from
+[user website](../user/website/index.md).
 Everything is correctly setup.
 
 ## References
