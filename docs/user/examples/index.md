@@ -25,5 +25,6 @@ to use the examples in the following order.
 1. [Mass Spring Damper](./mass-spring-damper/README.md)
 1. [Water Tank Fault Injection](./water_tank_FI/README.md)
 1. [Water Tank Model Swap](./water_tank_swap/README.md)
+1. [Desktop Robotti and RabbitMQ](./drobotti-rmqfmu/README.md)
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
