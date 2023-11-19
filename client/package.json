@@ -36,7 +36,7 @@
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.12.1",
+    "@mui/material": "^5.14.18",
     "@reduxjs/toolkit": "^1.9.5",
     "dotenv": "^16.1.4",
     "oidc-client-ts": "^2.2.2",
