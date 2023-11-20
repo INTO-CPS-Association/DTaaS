@@ -2,6 +2,7 @@
 
 <!-- prettier-ignore -->
 !!! Requirements
+
     - User needs to have an account on server2.
     - SSH server must be running on server2
 
@@ -9,19 +10,19 @@ To link a port from the service machine (server2)
 to the local port on the user workspace.
 You can make a ssh link between these two.
 
-#### 1. Step
+## 1. Step
 
 Go to the user workspace, on which you want to map
 from localhost to the services machine
 
 - e.g. `foo.com/user1`
 
-#### 2. Step
+## 2. Step
 
 Open a terminal in your user workspace.
 ![Open terminal in user workspace](open_terminal_in_workspace.gif)
 
-#### 3. Step
+## 3. Step
 
 Run the following command to map a port:
 
