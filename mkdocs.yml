@@ -36,6 +36,8 @@ nav:
         - Link services to local ports: admin/guides/link_service.md
         - Make common asset area readonly: admin/guides/common_workspace_readonly.md
         - Host site without https: admin/guides/hosting_site_without_https.md
+        - Host site without https: admin/guides/hosting_site_without_https.md
+        - Update basepath/route for the application: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
