@@ -2,7 +2,7 @@
 
 <!-- prettier-ignore -->
 !!! Pre-requisite
-    You should read the documentation about 
+    You should read the documentation about
     the already available [services](../services.md)
 
 This guide will show you how to add more services.
@@ -101,7 +101,8 @@ log(chalk.green("MongoDB server docker container started successfully"));
 
 ## 3. Run the script
 
-Go to the directory `/deploy/services/` and run services script with the following commands:
+Go to the directory `/deploy/services/`
+and run services script with the following commands:
 
 ```bash
 yarn install
