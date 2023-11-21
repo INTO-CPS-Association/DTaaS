@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-printf "Hello"
-
 TOP_DIR="$(pwd)"
 export TOP_DIR
 
