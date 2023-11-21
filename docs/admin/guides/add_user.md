@@ -28,7 +28,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="<username>" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace-minimal
+  mltooling/ml-workspace-minimal:0.13.2
 
 ```
 

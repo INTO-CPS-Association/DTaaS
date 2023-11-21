@@ -73,7 +73,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="bar/user1" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace-minimal || true
+  mltooling/ml-workspace-minimal:0.13.2 || true
 ```
 
 ## 5. Proceed with install using deploy/install.sh

@@ -1,7 +1,7 @@
 #!/bin/bash
 # get the required docker images
 docker pull traefik:v2.10
-docker pull mltooling/ml-workspace-minimal
+docker pull mltooling/ml-workspace-minimal:0.13.2
 docker pull grafana/grafana:10.1.4
 docker pull influxdb:2.7
 docker pull telegraf:1.28.2
