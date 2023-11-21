@@ -72,7 +72,7 @@ cat /vagrant/vagrant.pub >> /root/.ssh/authorized_keys
 
 # get the required docker images
 docker pull traefik:v2.10
-docker pull mltooling/ml-workspace:0.13.2
+docker pull mltooling/ml-workspace-minimal
 docker pull grafana/grafana:10.1.4
 docker pull influxdb:2.7
 docker pull rabbitmq:3-management

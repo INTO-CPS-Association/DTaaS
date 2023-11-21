@@ -31,7 +31,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="user2" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace:0.13.2 || true
+  mltooling/ml-workspace-minimal || true
 ```
 
 This ensures that the common area is read-only for user2,

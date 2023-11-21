@@ -19,7 +19,7 @@ bash script/base.sh || exit
 printf "\n \n Download the required docker images...\n "
 printf ".........\n "
 docker pull traefik:v2.10
-docker pull mltooling/ml-workspace:0.13.2
+docker pull mltooling/ml-workspace-minimal
 printf "\n\n docker images successfully downloaded...\n \n \n "
 
 
@@ -59,7 +59,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="user1" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace:0.13.2 || true
+  mltooling/ml-workspace-minimal || true
 
 docker run -d \
  -p 8091:8080 \
@@ -70,7 +70,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="user2" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace:0.13.2 || true
+  mltooling/ml-workspace-minimal || true
 
 #-------------
 printf "\n \n Start the traefik gateway server\n "
