@@ -36,15 +36,16 @@ try {
 
 log(chalk.green("Start new InfluxDB server docker container"));
 await $$`docker run -d -p ${influxdbConfig.port}:8086 \
---name influxdb \
--v ${influxdbConfig.datapath}/data:/var/lib/influxdb2 \
--v ${influxdbConfig.datapath}/config:/etc/influxdb2 \
--e DOCKER_INFLUXDB_INIT_MODE=setup \
--e DOCKER_INFLUXDB_INIT_USERNAME=${influxdbConfig.username} \
--e DOCKER_INFLUXDB_INIT_PASSWORD=${influxdbConfig.password} \
--e DOCKER_INFLUXDB_INIT_ORG=dtaas \
--e DOCKER_INFLUXDB_INIT_BUCKET=dtaas \
-influxdb:2.7`;
+  --name influxdb \
+  --restart always \
+  -v ${influxdbConfig.datapath}/data:/var/lib/influxdb2 \
+  -v ${influxdbConfig.datapath}/config:/etc/influxdb2 \
+  -e DOCKER_INFLUXDB_INIT_MODE=setup \
+  -e DOCKER_INFLUXDB_INIT_USERNAME=${influxdbConfig.username} \
+  -e DOCKER_INFLUXDB_INIT_PASSWORD=${influxdbConfig.password} \
+  -e DOCKER_INFLUXDB_INIT_ORG=dtaas \
+  -e DOCKER_INFLUXDB_INIT_BUCKET=dtaas \
+  influxdb:2.7`;
 log(chalk.green("InfluxDB server docker container started successfully"));
 
 
@@ -62,6 +63,7 @@ log(chalk.green("Start new Grafana server docker container"));
 await $$`docker run -d \
   -p ${grafanaConfig.port}:3000 \
   --name=grafana \
+  --restart always \
   -e "GF_SERVER_SERVE_FROM_SUB_PATH=true" \
   -e "GF_SERVER_DOMAIN=${grafanaConfig.hostname}" \
   -e "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s" \
@@ -106,7 +108,9 @@ try {
 log(chalk.green("Start RabbitMQ server docker container"));
 await $$`docker run -d --name rabbitmq-server \
   -p ${rabbitmqConfig.ports.main}:5672 \
-  -p ${rabbitmqConfig.ports.management}:15672 rabbitmq:3-management`;
+  -p ${rabbitmqConfig.ports.management}:15672 \
+  --restart always \
+  rabbitmq:3-management`;
 log(chalk.green("RabbitMQ server docker container started successfully\n"));
 
 log(chalk.blue("Wait 2 minutes for RabbitMQ server to bootstrap"));
@@ -136,3 +140,27 @@ await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo systemctl restart mosquitto`;
 await $$`sudo systemctl status mosquitto`;
+
+//---------------
+log(chalk.blue("Start MongoDB server"));
+const mongodbConfig = config.services.mongodb;
+
+try {
+  log(
+    chalk.green(
+      "Attempt to delete any existing MongoDB server docker container"
+    )
+  );
+  await $$`docker stop mongodb`;
+  await $$`docker rm mongodb`;
+} catch (e) {}
+
+log(chalk.green("Start new Mongodb server docker container"));
+await $$`docker run -d -p ${mongodbConfig.port}:27017 \
+  --name mongodb \
+  -v ${mongodbConfig.datapath}:/data/db \
+  -e MONGO_INITDB_ROOT_USERNAME=${mongodbConfig.username} \
+  -e MONGO_INITDB_ROOT_PASSWORD=${mongodbConfig.password} \
+  --restart always \
+  mongo:7.0.3`;
+log(chalk.green("MongoDB server docker container started successfully"));

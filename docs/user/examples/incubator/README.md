@@ -24,7 +24,9 @@ with access to the virtual host "/"
 ```
 
 ```bash
-docker run -d --name rabbitmq-server -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+docker run -d --name rabbitmq-server \
+  --restart always \
+  -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 docker exec rabbitmq-server rabbitmqctl add_user incubator incubator
 docker exec rabbitmq-server rabbitmqctl set_permissions -p "/" incubator ".*" ".*" ".*"
 ```

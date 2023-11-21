@@ -38,12 +38,13 @@ This vagrant box installed for users will have the following items:
 * yarn v1.22
 * npm v10.2
 * containers
-  * ml-workspace v0.13
+  * ml-workspace-minimal v0.13
   * traefik v2.10
   * gitlab-ce v16.4
   * influxdb v2.7
   * grafana v10.1
   * rabbitmq v3-management
+  * mongodb v7.0
   * eclipse-mosquitto (mqtt) v2
 
 This vagrant box installed for developers will have
