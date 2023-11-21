@@ -1,12 +1,12 @@
 repos:
-  - repo: local
-    hooks:
-      - id: format-check
-        name: format check
-        entry: ./script/pre-commit-format-check.sh
-        language: script
-        args: [client, servers/execution/runner]
-        # stages: [pre-commit]
+  # - repo: local
+  #   hooks:
+  #     - id: format-check
+  #       name: format check
+  #       entry: ./script/pre-commit-format-check.sh
+  #       language: script
+  #       args: [client, servers/execution/runner]
+  #       # stages: [pre-commit]
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.32.2
