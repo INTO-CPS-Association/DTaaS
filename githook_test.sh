@@ -33,22 +33,22 @@ TOP_DIR="$(pwd)"
 # git push
 
 # 3. test prettier hook
-printf "Creating dummy files...\n\n"
-echo "const dummy   = 'Hello, client';" > client/dummy.ts
-
-printf "Testing...\n\n"
-git add .
-git commit -m "test git hooks"
-git reset
-
-# 4. test eslint hook fail
 # printf "Creating dummy files...\n\n"
-# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
+# echo "const dummy   = 'Hello, client';" > client/dummy.ts
 
-# printf "Testing eslint hook fail...\n\n"
+# printf "Testing...\n\n"
 # git add .
 # git commit -m "test git hooks"
 # git reset
+
+# 4. test eslint hook fail
+printf "Creating dummy files...\n\n"
+echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
+
+printf "Testing eslint hook fail...\n\n"
+git add .
+git commit -m "test git hooks"
+git reset
 
 # 5. test markdownlint hook
 # # dummy
