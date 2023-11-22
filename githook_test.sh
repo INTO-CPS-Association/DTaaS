@@ -1,4 +1,5 @@
-# 1. test all hooks pass
+###### 1. Test all hooks pass
+
 # printf "Testing all hooks pass...\n\n"
 
 # printf "Creating dummy files...\n\n"
@@ -13,7 +14,8 @@
 # printf "\nPre-push stage...\n\n"
 # git push -q
 
-# 2. test prettier hook fail
+###### 2. Test prettier hook fail
+
 # printf "Testing prettier hook fail...\n\n"
 
 # printf "Creating dummy files...\n\n"
@@ -25,11 +27,25 @@
 # git commit -m "test git hooks" -q
 # git reset -q
 
-# 3. test eslint hook fail
-printf "Testing eslint hook fail...\n\n"
+###### 3. Test eslint hook fail
+
+# print "Testing eslint hook fail...\n\n"
+
+# printf "Creating dummy files...\n\n"
+# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
+
+# printf "Staging changes...\n\n"
+# git add .
+# printf "Pre-commit stage...\n\n"
+# git commit -m "test git hooks" -q
+# git reset -q
+
+###### 4. Test markdownlint hook fail
+
+printf "Testing markdownlint hoot...\n\n"
 
 printf "Creating dummy files...\n\n"
-echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
+echo " Hello, lib" > servers/lib/dummy.md
 
 printf "Staging changes...\n\n"
 git add .
@@ -37,16 +53,8 @@ printf "Pre-commit stage...\n\n"
 git commit -m "test git hooks" -q
 git reset -q
 
-# 4. test markdownlint hook fail
-# printf "Creating dummy files...\n\n"
-# echo " Hello, lib" > servers/lib/dummy.md
+###### Clean up after each test
 
-# printf "Testing markdownlint hoot...\n\n"
-# git add .
-# git commit -m "test markdownlint hook"
-# git reset
-
-# clean up after each test
 rm -f client/dummy.ts
 rm -f servers/execution/runner/dummy.js
 rm -f servers/lib/dummy.md
