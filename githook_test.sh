@@ -48,6 +48,6 @@ rm -f servers/execution/runner/dummy.js
 rm -f servers/lib/dummy.md
 
 printf "Resetting...\n\n"
-# git add .
-# git commit -m "reset after test" -q
-# git push -q
+git add .
+git commit -m "reset after test" -q
+git push -q
