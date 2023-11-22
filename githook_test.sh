@@ -25,7 +25,7 @@ TOP_DIR="$(pwd)"
 printf "Creating dummy files...\n\n"
 echo "const dummy = 'Hello, client!';" > client/dummy.js
 echo "const dummy = 'Hello, runner!';" > servers/execution/runner/dummy.ts
-echo "#Hello, lib" > servers/lib/dummy.md
+echo "# Hello, lib" > servers/lib/dummy.md
 
 printf "Testing all hooks run...\n\n"
 git add .
@@ -72,7 +72,7 @@ rm -f servers/execution/runner/dummy.js
 rm -f servers/lib/dummy.md
 
 # reset
-printf "Resetting...\n\n"
-git add .
-git commit -m "reset after test"
-git push
+# printf "Resetting...\n\n"
+# git add .
+# git commit -m "reset after test"
+# git push
