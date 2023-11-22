@@ -20,7 +20,7 @@ the two masses is computed.
 
 ![Mass Spring Damper Structure](dt-structure.png)
 
-## Configuration of assets
+## Digital Twin Configuration
 
 This example uses two models and one tool. The specific assets used are:
 
@@ -32,6 +32,7 @@ This example uses two models and one tool. The specific assets used are:
 
 The `co-sim.json` and `time.json`
 are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.
 
 ## Lifecycle Phases
 
@@ -46,7 +47,7 @@ are two DT configuration files used for executing the digital twin.
 To run the example, change your present directory.
 
 ```bash
-cd workspace/examples/digital_twins/mass-spring-damper
+cd /workspace/examples/digital_twins/mass-spring-damper
 ```
 
 If required, change the execute permission of lifecycle scripts
@@ -68,11 +69,9 @@ lifecycle/create
 
 ### Execute
 
-Run the co-simulation. Generate the co-simulation output.csv file
-at `data/mass-spring-damper/output/output.csv`.
-
-There are also debug and maestro log files stored in
-`data/mass-spring-damper/output` directory.
+Run the the Digital Twin. Since this is a co-simulation based
+digital twin, the Maestro co-simulation tool executes co-simulation
+using the two FMU models.
 
 ```bash
 lifecycle/execute
@@ -81,10 +80,10 @@ lifecycle/execute
 #### Examine the results
 
 The results can be found in the
-_workspace/examples/data/mass-spring-damper/output directory_.
+_/workspace/examples/data/mass-spring-damper/output directory_.
 
 You can also view run logs in the
-_workspace/examples/digital_twins/mass-spring-damper_.
+_/workspace/examples/digital_twins/mass-spring-damper_.
 
 ### Terminate phase
 
@@ -103,3 +102,7 @@ case study are available in:
 Gomes, Cláudio, et al. "Co-simulation: State of the art."
 arXiv preprint arXiv:1702.00686 (2017).
 ```
+
+The source code for the models used in this DT are available in
+[mass spring damper](https://github.com/INTO-CPS-Association/example-mass_spring_damper)
+github repository.

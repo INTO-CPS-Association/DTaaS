@@ -11,7 +11,7 @@ In this co-simulation based DT, a watertank case-study is used; co-simulation
 consists of a tank and controller. The goal of which is to keep
 the level of water in the tank between ```Level-1``` and ```Level-2```.
 The faults are injected into output of the water tank
-controller (**Watertankcontroller-c.fmu**)
+controller (__Watertankcontroller-c.fmu__)
 from 12 to 20 time units, such that
 the tank output is closed for a period of time, leading to the water level
 increasing in the tank beyond the desired level (```Level-2```).
@@ -24,7 +24,7 @@ increasing in the tank beyond the desired level (```Level-2```).
 
 ![Water Tank Structure](dt_structure.png)
 
-## Configuration of assets
+## Digital Twin Configuration
 
 This example uses two models and one tool.
 The specific assets used are:
@@ -37,8 +37,9 @@ The specific assets used are:
 
 The `multimodelFI.json` and `simulation-config.json`
 are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.
 
-:fontawesome-solid-circle-info: The faults are defined in **wt_fault.xml**.
+:fontawesome-solid-circle-info: The faults are defined in __wt_fault.xml__.
 
 ## Lifecycle Phases
 
@@ -53,7 +54,7 @@ are two DT configuration files used for executing the digital twin.
 To run the example, change your present directory.
 
 ```bash
-cd workspace/examples/digital_twins/water_tank_FI
+cd /workspace/examples/digital_twins/water_tank_FI
 ```
 
 If required, change the execute permission of lifecycle scripts
@@ -95,10 +96,10 @@ lifecycle/analyze
 #### Examine the results
 
 The results can be found in the
-_workspace/examples/data/water_tank_FI/output directory_.
+_/workspace/examples/data/water_tank_FI/output directory_.
 
 You can also view run logs in the
-_workspace/examples/digital_twins/water_tank_FI_.
+_/workspace/examples/digital_twins/water_tank_FI_.
 
 ### Terminate phase
 
@@ -118,3 +119,12 @@ L. Esterle, "Fault Injecting Co-simulations for Safety,"
 2021 5th International Conference on System Reliability and Safety (ICSRS),
 Palermo, Italy, 2021.
 ```
+
+The fault-injection plugin is an extension to the Maestro co-orchestration
+engine that enables injecting inputs and outputs of FMUs in an FMI-based
+co-simulation with tampered values.
+More details on the plugin can be found in
+[fault injection](https://github.com/INTO-CPS-Association/fault-injection-maestro)
+git repository. The source code for this example is also in the same github
+repository in a
+[example directory](https://github.com/INTO-CPS-Association/fault-injection-maestro/blob/development/fi_example/README.md).

@@ -39,21 +39,28 @@ for help on the management of gitlab groups.
 You can clone the git repositories from the `dtaas` group
 to get a sample file system structure for the lib microservice.
 
-## Setup Microservice
+## :arrow_down: Install
 
-To set up the lib microservice, follow these steps:
+The package is available in Github
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
-Download the **lib-microservice.zip** from the
-[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
+Set the registry and install the package with the following commands
 
-## Configuration setup
+```bash
+sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm install -g @into-cps-association/libms
+```
 
-The microservices uses `.env` environment files to receive configuration.
+The _npm install_ command asks for username and password. The username is
+your Github username and the password is your Github
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+In order for the npm to download the package, your personal access token
+needs to have _read:packages_ scope.
 
-To set up the environment variables for the lib microservice,
-create a new file named _.env_ in the `lib-ms` directory.
-Then, add the following variables and their respective values.
-Below you can see and how, with included examples:
+## :gear: Configure
+
+The microservices requires config specified in INI format.
+The template configuration file is:
 
 ```ini
 PORT='4001'
@@ -88,34 +95,45 @@ Replace the default values the appropriate values for your setup.
 1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
    and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
-### Start Microservice
+## :rocket: Use
+
+Display help.
 
 ```bash
-yarn install    # Install dependencies for the microservice
-yarn build      # build the application
-yarn start      # start the application
+libms -h
 ```
 
-#### Config flag
+The config is saved `.env` file by convention. The __libms__ looks for
+`.env` file in the working directory from which it is run.
+If you want to run __libms__ without explicitly specifying the configuration
+file, run
+
+```bash
+libms
+```
+
+To run __libms__ with a custom config file,
+
+```bash
+libms -c FILE-PATH
+libms --config FILE-PATH
+```
 
 If the environment file is named something other than `.env`,
-the filename must be specifed with the command `-c, --config <path>`,
-when starting the application. For instance,
+for example as `.env.development`, you can run
 
 ```sh
-yarn start -c ".env.development"
+libms -c ".env.development"
 ```
 
 You can press `Ctl+C` to halt the application.
 If you wish to run the microservice in the background, use
 
 ```bash
-nohup yarn start & disown
+nohup libms [-c FILE-PATH] & disown
 ```
 
 The lib microservice is now running and ready to serve files, functions, and models.
-
-Users can access the library microservice at URL: `http://localhost:<PORT>/lib`.
 
 ## Service Endpoint
 

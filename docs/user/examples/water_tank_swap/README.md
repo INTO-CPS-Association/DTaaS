@@ -51,7 +51,7 @@ The following table shows the configuration files and their purpose.
 To run the example, change your present directory.
 
 ```bash
-cd workspace/examples/digital_twins/water_tank_swap
+cd /workspace/examples/digital_twins/water_tank_swap
 ```
 
 If required, change the permission of files you need to execute, for example:
@@ -122,6 +122,9 @@ lifecycle/terminate
 ```
 
 ## References
+
+The complete source of this example is available on
+[model swap](https://github.com/hejersbo/dtaas-wt-swap) github repository.
 
 The runtime model (FMU) swap mechanism demonstrated by the experiment
 is detailed in the paper:

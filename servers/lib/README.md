@@ -20,30 +20,34 @@ You can visit the gitlab documentation on
 [groups](https://docs.gitlab.com/ee/user/group/)
 for help on the management of gitlab groups.
 
-You can clone the git repositories from the [gitlab dtaas](https://gitlab.com/dtaas) group
+You can clone the git repositories from
+the [gitlab dtaas](https://gitlab.com/dtaas) group
 to get a sample file system structure for the lib microservice.
 
 ## :arrow_down: Install
 
-The package is available in github packages registry.
-<<<<<<< HEAD
-You can install the package using
-
-```bash
-=======
+The package is available in Github
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
 Set the registry and install the package with the following commands
+
 ```bash
 sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
->>>>>>> origin/feature/distributed-demo
 sudo npm install -g @into-cps-association/libms
 ```
 
+The _npm install_ command asks for username and password. The username is
+your Github username and the password is your Github
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+In order for the npm to download the package, your personal access token
+needs to have _read:packages_ scope.
+
 ## :gear: Configure
 
-The microservices requires config specified in INI format. The template configuration file is:
+The microservices requires config specified in INI format.
+The template configuration file is:
 
-```env
+```ini
 PORT='4001'
 MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
@@ -76,21 +80,6 @@ Replace the default values the appropriate values for your setup.
 1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
    and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
-## User Commands
-
-This config is saved `.env` file by convention. The __libms__ looks for `.env` file in the working directory from which it is run.
-
-If the environment file is named something other than `.env`,
-the filename must be specifed with the command `-c, --config <path>`,
-when starting the application. For instance,
-
-```sh
-yarn start -c ".env.development"
-```
-
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
-
 ## :rocket: Use
 
 Display help.
@@ -99,25 +88,30 @@ Display help.
 libms -h
 ```
 
-The microservice is available at: http://localhost:PORT/lib
-
-Use the instructions in
-[publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing and using **libms npm package**.
-
-Application of the advice given on that page for **libms** will require
-running the following commands.
+The config is saved `.env` file by convention. The __libms__ looks for
+`.env` file in the working directory from which it is run.
+If you want to run __libms__ without explicitly specifying the configuration
+file, run
 
 ```bash
 libms
 ```
 
-Run __libms__ with a custom config file.
+To run __libms__ with a custom config file,
 
 ```bash
 libms -c FILE-PATH
 libms --config FILE-PATH
 ```
+
+If the environment file is named something other than `.env`,
+for example as `.env.development`, you can run
+
+```sh
+libms -c ".env.development"
+```
+
+You can press `Ctl+C` to halt the application.
 
 The microservice is available at: http://localhost:PORT/lib
 
