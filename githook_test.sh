@@ -23,8 +23,8 @@ TOP_DIR="$(pwd)"
 
 # 2. test all hooks pass
 # printf "Creating dummy files...\n\n"
-# echo "const dummy = 'Hello, client';" > client/dummy.js
-# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.ts
+# echo "const dummy = 'Hello, client';" > client/dummy.ts
+# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
 # echo "# Hello, lib" > servers/lib/dummy.md
 
 # printf "Testing all hooks pass...\n\n"
@@ -32,21 +32,20 @@ TOP_DIR="$(pwd)"
 # git commit -m "test git hooks"
 # git push
 
-# 3. test eslint hook fail
+# 3. test prettier hook
 printf "Creating dummy files...\n\n"
-echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
+echo "const dummy   = 'Hello, client';" > client/dummy.ts
 
-printf "Testing eslint hook fail...\n\n"
+printf "Testing...\n\n"
 git add .
 git commit -m "test git hooks"
 git reset
 
-# 3. test prettier hook
+# 4. test eslint hook fail
 # printf "Creating dummy files...\n\n"
-# echo "const dummy   = 'Hello, client!';" > client/dummy.ts
+# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
 
-# # test
-# printf "Testing...\n\n"
+# printf "Testing eslint hook fail...\n\n"
 # git add .
 # git commit -m "test git hooks"
 # git reset
