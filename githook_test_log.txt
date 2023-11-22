@@ -1,0 +1,23 @@
+# 1. Testing all hooks pass
+Testing all hooks pass...
+
+Creating dummy files...
+
+Staging changes...
+
+Pre-commit stage...
+
+yarn install client......................................................Passed
+yarn install runner......................................................Passed
+yarn install lib.........................................................Passed
+prettier.................................................................Passed
+eslint...................................................................Passed
+markdownlint.............................................................Passed
+
+Pre-push stage...
+
+yarn install client......................................................Passed
+yarn install runner......................................................Passed
+yarn install lib.........................................................Passed
+yarn jest client.........................................................Passed
+yarn test runner.........................................................Passed
