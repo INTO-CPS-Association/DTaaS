@@ -15,7 +15,7 @@ To start with, install the required software and git-hooks.
 
 ```bash
 bash script/env.sh
-bash script/configure-git-hooks.sh
+bash script/setup-git-hooks.sh
 ```
 
 The git-hooks will ensure that your commits are formatted
