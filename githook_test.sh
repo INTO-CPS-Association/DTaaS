@@ -1,12 +1,15 @@
 # 1. test all hooks pass
+printf "Testing all hooks pass...\n\n"
+
 printf "Creating dummy files...\n\n"
 echo "const dummy = 'Hello, client';" > client/dummy.ts
 echo "// const dummy = 'Hello, runner'; var a = dummy;" > servers/execution/runner/dummy.js
 echo "# Hello, lib" > servers/lib/dummy.md
 
-printf "Testing all hooks pass...\n\n"
 git add .
+printf "Pre-commit stage...\n\n"
 git commit -m "test git hooks" -q
+printf "Pre-push stage...\n\n"
 git push -q
 
 # 2. test prettier hook fail
