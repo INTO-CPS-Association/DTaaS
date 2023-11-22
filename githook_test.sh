@@ -23,8 +23,8 @@ TOP_DIR="$(pwd)"
 
 # 2. test all hooks run
 printf "Creating dummy files...\n\n"
-echo "const dummy = 'Hello, client!';" > client/dummy.js
-echo "const dummy = 'Hello, runner!';" > servers/execution/runner/dummy.ts
+echo "const dummy = 'Hello, client';" > client/dummy.js
+echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.ts
 echo "# Hello, lib" > servers/lib/dummy.md
 
 printf "Testing all hooks run...\n\n"

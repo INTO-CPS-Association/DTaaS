@@ -1,1 +1,1 @@
-const dummy = 'Hello, client!';
+const dummy = 'Hello, client';
