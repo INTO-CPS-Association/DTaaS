@@ -52,20 +52,20 @@ repos:
       - id: eslint
         args: ["--fix"]
         files: "^(client|servers/execution/runner|servers/lib)/.*"
-        # stages: [pre-commit]
+        stages: [pre-commit]
 
-  # - repo: https://github.com/igorshubovych/markdownlint-cli
-  #   rev: v0.37.0
-  #   hooks:
-  #     - id: markdownlint
-  #       args: ["--fix"]
-  #       files: "^(client|servers/execution/runner|servers/lib)/.*"
-  #       stages: [pre-commit]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        args: ["--fix"]
+        files: "^(client|servers/execution/runner|servers/lib)/.*"
+        stages: [pre-commit]
 
-  # - repo: https://github.com/pre-commit/mirrors-prettier
-  #   rev: v3.1.0
-  #   hooks:
-  #     - id: prettier
-  #       args: ["--ignore-path", "../.gitignore", "--write"]
-  #       files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
-  #       stages: [pre-commit]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        args: ["--ignore-path", "../.gitignore", "--write"]
+        files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
+        stages: [pre-commit]
