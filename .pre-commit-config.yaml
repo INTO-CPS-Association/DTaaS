@@ -50,6 +50,7 @@ repos:
     rev: v8.54.0
     hooks:
       - id: eslint
+        args: ["--fix"]
         files: "^(client|servers/execution/runner|servers/lib)/.*"
         # stages: [pre-commit]
 
