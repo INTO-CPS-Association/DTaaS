@@ -1,0 +1,64 @@
+###### 1. Test all hooks pass
+
+Pre-commit stage...
+
+yarn install client......................................................Passed
+yarn install runner......................................................Passed
+yarn install lib.........................................................Passed
+prettier.................................................................Passed
+eslint...................................................................Passed
+markdownlint.............................................................Passed
+
+Pre-push stage...
+
+yarn install client......................................................Passed
+yarn install runner......................................................Passed
+yarn install lib.........................................................Passed
+yarn jest client.........................................................Passed
+yarn test runner.........................................................Passed
+
+###### 2. Test prettier hook fail
+
+yarn install client......................................................Passed
+yarn install runner..................................(no files to check)Skipped
+yarn install lib.....................................(no files to check)Skipped
+prettier.................................................................Failed
+- hook id: prettier
+- files were modified by this hook
+
+client/dummy.ts
+
+eslint...............................................(no files to check)Skipped
+markdownlint.........................................(no files to check)Skipped
+
+###### 3. Test eslint hook fail
+
+yarn install client..................................(no files to check)Skipped
+yarn install runner......................................................Passed
+yarn install lib.....................................(no files to check)Skipped
+prettier.............................................(no files to check)Skipped
+eslint...................................................................Failed
+- hook id: eslint
+- exit code: 1
+
+
+/home/lindot/Documents/DTaaS/servers/execution/runner/dummy.js
+  1:7  error  'dummy' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+
+markdownlint.........................................(no files to check)Skipped
+
+###### 4. Test markdownlint hook fail
+
+yarn install client..................................(no files to check)Skipped
+yarn install runner..................................(no files to check)Skipped
+yarn install lib.........................................................Passed
+prettier.............................................(no files to check)Skipped
+eslint...............................................(no files to check)Skipped
+markdownlint.............................................................Failed
+- hook id: markdownlint
+- exit code: 1
+
+servers/lib/dummy.md:1 MD041/first-line-heading/first-line-h1 First line in a file should be a top-level heading [Context: " Hello, lib"]
