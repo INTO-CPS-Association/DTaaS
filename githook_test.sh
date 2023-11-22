@@ -42,24 +42,22 @@ TOP_DIR="$(pwd)"
 # git reset
 
 # 4. test eslint hook fail
-printf "Creating dummy files...\n\n"
-echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
-
-printf "Testing eslint hook fail...\n\n"
-git add .
-git commit -m "test git hooks"
-git reset
-
-# 5. test markdownlint hook
-# # dummy
 # printf "Creating dummy files...\n\n"
-# echo "Hello, lib!" > servers/lib/dummy.md
+# echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
 
-# # test
-# printf "Testing...\n\n"
+# printf "Testing eslint hook fail...\n\n"
 # git add .
 # git commit -m "test git hooks"
 # git reset
+
+# 5. test markdownlint hook fail
+printf "Creating dummy files...\n\n"
+echo " Hello, lib" > servers/lib/dummy.md
+
+printf "Testing markdownlint hoot...\n\n"
+git add .
+git commit -m "test git hooks"
+git reset
 
 # remove
 printf "Removing dummy files...\n\n"
