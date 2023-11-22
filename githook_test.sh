@@ -48,9 +48,20 @@ TOP_DIR="$(pwd)"
 # git reset
 
 # 4. test eslint hook
+# # dummy
+# printf "Creating dummy files...\n\n"
+# echo "const dummy = 'Hello, runner!';" > servers/execution/runner/dummy.js
+
+# # test
+# printf "Testing...\n\n"
+# git add .
+# git commit -m "test git hooks"
+# git reset
+
+# 5. test markdownlint hook
 # dummy
 printf "Creating dummy files...\n\n"
-echo "const a: number = 1; console.log(a)" > client/dummy.ts
+echo "# Hello, lib!" > servers/lib/dummy.md
 
 # test
 printf "Testing...\n\n"
@@ -58,10 +69,9 @@ git add .
 git commit -m "test git hooks"
 git reset
 
-
 # remove
 printf "Removing dummy files...\n\n"
 rm -f client/dummy.ts
-rm -f servers/execution/runner/dummy.ts
-rm -f servers/lib/dummy.ts
+rm -f servers/execution/runner/dummy.js
+rm -f servers/lib/dummy.md
 
