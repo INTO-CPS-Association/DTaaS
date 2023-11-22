@@ -6,8 +6,8 @@ echo "# Hello, lib" > servers/lib/dummy.md
 
 printf "Testing all hooks pass...\n\n"
 git add .
-git commit -m "test git hooks"
-git push
+git commit -m "test git hooks" -q
+git push -q
 
 # 2. test prettier hook fail
 # printf "Creating dummy files...\n\n"
@@ -44,5 +44,5 @@ rm -f servers/lib/dummy.md
 
 printf "Resetting...\n\n"
 git add .
-git commit -m "reset after test"
-git push
+git commit -m "reset after test" -q
+git push -q
