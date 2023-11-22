@@ -66,14 +66,14 @@ git reset
 # git commit -m "test git hooks"
 # git reset
 
-# # remove
-# printf "Removing dummy files...\n\n"
-# rm -f client/dummy.js
-# rm -f servers/execution/runner/dummy.ts
-# rm -f servers/lib/dummy.md
+# remove
+printf "Removing dummy files...\n\n"
+rm -f client/dummy.js
+rm -f servers/execution/runner/dummy.ts
+rm -f servers/lib/dummy.md
 
-# # reset
-# printf "Resetting...\n\n"
-# git add .
-# git commit -m "reset after test"
-# git push
+# reset
+printf "Resetting...\n\n"
+git add .
+git commit -m "reset after test"
+git push
