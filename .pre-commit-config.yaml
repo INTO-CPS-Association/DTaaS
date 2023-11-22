@@ -9,16 +9,17 @@ repos:
             "../.gitignore",
             "--write",
           ]
-        files: '^(client|servers/execution/runner)/.*\.(ts|tsx|css|scss)$'
+        files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.54.0
     hooks:
       - id: eslint
-        files: '^(client|servers/execution/runner)/.*'
+        files: '^(client|servers/execution/runner|servers/lib)/.*'
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.37.0
     hooks:
       - id: markdownlint
         args: ["--fix"]
+        files: '^(client|servers/execution/runner|servers/lib)/.*'
