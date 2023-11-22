@@ -41,6 +41,13 @@ git push -q
 # git commit -m "test markdownlint hook"
 # git reset
 
-# Reset after each test
+# clean up after each test
+printf "\n Removing dummy files...\n\n"
+rm -f client/dummy.ts
+rm -f servers/execution/runner/dummy.js
+rm -f servers/lib/dummy.md
+
 printf "Resetting...\n\n"
-git reset --hard HEAD~1
+git add .
+git commit -m "reset after test" -q
+git push -q
