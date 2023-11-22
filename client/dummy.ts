@@ -1,4 +1,3 @@
-
-export const dummy = () => { console.log('dummy');
-
-}
+export const dummy = () => {
+  console.log('dummy');
+};
