@@ -1,1 +1,0 @@
-const dummy = 'Hello, client';
