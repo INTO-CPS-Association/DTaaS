@@ -1,8 +1,7 @@
 TOP_DIR="$(pwd)"
 
-# 1. prepare
-# # setup
-# printf "Setting up...\n\n"
+# 1. initial setup for testing
+# printf "Cleaning...\n\n"
 # cd client
 # yarn clean
 # cd "$TOP_DIR"
@@ -17,24 +16,21 @@ TOP_DIR="$(pwd)"
 
 # rm -rf .git/hooks/
 
-# # install
 # printf "Installing...\n\n"
 # pip install pre-commit
 # pre-commit autoupdate
 # pre-commit install
 
 # 2. test all hooks run
-# # dummy
-# printf "Creating dummy files...\n\n"
-# echo "const dummy = 'Hello, client!';" > client/dummy.ts
-# echo "const dummy = 'Hello, runner!';" > servers/execution/runner/dummy.ts
-# echo "const dummy = 'Hello, lib!';" > servers/lib/dummy.ts
+printf "Creating dummy files...\n\n"
+echo "const dummy = 'Hello, client!';" > client/dummy.js
+echo "const dummy = 'Hello, runner!';" > servers/execution/runner/dummy.ts
+echo "#Hello, lib" > servers/lib/dummy.md
 
-# # test
-# printf "Testing...\n\n"
-# git add .
-# git commit -m "test git hooks"
-# git push
+printf "Testing all hooks run...\n\n"
+git add .
+git commit -m "test git hooks"
+git push
 
 # 3. test prettier hook
 # # dummy
@@ -59,15 +55,15 @@ TOP_DIR="$(pwd)"
 # git reset
 
 # 5. test markdownlint hook
-# dummy
-printf "Creating dummy files...\n\n"
-echo "# Hello, lib!" > servers/lib/dummy.md
+# # dummy
+# printf "Creating dummy files...\n\n"
+# echo "Hello, lib!" > servers/lib/dummy.md
 
-# test
-printf "Testing...\n\n"
-git add .
-git commit -m "test git hooks"
-git reset
+# # test
+# printf "Testing...\n\n"
+# git add .
+# git commit -m "test git hooks"
+# git reset
 
 # remove
 printf "Removing dummy files...\n\n"
@@ -75,3 +71,8 @@ rm -f client/dummy.ts
 rm -f servers/execution/runner/dummy.js
 rm -f servers/lib/dummy.md
 
+# reset
+printf "Resetting...\n\n"
+git add .
+git commit -m "reset after test"
+git push
