@@ -2,18 +2,11 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TabComponent, constructURL } from 'components/tab/TabComponent';
-// import { TabData } from 'components/tab/subcomponents/TabRender';
 import { assetType } from 'route/library/LibraryTabData';
-// import { useURLforLIB } from 'util/envUtil';
-// import { Typography } from '@mui/material';
-// import Iframe from 'react-iframe';
 import { createCombinedTabs, createTabs } from 'route/library/Library';
 
 describe('TabComponent', () => {
-  // const LIBurl = useURLforLIB();
-
   const assetTypeTabs = createTabs();
-
   const scopeTabs = createCombinedTabs();
 
   test('renders an empty tab', () => {
@@ -28,7 +21,6 @@ describe('TabComponent', () => {
   test('renders tabs with labels and defaults to the first tab open', async () => {
     render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
 
-    // Check if tab labels are rendered
     const functionsAppear = screen.getAllByText('Functions');
     expect(functionsAppear.length).toBeGreaterThan(0);
 
@@ -42,11 +34,8 @@ describe('TabComponent', () => {
       expect(isFunctionsBody.length).toBeGreaterThan(0);
     }
 
-    // Click on the 'models' tab
     const clickedTab = screen.getByRole('tab', { name: 'Models' });
     await userEvent.click(clickedTab);
-
-    // Check if the content of 'models' tab is now visible
 
     const modelsTab = assetType.find((tab) => tab.label === 'Models');
 
@@ -62,7 +51,6 @@ describe('TabComponent', () => {
     const clickedTab = screen.getByRole('tab', { name: 'Data' });
 
     await userEvent.click(clickedTab);
-    // Check if the tab is open after the click
 
     const dataTab = assetType.find((tab) => tab.label === 'Data');
 
@@ -80,14 +68,12 @@ describe('TabComponent', () => {
   });
 
   test('constructs correct URLs for Iframes', () => {
-    // Example URL construction
-    const githubName = 'caesarv16';
-    const LIBURL = `http://localhost.com:4000/${githubName}/`;
+    const gitlabName = 'user';
+    const LIBURL = `http://localhost.com:4000/${gitlabName}/`;
     const tabLabel = 'Functions';
     const subTabLabel = 'Common';
     const expectedURL = `${LIBURL}tree/functions`;
 
-    // Check if the function constructs the correct URL
     expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);
   });
 });

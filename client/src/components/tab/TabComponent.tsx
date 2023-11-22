@@ -3,28 +3,28 @@ import TabRender, { TabData } from './subcomponents/TabRender';
 import { Tab, TabList, TabPanel, Tabs } from './subcomponents/TabStyles';
 
 export function constructURL(assetType: string, scope: string, libURL: string) {
-  const formattedTab = assetType.toLowerCase();
-  const formattedSubTab = scope.toLowerCase();
+  const assetTab = assetType.toLowerCase();
+  const scopeTab = scope.toLowerCase();
 
   let url = libURL;
   url += 'tree/';
 
-  if (formattedTab === 'digital twins') {
+  if (assetTab === 'digital twins') {
     url += 'digital_twins';
-    if (formattedSubTab === 'private') {
+    if (scopeTab === 'private') {
       url += '/private';
     }
-  } else if (formattedSubTab === 'private') {
-    url += `${formattedTab}/${formattedSubTab}`;
+  } else if (scopeTab === 'private') {
+    url += `${assetTab}/${scopeTab}`;
   } else {
-    url += formattedTab;
+    url += assetTab;
   }
 
   return url;
 }
 
 function renderScopeTabList(
-  scope: TabData[][] | undefined,
+  scope: TabData[][],
   subIndex: number
 ): JSX.Element {
   return (
@@ -37,7 +37,7 @@ function renderScopeTabList(
 }
 
 function renderScopeTabPanels(
-  scope: TabData[][] | undefined,
+  scope: TabData[][],
   subIndex: number
 ): JSX.Element {
   return (
@@ -56,7 +56,7 @@ function renderScopeTabPanels(
 export function TabComponent(props: {
   assetType: TabData[];
   scope: TabData[][];
-}) {
+}): JSX.Element {
   return (
     <Tabs>
       <TabList>

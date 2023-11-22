@@ -10,7 +10,7 @@ import tabs from './DigitalTwinTabData';
 function DTContent() {
   const DTurl = useURLforDT();
 
-  const tabData1: TabData[] = tabs.map((tab) => ({
+  const DTTab: TabData[] = tabs.map((tab) => ({
     label: tab.label,
     body: (
       <>
@@ -25,7 +25,7 @@ function DTContent() {
 
   return (
     <Layout>
-      <TabComponent assetType={tabData1} scope={[]} />
+      <TabComponent assetType={DTTab} scope={[]} />
     </Layout>
   );
 }
