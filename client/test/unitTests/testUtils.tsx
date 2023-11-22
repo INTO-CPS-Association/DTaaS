@@ -85,13 +85,6 @@ export function itDisplaysContentOfTabs(
       });
       expect(a.length).toBeGreaterThan(0);
 
-      // expect(
-      //   screen.getByText(tab.body, {
-      //     normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-      //   })
-      // ).toBeInTheDocument();
-
-      // Expect the other tabs to not be rendered
       tabs
         .filter((otherTab) => otherTab.label !== tab.label)
         .forEach((otherTab) => {
@@ -104,7 +97,6 @@ export function itDisplaysContentOfTabs(
 export function itPreventsDefaultActionWhenLinkIsClicked(linkText: string) {
   it(`should prevent default action when ${linkText} is clicked`, () => {
     const linkElement = screen.getByRole('link', { name: linkText });
-    // Simulate click event on see more link
     const clickEvent = createEvent.click(linkElement);
     fireEvent(linkElement, clickEvent);
     expect(clickEvent.defaultPrevented).toBeTruthy();
