@@ -26,7 +26,7 @@
 # git reset -q
 
 # 3. test eslint hook fail
-print "Testing eslint hook fail...\n\n"
+printf "Testing eslint hook fail...\n\n"
 
 printf "Creating dummy files...\n\n"
 echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
