@@ -1,4 +1,4 @@
-# 1. Testing all hooks pass
+# 1. Test all hooks pass
 Testing all hooks pass...
 
 Creating dummy files...
@@ -21,3 +21,24 @@ yarn install runner......................................................Passed
 yarn install lib.........................................................Passed
 yarn jest client.........................................................Passed
 yarn test runner.........................................................Passed
+
+# 2. Test prettier hook fail
+Testing prettier hook fail...
+
+Creating dummy files...
+
+Staging changes...
+
+Pre-commit stage...
+
+yarn install client......................................................Passed
+yarn install runner..................................(no files to check)Skipped
+yarn install lib.....................................(no files to check)Skipped
+prettier.................................................................Failed
+- hook id: prettier
+- files were modified by this hook
+
+client/dummy.ts
+
+eslint...............................................(no files to check)Skipped
+markdownlint.........................................(no files to check)Skipped
