@@ -34,7 +34,7 @@ TOP_DIR="$(pwd)"
 
 # 3. test eslint hook fail
 printf "Creating dummy files...\n\n"
-echo "const dummy = 'Hello, client';" > client/dummy.js
+echo "const dummy = 'Hello, runner';" > servers/execution/runner/dummy.js
 
 printf "Testing eslint hook fail...\n\n"
 git add .
@@ -51,10 +51,6 @@ git reset
 # git commit -m "test git hooks"
 # git reset
 
-
-
-
-
 # 5. test markdownlint hook
 # # dummy
 # printf "Creating dummy files...\n\n"
@@ -68,8 +64,8 @@ git reset
 
 # remove
 printf "Removing dummy files...\n\n"
-rm -f client/dummy.js
-rm -f servers/execution/runner/dummy.ts
+rm -f client/dummy.ts
+rm -f servers/execution/runner/dummy.js
 rm -f servers/lib/dummy.md
 
 # reset
