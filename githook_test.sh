@@ -38,7 +38,7 @@ TOP_DIR="$(pwd)"
 
 # printf "Testing...\n\n"
 # git add .
-# git commit -m "test git hooks"
+# git commit -m "test prettier hooks"
 # git reset
 
 # 4. test eslint hook fail
@@ -47,7 +47,7 @@ TOP_DIR="$(pwd)"
 
 # printf "Testing eslint hook fail...\n\n"
 # git add .
-# git commit -m "test git hooks"
+# git commit -m "test eslint hook"
 # git reset
 
 # 5. test markdownlint hook fail
@@ -56,7 +56,7 @@ echo " Hello, lib" > servers/lib/dummy.md
 
 printf "Testing markdownlint hoot...\n\n"
 git add .
-git commit -m "test git hooks"
+git commit -m "test markdownlint hook"
 git reset
 
 # remove
