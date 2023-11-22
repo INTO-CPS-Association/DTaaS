@@ -1,7 +1,7 @@
 # 1. test all hooks pass
 printf "Creating dummy files...\n\n"
 echo "const dummy = 'Hello, client';" > client/dummy.ts
-echo "//'Hello, runner';" > servers/execution/runner/dummy.js
+echo "// const dummy = 'Hello, runner'; var a = dummy;" > servers/execution/runner/dummy.js
 echo "# Hello, lib" > servers/lib/dummy.md
 
 printf "Testing all hooks pass...\n\n"
