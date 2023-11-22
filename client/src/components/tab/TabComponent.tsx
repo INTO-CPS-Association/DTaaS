@@ -23,10 +23,7 @@ export function constructURL(assetType: string, scope: string, libURL: string) {
   return url;
 }
 
-function renderScopeTabList(
-  scope: TabData[][],
-  subIndex: number
-): JSX.Element {
+function renderScopeTabList(scope: TabData[][], subIndex: number): JSX.Element {
   return (
     <TabList>
       {scope &&
