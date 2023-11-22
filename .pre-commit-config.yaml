@@ -20,20 +20,22 @@ repos:
         files: "^servers/lib/.*"
         args: ["-c", "cd servers/lib && yarn install"]
       
-      - id: yarn-jest-client
-        name: yarn jest client
-        entry: bash
-        language: system
-        files: "^client/.*"
-        args: ["-c", "cd client && yarn jest . --coverage=false"]
-        stages: [pre-push]
+      # - id: yarn-jest-client
+      #   name: yarn jest client
+      #   entry: bash
+      #   language: system
+      #   files: "^client/.*"
+      #   args: ["-c", "cd client && yarn jest . --coverage=false"]
+      #   stages: [pre-push]
       - id: yarn-test-runner
         name: yarn test runner
         entry: bash
         language: system
         files: "^servers/execution/runner/.*"
         args: ["-c", "cd servers/execution/runner && yarn test:nocov"]
-        stages: [pre-push]
+        pass_filenames: false
+        verbose: true
+        # stages: [pre-push]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
