@@ -5,42 +5,37 @@ repos:
         name: yarn install client
         entry: bash
         language: system
-        files: '^client/.*'
+        files: "^client/.*"
         args: ["-c", "cd client && yarn install"]
       - id: yarn-install-runner
         name: yarn install runner
         entry: bash
         language: system
-        files: '^servers/execution/runner/.*'
+        files: "^servers/execution/runner/.*"
         args: ["-c", "cd servers/execution/runner && yarn install"]
       - id: yarn-install-lib
         name: yarn install lib
         entry: bash
         language: system
-        files: '^servers/lib/.*'
+        files: "^servers/lib/.*"
         args: ["-c", "cd servers/lib && yarn install"]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
       - id: prettier
-        args:
-          [
-            "--ignore-path",
-            "../.gitignore",
-            "--write",
-          ]
+        args: ["--ignore-path", "../.gitignore", "--write"]
         files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.54.0
     hooks:
       - id: eslint
-        files: '^(client|servers/execution/runner|servers/lib)/.*'
+        files: "^(client|servers/execution/runner|servers/lib)/.*"
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.37.0
     hooks:
       - id: markdownlint
         args: ["--fix"]
-        files: '^(client|servers/execution/runner|servers/lib)/.*'
+        files: "^(client|servers/execution/runner|servers/lib)/.*"
