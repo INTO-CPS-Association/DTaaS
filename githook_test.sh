@@ -50,7 +50,7 @@ TOP_DIR="$(pwd)"
 # 4. test eslint hook
 # dummy
 printf "Creating dummy files...\n\n"
-echo "const dummy = 1;" > servers/execution/runner/dummy.ts
+echo "const dummy = 5;" > servers/execution/runner/dummy.ts
 
 # test
 printf "Testing...\n\n"
