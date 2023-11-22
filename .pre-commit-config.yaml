@@ -25,7 +25,7 @@ repos:
         entry: bash
         language: system
         files: "^client/.*"
-        args: ["-c", "cd client && yarn jest . --coverage=false"]
+        args: ["-c", "cd client && yarn jest ."]
         stages: [pre-push]
       - id: yarn-test-runner
         name: yarn test runner
