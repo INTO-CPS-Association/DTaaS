@@ -6,10 +6,12 @@ echo "const dummy = 'Hello, client';" > client/dummy.ts
 echo "// const dummy = 'Hello, runner'; var a = dummy;" > servers/execution/runner/dummy.js
 echo "# Hello, lib" > servers/lib/dummy.md
 
+printf "Staging changes...\n\n"
+
 git add .
 printf "Pre-commit stage...\n\n"
 git commit -m "test git hooks" -q
-printf "Pre-push stage...\n\n"
+printf "\nPre-push stage...\n\n"
 git push -q
 
 # 2. test prettier hook fail
@@ -39,13 +41,14 @@ git push -q
 # git commit -m "test markdownlint hook"
 # git reset
 
-# clean up after each test
-printf "Removing dummy files...\n\n"
-rm -f client/dummy.ts
-rm -f servers/execution/runner/dummy.js
-rm -f servers/lib/dummy.md
+# # clean up after each test
+# printf "\n Removing dummy files...\n\n"
+# rm -f client/dummy.ts
+# rm -f servers/execution/runner/dummy.js
+# rm -f servers/lib/dummy.md
 
 printf "Resetting...\n\n"
-git add .
-git commit -m "reset after test" -q
-git push -q
+git reset --hard HEAD~1
+# git add .
+# git commit -m "reset after test" -q
+# git push -q
