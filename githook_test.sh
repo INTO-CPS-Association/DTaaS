@@ -42,7 +42,7 @@
 
 ###### 4. Test markdownlint hook fail
 
-printf "Testing markdownlint hoot...\n\n"
+printf "Testing markdownlint hook...\n\n"
 
 printf "Creating dummy files...\n\n"
 echo " Hello, lib" > servers/lib/dummy.md

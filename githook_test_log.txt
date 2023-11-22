@@ -1,9 +1,4 @@
-# 1. Test all hooks pass
-Testing all hooks pass...
-
-Creating dummy files...
-
-Staging changes...
+###### 1. Test all hooks pass
 
 Pre-commit stage...
 
@@ -22,14 +17,7 @@ yarn install lib.........................................................Passed
 yarn jest client.........................................................Passed
 yarn test runner.........................................................Passed
 
-# 2. Test prettier hook fail
-Testing prettier hook fail...
-
-Creating dummy files...
-
-Staging changes...
-
-Pre-commit stage...
+###### 2. Test prettier hook fail
 
 yarn install client......................................................Passed
 yarn install runner..................................(no files to check)Skipped
@@ -43,14 +31,7 @@ client/dummy.ts
 eslint...............................................(no files to check)Skipped
 markdownlint.........................................(no files to check)Skipped
 
-# 3. Test eslint hook fail
-Testing eslint hook fail...
-
-Creating dummy files...
-
-Staging changes...
-
-Pre-commit stage...
+###### 3. Test eslint hook fail
 
 yarn install client..................................(no files to check)Skipped
 yarn install runner......................................................Passed
@@ -68,3 +49,16 @@ eslint...................................................................Failed
 
 
 markdownlint.........................................(no files to check)Skipped
+
+###### 4. Test markdownlint hook fail
+
+yarn install client..................................(no files to check)Skipped
+yarn install runner..................................(no files to check)Skipped
+yarn install lib.........................................................Passed
+prettier.............................................(no files to check)Skipped
+eslint...............................................(no files to check)Skipped
+markdownlint.............................................................Failed
+- hook id: markdownlint
+- exit code: 1
+
+servers/lib/dummy.md:1 MD041/first-line-heading/first-line-h1 First line in a file should be a top-level heading [Context: " Hello, lib"]
