@@ -67,12 +67,12 @@ git push
 
 # remove
 printf "Removing dummy files...\n\n"
-rm -f client/dummy.ts
-rm -f servers/execution/runner/dummy.js
+rm -f client/dummy.js
+rm -f servers/execution/runner/dummy.ts
 rm -f servers/lib/dummy.md
 
 # reset
-# printf "Resetting...\n\n"
-# git add .
-# git commit -m "reset after test"
-# git push
+printf "Resetting...\n\n"
+git add .
+git commit -m "reset after test"
+git push
