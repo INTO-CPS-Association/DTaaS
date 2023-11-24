@@ -1,9 +1,9 @@
 # Link services to local ports
 
-<!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
 !!! Requirements
 
+<!-- markdownlint-disable MD046 -->
     - User needs to have an account on server2.
     - SSH server must be running on server2
 
