@@ -168,8 +168,8 @@ You can run this script multiple times until the installation is successful.
 
 <!-- prettier-ignore -->
 !!! note
-    While installing you might encounter multiple dialogs asking, 
-    which services should be restarted. 
+    While installing you might encounter multiple dialogs asking,
+    which services should be restarted.
     Just click **OK** to all of those.
 
 ## Post-install Check

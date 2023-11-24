@@ -44,7 +44,7 @@ for getting the Gitlab OAuth application details.
 
 <!-- prettier-ignore -->
 !!! note
-    While installing you might encounter multiple dialogs asking, 
+    While installing you might encounter multiple dialogs asking,
     which services should be restarted. Just click **OK** to all of those.
 
 Run the following scripts.
