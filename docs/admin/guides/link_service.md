@@ -29,7 +29,7 @@ Open a terminal in your user workspace.
 Run the following command to map a port:
 
 ```sh
-ssh -fNT -L <local_port>:<destination>:<destination_port> <user>@<ssh_server>
+ssh -fNT -L <local_port>:<destination>:<destination_port> <user>@<services.server.com>
 
 ```
 
