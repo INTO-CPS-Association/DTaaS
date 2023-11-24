@@ -555,8 +555,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#access-the-application" class="md-nav__link">
-    Access the application
+  <a href="#post-install-check" class="md-nav__link">
+    Post-install Check
   </a>
   
 </li>
@@ -731,6 +731,124 @@
       <a href="services.html" class="md-nav__link">
         Services
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+          Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/add_user.html" class="md-nav__link">
+        New user
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/add_service.html" class="md-nav__link">
+        New Service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/link_service.html" class="md-nav__link">
+        Link services
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/common_workspace_readonly.html" class="md-nav__link">
+        Common Assets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/hosting_site_without_https.html" class="md-nav__link">
+        HTTP Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/update_basepath.html" class="md-nav__link">
+        Basepath
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -1430,8 +1548,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#access-the-application" class="md-nav__link">
-    Access the application
+  <a href="#post-install-check" class="md-nav__link">
+    Post-install Check
   </a>
   
 </li>
@@ -1478,7 +1596,7 @@ Download the <strong>DTaaS.zip</strong> from the
 Unzip the same into a directory named <strong>DTaaS</strong>.
 The rest of the instructions assume that your working directory is <strong>DTaaS</strong>.</p>
 <!-- markdownlint-disable MD046 -->
-
+<!-- prettier-ignore -->
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you only want to test the application
@@ -1502,7 +1620,7 @@ at <em>deploy/config/gateway/fileConfig.yml</em>.
 Change <code>foo.com</code> to your local hostname and user1/user2 to
 the usernames chosen by you.</p>
 <!-- markdownlint-disable MD046 -->
-
+<!-- prettier-ignore -->
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Do not use <code>http://</code> or <code>https://</code>
@@ -1591,7 +1709,8 @@ the <a href="client/auth.html">Authentication page</a>.</p>
 </table>
 <p>You can also see
 <a href="https://docs.gitlab.com/ee/integration/oauth_provider.html">Gitlab help page</a>
-for getting the Gitlab OAuth application details.</p>
+for getting the Gitlab OAuth application details.
+Remember to Create gitlab accounts for usernames chosen by you.</p>
 <h3 id="update-client-config">Update Client Config</h3>
 <p>Change the React website configuration in <em>deploy/config/client/env.js</em>.</p>
 <div class="language-js highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
@@ -1611,24 +1730,26 @@ for getting the Gitlab OAuth application details.</p>
 <span class="normal"><a href="#__codelineno-3-15">15</a></span>
 <span class="normal"><a href="#__codelineno-3-16">16</a></span>
 <span class="normal"><a href="#__codelineno-3-17">17</a></span>
-<span class="normal"><a href="#__codelineno-3-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;dtaas&#39;</span><span class="p">,</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+<span class="normal"><a href="#__codelineno-3-18">18</a></span>
+<span class="normal"><a href="#__codelineno-3-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://foo.com/&quot;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dtaas&quot;</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/lab&quot;</span><span class="p">,</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">  </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/terminals/main&quot;</span><span class="p">,</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/tools/vnc/?password=vncpassword&quot;</span><span class="p">,</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/tools/vscode/&quot;</span><span class="p">,</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/lab&quot;</span><span class="p">,</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">  </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 </span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12"></a>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/Library&#39;</span><span class="p">,</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="p">};</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">  </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">    </span><span class="s2">&quot;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&quot;</span><span class="p">,</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">  </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://gitlab.foo.com/&quot;</span><span class="p">,</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">  </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://foo.com/Library&quot;</span><span class="p">,</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">  </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://foo.com/&quot;</span><span class="p">,</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">  </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;openid profile read_user read_repository api&quot;</span><span class="p">,</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="p">};</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="update-the-installation-script">Update the installation script</h2>
 <p>Open <code>deploy/install.sh</code> and update user1/user2 to usernames chosen by you.</p>
@@ -1637,8 +1758,17 @@ for getting the Gitlab OAuth application details.</p>
 <div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nb">source</span><span class="w"> </span>deploy/install.sh
 </span></code></pre></div></td></tr></table></div>
 <p>You can run this script multiple times until the installation is successful.</p>
-<h2 id="access-the-application">Access the application</h2>
-<p>Now you should be able to access the DTaaS application at: <http:><em>https://foo.com</em></http:></p>
+<!-- prettier-ignore -->
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While installing you might encounter multiple dialogs asking,
+which services should be restarted.
+Just click <strong>OK</strong> to all of those.</p>
+</div>
+<h2 id="post-install-check">Post-install Check</h2>
+<p>Now you should be able to access the DTaaS application at: <http:><em>https://foo.com</em></http:>.</p>
+<p>If you can following all the screenshots from <a href="../user/website/index.html">user website</a>.
+Everything is correctly setup.</p>
 <h2 id="references">References</h2>
 <p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a>,
 <a href="https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container">Traefik logo</a>,

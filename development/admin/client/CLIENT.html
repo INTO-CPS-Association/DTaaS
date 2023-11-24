@@ -648,6 +648,124 @@
 
             
           
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+          Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/add_user.html" class="md-nav__link">
+        New user
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/add_service.html" class="md-nav__link">
+        New Service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/link_service.html" class="md-nav__link">
+        Link services
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/common_workspace_readonly.html" class="md-nav__link">
+        Common Assets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/hosting_site_without_https.html" class="md-nav__link">
+        HTTP Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/update_basepath.html" class="md-nav__link">
+        Basepath
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1492,7 +1610,7 @@ then the following the commands in  will instantiate the required user workspace
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">  </span>--env<span class="w"> </span><span class="nv">WORKSPACE_BASE_URL</span><span class="o">=</span><span class="s2">&quot;alice&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">  </span>--shm-size<span class="w"> </span>512m<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">  </span>--restart<span class="w"> </span>always<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">  </span>mltooling/ml-workspace:0.13.2
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">  </span>mltooling/ml-workspace-minimal:0.13.2
 </span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14"></a>
 </span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w"> </span>-p<span class="w"> </span><span class="m">8091</span>:8080<span class="w"> </span><span class="se">\</span>
@@ -1503,7 +1621,7 @@ then the following the commands in  will instantiate the required user workspace
 </span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">  </span>--env<span class="w"> </span><span class="nv">WORKSPACE_BASE_URL</span><span class="o">=</span><span class="s2">&quot;bob&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22"></a><span class="w">  </span>--shm-size<span class="w"> </span>512m<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23"></a><span class="w">  </span>--restart<span class="w"> </span>always<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24"></a><span class="w">  </span>mltooling/ml-workspace:0.13.2
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24"></a><span class="w">  </span>mltooling/ml-workspace-minimal:0.13.2
 </span></code></pre></div></td></tr></table></div>
 <p>Given that multiple services are running at different routes,
 a reverse proxy is needed to map the background services to external routes.

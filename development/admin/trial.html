@@ -501,8 +501,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sanity-check" class="md-nav__link">
-    Sanity check
+  <a href="#post-install-check" class="md-nav__link">
+    Post-install Check
   </a>
   
 </li>
@@ -691,6 +691,124 @@
       <a href="services.html" class="md-nav__link">
         Services
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+          Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/add_user.html" class="md-nav__link">
+        New user
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/add_service.html" class="md-nav__link">
+        New Service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/link_service.html" class="md-nav__link">
+        Link services
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/common_workspace_readonly.html" class="md-nav__link">
+        Common Assets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/hosting_site_without_https.html" class="md-nav__link">
+        HTTP Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="guides/update_basepath.html" class="md-nav__link">
+        Basepath
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -1350,8 +1468,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sanity-check" class="md-nav__link">
-    Sanity check
+  <a href="#post-install-check" class="md-nav__link">
+    Post-install Check
   </a>
   
 </li>
@@ -1383,7 +1501,7 @@
 
 <h1 id="trial-installation">Trial Installation</h1>
 <p>To try out the software, you can install it on Ubuntu Server 22.04
-Operating System.  The setup requires a
+Operating System. The setup requires a
 machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
 space to the vagrant box.
 A successful installation will create a setup
@@ -1436,25 +1554,38 @@ the <a href="client/auth.html">Authentication page</a>.</p>
 <p>You can also see
 <a href="https://docs.gitlab.com/ee/integration/oauth_provider.html">Gitlab help page</a>
 for getting the Gitlab OAuth application details.</p>
+<p>Remember to create gitlab accounts for <code>user1</code> and <code>user2</code>.</p>
 <h2 id="install">Install</h2>
+<!-- prettier-ignore -->
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While installing you might encounter multiple dialogs asking,
+which services should be restarted. Just click <strong>OK</strong> to all of those.</p>
+</div>
+<p>Run the following scripts.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>bash<span class="w"> </span>single-script-install.sh
 </span></code></pre></div></td></tr></table></div>
+<!-- prettier-ignore -->
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This test installation has default credentials and is thus highly insecure.</p>
 </div>
 <h2 id="post-install">Post install</h2>
-<p>After the install-script. Please change <strong>foo.com</strong> and Gitlab OAuth details
+<p>After the install-script. Please change <strong>foo.com</strong>
+and <a href="#2-gitlab-oauth-application">Gitlab OAuth</a> details
 to your local settings in the following files.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>~/DTaaS/client/build/env.js
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 </span></code></pre></div></td></tr></table></div>
-<h2 id="sanity-check">Sanity check</h2>
+<h2 id="post-install-check">Post-install Check</h2>
 <p>Now when you visit your domain, you should be able to login through your
 OAuth Provider and be able to access the DTaas web UI.</p>
+<p>If you can following all the screenshots from
+<a href="../user/website/index.html">user website</a>.
+Everything is correctly setup.</p>
 <h2 id="references">References</h2>
 <p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a>,
 <a href="https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container">Traefik logo</a>,
