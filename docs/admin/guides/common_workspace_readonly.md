@@ -2,14 +2,16 @@
 
 ## Why
 
-In some cases you might want to restrict the users rights to the common workspace.
+In some cases you might want to restrict the access rights of some users 
+to the common assets.
 In order to make the common area read only,
-you have to change the install script for setting up the user workspace.
+you have to change the install script section performing the creation
+of user workspaces.
 
 ## How
 
-To make the common area read-only for user2,
-the following changes were made to the install script,
+To make the common assets read-only for user2,
+the following changes need to be made to the install script,
 which is located one of the following places.
 
 - trial installation: `single-script-install.sh`
@@ -35,4 +37,4 @@ docker run -d \
 ```
 
 This ensures that the common area is read-only for user2,
-while the user's own files are still writable.
+while the user's own (private) assets are still writable.

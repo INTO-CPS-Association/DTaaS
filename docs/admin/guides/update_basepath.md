@@ -3,7 +3,7 @@
 The updates required to make the application
 work with basepath (say bar):
 
-## 1. Change the Gitlab OAuth URLs to include basepath
+**1. Change the Gitlab OAuth URLs to include basepath:**
 
 ```yml
   REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
@@ -11,7 +11,7 @@ work with basepath (say bar):
   REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/bar',
 ```
 
-## 2. Update traefik gateway config (deploy/config/gateway/fileConfig.yml)
+**2. Update traefik gateway config (deploy/config/gateway/fileConfig.yml):**
 
 ```yml
 http:
@@ -51,17 +51,16 @@ http:
           - url: "http://localhost:8090"
 ```
 
-## 3. Update deploy/config/client/env.js
+**3. Update deploy/config/client/env.js:**
 
-Use the [client documentation](../client/CLIENT.md) for an example.
+See the [client documentation](../client/CLIENT.md) for an example.
 
-## 4. Update install scripts
+**4. Update install scripts:**
 
-Update deploy/install.sh by adding basepath. For example,
+Update _deploy/install.sh_ by adding basepath. For example, add
+_WORKSPACE_BASE_URL="bar/"_ for all user workspaces.
 
-WORKSPACE_BASE_URL="bar/" for all user workspaces.
-
-For user1, the docker command becomes:
+For user1, the docker command changes to:
 
 ```sh
 docker run -d \
@@ -76,4 +75,4 @@ docker run -d \
   mltooling/ml-workspace-minimal:0.13.2 || true
 ```
 
-## 5. Proceed with install using deploy/install.sh
+**5. Proceed with install using deploy/install.sh:**

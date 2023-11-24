@@ -138,19 +138,6 @@ await $$`sudo systemctl restart mosquitto`;
 await $$`sudo systemctl status mosquitto`;
 
 //---------------
-try {
-  log(chalk.blue("Load services configuration"));
-  config = await yaml.load(fs.readFileSync("services.yml", "utf8"));
-  log(
-    chalk.green(
-      "configuration loading is successful and config is a valid yaml file"
-    )
-  );
-} catch (e) {
-  log(chalk.red("configuration is invalid. Please rectify services.yml file"));
-  process.exit(1);
-}
-
 log(chalk.blue("Start MongoDB server"));
 const mongodbConfig = config.services.mongodb;
 

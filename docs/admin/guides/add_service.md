@@ -6,26 +6,26 @@
     the already available [services](../services.md)
 
 This guide will show you how to add more services.
-In the following example we will be adding **mongodb** as a service,
-but this could be used for other services as well.
+In the following example we will be adding **MongoDB** as a service,
+but these steps could be modified to install other services as well.
 
 :fontawesome-solid-circle-info:
 **Adding other services requires more RAM and CPU power.**
 **Please make sure the host machine meets the hardware requirements**
 **for running all the services.**
 
-## 1. Add the configuration
+**1. Add the configuration:**
 
-You should add the following configuration variables.
+Select configuration parameters for the MongoDB service.
 
 | Configuration Variable Name | Description                                                       |
 | :-------------------------- | :---------------------------------------------------------------- |
-| username                    | the username of the root user in the mongodb                      |
-| password                    | the password of the root user in the mongodb                      |
+| username                    | the username of the root user in the MongoDB                      |
+| password                    | the password of the root user in the MongoDB                      |
 | port                        | the mapped port on the host machine (default is 27017)            |
-| datapath                    | path on host machine to mount the data from the mongodb container |
+| datapath                    | path on host machine to mount the data from the MongoDB container |
 
-Open the file `/deploy/services/services.yml` and add the configuration for mongodb:
+Open the file `/deploy/services/services.yml` and add the configuration for MongoDB:
 
 ```yml
 services:
@@ -45,11 +45,11 @@ services:
     ...
 ```
 
-## 2. Add the script
+**2. Add the script:**
 
-The next step is to add the script that set up the mongodb container with the configuraiton.
+The next step is to add the script that sets up the MongoDB container with the configuraiton.
 
-Create following file `/deploy/services/mongodb.js` and add the following code:
+Create new file named `/deploy/services/mongodb.js` and add the following code:
 
 ```js
 #!/usr/bin/node
@@ -99,7 +99,7 @@ mongo`;
 log(chalk.green("MongoDB server docker container started successfully"));
 ```
 
-## 3. Run the script
+**3. Run the script:**
 
 Go to the directory `/deploy/services/`
 and run services script with the following commands:

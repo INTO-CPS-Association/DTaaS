@@ -40,6 +40,8 @@ You can also see
 [Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 for getting the Gitlab OAuth application details.
 
+Remember to create gitlab accounts for `user1` and `user2`.
+
 ## Install
 
 <!-- prettier-ignore -->

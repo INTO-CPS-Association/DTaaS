@@ -38,7 +38,7 @@ This vagrant box installed for users will have the following items:
 * yarn v1.22
 * npm v10.2
 * containers
-  * ml-workspace v0.13
+  * ml-workspace-minimal v0.13
   * traefik v2.10
   * gitlab-ce v16.4
   * influxdb v2.7

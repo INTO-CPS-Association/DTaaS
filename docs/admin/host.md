@@ -125,6 +125,7 @@ You need the following information from the OAuth application registered on Gitl
 You can also see
 [Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 for getting the Gitlab OAuth application details.
+Remember to Create gitlab accounts for usernames chosen by you.
 
 ### Update Client Config
 

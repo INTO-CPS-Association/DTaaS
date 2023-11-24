@@ -23,5 +23,5 @@ services:
     mongodb:
         username: "dtaas"
         password: "dtaas"
-        port: 5672
+        port: 27017
         datapath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/vagrant/two-machine/mongodb" #no spaces in the path
