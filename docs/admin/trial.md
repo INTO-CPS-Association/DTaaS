@@ -1,7 +1,7 @@
 # Trial Installation
 
 To try out the software, you can install it on Ubuntu Server 22.04
-Operating System.  The setup requires a
+Operating System. The setup requires a
 machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
 space to the vagrant box.
 A successful installation will create a setup
@@ -40,19 +40,30 @@ You can also see
 [Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 for getting the Gitlab OAuth application details.
 
+Remember to create gitlab accounts for `user1` and `user2`.
+
 ## Install
+
+<!-- prettier-ignore -->
+!!! note
+    While installing you might encounter multiple dialogs asking,
+    which services should be restarted. Just click **OK** to all of those.
+
+Run the following scripts.
 
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
 bash single-script-install.sh
 ```
 
+<!-- prettier-ignore -->
 !!! warning
     This test installation has default credentials and is thus highly insecure.
 
 ## Post install
 
-After the install-script. Please change **foo.com** and Gitlab OAuth details
+After the install-script. Please change **foo.com**
+and [Gitlab OAuth](#2-gitlab-oauth-application) details
 to your local settings in the following files.
 
 ```txt
@@ -60,10 +71,14 @@ to your local settings in the following files.
 ~/DTaaS/servers/config/gateway/dynamic/fileConfig.yml
 ```
 
-## Sanity check
+## Post-install Check
 
 Now when you visit your domain, you should be able to login through your
 OAuth Provider and be able to access the DTaas web UI.
+
+If you can following all the screenshots from
+[user website](../user/website/index.md).
+Everything is correctly setup.
 
 ## References
 

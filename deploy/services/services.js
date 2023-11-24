@@ -136,3 +136,26 @@ await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo systemctl restart mosquitto`;
 await $$`sudo systemctl status mosquitto`;
+
+//---------------
+log(chalk.blue("Start MongoDB server"));
+const mongodbConfig = config.services.mongodb;
+
+try {
+  log(
+    chalk.green(
+      "Attempt to delete any existing MongoDB server docker container"
+    )
+  );
+  await $$`docker stop mongodb`;
+  await $$`docker rm mongodb`;
+} catch (e) {}
+
+log(chalk.green("Start new Mongodb server docker container"));
+await $$`docker run -d -p ${mongodbConfig.port}:27017 \
+--name mongodb \
+-v ${mongodbConfig.datapath}:/data/db \
+-e MONGO_INITDB_ROOT_USERNAME=${mongodbConfig.username} \
+-e MONGO_INITDB_ROOT_PASSWORD=${mongodbConfig.password} \
+mongo:7.0.3`;
+log(chalk.green("MongoDB server docker container started successfully"));
