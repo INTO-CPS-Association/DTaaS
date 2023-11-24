@@ -2,7 +2,7 @@
 
 ## Why
 
-In some cases you might want to restrict the access rights of some users 
+In some cases you might want to restrict the access rights of some users
 to the common assets.
 In order to make the common area read only,
 you have to change the install script section performing the creation
