@@ -32,12 +32,11 @@ nav:
       - Services: admin/services.md
       - Guides: 
         - New user: admin/guides/add_user.md
-        - Other services: admin/guides/add_service.md
-        - Link services to local ports: admin/guides/link_service.md
-        - Make common asset area readonly: admin/guides/common_workspace_readonly.md
-        - Host site without https: admin/guides/hosting_site_without_https.md
-        - Host site without https: admin/guides/hosting_site_without_https.md
-        - Update basepath/route for the application: admin/guides/update_basepath.md
+        - New Service: admin/guides/add_service.md
+        - Link services: admin/guides/link_service.md
+        - Common Assets: admin/guides/common_workspace_readonly.md
+        - HTTP Mode: admin/guides/hosting_site_without_https.md
+        - Basepath: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
