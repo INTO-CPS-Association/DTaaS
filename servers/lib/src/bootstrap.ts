@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import cloudcmd = require('cloudcmd');
 import * as dotenv from 'dotenv';
 import AppModule from './app.module';
+import createConfig from './cloudcmd.config';
 
 type BootstrapOptions = {
   config?: string;
@@ -24,29 +25,9 @@ export default async function bootstrap(options?: BootstrapOptions) {
     }
   }
 
-  const config = {
-    name: 'cloudcmd',
-  };
-
-  const { createConfigManager, configPath } = cloudcmd;
-
-  const filePicker = {
-    data: {
-      FilePicker: {
-        key: 'key',
-      },
-    },
-  };
-
-  const modules = {
-    filePicker,
-  };
-
-  const configManager = createConfigManager(configPath);
-
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
-  app.use('/cmd', cloudcmd({ configManager, modules, config }));
+  app.use('/cmd', cloudcmd({ config: createConfig() }));
   await app.listen(port);
 }
