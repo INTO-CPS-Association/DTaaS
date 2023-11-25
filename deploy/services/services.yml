@@ -20,3 +20,8 @@ services:
     mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
         username: "dtaas"
         password: "dtaas"
+    mongodb:
+        username: "dtaas"
+        password: "dtaas"
+        port: 27017
+        datapath: "/home/prasad/git/prasadtalasila/DTaaS/deploy/vagrant/two-machine/mongodb" #no spaces in the path

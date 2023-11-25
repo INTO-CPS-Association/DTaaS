@@ -1,12 +1,5 @@
 # Few issues in the Software
 
-## Some limitations
-
-- The complete DTaaS software requires
-  multiple docker containers and one client website.
-  All of these can work together only on a server with a proper domain name.
-  The complete application does not work on localhost.
-
 ## Third-Party Software
 
 - We use third-party software which have certain
@@ -17,7 +10,7 @@
 - the docker container loses network connectivity after three days.
   The only known solution is to restart the docker container.
   You don't need to restart the complete DTaaS platform, restart of
-  the docker contaienr of ml-workspace is sufficient.
+  the docker container of ml-workspace is sufficient.
 - the terminal tool doesn't seem to have the ability to refresh itself.
   If there is an issue, the only solution is to close and
   reopen the terminal from "open tools" drop down of notebook
