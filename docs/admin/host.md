@@ -63,6 +63,7 @@ This step requires `htpasswd` commandline utility. If
 it is not available on your system, please install the same by using
 
 ```bash
+sudo apt-get update
 sudo apt-get install -y apache2-utils
 ```
 
