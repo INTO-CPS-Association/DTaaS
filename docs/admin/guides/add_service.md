@@ -91,11 +91,12 @@ try {
 
 log(chalk.green("Start new Mongodb server docker container"));
 await $$`docker run -d -p ${mongodbConfig.port}:27017 \
---name mongodb \
--v ${mongodbConfig.datapath}:/data/db \
--e MONGO_INITDB_ROOT_USERNAME=${mongodbConfig.username} \
--e MONGO_INITDB_ROOT_PASSWORD=${mongodbConfig.password} \
-mongo:7.0.3`;
+  --name mongodb \
+  -v ${mongodbConfig.datapath}:/data/db \
+  -e MONGO_INITDB_ROOT_USERNAME=${mongodbConfig.username} \
+  -e MONGO_INITDB_ROOT_PASSWORD=${mongodbConfig.password} \
+  --restart always \
+  mongo:7.0.3`;
 log(chalk.green("MongoDB server docker container started successfully"));
 ```
 
