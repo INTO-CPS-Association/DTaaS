@@ -94,12 +94,12 @@ you can see the following services active within server2 (_services.foo.com_).
 
 | service | external url |
 |:---|:---|
-| InfluxDB and visualization service | services.foo.com |
+| InfluxDB database | services.foo.com |
 | Grafana visualization service | services.foo.com:3000 |
-| MQTT communication service | services.foo.com:1883 |
-| RabbitMQ communication service | services.foo.com:5672 |
-| RabbitMQ management service | services.foo.com:15672 |
-||
+| MQTT Broker | services.foo.com:1883 |
+| RabbitMQ Broker | services.foo.com:5672 |
+| RabbitMQ Broker management website | services.foo.com:15672 |
+| MongoDB database | services.foo.com:27017 |
 
 ### Install DTaaS Application
 

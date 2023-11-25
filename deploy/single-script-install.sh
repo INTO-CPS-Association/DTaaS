@@ -191,6 +191,7 @@ docker run -d \
  -v "$PWD/auth:/etc/traefik/auth" \
  -v "$PWD/dynamic:/etc/traefik/dynamic" \
  -v /var/run/docker.sock:/var/run/docker.sock \
+ --restart always \
  traefik:v2.10 || true
 
 
