@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
 import FilesModule from './files/files.module';
+import EventsGateway from './events/events.gateway';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import FilesModule from './files/files.module';
     }),
     FilesModule,
   ],
+  providers: [EventsGateway],
 })
 export default class AppModule {}
