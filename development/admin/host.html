@@ -1631,7 +1631,9 @@ in <em>deploy/config/gateway/fileConfig.yml</em>.</p>
 <h4 id="authentication">Authentication</h4>
 <p>This step requires <code>htpasswd</code> commandline utility. If
 it is not available on your system, please install the same by using</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>apache2-utils
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>apache2-utils
 </span></code></pre></div></td></tr></table></div>
 <p>You can now proceed with update of the gateway authentication setup.
 The dummy username is <code>foo</code> and the password is <code>bar</code>.
