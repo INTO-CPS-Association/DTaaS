@@ -21,7 +21,7 @@ Unzip the same into a directory named **DTaaS**.
 The rest of the instructions assume that your working directory is **DTaaS**.
 
 <!-- markdownlint-disable MD046 -->
-
+<!-- prettier-ignore -->
 !!! note
     If you only want to test the application
     and are not setting up a production instance,
@@ -50,7 +50,7 @@ Change `foo.com` to your local hostname and user1/user2 to
 the usernames chosen by you.
 
 <!-- markdownlint-disable MD046 -->
-
+<!-- prettier-ignore -->
 !!! tip
     Do not use `http://` or `https://`
     in _deploy/config/gateway/fileConfig.yml_.
@@ -115,16 +115,17 @@ the [Authentication page](client/auth.md).
 
 You need the following information from the OAuth application registered on Gitlab:
 
-| Gitlab Variable Name | Variable name in Client env.js | Default Value |
-|:---|:---|:---|
-| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
-| Application ID | REACT_APP_CLIENT_ID |
-| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
-| Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
+| Gitlab Variable Name | Variable name in Client env.js | Default Value                                    |
+| :------------------- | :----------------------------- | :----------------------------------------------- |
+| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | https://gitlab.foo.com/                          |
+| Application ID       | REACT_APP_CLIENT_ID            |
+| Callback URL         | REACT_APP_REDIRECT_URI         | https://foo.com/Library                          |
+| Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api |
 
 You can also see
 [Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 for getting the Gitlab OAuth application details.
+Remember to Create gitlab accounts for usernames chosen by you.
 
 ### Update Client Config
 
@@ -132,22 +133,23 @@ Change the React website configuration in _deploy/config/client/env.js_.
 
 ```js
 window.env = {
-  REACT_APP_ENVIRONMENT: 'prod',
-  REACT_APP_URL: 'https://foo.com/',
-  REACT_APP_URL_BASENAME: 'dtaas',
-  REACT_APP_URL_DTLINK: '/lab',
-  REACT_APP_URL_LIBLINK: '',
-  REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',
-  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-  REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-  REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+  REACT_APP_ENVIRONMENT: "prod",
+  REACT_APP_URL: "https://foo.com/",
+  REACT_APP_URL_BASENAME: "dtaas",
+  REACT_APP_URL_DTLINK: "/lab",
+  REACT_APP_URL_LIBLINK: "",
+  REACT_APP_WORKBENCHLINK_TERMINAL: "/terminals/main",
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: "/tools/vnc/?password=vncpassword",
+  REACT_APP_WORKBENCHLINK_VSCODE: "/tools/vscode/",
+  REACT_APP_WORKBENCHLINK_JUPYTERLAB: "/lab",
+  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: "",
 
-  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
-  REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
-  REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
-  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  REACT_APP_CLIENT_ID:
+    "934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0",
+  REACT_APP_AUTH_AUTHORITY: "https://gitlab.foo.com/",
+  REACT_APP_REDIRECT_URI: "https://foo.com/Library",
+  REACT_APP_LOGOUT_REDIRECT_URI: "https://foo.com/",
+  REACT_APP_GITLAB_SCOPES: "openid profile read_user read_repository api",
 };
 ```
 
@@ -165,9 +167,18 @@ source deploy/install.sh
 
 You can run this script multiple times until the installation is successful.
 
-## Access the application
+<!-- prettier-ignore -->
+!!! note
+    While installing you might encounter multiple dialogs asking,
+    which services should be restarted.
+    Just click **OK** to all of those.
 
-Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>
+## Post-install Check
+
+Now you should be able to access the DTaaS application at: <http:>_https://foo.com_</http:>.
+
+If you can following all the screenshots from [user website](../user/website/index.md).
+Everything is correctly setup.
 
 ## References
 

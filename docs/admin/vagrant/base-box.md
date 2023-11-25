@@ -37,9 +37,9 @@ This vagrant box installed for users will have the following items:
 1. nodejs v18.8
 1. yarn v1.22
 1. npm v10.2
-1. containers - ml-workspace v0.13, traefik v2.10, gitlab-ce v16.4,
+1. containers - ml-workspace-minimal v0.13, traefik v2.10, gitlab-ce v16.4,
    influxdb v2.7, grafana v10.1, rabbitmq v3-management,
-   eclipse-mosquitto (mqtt) v2
+   eclipse-mosquitto (mqtt) v2, mongodb v7.0
 
 This vagrant box installed for developers will have
 the following items additional items:

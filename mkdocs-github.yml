@@ -30,6 +30,13 @@ nav:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
       - Services: admin/services.md
+      - Guides: 
+        - New user: admin/guides/add_user.md
+        - New Service: admin/guides/add_service.md
+        - Link services: admin/guides/link_service.md
+        - Common Assets: admin/guides/common_workspace_readonly.md
+        - HTTP Mode: admin/guides/hosting_site_without_https.md
+        - Basepath: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md

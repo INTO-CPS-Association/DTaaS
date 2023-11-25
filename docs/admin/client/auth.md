@@ -51,6 +51,13 @@ Here are the steps to get started:
 |Callback URL|REACT_APP_REDIRECT_URI|[https://foo.com/Library](https://foo.com/Library)|
 |Scopes|REACT_APP_GITLAB_SCOPES|openid, profile, read_user, read_repository, api|
 
+**7. Create User Accounts:**
+
+Create user accounts in gitlab for all the usernames chosen during
+installation. The _trial_ installation script comes with two default
+usernames - _user1_ and _user2_. For all other installation scenarios,
+accounts with specific usernames need to be created on gitlab.
+
 ## Development Environment
 
 There needs to be a valid callback and logout URLs for development and testing
