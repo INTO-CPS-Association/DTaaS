@@ -3,13 +3,13 @@ name: Library microservice
 on:
   push:
     paths:
-      - 'servers/lib/**'
+      - "servers/lib/**"
   pull_request:
     paths:
-      - 'servers/lib/**'
+      - "servers/lib/**"
   workflow_dispatch:
     paths:
-      - 'servers/lib/**'
+      - "servers/lib/**"
 
 jobs:
   test-lib-ms:
@@ -43,8 +43,7 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test -u
-          yarn test -i
+          yarn test -a
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
@@ -62,8 +61,7 @@ jobs:
           flags: lib-microservice-tests
 
   publish-package:
-
-    if: | 
+    if: |
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
@@ -85,7 +83,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           always-auth: true
-          registry-url: 'https://npm.pkg.github.com/'
+          registry-url: "https://npm.pkg.github.com/"
 
       - name: Publish package
         run: |
@@ -94,4 +92,4 @@ jobs:
           yarn build
           yarn publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
