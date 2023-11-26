@@ -68,11 +68,12 @@ export class MockConfigService {
       case "MODE":
         if (process.env.MODE === "gitlab") {
           return "gitlab";
-        } if (process.env.MODE === "local") {
+        }
+        if (process.env.MODE === "local") {
           return "local";
-        } 
-          return "unknown";
-        
+        }
+        return "unknown";
+
       default:
         return undefined;
     }
@@ -100,33 +101,43 @@ export const mockReadFileResponseData = {
 
 export const expectedListDirectoryResponse = {
   data: {
-    listDirectory: {
+    project: {
       repository: {
         tree: {
           trees: {
             edges: [
               {
                 node: {
+                  type: "tree",
+                  path: "data",
                   name: "data",
                 },
               },
               {
                 node: {
-                  name: "digital_twins",
+                  type: "tree",
+                  path: "digital twins",
+                  name: "digital twins",
                 },
               },
               {
                 node: {
+                  type: "tree",
+                  path: "functions",
                   name: "functions",
                 },
               },
               {
                 node: {
+                  type: "tree",
+                  path: "models",
                   name: "models",
                 },
               },
               {
                 node: {
+                  type: "tree",
+                  path: "tools",
                   name: "tools",
                 },
               },
@@ -140,7 +151,7 @@ export const expectedListDirectoryResponse = {
 
 export const expectedFileContentResponse = {
   data: {
-    readFile: {
+    project: {
       repository: {
         blobs: {
           nodes: [
@@ -157,15 +168,16 @@ export const expectedFileContentResponse = {
 };
 
 export const e2elistDirectory = `query {
-  listDirectory(path:"user2")
+  project(fullPath:"dtaas/user2")
   {
-    repository{
-      tree{
-        trees{
-          edges{
-            node{
+    repository {
+      tree(recursive: false) {
+        trees {
+          edges {
+            node {
+              type
+              path
               name
-              
             }
           }
         }
@@ -173,11 +185,29 @@ export const e2elistDirectory = `query {
     }
   }
 }`;
+// export const e2elistDirectory = `query {
+//   listDirectory(path:"user2")
+//   {
+//     repository{
+//       tree{
+//         trees{
+//           edges{
+//             node{
+//               name
+//
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }`;
 
 export const e2eReadFile = `query {
-  readFile(path:"user2/tools/README.md") {
+  project(fullPath:"dtaas/user2")
+  {
     repository {
-      blobs {
+      blobs(paths: ["tools/README.md"]) {
         nodes {
           name
           rawBlob
@@ -187,3 +217,17 @@ export const e2eReadFile = `query {
     }
   }
 }`;
+
+// export const e2eReadFile = `query {
+//   readFile(path:"user2/tools/README.md") {
+//     repository {
+//       blobs {
+//         nodes {
+//           name
+//           rawBlob
+//           rawTextBlob
+//         }
+//       }
+//     }
+//   }
+// }`;
