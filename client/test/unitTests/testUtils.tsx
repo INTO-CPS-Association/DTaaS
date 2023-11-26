@@ -18,7 +18,7 @@ type RouterOptions = {
 
 export const renderWithRouter = (
   ui: React.ReactElement,
-  { route = '/', store }: RouterOptions = {},
+  { route = '/', store }: RouterOptions = {}
 ) => {
   window.history.pushState({}, 'Test page', route);
 
@@ -26,7 +26,7 @@ export const renderWithRouter = (
     ? render(
         <Provider store={store}>
           <RouterComponent ui={ui} route={route} />
-        </Provider>,
+        </Provider>
       )
     : render(<RouterComponent ui={ui} route={route} />);
 };
@@ -65,7 +65,7 @@ export function InitRouteTests(component: React.ReactElement) {
 }
 
 export function itDisplaysContentOfTabs(
-  tabs: { label: string; body: string }[],
+  tabs: { label: string; body: string }[]
 ) {
   it('should render labels of all tabs', () => {
     tabs.forEach((tab) => {
@@ -117,7 +117,7 @@ export interface TabLabelURLPair {
 }
 
 export function itHasCorrectURLOfTabsWithIframe(
-  tablabelsURLpair: TabLabelURLPair[],
+  tablabelsURLpair: TabLabelURLPair[]
 ) {
   it('should render the Iframe component for the first tab with the correct title and URL', () => {
     tablabelsURLpair.forEach((tablabelURLpair) => {

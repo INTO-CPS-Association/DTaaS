@@ -19,7 +19,7 @@ describe('Library with no props', () => {
   InitRouteTests(
     <AuthProvider>
       <Library />
-    </AuthProvider>,
+    </AuthProvider>
   );
 
   itDisplaysContentOfTabs(assetType);

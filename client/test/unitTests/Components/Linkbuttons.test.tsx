@@ -24,7 +24,7 @@ const getButtonIcon = (key: string) =>
 const evaluateButtonSize = (expectedSize: number) => {
   buttons.forEach((button) => {
     expect(
-      getComputedStyle(getButtonIcon(button.key)).getPropertyValue('font-size'),
+      getComputedStyle(getButtonIcon(button.key)).getPropertyValue('font-size')
     ).toBe(`${expectedSize}rem`);
   });
 };
@@ -38,7 +38,7 @@ describe('LinkButtons component default size', () => {
     buttons.forEach((button) => {
       expect(getButton(button.key).parentElement).toHaveAttribute(
         'aria-label',
-        button.link,
+        button.link
       );
       expect(getLabel(button.key).tagName).toBe('H6');
     });
@@ -66,7 +66,7 @@ describe('LinkButtons component default size', () => {
 
   it('should use name from iconLib as label when avaiable', () => {
     expect(getLabel(buttons[0].key).textContent).toBe(
-      LinkIcons[buttons[0].key].name,
+      LinkIcons[buttons[0].key].name
     );
   });
 });

@@ -25,7 +25,7 @@ describe('reducers', () => {
   describe('menu reducer', () => {
     const itShouldHandleMenuActions = (
       actionCreator: () => { type: string },
-      expectedValue: boolean,
+      expectedValue: boolean
     ) => {
       const newState = menuReducer(initialState.menu, actionCreator());
       expect(newState.isOpen).toBe(expectedValue);
@@ -33,7 +33,7 @@ describe('reducers', () => {
 
     it('menuReducer should return the initial menu state when an unknown action type is passed with an undefined state', () => {
       expect(menuReducer(undefined, { type: 'unknown' })).toEqual(
-        initialState.menu,
+        initialState.menu
       );
     });
 
@@ -50,7 +50,7 @@ describe('reducers', () => {
   describe('auth reducer', () => {
     it('authReducer should return the initial menu state when an unknown action type is passed with an undefined state', () => {
       expect(authReducer(undefined, { type: 'unknown' })).toEqual(
-        initialState.auth,
+        initialState.auth
       );
     });
 

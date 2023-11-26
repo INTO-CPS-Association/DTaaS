@@ -53,10 +53,10 @@ describe('envUtil', () => {
 
   test('GetURL should return the correct enviroment variables', () => {
     expect(useURLforDT()).toBe(
-      `${testAppURL}/${testBasename}/${testUsername}/${testDT}`,
+      `${testAppURL}/${testBasename}/${testUsername}/${testDT}`
     );
     expect(useURLforLIB()).toBe(
-      `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`,
+      `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`
     );
     expect(useURLbasename()).toBe(testBasename);
   });
@@ -71,8 +71,8 @@ describe('envUtil', () => {
     const result = getWorkbenchLinkValues();
     expect(
       result.every(
-        (el) => typeof el.key === 'string' && typeof el.link === 'string',
-      ),
+        (el) => typeof el.key === 'string' && typeof el.link === 'string'
+      )
     ).toBe(true);
   });
 
@@ -83,8 +83,8 @@ describe('envUtil', () => {
     result.forEach((el, i) => {
       expect(el.link).toEqual(
         `${testAppURL}/${testBasename}/${testUsername}/${cleanURL(
-          testWorkbenchEndpoints[i],
-        )}`,
+          testWorkbenchEndpoints[i]
+        )}`
       );
     });
   });

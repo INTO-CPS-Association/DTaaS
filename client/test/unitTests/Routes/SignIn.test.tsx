@@ -23,11 +23,11 @@ describe('SignIn', () => {
     render(
       <MemoryRouter>
         <SignIn />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(
-      screen.getByRole('button', { name: /Sign In With GitLab/i }),
+      screen.getByRole('button', { name: /Sign In With GitLab/i })
     ).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe('SignIn', () => {
     render(
       <MemoryRouter>
         <SignIn />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     const signInButton = screen.getByRole('button', {

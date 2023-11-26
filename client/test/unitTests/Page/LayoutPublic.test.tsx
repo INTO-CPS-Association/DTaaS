@@ -11,7 +11,7 @@ const PublicTestComponentId = 'public-component';
 
 describe('LayoutPublic component with one element', () => {
   beforeEach(() =>
-    renderLayoutWithRouter(LayoutPublic, [PublicTestComponentId]),
+    renderLayoutWithRouter(LayoutPublic, [PublicTestComponentId])
   );
 
   basicLayoutTestsWithSingleComponent();

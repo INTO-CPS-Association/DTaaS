@@ -38,7 +38,7 @@ describe('AuthProvider', () => {
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
     expect(
-      getByText('Authentication service unavailable...try again later'),
+      getByText('Authentication service unavailable...try again later')
     ).toBeInTheDocument();
   });
 

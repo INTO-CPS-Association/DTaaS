@@ -81,11 +81,13 @@ Access to the service on network is available at `http://<ip or hostname>:3000/`
 Two REST API routes are active. The route paths and the responses given
 for these two sources are:
 
+
 | REST API Route                 | Return Value | Comment |
 | :----------------------------- | :----------- | :------ |
 | localhost:3000/phase | [ hello ] | Each invocation appends to _array_. |
 | localhost:3000/lifecycle/phase | _true_       | Always returns _true_ |
 | localhost:3000/phase | [ hello ] | array. |
+
 
 ## :balance_scale: License
 

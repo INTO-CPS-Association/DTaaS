@@ -57,7 +57,7 @@ const router = createBrowserRouter(
   ],
   {
     basename: `/${useURLbasename()}`,
-  },
+  }
 );
 
 const root = document.getElementById('root');
@@ -68,7 +68,7 @@ if (root) {
       <AppProvider>
         <RouterProvider router={router} />
       </AppProvider>
-    </React.StrictMode>,
+    </React.StrictMode>
   );
 } else {
   throw Error("Couldn't find root element");
