@@ -8,9 +8,11 @@ import {
 } from '../testUtils';
 
 describe('Digital Twins', () => {
+  let tabLabels: string[] = [];
+ tabs.forEach((tab) => tabLabels.push(tab.label));
   InitRouteTests(<DigitalTwins />);
 
   itDisplaysContentOfTabs(tabs);
 
-  itHasCorrectTabNameinDTIframe([tabs[0].label]);
+  itHasCorrectTabNameinDTIframe(tabLabels);
 });
