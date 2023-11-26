@@ -2,7 +2,7 @@ import * as React from 'react';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 
-const tabs: TabData[] = [
+const accountTab: TabData[] = [
   {
     label: 'Profile',
     body: <>Profile - potentially visible to other users.</>,
@@ -13,8 +13,10 @@ const tabs: TabData[] = [
   },
 ];
 
+const scope: TabData[][] = [];
+
 function AccountTabs() {
-  return <TabComponent tabs={tabs} />;
+  return <TabComponent assetType={accountTab} scope={scope} />;
 }
 
 export default AccountTabs;
