@@ -30,6 +30,13 @@ nav:
         - website: admin/client/CLIENT.md
         - library microservice: admin/servers/lib/LIB-MS.md
       - Services: admin/services.md
+      - Guides: 
+        - New user: admin/guides/add_user.md
+        - New Service: admin/guides/add_service.md
+        - Link services: admin/guides/link_service.md
+        - Common Assets: admin/guides/common_workspace_readonly.md
+        - HTTP Mode: admin/guides/hosting_site_without_https.md
+        - Basepath: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
@@ -45,6 +52,7 @@ nav:
           - Mass Spring Damper: user/examples/mass-spring-damper/README.md
           - Water Tank Fault Injection: user/examples/water_tank_FI/README.md
           - Water Tank Model Swap: user/examples/water_tank_swap/README.md
+          - Desktop Robotti and RabbitMQ: user/examples/drobotti-rmqfmu/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 

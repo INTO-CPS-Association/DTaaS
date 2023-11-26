@@ -1,12 +1,12 @@
 # Overview
 
-## What is the goal
+## What is the goal?
 
 The goal is to set up the DTaaS infrastructure in order to enable
 your users to use the DTaaS.
 As an admin you will administrate the users and the servers of the system.
 
-## What are the requirements
+## What are the requirements?
 
 ### OAuth Provider
 
@@ -26,11 +26,11 @@ proxy / load balancer that provides https termination. You can still use
 the DTaaS software even if you do not have this reverse proxy. If you do
 not have a reverse proxy, please replace <http:>_https://foo.com_</http:>
 with <http:>_http://foo.com_</http:> in
-[client .env file](./client/CLIENT.md) and in
+[client env.js file](./client/CLIENT.md) and in
 [OAuth registration](./client/auth.md). Other installation configuration
 remains the same.
 
-## What to install
+## What to install?
 
 The DTaaS can be installed in different ways. Each version is for different purposes:
 
@@ -41,4 +41,4 @@ The DTaaS can be installed in different ways. Each version is for different purp
 - Seperater Packages: [client website](client/CLIENT.md) and
   [lib microservice](servers/lib/LIB-MS.md)
 
-Following the installation that fit your usecase.
+Follow the installation that fits your usecase.

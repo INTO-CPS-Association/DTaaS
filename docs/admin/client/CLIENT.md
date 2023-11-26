@@ -125,7 +125,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="alice" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace:0.13.2
+  mltooling/ml-workspace-minimal:0.13.2
 
 docker run -d \
  -p 8091:8080 \
@@ -136,7 +136,7 @@ docker run -d \
   --env WORKSPACE_BASE_URL="bob" \
   --shm-size 512m \
   --restart always \
-  mltooling/ml-workspace:0.13.2
+  mltooling/ml-workspace-minimal:0.13.2
 ```
 
 Given that multiple services are running at different routes,
