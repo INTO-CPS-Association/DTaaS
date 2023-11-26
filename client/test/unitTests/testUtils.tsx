@@ -144,3 +144,17 @@ export function itHasCorrectURLOfTabsWithIframe(
     });
   });
 }
+
+export function itHasCorrectTabNameinDTIframe(
+  tablabels: string[]
+) {
+  it('should render the Iframe component on DT page for the first tab with the correct title', () => {
+    tablabels.forEach((tablabel) => {
+      const tabElement = screen.getByRole('tab', {
+        name: tablabel,
+      });
+
+      expect(tabElement).toBeTruthy();
+    });
+  });
+}
