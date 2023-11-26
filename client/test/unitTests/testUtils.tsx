@@ -137,7 +137,7 @@ export function itHasCorrectURLOfTabsWithIframe(
         tabUsed = 'digital_twins';
       }
       const tree = 'tree/';
-      const privateTab = '/private';
+      const privateTab = '';
       const urlUsed = tablabelURLpair.url + tree + tabUsed + privateTab;
       expect(firstTabIframe.length).toBeGreaterThan(0);
       expect(firstTabIframe[0]).toHaveAttribute('src', urlUsed);

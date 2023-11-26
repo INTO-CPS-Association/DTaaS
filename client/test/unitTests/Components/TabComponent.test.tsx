@@ -70,10 +70,10 @@ describe('TabComponent', () => {
   test('constructs correct URLs for Iframes', () => {
     const gitlabName = 'user';
     const LIBURL = `http://localhost.com:4000/${gitlabName}/`;
-    const tabLabel = 'Functions';
-    const subTabLabel = 'Common';
-    const expectedURL = `${LIBURL}tree/functions`;
+    const assets = 'Digital Twins';
+    const scope = 'Common';
+    const expectedURL = `${LIBURL}tree/common/digital_twins`;
 
-    expect(constructURL(tabLabel, subTabLabel, LIBURL)).toBe(expectedURL);
+    expect(constructURL(assets, scope, LIBURL)).toBe(expectedURL);
   });
 });

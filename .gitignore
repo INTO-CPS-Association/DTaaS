@@ -152,3 +152,6 @@ site/
 
 # yarn cache
 .yarn
+
+# Jupter Lab
+.workspace
