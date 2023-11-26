@@ -167,10 +167,9 @@ export const expectedFileContentResponse = {
   },
 };
 
-export const e2elistDirectory = `query {
-  project(fullPath:"dtaas/user2")
-  {
-    repository {
+export const e2elistDirectory = `query filecontents {
+  project(fullPath: "dtaas/user2") {
+		 repository {
       tree(recursive: false) {
         trees {
           edges {
@@ -184,7 +183,8 @@ export const e2elistDirectory = `query {
       }
     }
   }
-}`;
+}
+`;
 // export const e2elistDirectory = `query {
 //   listDirectory(path:"user2")
 //   {
@@ -203,7 +203,7 @@ export const e2elistDirectory = `query {
 //   }
 // }`;
 
-export const e2eReadFile = `query {
+export const e2eReadFile = `query readFile {
   project(fullPath:"dtaas/user2")
   {
     repository {

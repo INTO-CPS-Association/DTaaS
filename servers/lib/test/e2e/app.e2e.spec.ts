@@ -41,24 +41,6 @@ describe("End to End test for the application", () => {
     await app.close();
   }, 10000);
 
-  // it("should return the filename corresponding to the directory given in the query", async () => {
-  //   const query = e2elistDirectory;
-  //
-  //   const response = await request("http://localhost:4001")
-  //     .post(process.env.APOLLO_PATH)
-  //     .send({ query });
-  //   expect(response.body).toEqual(expectedListDirectoryResponse);
-  // }, 10000);
-  //
-  // it("should return the content of a file given in the query ", async () => {
-  //   const query = e2eReadFile;
-  //
-  //   const response = await request("http://localhost:4001")
-  //     .post(process.env.APOLLO_PATH)
-  //     .send({ query });
-  //   expect(response.body).toEqual(expectedFileContentResponse);
-  // }, 10000);
-
   it("should return the directory contents requested with HTTP POST query", async () => {
     const query = e2elistDirectory;
 
@@ -99,30 +81,3 @@ describe("End to End test for the application", () => {
     expect({ data }).toEqual(expectedFileContentResponse);
   }, 10000);
 });
-
-/*
-  describe("End to End test for the application", () => {
-    it("should return the filename corresponding to the directory given in the query through the Traefik gateway", async () => {
-      const query = e2elistDirectory;
-
-      const response = await request("http://localhost")
-        .post("/lib")
-        .send({ query });
-
-      response;
-      expect(response.body).toEqual(expectedListDirectoryResponse);
-    }, 10000);
-
-    it("should return the content of a file given in the query through the Traefik gateway", async () => {
-      const query = e2eReadFile;
-
-      const response = await request("http://localhost")
-        .post("/lib")
-        .send({ query });
-
-      response;
-      expect(response.body).toEqual(expectedFileContentResponse);
-    }, 10000);
-  });
-}
-*/
