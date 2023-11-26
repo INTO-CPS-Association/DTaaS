@@ -8,8 +8,8 @@ import {
 } from '../testUtils';
 
 describe('Digital Twins', () => {
-  let tabLabels: string[] = [];
- tabs.forEach((tab) => tabLabels.push(tab.label));
+  const tabLabels: string[] = [];
+  tabs.forEach((tab) => tabLabels.push(tab.label));
   InitRouteTests(<DigitalTwins />);
 
   itDisplaysContentOfTabs(tabs);
