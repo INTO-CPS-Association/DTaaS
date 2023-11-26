@@ -159,3 +159,6 @@ test.svg
 
 # config files
 runner.yml
+
+# Jupter Lab
+.workspace

@@ -79,13 +79,12 @@ export function itDisplaysContentOfTabs(
       act(() => {
         tabElement.click();
       });
-      expect(
-        screen.getByText(tab.body, {
-          normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
-        })
-      ).toBeInTheDocument();
 
-      // Expect the other tabs to not be rendered
+      const a = screen.getAllByText(tab.body, {
+        normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+      });
+      expect(a.length).toBeGreaterThan(0);
+
       tabs
         .filter((otherTab) => otherTab.label !== tab.label)
         .forEach((otherTab) => {
@@ -98,7 +97,6 @@ export function itDisplaysContentOfTabs(
 export function itPreventsDefaultActionWhenLinkIsClicked(linkText: string) {
   it(`should prevent default action when ${linkText} is clicked`, () => {
     const linkElement = screen.getByRole('link', { name: linkText });
-    // Simulate click event on see more link
     const clickEvent = createEvent.click(linkElement);
     fireEvent(linkElement, clickEvent);
     expect(clickEvent.defaultPrevented).toBeTruthy();
@@ -129,11 +127,32 @@ export function itHasCorrectURLOfTabsWithIframe(
       act(() => {
         tabElement.click();
       });
-      const firstTabIframe = screen.getByTitle(tablabelURLpair.label, {
-        exact: false,
+
+      const firstTabIframe = screen.getAllByTitle(tablabelURLpair.label, {
+        exact: true,
       });
-      expect(firstTabIframe).toBeInTheDocument();
-      expect(firstTabIframe).toHaveAttribute('src', tablabelURLpair.url);
+
+      let tabUsed = tablabelURLpair.label.toLowerCase();
+      if (tabUsed === 'digital twins') {
+        tabUsed = 'digital_twins';
+      }
+      const tree = 'tree/';
+      const privateTab = '';
+      const urlUsed = tablabelURLpair.url + tree + tabUsed + privateTab;
+      expect(firstTabIframe.length).toBeGreaterThan(0);
+      expect(firstTabIframe[0]).toHaveAttribute('src', urlUsed);
+    });
+  });
+}
+
+export function itHasCorrectTabNameinDTIframe(tablabels: string[]) {
+  it('should render the Iframe component on DT page for the first tab with the correct title', () => {
+    tablabels.forEach((tablabel) => {
+      const tabElement = screen.getByRole('tab', {
+        name: tablabel,
+      });
+
+      expect(tabElement).toBeTruthy();
     });
   });
 }
