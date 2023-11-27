@@ -24,7 +24,7 @@ function renderScopeTabList(scope: TabData[][], subIndex: number): JSX.Element {
 
 function renderScopeTabPanels(
   scope: TabData[][],
-  subIndex: number
+  subIndex: number,
 ): JSX.Element {
   return (
     <>
