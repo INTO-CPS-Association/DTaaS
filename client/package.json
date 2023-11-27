@@ -1,27 +1,29 @@
 {
-  "name": "dtaas-web",
-  "version": "0.2.0",
+  "name": "@into-cps-association/dtaas-web",
+  "version": "0.3.1",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
   "contributors": [
     "Omar Suleiman",
     "Asger Busk Breinholm",
-    "Mathias Brændgaard"
+    "Mathias Brændgaard",
+    "Emre Temel",
+    "Cesar Vela"
   ],
   "license": "SEE LICENSE IN <LICENSE.md>",
   "private": false,
   "type": "module",
   "scripts": {
-    "develop": "npx react-scripts start",
-    "test": "script/test.bash",
-    "syntax": "script/syntax.bash",
-    "build": "script/build.bash",
+    "build": "react-scripts build",
+    "clean": "npx rimraf build/ node_modules/ coverage/ playwright-report/  *.svg",
     "configapp": "script/config.bash",
-    "start": "script/start.bash",
-    "clean": "script/clean.bash",
+    "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "graph": "script/graph.bash"
+    "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
+    "start": "serve -s build -l 4000",
+    "syntax": "npx eslint . --fix",
+    "test": "script/test.bash"
   },
   "eslintConfig": {
     "extends": [
