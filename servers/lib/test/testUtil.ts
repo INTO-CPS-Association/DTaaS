@@ -15,7 +15,7 @@ export const testDirectory = {
       trees: {
         edges: [
           { node: { name: "data", type: "tree" } },
-          { node: { name: "digital_twins", type: "tree" } },
+          { node: { name: "digital twins", type: "tree" } },
           { node: { name: "functions", type: "tree" } },
           { node: { name: "models", type: "tree" } },
           { node: { name: "tools", type: "tree" } },
@@ -29,7 +29,7 @@ export const fstestFileContent = "content123";
 export const pathToTestFileContent = "user2/tools/README.md";
 export const testFileArray = [
   "data",
-  "digital_twins",
+  "digital twins",
   "functions",
   "models",
   "tools",
@@ -104,6 +104,9 @@ export const expectedListDirectoryResponse = {
     project: {
       repository: {
         tree: {
+          blobs: {
+            edges: [],
+          },
           trees: {
             edges: [
               {
@@ -167,16 +170,25 @@ export const expectedFileContentResponse = {
   },
 };
 
-export const e2elistDirectory = `query filecontents {
+export const e2elistDirectory = `query listDirectory {
   project(fullPath: "dtaas/user2") {
-		 repository {
+	  repository {
       tree(recursive: false) {
+        blobs {
+          edges {
+            node {
+              name
+              type
+              path
+            }
+          }
+        }
         trees {
           edges {
             node {
               type
-              path
               name
+              path
             }
           }
         }
@@ -185,23 +197,6 @@ export const e2elistDirectory = `query filecontents {
   }
 }
 `;
-// export const e2elistDirectory = `query {
-//   listDirectory(path:"user2")
-//   {
-//     repository{
-//       tree{
-//         trees{
-//           edges{
-//             node{
-//               name
-//
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// }`;
 
 export const e2eReadFile = `query readFile {
   project(fullPath:"dtaas/user2")
@@ -217,17 +212,3 @@ export const e2eReadFile = `query readFile {
     }
   }
 }`;
-
-// export const e2eReadFile = `query {
-//   readFile(path:"user2/tools/README.md") {
-//     repository {
-//       blobs {
-//         nodes {
-//           name
-//           rawBlob
-//           rawTextBlob
-//         }
-//       }
-//     }
-//   }
-// }`;

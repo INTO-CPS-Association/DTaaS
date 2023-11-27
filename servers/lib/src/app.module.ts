@@ -1,25 +1,46 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver } from "@nestjs/apollo";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { join } from "path";
-import FilesModule from "./files/files.module";
+import { AppController } from "./controllers/app.controller";
+import { AppService } from "./services/app.service";
+import { ProjectResolver } from "./resolvers/project.resolver";
+import { RepositoryResolver } from "./resolvers/repository.resolver";
+import { TreeResolver } from "./resolvers/tree.resolver";
+import { BlobResolver } from "./resolvers/blob.resolver";
+import { EdgeResolver } from "./resolvers/edge.resolver";
+import { NodeService } from "./services/node.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
-    GraphQLModule.forRootAsync({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-        path: configService.get<string>("APOLLO_PATH")
+        typePaths: ["./**/*.gql"],
+        definitions: {
+          path: join(process.cwd(), "src/graphql.ts"),
+        },
+        playground: true,
+        path: configService.get<string>("APOLLO_PATH"),
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
-    FilesModule,
-  ]
+    // FilesModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    ProjectResolver,
+    RepositoryResolver,
+    TreeResolver,
+    BlobResolver,
+    EdgeResolver,
+    NodeService,
+  ],
 })
-
 export default class AppModule {}

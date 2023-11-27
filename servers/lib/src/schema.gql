@@ -1,58 +1,38 @@
-# ------------------------------------------------------
-# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
-# ------------------------------------------------------
+type Node {
+  name: String!
+  type: String
+  path: String
+  rawBlob: String
+  rawTextBlob: String
+}
+
+type Edge {
+  node: Node!
+}
 
 type Blob {
-  name: String!
-  type: String!
-}
-
-type BlobEdge {
-  node: Blob!
-}
-
-type BlobConnection {
-  edges: [BlobEdge!]!
-}
-
-type TreeEntry {
-  name: String!
-  type: String!
-}
-
-type TreeEdge {
-  node: TreeEntry!
-}
-
-type TreeConnection {
-  edges: [TreeEdge!]!
+  edges: [Edge!]
+  nodes: [Node!]
 }
 
 type Tree {
-  blobs: BlobConnection!
-  trees: TreeConnection!
-}
-
-type RepositoryBlob {
-  name: String!
-  rawBlob: String!
-  rawTextBlob: String!
-}
-
-type RepositoryBlobConnection {
-  nodes: [RepositoryBlob!]!
+  blobs: Blob
+  trees: Blob
 }
 
 type Repository {
-  tree: Tree!
-  blobs: RepositoryBlobConnection!
+  tree(recursive: Boolean = false): Tree!
+  blobs(paths: [String]): Blob!
 }
 
 type Project {
   repository: Repository!
+  fullPath: String
 }
 
 type Query {
+  project(fullPath: String!): Project!
+
   listDirectory(path: String!): Project!
   readFile(path: String!): Project!
 }
