@@ -11,8 +11,6 @@ type BootstrapOptions = {
   runHelp?: CallableFunction;
 };
 
-const cloudcmdPrefix = '/fileserver/';
-
 export default async function bootstrap(options?: BootstrapOptions) {
   const configFile = dotenv.config({
     path: options?.config ?? '.env',
@@ -30,22 +28,17 @@ export default async function bootstrap(options?: BootstrapOptions) {
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT');
+  const fileserverPath = configService.get<string>('FILESERVER_PATH');
 
   const server = app.getHttpServer();
-  // eslint-disable-next-line no-console
 
   const socket = new Server(server, {
-    path: `${cloudcmdPrefix}socket.io`,
+    path: `${fileserverPath}socket.io/`,
   });
 
-  // const socketAdapter = new SocketIOAdapter(configService);
-  // app.useWebSocketAdapter(socketAdapter);
-  const port = configService.get<number>('PORT');
-  // const socket2 = socketAdapter.createIOServer(port, {
-  //   path: '/cmd/socket.io',
-  // } as ServerOptions);
   app.use(
-    cloudcmdPrefix,
+    fileserverPath,
     cloudcmd({
       config: createConfig(),
       socket,
