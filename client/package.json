@@ -34,11 +34,11 @@
     "singleQuote": true
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@fontsource/roboto": "^4.5.8",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.12.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.8",
+    "@mui/material": "^5.14.8",
     "@reduxjs/toolkit": "^1.9.5",
     "dotenv": "^16.1.4",
     "oidc-client-ts": "^2.2.2",
@@ -52,8 +52,8 @@
     "react-tabs": "^6.0.0",
     "redux": "^4.2.1",
     "resize-observer-polyfill": "^1.5.1",
-    "serve": "^14.0.1",
-    "styled-components": "^5.3.9",
+    "serve": "^14.2.1",
+    "styled-components": "^6.1.1",
     "typescript": "^4.9.5"
   },
   "devDependencies": {
