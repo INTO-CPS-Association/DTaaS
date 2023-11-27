@@ -11,7 +11,7 @@ describe('TabComponent', () => {
 
   test('renders an empty tab', () => {
     const { getByText } = render(
-      <TabComponent assetType={assetTypeTabs} scope={scopeTabs} />
+      <TabComponent assetType={assetTypeTabs} scope={scopeTabs} />,
     );
     const emptyTab = getByText('Functions');
     expect(emptyTab).toBeInTheDocument();
@@ -60,10 +60,10 @@ describe('TabComponent', () => {
     }
 
     expect(
-      screen.queryByText(assetTypeTabs[0].body.props.children)
+      screen.queryByText(assetTypeTabs[0].body.props.children),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(assetTypeTabs[1].body.props.children)
+      screen.queryByText(assetTypeTabs[1].body.props.children),
     ).not.toBeInTheDocument();
   });
 
