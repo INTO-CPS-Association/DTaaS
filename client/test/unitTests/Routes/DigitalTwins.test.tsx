@@ -1,19 +1,18 @@
 import * as React from 'react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import { mockURLforDT } from '../__mocks__/global_mocks';
 import {
   InitRouteTests,
   itDisplaysContentOfTabs,
-  itHasCorrectURLOfTabsWithIframe,
+  itHasCorrectTabNameinDTIframe,
 } from '../testUtils';
 
 describe('Digital Twins', () => {
+  const tabLabels: string[] = [];
+  tabs.forEach((tab) => tabLabels.push(tab.label));
   InitRouteTests(<DigitalTwins />);
 
   itDisplaysContentOfTabs(tabs);
 
-  itHasCorrectURLOfTabsWithIframe([
-    { label: tabs[0].label, url: mockURLforDT },
-  ]);
+  itHasCorrectTabNameinDTIframe(tabLabels);
 });

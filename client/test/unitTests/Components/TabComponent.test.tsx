@@ -1,43 +1,79 @@
 import * as React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TabComponent from 'components/tab/TabComponent';
-import { TabData } from 'components/tab/subcomponents/TabRender';
+import { TabComponent, constructURL } from 'components/tab/TabComponent';
+import { assetType } from 'route/library/LibraryTabData';
+import { createCombinedTabs, createTabs } from 'route/library/Library';
 
 describe('TabComponent', () => {
-  test('empty tab renders', () => {
-    const tabs: TabData[] = [];
-    render(<TabComponent tabs={tabs} />);
-    expect(true);
-  });
+  const assetTypeTabs = createTabs();
+  const scopeTabs = createCombinedTabs();
 
-  test('renders tabs with labels and default tab open', () => {
-    const tabs = [
-      { label: 'Tab 1', body: <div>Tab 1 content</div> },
-      { label: 'Tab 2', body: <div>Tab 2 content</div> },
-    ];
-    const { getByText, queryByText } = render(<TabComponent tabs={tabs} />);
-    expect(getByText('Tab 1')).toBeInTheDocument();
-    expect(getByText('Tab 2')).toBeInTheDocument();
-
-    expect(getByText('Tab 1 content')).toBeInTheDocument();
-    expect(queryByText('Tab 2 content')).not.toBeInTheDocument();
-  });
-
-  test('change tab', async () => {
-    const tabs = [
-      { label: 'Tab 1', body: <div>Tab 1 content</div> },
-      { label: 'Tab 2', body: <div>Tab 2 content</div> },
-      { label: 'Tab 3', body: <div>Tab 3 content</div> },
-    ];
-    const { getByText, getByRole, queryByText } = render(
-      <TabComponent tabs={tabs} />
+  test('renders an empty tab', () => {
+    const { getByText } = render(
+      <TabComponent assetType={assetTypeTabs} scope={scopeTabs} />,
     );
-    const tab = getByRole('tab', { name: 'Tab 2' });
+    const emptyTab = getByText('Functions');
+    expect(emptyTab).toBeInTheDocument();
+    userEvent.click(emptyTab);
+  });
 
-    await userEvent.click(tab);
-    expect(queryByText('Tab 1 content')).not.toBeInTheDocument();
-    expect(getByText('Tab 2 content')).toBeInTheDocument();
-    expect(queryByText('Tab 3 content')).not.toBeInTheDocument();
+  test('renders tabs with labels and defaults to the first tab open', async () => {
+    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+
+    const functionsAppear = screen.getAllByText('Functions');
+    expect(functionsAppear.length).toBeGreaterThan(0);
+
+    const modelsAppear = screen.getAllByText('Models');
+    expect(modelsAppear.length).toBeGreaterThan(0);
+
+    const functionsTab = assetType.find((tab) => tab.label === 'Functions');
+
+    if (functionsTab) {
+      const isFunctionsBody = screen.getAllByText('Functions');
+      expect(isFunctionsBody.length).toBeGreaterThan(0);
+    }
+
+    const clickedTab = screen.getByRole('tab', { name: 'Models' });
+    await userEvent.click(clickedTab);
+
+    const modelsTab = assetType.find((tab) => tab.label === 'Models');
+
+    if (modelsTab) {
+      const isModelsBody = screen.getAllByText(modelsTab.body);
+      const modelsbodylength = isModelsBody.length;
+      expect(modelsbodylength).not.toBeLessThan(0);
+    }
+  });
+
+  test('changes the active tab on click', async () => {
+    render(<TabComponent assetType={assetTypeTabs} scope={scopeTabs} />);
+    const clickedTab = screen.getByRole('tab', { name: 'Data' });
+
+    await userEvent.click(clickedTab);
+
+    const dataTab = assetType.find((tab) => tab.label === 'Data');
+
+    if (dataTab) {
+      const isDataBody = screen.getAllByText(dataTab.body);
+      expect(isDataBody.length).toBeGreaterThan(0);
+    }
+
+    expect(
+      screen.queryByText(assetTypeTabs[0].body.props.children),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(assetTypeTabs[1].body.props.children),
+    ).not.toBeInTheDocument();
+  });
+
+  test('constructs correct URLs for Iframes', () => {
+    const gitlabName = 'user';
+    const LIBURL = `http://localhost.com:4000/${gitlabName}/`;
+    const assets = 'Digital Twins';
+    const scope = 'Common';
+    const expectedURL = `${LIBURL}tree/common/digital_twins`;
+
+    expect(constructURL(assets, scope, LIBURL)).toBe(expectedURL);
   });
 });

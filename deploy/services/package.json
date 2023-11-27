@@ -5,6 +5,9 @@
   "author": "Prasad Talasila",
   "private": false,
   "type": "module",
+  "scripts": {
+    "clean": "npx rimraf node_modules"
+  },
   "dependencies": {
     "chalk": "^5.3.0",
     "execa": "^8.0.1",
