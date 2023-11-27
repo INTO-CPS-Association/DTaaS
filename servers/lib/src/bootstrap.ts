@@ -29,16 +29,16 @@ export default async function bootstrap(options?: BootstrapOptions) {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
-  const fileserverPath = configService.get<string>('FILESERVER_PATH');
+  const fileServerPath = configService.get<string>('FILE_SERVER_PATH');
 
   const server = app.getHttpServer();
 
   const socket = new Server(server, {
-    path: `${fileserverPath}socket.io/`,
+    path: `${fileServerPath}/socket.io/`,
   });
 
   app.use(
-    fileserverPath,
+    fileServerPath,
     cloudcmd({
       config: createConfig(),
       socket,
