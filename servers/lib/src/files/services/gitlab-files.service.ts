@@ -23,8 +23,6 @@ export default class GitlabFilesService implements IFilesService {
   private async parseArguments(
     path: string,
   ): Promise<{ domain: string; parsedPath: string }> {
-    console.log("pathhh", path);
-
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
