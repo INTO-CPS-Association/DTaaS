@@ -22,12 +22,14 @@ The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
 push the commits to remote repositories.
 
-You can also run the git-hooks manually before staging changes
-using the following commands
+You can also run the git-hooks manually before committing or pushing
+by using the run commands below. The autoupdate command will set the
+revisions of the git repos used in the .pre-commit-config.yaml up to date.
 
 ```bash
 pre-commit run --hook-stage pre-commit # runs format and syntax checks
 pre-commit run --hook-stage pre-push   # runs test
+pre-commit autoupdate                  # update hooks to latests versions
 ```
 
 Be aware that the tests may take a long time to run.
