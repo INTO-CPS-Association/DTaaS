@@ -66,3 +66,21 @@ repos:
       - id: markdownlint
         files: '^(client|servers/execution/runner|servers/lib)/.*\.md$'
         stages: [pre-commit]
+
+  - repo: https://github.com/syntaqx/git-hooks
+    rev: v0.0.18
+    hooks:
+      - id: shellcheck
+        files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-json
+        files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+      - id: check-yaml
+        files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+  
