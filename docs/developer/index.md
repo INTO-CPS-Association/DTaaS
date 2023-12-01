@@ -22,7 +22,9 @@ The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
 push the commits to remote repositories.
 
-You can also run the git-hooks manually before staging changes using the following commands
+You can also run the git-hooks manually before staging changes
+using the following commands
+
 ```bash
 pre-commit run --hook-stage pre-commit # runs format and syntax checks
 pre-commit run --hook-stage pre-push   # runs test
@@ -83,11 +85,11 @@ the code quality.
 
 The project code qualities are measured based on:
 
-* Linting issues identified by
+- Linting issues identified by
   [Code Climate](https://codeclimate.com/github/INTO-CPS-Association/DTaaS)
-* Test coverage report collected by
+- Test coverage report collected by
   [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
-* Successful [github actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
+- Successful [github actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
 
 ### Code Climate
 
