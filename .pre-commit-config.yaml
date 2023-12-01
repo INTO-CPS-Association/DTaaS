@@ -65,6 +65,8 @@ repos:
     hooks:
       - id: markdownlint
         files: '.*\.md$'
+        entry: ./script/markdownlint-hook.sh
+        verbose: true
         stages: [pre-commit]
 
   - repo: https://github.com/syntaqx/git-hooks
