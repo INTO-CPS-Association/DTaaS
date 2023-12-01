@@ -15,7 +15,7 @@ export const testDirectory = {
       trees: {
         edges: [
           { node: { name: "data", type: "tree" } },
-          { node: { name: "digital_twins", type: "tree" } },
+          { node: { name: "digital twins", type: "tree" } },
           { node: { name: "functions", type: "tree" } },
           { node: { name: "models", type: "tree" } },
           { node: { name: "tools", type: "tree" } },
@@ -29,7 +29,7 @@ export const fstestFileContent = "content123";
 export const pathToTestFileContent = "user2/tools/README.md";
 export const testFileArray = [
   "data",
-  "digital_twins",
+  "digital twins",
   "functions",
   "models",
   "tools",
@@ -68,11 +68,12 @@ export class MockConfigService {
       case "MODE":
         if (process.env.MODE === "gitlab") {
           return "gitlab";
-        } if (process.env.MODE === "local") {
+        }
+        if (process.env.MODE === "local") {
           return "local";
-        } 
-          return "unknown";
-        
+        }
+        return "unknown";
+
       default:
         return undefined;
     }
@@ -112,7 +113,7 @@ export const expectedListDirectoryResponse = {
               },
               {
                 node: {
-                  name: "digital_twins",
+                  name: "digital twins",
                 },
               },
               {
@@ -157,7 +158,7 @@ export const expectedFileContentResponse = {
 };
 
 export const e2elistDirectory = `query {
-  listDirectory(path:"user2")
+  listDirectory(path:"dtaas/user2")
   {
     repository{
       tree{
@@ -175,7 +176,7 @@ export const e2elistDirectory = `query {
 }`;
 
 export const e2eReadFile = `query {
-  readFile(path:"user2/tools/README.md") {
+  readFile(path:"dtaas/user2/tools/README.md") {
     repository {
       blobs {
         nodes {

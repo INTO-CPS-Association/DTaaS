@@ -1,8 +1,7 @@
-export const getDirectoryQuery = (domain: string, parsedPath: string) => `
-  query listDirectory {
+export const getDirectoryQuery = (domain: string) => `query listDirectory {
     project(fullPath: "${domain}") {
       repository {
-        tree(path: "${parsedPath}", recursive: false) {
+        tree(recursive: false) {
           blobs {
             edges {
               node {
@@ -25,8 +24,10 @@ export const getDirectoryQuery = (domain: string, parsedPath: string) => `
   }
 `;
 
-export const getReadFileQuery = (domain: string, parsedPath: string) => `
-  query readFile {
+export const getReadFileQuery = (
+  domain: string,
+  parsedPath: string,
+) => `query readFile {
     project(fullPath: "${domain}") {
       repository {
         blobs(paths: "${parsedPath}") {

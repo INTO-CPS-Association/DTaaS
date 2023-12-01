@@ -21,17 +21,24 @@ export default class GitlabFilesService implements IFilesService {
   }
 
   private async parseArguments(
-    path: string
+    path: string,
   ): Promise<{ domain: string; parsedPath: string }> {
+    console.log("pathhh", path);
+
     const gitlabGroup = this.configService.get("GITLAB_GROUP");
     const pathParts: string[] = path.split("/");
     const project: string = pathParts[0];
 
     // Only prepend the gitlabGroup if it's not already part of the path
     const domain: string =
-      project === gitlabGroup ? project : `${gitlabGroup  }/${  project}`;
+      project === gitlabGroup
+        ? `${project}/${pathParts[1]}`
+        : `${gitlabGroup}/${project}`;
 
-    const parsedPath = pathParts.slice(1).join("/");
+    const parsedPath =
+      project === gitlabGroup
+        ? pathParts.slice(2).join("/")
+        : pathParts.slice(1).join("/");
     return { domain, parsedPath };
   }
 
@@ -42,11 +49,8 @@ export default class GitlabFilesService implements IFilesService {
         method: "post",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.configService.get("GITLAB_TOKEN")}`,
         },
-        data: {
-          query,
-        },
+        data: { query },
       });
       return response.data.data.project;
     } catch (error) {
@@ -56,10 +60,11 @@ export default class GitlabFilesService implements IFilesService {
 
   private async executeQuery(
     path: string,
-    getQuery: QueryFunction
+    getQuery: QueryFunction,
   ): Promise<Project> {
     const { domain, parsedPath } = await this.parseArguments(path);
     const query = getQuery(domain, parsedPath);
+
     return this.sendRequest(query);
   }
 }
