@@ -7,7 +7,7 @@ export const TestComponentIdList = ['component1', 'component2', 'component3'];
 
 export function renderLayoutWithRouter(
   Layout: (props: { children: React.ReactElement[] }) => React.ReactElement,
-  Children: string[]
+  Children: string[],
 ) {
   render(<Layout>{generateTestDivs(Children)}</Layout>, {
     wrapper: BrowserRouter,

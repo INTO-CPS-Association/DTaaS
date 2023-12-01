@@ -49,7 +49,7 @@ const setupTest = (authState: AuthState) => {
     <PrivateRoute>
       <Library />
     </PrivateRoute>,
-    { route: '/private', store }
+    { route: '/private', store },
   );
 };
 
@@ -75,7 +75,7 @@ describe('Redux and Authentication integration test', () => {
 
     expect(screen.getByText('Signin')).toBeInTheDocument();
     expect(authReducer(undefined, { type: 'unknown' })).toEqual(
-      initialState.auth
+      initialState.auth,
     );
     expect(store.getState().userName).toBe(undefined);
   });
