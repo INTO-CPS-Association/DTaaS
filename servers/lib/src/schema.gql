@@ -26,8 +26,8 @@ type Repository {
 }
 
 type Project {
-  repository: Repository!
-  fullPath: String
+  repository: Repository
+  fullPath: String!
 }
 
 type Query {

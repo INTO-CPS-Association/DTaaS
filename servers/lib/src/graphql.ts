@@ -36,8 +36,8 @@ export interface Repository {
 }
 
 export interface Project {
-    repository: Repository;
-    fullPath?: Nullable<string>;
+    repository?: Nullable<Repository>;
+    fullPath: string;
 }
 
 export interface IQuery {

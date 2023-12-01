@@ -3,13 +3,12 @@ import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { join } from "path";
-import { AppController } from "./controllers/app.controller";
-import { AppService } from "./services/app.service";
 import { ProjectResolver } from "./resolvers/project.resolver";
 import { RepositoryResolver } from "./resolvers/repository.resolver";
 import { TreeResolver } from "./resolvers/tree.resolver";
 import { BlobResolver } from "./resolvers/blob.resolver";
 import { EdgeResolver } from "./resolvers/edge.resolver";
+import { ProjectService } from "./services/project.service";
 import { NodeService } from "./services/node.service";
 
 @Module({
@@ -32,15 +31,14 @@ import { NodeService } from "./services/node.service";
     }),
     // FilesModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     ProjectResolver,
+    ProjectService,
+    NodeService,
     RepositoryResolver,
     TreeResolver,
     BlobResolver,
     EdgeResolver,
-    NodeService,
   ],
 })
 export default class AppModule {}
