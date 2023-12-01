@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-// import { execSync } from "child_process";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import AppModule from "../../src/app.module";
 import {
@@ -20,8 +19,6 @@ describe("End to End test for the application", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    // execSync("test/starttraefik.bash");
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -34,7 +31,6 @@ describe("End to End test for the application", () => {
   }, 10000);
 
   afterAll(async () => {
-    // execSync("test/stoptraefik.bash");
     await app.close();
   }, 10000);
 
