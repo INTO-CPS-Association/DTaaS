@@ -22,6 +22,12 @@ The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
 push the commits to remote repositories.
 
+You can also run the git-hooks manually before staging changes using the following commands
+```bash
+pre-commit run --hook-stage pre-commit # runs format and syntax checks
+pre-commit run --hook-stage pre-push   # runs test
+```
+
 Be aware that the tests may take a long time to run.
 If you want to skip the tests or formatting,
 you can use the `--no-verify` flag
