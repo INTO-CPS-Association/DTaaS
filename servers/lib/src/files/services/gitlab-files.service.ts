@@ -41,6 +41,7 @@ export default class GitlabFilesService implements IFilesService {
   }
 
   private async sendRequest(query: string): Promise<Project> {
+    this.configService.get("GITLAB_TOKEN");
     try {
       const response = await axios({
         url: "https://gitlab.com/api/graphql",
