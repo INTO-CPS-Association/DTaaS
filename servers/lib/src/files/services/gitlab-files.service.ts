@@ -30,7 +30,7 @@ export default class GitlabFilesService implements IFilesService {
     // Only prepend the gitlabGroup if it's not already part of the path
     const domain: string =
       project === gitlabGroup
-        ? `${project}/${pathParts[1]}`
+        ? `${gitlabGroup}/${pathParts[1]}`
         : `${gitlabGroup}/${project}`;
 
     const parsedPath =
@@ -41,13 +41,13 @@ export default class GitlabFilesService implements IFilesService {
   }
 
   private async sendRequest(query: string): Promise<Project> {
-    this.configService.get("GITLAB_TOKEN");
     try {
       const response = await axios({
         url: "https://gitlab.com/api/graphql",
         method: "post",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `bearer ${this.configService.get("TOKEN")}`,
         },
         data: { query },
       });
