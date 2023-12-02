@@ -12,8 +12,11 @@ export default class LocalFilesService implements IFilesService {
 
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
-
-    const fullPath = join(dataPath, path);
+    const pathParts = path.split("/");
+    const fullPath =
+      pathParts[0] === this.configService.get("GITLAB_GROUP")
+        ? join(dataPath, pathParts.splice(1).join("/"))
+        : join(dataPath, pathParts.join("/"));
 
     const files = await fs.promises.readdir(fullPath);
 
@@ -35,7 +38,11 @@ export default class LocalFilesService implements IFilesService {
 
   async readFile(path: string): Promise<Project> {
     const dataPath = this.configService.get("LOCAL_PATH");
-    const fullPath = join(dataPath, path);
+    const pathParts = path.split("/");
+    const fullPath =
+      pathParts[0] === this.configService.get("GITLAB_GROUP")
+        ? join(dataPath, pathParts.splice(1).join("/"))
+        : join(dataPath, pathParts.join("/"));
 
     try {
       const content = await (
