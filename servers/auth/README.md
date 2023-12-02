@@ -24,6 +24,7 @@ You should have docker setup to be able to run this. Docker Desktop for Linux is
 - Run:
 
 ```bash
+cd DTaaS/servers/auth
 docker compose up -d --remove-orphans
 ```
 
@@ -31,6 +32,8 @@ The microservice is now running.
 
 
 ## View the example
+
+Note: Please use incognito windows in your web browser to avoid any existing cookies that cause deviation from expected performance of the example.
 
 - Head over to http://localhost/os
 - You will be redirected to Gitlab. Sign in if you aren't already signed in. Use a "xyz@gmail.com" account on Gitlab to sign in. 
