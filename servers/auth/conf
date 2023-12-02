@@ -1,0 +1,2 @@
+rule.r2.action=allow
+rule.r2.rule=Path(`/public`)

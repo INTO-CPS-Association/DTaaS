@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.entryPoints=web"
+      - "traefik.http.routers.whoami.rule=Path(`/os`)"
+      - "traefik.http.routers.whoami.middlewares=traefik-forward-auth"
+
+      - "traefik.http.routers.whoamifree.entryPoints=web"
+      - "traefik.http.routers.whoamifree.rule=Path(`/public`)"
+      - "traefik.http.routers.whoamifree.middlewares=traefik-forward-auth"
+  
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:2
+    volumes:
+      - /home/astitva/Desktop/dockertrails/cur/conf:/rules
+    environment:
+      - DEFAULT_PROVIDER=generic-oauth
+      - DOMAIN=gmail.com
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.com/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.com/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.com/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=b31ee8f6ea880d5fb037e0f0a314e881207c9d3982b511416e24cea143bb25d7
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=gloas-2068b7f1965f2432bd5e0b34930974a282570f1c71b56034e3a78bb494d7d4cd
+      - PROVIDERS_GENERIC_OAUTH_SCOPE=openid, read_user
+      - SECRET= abcdefgih
+      # INSECURE_COOKIE is required if not using a https entrypoint
+      - INSECURE_COOKIE=true
+      - LOG_LEVEL=debug
+      - CONFIG=/rules
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.oauth.entryPoints=web"
+      - "traefik.http.routers.oauth.rule=Path(`/_oauth`)"
+      - "traefik.http.routers.oauth.middlewares=traefik-forward-auth"
+
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
