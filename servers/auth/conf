@@ -1,2 +1,9 @@
-rule.r2.action=allow
-rule.r2.rule=Path(`/public`)
+rule.noauth.action=allow
+rule.noauth.rule=Path(`/public`)
+
+rule.all.action=auth
+rule.all.rule=Path('/os')
+
+rule.onlyuser1.action=auth
+rule.onlyuser1.rule=Path('/user1')
+rule.onlyuser1.whitelist = astitvasehgal05@gmail.com

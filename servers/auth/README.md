@@ -24,7 +24,6 @@ You should have docker setup to be able to run this. Docker Desktop for Linux is
 - Run:
 
 ```bash
-cd DTaaS/servers/auth
 docker compose up -d --remove-orphans
 ```
 
@@ -33,12 +32,32 @@ The microservice is now running.
 
 ## View the example
 
-Note: Please use incognito windows in your web browser to avoid any existing cookies that cause deviation from expected performance of the example.
-
 - Head over to http://localhost/os
 - You will be redirected to Gitlab. Sign in if you aren't already signed in. Use a "xyz@gmail.com" account on Gitlab to sign in. 
 - On Gitlab you will be asked to authorize sharing some account data with a "TrialAuth" application. Click on the "Authorize" button. 
 - You will be redirect to the whoami server page showing information about your system.
+
+### Logout
+
+- To logout (o.e. require re-authentication to access services), simply head over to http://localhost/_oauth/logout
+- You should be redirected to https://www.google.com/ . This confirms successful logout.
+
+### Test: When you logout.
+
+- Logout by heading over to http://localhost/_oauth/logout 
+- To test if this works, **first logout of Gitlab**. This is required because if you are signed into Gitlab, although an exchange of new access tokens will occur, 
+it may not be evident as you will be auto-signedin to Gitlab.
+- Now, head over to http://localhost/os. You will have to go through the Auth process again now. 
+- Once you've passed OAuth, you will be shown the server page.
+
+### Test: When you don't logout
+
+- Close the whoami server page tabs (if any are open).
+- Do not logout this time. 
+- Again, **logout of Gitlab**. (To maintain consistency of the test)
+- Head over to http://localhost/os. 
+- You will automatically be able to see this page, without any Auth process/ new access tokens. 
+- This page is still visible even though you have logged out of Gitlab. This is because you haven't logged out of the OAuth.  
 
 ## Additional tests
 

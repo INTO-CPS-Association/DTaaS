@@ -26,12 +26,11 @@ services:
       - "traefik.http.routers.whoamifree.middlewares=traefik-forward-auth"
   
   traefik-forward-auth:
-    image: thomseddon/traefik-forward-auth:2
+    image: thomseddon/traefik-forward-auth:latest
     volumes:
       - /home/astitva/Desktop/dockertrails/cur/conf:/rules
     environment:
       - DEFAULT_PROVIDER=generic-oauth
-      - DOMAIN=gmail.com
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.com/oauth/authorize
       - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.com/oauth/token
       - PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.com/api/v4/user
@@ -42,12 +41,13 @@ services:
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
       - LOG_LEVEL=debug
+      - LOGOUT_REDIRECT=https://www.google.com/
       - CONFIG=/rules
     labels:
       - "traefik.enable=true"
 
       - "traefik.http.routers.oauth.entryPoints=web"
-      - "traefik.http.routers.oauth.rule=Path(`/_oauth`)"
+      - "traefik.http.routers.oauth.rule=PathPrefix(`/_oauth`)"
       - "traefik.http.routers.oauth.middlewares=traefik-forward-auth"
 
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
