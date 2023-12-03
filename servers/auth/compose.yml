@@ -17,13 +17,25 @@ services:
     image: traefik/whoami
     labels:
       - "traefik.enable=true"
+      #Models an Auth service that is open to all
       - "traefik.http.routers.whoami.entryPoints=web"
       - "traefik.http.routers.whoami.rule=Path(`/os`)"
       - "traefik.http.routers.whoami.middlewares=traefik-forward-auth"
 
+      #Models a NoAuth needed service
       - "traefik.http.routers.whoamifree.entryPoints=web"
       - "traefik.http.routers.whoamifree.rule=Path(`/public`)"
       - "traefik.http.routers.whoamifree.middlewares=traefik-forward-auth"
+
+      #Models a service only visible to user1
+      - "traefik.http.routers.u1.entryPoints=web"
+      - "traefik.http.routers.u1.rule=Path(`/user1`)"
+      - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
+
+      #Models a service only visible to user2
+      - "traefik.http.routers.u2.entryPoints=web"
+      - "traefik.http.routers.u2.rule=Path(`/user2`)"
+      - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
   
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest

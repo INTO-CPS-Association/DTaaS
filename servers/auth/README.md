@@ -20,8 +20,6 @@ This demo uses docker for running the microservice. Within docker, images of the
 You should have docker setup to be able to run this. Docker Desktop for Linux is preferred.
 
 - Clone/Pull the DTaaS repo
-- To avoid any volume mount errors, please open up the servers/auth/compose.yml file and change the path in services: traefik-forward-auth: volumes: 
-  to the correct file path of the servers/auth/conf file on your system
 - In your terminal, change directory to this auth directory, 
 - Run:
 
