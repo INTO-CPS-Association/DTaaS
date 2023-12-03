@@ -1,0 +1,88 @@
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: yarn-install-client
+        name: yarn install client
+        entry: bash
+        language: system
+        files: "^client/.*"
+        args: ["-c", "cd client && yarn install"]
+      - id: yarn-install-runner
+        name: yarn install runner
+        entry: bash
+        language: system
+        files: "^servers/execution/runner/.*"
+        args: ["-c", "cd servers/execution/runner && yarn install"]
+      - id: yarn-install-lib
+        name: yarn install lib
+        entry: bash
+        language: system
+        files: "^servers/lib/.*"
+        args: ["-c", "cd servers/lib && yarn install"]
+
+      - id: yarn-jest-client
+        name: yarn jest client
+        entry: bash
+        language: system
+        files: "^client/.*"
+        args: ["-c", "cd client && yarn jest . --coverage=false"]
+        stages: [pre-push]
+      - id: yarn-test-runner
+        name: yarn test runner
+        entry: bash
+        language: system
+        files: "^servers/execution/runner/.*"
+        args: ["-c", "cd servers/execution/runner && yarn test:nocov"]
+        stages: [pre-push]
+      # - id: yarn-test-lib
+      #   name: yarn test lib
+      #   entry: bash
+      #   language: system
+      #   files: "^servers/lib/.*"
+      #   args: ["-c", "cd servers/lib && yarn jest . --coverage=false"]
+      #   stages: [pre-push]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        args: ["--ignore-path", "../.gitignore", "--write"]
+        files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.54.0
+    hooks:
+      - id: eslint
+        args: ["--fix"]
+        files: "^(client|servers/execution/runner|servers/lib)/.*"
+        stages: [pre-commit]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        files: '.*\.md$'
+        entry: ./script/markdownlint-hook.sh
+        verbose: true
+        stages: [pre-commit]
+
+  - repo: https://github.com/syntaqx/git-hooks
+    rev: v0.0.18
+    hooks:
+      - id: shellcheck
+        files: '.*'
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-json
+        files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+      - id: check-yaml
+        files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+  

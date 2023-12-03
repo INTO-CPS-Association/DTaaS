@@ -31,9 +31,9 @@ You need the following information from the OAuth application registered on Gitl
 
 | Gitlab Variable Name | Variable name in Client env.js | Default Value                                    |
 | :------------------- | :----------------------------- | :----------------------------------------------- |
-| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | https://gitlab.foo.com/                          |
+| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | <https://gitlab.foo.com/>                        |
 | Application ID       | REACT_APP_CLIENT_ID            |
-| Callback URL         | REACT_APP_REDIRECT_URI         | https://foo.com/Library                          |
+| Callback URL         | REACT_APP_REDIRECT_URI         | <https://foo.com/Library>                        |
 | Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api |
 
 You can also see

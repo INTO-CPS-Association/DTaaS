@@ -13,8 +13,8 @@ The installation scripts in this directory install:
 ## Configure and Install
 
 The first step in installation is to specify the config of the services.
-There are two configuration files. The __services.yml__ contains most
-of configuration settings. The __mqtt-default.conf__ file contains
+There are two configuration files. The **services.yml** contains most
+of configuration settings. The **mqtt-default.conf** file contains
 the MQTT listening port. Update these two config files before proceeding
 with the installation of the services.
 

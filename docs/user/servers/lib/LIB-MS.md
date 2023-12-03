@@ -38,7 +38,7 @@ To retrieve a list of files in a directory, use the following GraphQL query.
 
 Replace `path` with the desired directory path.
 
-send requests to: <http:>https://foo.com/lib</http:>
+send requests to: <https://foo.com/lib>
 
 === "GraphQL Query"
 

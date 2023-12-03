@@ -13,7 +13,7 @@ COMMIT_HASH=$(git rev-parse --short HEAD)
 export COMMIT_HASH
 export MKDOCS_ENABLE_PDF_EXPORT=1 
 
-echo ${VERSION}
+echo "${VERSION}"
 if [ -d site ]
 then
   rm -rf site
