@@ -23,6 +23,19 @@ to install and use the DTaaS software platform.
 You are welcome to open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose)
 if there is a suggestion to improve the software.
 
+If you find this repo useful for your research, please consider citing our paper:
+
+```bibtex
+@misc{talasila2023digital,
+      title={Digital Twin as a Service (DTaaS): A Platform for Digital Twin Developers and Users}, 
+      author={Prasad Talasila and Cláudio Gomes and Peter Høgh Mikkelsen and Santiago Gil Arboleda and Eduard Kamburjan and Peter Gorm Larsen},
+      year={2023},
+      eprint={2305.07244},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE}
+}
+```
+
 ## :hammer_and_wrench: Development Setup
 
 This is a mono repo containing code for

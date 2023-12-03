@@ -2,6 +2,6 @@ default: true
 MD033: false
 MD013: 
   code_blocks: false
-  tables: true
+  tables: false
 MD046: 
   style: "fenced"

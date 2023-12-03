@@ -24,8 +24,8 @@ like <http:>_foo.com_</http:>.
 The installation setup assumes that the foo.com server is behind a reverse
 proxy / load balancer that provides https termination. You can still use
 the DTaaS software even if you do not have this reverse proxy. If you do
-not have a reverse proxy, please replace <http:>_https://foo.com_</http:>
-with <http:>_http://foo.com_</http:> in
+not have a reverse proxy, please replace <https://foo.com>
+with <http://foo.com> in
 [client env.js file](./client/CLIENT.md) and in
 [OAuth registration](./client/auth.md). Other installation configuration
 remains the same.
