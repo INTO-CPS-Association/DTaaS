@@ -935,10 +935,10 @@
   resolved "https://registry.yarnpkg.com/@lukeed/csprng/-/csprng-1.1.0.tgz#1e3e4bd05c1cc7a0b2ddbd8a03f39f6e4b5e6cfe"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
-"@nestjs/apollo@^12.0.9":
-  version "12.0.9"
-  resolved "https://registry.yarnpkg.com/@nestjs/apollo/-/apollo-12.0.9.tgz#f346ac28bd5e4711f6007a1e8301d8eca77e82cc"
-  integrity sha512-aAo+FzmLNQdAZVYkJu4Jnhx4QWp3RalfuFe9vH644ap/ao79FhWR/YKA0N+Zr1RTLKjtl7/PUm4N6z2a8G2LbQ==
+"@nestjs/apollo@^12.0.11":
+  version "12.0.11"
+  resolved "https://registry.yarnpkg.com/@nestjs/apollo/-/apollo-12.0.11.tgz#1d6d1dcae990ebd2c61458802518c84a0693fc43"
+  integrity sha512-E8kBOyGBZ8Zx4qMLnK3+ECZgmLKqNHyYbtkOi0fXWr8ackosLMkRqGgtDVffXRlVA3eo6G3RgnL0Qyu3VvfD5A==
   dependencies:
     "@apollo/server-plugin-landing-page-graphql-playground" "4.0.0"
     iterall "1.3.0"
