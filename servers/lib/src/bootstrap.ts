@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import AppModule from './app.module';
+import runCloudCmd from './cloudcmd';
 
 type BootstrapOptions = {
   config?: string;
+  fileserver?: string;
   runHelp?: CallableFunction;
 };
 
@@ -22,7 +24,13 @@ export default async function bootstrap(options?: BootstrapOptions) {
       process.exit(1);
     }
   }
+
   const app = await NestFactory.create(AppModule);
+
+  if (options.fileserver) {
+    runCloudCmd(app);
+  }
+
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
   await app.listen(port);
