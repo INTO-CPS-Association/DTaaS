@@ -10,13 +10,16 @@ export default class LocalFilesService implements IFilesService {
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor(private configService: ConfigService) {}
 
-  async listDirectory(path: string): Promise<Project> {
+  GetFullPath(path: string) {
     const dataPath = this.configService.get('LOCAL_PATH');
     const pathParts = path.split('/');
-    const fullPath =
-      pathParts[0] === this.configService.get('GITLAB_GROUP')
-        ? join(dataPath, pathParts.splice(1).join('/'))
-        : join(dataPath, pathParts.join('/'));
+    return pathParts[0] === this.configService.get('GITLAB_GROUP')
+      ? join(dataPath, pathParts.splice(1).join('/'))
+      : join(dataPath, pathParts.join('/'));
+  }
+
+  async listDirectory(path: string): Promise<Project> {
+    const fullPath = this.GetFullPath(path);
 
     const files = await fs.promises.readdir(fullPath);
 
@@ -37,12 +40,7 @@ export default class LocalFilesService implements IFilesService {
   }
 
   async readFile(path: string): Promise<Project> {
-    const dataPath = this.configService.get('LOCAL_PATH');
-    const pathParts = path.split('/');
-    const fullPath =
-      pathParts[0] === this.configService.get('GITLAB_GROUP')
-        ? join(dataPath, pathParts.splice(1).join('/'))
-        : join(dataPath, pathParts.join('/'));
+    const fullPath = this.GetFullPath(path);
 
     try {
       const content = await (
