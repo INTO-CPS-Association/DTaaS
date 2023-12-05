@@ -182,4 +182,3 @@ yarn test -e
 This command launches the test runner and executes all end-to-end tests.
 Make sure you have an active internet connection while running these tests,
 as they simulate real user interactions with your GitLab account.
-

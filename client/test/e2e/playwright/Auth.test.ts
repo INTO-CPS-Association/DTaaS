@@ -13,7 +13,7 @@ test.describe('Tests on Authentication Flow', () => {
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
       .click();
     await expect(
-      page.getByRole('button', { name: 'Open settings' })
+      page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
     await expect(page).toHaveURL(/.*Library/);
   });
@@ -23,7 +23,7 @@ test.describe('Tests on Authentication Flow', () => {
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
       .click();
     await expect(
-      page.getByRole('button', { name: 'Open settings' })
+      page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
     await expect(page).toHaveURL(/.*Library/);
 

@@ -22,6 +22,10 @@ sudo -H pip3 install qrcode
 sudo apt-get install -y rubygems
 sudo gem install mdl
 
+# Install shellcheck
+sudo apt-get install -y shellcheck
+
 # Install madge for generating dependency graphs of typescript projects
 sudo apt-get install -y graphviz
 sudo npm install -g madge
+

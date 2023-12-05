@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import * as fs from "fs";
-import { join } from "path";
-import { ConfigService } from "@nestjs/config";
-import { Project } from "src/types";
-import { IFilesService } from "../interfaces/files.service.interface";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import * as fs from 'fs';
+import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
+import { Project } from 'src/types';
+import { IFilesService } from '../interfaces/files.service.interface';
 
 @Injectable()
 export default class LocalFilesService implements IFilesService {
@@ -11,12 +11,12 @@ export default class LocalFilesService implements IFilesService {
   constructor(private configService: ConfigService) {}
 
   async listDirectory(path: string): Promise<Project> {
-    const dataPath = this.configService.get("LOCAL_PATH");
-    const pathParts = path.split("/");
+    const dataPath = this.configService.get('LOCAL_PATH');
+    const pathParts = path.split('/');
     const fullPath =
-      pathParts[0] === this.configService.get("GITLAB_GROUP")
-        ? join(dataPath, pathParts.splice(1).join("/"))
-        : join(dataPath, pathParts.join("/"));
+      pathParts[0] === this.configService.get('GITLAB_GROUP')
+        ? join(dataPath, pathParts.splice(1).join('/'))
+        : join(dataPath, pathParts.join('/'));
 
     const files = await fs.promises.readdir(fullPath);
 
@@ -26,10 +26,10 @@ export default class LocalFilesService implements IFilesService {
 
     const tree = {
       trees: {
-        edges: edges.filter((edge) => edge.node.type === "tree"),
+        edges: edges.filter((edge) => edge.node.type === 'tree'),
       },
       blobs: {
-        edges: edges.filter((edge) => edge.node.type === "blob"),
+        edges: edges.filter((edge) => edge.node.type === 'blob'),
       },
     };
 
@@ -37,32 +37,32 @@ export default class LocalFilesService implements IFilesService {
   }
 
   async readFile(path: string): Promise<Project> {
-    const dataPath = this.configService.get("LOCAL_PATH");
-    const pathParts = path.split("/");
+    const dataPath = this.configService.get('LOCAL_PATH');
+    const pathParts = path.split('/');
     const fullPath =
-      pathParts[0] === this.configService.get("GITLAB_GROUP")
-        ? join(dataPath, pathParts.splice(1).join("/"))
-        : join(dataPath, pathParts.join("/"));
+      pathParts[0] === this.configService.get('GITLAB_GROUP')
+        ? join(dataPath, pathParts.splice(1).join('/'))
+        : join(dataPath, pathParts.join('/'));
 
     try {
       const content = await (
-        await fs.promises.readFile(fullPath, "utf8")
+        await fs.promises.readFile(fullPath, 'utf8')
       ).trim();
 
-      const name = fullPath.split("/").pop(); // extract file name from the path
+      const name = fullPath.split('/').pop(); // extract file name from the path
 
       return LocalFilesService.formatResponse(name, content);
     } catch (error) {
-      throw new InternalServerErrorException("Error reading file");
+      throw new InternalServerErrorException('Error reading file');
     }
   }
 
   private static async getFileStats(fullPath: string, file: string) {
     const stats = await fs.promises.lstat(join(fullPath, file));
     if (stats.isDirectory()) {
-      return { node: { name: file, type: "tree" } };
+      return { node: { name: file, type: 'tree' } };
     }
-    return { node: { name: file, type: "blob" } };
+    return { node: { name: file, type: 'blob' } };
   }
 
   private static formatResponse(name: string, content: string): Project {
