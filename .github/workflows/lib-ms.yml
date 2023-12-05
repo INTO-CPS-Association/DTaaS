@@ -49,7 +49,7 @@ jobs:
           LOCAL_PATH: ${{ github.workspace }}/files
           GITLAB_GROUP: dtaas
           GITLAB_URL: https://gitlab.com/api/graphql
-          TOKEN: token
+          GITLAB_TOKEN: token
           MODE: gitlab
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
