@@ -31,3 +31,15 @@ gitlab repository:
     models/
     tools/
 ```
+
+You also need a .env file in the lib folder:
+
+```bash
+PORT='4001'
+MODE='gitlab'
+LOCAL_PATH ='/home/<Name>/DTaaS/files'
+GITLAB_GROUP ='dtaas'
+GITLAB_URL='https://gitlab.com/api/graphql'
+GITLAB_TOKEN='A VALID GITLAB TOKEN'
+APOLLO_PATH='/lib'
+```
