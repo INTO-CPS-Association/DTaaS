@@ -1,5 +1,23 @@
 #!/bin/bash
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --env)
+            env_variable="$2"
+            shift
+            ;;
+        *)
+            echo "Unknown parameter passed: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 set -eu
+
+if [ -n "$env_variable" ] ; then
+  printf "environment: ${env_variable}.\n"
+fi
 
 printf "Install script for DTaaS software platform.\n"
 printf "You can run the script multiple times until the installation succeeds.\n "
@@ -129,13 +147,22 @@ yarn install
 yarn build
 
 yarn configapp dev
-cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
+if [ -n "$env_variable" ] ; then
+  cp "${TOP_DIR}/deploy/config/client/env.${env_variable}.js" build/env.js
+else
+  cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
+fi
 nohup serve -s build -l 4000 & disown
 
 #-------------
 printf "\n\n Build, configure and run the lib microservice\n "
 printf "...........\n "
 cd "${TOP_DIR}/servers/lib" || exit
+if [ -n "$env_variable" ] ; then
+  cp "${TOP_DIR}/deploy/config/lib.${env_variable}" .env
+else
+  cp "${TOP_DIR}/deploy/config/lib" .env
+fi
 yarn install
 yarn build
 
@@ -183,8 +210,11 @@ printf "\n\n Start the traefik gateway server\n "
 printf "...........\n "
 cd "${TOP_DIR}/servers/config/gateway" || exit
 cp "${TOP_DIR}/deploy/config/gateway/auth" auth
-cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
-
+if [ -n "$env_variable" ] ; then
+  cp "${TOP_DIR}/deploy/config/gateway/fileConfig.${env_variable}.yml" "dynamic/fileConfig.yml"
+else
+  cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
+fi
 docker run -d \
  --name "traefik-gateway" \
  --network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \
