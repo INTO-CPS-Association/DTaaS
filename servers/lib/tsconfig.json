@@ -7,6 +7,7 @@
     "experimentalDecorators": true, //allow experimental decorators for es7
     "forceConsistentCasingInFileNames": false,
     "incremental": true,
+    "resolveJsonModule": true,
     "module": "commonjs", //use node module system
     "moduleResolution": "node", //use node module resolution strategy node
     //"noImplicitAny": true, //raise error on any type
@@ -25,7 +26,7 @@
     "types": ["node", "jest"], //use node and jest types
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
-    ],
+    ]
   },
   "exclude": ["**/node_modules/*", "./dist"]
 }

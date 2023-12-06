@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
 import FilesModule from './files/files.module';
+import CloudCMDService from './cloudcmd/cloudcmd.service';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import FilesModule from './files/files.module';
     }),
     FilesModule,
   ],
+  providers: [CloudCMDService],
 })
 export default class AppModule {}
