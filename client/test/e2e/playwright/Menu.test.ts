@@ -1,7 +1,7 @@
 // src: https://playwright.dev/docs/writing-tests
 
 import { test, expect } from '@playwright/test';
-import links from './Links.ts'; // Extension is required with Playwright import
+import links from './Links'; // Extension is required with Playwright import
 
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
