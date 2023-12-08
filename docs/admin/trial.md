@@ -49,7 +49,8 @@ Remember to create gitlab accounts for `user1` and `user2`.
     While installing you might encounter multiple dialogs asking,
     which services should be restarted. Just click **OK** to all of those.
 
-Run the following scripts.
+Run the following scripts. To setup the installation to use localhost,
+add the following argument to the script `--env local`.
 
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh

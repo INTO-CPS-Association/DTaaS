@@ -16,7 +16,7 @@ done
 set -eu
 
 if [ -n "$env_variable" ] ; then
-  printf "environment: ${env_variable}.\n"
+  printf "environment: $env_variable.\n"
 fi
 
 printf "Install script for DTaaS software platform.\n"
