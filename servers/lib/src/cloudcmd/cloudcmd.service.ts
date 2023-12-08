@@ -1,9 +1,8 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { INestApplication, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { HttpAdapterHost } from "@nestjs/core";
 import { Server } from "socket.io";
 import * as cloudcmd from "cloudcmd";
-import * as cloudCMDOptions from "../../config/cloudcmd.json";
+import * as fs from "fs";
 
 @Injectable()
 export default class CloudCMDService {
@@ -11,36 +10,32 @@ export default class CloudCMDService {
 
   private socket: Server;
 
-  constructor(
-    private configService: ConfigService,
-    private adapterHost: HttpAdapterHost,
-  ) {
-    const filesPath = this.configService.get<string>("LOCAL_PATH");
+  // eslint-disable-next-line
+  constructor(private configService: ConfigService) {}
 
-    let root: string;
-    try {
-      if (cloudCMDOptions.root === "") {
-        throw new Error("");
-      }
-      root = cloudCMDOptions.root;
-    } catch {
-      root = filesPath;
+  run(app: INestApplication, optionsPath: string) {
+    const filesPath = this.configService.get<string>("LOCAL_PATH");
+    const rawData = fs.readFileSync(optionsPath, "utf8");
+    const options = JSON.parse(rawData);
+
+    if (!options.prefix && options.prefix !== "") {
+      throw new Error("Missing required options prefix for cloudcmd to run");
     }
 
-    const server = this.adapterHost.httpAdapter;
+    if (!options.root && options.root !== "") {
+      options.root = filesPath;
+    }
 
-    this.logger.log(server, filesPath);
-    this.socket = new Server(server.getHttpServer(), {
-      path: "/fileserver/socket.io/",
+    this.logger.log(options);
+
+    const server = app.getHttpServer();
+
+    this.socket = new Server(server, {
+      path: `${options.prefix}`,
     });
 
-    server.use(
-      "/fileserver",
-      cloudcmd({ config: { ...cloudCMDOptions, root }, socket: this.socket }),
-    );
+    app.use(options.prefix, cloudcmd({ config: options, socket: this.socket }));
 
-    this.logger.log(
-      `Middleware initialized for route: ${cloudCMDOptions.prefix}`,
-    );
+    this.logger.log(`Listening on route: ${options.prefix}`);
   }
 }
