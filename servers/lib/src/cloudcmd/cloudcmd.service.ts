@@ -2,7 +2,6 @@ import { INestApplication, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Server } from "socket.io";
 import * as cloudcmd from "cloudcmd";
-import * as fs from "fs";
 
 @Injectable()
 export default class CloudCMDService {
@@ -15,27 +14,28 @@ export default class CloudCMDService {
 
   run(app: INestApplication, optionsPath: string) {
     const filesPath = this.configService.get<string>("LOCAL_PATH");
-    const rawData = fs.readFileSync(optionsPath, "utf8");
-    const options = JSON.parse(rawData);
 
-    if (!options.prefix && options.prefix !== "") {
-      throw new Error("Missing required options prefix for cloudcmd to run");
-    }
+    const { createConfigManager } = cloudcmd;
+    const configManager = createConfigManager({
+      configPath: optionsPath,
+    });
 
-    if (!options.root && options.root !== "") {
-      options.root = filesPath;
-    }
-
-    this.logger.log(options);
+    configManager("root", filesPath);
 
     const server = app.getHttpServer();
 
     this.socket = new Server(server, {
-      path: `${options.prefix}`,
+      path: `${configManager("prefix")}/socket.io`,
     });
 
-    app.use(options.prefix, cloudcmd({ config: options, socket: this.socket }));
+    app.use(
+      configManager("prefix"),
+      cloudcmd({
+        configManager,
+        socket: this.socket,
+      }),
+    );
 
-    this.logger.log(`Listening on route: ${options.prefix}`);
+    this.logger.log(`Listening on route: ${configManager("prefix")}`);
   }
 }
