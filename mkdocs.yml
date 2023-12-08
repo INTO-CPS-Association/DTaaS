@@ -22,6 +22,7 @@ nav:
       - Host Install:
         - Trial: admin/trial.md
         - Production: admin/host.md
+        - Localhost: admin/localhost.md
       - Vagrant:
         - Base Box: admin/vagrant/base-box.md
         - Single Machine: admin/vagrant/single-machine.md

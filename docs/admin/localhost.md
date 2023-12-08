@@ -1,3 +1,5 @@
+# Localhost
+
 To setup the DTaaS to use localhost, please follow [trial setup](./trial.md),
 but use the script below instead.
 
