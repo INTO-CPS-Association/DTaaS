@@ -1,6 +1,4 @@
 {
   "name": "DTaaS Fileserver",
-  "prefix": "fileserver",
-  "prefixSocket": "fileserver",
-  "root": ""
+  "prefix": "/fileserver"
 }
