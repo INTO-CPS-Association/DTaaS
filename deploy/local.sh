@@ -1,1 +1,0 @@
-source ./deploy/single-script-install.sh --env local
