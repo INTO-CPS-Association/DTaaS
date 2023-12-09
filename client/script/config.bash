@@ -5,8 +5,8 @@
 
 mode=$1
 if [ -z "$mode" ]; then
-    printf "Use yarn configapp with either dev, prod, or test:\n"
-    printf "i.e. \"yarn configapp dev\"\n"
+    printf "Use yarn configapp with either dev, prod, or test:"
+    printf "i.e. \"yarn configapp dev\""
     exit 1
 fi
 
@@ -21,7 +21,7 @@ case "$mode" in
         yarn config:test
         ;;
     *)
-        printf "Invalid mode $mode - use 'dev', 'prod', or 'test'\n"
+        echo "Invalid mode $mode - use 'dev', 'prod', or 'test'\n"
         exit 1
         ;;
 esac

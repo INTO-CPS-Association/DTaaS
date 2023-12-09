@@ -17,9 +17,9 @@
   "scripts": {
     "build": "npx tsc",
     "clean": "npx rimraf build/ node_modules/ coverage/ playwright-report/  *.svg",
-    "configapp:dev": "npx cross-env NODE_OPTIONS=--experimental-vm-modules cp config/dev.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
-    "configapp:prod": "npx cross-env NODE_OPTIONS=--experimental-vm-modules cp config/prod.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
-    "configapp:test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules cp config/test.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:dev": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/dev.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:prod": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/prod.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/test.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
     "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
