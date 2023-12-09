@@ -7,6 +7,7 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
+      - "--log.level=trace"
     ports:
       - "80:80"
       - "8080:8080"
@@ -40,15 +41,15 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - /home/astitva/Desktop/DTaaS/servers/auth/conf:/rules
+      - /home/astitva/Desktop/dockertrails/progress/conf:/rules
     environment:
       - DEFAULT_PROVIDER=generic-oauth
-      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.com/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.com/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.com/api/v4/user
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=b31ee8f6ea880d5fb037e0f0a314e881207c9d3982b511416e24cea143bb25d7
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=gloas-2068b7f1965f2432bd5e0b34930974a282570f1c71b56034e3a78bb494d7d4cd
-      - PROVIDERS_GENERIC_OAUTH_SCOPE=openid, read_user
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=xxxx
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=xxxx
+      - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
       - SECRET= abcdefgih
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true

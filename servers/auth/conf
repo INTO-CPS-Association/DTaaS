@@ -6,8 +6,8 @@ rule.noauth.rule=Path(`/public`)
 
 rule.onlyu1.action=auth
 rule.onlyu1.rule=Path(`/user1`)
-rule.onlyu1.whitelist = astitvasehgal05@gmail.com
+rule.onlyu1.whitelist = user1@localhost
 
 rule.onlyu2.action=auth
 rule.onlyu2.rule=Path(`/user2`)
-rule.onlyu2.whitelist = f20190640@goa.bits-pilani.ac.in
+rule.onlyu2.whitelist = user2@localhost
