@@ -41,7 +41,7 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - /home/astitva/Desktop/dockertrails/progress/conf:/rules
+      - /home/astitva/Desktop/DTaaS/servers/auth/conf:/rules
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
