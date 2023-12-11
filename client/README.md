@@ -13,12 +13,13 @@ the application.
 
 ```bash
 cd client
-yarn install --production    #install the nodejs dependencies
-yarn format     #format .ts[x] and .js[x] files with prettier.
-yarn syntax     #perform linting and static analysis
-yarn graph       # generate dependency graphs in the code
-yarn build      #build the react app into build/ directory
-yarn develop    #start the development server without building. Great for live edits.
+yarn install                #install the nodejs dependencies
+yarn install --production   #install dependencies without Playwright and devDependencies 
+yarn format                 #format .ts[x] and .js[x] files with prettier.
+yarn syntax                 #perform linting and static analysis
+yarn graph                  # generate dependency graphs in the code
+yarn build                  #build the react app into build/ directory
+yarn develop                #start the development server without building. Great for live edits.
 
 
 #Required: Specify the environment; specify only one
