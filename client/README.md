@@ -13,7 +13,7 @@ the application.
 
 ```bash
 cd client
-yarn install    #install the nodejs dependencies
+yarn install --production    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
 yarn graph       # generate dependency graphs in the code
