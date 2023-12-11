@@ -1,4 +1,6 @@
 #!/bin/sh
 
-git config --local core.hooksPath .git-hooks
-printf "Git hooks configured successfully. See .git-hooks for more information."
+pip install pre-commit
+pre-commit install
+
+printf "Git hooks setup successfully. See .git/hooks/ for more information."

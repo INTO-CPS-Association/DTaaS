@@ -88,16 +88,16 @@ Display help.
 libms -h
 ```
 
-The config is saved `.env` file by convention. The __libms__ looks for
+The config is saved `.env` file by convention. The **libms** looks for
 `.env` file in the working directory from which it is run.
-If you want to run __libms__ without explicitly specifying the configuration
+If you want to run **libms** without explicitly specifying the configuration
 file, run
 
 ```bash
 libms
 ```
 
-To run __libms__ with a custom config file,
+To run **libms** with a custom config file,
 
 ```bash
 libms -c FILE-PATH
@@ -113,6 +113,7 @@ libms -c ".env.development"
 
 You can press `Ctl+C` to halt the application.
 
-The microservice is available at: http://localhost:PORT/lib
+The microservice is available at: 'localhost:PORT/lib'
 
+<!-- markdownlint-disable-next-line MD013 -->
 The [API](https://into-cps-association.github.io/DTaaS/development/user/servers/lib/LIB-MS.html) page shows sample queries and responses.

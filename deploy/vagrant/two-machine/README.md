@@ -41,8 +41,8 @@ Please change these to your unique website URLs.
 
 The first step is to define the network identity of the two VMs. For that, you
 need _server name_, _hostname_ and _MAC address_. The hostname is the network
-URL at which the server can be accessed on the WWW. Please follow these steps
-to make this work in your local environment.
+URL at which the server can be accessed on the world wide web. Please follow
+these steps to make this work in your local environment.
 
 Update the **boxes.json**. There are entries one for each server.
 The fields to update are:

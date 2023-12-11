@@ -20,10 +20,10 @@
 
 * The INTO-CPS tool suite software and the INTO-CPS Association
 * Public License (ICAPL) are obtained from the INTO-CPS Association, either
-* from the above address, from the URLs: <http:>http://www.into-cps.org</http:> or
+* from the above address, from the URLs: <http://www.into-cps.org> or
 * in the INTO-CPS tool suite distribution.
 * GNU version 3 is obtained from:
-* <http:>http://www.gnu.org/copyleft/gpl.html</http:>.
+* <http://www.gnu.org/copyleft/gpl.html>.
 
 * This program is distributed WITHOUT ANY WARRANTY; without
 * even the implied warranty of  MERCHANTABILITY or FITNESS
@@ -291,11 +291,11 @@ This Agreement is governed by the laws of Denmark. The place of jurisdiction
 for all disagreements related to this Agreement, is Aarhus, Denmark.
 
 The EPL 1.0 license definition has been obtained from:
-<http:>http://www.eclipse.org/legal/epl-v10.html</http:>.
+<http://www.eclipse.org/legal/epl-v10.html>.
 It is also reproduced in the INTO-CPS distribution.
 
 The GPL Version 3 license definition has been obtained from
-<http:>http://www.gnu.org/copyleft/gpl.html</http:>.
+<http://www.gnu.org/copyleft/gpl.html>.
 It is also reproduced in the INTO-CPS distribution.
 
 --- End of Definition of INTO-CPS Association Public License ---

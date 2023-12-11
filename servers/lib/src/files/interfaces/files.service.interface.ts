@@ -1,4 +1,4 @@
-import { Project } from "src/types";
+import { Project } from 'src/types';
 
 // FileService interface
 export interface IFilesService {

@@ -10,7 +10,7 @@ test.describe('Menu Links from first page (Layout)', () => {
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
       .click();
     await expect(
-      page.getByRole('button', { name: 'Open settings' })
+      page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
     await expect(page).toHaveURL(/.*Library/);
   });
@@ -19,7 +19,7 @@ test.describe('Menu Links from first page (Layout)', () => {
     await links.reduce(async (previousPromise, link) => {
       await previousPromise;
       const linkElement = await page.locator(
-        `div[role="button"]:has-text("${link.text}")`
+        `div[role="button"]:has-text("${link.text}")`,
       );
       await expect(linkElement).toBeVisible();
     }, Promise.resolve());
