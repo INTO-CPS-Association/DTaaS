@@ -17,3 +17,4 @@ window.env = {
   REACT_APP_LOGOUT_REDIRECT_URI: "http://localhost/",
   REACT_APP_GITLAB_SCOPES: "openid profile read_user read_repository api",
 };
+
