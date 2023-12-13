@@ -30,7 +30,7 @@ TOP_DIR=$(pwd)
 printf "\n \n Build, configure and run the react website\n "
 printf ".....\n "
 cd "${TOP_DIR}/client" || exit
-yarn install
+yarn install --production
 yarn build
 
 #one of the environments; specify only one; "dev" used the REACT_APP_ENV is not set
