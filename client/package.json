@@ -9,7 +9,9 @@
     "Asger Busk Breinholm",
     "Mathias Brændgaard",
     "Emre Temel",
-    "Cesar Vela"
+    "Cesar Vela",
+    "Lei, Caroline Ting Ting",
+    "Huiqi Zhou"
   ],
   "license": "SEE LICENSE IN <LICENSE.md>",
   "private": false,
@@ -17,9 +19,9 @@
   "scripts": {
     "build": "npx tsc",
     "clean": "npx rimraf build/ node_modules/ coverage/ playwright-report/  *.svg",
-    "configapp:dev": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/dev.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
-    "configapp:prod": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/prod.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
-    "configapp:test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 cp config/test.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:dev": "npx shx cp config/dev.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:prod": "npx shx cp config/prod.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
+    "configapp:test": "npx shx cp config/test.js public/env.js && [ -d build ] && cp public/env.js build/env.js",
     "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
@@ -27,7 +29,7 @@
     "syntax": "npx eslint . --fix",
     "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest -c ./jest.config.json ../test/unitTests --coverage",
     "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules  NODE_NO_WARNINGS=1 jest -c ./jest.integration.config.json ../test/integration",
-    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules  NODE_NO_WARNINGS=1 yarn configapp test && yarn start >/dev/null & playwright test && npx kill-port 4000 && yarn configapp dev",
+    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules  NODE_NO_WARNINGS=1 yarn configapp:test && yarn start >/dev/null & playwright test && npx kill-port 4000 && yarn configapp:dev",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
     "install-deps": "npx cross-env NODE_OPTIONS=--experimental-vm-modules yarn install --frozen-lockfile && npx playwright install-deps",
     "install": "yarn install --frozen-lockfile && npx playwright install-deps"
