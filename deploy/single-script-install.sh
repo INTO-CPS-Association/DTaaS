@@ -143,7 +143,7 @@ TOP_DIR=$(pwd)
 printf "\n\n Build, configure and run the react website\n "
 printf ".....\n "
 cd "${TOP_DIR}/client" || exit
-yarn install
+yarn install --production
 yarn build
 
 yarn configapp dev
