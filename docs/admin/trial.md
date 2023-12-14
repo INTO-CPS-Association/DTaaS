@@ -40,7 +40,7 @@ You can also see
 [Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 for getting the Gitlab OAuth application details.
 
-Remember to create gitlab accounts for `user1` and `user2`.
+Remember to create gitlab accounts for `user1`.
 
 ## Install
 
@@ -49,12 +49,12 @@ Remember to create gitlab accounts for `user1` and `user2`.
     While installing you might encounter multiple dialogs asking,
     which services should be restarted. Just click **OK** to all of those.
 
-Run the following scripts. To setup the installation to use localhost,
-add the following argument to the script `--env local`.
+Run the following scripts. To setup the installation to use trial,
+the following argument is added to the script `--env trial`.
 
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
-bash single-script-install.sh
+bash single-script-install.sh --env trial
 ```
 
 <!-- prettier-ignore -->
