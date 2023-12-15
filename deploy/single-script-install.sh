@@ -13,7 +13,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-set -eu
+set -e
 
 if [ -n "$env_variable" ] ; then
   printf "environment: %s.\n" "$env_variable"
