@@ -22,8 +22,8 @@ If you need more help with this step, please see
 the [Authentication page](client/auth.md).
 
 !!! Information
-    It is sufficient to have 
-    [user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application) 
+    <!-- markdownlint-disable MD013 -->
+    It is sufficient to have [user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application) 
     application.
 
 You need the following information from the OAuth application registered on Gitlab:
