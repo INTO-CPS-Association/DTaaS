@@ -20,9 +20,9 @@ nav:
       - Overview: admin/overview.md
       - Authentication: admin/client/auth.md
       - Host Install:
+        - Localhost: admin/localhost.md
         - Trial: admin/trial.md
         - Production: admin/host.md
-        - Localhost: admin/localhost.md
       - Vagrant:
         - Base Box: admin/vagrant/base-box.md
         - Single Machine: admin/vagrant/single-machine.md
