@@ -13,6 +13,10 @@ A one-step installation script is provided on this page. This script sets up
 the DTaaS software with default credentials and users.
 You can use it to check a test installation of DTaaS software.
 
+!!! Information
+    It is sufficient to have [user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application) application.
+
+
 ## Pre-requisites
 
 ### 1. Domain name
