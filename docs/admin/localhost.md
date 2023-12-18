@@ -1,13 +1,13 @@
 # Localhot Installation
 
-To try out the software, you can install it on Ubuntu Server 22.04
+To try out the software, you can install it on Ubuntu 22.04
 Operating System. The setup requires a
-machine which can spare 16GB RAM, 8 vCPUs and 50GB Hard Disk
-space to the vagrant box.
+machine which can spare 4GB RAM, 2 vCPUs and 15GB Hard Disk
+space to a the DTaaS application.
 A successful installation will create a setup
 similar to the one shown in the figure.
 
-![Single host install](./single-host.png)
+![localhost install](./localhost.png)
 
 A one-step installation script is provided on this page. This script sets up
 the DTaaS software with a user.
@@ -24,13 +24,14 @@ the [Authentication page](client/auth.md).
 !!! Information
     <!-- markdownlint-disable-file MD013 -->
     It is sufficient to have [user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
-    application.
+    application. You can create this application
+    in your gitlab account.
 
 You need the following information from the OAuth application registered on Gitlab:
 
 | Gitlab Variable Name | Variable name in Client env.js | Default Value                                    |
 | :------------------- | :----------------------------- | :----------------------------------------------- |
-| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | <https://gitlab.foo.com/>                        |
+| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | <https://gitlab.com/> or <https://gitlab.foo.com/>      |
 | Application ID       | REACT_APP_CLIENT_ID            |
 | Callback URL         | REACT_APP_REDIRECT_URI         | <http://localhost/Library>                        |
 | Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api |
@@ -59,6 +60,22 @@ bash single-script-install.sh --env local
 <!-- prettier-ignore -->
 !!! warning
     This test installation has default credentials and is thus highly insecure.
+
+## Post install
+
+After the install-script. Please change
+[Gitlab OAuth](#1-gitlab-oauth-application) details in
+
+```txt
+~/DTaaS/client/build/env.js
+```
+
+and change `filepath`
+to your local settings in the following file.
+
+```txt
+~/DTaaS/servers/lib/.env
+```
 
 ## Post-install Check
 
