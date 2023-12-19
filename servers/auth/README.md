@@ -37,14 +37,14 @@ The microservice is now running.
 
 ## View the example
 
-- Try heading over to <http:>http://localhost/public</http:>.
+- Try heading over to <http://localhost/public>.
   This is a public, accessible to all, copy of the webserver.
   It still passes through the AuthServer (traefik-forward-auth),
   however this Path is set to allow access to all,
   instead of any authentication.
   You should be able to see this page with any email ID/ even without signing in.
 
-- Head over to <http:>http://localhost/os</http:>.
+- Head over to <http://localhost/os>.
   This page requires Gitlab OAuth and is not public.
 - You will be redirected to Gitlab. Sign in if you aren't already signed in.
   user1 (user1@localhost) /user2 (user2@localhost)
@@ -60,26 +60,26 @@ The microservice is now running.
 ### Selective access
 
 - Users can be selectively allowed to access some resources.
-  If you signed in with user1, try to visit <http:>http://localhost/user1</http:>.
+  If you signed in with user1, try to visit <http://localhost/user1>.
 - This wouldn't be accessible if you signed in using user2 account.
-- If you signed in using user1 account, try visiting <http:>http://localhost/user2</http:>.
+- If you signed in using user1 account, try visiting <http://localhost/user2>.
   You should recieve a Not Authorized message, and access will be restricted.
 
 ### Logout
 
 - To logout (o.e. require re-authentication to access services),
-  simply head over to <http:>http://localhost/_oauth/logout</http:>
-- You should be redirected to <http:>https://www.google.com/</http:>.
+  simply head over to <http://localhost/_oauth/logout>
+- You should be redirected to <https://www.google.com/>.
   This confirms successful logout.
 
 ### Test: When you logout
 
-- Logout by heading over to <http:>http://localhost/_oauth/logout</http:>
+- Logout by heading over to <http://localhost/_oauth/logout>
 - To test if this works, **first logout of Gitlab**.
   This is required because if you are signed into Gitlab,
   although an exchange of new access tokens will occur,
   it may not be evident as you will be auto-signedin to Gitlab.
-- Now, head over to <http:>http://localhost/os</http:>.
+- Now, head over to <http://localhost/os>.
   You will have to go through the Auth process again now.
 - Once you've passed OAuth, you will be shown the server page.
 
@@ -88,7 +88,7 @@ The microservice is now running.
 - Close the whoami server page tabs (if any are open).
 - Do not logout this time.
 - Again, **logout of Gitlab**. (To maintain consistency of the test)
-- Head over to <http:>http://localhost/os</http:>.
+- Head over to <http://localhost/os>.
 - You will automatically be able to see this page,
   without any Auth process/ new access tokens.
 - This page is still visible even though you have logged out of Gitlab.
@@ -138,14 +138,61 @@ The conf file can be used to configure the specific rules.
   This restricts access of the resource,
   allowing only users mentioned in the whitelist.
 
-### Updating Configuration
+## Updating Configuration
 
-To rules are currently static, i.e. do not update on runtime.
-To update the rules, change the conf file while the server is up,
-then recreate the traefik-forward-auth container in the running
-stack of containers.
+### Adding OAuth to a new service
 
-This will update the system with the new rules.
+The current compose.yml file has a "dummy" service.
+Currently, this service doesn't have any OAuth applied to it
+as the traefik-forward-auth isn't applied as a middleware to it's route.
+
+To add OAuth to this service, add the following into the labels of the service.
+
+```yaml
+- "traefik.http.routers.dummy2.middlewares=traefik-forward-auth"
+```
+
+In your terminal, recreate this changed service.
+
+```bash
+docker compose up -d --force-recreate dummy
+```
+
+Here, "dummy" is the service name.
+
+This adds Gitlab OAuth to the service.
+
+### Adding selective access to service
+
+Till now, the Gitlab OAuth has been added to the dummy service.
+This allows **any** users that complete the Gitlab Instance sign in,
+to have access to the service.
+
+To restrict access based on user identity, we need to add
+appropriate rules to the _servers/auth/conf_ file.
+
+Let's say we want only user2 (user2@localhost) to have access
+to this new dummy service. Add the following to the conf file:
+
+```text
+rule.dummy.action=auth
+rule.dummy.rule=Path(`/user2`)
+rule.dummy.whitelist = user2@localhost
+```
+
+The traefik-forward-auth service is based on static rules.
+Thus simply adding these rules to the conf file doesn't make
+them take effect immediately.
+
+You will need to recreate the traefik-forward-auth container
+any time you update the conf file.
+
+```bash
+docker compose up -d --force-recreate traefik-forward-auth
+```
+
+This updates the rules being used, and now only user2 will have
+access to the dummy service.
 
 ## Further work
 
@@ -153,8 +200,9 @@ This will update the system with the new rules.
   and all microservices that require OAuth will be added
   behind this Authentication,
   only accesible through the Traefik reverse proxy.
+- Dynamic rule addition is also an open issue.
 - Please refer to
-  <http:>https://github.com/thomseddon/traefik-forward-auth</http:>.
+  <https://github.com/thomseddon/traefik-forward-auth>.
   This microservice is based on this repository.
 
 ## Disclaimer

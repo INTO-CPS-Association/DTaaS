@@ -38,6 +38,15 @@ services:
       - "traefik.http.routers.u2.rule=Path(`/user2`)"
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
   
+  dummy:
+    image: mpepping/whoami
+    environment:
+      - MESSAGE="Hello there, I'm a container."
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dummy2.entryPoints=web"
+      - "traefik.http.routers.dummy2.rule=Path(`/dummy`)"
+  
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
