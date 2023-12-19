@@ -138,6 +138,15 @@ The conf file can be used to configure the specific rules.
   This restricts access of the resource,
   allowing only users mentioned in the whitelist.
 
+### Updating Configuration
+
+To rules are currently static, i.e. do not update on runtime.
+To update the rules, change the conf file while the server is up,
+then recreate the traefik-forward-auth container in the running
+stack of containers.
+
+This will update the system with the new rules.
+
 ## Further work
 
 - This is a working demo. It will now be integrated with DTaaS,
