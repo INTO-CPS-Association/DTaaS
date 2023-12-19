@@ -1,15 +1,15 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import FilesResolver from "../../src/files/resolvers/files.resolver";
+import { Test, TestingModule } from '@nestjs/testing';
+import FilesResolver from '../../src/files/resolvers/files.resolver';
 import {
   testDirectory,
   pathToTestDirectory,
   pathToTestFileContent,
   testFileContent,
-} from "../testUtil";
-import { IFilesService } from "../../src/files/interfaces/files.service.interface";
-import FilesServiceFactory from "../../src/files/services/files-service.factory";
+} from '../testUtil';
+import { IFilesService } from '../../src/files/interfaces/files.service.interface';
+import FilesServiceFactory from '../../src/files/services/files-service.factory';
 
-describe("Unit tests for FilesResolver", () => {
+describe('Unit tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
   let filesService: IFilesService;
 
@@ -38,30 +38,30 @@ describe("Unit tests for FilesResolver", () => {
       .create();
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(filesResolver).toBeDefined();
   });
 
-  describe("listDirectory", () => {
-    it("should be defined", () => {
+  describe('listDirectory', () => {
+    it('should be defined', () => {
       expect(filesResolver.listDirectory).toBeDefined();
     });
 
-    it("should list files in directory", async () => {
+    it('should list files in directory', async () => {
       const result = await filesResolver.listDirectory(pathToTestDirectory);
       expect(result).toEqual(testDirectory);
       expect(filesService.listDirectory).toHaveBeenCalledWith(
-        pathToTestDirectory
+        pathToTestDirectory,
       );
     });
   });
 
-  describe("readFile", () => {
-    it("should be defined", () => {
+  describe('readFile', () => {
+    it('should be defined', () => {
       expect(filesResolver.readFile).toBeDefined();
     });
 
-    it("should read file", async () => {
+    it('should read file', async () => {
       const result = await filesResolver.readFile(pathToTestFileContent);
       expect(result).toEqual(testFileContent);
       expect(filesService.readFile).toHaveBeenCalledWith(pathToTestFileContent);

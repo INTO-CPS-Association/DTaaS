@@ -42,7 +42,7 @@ setup('authenticate', async ({ page }) => {
     // 'Authorize' button did not appear within 4 seconds, so just ignore and continue.
   }
   await expect(
-    page.getByRole('button', { name: 'Open settings' })
+    page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();
 
   const storage = await page.context().storageState();

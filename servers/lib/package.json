@@ -13,6 +13,7 @@
   "scripts": {
     "build": "script/build.bash",
     "clean": "script/clean.bash",
+    "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "script/start.bash",
     "syntax": "script/syntax.bash",
     "test": "script/test.bash",

@@ -1,18 +1,18 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-import FilesResolver from "../../src/files/resolvers/files.resolver";
-import FilesServiceFactory from "../../src/files/services/files-service.factory";
-import LocalFilesService from "../../src/files/services/local-files.service";
-import GitlabFilesService from "../../src/files/services/gitlab-files.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import FilesResolver from '../../src/files/resolvers/files.resolver';
+import FilesServiceFactory from '../../src/files/services/files-service.factory';
+import LocalFilesService from '../../src/files/services/local-files.service';
+import GitlabFilesService from '../../src/files/services/gitlab-files.service';
 import {
   pathToTestDirectory,
   pathToTestFileContent,
   testDirectory,
   testFileContent,
   MockConfigService,
-} from "../testUtil";
+} from '../testUtil';
 
-describe("Integration tests for FilesResolver", () => {
+describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
   let mockConfigService: MockConfigService;
 
@@ -35,29 +35,29 @@ describe("Integration tests for FilesResolver", () => {
     jest.clearAllMocks();
   });
 
-  const modes = ["local", "gitlab"];
+  const modes = ['local', 'gitlab'];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const mode of modes) {
-  // eslint-disable-next-line no-loop-func
-  describe(`when MODE is ${mode}`, () => {
+    // eslint-disable-next-line no-loop-func
+    describe(`when MODE is ${mode}`, () => {
       beforeEach(() => {
-        jest.spyOn(mockConfigService, "get").mockReturnValue(mode);
+        jest.spyOn(mockConfigService, 'get').mockReturnValue(mode);
       });
 
-      it("should be defined", () => {
+      it('should be defined', () => {
         expect(filesResolver).toBeDefined();
       });
 
-      describe("listDirectory", () => {
-        it("should list files", async () => {
+      describe('listDirectory', () => {
+        it('should list files', async () => {
           const files = await filesResolver.listDirectory(pathToTestDirectory);
           expect(files).toEqual(testDirectory);
         });
       });
 
-      describe("readFile", () => {
-        it("should read file", async () => {
+      describe('readFile', () => {
+        it('should read file', async () => {
           const content = await filesResolver.readFile(pathToTestFileContent);
           expect(content).toEqual(testFileContent);
         });

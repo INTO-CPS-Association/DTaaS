@@ -105,9 +105,9 @@ registered on Gitlab:
 
 | Gitlab Variable Name | Variable name in Client env.js | Default Value |
 |:---|:---|:---|
-| OAuth Provider | REACT_APP_AUTH_AUTHORITY | https://gitlab.foo.com/ |
+| OAuth Provider | REACT_APP_AUTH_AUTHORITY | <https://gitlab.foo.com/> |
 | Application ID | REACT_APP_CLIENT_ID |
-| Callback URL | REACT_APP_REDIRECT_URI | https://foo.com/Library |
+| Callback URL | REACT_APP_REDIRECT_URI | <https://foo.com/Library> |
 | Scopes | REACT_APP_GITLAB_SCOPES | openid, profile, read_user, read_repository, api |
 
 You can also see
@@ -158,7 +158,7 @@ You can run this script multiple times until the installation is successful.
 
 ## Access the application
 
-Now you should be able to access the DTaaS application at: _<http:>https://foo.com</http:>_
+Now you should be able to access the DTaaS application at: <https://foo.com>
 
 ## References
 
