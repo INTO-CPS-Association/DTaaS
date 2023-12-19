@@ -4,13 +4,13 @@ services:
   traefik:
     image: traefik:v2.10
     command: 
-      - "--api.insecure=true"
+      #- "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
-      - "--log.level=trace"
+      #- "--log.level=trace"
     ports:
       - "80:80"
-      - "8080:8080"
+      #- "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -53,7 +53,7 @@ services:
       - SECRET= abcdefgih
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
-      - LOG_LEVEL=debug
+      #- LOG_LEVEL=debug
       - LOGOUT_REDIRECT=https://www.google.com/
       - CONFIG=/rules
     labels:
