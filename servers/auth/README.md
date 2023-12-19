@@ -137,7 +137,7 @@ The conf file can be used to configure the specific rules.
 
   This restricts access of the resource,
   allowing only users mentioned in the whitelist.
- 
+
 ## Further work
 
 - This is a working demo. It will now be integrated with DTaaS,
