@@ -138,6 +138,31 @@ The conf file can be used to configure the specific rules.
   This restricts access of the resource,
   allowing only users mentioned in the whitelist.
 
+## Adding/Removing a service
+
+To remove an existing service. Remove it's
+entire configuration from the compose.yml file,
+and then run:
+
+```bash
+docker compose up -d --remove-orphans
+```
+
+This will remove the service.
+
+To add a new service/remove an existing service,
+set the service up as you normally would in the
+docker compose with traefik as the gateway.
+
+Simply run
+
+```bash
+docker compose up -d
+```
+
+for the service to take effect. To add OAuth to
+this service, follow the next section.
+
 ## Updating Configuration
 
 ### Adding OAuth to a new service
