@@ -52,9 +52,12 @@ Remember to create gitlab accounts for `user1`.
 Run the following scripts. To setup the installation to use localhost,
 the following argument is added to the script `--env local`.
 
+Please also specify the username used in the OAuth Application,
+with `--username username`.
+
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
-bash single-script-install.sh --env local
+bash single-script-install.sh --env local --username <username>
 ```
 
 <!-- prettier-ignore -->

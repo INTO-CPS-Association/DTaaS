@@ -57,9 +57,12 @@ Remember to create gitlab accounts for `user1`.
 Run the following scripts. To setup the installation to use trial,
 the following argument is added to the script `--env trial`.
 
+Please also specify the username used in the OAuth Application,
+with `--username username`.
+
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
-bash single-script-install.sh --env trial
+bash single-script-install.sh --env trial --username <username>
 ```
 
 <!-- prettier-ignore -->
