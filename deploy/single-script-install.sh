@@ -5,6 +5,10 @@ while [[ "$#" -gt 0 ]]; do
             env_variable="$2"
             shift
             ;;
+        --username)
+            username="$2"
+            shift
+            ;;
         *)
             echo "Unknown parameter passed: $1"
             exit 1
@@ -183,16 +187,33 @@ nohup yarn start & disown
 #-------------
 printf "\n\n Start the user workspaces\n "
 printf "...........\n "
-docker run -d \
- -p 8090:8080 \
-  --name "ml-workspace-user1" \
-  -v "${TOP_DIR}/files/user1:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common" \
-  --env AUTHENTICATE_VIA_JUPYTER="" \
-  --env WORKSPACE_BASE_URL="user1" \
-  --shm-size 512m \
-  --restart always \
-  mltooling/ml-workspace-minimal:0.13.2 || true
+
+if [ -n "$username" ] ; then
+  cp -R "${TOP_DIR}/files/user1" "${TOP_DIR}/files/${username}"
+  docker run -d \
+  -p 8090:8080 \
+    --name "ml-workspace-${username}" \
+    -v "${TOP_DIR}/files/${username}:/workspace" \
+    -v "${TOP_DIR}/files/common:/workspace/common" \
+    --env AUTHENTICATE_VIA_JUPYTER="" \
+    --env WORKSPACE_BASE_URL="${username}" \
+    --shm-size 512m \
+    --restart always \
+    mltooling/ml-workspace-minimal:0.13.2 || true
+else 
+  docker run -d \
+  -p 8090:8080 \
+    --name "ml-workspace-user1" \
+    -v "${TOP_DIR}/files/user1:/workspace" \
+    -v "${TOP_DIR}/files/common:/workspace/common" \
+    --env AUTHENTICATE_VIA_JUPYTER="" \
+    --env WORKSPACE_BASE_URL="user1" \
+    --shm-size 512m \
+    --restart always \
+    mltooling/ml-workspace-minimal:0.13.2 || true
+fi
+
+
 
 #-------------
 printf "\n\n Start the traefik gateway server\n "
@@ -204,6 +225,11 @@ if [ -n "$env_variable" ] ; then
 else
   cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
 fi
+
+if [ -n "$username" ] ; then
+  sed "s/user1/${username}/" "${TOP_DIR}/deploy/config/gateway/fileConfig.${env_variable}.yml" > "dynamic/fileConfig.yml"
+fi
+
 docker run -d \
  --name "traefik-gateway" \
  --network=host -v "$PWD/traefik.yml:/etc/traefik/traefik.yml" \
