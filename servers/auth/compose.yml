@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command: 
+      #- "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+      #- "--log.level=trace"
+    ports:
+      - "80:80"
+      #- "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      #Models an Auth service that is open to all
+      - "traefik.http.routers.whoami.entryPoints=web"
+      - "traefik.http.routers.whoami.rule=Path(`/os`)"
+      - "traefik.http.routers.whoami.middlewares=traefik-forward-auth"
+
+      #Models a NoAuth needed service
+      - "traefik.http.routers.whoamifree.entryPoints=web"
+      - "traefik.http.routers.whoamifree.rule=Path(`/public`)"
+      - "traefik.http.routers.whoamifree.middlewares=traefik-forward-auth"
+
+      #Models a service only visible to user1
+      - "traefik.http.routers.u1.entryPoints=web"
+      - "traefik.http.routers.u1.rule=Path(`/user1`)"
+      - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
+
+      #Models a service only visible to user2
+      - "traefik.http.routers.u2.entryPoints=web"
+      - "traefik.http.routers.u2.rule=Path(`/user2`)"
+      - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
+  
+  dummy:
+    image: mpepping/whoami
+    environment:
+      - MESSAGE="Hello there, I'm a container."
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dummy2.entryPoints=web"
+      - "traefik.http.routers.dummy2.rule=Path(`/dummy`)"
+  
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:latest
+    volumes:
+      - /home/astitva/Desktop/DTaaS/servers/auth/conf:/rules
+    environment:
+      - DEFAULT_PROVIDER=generic-oauth
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=xxxx
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=xxxx
+      - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
+      - SECRET= abcdefgih
+      # INSECURE_COOKIE is required if not using a https entrypoint
+      - INSECURE_COOKIE=true
+      #- LOG_LEVEL=debug
+      - LOGOUT_REDIRECT=https://www.google.com/
+      - CONFIG=/rules
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.oauth.entryPoints=web"
+      - "traefik.http.routers.oauth.rule=PathPrefix(`/_oauth`)"
+      - "traefik.http.routers.oauth.middlewares=traefik-forward-auth"
+
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
