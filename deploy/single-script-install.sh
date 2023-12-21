@@ -162,11 +162,6 @@ nohup serve -s build -l 4000 & disown
 printf "\n\n Build, configure and run the lib microservice\n "
 printf "...........\n "
 cd "${TOP_DIR}/servers/lib" || exit
-if [ -n "$env_variable" ] ; then
-  cp "${TOP_DIR}/deploy/config/lib.${env_variable}" .env
-else
-  cp "${TOP_DIR}/deploy/config/lib" .env
-fi
 yarn install
 yarn build
 
@@ -252,7 +247,9 @@ printf "\n\n The installation is complete.\n\n\n "
 printf "Continue with the application configuration.\n "
 printf ".........\n\n\n "
 if [[ "$env_variable" == "local" ]]; then
-  :
+  printf "Remember to change Gitlab OAuth details to your \
+  local settings in the following file.\n "
+  printf "%s/client/build/env.js\n " "$TOP_DIR"
 else
   printf "Remember to change foo.com and Gitlab OAuth details to your \
   local settings in the following files.\n "
