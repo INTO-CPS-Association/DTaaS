@@ -1,0 +1,35 @@
+http:
+  routers:
+    dtaas:
+      entryPoints:
+        - http
+      rule: "Host(`localhost`)"
+      service: dtaas
+
+    user1:
+      entryPoints:
+        - http
+      rule: "Host(`localhost`) && PathPrefix(`/user1`)"
+      service: user1
+
+    libms:
+      entryPoints:
+        - http
+      rule: "Host(localhost`) && PathPrefix(`/lib`)"
+      service: libms
+
+  services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:4000"
+
+    user1:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8090"
+
+    libms:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:4001"

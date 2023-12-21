@@ -1,5 +1,27 @@
 #!/bin/bash
-set -eu
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --env)
+            env_variable="$2"
+            shift
+            ;;
+        --username)
+            username="$2"
+            shift
+            ;;
+        *)
+            echo "Unknown parameter passed: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+set -e
+
+if [ -n "$env_variable" ] ; then
+  printf "environment: %s.\n" "$env_variable"
+fi
 
 printf "Install script for DTaaS software platform.\n"
 printf "You can run the script multiple times until the installation succeeds.\n "
@@ -125,11 +147,15 @@ TOP_DIR=$(pwd)
 printf "\n\n Build, configure and run the react website\n "
 printf ".....\n "
 cd "${TOP_DIR}/client" || exit
-yarn install
+yarn install --production
 yarn build
 
 yarn configapp dev
-cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
+if [ -n "$env_variable" ] ; then
+  cp "${TOP_DIR}/deploy/config/client/env.${env_variable}.js" build/env.js
+else
+  cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
+fi
 nohup serve -s build -l 4000 & disown
 
 #-------------
@@ -156,34 +182,48 @@ nohup yarn start & disown
 #-------------
 printf "\n\n Start the user workspaces\n "
 printf "...........\n "
-docker run -d \
- -p 8090:8080 \
-  --name "ml-workspace-user1" \
-  -v "${TOP_DIR}/files/user1:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common" \
-  --env AUTHENTICATE_VIA_JUPYTER="" \
-  --env WORKSPACE_BASE_URL="user1" \
-  --shm-size 512m \
-  --restart always \
-  mltooling/ml-workspace-minimal:0.13.2 || true
 
-docker run -d \
- -p 8091:8080 \
-  --name "ml-workspace-user2" \
-  -v "${TOP_DIR}/files/user2:/workspace" \
-  -v "${TOP_DIR}/files/common:/workspace/common" \
-  --env AUTHENTICATE_VIA_JUPYTER="" \
-  --env WORKSPACE_BASE_URL="user2" \
-  --shm-size 512m \
-  --restart always \
-  mltooling/ml-workspace-minimal:0.13.2 || true
+if [ -n "$username" ] ; then
+  cp -R "${TOP_DIR}/files/user1" "${TOP_DIR}/files/${username}"
+  docker run -d \
+  -p 8090:8080 \
+    --name "ml-workspace-${username}" \
+    -v "${TOP_DIR}/files/${username}:/workspace" \
+    -v "${TOP_DIR}/files/common:/workspace/common" \
+    --env AUTHENTICATE_VIA_JUPYTER="" \
+    --env WORKSPACE_BASE_URL="${username}" \
+    --shm-size 512m \
+    --restart always \
+    mltooling/ml-workspace-minimal:0.13.2 || true
+else 
+  docker run -d \
+  -p 8090:8080 \
+    --name "ml-workspace-user1" \
+    -v "${TOP_DIR}/files/user1:/workspace" \
+    -v "${TOP_DIR}/files/common:/workspace/common" \
+    --env AUTHENTICATE_VIA_JUPYTER="" \
+    --env WORKSPACE_BASE_URL="user1" \
+    --shm-size 512m \
+    --restart always \
+    mltooling/ml-workspace-minimal:0.13.2 || true
+fi
+
+
 
 #-------------
 printf "\n\n Start the traefik gateway server\n "
 printf "...........\n "
 cd "${TOP_DIR}/servers/config/gateway" || exit
 cp "${TOP_DIR}/deploy/config/gateway/auth" auth
-cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
+if [ -n "$env_variable" ] ; then
+  cp "${TOP_DIR}/deploy/config/gateway/fileConfig.${env_variable}.yml" "dynamic/fileConfig.yml"
+else
+  cp "${TOP_DIR}/deploy/config/gateway/fileConfig.yml" "dynamic/fileConfig.yml"
+fi
+
+if [ -n "$username" ] ; then
+  sed "s/user1/${username}/" "${TOP_DIR}/deploy/config/gateway/fileConfig.${env_variable}.yml" > "dynamic/fileConfig.yml"
+fi
 
 docker run -d \
  --name "traefik-gateway" \
@@ -206,7 +246,13 @@ printf "\n\n The installation is complete.\n\n\n "
 
 printf "Continue with the application configuration.\n "
 printf ".........\n\n\n "
-printf "Remember to change foo.com and Gitlab OAuth details to your \
-local settings in the following files.\n "
-printf "1. %s/client/build/env.js\n " "$TOP_DIR"
-printf "2. %s/servers/config/gateway/dynamic/fileConfig.yml\n " "$TOP_DIR"
+if [[ "$env_variable" == "local" ]]; then
+  printf "Remember to change Gitlab OAuth details to your \
+  local settings in the following file.\n "
+  printf "%s/client/build/env.js\n " "$TOP_DIR"
+else
+  printf "Remember to change foo.com and Gitlab OAuth details to your \
+  local settings in the following files.\n "
+  printf "1. %s/client/build/env.js\n " "$TOP_DIR"
+  printf "2. %s/servers/config/gateway/dynamic/fileConfig.yml\n " "$TOP_DIR"
+fi

@@ -1,5 +1,5 @@
 window.env = {
-  REACT_APP_ENVIRONMENT: 'dev',
+  REACT_APP_ENVIRONMENT: 'prod',
   REACT_APP_URL: 'https://foo.com/',
   REACT_APP_URL_BASENAME: '',
   REACT_APP_URL_DTLINK: '/lab',

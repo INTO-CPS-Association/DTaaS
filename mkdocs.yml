@@ -20,6 +20,7 @@ nav:
       - Overview: admin/overview.md
       - Authentication: admin/client/auth.md
       - Host Install:
+        - Localhost: admin/localhost.md
         - Trial: admin/trial.md
         - Production: admin/host.md
       - Vagrant:
