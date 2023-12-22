@@ -422,6 +422,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../admin/localhost.html" class="md-nav__link">
+        Localhost
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../admin/trial.html" class="md-nav__link">
         Trial
       </a>
@@ -1025,6 +1039,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../user/examples/three-tank/index.html" class="md-nav__link">
+        Three Water Tanks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="https://github.com/INTO-CPS-Association/DTaaS-examples" class="md-nav__link">
         Codebase
       </a>
@@ -1500,6 +1528,15 @@ are not supported inherently and may require additional steps.</p>
 <p>The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
 push the commits to remote repositories.</p>
+<p>You can also run the git-hooks manually before committing or pushing
+by using the run commands below. The autoupdate command will set the
+revisions of the git repos used in the .pre-commit-config.yaml up to date.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>pre-commit<span class="w"> </span>run<span class="w"> </span>--hook-stage<span class="w"> </span>pre-commit<span class="w"> </span><span class="c1"># runs format and syntax checks</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>pre-commit<span class="w"> </span>run<span class="w"> </span>--hook-stage<span class="w"> </span>pre-push<span class="w">   </span><span class="c1"># runs test</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>pre-commit<span class="w"> </span>autoupdate<span class="w">                  </span><span class="c1"># update hooks to latests versions</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Be aware that the tests may take a long time to run.
 If you want to skip the tests or formatting,
 you can use the <code>--no-verify</code> flag
@@ -1507,7 +1544,7 @@ on <code>git commit</code> or <code>git push</code>. Please use this
 option with care.</p>
 <p>There is a script to download all the docker containers
 used in the project. You can download them using</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>bash<span class="w"> </span>script/docker.sh
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>bash<span class="w"> </span>script/docker.sh
 </span></code></pre></div></td></tr></table></div>
 <p><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/26a0.svg" title=":warning:" /> The docker images are large and are likely to consume
 about 5GB of bandwidth and 15GB of space.
