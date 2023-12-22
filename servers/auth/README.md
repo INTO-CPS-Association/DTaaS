@@ -111,7 +111,7 @@ Docker Desktop for Linux is preferred.
 - No other changes should be made to compose.yml.
 
 - Finally, run:
-  
+
   ```bash
   docker compose up -d --remove-orphans
   ```
@@ -287,6 +287,6 @@ access to the dummy service.
 There is an 8 second timeout on OAuth requests sent to Gitlab.
 If the OAuth signin process is not complete before eight seconds,
 Gitlab cancels the signin request and gives
-```503 - Service Unavailable``` message.
+_503 - Service Unavailable_ message.
 The timelimit variable has not been found in gitlab.rb config file;
 timelimit is probably built into Gitlab code.
