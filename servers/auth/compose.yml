@@ -53,9 +53,9 @@ services:
       - /home/astitva/Desktop/DTaaS/servers/auth/conf:/rules
     environment:
       - DEFAULT_PROVIDER=generic-oauth
-      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.foo.com/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.foo.com/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.foo.com/api/v4/user
       - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=xxxx
       - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=xxxx
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user

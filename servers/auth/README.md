@@ -12,6 +12,88 @@ Within docker, images of the following container are used:
   This is an example version of any microservice
   that should lie behind the OAuth.
 
+## Ready Reckoner
+
+You need an
+[instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application)
+on Gitlab. If you use <https://gitlab.com> as your authentication provider,
+you can only authenticate a single user. For the table below, <https://gitlab.foo.com>
+has been used as example URL of OAuth provider
+
+| Gitlab Variable Name | Variable name in compose.yml          | Default Value                            |
+| :------------------- | :------------------------------------ | :----------------------------------------|
+| OAuth Provider       | PROVIDERS_GENERIC_OAUTH_AUTH_URL      | <https://gitlab.foo.com/oauth/authorize> |
+|                      | PROVIDERS_GENERIC_OAUTH_TOKEN_URL     | <https://gitlab.foo.com/oauth/token>     |
+|                      | PROVIDERS_GENERIC_OAUTH_USER_URL      | <https://gitlab.foo.com/api/v4/user>     |
+| Application ID       | PROVIDERS_GENERIC_OAUTH_CLIENT_ID     |                                          |
+| Secret               | PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET |                                          |
+| Callback URL         |                                       | <http://localhost/_oauth>                |
+| Scopes               |                                       | read_user                                |
+| Logout URL for demo  |                                       | <http://localhost/_oauth/logout>         |
+||
+
+## Configure Authentication Rules
+
+The Traefik forward auth microservices requires configuration rules to manage
+authentication for different URL paths.
+The `conf` file can be used to configure the specific rules.
+There are broadly three kinds of URLs:
+
+### Public Path Without Authentication
+
+To setup a public page, an example is shown below.
+
+```text
+rule.noauth.action=allow
+rule.noauth.rule=Path(`/public`)
+```
+
+Here, 'noauth' is the rule name, and should be changed to suit rule use.
+Rule names should be unique for each rule.
+The 'action' property is set to "allow" to make the resource public.
+The 'rule' property defines the path/route to reach the resource.
+
+### Common to All Users
+
+To setup a common page that requires Gitlab OAuth,
+but is available to all users of the Gitlab instance:
+
+```text
+rule.all.action=auth
+rule.all.rule=Path(`/os`)
+```
+
+The 'action' property is set to "auth", to enable Gitlab
+OAuth before the resource can be accessed.
+
+### Selective Access
+
+Selective Access refers to the scenario of allowing access to a URL path
+for a few users. To setup selective access to a page:
+
+```text
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user1`)
+rule.onlyu1.whitelist = user1@localhost
+```
+
+The 'whitelist' property of a rule defines a comma separated list
+of email IDs that are allowed to access the resource.
+While signing in users can sign in with either their username or email ID
+as usual, but the email ID corresponding to the
+account should be included in the whitelist.
+
+This restricts access of the resource,
+allowing only users mentioned in the whitelist.
+
+### Limitation
+
+The rules in _conf_ file are not dynamically loaded into
+the **traefik-forward-auth** microservice. Any change in the _conf_ file requires
+retart of **traefik-forward-auth** for the changes to take effect.
+All the existing user sessions get invalidated when
+the **traefik-forward-auth** restarts.
+
 ## Run the example
 
 You should have docker setup to be able to run this.
@@ -22,36 +104,50 @@ Docker Desktop for Linux is preferred.
 - This service works based on 2 files,
   servers/auth/compose.yml and servers/auth/conf.
 - In the compose.yml, under the traefik-forward-auth service volumes,
-  please replace the correct file path for
-  servers/auth/conf file (on the left hand side of ':').
-- Also fill in the CLIENT_ID, CLIENT_SECRET fields.
+  please replace the correct absolute file path for
+  servers/auth/conf file in the volume mapping of
+  **traefik-forward-auth** container..
+- Also fill in the OAUTH details in compose.yml as per the table given above.
 - No other changes should be made to compose.yml.
 
-- Run:
+- Finally, run:
+  
+  ```bash
+  docker compose up -d --remove-orphans
+  ```
 
-```bash
-docker compose up -d --remove-orphans
-```
+The microservices start up and provide access to
+the following URL paths.
 
-The microservice is now running.
+| URL Path | Access Granted to |
+|:------------|:---------------|
+| <http://localhost/public> | everyone including unauthenticated users |
+| <http://localhost/os> | user1 and user2 |
+| <http://localhost/user1> | user1 |
+| <http://localhost/user2> | user2 |
+||
 
 ## View the example
 
-- Try heading over to <http://localhost/public>.
-  This is a public, accessible to all, copy of the webserver.
-  It still passes through the AuthServer (traefik-forward-auth),
-  however this Path is set to allow access to all,
-  instead of any authentication.
-  You should be able to see this page with any email ID/ even without signing in.
+### Public
+
+Try heading over to <http://localhost/public>.
+This is a public, accessible to all, copy of the webserver.
+It still passes through the AuthServer (traefik-forward-auth),
+however this Path is set to allow access to all,
+instead of any authentication.
+You should be able to see this page without even signing in.
+
+### Authenticated users
 
 - Head over to <http://localhost/os>.
   This page requires Gitlab OAuth and is not public.
 - You will be redirected to Gitlab. Sign in if you aren't already signed in.
-  user1 (user1@localhost) /user2 (user2@localhost)
+  _user1 (user1@localhost) / user2 (user2@localhost)_
   accounts can be used to sign into the Gitlab instance.
 - On Gitlab you will be asked to authorize sharing some
-  account data with a "AuthTry" application.
-  Click on the "Authorize" button.
+  account data for the <http://localhost> application.
+  Click on the **Authorize** button.
 - You will be redirect to the whoami server page
   showing information about your system.
   Any account that passes the Gitlab OAuth or
@@ -92,51 +188,8 @@ The microservice is now running.
 - You will automatically be able to see this page,
   without any Auth process/ new access tokens.
 - This page is still visible even though you have logged out of Gitlab.
-  This is because you haven't logged out of the OAuth.
-
-## Configuration
-
-The conf file can be used to configure the specific rules.
-
-- To setup a public page, an example is shown below.
-
-  ```text
-  rule.noauth.action=allow
-  rule.noauth.rule=Path(`/public`)
-  ```
-
-  Here, 'noauth' is the rule name, and should be changed to suit rule use.
-  Rule names should be unique for each rule.
-  The 'action' property is set to "allow" to make the resource public.
-  The 'rule' property defines the path/route to reach the resource.
-
-- To setup a common page that requires Gitlab OAuth,
-  but is available to all users of the Gitlab instance:
-
-  ```text
-  rule.all.action=auth
-  rule.all.rule=Path(`/os`)
-  ```
-
-  The 'action' property is set to "auth", to enable Gitlab
-  OAuth before the resource can be accessed.
-
-- To setup selective access to a page:
-
-  ```text
-  rule.onlyu1.action=auth
-  rule.onlyu1.rule=Path(`/user1`)
-  rule.onlyu1.whitelist = user1@localhost
-  ```
-
-  The 'whitelist' property of a rule defines a comma separated list
-  of email IDs that are allowed to access the resource.
-  While signing in users can sign in with either their username or email ID
-  as usual, but the email ID corresponding to the
-  account should be included in the whitelist.
-
-  This restricts access of the resource,
-  allowing only users mentioned in the whitelist.
+  This is because you haven't logged out of the OAuth session
+  managed by traefik forward auth.
 
 ## Adding/Removing a service
 
@@ -226,15 +279,14 @@ access to the dummy service.
   behind this Authentication,
   only accesible through the Traefik reverse proxy.
 - Dynamic rule addition is also an open issue.
-- Please refer to
-  <https://github.com/thomseddon/traefik-forward-auth>.
-  This microservice is based on this repository.
+- The Traefik Forward Auth code is available
+  [online](https://github.com/thomseddon/traefik-forward-auth).
 
 ## Disclaimer
 
-The server currently has a 8 second timeout on requests.
-This might cause some requests to timeout,
-usually due to internet connectivity
-and recieve a 503 - Service Unavailable.
-Please try again in case this happens.
-This is an open issue.
+There is an 8 second timeout on OAuth requests sent to Gitlab.
+If the OAuth signin process is not complete before eight seconds,
+Gitlab cancels the signin request and gives
+```503 - Service Unavailable``` message.
+The timelimit variable has not been found in gitlab.rb config file;
+timelimit is probably built into Gitlab code.

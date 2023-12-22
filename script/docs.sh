@@ -50,4 +50,4 @@ mv site/index.html .
 rm -rf site
 
 git add .
-git commit -m "docs for ${COMMIT_HASH} commit"
+git commit --no-verify -m "docs for ${COMMIT_HASH} commit"
