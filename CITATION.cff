@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Talasila"
+  given-names: "Prasad"
+  orcid: "https://orcid.org/0000-0002-8973-2640"
+title: "Digital Twin as a Service"
+version: 0.3.0
+date-released: 2023-11-08
+url: "https://github.com/into-cps-association/DTaaS"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Talasila"
+    given-names: "Prasad"
+    orcid: "https://orcid.org/0000-0002-8973-2640"
+  - family-names: "Gomes"
+    given-names: "Cláudio"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+  - family-names: "Mikkelsen"
+    given-names: "Peter Høgh"
+    orcid: "https://orcid.org/0000-0003-2321-758X"
+  - family-names: "Gil"
+    given-names: "Santiago"
+    orcid: "https://orcid.org/0000-0002-1789-531X"
+  - family-names: "Kamburjan"
+    given-names: "Eduard"
+    orcid: "https://orcid.org/0000-0002-0996-2543"
+  - family-names: "Larsen"
+    given-names: "Peter Gorm"
+    orcid: "https://orcid.org/0000-0002-4589-1500"
+  conference-paper: "The 2023 IEEE International Conference on Digital Twin"
+  month: 8
+  title: "Digital Twin as a Service (DTaaS): A Platform for Digital Twin Developers and Users"
+  year: 2023
