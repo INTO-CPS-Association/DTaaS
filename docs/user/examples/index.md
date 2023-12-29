@@ -1,9 +1,14 @@
 # DTaaS Examples
 
 There are some example digital twins created for the DTaaS software.
-Use these examples and follow the steps given in the **Examples** section to experience
-features of the DTaaS software platform and understand best practices for managing
-digital twins within the platform.
+Use these examples and follow the steps given in the **Examples** section
+to experience features of the DTaaS software platform and understand
+best practices for managing digital twins within the platform.
+
+You can also see a 
+[short video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/cpsens.mp4)
+on the use of DTaaS for creating a digital shadow. This video is recorded using
+DTaaS v0.2.0.
 
 ## Copy Examples
 
@@ -26,6 +31,7 @@ to use the examples in the following order.
 1. [Water Tank Fault Injection](./water_tank_FI/README.md)
 1. [Water Tank Model Swap](./water_tank_swap/README.md)
 1. [Desktop Robotti and RabbitMQ](./drobotti-rmqfmu/README.md)
+1. [Water Treatment Plant and OPC-UA](./opc-ua-waterplant/README.md)
 1. [Three Water Tanks with DT Manager Framework](./three-tank/README.md)
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

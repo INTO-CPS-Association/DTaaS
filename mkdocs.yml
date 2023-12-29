@@ -54,6 +54,7 @@ nav:
           - Water Tank Fault Injection: user/examples/water_tank_FI/README.md
           - Water Tank Model Swap: user/examples/water_tank_swap/README.md
           - Desktop Robotti and RabbitMQ: user/examples/drobotti-rmqfmu/README.md
+          - Water Plant and OPC-UA: user/examples/opc-ua-waterplant/README.md
           - Three Water Tanks: user/examples/three-tank/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
