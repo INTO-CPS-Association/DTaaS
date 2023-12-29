@@ -9,7 +9,7 @@ version: 0.3.0
 date-released: 2023-11-08
 url: "https://github.com/into-cps-association/DTaaS"
 preferred-citation:
-  type: article
+  conference: "The 2023 IEEE International Conference on Digital Twin"
   authors:
   - family-names: "Talasila"
     given-names: "Prasad"
@@ -29,7 +29,6 @@ preferred-citation:
   - family-names: "Larsen"
     given-names: "Peter Gorm"
     orcid: "https://orcid.org/0000-0002-4589-1500"
-  conference-paper: "The 2023 IEEE International Conference on Digital Twin"
-  month: 8
   title: "Digital Twin as a Service (DTaaS): A Platform for Digital Twin Developers and Users"
+  month: 8
   year: 2023
