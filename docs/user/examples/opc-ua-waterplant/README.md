@@ -35,7 +35,7 @@ the residence time (computed from the measure of the volume flow) and
 the UV intensity (measured by the intensity sensor).
 
 The information of the volumetric flow and power (in the three parts of
-the channel) is transmitted to the PLC of the plant. 
+the channel) is transmitted to the PLC of the plant.
 Furthermore, the PLC is working as OPC UA Server to send and receive
 data to and from an OPC UA client.
 Additionally, some sizing parameters and initial values are read from
@@ -111,7 +111,6 @@ the initial input data values used by the server.
 
 ![Configuration input](images/conf-inputs.png)
 
-
 ### DT Config
 
 The _config.json_ specifies the configuration parameters for
@@ -127,7 +126,7 @@ Optional parameters can be modified:
 - record_interval. Sometimes the simulation step_size is small and
   a the size of the results file can be too big. For instance,
   if the simulation step_size is 0.01 seconds, we can increase
-  the record_interval so as to reduce the result file size. 
+  the record_interval so as to reduce the result file size.
 - record_variables: we can specify the list of variables that we
   want to record.
 - enable_send = True, if we want to send results to the OPC UA Server.

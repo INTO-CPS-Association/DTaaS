@@ -5,7 +5,7 @@ Use these examples and follow the steps given in the **Examples** section
 to experience features of the DTaaS software platform and understand
 best practices for managing digital twins within the platform.
 
-You can also see a 
+You can also see a
 [short video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/cpsens.mp4)
 on the use of DTaaS for creating a digital shadow. This video is recorded using
 DTaaS v0.2.0.
