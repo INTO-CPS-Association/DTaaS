@@ -36,13 +36,13 @@ jobs:
           cd client/	
           yarn install	
           yarn build
-          yarn configapp dev
       - name: Run client unit and integration tests
         run: |
           cd client/	
           yarn install	
-          yarn test -u
-          yarn test -i
+          yarn config:test
+          yarn test:unit
+          yarn test:int
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
