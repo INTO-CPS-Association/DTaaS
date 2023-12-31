@@ -65,7 +65,7 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.12.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {
