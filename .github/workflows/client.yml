@@ -41,8 +41,8 @@ jobs:
           cd client/	
           yarn install	
           yarn config:test
-          yarn test:unit
           yarn test:int
+          yarn test:unit
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
