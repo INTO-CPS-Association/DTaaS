@@ -12,14 +12,13 @@ yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
-yarn test -a    # Run all tests
-yarn test -e    # Run end-to-end tests
-yarn test -i    # Run integration tests
-yarn test -u    # Run unit tests
-yarn start      # Start the application
+yarn test:unit  # Run all tests
+yarn test:e2e   # Run end-to-end tests
+yarn test:int   # Run integration tests
+yarn test:all   # Run unit tests
 yarn start -h   # List of all the CLI commands
 yarn start      # Start the application
-yarn clean      # Deletes directories "build", "coverage", and "dist"
+yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
 ## :package: :ship: NPM package

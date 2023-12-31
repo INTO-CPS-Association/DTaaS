@@ -11,13 +11,18 @@
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "scripts": {
-    "build": "script/build.bash",
-    "clean": "script/clean.bash",
+    "build": "npx tsc",
+    "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "start": "script/start.bash",
-    "syntax": "script/syntax.bash",
-    "test": "script/test.bash",
-    "graph": "script/graph.bash"
+    "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
+    "start": "node dist/src/main.js",
+    "syntax": "npx eslint . --fix",
+    "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
+    "test:all": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json --coverage",
+    "test:int": "jest ../test/integration --coverage",
+    "test:unit": "jest ../test/unit --coverage",
+    "test": "script/test.bash"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {
