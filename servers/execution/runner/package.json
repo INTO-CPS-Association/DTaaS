@@ -67,7 +67,7 @@
     "@nestjs/common": "^10.2.7",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.2.7",
-    "@nestjs/platform-express": "^10.2.4",
+    "@nestjs/platform-express": "^10.3.0",
     "cross-env": "^7.0.3",
     "execa": "^8.0.1",
     "js-yaml": "^4.1.0",
