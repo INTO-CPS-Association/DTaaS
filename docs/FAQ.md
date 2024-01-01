@@ -18,6 +18,31 @@
     Please see the [features](user/features.md) page
     to get a sense of the things you can do in DaaS.
 
+??? Question "What is the scope and current capabilities of DTaaS?"
+
+    1. DTaaS is a web based interface to allow you to invoke various tools
+       related to work you want to perform with one or more DTs.
+    2. DTaaS as such doesn't help you create DTs; it loads and runs DTs
+       that you create using tools and services that are available via DTaaS.
+    3. DTaaS can help you create DTs only if your DT or DT asset authoring tools
+       can work in user workspace containing
+       Linux terminal / Desktop / Jupyter / VSCode services.
+    4. DTaaS as such won't help you to install DTs that you get from elsewhere.
+    5. DTs are just executables, as far as DTaaS is concerned.
+       Users are not constrained to work with DTs in a certain way.
+       The DTaaS suggests creation of DTs from reusable assets and provides
+       a suggestive structure for DTs. The [examples](./user/examples/index.md)
+       provide more insight into DTaaS way of working with DTs.
+       But this suggested workflow is not binding on the users.
+    6. DTaaS doesn't help you to autorun run DTs, other than by providing
+       user workspaces. These user workspaces are based on Ubuntu 20.04
+       Operating system.
+    7. The current user interface of DTaaS web application is heavily reliant
+       on the use of Jupyter lab and notebook. 
+       The **Digital Twins** page has Create / Execute / Analyze sections but
+       all point to Jupyter lab. Web interface. The functionality of these pages
+       is still under development.
+
 ??? Question "Are there any Key Performance / Capability Indicators for DTaaS?"
 
     | Key Performance Indicator | Value |
