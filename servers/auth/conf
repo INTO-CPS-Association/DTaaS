@@ -1,8 +1,8 @@
-rule.all.action=allow
-rule.all.rule=Path(`/`)
+rule.all.action=auth
+rule.all.rule=Path(`/os`)
 
-rule.noauth.action=auth
-rule.noauth.rule=Path(`/lib`)
+rule.noauth.action=allow
+rule.noauth.rule=Path(`/public`)
 
 rule.onlyu1.action=auth
 rule.onlyu1.rule=Path(`/user1`)
