@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  client:
+    build: 
+      context: ./
+      dockerfile: ./client/dockerfile
+      args:
+        - ENV=local
+    ports:
+      - "4000:4000"
