@@ -27,7 +27,8 @@ yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 
 The Github actions workflow of
 [lib microservice](../../.github/workflows/lib-ms.yml) publishes the __libms__
-into [public packages](https://github.com/orgs/INTO-CPS-Association/packages).
+into
+[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 ### Verdaccio - Local Package Registry
 

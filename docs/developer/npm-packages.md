@@ -1,13 +1,40 @@
 # Publish NPM packages
 
 The DTaaS software is developed as a monorepo with multiple npm packages.
+
+## Default npm registry
+
+The default registry for npm packages is [npmjs](https://registry.npmjs.org).
+The freely-accessible public packages are published to the **npmjs** registry.
+The publication step is manual.
+
+```bash
+npm login --registry="https://registry.npmjs.org"
+cat ~/.npmrc  #shows the auth token for the registry
+//registry.npmjs.org/:_authToken=xxxxxxxxxx
+yarn publish --registry="https://registry.npmjs.org" \
+  --no-git-tag-version --access public
+```
+
+At least one package is published to this registry for each release of DTaaS.
+This published package is used in the release scripts.
+
+## Github  npm registry
+
+The Github actions of the project publish
+[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
+The only limitation is that the users need an
+[access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+from Github.
+
+## Private Registry
+
+### Setup private npm registry
+
 Since publishing to [npmjs](https://www.npmjs.com/) is
 irrevocable and public, developers are encouraged to setup their own private
 npm registry for local development.
-
 A private npm registry will help with local publish and unpublish steps.
-
-## Setup private npm registry
 
 We recommend using [verdaccio](https://verdaccio.org) for this task.
 The following commands help you create a working private npm registry
@@ -25,7 +52,7 @@ npm login #login with the credentials for npm utility
 You can open `http://localhost:4873` in your browser, login with
 the user credentials to see the packages published.
 
-### Publish to private npm registry
+#### Publish to private npm registry
 
 To publish a package to your local registry, do:
 
@@ -56,7 +83,7 @@ sudo npm list -g # should list @dtaas/runner in the packages
 sudo npm remove --global @dtaas/runner
 ```
 
-## :rocket: Use the packages
+### :rocket: Use the packages
 
 The packages available in private npm registry can be used like
 the regular npm packages installed from [npmjs](https://www.npmjs.com/).

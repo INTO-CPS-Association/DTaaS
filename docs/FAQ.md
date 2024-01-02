@@ -38,7 +38,7 @@
        user workspaces. These user workspaces are based on Ubuntu 20.04
        Operating system.
     7. The current user interface of DTaaS web application is heavily reliant
-       on the use of Jupyter lab and notebook. 
+       on the use of Jupyter lab and notebook.
        The **Digital Twins** page has Create / Execute / Analyze sections but
        all point to Jupyter lab. Web interface. The functionality of these pages
        is still under development.
