@@ -37,7 +37,7 @@ the UV intensity (measured by the intensity sensor).
 The information of the volumetric flow and power (in the three parts of
 the channel) is transmitted to the PLC of the plant.
 Furthermore, the PLC is working as OPC UA Server to send and receive
-data to and from an OPC UA client.
+data to and from an OPC UA Client.
 Additionally, some sizing parameters and initial values are read from
 a spreadsheet filled in by the plant operator. In this case, the spreadsheet
 is an Open Office file (.ods) due to the software installed in the SCADA PC.
@@ -55,7 +55,7 @@ conservation laws (mass, energy and momentum), but simplifies details
 (geometry, mainly) to ensure real-time calculations and accurate results.
 The results are compared to the ones obtained by the CFD. C solver developed
 is used by the OpenModelica model. OpenModelica converts it into
-the FMI standard, to be integrated in the main script execution (_main.py_).
+the FMI standard, to be integrated in the OPC UA Client (_client-opcua.py_).
 
 ![Structure of Python Script](images/dt-structure.png)
 
