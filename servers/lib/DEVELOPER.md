@@ -21,6 +21,9 @@ yarn start      # Start the application
 yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
+**NOTE**: All tests require a valid `.env` file placed in the same directory
+as `package.json`.
+
 ## :package: :ship: NPM package
 
 ### Github Package Registry
