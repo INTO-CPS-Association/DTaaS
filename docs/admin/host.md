@@ -87,12 +87,10 @@ The library microservice requires configuration.
 A template of this configuration file is given in _deploy/config/lib_ file.
 Please modify this file as per your needs.
 
-The first step in this configuration is to prepare the a filesystem for users.
-An example file system in `files/` directory.
+The first step in this configuration is to prepare a filesystem for users.
+An example file system is in `files/` directory.
 You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Add an environment file named `.env` in lib for the library microservice.
-An example `.env` file is given below.
 The simplest possibility is to use `local` mode with the following example.
 The filepath is the absolute filepath to `files/` directory.
 You can copy this configuration into _deploy/config/lib_ file to get started.
