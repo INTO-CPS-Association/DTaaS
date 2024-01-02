@@ -29,7 +29,7 @@ as `package.json`.
 ### Github Package Registry
 
 The Github actions workflow of
-[lib microservice](../../.github/workflows/lib-ms.yml) publishes the __libms__
+[lib microservice](../../.github/workflows/lib-ms.yml) publishes the **libms**
 into
 [packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
@@ -37,9 +37,9 @@ into
 
 Use the instructions in
 [publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing __libms npm package__ in local computer.
+with publishing **libms npm package** in local computer.
 
-Application of the advice given on that page for __libms__ will require
+Application of the advice given on that page for **libms** will require
 running the following commands.
 
 ### Publish
