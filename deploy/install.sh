@@ -34,18 +34,15 @@ yarn install --production
 yarn build
 
 #one of the environments; specify only one; "dev" used the REACT_APP_ENV is not set
-yarn configapp prod
+yarn config:prod
 cp "${TOP_DIR}/deploy/config/client/env.js" build/env.js
 nohup serve -s build -l 4000 & disown
 
 #-------------
-printf "\n\nStart the lib microservice\n "
+printf "\n\n Install and run the lib microservice\n "
 printf "...........\n "
-cd "${TOP_DIR}/servers/lib" || exit
-yarn install
-yarn build
-cp "${TOP_DIR}/deploy/config/lib" .env
-nohup yarn start & disown
+sudo npm install -g @into-cps-association/libms
+nohup libms --config "${TOP_DIR/deploy/config}/lib" & disown
 
 #-------------
 printf "\n \n Start the user workspaces\n "

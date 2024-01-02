@@ -90,7 +90,7 @@ then
   curl -fsSL "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key" | \
     sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 fi
-NODE_MAJOR=18
+NODE_MAJOR=20
 printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
   https://deb.nodesource.com/node_%s.x nodistro main" "$NODE_MAJOR" | \
   sudo tee /etc/apt/sources.list.d/nodesource.list
@@ -150,7 +150,7 @@ cd "${TOP_DIR}/client" || exit
 yarn install --production
 yarn build
 
-yarn configapp dev
+yarn config:dev
 if [ -n "$env_variable" ] ; then
   cp "${TOP_DIR}/deploy/config/client/env.${env_variable}.js" build/env.js
 else
@@ -159,11 +159,9 @@ fi
 nohup serve -s build -l 4000 & disown
 
 #-------------
-printf "\n\n Build, configure and run the lib microservice\n "
+printf "\n\n Install and run the lib microservice\n "
 printf "...........\n "
-cd "${TOP_DIR}/servers/lib" || exit
-yarn install
-yarn build
+sudo npm install -g @into-cps-association/libms
 
 {
   printf "PORT='4001'\n "
@@ -175,8 +173,8 @@ yarn build
   printf "LOG_LEVEL='debug'\n "
   printf "APOLLO_PATH='lib'\n "
   printf "GRAPHQL_PLAYGROUND='true'\n "
-} > .env
-nohup yarn start & disown
+} > "${TOP_DIR/deploy/config}/lib"
+nohup libms --config "${TOP_DIR/deploy/config}/lib" & disown
 
 
 #-------------
@@ -207,7 +205,6 @@ else
     --restart always \
     mltooling/ml-workspace-minimal:0.13.2 || true
 fi
-
 
 
 #-------------

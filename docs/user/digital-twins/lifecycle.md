@@ -76,6 +76,10 @@ A dedicated program exists for each phase of DT lifecycle. Each program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
 
+:fontawesome-solid-circle-info: **The recommended way to implement lifecycle**
+**phases within DTaaS is to create scripts. These scripts can be as simple**
+**as shell scripts.**
+
 ## Example Lifecycle Scripts
 
 Here are the example programs / scripts to manage three phases in
