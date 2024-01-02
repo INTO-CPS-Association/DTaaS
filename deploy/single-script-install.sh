@@ -173,8 +173,8 @@ sudo npm install -g @into-cps-association/libms
   printf "LOG_LEVEL='debug'\n "
   printf "APOLLO_PATH='lib'\n "
   printf "GRAPHQL_PLAYGROUND='true'\n "
-} > "${TOP_DIR/deploy/config}/lib"
-nohup libms --config "${TOP_DIR/deploy/config}/lib" & disown
+} > "${TOP_DIR}/deploy/config/lib"
+nohup libms --config "${TOP_DIR}/deploy/config/lib" & disown
 
 
 #-------------
