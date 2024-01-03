@@ -79,3 +79,6 @@ docker pull rabbitmq:3-management
 docker pull eclipse-mosquitto:2
 docker pull mongo:7.0.3
 docker pull gitlab/gitlab-ce:16.4.1-ce.0
+
+# remove default route inserted by vagrant
+printf "* * * * * ip route del default via 10.0.2.2 dev enp0s3\n" | crontab -

@@ -62,9 +62,7 @@ base vagrant box.
 
 ```bash
 #create a key pair
-ssh-keygen -b 4096 -t rsa -f key -q -N ""
-mv key vagrant
-mv key.pub vagrant.pub
+ssh-keygen -b 4096 -t rsa -f vagrant -q -N ""
 
 vagrant up
 
