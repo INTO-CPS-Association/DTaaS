@@ -4,4 +4,4 @@ services:
         hostname: "foo.com"
         url: "foo.com/gitlab"
         port: 8969
-        homedir: "/home/vagrant/DTaaS/deploy/vagrant/two-machine/gitlab" #no spaces in the path
+        homedir: "/home/vagrant/DTaaS/deploy/services/gitlab" #no spaces in the path

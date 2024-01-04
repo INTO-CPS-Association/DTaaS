@@ -15,7 +15,7 @@ services:
     influxdb:
         username: "dtaas"
         password: "dtaas1357"   # need to have letters and numbers
-        datapath: "/home/vagrant/DTaaS/deploy/vagrant/two-machine/influx" #no spaces in the path
+        datapath: "/home/vagrant/DTaaS/deploy/services/influx" #no spaces in the path
         port: 80
     mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
         username: "dtaas"
@@ -24,4 +24,4 @@ services:
         username: "dtaas"
         password: "dtaas"
         port: 27017
-        datapath: "/home/vagrant/DTaaS/deploy/vagrant/two-machine/mongodb" #no spaces in the path
+        datapath: "/home/vagrant/DTaaS/deploy/services/mongodb" #no spaces in the path
