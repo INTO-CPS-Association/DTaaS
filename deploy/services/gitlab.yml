@@ -1,0 +1,7 @@
+kind: deployment
+services:
+    gitlab:
+        hostname: "foo.com"
+        url: "foo.com/gitlab"
+        port: 8969
+        homedir: "/home/vagrant/DTaaS/deploy/vagrant/two-machine/gitlab" #no spaces in the path
