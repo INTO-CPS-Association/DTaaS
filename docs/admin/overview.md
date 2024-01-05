@@ -1,25 +1,27 @@
 # Overview
 
-## What is the goal?
+## Goal
 
 The goal is to set up the DTaaS infrastructure in order to enable
 your users to use the DTaaS.
 As an admin you will administrate the users and the servers of the system.
 
-## What are the requirements?
+## Requirements
 
-### OAuth Provider
+### OAuth Provider (Mandatory)
 
 You need to have an OAuth Provider running, which the DTaaS can use for
 authentication. This is described further in
 the [authentication section](./client/auth.md).
 
-### Domain name
+### Domain name (Optional)
 
-The DTaaS software can only be hosted on a server with a domain name
-like <http:>_foo.com_</http:>.
+The DTaaS software is a web application and is preferably hosted
+ on a server with a domain name like <http:>_foo.com_</http:>.
+However, it is possible to install the software on your computer
+and use access it at <http:>_localhost_</http:>.
 
-### Reverse Proxy
+### Reverse Proxy (Optional)
 
 The installation setup assumes that the foo.com server is behind a reverse
 proxy / load balancer that provides https termination. You can still use
@@ -30,7 +32,7 @@ with <http://foo.com> in
 [OAuth registration](./client/auth.md). Other installation configuration
 remains the same.
 
-## How to install?
+## Install
 
 The DTaaS can be installed in different ways. Each version serves a different purpose.
 Follow the installation that fits your usecase.

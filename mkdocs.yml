@@ -28,12 +28,13 @@ nav:
         - Single Machine: admin/vagrant/single-machine.md
         - Two Machines: admin/vagrant/two-machines.md
       - Separate Packages:
-        - website: admin/client/CLIENT.md
-        - library microservice: admin/servers/lib/LIB-MS.md
+        - Website: admin/client/CLIENT.md
+        - Library microservice: admin/servers/lib/LIB-MS.md
       - Services: admin/services.md
-      - Guides: 
+      - Guides:
         - New user: admin/guides/add_user.md
         - New Service: admin/guides/add_service.md
+        - Install Gitlab: admin/guides/gitlab.md
         - Link services: admin/guides/link_service.md
         - Common Assets: admin/guides/common_workspace_readonly.md
         - HTTP Mode: admin/guides/hosting_site_without_https.md
@@ -75,7 +76,7 @@ nav:
 use_directory_urls: false
 
 extra_css:
-  - docs/assets/css/extra.css
+  - assets/css/extra.css
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
