@@ -58,7 +58,7 @@
     "react-iframe": "^1.8.5",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-jest": "^27.6.0",
+    "eslint-plugin-jest": "^27.6.1",
     "@types/styled-components": "^5.1.32",
     "eslint": "^8.54.0",
     "eslint-plugin-import": "^2.29.0",
