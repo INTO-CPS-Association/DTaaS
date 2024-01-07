@@ -132,9 +132,9 @@
     "@apollographql/graphql-playground-html" "1.6.29"
 
 "@apollo/server@^4.9.3":
-  version "4.9.4"
-  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.9.4.tgz#fde57e984beef1b2962354a492d3bca072c1067c"
-  integrity sha512-lopNDM3sZerTcYH/P85QX5HqSNV4HoVbtX3zOrf0ak7eplhPDiGVyF0jQWRbL64znG6KXW+nMuLDTyFTMQnvgA==
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.10.0.tgz#fd3c003149b0774903c15a0cfef38e20d05aa096"
+  integrity sha512-pLx//lZ/pvUfWL9G8Np8+y3ujc0pYc8U7dwD6ztt9FAw8NmCPzPaDzlXLBAjGU6WnkqVBOnz8b3dOwRNjLYSUA==
   dependencies:
     "@apollo/cache-control-types" "^1.0.3"
     "@apollo/server-gateway-interface" "^1.1.1"
@@ -152,7 +152,6 @@
     "@types/express-serve-static-core" "^4.17.30"
     "@types/node-fetch" "^2.6.1"
     async-retry "^1.2.1"
-    body-parser "^1.20.0"
     cors "^2.8.5"
     express "^4.17.1"
     loglevel "^1.6.8"
@@ -2071,7 +2070,7 @@ body-parser@1.20.1:
     type-is "~1.6.18"
     unpipe "1.0.0"
 
-body-parser@1.20.2, body-parser@^1.20.0:
+body-parser@1.20.2:
   version "1.20.2"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.20.2.tgz#6feb0e21c4724d06de7ff38da36dad4f57a747fd"
   integrity sha512-ml9pReCu3M61kGlqoTm2umSXTlRTuGTx0bfYj+uIUKKYycG5NtSbeetV3faSU6R7ajOPw0g/J1PvK4qNy7s5bA==
