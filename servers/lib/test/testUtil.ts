@@ -61,14 +61,7 @@ export class MockConfigService {
         return process.env.TOKEN;
       case 'LOCAL_PATH':
         return process.env.TEST_PATH;
-      case 'GITLAB_URL':
-        return process.env.GITLAB_URL;
-      case 'GITLAB_GROUP':
-        return 'dtaas';
       case 'MODE':
-        if (process.env.MODE === 'gitlab') {
-          return 'gitlab';
-        }
         if (process.env.MODE === 'local') {
           return 'local';
         }
