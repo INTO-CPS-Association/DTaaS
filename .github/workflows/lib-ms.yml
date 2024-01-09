@@ -39,11 +39,11 @@ jobs:
           yarn install	
           yarn build
 
-      - name: Run unit tests
+      - name: Run all tests
         run: |
           cd servers/lib
           yarn install
-          yarn test:unit
+          yarn test:all
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
@@ -51,23 +51,7 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
 
-      - name: Run integration tests
-        if: ${{ always() }}
-        run: |
-          cd servers/lib
-          yarn install
-          yarn test:int
-        env:
-          PORT: 4001
-          LOCAL_PATH: ${{ github.workspace }}/files
-          GITLAB_GROUP: dtaas
-          GITLAB_URL: https://gitlab.com/api/graphql
-          TOKEN: token
-          MODE: gitlab
-          LOG_LEVEL: debug
-          APOLLO_PATH: /lib
-
-      - name: Upload unit and integration test coverage to Codecov
+      - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: servers/lib/coverage/clover.xml
