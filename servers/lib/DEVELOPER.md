@@ -10,6 +10,7 @@ file. Please see [README](./README.md) for this information.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
+yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
 yarn test:unit  # Run all tests
@@ -21,8 +22,17 @@ yarn start      # Start the application
 yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
-**NOTE**: All tests require a valid `.env` file placed in the same directory
-as `package.json`.
+**NOTE:** The integration and end-to-end tests require a valid
+`.env` file. Here is a sample file.
+
+```ini
+PORT='4001'
+MODE='local'
+LOCAL_PATH ='/Users/<Username>/DTaaS/files'
+LOG_LEVEL='debug'
+APOLLO_PATH='/lib'
+GRAPHQL_PLAYGROUND='true'
+```
 
 ## :package: :ship: NPM package
 

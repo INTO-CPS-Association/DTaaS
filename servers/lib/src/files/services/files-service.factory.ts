@@ -16,8 +16,7 @@ export default class FilesServiceFactory {
     const mode = this.configService.get<string>('MODE');
     if (mode === 'local') {
       return this.localFilesService;
-    } else {
-      throw new Error(`Invalid MODE: ${mode}`);
     }
+    throw new Error(`Invalid MODE: ${mode}`);
   }
 }
