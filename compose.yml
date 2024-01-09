@@ -5,7 +5,50 @@ services:
     build: 
       context: ./
       dockerfile: ./client/dockerfile
-      args:
-        - ENV=local
     ports:
       - "4000:4000"
+    volumes:
+      - "$PWD/deploy/config/client/env.js:/dtaas/client/build/env.js"
+  libms:
+    build: 
+      context: ./
+      dockerfile: ./servers/lib/dockerfile
+    ports:
+      - "4001:4001"
+    volumes:
+      - "$PWD/deploy/config/lib.docker:/dtaas/libms/.env"
+      - "$PWD/files:/dtaas/libms/files"
+
+  runner:
+    build: 
+      context: ./
+      dockerfile: ./servers/execution/runner/dockerfile
+    ports:
+      - "4002:3000"
+    volumes:
+      - "$PWD/files:/dtaas/runner/files"
+
+  # ml-workspace-user1:
+  #   image: mltooling/ml-workspace-minimal:0.13.2
+  #   container_name: ml-workspace-user1
+  #   ports:
+  #     - "8090:8080"
+  #   volumes:
+  #     - "$PWD/files/user1:/workspace"
+  #     - "$PWD/files/common:/workspace/common"
+  #   environment:
+  #     - AUTHENTICATE_VIA_JUPYTER=""
+  #     - WORKSPACE_BASE_URL="user1"
+  #   shm_size: 512m
+  #   restart: always
+
+  # traefik-gateway:
+    # image: traefik:v2.10
+    # container_name: traefik-gateway
+    # network_mode: host
+    # volumes:
+      # - "$PWD/servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
+      # - "$PWD/servers/config/gateway/auth:/etc/traefik/auth"
+      # - "$PWD/servers/config/gateway/dynamic:/etc/traefik/dynamic"
+      # - "/var/run/docker.sock:/var/run/docker.sock"
+    # restart: always
