@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { ApolloClient, DocumentNode, InMemoryCache, gql } from '@apollo/client';
 import AppModule from '../../src/app.module';
 import {
   e2eReadFile,
@@ -34,35 +34,36 @@ describe('End to End test for the application', () => {
     await app.close();
   }, 10000);
 
-  it('should return the directory contents requested with HTTP POST query', async () => {
-    const query = e2elistDirectory;
-
+  async function HTTPQuery(
+    query: string,
+    expectedResponse: unknown,
+  ): Promise<void> {
     const response = await request(`http://localhost:${process.env.PORT}`)
       .post(process.env.APOLLO_PATH)
       .send({ query });
-    expect(response.body).toEqual(expectedListDirectoryResponse);
-  }, 10000);
+    expect(response.body).toEqual(expectedResponse);
+  }
 
-  it('should return the directory contents requested with GraphQL query', async () => {
-    const query = gql(e2elistDirectory);
-
+  async function GraphQLQuery(
+    query: DocumentNode,
+    expectedResponse: unknown,
+  ): Promise<void> {
     const { data } = await client.query({ query });
-    expect({ data }).toEqual(expectedListDirectoryResponse);
+    expect({ data }).toEqual(expectedResponse);
+  }
+  it('should return the directory contents requested with HTTP POST query', async () => {
+    await HTTPQuery(e2elistDirectory, expectedListDirectoryResponse);
   }, 10000);
 
   it('should return the file content requested with HTTP POST query', async () => {
-    const query = e2eReadFile;
+    await HTTPQuery(e2eReadFile, expectedFileContentResponse);
+  }, 10000);
 
-    const response = await request(`http://localhost:${process.env.PORT}`)
-      .post(process.env.APOLLO_PATH)
-      .send({ query });
-    expect(response.body).toEqual(expectedFileContentResponse);
+  it('should return the directory contents requested with GraphQL query', async () => {
+    await GraphQLQuery(gql(e2elistDirectory), expectedListDirectoryResponse);
   }, 10000);
 
   it('should return the file content requested with GraphQL query', async () => {
-    const query = gql(e2eReadFile);
-
-    const { data } = await client.query({ query });
-    expect({ data }).toEqual(expectedFileContentResponse);
+    await GraphQLQuery(gql(e2eReadFile), expectedFileContentResponse);
   }, 10000);
 });
