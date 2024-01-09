@@ -3,7 +3,7 @@ FROM node:20.10.0-slim
 #! docker should be run from the root directory of the project
 
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /dtaas/client
 
 # Copy package.json and package-lock.json to the working directory
 COPY ./client/package.json ./
@@ -16,10 +16,6 @@ COPY ./client/ .
 
 # Build the React app
 RUN yarn build
-
-# Copy the env js file to the build folder
-ARG ENV
-COPY "deploy/config/client/env.${ENV}.js" build/env.js
 
 # Define the command to run your app
 CMD ["yarn", "start"]
