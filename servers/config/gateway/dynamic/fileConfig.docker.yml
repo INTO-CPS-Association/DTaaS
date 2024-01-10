@@ -1,0 +1,48 @@
+http:
+  routers:
+    dtaas:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`)'
+      middlewares:
+        - basic-auth
+      service: dtaas
+
+    user1:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/user1`)'
+      middlewares:
+        - basic-auth
+      service: user1
+
+    libms:
+      entryPoints:
+        - http
+      rule: 'Host(`localhost`) && PathPrefix(`/lib`)'
+      service: libms
+
+
+  # Middleware: Basic authentication
+  middlewares:
+    basic-auth:
+      basicAuth:
+        usersFile: "/etc/traefik/auth"
+        removeHeader: true
+
+
+  services:
+    dtaas:
+      loadBalancer:
+        servers:
+          - url: "http://client:4000"
+
+    user1:
+      loadBalancer:
+        servers:
+          - url: "http://ml-workspace-user1:8080"
+
+    libms:
+      loadBalancer:
+        servers:
+          - url: "http://libms:4001"
