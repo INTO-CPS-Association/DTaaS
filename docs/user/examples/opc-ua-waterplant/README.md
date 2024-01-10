@@ -13,12 +13,12 @@ adjusting setpoints could significantly reduce energy consumption.
 
 ## Physical Twin Overview
 
-This example demonstrates the communication between a physical waste
-water plant in the tertiary treatment and a digital twin of
-the ultaviolet (UV) disinfection process based on Computational Fluid
-Dynamics (CFD) and compartment models. The aim of this digital twin is to
-develop "virtual sensors" that provide continuous information that
-facilitates the decision making process for the plant operator.
+This example demonstrates the communication between a physical
+ultraviolet (UV) disinfection process (the tertiary treatment of a WWT plant)
+and its digital twin, which is based on Computational Fluid Dynamics (CFD)
+and compartment models. The aim of this digital twin is to develop
+"virtual sensors" that provide continuous information that facilitates
+the decision making process for the plant operator.
 
 ![Waste water treatment plant](images/water-treatment-plant.png)
 
@@ -37,7 +37,7 @@ the UV intensity (measured by the intensity sensor).
 The information of the volumetric flow and power (in the three parts of
 the channel) is transmitted to the PLC of the plant.
 Furthermore, the PLC is working as OPC UA Server to send and receive
-data to and from an OPC UA client.
+data to and from an OPC UA Client.
 Additionally, some sizing parameters and initial values are read from
 a spreadsheet filled in by the plant operator. In this case, the spreadsheet
 is an Open Office file (.ods) due to the software installed in the SCADA PC.
@@ -55,9 +55,9 @@ conservation laws (mass, energy and momentum), but simplifies details
 (geometry, mainly) to ensure real-time calculations and accurate results.
 The results are compared to the ones obtained by the CFD. C solver developed
 is used by the OpenModelica model. OpenModelica converts it into
-the FMI standard, to be integrated in the main script execution (_main.py_).
+the FMI standard, to be integrated in the OPC UA Client (_client-opcua.py_).
 
-![Structure of Python Script](images/dt-structure.png)
+![Structure of Python Script](images/dt-structure-uv_channel.png)
 
 ## Digital Twin Configuration
 

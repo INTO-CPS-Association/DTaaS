@@ -6,7 +6,7 @@ apt-get update -y
 apt-get upgrade -y
 
 #install docker-compose from https://docs.docker.com/compose/install/other/
-curl -SL "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64" \
+curl -SL "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64" \
   -o /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose

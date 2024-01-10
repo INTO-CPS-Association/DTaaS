@@ -38,7 +38,8 @@ yarn clean      # Deletes directories "build", "coverage", and "dist"
 
 The Github actions workflow of
 [lib microservice](../../../.github/workflows/runner.yml) publishes the **runner**
-into [public packages](https://github.com/orgs/INTO-CPS-Association/packages).
+into
+[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 ### Verdaccio - Local Package Registry
 

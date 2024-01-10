@@ -34,7 +34,7 @@ are not a developer, no changes are required to the `Vagrantfile`.
 This vagrant box installed for users will have the following items:
 
 * docker v24.0
-* nodejs v18.8
+* nodejs v20.10
 * yarn v1.22
 * npm v10.2
 * containers
@@ -62,9 +62,7 @@ base vagrant box.
 
 ```bash
 #create a key pair
-ssh-keygen -b 4096 -t rsa -f key -q -N ""
-mv key vagrant
-mv key.pub vagrant.pub
+ssh-keygen -b 4096 -t rsa -f vagrant -q -N ""
 
 vagrant up
 
@@ -79,9 +77,9 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 # inside ~/.zshrc, modify the following line
 plugins=(git zsh-autosuggestions history cp tmux)
 
-# to replace the vagrant ssh key-pair with personal one
-# remove the vagrant default public key - first line of
-# /home/vagrant/.ssh/authorized_keys
+# to replace the default vagrant ssh key-pair with
+# the generated private key into authorized keys
+cp /vagrant/vagrant.pub /home/vagrant/.ssh/authorized_keys
 
 # exit vagrant guest machine and then
 # copy own private key to vagrant private key location

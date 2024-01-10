@@ -102,8 +102,7 @@ This task has been postponed to future.
 Testing any code changes through the end user interface of your software
 is essential to verify if your code has the desired effect for the user.
 [End-to-End tests in DTaaS](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md)
-a functional setup. For more information
-[visit here](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/test/README.md).
+a functional setup.
 
 There are end-to-end tests in the DTaaS. This task has been postponed to future.
 

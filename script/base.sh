@@ -54,7 +54,7 @@ sudo systemctl enable containerd.service
 
 
 #install docker-compose from https://docs.docker.com/compose/install/other/
-sudo curl -SL "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64" \
+sudo curl -SL "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64" \
   -o /usr/local/bin/docker-compose
 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 sudo chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -69,7 +69,7 @@ then
   curl -fsSL "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key" | \
     sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 fi
-NODE_MAJOR=18
+NODE_MAJOR=20
 printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
   https://deb.nodesource.com/node_%s.x nodistro main" "$NODE_MAJOR" | \
   sudo tee /etc/apt/sources.list.d/nodesource.list

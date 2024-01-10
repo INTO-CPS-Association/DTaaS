@@ -11,13 +11,17 @@
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "scripts": {
-    "build": "script/build.bash",
-    "clean": "script/clean.bash",
+    "build": "npx tsc",
+    "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "start": "script/start.bash",
-    "syntax": "script/syntax.bash",
-    "test": "script/test.bash",
-    "graph": "script/graph.bash"
+    "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
+    "start": "node dist/src/main.js",
+    "syntax": "npx eslint . --fix",
+    "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
+    "test:all": "jest --coverage",
+    "test:e2e": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/ && npx cross-env TEST_PATH=test/data jest --config ./test/jest-e2e.json --coverage && npx rimraf ../../files/user2/tools/README.md",
+    "test:int": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/ && npx cross-env TEST_PATH=test/data jest ../test/integration --coverage && npx rimraf ../../files/user2/tools/README.md",
+    "test:unit": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/ && npx cross-env TEST_PATH=test/data jest ../test/unit --coverage && npx rimraf ../../files/user2/tools/README.md"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {

@@ -68,7 +68,7 @@ Please follow these steps to make this work in your local environment.
 Update the **boxes.json**. There are entries one for each server.
 The fields to update are:
 
-  1. `name` - name of server1 (`"name" = "dtaas"`)
+  1. `name` - name of server1 (`"name" = "dtaas-two"`)
   1. `hostname` - hostname of server1 (`"name" = "foo.com"`)
   1. MAC address (`:mac => "xxxxxxxx"`).
   This change is required if you have a DHCP server assigning domain names
