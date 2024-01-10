@@ -121,5 +121,38 @@ servers/.DS_Store
 data/.DS_Store
 **/.DS_Store
 
-# Built docs
+# Code and Built docs
 site/
+client/
+servers/
+files/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# yarn cache
+.yarn
+
+# madge dependency graphs
+src.svg
+test.svg
+
+# config files
+runner.yml
+
+# Jupter Lab
+.workspace

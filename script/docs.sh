@@ -13,7 +13,7 @@ COMMIT_HASH=$(git rev-parse --short HEAD)
 export COMMIT_HASH
 export MKDOCS_ENABLE_PDF_EXPORT=1 
 
-echo ${VERSION}
+echo "${VERSION}"
 if [ -d site ]
 then
   rm -rf site
@@ -50,4 +50,4 @@ mv site/index.html .
 rm -rf site
 
 git add .
-git commit -m "docs for ${COMMIT_HASH} commit"
+git commit --no-verify -m "docs for ${COMMIT_HASH} commit"
