@@ -3,21 +3,21 @@ version: '3'
 services:
   client:
     build: 
-      context: ./
-      dockerfile: ./client/dockerfile
+      context: ../
+      dockerfile: ./docker/client.dockerfile
     ports:
       - "4000:4000"
     volumes:
-      - "$PWD/client/config/dev.js:/dtaas/client/build/env.js"
+      - "../client/config/dev.js:/dtaas/client/build/env.js"
   libms:
     build: 
-      context: ./
-      dockerfile: ./servers/lib/dockerfile
+      context: ../
+      dockerfile: ./docker/libms.dockerfile
     ports:
       - "4001:4001"
     volumes:
-      - "$PWD/deploy/config/lib.docker:/dtaas/libms/.env"
-      - "$PWD/files:/dtaas/libms/files"
+      - "../deploy/config/lib.docker:/dtaas/libms/.env"
+      - "../files:/dtaas/libms/files"
 
   ml-workspace-user1:
     image: mltooling/ml-workspace-minimal:0.13.2
@@ -25,8 +25,8 @@ services:
     ports:
       - "8090:8080"
     volumes:
-      - "$PWD/files/user1:/workspace"
-      - "$PWD/files/common:/workspace/common"
+      - "../files/user1:/workspace"
+      - "../files/common:/workspace/common"
     environment:
       - AUTHENTICATE_VIA_JUPYTER
       - WORKSPACE_BASE_URL=user1
@@ -39,8 +39,8 @@ services:
     ports:
       - "9000:80"
     volumes:
-      - "$PWD/servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
-      - "$PWD/servers/config/gateway/auth:/etc/traefik/auth"
-      - "$PWD/servers/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
+      - "../servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
+      - "../servers/config/gateway/auth:/etc/traefik/auth"
+      - "../servers/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
     restart: always
