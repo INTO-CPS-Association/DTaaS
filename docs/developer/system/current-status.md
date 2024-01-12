@@ -5,7 +5,7 @@ Crucial system components are in place with ongoing development work
 focusing on increased automation and feature enhancement.
 The figure below shows the current status of the development work.
 
-![Current development status](current-status.png)
+![Current development status](current-status-developer.png)
 
 ## :lock: User Security
 
@@ -68,9 +68,10 @@ There are four external services integrated with the DTaaS software platform.
 They are:
 [InfluxDB](https://github.com/influxdata/influxdb),
 [Grafana](https://github.com/grafana/grafana),
-[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)
+[RabbitMQ](https://github.com/rabbitmq/rabbitmq-server),
+[MQTT](https://github.com/eclipse/mosquitto),
 and
-[MQTT](https://github.com/eclipse/mosquitto).
+[MongoDB](https://github.com/mongodb/mongo).
 
 These services can be used by DTs and PTs for communication, storing and
 visualization of data. There can also be monitoring services setup

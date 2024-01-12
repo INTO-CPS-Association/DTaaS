@@ -44,14 +44,15 @@ to get a sample file system structure for the lib microservice.
 The package is available in Github
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
-Set the registry and install the package with the following commands
+Set the registry and install the package with the one of
+the two following commands
 
 ```bash
+sudo npm install -g @into-cps-association/libms  # requires no login
 sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
-sudo npm install -g @into-cps-association/libms
 ```
 
-The _npm install_ command asks for username and password. The username is
+The _github package registry_ asks for username and password. The username is
 your Github username and the password is your Github
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 In order for the npm to download the package, your personal access token
@@ -64,11 +65,8 @@ The template configuration file is:
 
 ```ini
 PORT='4001'
-MODE='local' or 'gitlab'
+MODE='local'
 LOCAL_PATH='/Users/<Username>/DTaaS/files'
-GITLAB_GROUP='dtaas'
-GITLAB_URL='https://gitlab.com/api/graphql'
-TOKEN='123-sample-token'
 LOG_LEVEL='debug'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
@@ -78,22 +76,7 @@ The `LOCAL_PATH` variable is the absolute filepath to the
 location of the local directory which will be served to users
 by the Library microservice.
 
-The `GITLAB_URL`, `GITLAB_GROUP` and `TOKEN` are only relevant for `gitlab` mode.
-The `TOKEN` should be set to your GitLab Group access API token.
-For more information on how to create and use your access token,
-[gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
-
-Once you've generated a token, copy it and replace
-the value of `TOKEN` with your token for the gitlab group, can be found.
-
 Replace the default values the appropriate values for your setup.
-
-**NOTE**:
-
-1. When \__MODE=local_, only _LOCAL_PATH_ is used.
-   Other environment variables are unused.
-1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
-   and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
 ## :rocket: Use
 

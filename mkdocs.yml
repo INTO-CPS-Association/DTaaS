@@ -71,7 +71,9 @@ nav:
       - Publish NPM Packages: developer/npm-packages.md
   - Bugs: bugs.md
   - Thanks: thanks.md
-  - License: LICENSE.md
+  - License: 
+      - DTaaS: LICENSE.md
+      - Third Party: third-party.md 
 
 use_directory_urls: false
 

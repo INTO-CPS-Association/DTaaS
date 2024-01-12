@@ -159,7 +159,8 @@
 
 ??? Question "Does DTaaS support data collection from different sources like hardware, software and network? Is there any user interface or any tracking instruments used for data collection?"
 
-    The DTaaS provids InfluxDB, RabbitMQ, MQTT  services. Both the physical twin
+    The DTaaS provids InfluxDB, RabbitMQ, MQTT and MongoDB services.
+    Both the physical twin
     and digital twin can utilize these protocols for communication.
     The IoT (time-series) data can be collected using InfluxDB and MQTT
     broker services. There is a user interface for InfluxDB which can be
