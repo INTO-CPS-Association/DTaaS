@@ -18,14 +18,6 @@ services:
     volumes:
       - "$PWD/deploy/config/lib.docker:/dtaas/libms/.env"
       - "$PWD/files:/dtaas/libms/files"
-  runner:
-    build: 
-      context: ./
-      dockerfile: ./servers/execution/runner/dockerfile
-    ports:
-      - "4002:3000"
-    volumes:
-      - "$PWD/files:/dtaas/runner/files"
 
   ml-workspace-user1:
     image: mltooling/ml-workspace-minimal:0.13.2
