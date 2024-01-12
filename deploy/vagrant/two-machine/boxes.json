@@ -1,6 +1,6 @@
 [
     {
-        "name" : "dtaas",
+        "name" : "dtaas-two",
         "hostname" : "foo.com",
         "mac" : "02163e0d3c28",
         "ssh_port" : 11022,

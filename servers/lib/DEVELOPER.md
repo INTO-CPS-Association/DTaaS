@@ -12,31 +12,34 @@ yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
-yarn test -a    # Run all tests
-yarn test -e    # Run end-to-end tests
-yarn test -i    # Run integration tests
-yarn test -u    # Run unit tests
-yarn start      # Start the application
+yarn test:unit  # Run all tests
+yarn test:e2e   # Run end-to-end tests
+yarn test:int   # Run integration tests
+yarn test:all   # Run unit tests
 yarn start -h   # List of all the CLI commands
 yarn start      # Start the application
-yarn clean      # Deletes directories "build", "coverage", and "dist"
+yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
+
+**NOTE**: All tests require a valid `.env` file placed in the same directory
+as `package.json`.
 
 ## :package: :ship: NPM package
 
 ### Github Package Registry
 
 The Github actions workflow of
-[lib microservice](../../.github/workflows/lib-ms.yml) publishes the __libms__
-into [public packages](https://github.com/orgs/INTO-CPS-Association/packages).
+[lib microservice](../../.github/workflows/lib-ms.yml) publishes the **libms**
+into
+[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 ### Verdaccio - Local Package Registry
 
 Use the instructions in
 [publish npm package](../../docs/developer/npm-packages.md) for help
-with publishing __libms npm package__ in local computer.
+with publishing **libms npm package** in local computer.
 
-Application of the advice given on that page for __libms__ will require
+Application of the advice given on that page for **libms** will require
 running the following commands.
 
 ### Publish

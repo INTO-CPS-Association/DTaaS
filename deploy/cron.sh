@@ -18,8 +18,7 @@ nc -z localhost 4001
 PORT_STATUS=$?
 if (( PORT_STATUS == 1 ))
 then
-  cd "${PROJECT_PATH}/servers/lib" || exit
-  nohup yarn start & disown
+  nohup libms -c "${PROJECT_PATH}/deploy/config/lib" & disown
 fi
 
 docker start traefik-gateway
