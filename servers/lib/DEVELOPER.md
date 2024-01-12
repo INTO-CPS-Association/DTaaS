@@ -10,7 +10,7 @@ file. Please see [README](./README.md) for this information.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
-yarn format     #format .ts[x] and .js[x] files with prettier.
+yarn format     #format .ts[x] and .js[x] files with prettier
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
 yarn test:unit  # Run all tests
