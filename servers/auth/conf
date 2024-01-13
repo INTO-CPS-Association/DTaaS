@@ -4,6 +4,12 @@ rule.all.rule=Path(`/`)
 rule.noauth.action=auth
 rule.noauth.rule=PathPrefix(`/lib`)
 
+rule.libms.action=auth
+rule.libms.rule=PathPrefix(`/libms`)
+
+rule.client.action=auth
+rule.client.rule=PathPrefix(`/client`)
+
 rule.onlyu1.action=auth
 rule.onlyu1.rule=PathPrefix(`/user1`)
 rule.onlyu1.whitelist = astitvasehgal19@gmail.com

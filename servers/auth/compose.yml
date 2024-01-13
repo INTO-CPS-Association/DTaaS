@@ -23,6 +23,31 @@ services:
       - "traefik.http.routers.common.rule=Path(`/`)"
       - "traefik.http.routers.common.middlewares=traefik-forward-auth"
   
+  libms:
+    image: prasadtalasila/dtaas-libms:latest
+    ports:
+      - "4001:4001"
+    volumes:
+      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
+      - ${DTAAS_DIR}/files:/dtaas/libms/files
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libms.entryPoints=web"
+      - "traefik.http.routers.libms.rule=PathPrefix(`/libms`)"
+      - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
+  
+  client:
+    image: prasadtalasila/dtaas-client:latest
+    ports:
+      - "4000:4000"
+    volumes:
+      - ${DTAAS_DIR}/deploy/config/client/env.local.js:/dtaas/client/build/env.js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.entryPoints=web"
+      - "traefik.http.routers.client.rule=PathPrefix(`/client`)"
+      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
+
   library:
     image: httpd:alpine3.19
     volumes:
