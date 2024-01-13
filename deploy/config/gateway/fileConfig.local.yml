@@ -3,19 +3,19 @@ http:
     dtaas:
       entryPoints:
         - http
-      rule: "Host(`localhost`)"
+      rule: 'Host(`localhost`)'
       service: dtaas
 
     user1:
       entryPoints:
         - http
-      rule: "Host(`localhost`) && PathPrefix(`/user1`)"
+      rule: 'Host(`localhost`) && PathPrefix(`/user1`)'
       service: user1
 
     libms:
       entryPoints:
         - http
-      rule: "Host(localhost`) && PathPrefix(`/lib`)"
+      rule: 'Host(`localhost`) && PathPrefix(`/lib`)'
       service: libms
 
   services:

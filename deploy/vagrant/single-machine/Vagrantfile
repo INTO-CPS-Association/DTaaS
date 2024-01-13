@@ -6,14 +6,12 @@ Vagrant.configure(2) do |config|
 
   config.vm.box = "dtaas"
 
-  # gateway node - hosts traefik, dns and static client website
   config.vm.define "dtaas" do |node|
-    node.vm.hostname = "foo.com" 
-    node.vm.network "public_network", :bridge => 'ens10f3', :mac => "02163ef4f4f4"
+    node.vm.hostname = "foo.com"
+    node.vm.network "public_network", :mac => "02163ef4f4f4"
 
-
-   node.vm.provider "virtualbox" do |vb|
-      vb.name = "DTaaSOne"
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "dtaas-one"
       vb.memory = 16384
       vb.cpus = 8
     end

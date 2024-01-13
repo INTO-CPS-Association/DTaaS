@@ -87,12 +87,10 @@ The library microservice requires configuration.
 A template of this configuration file is given in _deploy/config/lib_ file.
 Please modify this file as per your needs.
 
-The first step in this configuration is to prepare the a filesystem for users.
-An example file system in `files/` directory.
+The first step in this configuration is to prepare a filesystem for users.
+An example file system is in `files/` directory.
 You can rename the top-level user1/user2 to the usernames chosen by you.
 
-Add an environment file named `.env` in lib for the library microservice.
-An example `.env` file is given below.
 The simplest possibility is to use `local` mode with the following example.
 The filepath is the absolute filepath to `files/` directory.
 You can copy this configuration into _deploy/config/lib_ file to get started.
@@ -133,24 +131,25 @@ Remember to Create gitlab accounts for usernames chosen by you.
 Change the React website configuration in _deploy/config/client/env.js_.
 
 ```js
-window.env = {
-  REACT_APP_ENVIRONMENT: "prod",
-  REACT_APP_URL: "https://foo.com/",
-  REACT_APP_URL_BASENAME: "dtaas",
-  REACT_APP_URL_DTLINK: "/lab",
-  REACT_APP_URL_LIBLINK: "",
-  REACT_APP_WORKBENCHLINK_TERMINAL: "/terminals/main",
-  REACT_APP_WORKBENCHLINK_VNCDESKTOP: "/tools/vnc/?password=vncpassword",
-  REACT_APP_WORKBENCHLINK_VSCODE: "/tools/vscode/",
-  REACT_APP_WORKBENCHLINK_JUPYTERLAB: "/lab",
-  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: "",
+if (typeof window !== 'undefined') {
+  window.env = {
+    REACT_APP_ENVIRONMENT: 'prod',
+    REACT_APP_URL: 'https://foo.com/',
+    REACT_APP_URL_BASENAME: 'dtaas',
+    REACT_APP_URL_DTLINK: '/lab',
+    REACT_APP_URL_LIBLINK: '',
+    REACT_APP_WORKBENCHLINK_TERMINAL: '/terminals/main',
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
 
-  REACT_APP_CLIENT_ID:
-    "934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0",
-  REACT_APP_AUTH_AUTHORITY: "https://gitlab.foo.com/",
-  REACT_APP_REDIRECT_URI: "https://foo.com/Library",
-  REACT_APP_LOGOUT_REDIRECT_URI: "https://foo.com/",
-  REACT_APP_GITLAB_SCOPES: "openid profile read_user read_repository api",
+    REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
+    REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
+    REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
+    REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  };
 };
 ```
 
