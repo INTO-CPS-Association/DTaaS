@@ -6,6 +6,8 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
+      - "--entrypoints.web.forwardedHeaders.insecure=true"
+      - "--entrypoints.web.proxyProtocol.insecure=true"
     ports:
       - "80:80"
       - "8080:8080"
@@ -24,13 +26,13 @@ services:
   library:
     image: httpd:alpine3.19
     volumes:
-      - ${FILE_DIR}:/usr/local/apache2/htdocs/lib
+      - ${TOP_DIR}/files:/usr/local/apache2/htdocs/lib
     labels:
     
       - "traefik.enable=true"
       #Models a NoAuth needed service
       - "traefik.http.routers.noauth.entryPoints=web"
-      - "traefik.http.routers.noauth.rule=Path(`/lib`)"
+      - "traefik.http.routers.noauth.rule=PathPrefix(`/lib`)"
       - "traefik.http.routers.noauth.middlewares=traefik-forward-auth"
 
   user1:
@@ -45,38 +47,38 @@ services:
       - "traefik.enable=true"
       #Models a service only visible to user1
       - "traefik.http.routers.u1.entryPoints=web"
-      - "traefik.http.routers.u1.rule=Path(`/${username1}`)"
+      - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`)"
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
   
   user2:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
-      - /home/astitva/Desktop/DTaaS/servers/auth/files/common:/workspace/common 
-      - /home/astitva/Desktop/DTaaS/servers/auth/files/user2:/workspace
+      - ${TOP_DIR}/files/common:/workspace/common 
+      - ${TOP_DIR}/files/${username2}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=user2
+      - WORKSPACE_BASE_URL=${username2}
     labels:
       - "traefik.enable=true"
       #Models a service only visible to user2
       - "traefik.http.routers.u2.entryPoints=web"
-      - "traefik.http.routers.u2.rule=Path(`/user2`)"
+      - "traefik.http.routers.u2.rule=PathPrefix(`/${username2}`)"
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
   
   
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - /home/astitva/Desktop/DTaaS/servers/auth/conf:/conf
+      - ${TOP_DIR}/conf:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
-      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=eef17993ec9c076e78b39684ca0e7ae8dffda8f646cc637641928dc85e4fead8
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=cbe95c2f9139e02219d5d2557c36961918d8900013c73d16631846c7a2850ed8
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${BASE_URL}/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${BASE_URL}/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=${BASE_URL}/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${CLIENT_ID}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${CLIENT_SECRET}
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
-      - SECRET= abcdefgi
+      - SECRET= ${OAUTH_SECRET}
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
       - CONFIG=/conf

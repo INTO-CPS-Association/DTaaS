@@ -2,12 +2,12 @@ rule.all.action=allow
 rule.all.rule=Path(`/`)
 
 rule.noauth.action=auth
-rule.noauth.rule=Path(`/lib`)
+rule.noauth.rule=PathPrefix(`/lib`)
 
 rule.onlyu1.action=auth
-rule.onlyu1.rule=Path(`/user1`)
-rule.onlyu1.whitelist = user1@localhost
+rule.onlyu1.rule=PathPrefix(`/user1`)
+rule.onlyu1.whitelist = astitvasehgal19@gmail.com
 
 rule.onlyu2.action=auth
-rule.onlyu2.rule=Path(`/user2`)
-rule.onlyu2.whitelist = user2@localhost
+rule.onlyu2.rule=PathPrefix(`/user2`)
+rule.onlyu2.whitelist = f20190640@goa.bits-pilani.ac.in
