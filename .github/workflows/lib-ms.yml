@@ -41,8 +41,6 @@ jobs:
 
       - name: Run all tests
         run: |
-          ls ${LOCAL_PATH}
-          pwd
           cd servers/lib
           yarn install
           yarn test:unit
