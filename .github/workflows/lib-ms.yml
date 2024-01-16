@@ -42,9 +42,11 @@ jobs:
       - name: Run all tests
         run: |
           ls ${LOCAL_PATH}
+          echo ${LOCAL_PATH}
+          print ${LOCAL_PATH}
           cd servers/lib
           yarn install
-          LOCAL_PATH=${{ github.workspace }}/files yarn test:all
+          yarn test:all
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
