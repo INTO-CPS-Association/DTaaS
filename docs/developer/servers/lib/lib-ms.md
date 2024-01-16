@@ -32,18 +32,8 @@ classDiagram
 
     class FilesServiceFactory {
     -configService: ConfigService
-    -gitlabFilesService: GitlabFilesService
     -localFilesService: LocalFilesService
     +create(): IFilesService
-    }
-
-    class GitlabFilesService {
-    -configService: ConfigService
-    -parseArguments(path: string): Promise<domain: string; parsedPath: string>
-    -sendRequest(query: string): Promise<Project>
-    -executeQuery(path: string, getQuery: QueryFunction): Promise<Project>
-    +listDirectory(path: string): Promise<Project>
-    +readFile(path: string): Promise<Project>
     }
 
     class LocalFilesService {
@@ -63,11 +53,9 @@ classDiagram
     }
 
     IFilesService <|-- FilesResolver: uses
-    IFilesService <|.. GitlabFilesService: implements
     IFilesService <|.. LocalFilesService: implements
     IFilesService <|-- FilesServiceFactory: creates
     ConfigService <|-- FilesServiceFactory: uses
-    ConfigService <|-- GitlabFilesService: uses
     ConfigService <|-- LocalFilesService: uses
 ```
 
@@ -84,11 +72,9 @@ sequenceDiagram
     participant CS as ConfigService
     participant IFS as IFilesService
     participant LFS as LocalFilesService
-    participant GFS as GitlabFilesService
     end
 
     participant FS as Local File System DB
-    participant GAPI as GitLab API DB
 
     Client ->> Traefik : HTTP request
     Traefik ->> FR : GraphQL query
@@ -129,35 +115,7 @@ sequenceDiagram
         LFS ->> IFS : return Promise<Project>
     end
     deactivate LFS
-    else MODE = GitLab
-        FSF ->> FR : return filesService (GFS)
-        %%deactivate FSF
-
-    FR ->> IFS : listDirectory(path) or readFile(path)
     activate IFS
-
-    IFS ->> GFS : listDirectory(path) or readFile(path)
-    activate GFS
-
-    GFS ->> GFS : parseArguments(path)
-    GFS ->> GFS : executeQuery()
-
-    GFS ->> CS : getConfiguration("GITLAB_API_URL", "GITLAB_TOKEN")
-    activate CS
-
-    CS -->> GFS : return GitLab API URL and Token
-    deactivate CS
-
-    GFS ->> GAPI : sendRequest()
-    alt GitLab API error
-        GAPI -->> GFS : API error
-        GFS ->> GFS : Throw new Error("Invalid query")
-        GFS -->> IFS : Error
-    else Successful GitLab API operation
-        GAPI -->> GFS : Return API response
-        GFS ->> IFS : return Promise<Project>
-    end
-    deactivate GFS
     end
 
     alt Error thrown

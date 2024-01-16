@@ -12,19 +12,10 @@ interface IFilesService {
 
 class FilesServiceFactory {
   -configService: ConfigService
-  -gitlabFilesService: GitlabFilesService
   -localFilesService: LocalFilesService
   +create(): IFilesService
 }
 
-class GitlabFilesService {
-  -configService: ConfigService
-  -parseArguments(path: string): Promise<{ domain: string; parsedPath: string }>
-  -sendRequest(query: string): Promise<Project>
-  -executeQuery(path: string, getQuery: QueryFunction): Promise<Project>
-  +listDirectory(path: string): Promise<Project>
-  +readFile(path: string): Promise<Project>
-}
 
 class LocalFilesService {
   -configService: ConfigService
@@ -38,10 +29,8 @@ class ConfigService {
 }
 
 FilesResolver --> IFilesService: uses
-IFilesService <|.. GitlabFilesService: implements
 IFilesService <|.. LocalFilesService: implements
 FilesServiceFactory --> IFilesService: creates
 FilesServiceFactory --> ConfigService: uses
-GitlabFilesService --> ConfigService: uses
 LocalFilesService --> ConfigService: uses
 @enduml
