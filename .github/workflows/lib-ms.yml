@@ -43,9 +43,6 @@ jobs:
         run: |
           cd servers/lib
           yarn install
-          yarn test:unit
-          yarn test:int
-          yarn test:e2e
           yarn test:all
         env:
           PORT: 4001
