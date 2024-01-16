@@ -199,7 +199,8 @@ in new browser are:
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
     The Terminal hyperlink does not always work reliably. If you want
-    terminal. Please use the tools dropdown in the Jupyter Notebook.
+    terminal, please use the tools dropdown in the Jupyter Notebook.
+    ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
 
 ## Finally logout
 

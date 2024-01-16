@@ -7,6 +7,10 @@ The figure below shows the current status of the development work.
 
 ![Current development status](current-status-developer.png)
 
+If you are interested in C4 representation of the same diagram,
+please take a look at
+the [C4 L2 diagram](current-status-developer-2.png).
+
 ## :lock: User Security
 
 There is authentication mechanisms in place for the react website

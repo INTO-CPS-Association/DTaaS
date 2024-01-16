@@ -64,8 +64,12 @@
     The licensed software are not available on the software platform.
     But users have private workspaces which are based
     on Linux-based xfce Desktop environment.
-    Users can install software in their workspaces. The licensed software
-    installed by one user is not available to another user.
+    Users can install software in their workspaces.
+    Please see a
+    [screencast](FAQ/matlab-simulink.mp4) of using Matlab Simulink
+    within the DTaaS software.
+    The licensed software installed by one user is not available
+    to another user.
 
 ## Digital Twin Models
 

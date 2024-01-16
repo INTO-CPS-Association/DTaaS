@@ -24,25 +24,12 @@ There is a skeleton file structure in
 [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
 You can copy and create file system for your users.
 
-## Gitlab setup (optional)
-
-For this microserivce to be functional,
-a certain directory or gitlab project structure is expected.
-The microservice expects that the gitlab consisting of one group,
-DTaaS, and within that group, all of the projects be located,
-**user1**, **user2**, ... , as well as a **commons** project.
-Each project corresponds to files of one user.
-A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
-You can visit the gitlab documentation on [groups](https://docs.gitlab.com/ee/user/group/)
-for help on the management of gitlab groups.
-
-You can clone the git repositories from the `dtaas` group
-to get a sample file system structure for the lib microservice.
-
 ## :arrow_down: Install
 
 The package is available in Github
-[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
+and on
+[npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
 
 Set the registry and install the package with the one of
 the two following commands
