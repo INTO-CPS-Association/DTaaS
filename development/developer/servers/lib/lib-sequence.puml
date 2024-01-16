@@ -1,16 +1,14 @@
 @startuml
 actor Client
 actor Traefik
-box "RAMS" #LightGreen
+box "Library Microservice" #LightGreen
 participant "FilesResolver" as FR
 participant "FilesServiceFactory" as FSF
 participant "ConfigService" as CS
 participant "IFilesService" as IFS
 participant "LocalFilesService" as LFS
-participant "GitlabFilesService" as GFS
 end box
 database "Local File System" as FS
-database "GitLab API" as GAPI
 
 Client -> Traefik : HTTP request
 Traefik -> FR : GraphQL query
@@ -51,35 +49,6 @@ alt MODE = Local
     LFS -> IFS : return Promise<Project>
   end
   deactivate LFS
-else MODE = GitLab
-  FSF -> FR : return filesService (GFS)
-  deactivate FSF
-
-  FR -> IFS : listDirectory(path) or readFile(path)
-  activate IFS
-
-  IFS -> GFS : listDirectory(path) or readFile(path)
-  activate GFS
-
-  GFS -> GFS : parseArguments(path)
-  GFS -> GFS : executeQuery()
-
-  GFS -> CS : getConfiguration("GITLAB_API_URL", "GITLAB_TOKEN")
-  activate CS
-
-  CS --> GFS : return GitLab API URL and Token
-  deactivate CS
-
-  GFS -> GAPI : sendRequest()
-  alt GitLab API error
-    GAPI --> GFS : API error
-    GFS -> GFS : Throw new Error("Invalid query")
-    GFS --> IFS : Error
-  else Successful GitLab API operation
-    GAPI --> GFS : Return API response
-    GFS -> IFS : return Promise<Project>
-  end
-  deactivate GFS
 end
 
 alt Error thrown
