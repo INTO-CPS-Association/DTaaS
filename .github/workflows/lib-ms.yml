@@ -41,6 +41,7 @@ jobs:
 
       - name: Run all tests
         run: |
+          ls ${LOCAL_PATH}
           cd servers/lib
           yarn install
           yarn test:all
