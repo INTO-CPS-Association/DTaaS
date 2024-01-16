@@ -20,8 +20,8 @@
     "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
     "posttest": "npx rimraf ../../files/user2/tools/README.md",
     "test:all": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md && npx cross-env LOCAL_PATH=test/data jest --coverage && npx rimraf ../../files/user2/tools/README.md",
-    "test:e2e": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md && npx cross-env TEST_PATH=test/data jest --config ./test/jest-e2e.json --coverage && npx rimraf ../../files/user2/tools/README.md",
-    "test:int": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md && npx cross-env TEST_PATH=test/data jest ../test/integration --coverage && npx rimraf ../../files/user2/tools/README.md",
+    "test:e2e": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md && npx cross-env LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage && npx rimraf ../../files/user2/tools/README.md",
+    "test:int": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md && npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage && npx rimraf ../../files/user2/tools/README.md",
     "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage"
   },
   "bin": "./dist/src/main.js",
