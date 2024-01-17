@@ -1,28 +1,10 @@
 # Overview
 
 The **lib microservice** is a simplified file manager providing graphQL API.
-It has three features:
+It has two features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
-* Source files can either come from local file system or from a gitlab instance.
-
-## Gitlab setup
-
-For this microserivce to be functional,
-a certain directory or gitlab project structure is expected.
-The microservice expects that the gitlab consisting of one group, dtaas (by convention),
-and within that group, all of the projects be located,
-**user1**, **user2**, ... , as well as a **commons** projects.
-Each project corresponds to files of one user.
-A sample file structure can be seen in [gitlab dtaas group](https://gitlab.com/dtaas).
-You can visit the gitlab documentation on
-[groups](https://docs.gitlab.com/ee/user/group/)
-for help on the management of gitlab groups.
-
-You can clone the git repositories from
-the [gitlab dtaas](https://gitlab.com/dtaas) group
-to get a sample file system structure for the lib microservice.
 
 ## :arrow_down: Install
 
@@ -51,9 +33,6 @@ The template configuration file is:
 PORT='4001'
 MODE='local' or 'gitlab'
 LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-GITLAB_GROUP ='dtaas'
-GITLAB_URL='https://gitlab.com/api/graphql'
-TOKEN='123-sample-token'
 LOG_LEVEL='debug'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
@@ -63,22 +42,7 @@ The `LOCAL_PATH` variable is the absolute filepath to the
 location of the local directory which will be served to users
 by the Library microservice.
 
-The `GITLAB_URL`, `GITLAB_GROUP` and `TOKEN` are only relevant for `gitlab` mode.
-The `TOKEN` should be set to your GitLab Group access API token.
-For more information on how to create and use your access token,
-[gitlab page](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html).
-
-Once you've generated a token, copy it and replace
-the value of `TOKEN` with your token for the gitlab group,
-
 Replace the default values the appropriate values for your setup.
-
-**NOTE**:
-
-1. When \__MODE=local_, only _LOCAL_PATH_ is used.
-   Other environment variables are unused.
-1. When _MODE=gitlab_, _GITLAB_URL, TOKEN_,
-   and _GITLAB_GROUP_ are used; _LOCAL_PATH_ is unused.
 
 ## :rocket: Use
 
