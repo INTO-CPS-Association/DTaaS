@@ -30,7 +30,7 @@ export default async function bootstrap(options?: BootstrapOptions) {
   const port = configService.get<number>('PORT');
 
   if (options.fileserver) {
-    cloudCMD(app, options.fileserver);
+    cloudCMD(app, options.fileserver, configService.get<string>('LOCAL_PATH'));
   }
 
   await app.listen(port);
