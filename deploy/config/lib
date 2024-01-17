@@ -1,6 +1,7 @@
 PORT='4001'
-MODE='local'
-LOCAL_PATH ='filepath'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
+ MODE='local'
+ LOCAL_PATH ='/mnt/d/Aryan/Coding/Web Dev/DTaaS/DTaaS/DTaaS/files'
+ LOG_LEVEL='debug'
+ APOLLO_PATH='lib'
+ GRAPHQL_PLAYGROUND='true'
+ 
