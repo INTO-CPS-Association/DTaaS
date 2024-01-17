@@ -1,14 +1,16 @@
 import { INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Server } from 'socket.io';
 import * as cloudcmd from 'cloudcmd';
+import { join } from 'path';
 
-const runCloudCMD = (app: INestApplication, optionsPath: string) => {
-  const filesPath = app.get(ConfigService).get<string>('LOCAL_PATH');
-
+const runCloudCMD = (
+  app: INestApplication,
+  optionsPath: string,
+  filesPath: string,
+) => {
   const { createConfigManager } = cloudcmd;
   const configManager = createConfigManager({
-    configPath: optionsPath,
+    configPath: join(process.cwd(), optionsPath),
   });
 
   configManager('root', filesPath);
@@ -18,7 +20,6 @@ const runCloudCMD = (app: INestApplication, optionsPath: string) => {
   const socket = new Server(server, {
     path: `${configManager('prefix')}/socket.io`,
   });
-
   app.use(
     configManager('prefix'),
     cloudcmd({
