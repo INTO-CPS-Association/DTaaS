@@ -1,0 +1,10 @@
+ INFO  Accepting connections at http://localhost:4000
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFilesModule dependencies initialized[39m[38;5;3m +45ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/lib, POST} route[39m[38;5;3m +53ms[39m
+[32m[Nest] 9173  - [39m01/17/2024, 10:26:20 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +2ms[39m

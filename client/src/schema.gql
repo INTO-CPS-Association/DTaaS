@@ -1,0 +1,58 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Blob {
+  name: String!
+  type: String!
+}
+
+type BlobEdge {
+  node: Blob!
+}
+
+type BlobConnection {
+  edges: [BlobEdge!]!
+}
+
+type TreeEntry {
+  name: String!
+  type: String!
+}
+
+type TreeEdge {
+  node: TreeEntry!
+}
+
+type TreeConnection {
+  edges: [TreeEdge!]!
+}
+
+type Tree {
+  blobs: BlobConnection!
+  trees: TreeConnection!
+}
+
+type RepositoryBlob {
+  name: String!
+  rawBlob: String!
+  rawTextBlob: String!
+}
+
+type RepositoryBlobConnection {
+  nodes: [RepositoryBlob!]!
+}
+
+type Repository {
+  tree: Tree!
+  blobs: RepositoryBlobConnection!
+}
+
+type Project {
+  repository: Repository!
+}
+
+type Query {
+  listDirectory(path: String!): Project!
+  readFile(path: String!): Project!
+}
