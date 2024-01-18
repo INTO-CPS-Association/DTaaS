@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/libms",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -22,7 +22,8 @@
     "test:all": "npx cross-env LOCAL_PATH=test/data jest --coverage",
     "test:e2e": "npx cross-env LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
     "test:int": "npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage",
-    "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage"
+    "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage",
+    "test:cloudcmd": "libms -c .env -f ./config/cloudcmd.json >/dev/null & jest test/cloudcmd --collectCoverage=false && yarn exec kill $(ps aux | grep '[l]ibms' | awk '{print $2}')"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {
