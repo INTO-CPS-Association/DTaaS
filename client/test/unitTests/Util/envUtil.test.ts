@@ -18,8 +18,8 @@ describe('envUtil', () => {
     'one',
     '/two',
     'three/',
-    '/four/',
-    '/five/guy/',
+    '/four/guy/',
+    // '/five/guy/',
   ];
   const testUsername = 'username';
   const testAppID = 'testAppID';
@@ -34,11 +34,10 @@ describe('envUtil', () => {
     REACT_APP_URL_BASENAME: testBasename,
     REACT_APP_URL_DTLINK: testDT,
     REACT_APP_URL_LIBLINK: testLIB,
-    REACT_APP_WORKBENCHLINK_TERMINAL: testWorkbenchEndpoints[0],
-    REACT_APP_WORKBENCHLINK_VNCDESKTOP: testWorkbenchEndpoints[1],
-    REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[2],
-    REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[3],
-    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[4],
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: testWorkbenchEndpoints[0],
+    REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[1],
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[2],
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[3],
 
     REACT_APP_CLIENT_ID: testAppID,
     REACT_APP_AUTH_AUTHORITY: testAuthority,

@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 jest.deepUnmock('components/LinkButtons');
 
 const buttons: KeyLinkPair[] = [
-  { key: 'TERMINAL', link: 'https://example.com/terminal' },
+  // { key: 'TERMINAL', link: 'https://example.com/terminal' },
   { key: 'VNCDESKTOP', link: 'https://example.com/desktop' },
   { key: 'NO_ICON', link: 'https://example.com/noicon' },
 ];
