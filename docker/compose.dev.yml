@@ -31,7 +31,6 @@ services:
       - AUTHENTICATE_VIA_JUPYTER
       - WORKSPACE_BASE_URL=user1
     shm_size: 512m
-    restart: always
 
   traefik-gateway:
     image: traefik:v2.10
@@ -43,4 +42,3 @@ services:
       - "../servers/config/gateway/auth:/etc/traefik/auth"
       - "../servers/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: always

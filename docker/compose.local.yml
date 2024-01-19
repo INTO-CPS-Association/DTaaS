@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  client:
+    image: intocps/dtaas-client
+    ports:
+      - "4000:4000"
+    volumes:
+      - "../client/config/test.js:/dtaas/client/build/env.js"
+  libms:
+    image: intocps/libms
+    ports:
+      - "4001:4001"
+    volumes:
+      - "../deploy/config/lib.docker:/dtaas/libms/.env"
+      - "../files:/dtaas/libms/files"
+
+  ml-workspace-user1:
+    image: mltooling/ml-workspace-minimal:0.13.2
+    container_name: ml-workspace-user1
+    ports:
+      - "8090:8080"
+    volumes:
+      - "../files/user1:/workspace"
+      - "../files/common:/workspace/common"
+    environment:
+      - AUTHENTICATE_VIA_JUPYTER
+      - WORKSPACE_BASE_URL=user1
+    shm_size: 512m
+
+  traefik-gateway:
+    image: traefik:v2.10
+    container_name: traefik-gateway
+    ports:
+      - "9000:80"
+    volumes:
+      - "../servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
+      - "../servers/config/gateway/auth:/etc/traefik/auth"
+      - "../servers/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
