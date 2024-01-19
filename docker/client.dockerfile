@@ -1,5 +1,5 @@
 #! docker should be run from the root directory of the project
-FROM node:20.10.0-slim
+FROM node:20.10.0-slim as build
 
 # Set the working directory inside the container
 WORKDIR /dtaas/client
@@ -16,5 +16,13 @@ COPY ./client/ .
 # Build the React app
 RUN yarn build
 
+
+FROM node:20.10.0-slim
+# Copy the build output to serve
+COPY --from=build /dtaas/client/build /dtaas/client/build
+COPY --from=build /dtaas/client/package.json /dtaas/client/package.json
+
+WORKDIR /dtaas/client
+RUN npm i -g serve
 # Define the command to run your app
 CMD ["yarn", "start"]
