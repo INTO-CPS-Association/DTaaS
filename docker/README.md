@@ -5,8 +5,8 @@ and what the purpose of those are.
 
 ## Folder Structure
 
-- **client.dockerfile**: Dockerfile for building 
-the client application container.
+- **client.dockerfile**: Dockerfile for building
+  the client application container.
 - **libms.dockerfile**: Dockerfile for building the library microservice container.
 - **compose.dev.yml:** Docker Compose configuration for development environment.
 - **compose.local.yml:** Docker Compose configuration for local installation.
