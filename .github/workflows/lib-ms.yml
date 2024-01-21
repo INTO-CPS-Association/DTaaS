@@ -23,9 +23,13 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
+
+      - name: Install pm2
+        run: |
+          npm install -g pm2
 
       - name: Run the linting checks
         run: |
