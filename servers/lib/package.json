@@ -16,6 +16,8 @@
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
     "start": "node dist/src/main.js",
+    "start:pm2": "pm2 start pm2.config.js --env development",
+    "stop:pm2": "pm2 delete libms",
     "syntax": "npx eslint . --fix",
     "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
     "posttest": "npx rimraf ../../files/user2/tools/README.md",
@@ -23,7 +25,7 @@
     "test:e2e": "npx cross-env LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
     "test:int": "npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage",
     "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage",
-    "test:cloudcmd": "libms -c .env -f ./config/cloudcmd.json >/dev/null & jest test/cloudcmd --collectCoverage=false && yarn exec kill $(ps aux | grep '[l]ibms' | awk '{print $2}')"
+    "test:cloudcmd": "pm2 start -f --name libms-test dist/src/main.js -- -c .env -f ./config/cloudcmd.json && jest test/cloudcmd --collectCoverage=false && pm2 delete libms-test"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {
