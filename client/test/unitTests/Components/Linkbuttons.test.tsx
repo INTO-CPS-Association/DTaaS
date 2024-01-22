@@ -7,19 +7,18 @@ import userEvent from '@testing-library/user-event';
 jest.deepUnmock('components/LinkButtons');
 
 const buttons: KeyLinkPair[] = [
-  { key: 'TERMINAL', link: 'https://example.com/terminal' },
   { key: 'VNCDESKTOP', link: 'https://example.com/desktop' },
   { key: 'NO_ICON', link: 'https://example.com/noicon' },
 ];
 
 const getButton = (key: string) =>
-  screen.getByRole('link', { name: `${LinkIcons[key].name ?? key}-btn` });
+  screen.getByRole('link', { name: `${LinkIcons[key]?.name ?? key}-btn` });
 
 const getLabel = (key: string) =>
-  screen.getByRole('heading', { level: 6, name: LinkIcons[key].name ?? key });
+  screen.getByRole('heading', { level: 6, name: LinkIcons[key]?.name ?? key });
 
 const getButtonIcon = (key: string) =>
-  screen.getByTitle(`${LinkIcons[key].name ?? key}-btn`).children[0];
+  screen.getByTitle(`${LinkIcons[key]?.name ?? key}-btn`).children[0];
 
 const evaluateButtonSize = (expectedSize: number) => {
   buttons.forEach((button) => {
@@ -66,7 +65,7 @@ describe('LinkButtons component default size', () => {
 
   it('should use name from iconLib as label when avaiable', () => {
     expect(getLabel(buttons[0].key).textContent).toBe(
-      LinkIcons[buttons[0].key].name,
+      LinkIcons[buttons[0].key]?.name,
     );
   });
 });
