@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/into-cps-association/dtaas-web:latest
+  IMAGE_NAME: into-cps-association/dtaas-web:latest
 
 jobs:
   build-and-push-image:
