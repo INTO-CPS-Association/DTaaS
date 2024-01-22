@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/dtaas-web:latest
 
 jobs:
   build-and-push-image:
@@ -28,7 +28,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -41,6 +40,5 @@ jobs:
           context: .
           file: ./docker/client.dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/dtaas-web:latest
-        #   tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags.lowercase }}
         #   labels: ${{ steps.meta.outputs.labels }}
