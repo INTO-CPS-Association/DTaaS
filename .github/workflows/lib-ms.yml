@@ -48,6 +48,7 @@ jobs:
           cd servers/lib
           yarn install
           yarn build
+          sleep 60
           yarn test:all
         env:
           PORT: 4001
