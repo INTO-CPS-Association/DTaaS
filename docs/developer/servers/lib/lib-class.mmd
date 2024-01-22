@@ -7,18 +7,8 @@ classDiagram
 
     class FilesServiceFactory {
     -configService: ConfigService
-    -gitlabFilesService: GitlabFilesService
     -localFilesService: LocalFilesService
     +create(): IFilesService
-    }
-
-    class GitlabFilesService {
-    -configService: ConfigService
-    -parseArguments(path: string): Promise<domain: string; parsedPath: string>
-    -sendRequest(query: string): Promise<Project>
-    -executeQuery(path: string, getQuery: QueryFunction): Promise<Project>
-    +listDirectory(path: string): Promise<Project>
-    +readFile(path: string): Promise<Project>
     }
 
     class LocalFilesService {
@@ -38,9 +28,7 @@ classDiagram
     }
 
     IFilesService <|-- FilesResolver: uses
-    IFilesService <|.. GitlabFilesService: implements
     IFilesService <|.. LocalFilesService: implements
     IFilesService <|-- FilesServiceFactory: creates
     ConfigService <|-- FilesServiceFactory: uses
-    ConfigService <|-- GitlabFilesService: uses
     ConfigService <|-- LocalFilesService: uses

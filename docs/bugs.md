@@ -7,7 +7,7 @@
 
 ### ML Workspace
 
-- the docker container loses network connectivity after three days.
+- the docker container slows down a bit after ten days.
   The only known solution is to restart the docker container.
   You don't need to restart the complete DTaaS platform, restart of
   the docker container of ml-workspace is sufficient.

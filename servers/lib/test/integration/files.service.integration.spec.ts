@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import FilesResolver from '../../src/files/resolvers/files.resolver';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
 import LocalFilesService from '../../src/files/services/local-files.service';
-import GitlabFilesService from '../../src/files/services/gitlab-files.service';
 import {
   pathToTestDirectory,
   pathToTestFileContent,
@@ -23,7 +22,6 @@ describe('Integration tests for FilesResolver', () => {
         FilesResolver,
         FilesServiceFactory,
         LocalFilesService,
-        GitlabFilesService,
         { provide: ConfigService, useClass: MockConfigService },
       ],
     }).compile();
@@ -35,7 +33,7 @@ describe('Integration tests for FilesResolver', () => {
     jest.clearAllMocks();
   });
 
-  const modes = ['local', 'gitlab'];
+  const modes = ['local'];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const mode of modes) {

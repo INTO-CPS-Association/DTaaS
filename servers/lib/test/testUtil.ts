@@ -57,18 +57,9 @@ export class MockConfigService {
   // eslint-disable-next-line class-methods-use-this
   get(key: string): string {
     switch (key) {
-      case 'TOKEN':
-        return process.env.TOKEN;
       case 'LOCAL_PATH':
-        return process.env.TEST_PATH;
-      case 'GITLAB_URL':
-        return process.env.GITLAB_URL;
-      case 'GITLAB_GROUP':
-        return 'dtaas';
+        return process.env.LOCAL_PATH;
       case 'MODE':
-        if (process.env.MODE === 'gitlab') {
-          return 'gitlab';
-        }
         if (process.env.MODE === 'local') {
           return 'local';
         }
