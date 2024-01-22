@@ -101,7 +101,7 @@ the `-H` option.
 To run **libms** with a custom config for HTTP protocol, use
 
 ```bash
-libms --http
+libms -H FILE-PATH
 libms --http FILE-PATH
 ```
 

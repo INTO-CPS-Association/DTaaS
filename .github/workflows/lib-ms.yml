@@ -49,7 +49,7 @@ jobs:
           yarn install
           yarn build
           yarn test:all
-          yarn test:http
+          yarn test:http-github
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files

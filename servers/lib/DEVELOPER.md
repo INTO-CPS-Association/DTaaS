@@ -13,12 +13,15 @@ yarn syntax     # Analyze code for errors and style issues
 yarn format     #format .ts[x] and .js[x] files with prettier
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
-yarn test:unit  # Run all tests
-yarn test:e2e   # Run end-to-end tests
+yarn test:unit  # Run unit tests
 yarn test:int   # Run integration tests
-yarn test:all   # Run unit tests
+yarn test:e2e   # Run end-to-end tests
+yarn test:http  # Run tests for HTTP file service provided by cloudcmd
+yarn test:all   # Run all tests except http tests
 yarn start -h   # List of all the CLI commands
 yarn start      # Start the application
+yarn start:pm2  # Start the application with process manager 2
+yarn stop:pm2   # Stop the application managed by process manager 2
 yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 

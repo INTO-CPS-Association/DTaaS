@@ -4,7 +4,7 @@ module.exports = {
         name: "libms",
         script: "./dist/src/main.js",
         watch: false,
-        args: "-c .env -f ./config/cloudcmd.json"
+        args: "-H ./config/http.json"
       }
   ]
 }
