@@ -6,7 +6,7 @@ import cloudCMD from './cloudcmd/cloudcmd';
 
 type BootstrapOptions = {
   config?: string;
-  fileserver?: string;
+  httpServer?: string;
   runHelp?: CallableFunction;
 };
 
@@ -29,8 +29,8 @@ export default async function bootstrap(options?: BootstrapOptions) {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
 
-  if (options.fileserver) {
-    cloudCMD(app, options.fileserver, configService.get<string>('LOCAL_PATH'));
+  if (options.httpServer) {
+    cloudCMD(app, options.httpServer, configService.get<string>('LOCAL_PATH'));
   }
 
   await app.listen(port);

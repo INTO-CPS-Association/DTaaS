@@ -11,7 +11,7 @@
   "open": false,
   "oneFilePanel": true,
   "keysPanel": false,
-  "prefix": "/files",
+  "prefix": "/lib/files",
   "confirmCopy": true,
   "confirmMove": true,
   "showConfig": false,

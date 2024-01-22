@@ -17,9 +17,12 @@ describe('cloudcmd test for the application', () => {
   }, 10000);
 
   it('should return the correct directory that is set as root', async () => {
-    const response = await axios.get('http://localhost:4001/files/api/v1/fs', {
-      responseType: 'json',
-    });
+    const response = await axios.get(
+      'http://localhost:4001/lib/files/api/v1/fs',
+      {
+        responseType: 'json',
+      },
+    );
 
     expect(response.data.path).toEqual('/');
     expect(response.data.files[0].name).toEqual('common');
@@ -29,7 +32,7 @@ describe('cloudcmd test for the application', () => {
 
   it('should return the content of a file that is uplaoded to cloudcmd ', async () => {
     const response = await axios.get(
-      'http://localhost:4001/files/api/v1/fs/test.txt',
+      'http://localhost:4001/lib/files/api/v1/fs/test.txt',
     );
 
     expect(response.data).toEqual('content12345');
@@ -37,7 +40,7 @@ describe('cloudcmd test for the application', () => {
 
   it('should upload a file to cloudcmd', async () => {
     const response = await axios.put(
-      'http://localhost:4001/files/api/v1/fs/uploadTest.txt',
+      'http://localhost:4001/lib/files/api/v1/fs/uploadTest.txt',
       'some content',
       { responseType: 'text' },
     );
