@@ -48,8 +48,8 @@ jobs:
           cd servers/lib
           yarn install
           yarn build
-          sleep 60
           yarn test:all
+          yarn test:http
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
