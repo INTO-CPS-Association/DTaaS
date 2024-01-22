@@ -72,8 +72,8 @@ This scenario is for software developers:
 The configuration files to be updated are:
 
 1. client/config/dev.js
-2. deploy/config/lib.docker
-3. servers/config/gateway/auth
+1. deploy/config/lib.docker
+1. servers/config/gateway/auth
 
 The relevant docker commands are:
 
@@ -90,8 +90,8 @@ their computers (localhost):
 The configuration files to be updated are:
 
 1. deploy/config/client/env.local.js
-2. deploy/config/lib.docker
-3. deploy/config/gateway/auth
+1. deploy/config/lib.docker
+1. deploy/config/gateway/auth
 
 The relevant docker commands are:
 
