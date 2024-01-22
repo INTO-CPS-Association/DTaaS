@@ -49,3 +49,17 @@ jobs:
         with:
           files: client/coverage/clover.xml
           flags: client-unit-integration-tests
+
+  publish-docker-image:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+      
+    name: Publish Docker image
+    needs: client
+    uses: INTO-CPS-Association/DTaaS/.github/workflows/docker.yml@feature/distributed-demo
+    with: 
+      registry: ghcr.io
+      image-name: into-cps-association/dtaas-client
+      version: ${{ github.sha }}
+      dockerfile: client.dockerfile
