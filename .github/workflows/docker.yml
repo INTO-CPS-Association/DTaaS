@@ -41,6 +41,6 @@ jobs:
           context: .
           file: ./docker/client.dockerfile
           push: true
-          tags: into-cps-association/dtaas-web:latest
+          tags: ghcr.io/${{ github.repository_owner }}/dtaas-web:latest
         #   tags: ${{ steps.meta.outputs.tags }}
         #   labels: ${{ steps.meta.outputs.labels }}
