@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/dtaas-web:latest
+  IMAGE_NAME: ghcr.io/into-cps-association/dtaas-web:latest
 
 jobs:
   build-and-push-image:
@@ -40,5 +40,5 @@ jobs:
           context: .
           file: ./docker/client.dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags.lowercase }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         #   labels: ${{ steps.meta.outputs.labels }}
