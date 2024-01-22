@@ -110,3 +110,13 @@ jobs:
           yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+  publish-docker-image:
+    name: Publish Docker image
+    needs: publish-package
+    uses: INTO-CPS-Association/DTaaS/.github/workflows/docker.yml@feature/distributed-demo
+    with: 
+      registry: ghcr.io
+      image-name: into-cps-association/dtaas-libms
+      version: ${{ github.sha }}
+      dockerfile: libms.dockerfile
