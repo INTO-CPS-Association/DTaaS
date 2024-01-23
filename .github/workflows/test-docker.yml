@@ -1,0 +1,27 @@
+# workflow that runs on this current branch
+
+
+on:
+  push:
+    branches:
+      - 381-create-docker-containers-for-client-lib-and-runner
+
+jobs:
+    publish-docker-image:
+        name: Publish Docker image
+        runs-on: ubuntu-latest
+        steps:
+          - name: Install jq
+            run: sudo apt-get install -y jq
+          - name: get version
+            id: vars
+            run: | 
+              version=`cat ./client/package.json | jq -r '.version'`
+              echo "version=$version" >> $GITHUB_OUTPUT
+          - name: publish docker image
+            uses: ./.github/workflows/docker.yml
+            with: 
+              registry: ghcr.io
+              image-name: into-cps-association/test-image
+              version: ${{ steps.vars.outputs.version }}
+              dockerfile: libms.dockerfile
