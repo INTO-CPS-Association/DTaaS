@@ -103,7 +103,7 @@ jobs:
       - name: get version
         id: vars
         run: | 
-          version=`cat package.json| jq -r '.version'`
+          version=`cat ./client/package.json | jq -r '.version'`
           echo "version=$version" >> $GITHUB_OUTPUT
       - name: publish docker image
         uses: ./.github/workflows/docker.yml
