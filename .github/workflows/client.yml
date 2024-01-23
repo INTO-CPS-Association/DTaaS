@@ -57,9 +57,19 @@ jobs:
       
     name: Publish Docker image
     needs: client
-    uses: INTO-CPS-Association/DTaaS/.github/workflows/docker.yml@feature/distributed-demo
-    with: 
-      registry: ghcr.io
-      image-name: into-cps-association/dtaas-client
-      version: ${{ github.sha }}
-      dockerfile: client.dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: vars
+        run: | 
+          version=`cat package.json| jq -r '.version'`
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: publish docker image
+        uses: ./.github/workflows/docker.yml
+        with: 
+          registry: ghcr.io
+          image-name: into-cps-association/dtaas-client
+          version: ${{ steps.vars.outputs.version }}
+          dockerfile: client.dockerfile
