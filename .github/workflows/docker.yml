@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       version:
-        required: false
+        required: true
         type: string
         default: 'latest'
       dockerfile:
