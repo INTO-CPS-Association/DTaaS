@@ -41,7 +41,7 @@ repos:
         entry: bash
         language: system
         files: "^servers/lib/.*"
-        args: ["-c", "cd servers/lib && yarn jest . --coverage=false"]
+        args: ["-c", "cd servers/lib && yarn test:nocov"]
         stages: [pre-push]
 
   - repo: https://github.com/pre-commit/mirrors-prettier

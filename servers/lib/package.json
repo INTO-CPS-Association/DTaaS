@@ -23,10 +23,12 @@
     "posttest": "npx rimraf ../../files/user2/tools/README.md",
     "test:all": "npx cross-env LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage",
     "test:e2e": "npx cross-env LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
-    "test:int": "npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage",
-    "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage",
     "test:http": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test",
-    "test:http-github": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test"
+    "test:http-nocov": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd  --coverage=false && pm2 delete libms-test",
+    "test:http-github": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test",
+    "test:int": "npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage",
+    "test:nocov": "yarn test:http-nocov && npx cross-env LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage=false",
+    "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {

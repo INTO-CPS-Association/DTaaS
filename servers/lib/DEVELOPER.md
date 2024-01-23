@@ -25,7 +25,7 @@ yarn stop:pm2   # Stop the application managed by process manager 2
 yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
-**NOTE:** The integration and end-to-end tests require a valid
+**NOTE:** The integration, end-to-end and http tests require a valid
 `.env` file. Here is a sample file.
 
 ```ini
