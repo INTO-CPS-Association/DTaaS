@@ -49,6 +49,7 @@ jobs:
           yarn install
           yarn build
           yarn test:all
+          ls $LOCAL_PATH
           yarn test:http-github
         env:
           PORT: 4001
