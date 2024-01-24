@@ -28,7 +28,7 @@ services:
     ports:
       - "9000:80"
     volumes:
-      - "../servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
+      - "../deploy/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
       - "../deploy/config/gateway/auth:/etc/traefik/auth"
-      - "../servers/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
+      - "../deploy/config/gateway/dynamic/fileConfig.docker.yml:/etc/traefik/dynamic/fileConfig.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
