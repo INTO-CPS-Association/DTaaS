@@ -1,0 +1,46 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: false
+        type: string
+        default: 'ghcr.io'
+      image-name:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+        default: 'latest'
+      dockerfile:
+        required: true
+        type: string
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    permissions:
+        contents: read
+        packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/${{ inputs.dockerfile }}
+          push: true
+          tags: ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}
