@@ -50,6 +50,7 @@ jobs:
           yarn build
           yarn test:all
           ls $LOCAL_PATH
+          curl http://localhost:4001/lib/files
           yarn test:http-github
         env:
           PORT: 4001
