@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ApolloClient, DocumentNode, InMemoryCache, gql } from '@apollo/client';
+import fetch from 'cross-fetch';
+import { ApolloClient, DocumentNode, HttpLink, InMemoryCache, gql } from '@apollo/client';
 import AppModule from '../../src/app.module';
 import {
   e2eReadFile,
@@ -11,7 +12,7 @@ import {
 } from '../testUtil';
 
 const client = new ApolloClient({
-  uri: `http://localhost:${process.env.PORT}${process.env.APOLLO_PATH}`,
+  link: new HttpLink({ uri: `http://localhost:${process.env.PORT}${process.env.APOLLO_PATH}`, fetch }),
   cache: new InMemoryCache({ addTypename: false }),
 });
 
