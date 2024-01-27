@@ -109,7 +109,7 @@ A sample configuration is [available](./config/http.json).
 
 ### Accessible URLs
 
-The microservice is available at: 
+The microservice is available at:
 
 **GraphQL protocol**: 'localhost:PORT/lib'
 **HTTP protocol**: 'localhost:PORT/lib/files'
