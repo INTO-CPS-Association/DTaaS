@@ -76,6 +76,6 @@ jobs:
     uses: ./.github/workflows/docker.yml
     with: 
       registry: ghcr.io
-      image-name: into-cps-association/dtaas-client
+      image-name: into-cps-association/dtaas-web
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
