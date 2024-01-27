@@ -108,14 +108,14 @@ covers DT Lifecycle, Reusable Assets and Execution Manager.
 A mapping of the C4 level 2 containers to components
 identified in the system architecture is also available in the table.
 
-| System Component | Container(s) |
-|:---|:---|
-| Gateway | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Unified Interface | [React Webapplication](../client/client.md) |
-| Reusable Assets | [Library Microservice](../servers/lib/lib-ms.md) |
-| Data | MQTT, InfluxDB, and RabbitMQ (not shown in the C4 Level 2 diagram) |
-| Visualization | InfluxDB (not shown in the C4 Level 2 diagram) |
-| DT Lifecycle | DT Lifecycle Manager and DT Configuration Validator |
-| Security | [Gitlab OAuth](../../admin/client/auth.md) |
-| Accounting | None |
-| Execution Manager | Execution Manager |
+| System Component  | Container(s)                                                                                                                             |
+| :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| Gateway           | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
+| Unified Interface | [React Webapplication](../client/client.md)                                                                                              |
+| Reusable Assets   | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
+| Data              | MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB (not shown in the C4 Level 2 diagram)                                                      |
+| Visualization     | InfluxDB (not shown in the C4 Level 2 diagram)                                                                                           |
+| DT Lifecycle      | DT Lifecycle Manager and DT Configuration Validator                                                                                      |
+| Security          | [Gitlab OAuth](../../admin/client/auth.md)                                                                                               |
+| Accounting        | None                                                                                                                                     |
+| Execution Manager | Execution Manager                                                                                                                        |

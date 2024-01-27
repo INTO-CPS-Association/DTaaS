@@ -34,11 +34,11 @@ export default class LocalFilesService implements IFilesService {
 
   async readFile(path: string): Promise<Project> {
     const dataPath = this.configService.get('LOCAL_PATH');
-    const fullpath = join(dataPath, path);
+    const fullPath = join(dataPath, path);
 
     try {
       const content = await (
-        await fs.promises.readFile(fullpath, 'utf8')
+        await fs.promises.readFile(fullPath, 'utf8')
       ).trim();
 
       const name = path.split('/').pop(); // extract file name from the path
