@@ -4,15 +4,20 @@ import bootstrap from './bootstrap';
 
 type ProgramOptions = {
   config?: string;
+  http?: string;
 };
 
 const program = new Command();
 
 program
   .description(
-    'The lib microservice is responsible for handling and serving the contents of library assets of the DTaaS platform. It provides API endpoints for clients to query, and fetch these assets.',
+    'The lib microservice is a file server. It supports file transfer over GraphQL and HTTP protocols.',
   )
-  .option('-c, --config <path>', 'set the config path (default .env)')
+  .option('-c, --config <file>', 'provide the config file (default .env)')
+  .option(
+    '-H, --http <file>',
+    'enable the HTTP server with the specified config',
+  )
   .helpOption('-h, --help', 'display help for libms')
   .showHelpAfterError();
 
@@ -20,8 +25,8 @@ program.parse(process.argv);
 
 const options: ProgramOptions = program.opts();
 
-if (options.config) {
-  bootstrap({ config: options.config, runHelp: () => program.help() });
-} else {
-  bootstrap({ runHelp: () => program.help() });
-}
+bootstrap({
+  config: options.config,
+  httpServer: options.http,
+  runHelp: () => program.help(),
+});
