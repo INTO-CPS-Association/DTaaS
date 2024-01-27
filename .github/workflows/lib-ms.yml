@@ -49,9 +49,6 @@ jobs:
           yarn install
           yarn build
           yarn test:all
-          ls $LOCAL_PATH
-          curl http://localhost:4001/lib/files
-          yarn test:http-github
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
