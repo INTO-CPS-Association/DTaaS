@@ -41,7 +41,7 @@
     "@nestjs/graphql": "^12.0.11",
     "@nestjs/platform-express": "^10.3.0",
     "axios": "^1.5.1",
-    "cloudcmd": "^16.17.7",
+    "cloudcmd": "^17.0.1",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
