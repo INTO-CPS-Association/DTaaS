@@ -8,5 +8,4 @@ const DTContent: React.FC = () => (
   </Layout>
 );
 
-const DigitalTwins: React.FC = () => <DTContent />; /* jshint ignore:line */
-export default DigitalTwins;
+export default DTContent;
