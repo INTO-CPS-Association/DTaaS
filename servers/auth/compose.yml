@@ -19,12 +19,12 @@ services:
     labels:
       - "traefik.enable=true"
       #Models an Auth service that is open to all
-      - "traefik.http.routers.common.entryPoints=web"
-      - "traefik.http.routers.common.rule=Path(`/`)"
-      - "traefik.http.routers.common.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.all.entryPoints=web"
+      - "traefik.http.routers.all.rule=Path(`/whoami`)"
+      - "traefik.http.routers.all.middlewares=traefik-forward-auth"
   
   libms:
-    image: prasadtalasila/dtaas-libms:latest
+    image: intocps/libms:latest
     ports:
       - "4001:4001"
     volumes:
@@ -37,7 +37,7 @@ services:
       - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
   
   client:
-    image: prasadtalasila/dtaas-client:latest
+    image: intocps/dtaas-web:latest
     ports:
       - "4000:4000"
     volumes:
@@ -45,13 +45,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
-      - "traefik.http.routers.client.rule=PathPrefix(`/client`)"
-      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
 
   library:
     image: httpd:alpine3.19
     volumes:
-      - ${TOP_DIR}/files:/usr/local/apache2/htdocs/lib
+      - ${DTAAS_DIR}/files:/usr/local/apache2/htdocs/lib
     labels:
     
       - "traefik.enable=true"
@@ -63,8 +62,8 @@ services:
   user1:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
-      - ${TOP_DIR}/files/common:/workspace/common 
-      - ${TOP_DIR}/files/${username1}:/workspace
+      - ${DTAAS_DIR}/files/common:/workspace/common 
+      - ${DTAAS_DIR}/files/${username1}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username1}
@@ -78,8 +77,8 @@ services:
   user2:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
-      - ${TOP_DIR}/files/common:/workspace/common 
-      - ${TOP_DIR}/files/${username2}:/workspace
+      - ${DTAAS_DIR}/files/common:/workspace/common 
+      - ${DTAAS_DIR}/files/${username2}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username2}
@@ -94,7 +93,7 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - ${TOP_DIR}/conf:/conf
+      - ${DTAAS_DIR}/servers/auth/conf:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${BASE_URL}/oauth/authorize
