@@ -7,6 +7,9 @@ import { getLogoutRedirectURI } from '../envUtil';
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
   removeUser: () => Promise<void>;
+  signoutSilent: () => Promise<void>;
+  stopSilentRenew: () => Promise<void>;
+  revokeTokens: () => Promise<void>;
   user?: User | null | undefined;
 }
 
@@ -29,7 +32,10 @@ export async function signOut() {
     localStorage.clear();
     sessionStorage.clear();
 
+    auth.stopSilentRenew();
     await auth.removeUser();
+    await auth.signoutSilent();
+    await auth.revokeTokens();
     await auth.signoutRedirect({
       post_logout_redirect_uri: LOGOUT_URL.toString(),
       id_token_hint: idToken,
