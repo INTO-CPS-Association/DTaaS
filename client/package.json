@@ -91,7 +91,7 @@
     "playwright": "^1.32.1",
     "prettier": "^3.2.4",
     "shx": "^0.3.4",
-    "ts-jest": "^29.1.1"
+    "ts-jest": "^29.1.2"
   },
   "browserslist": {
     "production": [
