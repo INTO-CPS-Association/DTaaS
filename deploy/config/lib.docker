@@ -1,6 +1,6 @@
 PORT='4001'
 MODE='local'
-LOCAL_PATH ='/home/astitva/Desktop/DTaaS/files'
+LOCAL_PATH ='/home/Desktop/DTaaS/files'
 LOG_LEVEL='debug'
 APOLLO_PATH='/libms'
 GRAPHQL_PLAYGROUND='true'

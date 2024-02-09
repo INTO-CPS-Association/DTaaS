@@ -4,13 +4,16 @@ rule.all.rule=Path(`/whoami`)
 rule.noauth.action=auth
 rule.noauth.rule=PathPrefix(`/lib`)
 
+rule.client.action = auth
+rule.client.rule = PathPrefix(`/`)
+
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/libms`)
 
 rule.onlyu1.action=auth
-rule.onlyu1.rule=PathPrefix(`/astitvasehgal19`)
-rule.onlyu1.whitelist = astitvasehgal19@gmail.com
+rule.onlyu1.rule=PathPrefix(`/user1`)
+rule.onlyu1.whitelist = foo@emailservice.com
 
 rule.onlyu2.action=auth
 rule.onlyu2.rule=PathPrefix(`/user2`)
-rule.onlyu2.whitelist = f20190640@goa.bits-pilani.ac.in
+rule.onlyu2.whitelist = bar@emailservice.com
