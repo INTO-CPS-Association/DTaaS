@@ -4,9 +4,6 @@ rule.all.rule=Path(`/whoami`)
 rule.noauth.action=auth
 rule.noauth.rule=PathPrefix(`/lib`)
 
-rule.client.action = auth
-rule.client.rule = PathPrefix(`/`)
-
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/libms`)
 
