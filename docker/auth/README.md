@@ -8,7 +8,7 @@ The compose-localhost.yml file in this directory is the single
 file that can be used to deploy DTaaS on localhost (locally).
 
 The compose-localhost.yml file in this directory is the single
-file that can be used to deploy DTaaS on a dedicated server 
+file that can be used to deploy DTaaS on a dedicated server
 with a valid DNS.
 
 The files use images already built and deployed on docker hub,
@@ -18,8 +18,8 @@ It also incorporates an Auth MS for backend security.
 
 ## Steps to follow before deploy
 
--  You should have docker installed. Preferrably Docker Desktop.
--  You need an
+- You should have docker installed. Preferrably Docker Desktop.
+- You need an
   [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application)
   on Gitlab. For the below discussion , <https://gitlab.foo.com>
   has been used as example URL of OAuth provider.
@@ -31,20 +31,20 @@ It also incorporates an Auth MS for backend security.
 
   | URL Path | Access Granted to |Access Granted to |
   |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory
-  | SERVER_DNS | 'foo.com' | The server dns, if you are using a dedicated server for deploy
-  | BASE_URL | 'https://gitlab.foo.com' | The URL of your Gitlab instance
-  | CLIENT_ID | 'xx' | The ID of your OAuth application
-  | CLIENT_SECRET | 'xx' | The Secret of your OAuth application
-  | OAUTH_SECRET | 'random-secret-string' | Any private random string
-  | username1 | 'user1' | The gitlab instance username of a user of DTaaS
-  | username2 | 'user2' | The gitlab instance username of a user of DTaaS
-  | ENV_JS_FILEPATH | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client
+  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory |
+  | SERVER_DNS | 'foo.com' | The server dns, if you are deploying with a dedicated server |
+  | BASE_URL | <http:>'https://gitlab.foo.com'</http:> | The URL of your Gitlab instance |
+  | CLIENT_ID | 'xx' | The ID of your OAuth application |
+  | CLIENT_SECRET | 'xx' | The Secret of your OAuth application |
+  | OAUTH_SECRET | 'random-secret-string' | Any private random string |
+  | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
+  | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
+  | ENV_JS_FILEPATH | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
 - Setup the client env.js file.
-  deploy/config/client/env.local.js can be used for 
+  deploy/config/client/env.local.js can be used for
   a localhost deploy without any changes.
-  For a prod situation, you  can make make changes to 
+  For a prod situation, you  can make make changes to
   the sample file deploy/config/client/env.trial.js
   Refer to client/README.md for more info.
 - Edits need to be made to servers/auth/conf file.
