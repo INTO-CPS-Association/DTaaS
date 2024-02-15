@@ -40,7 +40,8 @@ GRAPHQL_PLAYGROUND='false' or 'true'
 
 The `LOCAL_PATH` variable is the absolute filepath to the
 location of the local directory which will be served to users
-by the Library microservice.
+by the Library microservice. This
+[sample configuration file](./config/.env.default) can be used.
 
 Replace the default values the appropriate values for your setup.
 
@@ -49,10 +50,24 @@ Replace the default values the appropriate values for your setup.
 Display help.
 
 ```bash
-libms -h
+$libms -h
+Usage: libms [options]
+
+The lib microservice is a file server. It supports file transfer
+over GraphQL and HTTP protocols.
+
+Options:
+  -c, --config <file>  provide the config file (default .env)
+  -H, --http <file>    enable the HTTP server with the specified config
+  -h, --help           display help for libms
 ```
 
-The config is saved `.env` file by convention. The **libms** looks for
+Both the options are not mandatory.
+
+### Configuration file
+
+The config is saved `.env` file by convention. If `-c` is not specified
+The **libms** looks for
 `.env` file in the working directory from which it is run.
 If you want to run **libms** without explicitly specifying the configuration
 file, run
@@ -69,15 +84,35 @@ libms --config FILE-PATH
 ```
 
 If the environment file is named something other than `.env`,
-for example as `.env.development`, you can run
+for example as `config/.env.default`, you can run
 
 ```sh
-libms -c ".env.development"
+libms -c "config/.env.default"
 ```
 
 You can press `Ctl+C` to halt the application.
 
-The microservice is available at: 'localhost:PORT/lib'
+### Protocol Support
+
+The **libms** supports GraphQL protocol by default.
+It is possible to enable the HTTP protocol by setting
+the `-H` option.
+
+To run **libms** with a custom config for HTTP protocol, use
+
+```bash
+libms -H FILE-PATH
+libms --http FILE-PATH
+```
+
+A sample configuration is [available](./config/http.json).
+
+### Accessible URLs
+
+The microservice is available at:
+
+**GraphQL protocol**: 'localhost:PORT/lib'
+**HTTP protocol**: 'localhost:PORT/lib/files'
 
 <!-- markdownlint-disable-next-line MD013 -->
 The [API](https://into-cps-association.github.io/DTaaS/development/user/servers/lib/LIB-MS.html) page shows sample queries and responses.

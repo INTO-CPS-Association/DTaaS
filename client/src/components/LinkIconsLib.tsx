@@ -1,5 +1,4 @@
 import * as React from 'react';
-import TerminalOutlinedIcon from '@mui/icons-material/TerminalOutlined';
 import DesktopWindowsOutlinedIcon from '@mui/icons-material/DesktopWindowsOutlined';
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
@@ -11,10 +10,6 @@ type LinkIconsType = {
 };
 
 const LinkIcons: LinkIconsType = {
-  TERMINAL: {
-    icon: <TerminalOutlinedIcon />,
-    name: 'Terminal',
-  },
   VNCDESKTOP: {
     icon: <DesktopWindowsOutlinedIcon />,
     name: 'Desktop',

@@ -90,3 +90,4 @@ fi
 sudo apt-get update -y
 sudo apt-get install -y yarn
 sudo npm install -g serve
+sudo npm install -g pm2

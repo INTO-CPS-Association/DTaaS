@@ -23,9 +23,13 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
+
+      # - name: Install pm2
+      #   run: |
+      #     npm install -g pm2
 
       - name: Run the linting checks
         run: |
@@ -43,6 +47,7 @@ jobs:
         run: |
           cd servers/lib
           yarn install
+          yarn build
           yarn test:all
         env:
           PORT: 4001
@@ -50,6 +55,19 @@ jobs:
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
+
+      # - name: Run http mode tests
+      #   run: |
+      #     cd servers/lib
+      #     yarn install
+      #     yarn build
+      #     yarn test:http-github
+      #   env:
+      #     PORT: 4002
+      #     LOCAL_PATH: ${{ github.workspace }}/files
+      #     MODE: local
+      #     LOG_LEVEL: debug
+      #     APOLLO_PATH: /lib
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -92,3 +110,29 @@ jobs:
           yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+  get_version:
+    name: Get version
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v3
+        - name: Install jq
+          run: sudo apt-get install -y jq
+        - name: get version
+          id: get_version
+          run: | 
+            version=`cat ./client/package.json | jq -r '.version'`
+            echo "version=$version" >> $GITHUB_OUTPUT
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+  publish-docker-image:
+    name: Publish Docker image
+    needs: [ publish-package, get_version]
+    uses: ./.github/workflows/docker.yml
+    with: 
+        registry: ghcr.io
+        image-name: into-cps-association/dtaas-libms
+        version: ${{ needs.get_version.outputs.version }}
+        dockerfile: libms.dockerfile

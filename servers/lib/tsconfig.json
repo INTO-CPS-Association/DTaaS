@@ -25,7 +25,7 @@
     "types": ["node", "jest"], //use node and jest types
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
-    ],
+    ]
   },
   "exclude": ["**/node_modules/*", "./dist"]
 }
