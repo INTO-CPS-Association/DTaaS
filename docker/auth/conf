@@ -1,9 +1,3 @@
-rule.all.action=allow
-rule.all.rule=Path(`/whoami`)
-
-rule.noauth.action=auth
-rule.noauth.rule=PathPrefix(`/lib`)
-
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/libms`)
 

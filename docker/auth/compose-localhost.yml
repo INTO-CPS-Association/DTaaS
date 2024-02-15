@@ -10,17 +10,9 @@ services:
       - "--entrypoints.web.proxyProtocol.insecure=true"
     ports:
       - "80:80"
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  whoami:
-    image: traefik/whoami
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.all.entryPoints=web"
-      - "traefik.http.routers.all.rule=Path(`/whoami`)"
-      - "traefik.http.routers.all.middlewares=traefik-forward-auth"
   libms:
     image: intocps/libms:latest
     volumes:
@@ -30,30 +22,19 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.libms.entryPoints=web"
       - "traefik.http.services.libms.loadbalancer.server.port=4001"
-      - "traefik.http.routers.libms.rule= PathPrefix(`/libms`)"
+      - "traefik.http.routers.libms.rule= PathPrefix(`/lib`)"
       - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
   
   client:
     image: intocps/dtaas-web:0.3.2
     volumes:
-      - ${DTAAS_DIR}/deploy/config/client/env.local.js:/dtaas/client/build/env.js
+      - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
       - "traefik.http.routers.client.middlewares=traefik-forward-auth"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
-
-  library:
-    image: httpd:alpine3.19
-    volumes:
-      - ${DTAAS_DIR}/files:/usr/local/apache2/htdocs/lib
-    labels:
-    
-      - "traefik.enable=true"
-      - "traefik.http.routers.noauth.entryPoints=web"
-      - "traefik.http.routers.noauth.rule= PathPrefix(`/lib`) "
-      - "traefik.http.routers.noauth.middlewares=traefik-forward-auth"
 
   user1:
     image: mltooling/ml-workspace-minimal:0.13.2
@@ -90,9 +71,9 @@ services:
       - ${DTAAS_DIR}/docker/auth/conf:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
-      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${BASE_URL}/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${BASE_URL}/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=${BASE_URL}/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=${OAUTH_URL}/api/v4/user
       - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${CLIENT_ID}
       - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${CLIENT_SECRET}
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user

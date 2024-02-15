@@ -1,38 +1,56 @@
-# Traefik Auth Microservice - Demo
+# Single Docker Stack for DTaaS
 
-A basic demo version of the Traefik proxy &
-Authentication microservice is presented here.
-This demo uses docker for running the microservice.
-Within docker, images of the following container are used:
+We provide here a single docker stack to deploy DTaaS.
 
-- traefik - As the reverse proxy/ edge of our system
-- thomseddon/traefik-forward-auth - That works as an
-  authentication server, with Gitlab as the OAuth provider.
-- whoami - A tiny server which return information about your OS/IP.
-  This is an example version of any microservice
-  that should lie behind the OAuth.
+## Design
 
-## Ready Reckoner
+The compose-localhost.yml file in this directory is the single
+file that can be used to deploy DTaaS on localhost (locally).
 
-You need an
-[instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application)
-on Gitlab. If you use <https://gitlab.com> as your authentication provider,
-you can only authenticate a single user. For the table below, <https://gitlab.foo.com>
-has been used as example URL of OAuth provider
+The compose-localhost.yml file in this directory is the single
+file that can be used to deploy DTaaS on a dedicated server 
+with a valid DNS.
 
-| Gitlab Variable Name | Variable name in compose.yml          | Default Value                            |
-| :------------------- | :------------------------------------ | :----------------------------------------|
-| OAuth Provider       | PROVIDERS_GENERIC_OAUTH_AUTH_URL      | <https://gitlab.foo.com/oauth/authorize> |
-|                      | PROVIDERS_GENERIC_OAUTH_TOKEN_URL     | <https://gitlab.foo.com/oauth/token>     |
-|                      | PROVIDERS_GENERIC_OAUTH_USER_URL      | <https://gitlab.foo.com/api/v4/user>     |
-| Application ID       | PROVIDERS_GENERIC_OAUTH_CLIENT_ID     |                                          |
-| Secret               | PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET |                                          |
-| Callback URL         |                                       | <http://localhost/_oauth>                |
-| Scopes               |                                       | read_user                                |
-| Logout URL for demo  |                                       | <http://localhost/_oauth/logout>         |
-||
+The files use images already built and deployed on docker hub,
+for the ML-workspace, client, and LibMS.
 
-## Configure Authentication Rules
+It also incorporates an Auth MS for backend security.
+
+## Steps to follow before deploy
+
+-  You should have docker installed. Preferrably Docker Desktop.
+-  You need an
+  [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application)
+  on Gitlab. For the below discussion , <https://gitlab.foo.com>
+  has been used as example URL of OAuth provider.
+- Create an OAuth application client on your gitlab instance.
+  Note the client ID and client Secret for the same.
+- The .env file is a sample file. It contains environment variables
+  that are used by the docker compose files.
+  Edit all the fields according to your specific case.
+
+  | URL Path | Access Granted to |Access Granted to |
+  |:------------|:---------------|:---------------|
+  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory
+  | SERVER_DNS | 'foo.com' | The server dns, if you are using a dedicated server for deploy
+  | BASE_URL | 'https://gitlab.foo.com' | The URL of your Gitlab instance
+  | CLIENT_ID | 'xx' | The ID of your OAuth application
+  | CLIENT_SECRET | 'xx' | The Secret of your OAuth application
+  | OAUTH_SECRET | 'random-secret-string' | Any private random string
+  | username1 | 'user1' | The gitlab instance username of a user of DTaaS
+  | username2 | 'user2' | The gitlab instance username of a user of DTaaS
+  | ENV_JS_FILEPATH | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client
+
+- Setup the client env.js file.
+  deploy/config/client/env.local.js can be used for 
+  a localhost deploy without any changes.
+  For a prod situation, you  can make make changes to 
+  the sample file deploy/config/client/env.trial.js
+  Refer to client/README.md for more info.
+- Edits need to be made to servers/auth/conf file.
+  Refer to the below section for more info.
+
+## Configure Authorization Rules for AuthMS
 
 The Traefik forward auth microservices requires configuration rules to manage
 authentication for different URL paths.
@@ -89,204 +107,48 @@ allowing only users mentioned in the whitelist.
 ### Limitation
 
 The rules in _conf_ file are not dynamically loaded into
-the **traefik-forward-auth** microservice. Any change in the _conf_ file requires
+the **traefik-forward-auth** microservice.
+Any change in the _conf_ file requires
 retart of **traefik-forward-auth** for the changes to take effect.
 All the existing user sessions get invalidated when
 the **traefik-forward-auth** restarts.
 
-## Run the example
+## Deploy
 
-You should have docker setup to be able to run this.
-Docker Desktop for Linux is preferred.
+Use a simple command on the terminal.
 
-- Clone/Pull the DTaaS repo
-- In your terminal, change directory to this auth directory.
-- This service works based on 2 files,
-  servers/auth/compose.yml and servers/auth/conf.
-- In the compose.yml, under the traefik-forward-auth service volumes,
-  please replace the correct absolute file path for
-  servers/auth/conf file in the volume mapping of
-  **traefik-forward-auth** container..
-- Also fill in the OAUTH details in compose.yml as per the table given above.
-- No other changes should be made to compose.yml.
-
-- Finally, run:
-
-  ```bash
-  docker compose up -d --remove-orphans
-  ```
-
-The microservices start up and provide access to
-the following URL paths.
-
-| URL Path | Access Granted to |
-|:------------|:---------------|
-| <http://localhost/public> | everyone including unauthenticated users |
-| <http://localhost/os> | user1 and user2 |
-| <http://localhost/user1> | user1 |
-| <http://localhost/user2> | user2 |
-||
-
-## View the example
-
-### Public
-
-Try heading over to <http://localhost/public>.
-This is a public, accessible to all, copy of the webserver.
-It still passes through the AuthServer (traefik-forward-auth),
-however this Path is set to allow access to all,
-instead of any authentication.
-You should be able to see this page without even signing in.
-
-### Authenticated users
-
-- Head over to <http://localhost/os>.
-  This page requires Gitlab OAuth and is not public.
-- You will be redirected to Gitlab. Sign in if you aren't already signed in.
-  _user1 (user1@localhost) / user2 (user2@localhost)_
-  accounts can be used to sign into the Gitlab instance.
-- On Gitlab you will be asked to authorize sharing some
-  account data for the <http://localhost> application.
-  Click on the **Authorize** button.
-- You will be redirect to the whoami server page
-  showing information about your system.
-  Any account that passes the Gitlab OAuth or
-  the specific instance is allowed access.
-
-### Selective access
-
-- Users can be selectively allowed to access some resources.
-  If you signed in with user1, try to visit <http://localhost/user1>.
-- This wouldn't be accessible if you signed in using user2 account.
-- If you signed in using user1 account, try visiting <http://localhost/user2>.
-  You should recieve a Not Authorized message, and access will be restricted.
-
-### Logout
-
-- To logout (o.e. require re-authentication to access services),
-  simply head over to <http://localhost/_oauth/logout>
-- You should be redirected to <https://www.google.com/>.
-  This confirms successful logout.
-
-### Test: When you logout
-
-- Logout by heading over to <http://localhost/_oauth/logout>
-- To test if this works, **first logout of Gitlab**.
-  This is required because if you are signed into Gitlab,
-  although an exchange of new access tokens will occur,
-  it may not be evident as you will be auto-signedin to Gitlab.
-- Now, head over to <http://localhost/os>.
-  You will have to go through the Auth process again now.
-- Once you've passed OAuth, you will be shown the server page.
-
-### Test: When you don't logout
-
-- Close the whoami server page tabs (if any are open).
-- Do not logout this time.
-- Again, **logout of Gitlab**. (To maintain consistency of the test)
-- Head over to <http://localhost/os>.
-- You will automatically be able to see this page,
-  without any Auth process/ new access tokens.
-- This page is still visible even though you have logged out of Gitlab.
-  This is because you haven't logged out of the OAuth session
-  managed by traefik forward auth.
-
-## Adding/Removing a service
-
-To remove an existing service. Remove it's
-entire configuration from the compose.yml file,
-and then run:
+### For a localhost deploy
 
 ```bash
-docker compose up -d --remove-orphans
+docker compose -f compose-localhost.yml --env-file .env up -d
 ```
 
-This will remove the service.
-
-To add a new service/remove an existing service,
-set the service up as you normally would in the
-docker compose with traefik as the gateway.
-
-Simply run
+### For a server deploy
 
 ```bash
-docker compose up -d
+docker compose -f compose-server.yml --env-file .env up -d
 ```
 
-for the service to take effect. To add OAuth to
-this service, follow the next section.
+## Usage
 
-## Updating Configuration
+### Localhost deploy
 
-### Adding OAuth to a new service
+Then, head over to <http:>http://localhost/</http:>.
+Sign in to gitlab instance with the your account.
 
-The current compose.yml file has a "dummy" service.
-Currently, this service doesn't have any OAuth applied to it
-as the traefik-forward-auth isn't applied as a middleware to it's route.
+All the functionality of DTaaS should be available to you
+through the single page client now.
 
-To add OAuth to this service, add the following into the labels of the service.
+You may have to click Sign in to Gitlab on the Client page
+and authorize access to the shown application.
 
-```yaml
-- "traefik.http.routers.dummy2.middlewares=traefik-forward-auth"
-```
+### Server Deploy
 
-In your terminal, recreate this changed service.
+Then, head over to <http:>http://foo.com/</http:>.
+Sign in to gitlab instance with the your account.
 
-```bash
-docker compose up -d --force-recreate dummy
-```
+All the functionality of DTaaS should be available to you
+through the single page client now.
 
-Here, "dummy" is the service name.
-
-This adds Gitlab OAuth to the service.
-
-### Adding selective access to service
-
-Till now, the Gitlab OAuth has been added to the dummy service.
-This allows **any** users that complete the Gitlab Instance sign in,
-to have access to the service.
-
-To restrict access based on user identity, we need to add
-appropriate rules to the _servers/auth/conf_ file.
-
-Let's say we want only user2 (user2@localhost) to have access
-to this new dummy service. Add the following to the conf file:
-
-```text
-rule.dummy.action=auth
-rule.dummy.rule=Path(`/user2`)
-rule.dummy.whitelist = user2@localhost
-```
-
-The traefik-forward-auth service is based on static rules.
-Thus simply adding these rules to the conf file doesn't make
-them take effect immediately.
-
-You will need to recreate the traefik-forward-auth container
-any time you update the conf file.
-
-```bash
-docker compose up -d --force-recreate traefik-forward-auth
-```
-
-This updates the rules being used, and now only user2 will have
-access to the dummy service.
-
-## Further work
-
-- This is a working demo. It will now be integrated with DTaaS,
-  and all microservices that require OAuth will be added
-  behind this Authentication,
-  only accesible through the Traefik reverse proxy.
-- Dynamic rule addition is also an open issue.
-- The Traefik Forward Auth code is available
-  [online](https://github.com/thomseddon/traefik-forward-auth).
-
-## Disclaimer
-
-There is an 8 second timeout on OAuth requests sent to Gitlab.
-If the OAuth signin process is not complete before eight seconds,
-Gitlab cancels the signin request and gives
-_503 - Service Unavailable_ message.
-The timelimit variable has not been found in gitlab.rb config file;
-timelimit is probably built into Gitlab code.
+You may have to click Sign in to Gitlab on the Client page
+and authorize access to the shown application.
