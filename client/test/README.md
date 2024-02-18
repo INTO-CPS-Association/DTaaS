@@ -15,7 +15,7 @@ sudo npx playwright install-deps
 ## OAuth Setup
 
 You can follow the instructions in
-[authentication page](../../docs/admin/client/auth.md) to setup oauth for the
+[authorization page](../../docs/admin/client/auth.md) to setup oauth for the
 react client website. Remember to add the `http://localhost:4000` as callback URL
 in the oauth application. The gitlab will still be running on a remote machine.
 It is not possible to run both the gitlab and react client website on localhost.
@@ -35,7 +35,7 @@ the details of your testing environment. For instance, you need to adjust:
 * `REACT_APP_LOGOUT_REDIRECT_URI`
 
 to reflect your test setup. More information on about the environment settings is
-available in [authentication](../../docs/admin/client/auth.md) and
+available in [authorization](../../docs/admin/client/auth.md) and
 [client deployment](../../docs/admin/client/CLIENT.md) pages.
 
 Here's an example of relevant values for variables. This example is suitable for
@@ -85,7 +85,7 @@ There are two possible testing setups you can create.
 If you use `localhost` in the `REACT_APP_URL` the above the two mentioned setups
 are essentially the same.
 In order to run the tests on the integration server, you need to disable the
-HTTP authentication (if setup in the first place) on the Traefik server and
+HTTP authorization (if setup in the first place) on the Traefik server and
 let the website be accessible without any authenticaiton.
 
 ### The configuration files for the test on localhost

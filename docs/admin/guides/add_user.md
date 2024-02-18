@@ -33,7 +33,7 @@ docker run -d \
 
 **3. Add username and password:**
 
-The following code adds basic authentication for the new user.
+The following code adds basic authorization for the new user.
 
 ```bash
 cd DTaaS/servers/config/gateway

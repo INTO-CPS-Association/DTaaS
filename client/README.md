@@ -43,11 +43,11 @@ yarn test:all   #run all tests
 
 ---
 
-## Authentication
+## Authorization
 
-The react client website uses OAuth authentication.
-The [authentication page](../docs/admin/client/auth.md)
-provides details on setting up oauth authentication for
+The react client website uses OAuth authorization.
+The [authorization page](../docs/admin/client/auth.md)
+provides details on setting up oauth authorization for
 the client application.
 
 ## Custom configuration

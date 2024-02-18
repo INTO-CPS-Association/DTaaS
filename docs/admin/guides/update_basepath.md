@@ -32,7 +32,7 @@ http:
         - basic-auth
       service: user1
 
-  # Middleware: Basic authentication
+  # Middleware: Basic authorization
   middlewares:
     basic-auth:
       basicAuth:

@@ -13,6 +13,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  client:
+    image: intocps/dtaas-web:0.3.2
+    volumes:
+      - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.entryPoints=web"
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
+      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+
   libms:
     image: intocps/libms:latest
     volumes:
@@ -25,17 +36,6 @@ services:
       - "traefik.http.routers.libms.rule= PathPrefix(`/lib`)"
       - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
   
-  client:
-    image: intocps/dtaas-web:0.3.2
-    volumes:
-      - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.client.entryPoints=web"
-      - "traefik.http.services.client.loadbalancer.server.port=4000"
-      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
-      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
-
   user1:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
@@ -63,8 +63,7 @@ services:
       - "traefik.http.routers.u2.entryPoints=web"
       - "traefik.http.routers.u2.rule=PathPrefix(`/${username2}`) "
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
-  
-  
+
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:

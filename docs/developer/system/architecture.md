@@ -44,7 +44,7 @@ The users interact with the software platform using a website.
 The gateway is a single point of entry for direct access to the platform
 services. The gateway is responsible for controlling user access to
 the microservice components. The service mesh
-enables discovery of microservices, load balancing and authentication
+enables discovery of microservices, load balancing and authorization
 functionalities.
 
 In addition, there are microservices for catering to author, store,

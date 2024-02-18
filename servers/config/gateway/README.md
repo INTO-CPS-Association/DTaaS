@@ -30,7 +30,7 @@ docker run -d \
   traefik:v2.10
 ```
 
-## Authentication
+## Authorization
 
 The dummy username is `foo` and the password is `bar`.
 Please change this before starting the gateway.

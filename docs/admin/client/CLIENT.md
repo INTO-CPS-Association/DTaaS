@@ -18,7 +18,7 @@ To host DTaaS client website on your server, follow these steps:
   static files that are ready for deployment.
 
 - Setup the oauth application on gitlab instance.
-  See the instructions in [authentication page](auth.md) for completing this task.
+  See the instructions in [authorization page](auth.md) for completing this task.
 - Locate the file `site/env.js` and replace the example values to
   match your infrastructure.
   The constructed links will be

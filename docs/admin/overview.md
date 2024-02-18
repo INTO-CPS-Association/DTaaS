@@ -11,8 +11,8 @@ As an admin you will administrate the users and the servers of the system.
 ### OAuth Provider (Mandatory)
 
 You need to have an OAuth Provider running, which the DTaaS can use for
-authentication. This is described further in
-the [authentication section](./client/auth.md).
+authorization. This is described further in
+the [authorization section](./client/auth.md).
 
 ### Domain name (Optional)
 
