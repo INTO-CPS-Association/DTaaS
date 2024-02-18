@@ -49,7 +49,7 @@
     "@types/styled-components": "^5.1.32",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
-    "dotenv": "^16.1.4",
+    "dotenv": "^16.4.4",
     "eslint": "^8.54.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
