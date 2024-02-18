@@ -15,8 +15,8 @@ setup is shown here.
 In the new application configuration, there are two OAuth2 applications.
 
 - The React single page application (SPA). The details of
-this Oauth2 app are in
-[client docs](../../docs/admin/client/auth.md).
+  this Oauth2 app are in
+  [client docs](../../docs/admin/client/auth.md).
 - The Oauth2 server-side or web application for traefik forward-auth container.
   The details are in [server docs](../../docs/admin/servers/auth.md).
 
