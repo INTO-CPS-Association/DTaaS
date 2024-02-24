@@ -5,16 +5,16 @@ services:
     build: 
       context: ../
       dockerfile: ./docker/client.dockerfile
-    ports:
-      - "4000:4000"
+    labels:
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
     volumes:
       - "../client/config/dev.js:/dtaas/client/build/env.js"
   libms:
     build: 
       context: ../
       dockerfile: ./docker/libms.dockerfile
-    ports:
-      - "4001:4001"
+    labels:
+      - "traefik.http.services.libms.loadbalancer.server.port=4001"
     volumes:
       - "../deploy/config/lib.docker:/dtaas/libms/.env"
       - "../files:/dtaas/libms/files"
@@ -22,8 +22,6 @@ services:
   ml-workspace-user1:
     image: mltooling/ml-workspace-minimal:0.13.2
     container_name: ml-workspace-user1
-    ports:
-      - "8090:8080"
     volumes:
       - "../files/user1:/workspace"
       - "../files/common:/workspace/common"
@@ -36,7 +34,7 @@ services:
     image: traefik:v2.10
     container_name: traefik-gateway
     ports:
-      - "9000:80"
+      - "80:80"
     volumes:
       - "../servers/config/gateway/traefik.yml:/etc/traefik/traefik.yml"
       - "../servers/config/gateway/auth:/etc/traefik/auth"
