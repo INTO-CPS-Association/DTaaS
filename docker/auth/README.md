@@ -56,7 +56,7 @@ Edit all the fields according to your specific case.
   | URL Path | Access Granted to |Access Granted to |
   |:------------|:---------------|:---------------|
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | SERVER_DNS | <http>_foo.com_</http> or <http>_localhost_</http> | The server dns, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
+  | SERVER_DNS | <http>_foo.com_</http> or <http>_localhost_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | BASE_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance |
   | CLIENT_ID | 'xx' | The ID of your OAuth application |
   | CLIENT_SECRET | 'xx' | The Secret of your OAuth application |
@@ -75,6 +75,20 @@ Edit all the fields according to your specific case.
 
   Further explanation on the client configuration is available in
   [client config page](../../docs/admin/client/CLIENT.md).
+
+### Caveat
+
+The usernames in the `.env` file need to match those in the conf file.
+
+Traefik routes are controlled by the `.env` file
+Authentication on these routes is controlled by the `conf` file.
+If a route is not specified in `conf` file but an authorisation is
+requested by traefik for this unknown route, the default behavior of
+traefik forward-auth kicks in. This default behavior is to enable
+endpoint being available to any signed in user.
+
+If there are extra routes in `conf` file but these are not in `.env` file,
+such routes are not served by traefik; it will give **404 server response**.
 
 ## Run
 

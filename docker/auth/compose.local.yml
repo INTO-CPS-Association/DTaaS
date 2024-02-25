@@ -14,7 +14,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   client:
-    image: intocps/dtaas-web:0.3.2
+    image: intocps/dtaas-web:latest
     volumes:
       - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
     labels:

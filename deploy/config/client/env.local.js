@@ -1,6 +1,6 @@
 if (typeof window !== 'undefined') {
   window.env = {
-    REACT_APP_ENVIRONMENT: 'test',
+    REACT_APP_ENVIRONMENT: 'local',
     REACT_APP_URL: 'http://localhost/',
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',

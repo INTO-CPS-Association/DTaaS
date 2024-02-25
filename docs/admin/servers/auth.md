@@ -51,7 +51,7 @@ Here are the steps to get started:
 **4. OAuth Application Creation:**
 
 - During the creation of the OAuth application on GitLab, you need to specify
-  the scope. Choose read_user_ scope.
+  the scope. Choose _read_user_ scope.
 
 **5. Application Credentials:**
 
