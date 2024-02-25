@@ -57,7 +57,7 @@ the usernames chosen by you.
 
 <!-- markdownlint-enable MD046 -->
 
-#### Authentication
+#### Authorization
 
 This step requires `htpasswd` commandline utility. If
 it is not available on your system, please install the same by using
@@ -67,7 +67,7 @@ sudo apt-get update
 sudo apt-get install -y apache2-utils
 ```
 
-You can now proceed with update of the gateway authentication setup.
+You can now proceed with update of the gateway authorization setup.
 The dummy username is `foo` and the password is `bar`.
 Please change this before starting the gateway.
 
@@ -110,7 +110,7 @@ GRAPHQL_PLAYGROUND='true'
 
 The DTaaS react website requires Gitlab OAuth provider.
 If you need more help with this step, please see
-the [Authentication page](client/auth.md).
+the [Authorization page](client/auth.md).
 
 You need the following information from the OAuth application registered on Gitlab:
 

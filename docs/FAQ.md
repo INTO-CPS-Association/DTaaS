@@ -282,12 +282,12 @@
 
 ??? Question "How is user access controlled and authenticated?"
 
-    There is a two-level authentication mechanism in place in each default
-    installation of DTaaS. The first-level is HTTP basic authentication
+    There is a two-level authorization mechanism in place in each default
+    installation of DTaaS. The first-level is HTTP basic authorization
     over secure HTTPS connection. The second-level is the OAuth PKCE
-    authentication flow for each user. The OAuth authentication is provider
+    authorization flow for each user. The OAuth authorization is provider
     by a Gitlab instance. The DTaaS does not store the account and
-    authentication information of users.
+    authorization information of users.
 
 ??? Question "Does you platform manage personal data? How is data classified and tagged based on the sensitivity? Who has access to the critical data?"
 

@@ -13,28 +13,28 @@ the [C4 L2 diagram](current-status-developer-2.png).
 
 ## :lock: User Security
 
-There is authentication mechanisms in place for the react website
+There is authorization mechanisms in place for the react website
 and the Traefik gateway.
 
-The react website component uses Gitlab for user authentication using
+The react website component uses Gitlab for user authorization using
 OAuth protocol.
 
-### Gateway Authentication
+### Gateway Authorization
 
-The Traefik gateway has HTTP basic authentication enabled by default. This
-authentication on top of HTTPS connection can provide a good protection
+The Traefik gateway has HTTP basic authorization enabled by default. This
+authorization on top of HTTPS connection can provide a good protection
 against unauthorized use.
 
 !!! warning
-    Please note that HTTP basic authentication over insecure non-TLS
+    Please note that HTTP basic authorization over insecure non-TLS
     is insecure.
 
 There is also a possibility of using self-signed mTLS certificates.
 The current security functionality is based on signed
 Transport Layer Security (TLS)
 certificates issued to users. The TLS certificate based mutual TLS (mTLS)
-authentication protocol provides better security than the usual
-username and password combination. The mTLS authentication takes place between
+authorization protocol provides better security than the usual
+username and password combination. The mTLS authorization takes place between
 the users browser and the platform gateway. The gateway federates all
 the backend services. The service discovery, load balancing, and health checks
 are carried by the gateway based on a dynamic reconfiguration mechanism.

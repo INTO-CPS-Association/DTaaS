@@ -31,7 +31,7 @@ after running the script.
 
 The DTaaS react website requires Gitlab OAuth provider.
 If you need more help with this step, please see
-the [Authentication page](client/auth.md).
+the [Authorization page](client/auth.md).
 
 You need the following information from the Gitlab OAuth application
 registered on Gitlab:

@@ -7,15 +7,15 @@ the DTaaS software platform.
 
 ![Login](login.png)
 
-The screen presents with HTTP authentication form. You can enter the user
+The screen presents with HTTP authorization form. You can enter the user
 credentials. If the DTaaS is being served over HTTPS secure communication
 protocol, the username and password are secure.
 
-## Start the Authentication
+## Start the Authorization
 
-You are now logged into the DTaaS server. The DTaaS uses third-party authentication
+You are now logged into the DTaaS server. The DTaaS uses third-party authorization
 protocol known as
-[OAuth](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
+[OAuth](https://auth0.com/docs/get-started/authorization-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
 service provider. The DTaaS uses Gitlab as OAuth provider.
@@ -23,11 +23,11 @@ service provider. The DTaaS uses Gitlab as OAuth provider.
 ![Gitlab signin button](gitlab-sso-1.png)
 
 You can see the Gitlab signin button. A click on this button takes you to
-Gitlab instance providing authentication for DTaaS.
+Gitlab instance providing authorization for DTaaS.
 
 ## Authenticate at Gitlab
 
-The username and password authentication takes place on the gitlab website.
+The username and password authorization takes place on the gitlab website.
 Enter your username and password in the login form.
 
 ![Gitlab login form](gitlab-sso-2.png)
@@ -35,11 +35,11 @@ Enter your username and password in the login form.
 ## Permit DTaaS to Use Gitlab
 
 The DTaaS application needs your permission to use your Gitlab account for
-authentication. Click on **Authorize** button.
+authorization. Click on **Authorize** button.
 
 ![Gitlab OAuth permission](gitlab-sso-3.png)
 
-After successful authentication, you will be redirected to the **Library**
+After successful authorization, you will be redirected to the **Library**
 page of the DTaaS website.
 
 ## Overview of menu items
@@ -83,7 +83,8 @@ in their workspace.
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
     Typical examples of data sinks are visualization software, external users
-    and data storage services. There exist special outputs such as events, and
+    and data storage services. There exist special outputs
+    such as events, and
     commands which are akin to control outputs from a Digital Twin.
     These control outputs usually go to Physical Twins, but they can also
     go to another Digital Twin.
@@ -93,7 +94,8 @@ in their workspace.
     and their environment, at different levels of abstraction. Therefore,
     it is possible to have multiple models for the same Physical Twin.
     For example, a flexible robot used in a car production plant may have
-    structural model(s) which will be useful in tracking the wear and tear
+    structural model(s) which will be useful in tracking
+    the wear and tear
     of parts. The same robot can have a behavioural model(s) describing
     the safety guarantees provided by the robot manufacturer. The same robot
     can also have a functional model(s) describing the part manufacturing
@@ -124,11 +126,12 @@ data, functions, models, tools and digital twins.
 
 ??? Common Assets tip
     The common directory again has four sub-directories:
-    * data
-    * functions
-    * models
-    * tools
-    * digital twins
+    - data
+    - functions
+    - functions
+    - models
+    - tools
+    - digital twins
     The assets common to all users are placed in **common**.
 
 The items used by more than one user are placed in **common**. The items in

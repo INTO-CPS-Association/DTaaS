@@ -2,7 +2,7 @@ site_name: Digital Twin as a Service (DTaaS)
 
 repo_url: https://github.com/into-cps-association/DTaaS
 repo_name: DTaaS
-copyright: Copyright &copy; 2022 - 2023 The INTO-CPS Association
+copyright: Copyright &copy; 2022 - 2024 The INTO-CPS Association
 
 theme: 
   name: material
@@ -18,7 +18,9 @@ nav:
   - Home: index.md
   - Admin:
       - Overview: admin/overview.md
-      - Authentication: admin/client/auth.md
+      - Authorization:
+        - Client: admin/client/auth.md
+        - Servers: admin/servers/auth.md
       - Host Install:
         - Localhost: admin/localhost.md
         - Trial: admin/trial.md
@@ -64,6 +66,7 @@ nav:
       - System:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md
+      - Authorization: developer/oauth.md
       - Components:
         - Client: developer/client/client.md
         - Library Microservice: developer/servers/lib/lib-ms.md

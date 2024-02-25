@@ -2,7 +2,7 @@
 
 This guide helps with installation of a dedicated
 [Gitlab](https://gitlab.com) service. This Gitlab installation can be used
-as OAuth2 authentication provider to the DTaaS software.
+as OAuth2 authorization provider to the DTaaS software.
 
 There are two possible ways you can install Gitlab:
 
@@ -61,7 +61,7 @@ nginx['redirect_http_to_https'] = false
 letsencrypt['enable'] = false
 ```
 
-If you want to use <http:>_gitlab.foo.com'_</http:> for Gitlab installation,
+If you want to use <http:>_gitlab.foo.com_</http:> for Gitlab installation,
 you can make one change:
 `external_url http(s)://foo.com/gitlab`. Other settings remain the same.
 
@@ -75,7 +75,7 @@ this user account is available in: `/etc/gitlab/initial_root_password`.
 ### Traefik Gateway Configuration
 
 It is likely that you are going to put the Gitlab behind Traefik gateway.
-If so, do remove the middleware authentication from gitlab PathPrefix.
+If so, do remove the middleware authorization from gitlab PathPrefix.
 
 ## Use
 

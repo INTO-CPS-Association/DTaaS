@@ -12,13 +12,11 @@ There are two dockerfiles for building the containers:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
-
 - **libms.dockerfile**: Dockerfile for building the library microservice container.
 
 There are also two compose files for development and local installation scenarios.
 
 - **compose.dev.yml:** Docker Compose configuration for development environment.
-
 - **compose.local.yml:** Docker Compose configuration for localhost installation.
 
 ## Build and Publish Docker Images

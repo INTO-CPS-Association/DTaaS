@@ -19,7 +19,7 @@ You can use it to check a test installation of the DTaaS software.
 
 The DTaaS react website requires Gitlab OAuth provider.
 If you need more help with this step, please see
-the [Authentication page](client/auth.md).
+the [Authorization page](client/auth.md).
 
 !!! Information
     <!-- markdownlint-disable-file MD013 -->

@@ -1,18 +1,18 @@
-# Setting Up OAuth
+# OAuth for React Client
 
-To enable user authentication on DTaaS React client website, you will use
-the OAuth authentication protocol, specifically the PKCE authentication flow.
+To enable user authorization on DTaaS React client website, you will use
+the OAuth authorization protocol, specifically the PKCE authorization flow.
 Here are the steps to get started:
 
 **1. Choose Your GitLab Server:**
 
-- You need to set up OAuth authentication on a GitLab server.
-  The commercial gitlab.com is not suitable for multi-user authentication
+- You need to set up OAuth authorization on a GitLab server.
+  The commercial gitlab.com is not suitable for multi-user authorization
   (DTaaS requires this), so you'll need an on-premise GitLab instance.
 - You can use
   [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
 - Configure the OAuth application as
-  an [instance-wide authentication type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+  an [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
 **2. Determine Your Website's Hostname:**
 
@@ -22,7 +22,7 @@ Here are the steps to get started:
 
 **3. Define Callback and Logout URLs:**
 
-- For the PKCE authentication flow to function correctly, you need two URLs:
+- For the PKCE authorization flow to function correctly, you need two URLs:
   a callback URL and a logout URL.
 - The callback URL informs the OAuth provider of the page where
   signed-in users should be redirected. It's different from the landing
@@ -88,7 +88,7 @@ https://foo.com/acme
 https://foo.com/bar
 ```
 
-All of these instances can use the same gitlab instance for authentication.
+All of these instances can use the same gitlab instance for authorization.
 
 | DTaaS application URL | Gitlab Instance URL | Callback URL | Logout URL | Application ID |
 |:----|:----|:----|:----|:----|

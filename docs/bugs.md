@@ -20,7 +20,7 @@
 
 ## Gitlab
 
-- The gilab oauth authentication service does not
+- The gilab oauth authorization service does not
   have a way to sign out of a third-party application.
   Even if you sign out of DTaaS, the gitlab still shows user as signed in.
   The next time you click on the sign in button on the DTaaS page,
