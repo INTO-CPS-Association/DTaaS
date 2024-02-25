@@ -18,7 +18,7 @@ nav:
   - Home: index.md
   - Admin:
       - Overview: admin/overview.md
-      - Authentication:
+      - Authorization:
         - Client: admin/client/auth.md
         - Servers: admin/servers/auth.md
       - Host Install:
