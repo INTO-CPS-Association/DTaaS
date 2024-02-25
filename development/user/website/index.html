@@ -446,16 +446,82 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Authorization
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../admin/client/auth.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Authentication
+    Client
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/auth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Servers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1130,9 +1196,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#start-the-authentication" class="md-nav__link">
+  <a href="#start-the-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      Start the Authentication
+      Start the Authorization
     </span>
   </a>
   
@@ -1778,6 +1844,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../developer/oauth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1788,10 +1875,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1802,8 +1889,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
             Components
           </label>
@@ -2073,9 +2160,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#start-the-authentication" class="md-nav__link">
+  <a href="#start-the-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      Start the Authentication
+      Start the Authorization
     </span>
   </a>
   
@@ -2167,28 +2254,28 @@
 the DTaaS software platform.</p>
 <h2 id="login-to-enter-the-dtaas-software-platform">Login to enter the DTaaS software platform</h2>
 <p><img alt="Login" src="login.png" /></p>
-<p>The screen presents with HTTP authentication form. You can enter the user
+<p>The screen presents with HTTP authorization form. You can enter the user
 credentials. If the DTaaS is being served over HTTPS secure communication
 protocol, the username and password are secure.</p>
-<h2 id="start-the-authentication">Start the Authentication</h2>
-<p>You are now logged into the DTaaS server. The DTaaS uses third-party authentication
+<h2 id="start-the-authorization">Start the Authorization</h2>
+<p>You are now logged into the DTaaS server. The DTaaS uses third-party authorization
 protocol known as
-<a href="https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce">OAuth</a>.
+<a href="https://auth0.com/docs/get-started/authorization-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce">OAuth</a>.
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
 service provider. The DTaaS uses Gitlab as OAuth provider.</p>
 <p><img alt="Gitlab signin button" src="gitlab-sso-1.png" /></p>
 <p>You can see the Gitlab signin button. A click on this button takes you to
-Gitlab instance providing authentication for DTaaS.</p>
+Gitlab instance providing authorization for DTaaS.</p>
 <h2 id="authenticate-at-gitlab">Authenticate at Gitlab</h2>
-<p>The username and password authentication takes place on the gitlab website.
+<p>The username and password authorization takes place on the gitlab website.
 Enter your username and password in the login form.</p>
 <p><img alt="Gitlab login form" src="gitlab-sso-2.png" /></p>
 <h2 id="permit-dtaas-to-use-gitlab">Permit DTaaS to Use Gitlab</h2>
 <p>The DTaaS application needs your permission to use your Gitlab account for
-authentication. Click on <strong>Authorize</strong> button.</p>
+authorization. Click on <strong>Authorize</strong> button.</p>
 <p><img alt="Gitlab OAuth permission" src="gitlab-sso-3.png" /></p>
-<p>After successful authentication, you will be redirected to the <strong>Library</strong>
+<p>After successful authorization, you will be redirected to the <strong>Library</strong>
 page of the DTaaS website.</p>
 <h2 id="overview-of-menu-items">Overview of menu items</h2>
 <p>The menu is hidden by default. Only the icons of menu items are visible.
@@ -2223,7 +2310,8 @@ the sensor and actuator data of both Physical Twins and Digital Twins.</p>
 of data sources are sensor measurements from  Physical Twins, and
 test data provided by manufacturers for calibration of models.
 Typical examples of data sinks are visualization software, external users
-and data storage services. There exist special outputs such as events, and
+and data storage services. There exist special outputs
+such as events, and
 commands which are akin to control outputs from a Digital Twin.
 These control outputs usually go to Physical Twins, but they can also
 go to another Digital Twin.</p>
@@ -2234,7 +2322,8 @@ go to another Digital Twin.</p>
 and their environment, at different levels of abstraction. Therefore,
 it is possible to have multiple models for the same Physical Twin.
 For example, a flexible robot used in a car production plant may have
-structural model(s) which will be useful in tracking the wear and tear
+structural model(s) which will be useful in tracking
+the wear and tear
 of parts. The same robot can have a behavioural model(s) describing
 the safety guarantees provided by the robot manufacturer. The same robot
 can also have a functional model(s) describing the part manufacturing
@@ -2267,11 +2356,12 @@ data, functions, models, tools and digital twins.</p>
 <details class="common assets tip">
 <summary>Common</summary>
 <p>The common directory again has four sub-directories:
-* data
-* functions
-* models
-* tools
-* digital twins
+- data
+- functions
+- functions
+- models
+- tools
+- digital twins
 The assets common to all users are placed in <strong>common</strong>.</p>
 </details>
 <p>The items used by more than one user are placed in <strong>common</strong>. The items in
@@ -2411,7 +2501,7 @@ the DTaaS software platform.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2022 - 2023 The INTO-CPS Association
+      Copyright &copy; 2022 - 2024 The INTO-CPS Association
     </div>
   
   

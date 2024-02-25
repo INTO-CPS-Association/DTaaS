@@ -12,7 +12,7 @@
         <link rel="prev" href="architecture.html">
       
       
-        <link rel="next" href="../client/client.html">
+        <link rel="next" href="../oauth.html">
       
       
       <link rel="icon" href="../../assets/dtaas-logo.png">
@@ -446,16 +446,82 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Authorization
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../admin/client/auth.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Authentication
+    Client
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/auth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Servers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1687,9 +1753,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#gateway-authentication" class="md-nav__link">
+  <a href="#gateway-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      Gateway Authentication
+      Gateway Authorization
     </span>
   </a>
   
@@ -1750,6 +1816,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../oauth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1760,10 +1847,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1774,8 +1861,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
             Components
           </label>
@@ -2046,9 +2133,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#gateway-authentication" class="md-nav__link">
+  <a href="#gateway-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      Gateway Authentication
+      Gateway Authorization
     </span>
   </a>
   
@@ -2114,25 +2201,25 @@ The figure below shows the current status of the development work.</p>
 please take a look at
 the <a href="current-status-developer-2.png">C4 L2 diagram</a>.</p>
 <h2 id="user-security"><img alt="🔒" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f512.svg" title=":lock:" /> User Security</h2>
-<p>There is authentication mechanisms in place for the react website
+<p>There is authorization mechanisms in place for the react website
 and the Traefik gateway.</p>
-<p>The react website component uses Gitlab for user authentication using
+<p>The react website component uses Gitlab for user authorization using
 OAuth protocol.</p>
-<h3 id="gateway-authentication">Gateway Authentication</h3>
-<p>The Traefik gateway has HTTP basic authentication enabled by default. This
-authentication on top of HTTPS connection can provide a good protection
+<h3 id="gateway-authorization">Gateway Authorization</h3>
+<p>The Traefik gateway has HTTP basic authorization enabled by default. This
+authorization on top of HTTPS connection can provide a good protection
 against unauthorized use.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Please note that HTTP basic authentication over insecure non-TLS
+<p>Please note that HTTP basic authorization over insecure non-TLS
 is insecure.</p>
 </div>
 <p>There is also a possibility of using self-signed mTLS certificates.
 The current security functionality is based on signed
 Transport Layer Security (TLS)
 certificates issued to users. The TLS certificate based mutual TLS (mTLS)
-authentication protocol provides better security than the usual
-username and password combination. The mTLS authentication takes place between
+authorization protocol provides better security than the usual
+username and password combination. The mTLS authorization takes place between
 the users browser and the platform gateway. The gateway federates all
 the backend services. The service discovery, load balancing, and health checks
 are carried by the gateway based on a dynamic reconfiguration mechanism.</p>
@@ -2230,13 +2317,13 @@ based on these services.</p>
         
         
           
-          <a href="../client/client.html" class="md-footer__link md-footer__link--next" aria-label="Next: Client">
+          <a href="../oauth.html" class="md-footer__link md-footer__link--next" aria-label="Next: Authorization">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Client
+                Authorization
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -2253,7 +2340,7 @@ based on these services.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2022 - 2023 The INTO-CPS Association
+      Copyright &copy; 2022 - 2024 The INTO-CPS Association
     </div>
   
   

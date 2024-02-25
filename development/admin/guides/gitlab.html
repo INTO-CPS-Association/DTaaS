@@ -448,16 +448,82 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Authorization
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../client/auth.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Authentication
+    Client
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../servers/auth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Servers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1741,6 +1807,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../developer/oauth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1751,10 +1838,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1765,8 +1852,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
             Components
           </label>
@@ -2089,7 +2176,7 @@
 <h1 id="install-gitlab">Install Gitlab</h1>
 <p>This guide helps with installation of a dedicated
 <a href="https://gitlab.com">Gitlab</a> service. This Gitlab installation can be used
-as OAuth2 authentication provider to the DTaaS software.</p>
+as OAuth2 authorization provider to the DTaaS software.</p>
 <p>There are two possible ways you can install Gitlab:</p>
 <ul>
 <li>At dedicated domain name (ex: <http:><em>gitlab.foo.com</em></http:>)</li>
@@ -2140,7 +2227,7 @@ The variables to change are:</p>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="na">nginx[&#39;redirect_http_to_https&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="na">letsencrypt[&#39;enable&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 </span></code></pre></div></td></tr></table></div>
-<p>If you want to use <http:><em>gitlab.foo.com'</em></http:> for Gitlab installation,
+<p>If you want to use <http:><em>gitlab.foo.com</em></http:> for Gitlab installation,
 you can make one change:
 <code>external_url http(s)://foo.com/gitlab</code>. Other settings remain the same.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>gitlab-ctl<span class="w"> </span>reconfigure
@@ -2149,7 +2236,7 @@ you can make one change:
 this user account is available in: <code>/etc/gitlab/initial_root_password</code>.</p>
 <h3 id="traefik-gateway-configuration">Traefik Gateway Configuration</h3>
 <p>It is likely that you are going to put the Gitlab behind Traefik gateway.
-If so, do remove the middleware authentication from gitlab PathPrefix.</p>
+If so, do remove the middleware authorization from gitlab PathPrefix.</p>
 <h2 id="use">Use</h2>
 <p>After the installation is complete, the required user accounts and OAuth2
 applications can be setup on this Gitlab instance.</p>
@@ -2222,7 +2309,7 @@ applications can be setup on this Gitlab instance.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2022 - 2023 The INTO-CPS Association
+      Copyright &copy; 2022 - 2024 The INTO-CPS Association
     </div>
   
   

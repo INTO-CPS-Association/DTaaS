@@ -448,16 +448,82 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Authorization
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="auth.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Authentication
+    Client
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../servers/auth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Servers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1708,6 +1774,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../developer/oauth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authorization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1718,10 +1805,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1732,8 +1819,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
             Components
           </label>
@@ -2042,7 +2129,7 @@ option before using only the <strong>DTaaS-client.zip</strong> package.</p>
 </li>
 <li>
 <p>Setup the oauth application on gitlab instance.
-  See the instructions in <a href="auth.html">authentication page</a> for completing this task.</p>
+  See the instructions in <a href="auth.html">authorization page</a> for completing this task.</p>
 </li>
 <li>Locate the file <code>site/env.js</code> and replace the example values to
   match your infrastructure.
@@ -2110,73 +2197,67 @@ option before using only the <strong>DTaaS-client.zip</strong> package.</p>
 <span class="normal"><a href="#__codelineno-0-58">58</a></span>
 <span class="normal"><a href="#__codelineno-0-59">59</a></span>
 <span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="normal"><a href="#__codelineno-0-61">61</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;prod | dev&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;URL for the gateway&quot;</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Base URL for the client website&quot;</span><span class="p">(</span><span class="nx">optional</span><span class="p">),</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the Digital Twin&quot;</span><span class="p">,</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the Library Assets&quot;</span><span class="p">,</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the terminal link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the VNC Desktop link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the VS Code link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the Jupyter Lab link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">      </span><span class="s2">&quot;Endpoint for the Jupyter Notebook link&quot;</span><span class="p">,</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;AppID genereated by the gitlab OAuth provider&#39;</span><span class="p">,</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the private gitlab instance&#39;</span><span class="p">,</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the logged in users of the website&#39;</span><span class="p">,</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the anonymous users of the website&#39;</span><span class="p">,</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;OAuth scopes. These should match with the scopes set in gitlab OAuth provider&#39;</span><span class="p">,</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">  </span><span class="p">};</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">};</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="c1">// Example values with no base URL. Trailing and ending slashes are optional.</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/Library&#39;</span><span class="p">,</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="w">  </span><span class="p">};</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="p">};</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="c1">// Example values with &quot;bar&quot; as basename URL.</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="c1">//Trailing and ending slashes are optional.</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_TERMINAL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/terminals/main&#39;</span><span class="p">,</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar/Library&#39;</span><span class="p">,</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar&#39;</span><span class="p">,</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="w">  </span><span class="p">};</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="p">};</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the VNC Desktop link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the VS Code link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Endpoint for the Jupyter Lab link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">      </span><span class="s2">&quot;Endpoint for the Jupyter Notebook link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;AppID genereated by the gitlab OAuth provider&#39;</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the private gitlab instance&#39;</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the logged in users of the website&#39;</span><span class="p">,</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;URL of the homepage for the anonymous users of the website&#39;</span><span class="p">,</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;OAuth scopes. These should match with the scopes set in gitlab OAuth provider&#39;</span><span class="p">,</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">  </span><span class="p">};</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="p">};</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="c1">// Example values with no base URL. Trailing and ending slashes are optional.</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;prod&#39;</span><span class="p">,</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="w">  </span><span class="p">};</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="p">};</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="c1">// Example values with &quot;bar&quot; as basename URL.</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="c1">//Trailing and ending slashes are optional.</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VNCDESKTOP</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vnc/?password=vncpassword&#39;</span><span class="p">,</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_VSCODE</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/tools/vscode/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERLAB</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0&#39;</span><span class="p">,</span>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar&#39;</span><span class="p">,</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="w">  </span><span class="p">};</span>
+</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="p">};</span>
 </span></code></pre></div></td></tr></table></div>
 <ul>
 <li>
@@ -2339,7 +2420,7 @@ as reverse proxy.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2022 - 2023 The INTO-CPS Association
+      Copyright &copy; 2022 - 2024 The INTO-CPS Association
     </div>
   
   
