@@ -122,10 +122,10 @@ data/.DS_Store
 **/.DS_Store
 
 # Code and Built docs
-site/
-client/
-servers/
-files/
+/site/
+/client/
+/servers/
+/files/
 
 # IDEs and editors
 /.idea
