@@ -1,0 +1,8 @@
+rule.libms.action=allow
+rule.libms.rule=PathPrefix(`/lib`)
+
+rule.onlyu1.action=allow
+rule.onlyu1.rule=PathPrefix(`/user1`)
+
+rule.onlyu2.action=allow
+rule.onlyu2.rule=PathPrefix(`/user2`)

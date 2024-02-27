@@ -1,0 +1,10 @@
+rule.libms.action=auth
+rule.libms.rule=PathPrefix(`/lib`)
+
+rule.onlyu1.action=auth
+rule.onlyu1.rule=PathPrefix(`/user1`)
+rule.onlyu1.whitelist = user1@emailservice.com
+
+rule.onlyu2.action=auth
+rule.onlyu2.rule=PathPrefix(`/user2`)
+rule.onlyu2.whitelist = user2@emailservice.com
