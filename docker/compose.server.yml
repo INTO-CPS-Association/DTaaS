@@ -24,7 +24,7 @@ services:
       - "traefik.http.services.libms.loadbalancer.server.port=4001"
       - "traefik.http.routers.libms.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/lib`)"
       - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
-  
+
   client:
     image: intocps/dtaas-web:latest
     volumes:
@@ -39,7 +39,7 @@ services:
   user1:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common 
+      - ${DTAAS_DIR}/files/common:/workspace/common
       - ${DTAAS_DIR}/files/${username1}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
@@ -63,8 +63,7 @@ services:
       - "traefik.http.routers.u2.entryPoints=web"
       - "traefik.http.routers.u2.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username2}`)"
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
-  
-  
+
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
