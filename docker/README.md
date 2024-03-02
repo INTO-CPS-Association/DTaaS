@@ -88,11 +88,15 @@ same convention (IP/DNS) in the CLIENT_CONFIG file as well.
 
 No configuration change is needed for a general use case to bring up the LibMS.
 
-In a specific case, you can change the configuration of the LibMS by editing the file:
+In a specific case,
+you can change the configuration of the LibMS by editing the file:
 
 - deploy/config/lib.docker
 
-This is not recommended for a general use. It should be done with care, making relevant changes in all other related files, like the compose file being used. 
+This is not recommended for a general use.
+It should be done with care, making relevant changes
+in all other related files,
+and the compose file being used.
 
 ### Caveat
 
