@@ -28,7 +28,7 @@ services:
   client:
     image: intocps/dtaas-web:latest
     volumes:
-      - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
+      - ${CLIENT_CONFIG}:/dtaas/client/build/env.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
@@ -44,6 +44,7 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username1}
+    shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.entryPoints=web"
@@ -58,6 +59,7 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username2}
+    shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web"
@@ -67,7 +69,7 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - ${OAUTH_CONF_FILEPATH}:/conf
+      - ${DTAAS_DIR}/docker/conf.server:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize

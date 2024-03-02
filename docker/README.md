@@ -63,9 +63,9 @@ Edit all the fields according to your specific case.
   | OAUTH_SECRET | 'random-secret-string' | Any private random string |
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | ENV_JS_FILEPATH | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
+  | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
-- Assign the correct client config file to `ENV_JS_FILEPATH and
+- Assign the correct client config file to `CLIENT_CONFIG and
   update the values.
 
   | Deployment Scenario | client env file |

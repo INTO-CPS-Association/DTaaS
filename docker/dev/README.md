@@ -14,10 +14,9 @@ There are two dockerfiles for building the containers:
   the client application container.
 - **libms.dockerfile**: Dockerfile for building the library microservice container.
 
-There are also two compose files for development and local installation scenarios.
+There is a specific compose file for development:
 
 - **compose.dev.yml:** Docker Compose configuration for development environment.
-- **compose.local.yml:** Docker Compose configuration for localhost installation.
 
 ## Build and Publish Docker Images
 
@@ -67,11 +66,12 @@ configuration files to be modified are given for each scenario.
 
 This scenario is for software developers:
 
+### Client Website & Lib Configuration
+
 The configuration files to be updated are:
 
 1. client/config/dev.js
 1. deploy/config/lib.docker
-1. servers/config/gateway/auth
 
 The relevant docker commands are:
 
@@ -80,25 +80,7 @@ docker-compose -f compose.dev.yml up -d #start the application
 docker-compose -f compose.dev.yml down  #terminate the application
 ```
 
-### Localhost Use
-
-This scenario is for users interested in using the software on
-their computers (localhost):
-
-The configuration files to be updated are:
-
-1. deploy/config/client/env.local.js
-1. deploy/config/lib.docker
-1. deploy/config/gateway/auth
-
-The relevant docker commands are:
-
-```bash
-docker-compose -f compose.local.yml up -d #start the application
-docker-compose -f compose.local.yml down  #terminate the application
-```
-
 ### Access the Application
 
 You should access the application through the PORT mapped to the Traefik container.
-e.g. `localhost:9000`
+e.g. `localhost`
