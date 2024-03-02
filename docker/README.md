@@ -65,6 +65,12 @@ Edit all the fields according to your specific case.
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
   | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
+Note: The Server DNS can also be an IP address.
+However, for proper working it is neccessary to use the
+same convention (IP/DNS) in the CLIENT_CONFIG file as well.
+
+### Website Client
+
 - Assign the correct client config file to `CLIENT_CONFIG and
   update the values.
 
@@ -73,8 +79,20 @@ Edit all the fields according to your specific case.
   | localhost | deploy/config/client/env.local.js |
   | trial | deploy/config/client/env.trial.js |
 
+  This file has to be configured properly.
+
   Further explanation on the client configuration is available in
   [client config page](../../docs/admin/client/CLIENT.md).
+
+### Lib MS
+
+No configuration change is needed for a general use case to bring up the LibMS.
+
+In a specific case, you can change the configuration of the LibMS by editing the file:
+
+- deploy/config/lib.docker
+
+This is not recommended for a general use. It should be done with care, making relevant changes in all other related files, like the compose file being used. 
 
 ### Caveat
 
