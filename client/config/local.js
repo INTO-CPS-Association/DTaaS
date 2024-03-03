@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
 
     REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
     REACT_APP_REDIRECT_URI: 'http://localhost/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
