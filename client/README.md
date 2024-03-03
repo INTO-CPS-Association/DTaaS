@@ -22,6 +22,7 @@ yarn build      #build the react app into build/ directory
 yarn develop    #start the development server without building. Great for live edits.
 
 #Required: Choose one config for application (mandatory)
+yarn config:local
 yarn config:dev
 yarn config:prod
 yarn config:test

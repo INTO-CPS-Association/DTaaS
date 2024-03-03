@@ -14,9 +14,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   client:
-    image: intocps/dtaas-web:latest
+    build: 
+      context: ${DTAAS_DIR}/
+      dockerfile: ${DTAAS_DIR}/docker/dev/client.dockerfile
     volumes:
-      - ${ENV_JS_FILEPATH}:/dtaas/client/build/env.js
+      - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
@@ -26,6 +28,9 @@ services:
 
   libms:
     image: intocps/libms:latest
+    build: 
+      context: ${DTAAS_DIR}/
+      dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
     volumes:
       - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
       - ${DTAAS_DIR}/files:/dtaas/libms/files
@@ -44,6 +49,7 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username1}
+    shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.entryPoints=web"
@@ -58,6 +64,7 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username2}
+    shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web"
@@ -67,7 +74,7 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     volumes:
-      - ${DTAAS_DIR}/docker/auth/conf:/conf
+      - ${OAUTH_CONF_FILEPATH}:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
