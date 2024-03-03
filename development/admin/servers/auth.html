@@ -2247,11 +2247,13 @@ authorization flow.</p>
 <li>The callback URL informs the OAuth provider of the
     page where
     signed-in users should be redirected. It is the landing
-    homepage of the DTaaS applicati1on.
-  (either <a href="http://foo.com/Library/">http://foo.com/Library/</a> or <a href="http://localhost/Library/">http://localhost/Library/</a>)</li>
+    homepage of the DTaaS application.
+  (either <a href="http://foo.com/_oauth/">http://foo.com/_oauth/</a> or <a href="http://localhost/_oauth/">http://localhost/_oauth/</a>)</li>
 <li>The logout URL is the URL for signout of gitlab and clear authorization
   within traefik-forward auth.
-  (either <a href="http://foo.com/_oauth/">http://foo.com/_oauth/</a> or <a href="http://localhost/_oauth/">http://localhost/_oauth/</a>)</li>
+  (either <a href="http://foo.com/_oauth/logout">http://foo.com/_oauth/logout</a> or <a href="http://localhost/_oauth/logout">http://localhost/_oauth/logout</a>).
+  The logout URL is to help users logout of traefik forward-auth. The logout
+  URL should not be entered into Gitlab OAuth application setup.</li>
 </ul>
 <p><strong>4. OAuth Application Creation:</strong></p>
 <ul>
@@ -2306,7 +2308,7 @@ authorization flow.</p>
 </tr>
 <tr>
 <td>Scopes</td>
-<td>email</td>
+<td>read_user</td>
 <td></td>
 </tr>
 </tbody>
