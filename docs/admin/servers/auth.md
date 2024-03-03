@@ -42,11 +42,13 @@ Here are the steps to get started:
   - The callback URL informs the OAuth provider of the
     page where
     signed-in users should be redirected. It is the landing
-    homepage of the DTaaS applicati1on.
-  (either <http://foo.com/Library/> or <http://localhost/Library/>)
+    homepage of the DTaaS application.
+  (either <http://foo.com/_oauth/> or <http://localhost/_oauth/>)
   - The logout URL is the URL for signout of gitlab and clear authorization
   within traefik-forward auth.
-  (either <http://foo.com/_oauth/> or <http://localhost/_oauth/>)
+  (either <http://foo.com/_oauth/logout> or <http://localhost/_oauth/logout>).
+  The logout URL is to help users logout of traefik forward-auth. The logout
+  URL should not be entered into Gitlab OAuth application setup.
 
 **4. OAuth Application Creation:**
 
@@ -72,7 +74,7 @@ Here are the steps to get started:
 |Application Secret|CLIENT_SECRET| _xx_ |
 |Callback URL|(to be directly entered in Gitlab OAuth registration)||
 |Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
-|Scopes|email||
+|Scopes| read_user ||
 
 ## Development Environment
 

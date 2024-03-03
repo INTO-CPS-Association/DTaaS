@@ -70,8 +70,8 @@ This scenario is for software developers:
 
 The configuration files to be updated are:
 
-1. client/config/dev.js
-1. deploy/config/lib.docker
+1. client/config/local.js
+1. deploy/config/lib.docker (optional)
 
 The relevant docker commands are:
 

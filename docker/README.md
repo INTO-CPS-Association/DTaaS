@@ -67,11 +67,11 @@ Edit all the fields according to your specific case.
 
 Note: The Server DNS can also be an IP address.
 However, for proper working it is neccessary to use the
-same convention (IP/DNS) in the CLIENT_CONFIG file as well.
+same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
 
 ### Website Client
 
-- Assign the correct client config file to `CLIENT_CONFIG and
+- Assign the correct client config file to `CLIENT_CONFIG` and
   update the values.
 
   | Deployment Scenario | client env file |
@@ -101,6 +101,8 @@ and the compose file being used.
 ### Caveat
 
 The usernames in the `.env` file need to match those in the conf file.
+The conf.local is used by compose.local.yml and
+conf.server is used by compose.server.yml.
 
 Traefik routes are controlled by the `.env` file
 Authentication on these routes is controlled by the `conf` file.

@@ -18,7 +18,7 @@ services:
       context: ${DTAAS_DIR}/
       dockerfile: ${DTAAS_DIR}/docker/dev/client.dockerfile
     volumes:
-      - "${DTAAS_DIR}/client/config/dev.js:/dtaas/client/build/env.js"
+      - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
