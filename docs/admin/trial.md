@@ -57,7 +57,7 @@ for getting the Gitlab OAuth application details.
 Run the following commands.
 
 ```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
+wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/release-v0.4/deploy/single-script-install.sh
 bash single-script-install.sh --env trial --username <username>
 ```
 

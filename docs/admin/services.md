@@ -35,6 +35,7 @@ To clone, do:
 
 ```bash
 git clone https://github.com/into-cps-association/DTaaS.git
+git checkout release-v0.4
 cd DTaaS/deploy/services
 ```
 
