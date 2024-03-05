@@ -73,12 +73,15 @@ and one script. The specific assets used are:
 ## Lifecycle Phases
 
 The lifecycles that are covered include:
+
 1. Installation of dependencies in the create phase.
 2. Preparing the credentials for connections in the prepare phase.
 3. Execution of the experiment in the execution phase.
 4. Saving experiments in the save phase.
-5. Plotting the results of the co-simulation and the real data coming from the robots in the analyze phase.
-6. Terminating the background processes and cleaning up the outputs in the termination phase.
+5. Plotting the results of the co-simulation and the real data coming from
+6. the robots in the analyze phase.
+7. Terminating the background processes and cleaning up the outputs
+   in the termination phase.
 
 | Lifecycle Phase    | Completed Tasks |
 | --------- | ------- |
@@ -89,7 +92,6 @@ The lifecycles that are covered include:
 | Analyze | Uses plotting functions to generate plots of co-simulation results |
 | Terminate | Terminating the background processes |
 | Clean | Cleans up the output data                      |
-
 
 ## Run the example
 
@@ -231,6 +233,17 @@ the rmq-vhost.fmu.
 
 More information about the DT Manager and the case study is available in:
 
-1. D. Lehner, S. Gil, P. H. Mikkelsen, P. G. Larsen and M. Wimmer, "An Architectural Extension for Digital Twin Platforms to Leverage Behavioral Models," 2023 IEEE 19th International Conference on Automation Science and Engineering (CASE), Auckland, New Zealand, 2023, pp. 1-8, doi: 10.1109/CASE56687.2023.10260417.
-2. S. Gil, P. H. Mikkelsen, D. Tola, C. Schou and P. G. Larsen, "A Modeling Approach for Composed Digital Twins in Cooperative Systems," 2023 IEEE 28th International Conference on Emerging Technologies and Factory Automation (ETFA), Sinaia, Romania, 2023, pp. 1-8, doi: 10.1109/ETFA54631.2023.10275601.
-3. S. Gil, C. Schou, P. H. Mikkelsen, and P. G. Larsen, “Integrating Skills into Digital Twins in Cooperative Systems,” in 2024 IEEE/SICE International Symposium on System Integration (SII), 2024, pp. 1124–1131, doi: 10.1109/SII58957.2024.10417610.
+1. D. Lehner, S. Gil, P. H. Mikkelsen, P. G. Larsen and M. Wimmer,
+   "An Architectural Extension for Digital Twin Platforms to Leverage
+   Behavioral Models," 2023 IEEE 19th International Conference on
+   Automation Science and Engineering (CASE), Auckland,
+   New Zealand, 2023, pp. 1-8, doi: 10.1109/CASE56687.2023.10260417.
+2. S. Gil, P. H. Mikkelsen, D. Tola, C. Schou and P. G. Larsen,
+   "A Modeling Approach for Composed Digital Twins in Cooperative
+   Systems," 2023 IEEE 28th International Conference on Emerging
+   Technologies and Factory Automation (ETFA), Sinaia, Romania, 2023,
+   pp. 1-8, doi: 10.1109/ETFA54631.2023.10275601.
+3. S. Gil, C. Schou, P. H. Mikkelsen, and P. G. Larsen, “Integrating
+   Skills into Digital Twins in Cooperative Systems,” in 2024 IEEE/SICE
+   International Symposium on System Integration (SII), 2024, pp. 1124–1131,
+   doi: 10.1109/SII58957.2024.10417610.
