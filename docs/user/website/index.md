@@ -25,7 +25,7 @@ service provider. The DTaaS uses Gitlab as OAuth provider.
 You can see the Gitlab signin button. A click on this button takes you to
 Gitlab instance providing authorization for DTaaS.
 
-## Authenticate at Gitlab
+## Authorize at Gitlab
 
 The username and password authorization takes place on the gitlab website.
 Enter your username and password in the login form.

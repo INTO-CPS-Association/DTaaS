@@ -25,11 +25,8 @@ the platform users expect the following features:
 1. **Save** – save the state of a DT that’s already in the
    execution phase. This functionality is required for on
    demand saving and re-spawning of DTs.
-1. **What-if analysis** – explore alternative scenarios to (i)
-   plan for an optimal next step, (ii) recalibrate new DT
-   assets, (iii) automated creation of new DTs or their
-   assets; these newly created DT assets may be used to
-   perform scientifically valid experiments.
+1. **Services** – integrate DTs with on-platform or external
+   services with which users can interact with.
 1. **Share** – share a DT with other users of their organisation.
 
 ## System Architecture
@@ -40,15 +37,16 @@ The figure shows the system architecture of the the DTaaS software platform.
 
 ### System Components
 
-The users interact with the software platform using a website.
-The gateway is a single point of entry for direct access to the platform
-services. The gateway is responsible for controlling user access to
+The users interact with the software platform using a webapp.
+The service router is a single point of entry for direct access to the platform
+services. The service router is responsible for controlling user access to
 the microservice components. The service mesh
 enables discovery of microservices, load balancing and authorization
 functionalities.
 
-In addition, there are microservices for catering to author, store,
-explore, configure, execute and scenario analysis requirements.
+In addition, there are microservices for catering to managing
+DT reusable assets, platform services, DT lifecycle manager,
+DT execution manager, accouting and security.
 The microservices are complementary and composable; they fulfil
 core requirements of the system.
 
@@ -57,7 +55,7 @@ The microservices responsible for satisfying the user requirements are:
 1. **The security microservice** implements
    role-based access control (RBAC) in the platform.
 1. **The accounting microservice** is responsible for keeping track of the
-   platform, DT asset and infrastructure usage. Any licensing,
+   live status of platform, DT asset and infrastructure usage. Any licensing,
    usage restrictions need to be enforced by the accounting
    microservice. Accounting is a pre-requisite to commercialisation of
    the platform.
@@ -65,57 +63,39 @@ The microservices responsible for satisfying the user requirements are:
    infrastructure and resources via the platform, the accounting
    microservice needs to interface with accounting systems of
    the external services.
-
-1. **The data microservice** is a frontend to all the databases
-   integrated into the platform. A time-series database and a
-   graph database are essential. These two databases store timeseries
-   data from PT, events on PT/DT, commands sent by
-   DT to PT. The PTs uses these databases even when their
-   respective DTs are not in the execute phase.
-1. **The visualisation microservice** is again a frontend to
-   visualisation software that are natively supported inside the platform.
-   Any visualisation software running either on external
-   systems or on client browsers do not need to interact with
-   this microservice. They can directly use the data provided by
-   the data microservice.
-
-## C4 Architectural Diagrams
-
-The C4 architectural diagrams of the DTaaS software are presented here.
-
-### Level 1
-
-This Level 1 diagram only shows the users and the roles
-they play in the DTaaS software.
-
-<img src="C4-L1_diagram.png" alt="C4 Level 1 diagram" width="70%"/>
-
-### Level 2
-
-This simplified version of Level 2 diagram shows
-the software containers of the DTaaS software.
-
-![C4 Level 2 diagram](C4-L2_diagram_simplified.png)
+1. **User Workspaces** are virtual environments in which users can perform
+   lifecycle operations on DTs. These virtual environments are either docker
+   containers or virtual machines which provide desktop interface to users.
+1. **Reusable Assets** are assets / parts from which DTs are created.
+   Further explation is available on
+   the [assets page](../../user/servers/lib/assets.md)
+1. **Services** are dedicated services available to all the DTs and
+   users of the DTaaS platform. Services build upon DTs and
+   provide user interfaces to users.
+1. **DT Execution Manager** provides virtual and isolated execution
+   environments for DTs. The execution manager is also responsible
+   for dynamic resource provisioning of cloud resources.
+1. **DT Lifecycle Manager** manages the lifecycle operations on all DTs.
+   It also directs _DT Execution Manager_ to perform execute, save and
+   terminate operations on DTs.
 
 If you are interested, please take a look at
-the [detailed diagram](C4-L2_diagram_detailed.png).
+the [C4 architectural diagram](C4-L2_diagram.png).
 
-Please note that the given diagram only
-covers DT Lifecycle, Reusable Assets and Execution Manager.
+A mapping of the architectural components to related pages in
+the documentation is available in the table.
 
-## Mapping
-
-A mapping of the C4 level 2 containers to components
-identified in the system architecture is also available in the table.
-
-| System Component  | Container(s)                                                                                                                             |
+| System Component  | Doc Page(s)                                                                                                                             |
 | :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Gateway           | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Unified Interface | [React Webapplication](../client/client.md)                                                                                              |
+| Service Router           | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
+| Web Application | [React Webapplication](../client/client.md)                                                                                              |
 | Reusable Assets   | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
-| Data              | MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB (not shown in the C4 Level 2 diagram)                                                      |
-| Visualization     | InfluxDB (not shown in the C4 Level 2 diagram)                                                                                           |
-| DT Lifecycle      | DT Lifecycle Manager and DT Configuration Validator                                                                                      |
+| Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB)                                                       |
+| DT Lifecycle      | Not available yet                                                                                      |
 | Security          | [Gitlab OAuth](../../admin/client/auth.md)                                                                                               |
-| Accounting        | None                                                                                                                                     |
-| Execution Manager | Execution Manager                                                                                                                        |
+| Accounting        | Not available yet                                                                                                                                     |
+| Execution Manager | Not available yet                                                                                                                        |
+
+## References
+
+Font sources: [fileformat](https://www.fileformat.info)
