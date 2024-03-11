@@ -278,12 +278,12 @@ the case study is available in:
    Behavioral Models," 2023 IEEE 19th International Conference on
    Automation Science and Engineering (CASE), Auckland, New Zealand,
    2023, pp. 1-8, doi: 10.1109/CASE56687.2023.10260417.
-2. S. Gil, P. H. Mikkelsen, D. Tola, C. Schou and P. G. Larsen,
+1. S. Gil, P. H. Mikkelsen, D. Tola, C. Schou and P. G. Larsen,
    "A Modeling Approach for Composed Digital Twins in Cooperative Systems,"
    2023 IEEE 28th International Conference on Emerging Technologies
    and Factory Automation (ETFA), Sinaia, Romania, 2023, pp. 1-8,
    doi: 10.1109/ETFA54631.2023.10275601.
-3. S. Gil, C. Schou, P. H. Mikkelsen, and P. G. Larsen, “Integrating Skills
+1. S. Gil, C. Schou, P. H. Mikkelsen, and P. G. Larsen, “Integrating Skills
    into Digital Twins in Cooperative Systems,” in 2024 IEEE/SICE
    International Symposium on System Integration (SII), 2024, pp. 1124–1131,
    doi: 10.1109/SII58957.2024.10417610.
