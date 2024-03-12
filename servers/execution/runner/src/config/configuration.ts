@@ -4,6 +4,7 @@ import { join } from 'path';
 import Config from './Config.interface';
 
 const YAML_CONFIG_FILENAME = 'runner.yaml';
+const __dirname = process.cwd();
 
 export default () =>
   yaml.load(
