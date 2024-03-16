@@ -71,7 +71,7 @@ After starting all services successfully, the controller service will
 start producing output that looks like the following:
 
 ````log
-time           execution_interval  elapsed  heater_on  fan_on   room   box_air_temperature  state 
+time           execution_interval  elapsed  heater_on  fan_on   room   box_air_temperature  state
 19/11 16:17:59  3.00                0.01     True       False   10.70  19.68                Heating
 19/11 16:18:02  3.00                0.03     True       True    10.70  19.57                Heating
 19/11 16:18:05  3.00                0.01     True       True    10.70  19.57                Heating
@@ -100,4 +100,4 @@ or more of the following resources:
    Digital Twin Engineering.” In 2021 Annual Modeling and Simulation
    Conference (ANNSIM), 1–12. Fairfax, VA, USA: IEEE, 2021.
    [https://doi.org/10.23919/ANNSIM52504.2021.9552135](https://doi.org/10.23919/ANNSIM52504.2021.9552135).
-2. [Video recording of presentation by Claudio Gomes](https://videos.ida.dk/media/Introduction+to+Digital+Twin+Engineering+with+Cl%C3%A1udio+%C3%82ngelo+Gon%C3%A7alves+Gomes%2C+Aarhus+Universitet/1_7r1j05g8/256930613)
+1. [Video recording of presentation by Claudio Gomes](https://videos.ida.dk/media/Introduction+to+Digital+Twin+Engineering+with+Cl%C3%A1udio+%C3%82ngelo+Gon%C3%A7alves+Gomes%2C+Aarhus+Universitet/1_7r1j05g8/256930613)
