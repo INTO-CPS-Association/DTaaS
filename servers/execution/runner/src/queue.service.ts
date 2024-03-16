@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Phase } from './interfaces/lifecycle.interface';
+import { Phase } from './interfaces/lifecycle.interface.js';
 
 @Injectable()
 export default class Queue {

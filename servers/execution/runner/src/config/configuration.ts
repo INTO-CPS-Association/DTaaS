@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import Config from './Config.interface';
+import Config from './Config.interface.js';
 
 const YAML_CONFIG_FILENAME = 'runner.yaml';
 

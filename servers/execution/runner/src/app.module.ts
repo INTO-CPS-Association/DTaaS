@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import AppController from './app.controller';
-import LifeCycleManager from './lifecycleManager.service';
-import Queue from './queue.service';
-import configuration from './config/configuration';
+import AppController from './app.controller.js';
+import LifeCycleManager from './lifecycleManager.service.js';
+import Queue from './queue.service.js';
+import configuration from './config/configuration.js';
 
 @Module({
   imports: [

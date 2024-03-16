@@ -1,9 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 // import { AppService } from './app.service';
-import Queue from './queue.service';
-import { Phase } from './interfaces/lifecycle.interface';
-import ExecaCMDRunner from './execaCMDRunner';
-import LifeCycleManager from './lifecycleManager.service';
+import Queue from './queue.service.js';
+import { Phase } from './interfaces/lifecycle.interface.js';
+import ExecaCMDRunner from './execaCMDRunner.js';
+import LifeCycleManager from './lifecycleManager.service.js';
 
 @Controller()
 export default class AppController {
