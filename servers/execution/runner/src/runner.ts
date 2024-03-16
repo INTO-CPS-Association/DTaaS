@@ -2,10 +2,10 @@
 
 /* eslint-disable no-console */
 
-import ExecaCMDRunner from './execaCMDRunner';
-import CMDRunner from './interfaces/CMDRunner.interface';
-import LifeCycleManager from './lifecycleManager.service';
-import { DTLifeCycle, Phase } from './interfaces/lifecycle.interface';
+import ExecaCMDRunner from './execaCMDRunner.js';
+import CMDRunner from './interfaces/CMDRunner.interface.js';
+import LifeCycleManager from './lifecycleManager.service.js';
+import { DTLifeCycle, Phase } from './interfaces/lifecycle.interface.js';
 
 const command: CMDRunner = new ExecaCMDRunner('date');
 

@@ -34,5 +34,6 @@ to use the examples in the following order.
 1. [Water Treatment Plant and OPC-UA](./opc-ua-waterplant/README.md)
 1. [Three Water Tanks with DT Manager Framework](./three-tank/README.md)
 1. [Flex Cell Digital Twin with Two Industrial Robots](./flex-cell/README.md)
+1. [Incubator](./incubator/README.md)
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

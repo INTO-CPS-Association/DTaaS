@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import CMDRunner from './interfaces/CMDRunner.interface';
+import CMDRunner from './interfaces/CMDRunner.interface.js';
 
 export default class ExecaCMDRunner implements CMDRunner {
   command: string;

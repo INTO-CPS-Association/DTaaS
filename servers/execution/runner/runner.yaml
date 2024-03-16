@@ -1,0 +1,2 @@
+port: 5000
+location: "lifecycle" #directory location of scripts
