@@ -6,10 +6,16 @@ type Phase = {
   task: CMDRunner;
 };
 
+type PhaseStatus = {
+  name: string;
+  status: string;
+  logs: Map<string, string>;
+};
+
 interface DTLifeCycle {
   changePhase(name: string): Promise<[boolean, Map<string, string>]>;
   checkHistory(): Array<string>;
-  checkPhase(): Phase | undefined;
+  checkPhase(): PhaseStatus;
 }
 
-export { Phase, DTLifeCycle };
+export { Phase, PhaseStatus, DTLifeCycle };
