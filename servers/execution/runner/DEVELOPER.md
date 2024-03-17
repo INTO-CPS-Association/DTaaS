@@ -54,6 +54,6 @@ npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.
 
 ## Service Endpoint
 
-The URL endpoint for this microservice is located at: `localhost:3000`
+The URL endpoint for this microservice is located at: `localhost:<port>`
 
 Please see [README](./README.md) for more information.
