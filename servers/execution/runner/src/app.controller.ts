@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 // import { AppService } from './app.service';
 import Queue from './queue.service.js';
 import { Phase } from './interfaces/lifecycle.interface.js';
@@ -24,7 +24,7 @@ export default class AppController {
     return this.queueService.phaseHistory();
   }
 
-  @Get('lifecycle/phase')
+  @Post('lifecycle/phase')
   async changePhase(): Promise<boolean> {
     let success = false;
 
