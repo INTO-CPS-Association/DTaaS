@@ -28,8 +28,7 @@
     "runner": "./dist/src/main.js"
   },
   "files": [
-    "dist/",
-    "script/"
+    "dist/"
   ],
   "prettier": {
     "singleQuote": true

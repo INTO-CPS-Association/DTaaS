@@ -25,9 +25,9 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('["hello"]'));
 
-  it('/lifecycle/phase (GET)', () =>
+  it('/lifecycle/phase (POST)', () =>
     supertest(app.getHttpServer())
-      .get('/lifecycle/phase')
-      .expect(200)
+      .post('/lifecycle/phase')
+      .expect(201)
       .expect('true'));
 });
