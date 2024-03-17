@@ -28,7 +28,7 @@ export default class AppController {
   async changePhase(): Promise<boolean> {
     let success = false;
 
-    [success] = await this.lifecycle.changePhase('date');
+    [success] = await this.lifecycle.changePhase('create');
 
     return success;
   }

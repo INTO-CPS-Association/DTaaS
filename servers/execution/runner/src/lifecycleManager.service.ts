@@ -1,6 +1,11 @@
+import { join } from 'path';
 import { Phase, DTLifeCycle } from './interfaces/lifecycle.interface.js';
 import ExecaCMDRunner from './execaCMDRunner.js';
 import Queue from './queue.service.js';
+import readConfig from './config/configuration.js';
+import Config from './config/Config.interface.js';
+
+const config: Config = readConfig();
 
 export default class LifeCycleManager implements DTLifeCycle {
   private phaseQueue: Queue = new Queue();
@@ -15,7 +20,7 @@ export default class LifeCycleManager implements DTLifeCycle {
 
     let success: boolean = false;
 
-    phase.task = new ExecaCMDRunner(name);
+    phase.task = new ExecaCMDRunner(join(process.cwd(), config.location, name));
     this.phaseQueue.enqueue(phase);
     await phase.task.run().then((value) => {
       success = value;
