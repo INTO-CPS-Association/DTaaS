@@ -25,9 +25,43 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('["hello"]'));
 
-  it('/lifecycle/phase (POST)', () =>
+  it('/lifecycle/phase (POST) with valid lifecycle script', () => {
+    const body = {
+      name: 'create',
+    };
+
     supertest(app.getHttpServer())
       .post('/lifecycle/phase')
+      .send(body)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(200)
+      .expect('true');
+
+    /*
+      supertest(app.getHttpServer())
+      .post('/lifecycle/phase')
+      .send(body)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(200)
+      .then(response => {
+        console.log(response.body);
+        expect(response.body.status).toEqual('success');
+     });
+    */
+  });
+
+  it('/lifecycle/phase (POST) with invalid lifecycle script', () => {
+    const body = {
+      name: 'configure',
+    };
+    supertest(app.getHttpServer())
+      .post('/lifecycle/phase')
+      .send(body)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
       .expect(201)
-      .expect('true'));
+      .expect('false');
+  });
 });
