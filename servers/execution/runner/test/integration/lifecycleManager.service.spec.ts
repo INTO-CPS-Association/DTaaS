@@ -18,7 +18,7 @@ describe('Check LifecycleManager', () => {
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
 
-    [status, logs] = await dt.changePhase('whoami');
+    [status, logs] = await dt.changePhase('create');
 
     expect(status).toBe(true);
     expect(logs.get('stdout')).toEqual(expect.any(String));

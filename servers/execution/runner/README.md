@@ -1,7 +1,6 @@
 # :runner: Digital Twin Runner
 
-A utility service to manage the
-[lifecycle of one digital twin](../../../docs/user/digital-twins/lifecycle.md).
+A utility service to manage the lifecycle of one digital twin.
 The lifecycle of a digital twin is made of multiple phases.
 This digital twin runner utility
 helps with the managing the execution of lifecycle phases.
@@ -10,7 +9,7 @@ launched in two scenarios:
 
 1. User launches this from commandline and let the utility
    manage the lifecycle of one digital twin.
-1. Execution infrastructure of Digital Twin as a Service (DTaaS)
+2. Execution infrastructure of Digital Twin as a Service (DTaaS)
    launches this utility and instructs it to manage the lifecycle of
    one digital twin.
 
@@ -49,27 +48,38 @@ location: "lifecycle" #directory location of scripts
 The file should be named as _runner.yaml_ and placed in the directory
 in which the _runner_ microservice is run.
 
+## :pen: Create Lifecycle Scripts
+
+The runner requires lifecycle scripts of the digital twin.
+The scripts are to be placed in the `location` specified in
+_runner.yaml_ file. The location must be relative to
+the directory in which the **runner** microservice is being
+run.
+
+At the moment, only _lifecycle/create_ script is supported.
+
 ## :rocket: Use
 
 ```bash
 runner # launch the digital twin runner
 ```
 
-Once launched, the utility runs at `port 3000`.
+Once launched, the utility runs at the port specified in
+_runner.yaml_ file.
 
 If launched on one computer,
-you can access the same at `http://localhost:3000`.
+you can access the same at `http://localhost:<port>`.
 
-Access to the service on network is available at `http://<ip or hostname>:3000/`.
+Access to the service on network is available at `http://<ip or hostname>:<port>/`.
 
 Three REST API routes are active. The route paths and the responses given
 for these two sources are:
 
 | REST API Route                 | Return Value | Comment |
 | :----------------------------- | :----------- | :------ |
-| localhost:3000/phase | [ hello ] | Each invocation appends to _array_. |
-| localhost:3000/lifecycle/phase | _true_       | Always returns _true_ |
-| localhost:3000/phase | [ hello ] | array. |
+| localhost:port/phase | [ hello ] | Each invocation appends to _array_. |
+| localhost:port/lifecycle/phase | _true_       | Executes _lifecycle/create_ script |
+| localhost:port/phase | [ hello ] | array. |
 
 ## :balance_scale: License
 
