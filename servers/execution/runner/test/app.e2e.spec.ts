@@ -25,13 +25,13 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('["hello"]'));
 
-  it('/lifecycle/phase (POST) with valid lifecycle script', () => {
+  it('/ (POST) with valid lifecycle script', () => {
     const body = {
       name: 'create',
     };
 
     supertest(app.getHttpServer())
-      .post('/lifecycle/phase')
+      .post('/')
       .send(body)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -52,7 +52,7 @@ describe('AppController (e2e)', () => {
     */
   });
 
-  it('/lifecycle/phase (POST) with invalid lifecycle script', () => {
+  it('/ (POST) with invalid lifecycle script', () => {
     const body = {
       name: 'configure',
     };

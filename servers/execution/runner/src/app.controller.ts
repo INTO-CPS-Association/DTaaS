@@ -25,7 +25,7 @@ export default class AppController {
     return this.queueService.phaseHistory();
   }
 
-  @Post('lifecycle/phase')
+  @Post()
   async changePhase(
     @Body() updatePhaseDto: UpdatePhaseDto,
     @Res({ passthrough: true }) res: Response,
@@ -43,7 +43,7 @@ export default class AppController {
     }
   }
 
-  @Get('lifecycle/phase')
+  @Get()
   async reportPhase(): Promise<any> {
     const phaseStatus: PhaseStatus = this.lifecycle.checkPhase();
     return {
