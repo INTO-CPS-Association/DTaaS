@@ -34,13 +34,13 @@ describe('Check LifecycleManager', () => {
   });
 
   it('Should return correct phase status if there has been no changePhase calls', async () => {
-    const logs: Map<string, string> = new Map<string, string>();
-    logs.set('stdout', '');
-    logs.set('stderr', '');
     const expPhaseStatus = {
       name: 'none',
       status: 'invalid',
-      logs: logs,
+      logs: {
+        stdout: '',
+        stderr: '',
+      },
     };
     const dt: DTLifeCycle = new LifeCycleManager();
 

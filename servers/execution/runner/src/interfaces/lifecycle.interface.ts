@@ -9,7 +9,10 @@ type Phase = {
 type PhaseStatus = {
   name: string;
   status: string;
-  logs: Map<string, string>;
+  logs: {
+    stdout: string | undefined;
+    stderr: string | undefined;
+  };
 };
 
 interface DTLifeCycle {

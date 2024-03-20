@@ -44,15 +44,21 @@ export default class LifeCycleManager implements DTLifeCycle {
       phaseStatus = {
         name: 'none',
         status: 'invalid',
-        logs: logs,
+        logs: {
+          stdout: '',
+          stderr: '',
+        },
       };
     } else {
       phaseStatus = {
         name: phase.name,
         status: phase.status,
-        logs: phase.task.checkLogs(),
+        logs: {
+          stdout: phase.task.checkLogs().get('stdout'),
+          stderr: phase.task.checkLogs().get('stderr'),
+        },
       };
-      console.log(phase.task.checkLogs());
+      // console.log(phase.task.checkLogs());
     }
     return phaseStatus;
   }
