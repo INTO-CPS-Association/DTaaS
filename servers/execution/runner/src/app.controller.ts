@@ -1,10 +1,19 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Res,
+  UsePipes,
+} from '@nestjs/common';
 import { Response } from 'express';
 import Queue from './queue.service.js';
 import { Phase, PhaseStatus } from './interfaces/lifecycle.interface.js';
 import ExecaCMDRunner from './execaCMDRunner.js';
 import LifeCycleManager from './lifecycleManager.service.js';
-import UpdatePhaseDto from './dto/phase.dto.js';
+import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
+import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
@@ -26,6 +35,7 @@ export default class AppController {
   }
 
   @Post()
+  @UsePipes(new ZodValidationPipe(updatePhaseSchema))
   async changePhase(
     @Body() updatePhaseDto: UpdatePhaseDto,
     @Res({ passthrough: true }) res: Response,
@@ -44,17 +54,8 @@ export default class AppController {
   }
 
   @Get()
-  async reportPhase(): Promise<any> {
-    const phaseStatus: PhaseStatus = this.lifecycle.checkPhase();
-    return {
-      name: phaseStatus.name,
-      status: phaseStatus.status,
-      logs: {
-        stdout: phaseStatus.logs.get('stdout'),
-        stderr: phaseStatus.logs.get('stderr'),
-      },
-    };
-    // return this.lifecycle.checkPhase();
+  async reportPhase(): Promise<PhaseStatus> {
+    return this.lifecycle.checkPhase();
   }
   /*
   @Get('lifecycle/phase')
