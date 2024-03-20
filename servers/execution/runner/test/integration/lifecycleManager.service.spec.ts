@@ -1,7 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import LifeCycleManager from 'src/lifecycleManager.service';
-import { DTLifeCycle, Phase } from 'src/interfaces/lifecycle.interface';
-import ExecaCMDRunner from 'src/execaCMDRunner';
+import { DTLifeCycle, PhaseStatus } from 'src/interfaces/lifecycle.interface';
 
 describe('Check LifecycleManager', () => {
   it('Should create object', async () => {
@@ -18,7 +17,7 @@ describe('Check LifecycleManager', () => {
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
 
-    [status, logs] = await dt.changePhase('whoami');
+    [status, logs] = await dt.changePhase('create');
 
     expect(status).toBe(true);
     expect(logs.get('stdout')).toEqual(expect.any(String));
@@ -34,17 +33,19 @@ describe('Check LifecycleManager', () => {
     expect(status).toBe(false);
   });
 
-  it('Should return undefined if there has been no changePhase calls', async () => {
-    const dt: DTLifeCycle = new LifeCycleManager();
-    let phase: Phase | undefined = {
-      name: 'hello',
-      status: 'valid',
-      task: new ExecaCMDRunner(''),
+  it('Should return correct phase status if there has been no changePhase calls', async () => {
+    const expPhaseStatus = {
+      name: 'none',
+      status: 'invalid',
+      logs: {
+        stdout: '',
+        stderr: '',
+      },
     };
+    const dt: DTLifeCycle = new LifeCycleManager();
 
-    phase = dt.checkPhase();
-
-    expect(phase).toBe(undefined);
+    const phaseStatus: PhaseStatus = dt.checkPhase();
+    expect(phaseStatus).toEqual(expPhaseStatus);
   });
 
   it('Should hold correct phase history', async () => {

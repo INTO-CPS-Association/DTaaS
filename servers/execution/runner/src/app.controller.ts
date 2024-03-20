@@ -1,9 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-// import { AppService } from './app.service';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Res,
+  UsePipes,
+} from '@nestjs/common';
+import { Response } from 'express';
 import Queue from './queue.service.js';
-import { Phase } from './interfaces/lifecycle.interface.js';
+import { Phase, PhaseStatus } from './interfaces/lifecycle.interface.js';
 import ExecaCMDRunner from './execaCMDRunner.js';
 import LifeCycleManager from './lifecycleManager.service.js';
+import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
+import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
@@ -24,12 +34,33 @@ export default class AppController {
     return this.queueService.phaseHistory();
   }
 
-  @Get('lifecycle/phase')
-  async changePhase(): Promise<boolean> {
+  @Post()
+  @UsePipes(new ZodValidationPipe(updatePhaseSchema))
+  async changePhase(
+    @Body() updatePhaseDto: UpdatePhaseDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
     let success = false;
-
-    [success] = await this.lifecycle.changePhase('date');
-
-    return success;
+    [success] = await this.lifecycle.changePhase(updatePhaseDto.name);
+    if (success) {
+      res.status(HttpStatus.OK).send({
+        status: 'success',
+      });
+    } else {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        status: 'invalid phase',
+      });
+    }
   }
+
+  @Get()
+  async reportPhase(): Promise<PhaseStatus> {
+    return this.lifecycle.checkPhase();
+  }
+  /*
+  @Get('lifecycle/phase')
+  async reportPhase(): Promise<PhaseStatus> {
+    return this.lifecycle.checkPhase();
+  }
+  */
 }

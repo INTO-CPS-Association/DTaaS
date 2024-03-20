@@ -1,7 +1,6 @@
 # :runner: Digital Twin Runner
 
-A utility service to manage the
-[lifecycle of one digital twin](../../../docs/user/digital-twins/lifecycle.md).
+A utility service to manage the lifecycle of one digital twin.
 The lifecycle of a digital twin is made of multiple phases.
 This digital twin runner utility
 helps with the managing the execution of lifecycle phases.
@@ -10,7 +9,7 @@ launched in two scenarios:
 
 1. User launches this from commandline and let the utility
    manage the lifecycle of one digital twin.
-1. Execution infrastructure of Digital Twin as a Service (DTaaS)
+2. Execution infrastructure of Digital Twin as a Service (DTaaS)
    launches this utility and instructs it to manage the lifecycle of
    one digital twin.
 
@@ -18,75 +17,69 @@ The digital twin runner utility runs as a service and will provide
 REST API interface to execute lifecycle scripts of a digital twin.
 One digital twin runner is responsible for execution of a digital twin.
 
-## :hammer_and_wrench: Developer Commands
+## :arrow_down: Install
+
+The package is available in Github
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
+
+Set the registry and install the package with the following commands
 
 ```bash
-yarn install    # Install dependencies for the microservice
-yarn syntax     # Analyze code for errors and style issues
-yarn graph      # Generate dependency graphs in the code
-yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
-yarn test       # Run tests
-yarn test:nocov # Run the tests but do not report coverage
-yarn test:watchAll # Watch changes in test/ and run the tests
-yarn start      # Start the application
-yarn clean      # Deletes directories "build", "coverage", and "dist"
+sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm install -g @into-cps-association/runner
 ```
 
-## :package: :ship: NPM package
+The _npm install_ command asks for username and password. The username is
+your Github username and the password is your Github
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+In order for the npm to download the package, your personal access token
+needs to have _read:packages_ scope.
 
-### Github Package Registry
+## :gear: Configure
 
-The Github actions workflow of
-[lib microservice](../../../.github/workflows/runner.yml) publishes the **runner**
-into
-[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
+The microservices requires config specified in YAML format.
+The template configuration file is:
 
-### Verdaccio - Local Package Registry
-
-Use the instructions in
-[publish npm package](../../../docs/developer/npm-packages.md) for help
-with publishing **runner npm package**.
-
-Application of the advice given on that page for **runner** will require
-running the following commands.
-
-### Publish
-
-```bash
-yarn install
-yarn build #the dist/ directory is needed for publishing step
-yarn publish --no-git-tag-version #increments version and publishes to registry
-yarn publish #increments version, publishes to registry and adds a git tag
+```ini
+port: 5000
+location: "lifecycle" #directory location of scripts
 ```
 
-### Unpublish
+The file should be named as _runner.yaml_ and placed in the directory
+in which the _runner_ microservice is run.
+
+## :pen: Create Lifecycle Scripts
+
+The runner requires lifecycle scripts of the digital twin.
+The scripts are to be placed in the `location` specified in
+_runner.yaml_ file. The location must be relative to
+the directory in which the **runner** microservice is being
+run.
+
+At the moment, only _lifecycle/create_ script is supported.
+
+## :rocket: Use
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.0.2
-```
-
-## :rocket: Access the service
-
-```bash
-sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
 runner # launch the digital twin runner
 ```
 
-Once launched, the utility runs at `port 3000`.
+Once launched, the utility runs at the port specified in
+_runner.yaml_ file.
 
 If launched on one computer,
-you can access the same at `http://localhost:3000`.
+you can access the same at `http://localhost:<port>`.
 
-Access to the service on network is available at `http://<ip or hostname>:3000/`.
+Access to the service on network is available at `http://<ip or hostname>:<port>/`.
 
-Two REST API routes are active. The route paths and the responses given
+Three REST API routes are active. The route paths and the responses given
 for these two sources are:
 
 | REST API Route                 | Return Value | Comment |
 | :----------------------------- | :----------- | :------ |
-| localhost:3000/phase | [ hello ] | Each invocation appends to _array_. |
-| localhost:3000/lifecycle/phase | _true_       | Always returns _true_ |
-| localhost:3000/phase | [ hello ] | array. |
+| localhost:port/phase | [ hello ] | Each invocation appends to _array_. |
+| localhost:port/lifecycle/phase | _true_       | Executes _lifecycle/create_ script |
+| localhost:port/phase | [ hello ] | array. |
 
 ## :balance_scale: License
 
