@@ -8,3 +8,7 @@ rule.onlyu1.whitelist = user1@emailservice.com
 rule.onlyu2.action=auth
 rule.onlyu2.rule=PathPrefix(`/user2`)
 rule.onlyu2.whitelist = user2@emailservice.com
+
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/user3`)
+rule.onlyu3.whitelist = user3@emailservice.com
