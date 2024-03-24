@@ -3,43 +3,56 @@
 # Install openssl for certificate generation
 choco install -y openssl
 
-# Check if Node.js is installed, if not, install it
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-    choco install -y nodejs
-}
-
-# Wait for a few seconds to allow the system to settle
-Write-Host "Waiting for the system to settle..."
-Start-Sleep -Seconds 10
-
 # Install playwright tool for integration tests on browsers
-npm install -g playwright
-
-# Check if npm is installed properly
-if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    Write-Host "npm installation failed. Please make sure Node.js is installed properly."
-    exit
+# Ensure npm is added to PATH
+if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*npm*")) {
+    Write-Host "Adding npm to PATH..."
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(npm prefix -g)\node_modules\.bin", [EnvironmentVariableTarget]::Machine)
 }
+
+npm install -g playwright
 
 # Installing required python packages
 choco install -y python3
+
+# Ensure Python scripts directory is added to PATH
+if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Python3*")) {
+    Write-Host "Adding Python scripts to PATH..."
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command python3 | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
+}
+
+# Install mkdocs
 choco install -y mkdocs
+
+# Ensure Ruby scripts directory is added to PATH
+if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Ruby*")) {
+    Write-Host "Adding Ruby scripts to PATH..."
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command ruby | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
+}
+
+# Install ruby for gem command
 choco install -y ruby
-choco install -y graphviz
+
+# Ensure Gem scripts directory is added to PATH
+if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Gem*")) {
+    Write-Host "Adding Gem scripts to PATH..."
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command gem | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
+}
+
+# Install markdownlint
 gem install mdl
 
 # Install mkdocs plugins
 pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode
 
+# Ensure Python scripts directory is added to PATH (for pip)
+if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Python3*")) {
+    Write-Host "Adding Python scripts to PATH (for pip)..."
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command python3 | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
+}
+
 # Install shellcheck
 choco install -y shellcheck
 
-# Check if madge is installed, if not, install it
-if (-not (Get-Command madge -ErrorAction SilentlyContinue)) {
-    npm install -g madge
-}
-
-# Check if a reboot is necessary and prompt the user
-if (Test-Path "C:\Windows\Temp\PendingReboot.txt") {
-    Write-Host "A reboot is necessary. Please reboot your system at your earliest convenience."
-}
+# Install madge for generating dependency graphs of typescript projects
+npm install -g madge
