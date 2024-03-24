@@ -1,16 +1,5 @@
-# Install Chocolatey if not already installed
-if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-}
-
 # Install pre-commit using Chocolatey
 choco install pre-commit -y
-
-# Install Git if not already installed
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    choco install git -y
-}
 
 # Set up pre-commit hooks
 if (Test-Path -Path ".git") {

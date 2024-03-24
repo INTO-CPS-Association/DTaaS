@@ -1,3 +1,14 @@
+# Install Chocolatey if not already installed
+if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+}
+
+# Install Git if not already installed
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    choco install git -y
+}
+
 # Update and upgrade system
 choco upgrade all -y
 
