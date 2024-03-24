@@ -55,7 +55,7 @@ Invoke-WebRequest -Uri $url -OutFile $outputPath
 [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$outputPath", [EnvironmentVariableTarget]::Machine)
 
 # Install Node.js environment
-choco install -y nodejs
+choco install -y nodejs-lts
 npm install -g npm@10.2.0
 
 # Install Yarn
