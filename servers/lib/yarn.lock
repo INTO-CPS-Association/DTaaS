@@ -78,17 +78,19 @@
   integrity sha512-F17/vCp7QVwom9eG7ToauIKdAxpSoadsJnqIfyryLFSkLSOEqu+eC5Z3N8OXcUVStuOMcNHlyraRsA6rRICu4g==
 
 "@apollo/client@^3.8.9":
-  version "3.8.9"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.8.9.tgz#0e4ac133eb04c63e618138c1ebf273d9f110a4d0"
-  integrity sha512-IcQDFEEPc9+PEQsxhxQvsoQ04BRarOzi/Ila5PcniRSDeKJWgY22dnp6+V1i1fWXRDVd1ybdvze4sFESDVQUCQ==
+  version "3.9.9"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.9.9.tgz#38f983a1ad24e2687abfced0a9c1c3bef8d32616"
+  integrity sha512-/sMecU/M0WK9knrguts1lSLV8xFKzIgOMVb4mi6MOxgJXjliDB8PvOtmXhTqh2cVMMR4TzXgOnb+af/690zlQw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
+    "@wry/caches" "^1.0.0"
     "@wry/equality" "^0.5.6"
     "@wry/trie" "^0.5.0"
     graphql-tag "^2.12.6"
     hoist-non-react-statics "^3.3.2"
     optimism "^0.18.0"
     prop-types "^15.7.2"
+    rehackt "0.0.6"
     response-iterator "^0.2.6"
     symbol-observable "^4.0.0"
     ts-invariant "^0.10.3"
@@ -9144,6 +9146,11 @@ registry-url@^6.0.0:
   integrity sha512-+crtS5QjFRqFCoQmvGduwYWEBng99ZvmFvF+cUJkGYF1L1BfU8C6Zp9T7f5vPAwyLkUExpvK+ANVZmGU49qi4Q==
   dependencies:
     rc "1.2.8"
+
+rehackt@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/rehackt/-/rehackt-0.0.6.tgz#7a0a2247f2295e7548915417e44fbbf03bf004f4"
+  integrity sha512-l3WEzkt4ntlEc/IB3/mF6SRgNHA6zfQR7BlGOgBTOmx7IJJXojDASav+NsgXHFjHn+6RmwqsGPFgZpabWpeOdw==
 
 remark-lint-blockquote-indentation@^3.0.0:
   version "3.1.2"
