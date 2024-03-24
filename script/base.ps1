@@ -1,7 +1,8 @@
 # Install Chocolatey if not already installed
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    $installDir = Join-Path $env:USERPROFILE "choco"
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1")) -installDirectory $installDir
 }
 
 # Install Git if not already installed
