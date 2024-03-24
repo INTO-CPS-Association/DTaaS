@@ -8,7 +8,7 @@ choco install -y docker-desktop
 # Add user to docker group
 $user = $env:UserName
 $dockerGroup = 'docker'
-if ((Get-LocalGroupMember -Group $dockerGroup -Member $user) -eq $null) {
+if ($null -eq (Get-LocalGroupMember -Group $dockerGroup -Member $user)) {
     Add-LocalGroupMember -Group $dockerGroup -Member $user
 }
 
