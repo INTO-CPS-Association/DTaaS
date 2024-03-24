@@ -1,4 +1,4 @@
-import CMDRunner from './CMDRunner.interface';
+import CMDRunner from './CMDRunner.interface.js';
 
 type Phase = {
   name: string;

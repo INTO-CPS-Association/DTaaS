@@ -7,9 +7,7 @@ The figure below shows the current status of the development work.
 
 ![Current development status](current-status-developer.png)
 
-If you are interested in C4 representation of the same diagram,
-please take a look at
-the [C4 L2 diagram](current-status-developer-2.png).
+A C4 representation of the same diagram is also [available](current-status-developer-2.png).
 
 ## :lock: User Security
 
@@ -89,8 +87,12 @@ The development priorities for the DTaaS software development team are:
   (API Interface to DT)
 * Multi-user and microservice security
 * Increased automation of installation procedures
+* Upgrade software stack of user workspaces
 * DT Configuration DSL ín the form of YAML schema
 * UI for DT creation
-* DT examples
 
-Your contributions and collaboration are highly welcome.
+Your contributions are highly welcome.
+
+## References
+
+Font sources: [fileformat](https://www.fileformat.info)

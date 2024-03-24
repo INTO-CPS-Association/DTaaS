@@ -1,6 +1,6 @@
-import { Phase, DTLifeCycle } from './interfaces/lifecycle.interface';
-import ExecaCMDRunner from './execaCMDRunner';
-import Queue from './queue.service';
+import { Phase, DTLifeCycle } from './interfaces/lifecycle.interface.js';
+import ExecaCMDRunner from './execaCMDRunner.js';
+import Queue from './queue.service.js';
 
 export default class LifeCycleManager implements DTLifeCycle {
   private phaseQueue: Queue = new Queue();

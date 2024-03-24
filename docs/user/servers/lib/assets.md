@@ -6,21 +6,9 @@ assets is a fundamental feature of the platform.
 
 ## Kinds of Reusable Assets
 
-The DTaaS software categorizes all the reusable library assets into five categories:
+The DTaaS software categorizes all the reusable library assets into six categories:
 
 ![Categories of Library Assets](library-assets.png)
-
-### Functions
-
-The functions responsible for pre- and post-processing of:
-data inputs, data outputs, control outputs. The data science
-libraries and functions can be used to create useful function
-assets for the platform.
-In some cases, Digital Twin models require calibration prior
-to their use; functions written by domain experts along with
-right data inputs can make model calibration an achievable goal.
-Another use of functions is to process the sensor and actuator
-data of both Physical Twins and Digital Twins.
 
 ### Data
 
@@ -60,6 +48,18 @@ There exist cases where executable packages are run as binaries
 in a computing environment. Each of these packages are a pre-packaged
 combination of models and tools put together to create a ready
 to use Digital Twins.
+
+### Functions
+
+The functions responsible for pre- and post-processing of:
+data inputs, data outputs, control outputs. The data science
+libraries and functions can be used to create useful function
+assets for the platform.
+In some cases, Digital Twin models require calibration prior
+to their use; functions written by domain experts along with
+right data inputs can make model calibration an achievable goal.
+Another use of functions is to process the sensor and actuator
+data of both Physical Twins and Digital Twins.
 
 ### Digital Twins
 

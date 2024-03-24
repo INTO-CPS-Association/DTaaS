@@ -26,14 +26,14 @@ if there is a suggestion to improve the software.
 If you find this repo useful for your research, please consider citing our paper:
 
 ```bibtex
-@misc{talasila2023digital,
-      title={Digital Twin as a Service (DTaaS): A Platform for Digital Twin Developers and Users}, 
-      author={Prasad Talasila and Cláudio Gomes and Peter Høgh Mikkelsen and Santiago Gil Arboleda and Eduard Kamburjan and Peter Gorm Larsen},
-      year={2023},
-      eprint={2305.07244},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE}
-}
+@INPROCEEDINGS{talasila2023dtaas,
+  author={Talasila, Prasad and Gomes, Cláudio and Mikkelsen, Peter Høgh and Arboleda, Santiago Gil and Kamburjan, Eduard and Larsen, Peter Gorm},
+  booktitle={2023 IEEE Smart World Congress (SWC)},
+  title={Digital Twin as a Service (DTaaS): A Platform for Digital Twin Developers and Users}, 
+  year={2023},
+  pages={1-8},
+  keywords={digital twins;physical twin;automation;life cycle;composition},
+  doi={10.1109/SWC57546.2023.10448890}}
 ```
 
 ## :hammer_and_wrench: Development Setup
