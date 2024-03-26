@@ -2,11 +2,11 @@ import * as React from 'react';
 import Layout from 'page/Layout';
 import AccountTabs from './AccountTabs';
 
-const DTContent: React.FC = () => (
+const AccountContent: React.FC = () => (
   <Layout>
     <AccountTabs />
   </Layout>
 );
 
-const DigitalTwins: React.FC = () => <DTContent />; /* jshint ignore:line */
-export default DigitalTwins;
+const Account: React.FC = () => <AccountContent />; /* jshint ignore:line */
+export default Account;
