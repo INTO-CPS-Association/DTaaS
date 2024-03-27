@@ -22,7 +22,10 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
 }
 
 # Install mkdocs
-choco install -y mkdocs
+pip install mkdocs
+
+# Install Ruby: https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe
+choco install -y ruby
 
 # Ensure Ruby scripts directory is added to PATH
 if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Ruby*")) {
@@ -30,20 +33,11 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
     [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command ruby | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
 }
 
-# Install ruby for gem command
-choco install -y ruby
-
-# Ensure Gem scripts directory is added to PATH
-if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Gem*")) {
-    Write-Host "Adding Gem scripts to PATH..."
-    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command gem | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
-}
-
 # Install markdownlint
 gem install mdl
 
 # Install mkdocs plugins
-pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode
+pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode oauthlib PyJWT==2.1.0
 
 # Ensure Python scripts directory is added to PATH (for pip)
 if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Python3*")) {
