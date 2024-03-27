@@ -23,9 +23,9 @@ bash script/configure-git-hooks.sh
 ### Windows
 
 ```bash
-powershell -File script/base.ps1
-powershell -File script/env.ps1
-powershell -File script/configure-git-hooks.ps1
+script/base.ps1
+script/env.ps1
+script/configure-git-hooks.ps1
 ```
 
 The git-hooks will ensure that your commits are formatted
