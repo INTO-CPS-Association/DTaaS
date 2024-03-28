@@ -61,6 +61,7 @@ nav:
           - Three Water Tanks: user/examples/three-tank/README.md
           - Flex Cell: user/examples/flex-cell/README.md
           - Incubator: user/examples/incubator/README.md
+          - Firefighters: user/examples/o5g/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 

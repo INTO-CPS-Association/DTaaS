@@ -74,7 +74,6 @@ if (-not (Get-Command docker-desktop -ErrorAction SilentlyContinue)) {
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     # Install Node.js environment if not already installed
     choco install -y nodejs-lts
-    npm install -g npm@10.2.0
 }
 
 # Install Yarn

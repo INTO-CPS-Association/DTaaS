@@ -8,32 +8,57 @@ and [Research paper](https://arxiv.org/abs/2305.07244).
 
 ## :computer: Development Environment
 
-Ideally, developers should work on Ubuntu/Linux. Other operating systems
-are not supported inherently and may require additional steps.
+Ideally, developers should work on Ubuntu/Linux Operating System.There is
+an ongoing effort
+to bring support for Windows Operating System. But, the development and
+software installation scripts are still heavily suited to Ubuntu/Linux
 
-To start with, install the required software and git-hooks.
+Please use the steps given here to install the required software packages.
 
 ### Ubuntu/Linux
 
 ```bash
 bash script/env.sh
 bash script/configure-git-hooks.sh
+bash script/docker.sh
 ```
 
-### Windows (Follow the pre-requisites section before running any commands)
+:warning: The docker images are large and are likely to consume
+about 5GB of bandwidth and 15GB of space.
+You will have to download the docker images on a really good network.
 
-#### Pre-Requisites to run on Windows Systems
+### Windows
+
+Two powershell installation scripts, namely `base.ps1` and `env.ps1` 
+are available to install the required
+software packages. But errors might crop up due to missing
+environment variables. The potential errors are:
+
+1. `npm is not recognized.........` in `base.ps1`.
+2. `gem is not recognized.........` in `env.ps1`
+
+If you encounter these errors,
+remember to include _node_ and _ruby_ installation locations in
+**PATH** environment variable
+(`Settings --> search for "system environment variables"`
+`--> Advanced --> Environment Variables --> PATH`).
+
+The `base.ps1` and `env.ps1` scripts can be run again after setting
+the correct **PATH** environment variable.
+
+#### Pre-install Nodejs and Ruby Software
+
+Another way to solve the **PATH** environment problem is to
+install Nodejs and Ruby software packages before running the powershell
+scripts.
 
 1. Install the latest stable version of NodeJS from the
-   [official NodeJS website](<http:>https://nodejs.org/en</http:>).
-1. Install Ruby from
-   [here](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
+   [official NodeJS website](https://nodejs.org/en).
+2. Install Ruby from
+   [official Ruby website](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
    and follow all the defaults during the installation.
-1. Install Docker Desktop from the
-   [official Docker website](https://www.docker.com/products/docker-desktop/)
-   and ensure that it is running in the background before executing any command.
 
-Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
+Then, in an elevated(with **administrative** priviledges) powershell, run the
 following commands in the given order:
 
 ```bash
@@ -42,25 +67,7 @@ powershell -F script/env.ps1
 powershell -F script/configure-git-hooks.ps1
 ```
 
-<b>OR</b>
-
-<ol style="one">
-<li>Press the Windows button</li>
-<li>Type `powershell` and run it as <b>Administrator</b></li>
-<li>Navigate to the root directory of `DTaaS` (the root directory will be the on
-e which contains the `/script` folder)</li>
-<li>Type the following commands in order:</li>
-</ol>
-
-```bash
-script/base.ps1
-script/env.ps1
-script/configure-git-hooks.ps1
-```
-
-Remember to set the environment variables (in PATH) if some commands don't work
-
-<hr>
+### git hooks
 
 The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
@@ -81,17 +88,6 @@ If you want to skip the tests or formatting,
 you can use the `--no-verify` flag
 on `git commit` or `git push`. Please use this
 option with care.
-
-There is a script to download all the docker containers
-used in the project. You can download them using
-
-```bash
-bash script/docker.sh
-```
-
-:warning: The docker images are large and are likely to consume
-about 5GB of bandwidth and 15GB of space.
-You will have to download the docker images on a really good network.
 
 ## :building_construction: Development Workflow
 
