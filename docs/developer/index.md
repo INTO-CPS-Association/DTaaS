@@ -13,10 +13,54 @@ are not supported inherently and may require additional steps.
 
 To start with, install the required software and git-hooks.
 
+### Ubuntu/Linux
+
 ```bash
 bash script/env.sh
 bash script/configure-git-hooks.sh
 ```
+
+### Windows (Follow the pre-requisites section before running any commands)
+
+#### Pre-Requisites to run on Windows Systems
+
+1. Install the latest stable version of NodeJS from the
+   [official NodeJS website](<http:>https://nodejs.org/en</http:>).
+1. Install Ruby from
+   [here](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
+   and follow all the defaults during the installation.
+1. Install Docker Desktop from the
+   [official Docker website](https://www.docker.com/products/docker-desktop/)
+   and ensure that it is running in the background before executing any command.
+
+Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
+following commands in the given order:
+
+```bash
+powershell -F script/base.ps1
+powershell -F script/env.ps1
+powershell -F script/configure-git-hooks.ps1
+```
+
+<b>OR</b>
+
+<ol style="one">
+<li>Press the Windows button</li>
+<li>Type `powershell` and run it as <b>Administrator</b></li>
+<li>Navigate to the root directory of `DTaaS` (the root directory will be the on
+e which contains the `/script` folder)</li>
+<li>Type the following commands in order:</li>
+</ol>
+
+```bash
+script/base.ps1
+script/env.ps1
+script/configure-git-hooks.ps1
+```
+
+Remember to set the environment variables (in PATH) if some commands don't work
+
+<hr>
 
 The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you
