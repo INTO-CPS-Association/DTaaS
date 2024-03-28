@@ -22,18 +22,16 @@ bash script/configure-git-hooks.sh
 
 ### Windows (Follow the pre-requisites section before running any commands)
 
-<h3>Pre-Requisites to run on Windows Systems</h3>
+#### Pre-Requisites to run on Windows Systems
 
-<ol style="one">
-<li>Install the latest stable version of NodeJS from the [official NodeJS websit
-e](<http:>https://nodejs.org/en</http:>)</li>
-<li>Install Ruby from [here](<http:>https://github.com/oneclick/rubyinstaller2/release
-s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe</http:>)
-and follow all the defaults during the installation</li>
-<li>Install Docker Desktop from the [official Docker website](<http:>https://www.docke
-r.com/products/docker-desktop/</http:>) and <b><u>ensure that it is running in t
-he background before executing any command</u></b></li>
-</ol>
+1. Install the latest stable version of NodeJS from the
+   [official NodeJS website](<http:>https://nodejs.org/en</http:>).
+1. Install Ruby from
+   [here](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
+   and follow all the defaults during the installation.
+1. Install Docker Desktop from the
+   [official Docker website](https://www.docker.com/products/docker-desktop/)
+   and ensure that it is running in the background before executing any command.
 
 Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
 following commands in the given order:
