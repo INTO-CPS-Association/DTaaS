@@ -24,11 +24,19 @@ bash script/configure-git-hooks.sh
 
 <h3>Pre-Requisites to run on Windows Systems</h3>
 
-1. Install the latest stable version of NodeJS from the [official NodeJS website]("https://nodejs.org/en")
-2. Install Ruby from [here]("https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe") and follow all the defaults during the installation
-3. Install Docker Desktop from the [official Docker website]("https://www.docker.com/products/docker-desktop/") and <b><u>ensure that it is running in the background before executing any command</u></b>
+<ol style="one">
+<li>Install the latest stable version of NodeJS from the [official NodeJS websit
+e]("https://nodejs.org/en")</li>
+<li>Install Ruby from [here]("https://github.com/oneclick/rubyinstaller2/release
+s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe") and foll
+ow all the defaults during the installation</li>
+<li>Install Docker Desktop from the [official Docker website]("https://www.docke
+r.com/products/docker-desktop/") and <b><u>ensure that it is running in the back
+ground before executing any command</u></b></li>
+</ol>
 
-Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the following commands in the given order:
+Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
+following commands in the given order:
 
 ```bash
 powershell -F script/base.ps1
@@ -38,10 +46,14 @@ powershell -F script/configure-git-hooks.ps1
 
 <b>OR</b>
 
-1. Press the Windows button
-2. Type ```powershell``` and run it as <b>Administrator</b>
-3. Navigate to the root directory of ```DTaaS``` (the root directory will be the one which contains the ```/script``` folder)
-4. Type the following commands in order:
+<ol style="one">
+<li>Press the Windows button</li>
+<li>Type `powershell` and run it as <b>Administrator</b></li>
+<li>Navigate to the root directory of `DTaaS` (the root directory will be the on
+e which contains the `/script` folder)</li>
+<li>Type the following commands in order:</li>
+</ol>
+
 ```bash
 script/base.ps1
 script/env.ps1
