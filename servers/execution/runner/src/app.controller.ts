@@ -23,7 +23,7 @@ export default class AppController {
     private readonly queueService: Queue,
   ) {} // eslint-disable-line no-empty-function
 
-  @Get('phase')
+  @Get('history')
   getHello(): string[] {
     const phase: Phase = {
       name: 'hello',
