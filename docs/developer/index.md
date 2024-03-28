@@ -38,11 +38,13 @@ ground before executing any command</u></b></li>
 Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
 following commands in the given order:
 
+
 ```bash
 powershell -F script/base.ps1
 powershell -F script/env.ps1
 powershell -F script/configure-git-hooks.ps1
 ```
+
 
 <b>OR</b>
 
@@ -53,6 +55,7 @@ powershell -F script/configure-git-hooks.ps1
 e which contains the `/script` folder)</li>
 <li>Type the following commands in order:</li>
 </ol>
+
 
 ```bash
 script/base.ps1
