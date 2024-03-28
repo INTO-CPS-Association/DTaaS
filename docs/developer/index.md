@@ -26,25 +26,23 @@ bash script/configure-git-hooks.sh
 
 <ol style="one">
 <li>Install the latest stable version of NodeJS from the [official NodeJS websit
-e]("https://nodejs.org/en")</li>
-<li>Install Ruby from [here]("https://github.com/oneclick/rubyinstaller2/release
-s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe") and foll
+e](`https://nodejs.org/en`)</li>
+<li>Install Ruby from [here](`https://github.com/oneclick/rubyinstaller2/release
+s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe`) and foll
 ow all the defaults during the installation</li>
-<li>Install Docker Desktop from the [official Docker website]("https://www.docke
-r.com/products/docker-desktop/") and <b><u>ensure that it is running in the back
+<li>Install Docker Desktop from the [official Docker website](`https://www.docke
+r.com/products/docker-desktop/`) and <b><u>ensure that it is running in the back
 ground before executing any command</u></b></li>
 </ol>
 
 Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
 following commands in the given order:
 
-
 ```bash
 powershell -F script/base.ps1
 powershell -F script/env.ps1
 powershell -F script/configure-git-hooks.ps1
 ```
-
 
 <b>OR</b>
 
@@ -55,7 +53,6 @@ powershell -F script/configure-git-hooks.ps1
 e which contains the `/script` folder)</li>
 <li>Type the following commands in order:</li>
 </ol>
-
 
 ```bash
 script/base.ps1
