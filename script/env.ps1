@@ -37,7 +37,7 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
 gem install mdl
 
 # Install mkdocs plugins
-pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode oauthlib PyJWT==2.1.0
+pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode
 
 # Ensure Python scripts directory is added to PATH (for pip)
 if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Python3*")) {

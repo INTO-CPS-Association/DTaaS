@@ -28,11 +28,11 @@ bash script/configure-git-hooks.sh
 <li>Install the latest stable version of NodeJS from the [official NodeJS websit
 e](<http:>https://nodejs.org/en</http:>)</li>
 <li>Install Ruby from [here](<http:>https://github.com/oneclick/rubyinstaller2/release
-s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe</http:>) and foll
-ow all the defaults during the installation</li>
+s/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe</http:>) 
+and follow all the defaults during the installation</li>
 <li>Install Docker Desktop from the [official Docker website](<http:>https://www.docke
-r.com/products/docker-desktop/</http:>) and <b><u>ensure that it is running in the back
-ground before executing any command</u></b></li>
+r.com/products/docker-desktop/</http:>) and <b><u>ensure that it is running in t
+he background before executing any command</u></b></li>
 </ol>
 
 Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the
