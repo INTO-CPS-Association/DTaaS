@@ -20,13 +20,35 @@ bash script/env.sh
 bash script/configure-git-hooks.sh
 ```
 
-### Windows
+### Windows (Follow the pre-requisites section before running any commands)
+
+<h3>Pre-Requisites to run on Windows Systems</h3>
+
+1. Install the latest stable version of NodeJS from the [official NodeJS website]("https://nodejs.org/en")
+2. Install Ruby from [here]("https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe") and follow all the defaults during the installation
+3. Install Docker Desktop from the [official Docker website]("https://www.docker.com/products/docker-desktop/") and <b><u>ensure that it is running in the background before executing any command</u></b>
+
+Then, in an elevated(with <b>administrative</b> priviledges) powershell, run the following commands in the given order:
 
 ```bash
 powershell -F script/base.ps1
 powershell -F script/env.ps1
 powershell -F script/configure-git-hooks.ps1
 ```
+
+<b>OR</b>
+
+1. Press the Windows button
+2. Type ```powershell``` and run it as <b>Administrator</b>
+3. Navigate to the root directory of ```DTaaS``` (the root directory will be the one which contains the ```/script``` folder)
+4. Type the following commands in order:
+```bash
+script/base.ps1
+script/env.ps1
+script/configure-git-hooks.ps1
+```
+
+<hr>
 
 The git-hooks will ensure that your commits are formatted
 correctly and that the tests pass before you

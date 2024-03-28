@@ -1,7 +1,17 @@
-# Install Chocolatey if not already installed
+# Check if Chocolatey is installed, if not, install it
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    # Check the current execution policy
+    $currentExecutionPolicy = Get-ExecutionPolicy
+
+    # Set execution policy to Bypass temporarily
     Set-ExecutionPolicy Bypass -Scope Process -Force
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+    # Download and install Chocolatey
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+    # Restore the original execution policy
+    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
 }
 
 # Install Git if not already installed
@@ -9,7 +19,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     choco install git -y
 }
 
-# Update and upgrade system
+# Update all installed packages
 choco upgrade all -y
 
 # Check if docker-desktop is already installed
