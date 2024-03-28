@@ -58,6 +58,8 @@ script/env.ps1
 script/configure-git-hooks.ps1
 ```
 
+Remember to set the environment variables (in PATH) if some commands don't work
+
 <hr>
 
 The git-hooks will ensure that your commits are formatted
