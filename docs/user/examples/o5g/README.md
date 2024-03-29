@@ -48,7 +48,8 @@ by Leucker et al.
 
 ### Quick Check
 
-Before runnnig this example please make sure the following files are at the correct locations:
+Before runnnig this example please make sure the following files
+are at the correct locations:
 
 ```txt
 /workspace/examples/
