@@ -29,13 +29,13 @@ You will have to download the docker images on a really good network.
 
 ### Windows
 
-Two powershell installation scripts, namely `base.ps1` and `env.ps1` 
+Two powershell installation scripts, namely `base.ps1` and `env.ps1`
 are available to install the required
 software packages. But errors might crop up due to missing
 environment variables. The potential errors are:
 
 1. `npm is not recognized.........` in `base.ps1`.
-2. `gem is not recognized.........` in `env.ps1`
+1. `gem is not recognized.........` in `env.ps1`
 
 If you encounter these errors,
 remember to include _node_ and _ruby_ installation locations in
@@ -54,7 +54,7 @@ scripts.
 
 1. Install the latest stable version of NodeJS from the
    [official NodeJS website](https://nodejs.org/en).
-2. Install Ruby from
+1. Install Ruby from
    [official Ruby website](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
    and follow all the defaults during the installation.
 
