@@ -6,7 +6,7 @@ import { useAuth } from 'react-oidc-context';
 
 jest.mock('react-oidc-context');
 
-describe('SignIn', () => {
+describe('AccountTabs', () => {
     const mockprofile={
         preferred_username: "user1",
         picture: "pfp.jpg",
