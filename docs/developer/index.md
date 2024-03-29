@@ -38,7 +38,7 @@ environment variables. The potential errors are:
 1. `gem is not recognized.........` in `env.ps1`
 
 If you encounter these errors,
-remember to include _node_ and _ruby_ installation locations in
+remember to include _node_ installation locations in
 **PATH** environment variable
 (`Settings --> search for "system environment variables"`
 `--> Advanced --> Environment Variables --> PATH`).
@@ -46,17 +46,14 @@ remember to include _node_ and _ruby_ installation locations in
 The `base.ps1` and `env.ps1` scripts can be run again after setting
 the correct **PATH** environment variable.
 
-#### Pre-install Nodejs and Ruby Software
+#### Pre-install Nodejs
 
 Another way to solve the **PATH** environment problem is to
-install Nodejs and Ruby software packages before running the powershell
+install the Nodejs software package before running the powershell
 scripts.
 
 1. Install the latest stable version of NodeJS from the
    [official NodeJS website](https://nodejs.org/en).
-1. Install Ruby from
-   [official Ruby website](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
-   and follow all the defaults during the installation.
 
 #### Run Scripts
 
