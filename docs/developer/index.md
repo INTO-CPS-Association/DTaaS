@@ -35,7 +35,6 @@ software packages. But errors might crop up due to missing
 environment variables. The potential errors are:
 
 1. `npm is not recognized.........` in `base.ps1`.
-1. `gem is not recognized.........` in `env.ps1`
 
 If you encounter these errors,
 remember to include _node_ installation locations in
