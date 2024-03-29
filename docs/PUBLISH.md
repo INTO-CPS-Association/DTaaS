@@ -23,7 +23,7 @@ This project uses **markdownlint** linter tool for identifying the formatting
 issues in markdown files. Run
 
 ```sh
-mdl docs
+markdownlint docs
 ```
 
 from top-directory of the project and fix any identified issues. This needs
