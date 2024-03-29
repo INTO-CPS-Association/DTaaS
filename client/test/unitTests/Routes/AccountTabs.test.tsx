@@ -16,16 +16,6 @@ describe('AccountTabs', () => {
 
     const mockuser={profile: mockprofile};
 
-  /*beforeEach(() => {
-    (useAuth as jest.Mock).mockReturnValue({
-      user: mockuser,
-    });
-  });*/
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test('renders AccountTabs with correct profile information', () => {
     (useAuth as jest.Mock).mockReturnValue({
         user: mockuser,
