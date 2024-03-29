@@ -24,17 +24,8 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
 # Install mkdocs
 pip install mkdocs
 
-# Install Ruby: https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe
-choco install -y ruby
-
-# Ensure Ruby scripts directory is added to PATH
-if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Ruby*")) {
-    Write-Host "Adding Ruby scripts to PATH..."
-    [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command ruby | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
-}
-
 # Install markdownlint
-gem install mdl
+choco install markdownlint-cli
 
 # Install mkdocs plugins
 pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode
