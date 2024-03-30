@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import AccountTabs from 'route/auth/AccountTabs';
 import { useAuth } from 'react-oidc-context';
 
@@ -22,9 +21,7 @@ describe('AccountTabs', () => {
       });
 
     render(
-      <MemoryRouter>
-        <AccountTabs />
-      </MemoryRouter>
+      <AccountTabs />
     );
 
     const profilePicture = screen.getByTestId('profile-picture');
@@ -51,9 +48,7 @@ describe('AccountTabs', () => {
       });
 
     render(
-      <MemoryRouter>
-        <AccountTabs />
-      </MemoryRouter>
+      <AccountTabs />
     );
 
     const profilePicture = screen.getByTestId('profile-picture');
