@@ -1,8 +1,9 @@
+""" This file defines all cli entrypoints for dtaas"""
+
 import click
 #from . import service
-from .pkg import dtaas as dtaasPkg
+from .pkg import config as configPkg
 from .pkg import users as userPkg
-from .pkg import utils
 
 
 
@@ -10,17 +11,17 @@ from .pkg import utils
 @click.group()
 def dtaas():
     """all commands to help with Digital Twins as a Service"""
-    pass
+    return
 
 @dtaas.group()
 def admin():
     "administrative commands for DTaaS"
-    pass
+    return
 
 @admin.group()
 def user():
     """user management commands"""
-    pass
+    return
 
 #### user group commands
 @user.command()
@@ -30,10 +31,10 @@ def add():
     Specify the list in dtaas.toml [users].add\n
     """
 
-    configObj = dtaasPkg.Config()
+    configObj = configPkg.Config()
 
     err = userPkg.addUsers(configObj)
-    if err!=None:
+    if err is not None:
         raise click.ClickException("Error while adding users: " + str(err))
     click.echo("Users added successfully")
 
@@ -44,9 +45,9 @@ def delete():
     Specify the users in dtaas.toml [users].delete\n
     """
 
-    configObj = dtaasPkg.Config()
-    
+    configObj = configPkg.Config()
+
     err = userPkg.deleteUser(configObj)
-    if err!=None:
+    if err is not None:
         raise click.ClickException("Error while deleting users: " + str(err))
     click.echo("User deleted successfully")

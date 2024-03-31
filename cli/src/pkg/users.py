@@ -1,117 +1,117 @@
+"""This file has functions that handle the user cli commands"""
+
 import subprocess
 from . import utils
 
-def __getComposeConfig(username, server, DTaaSDirPath):
-    
+def getComposeConfig(username, server, path):
+    """Makes and returns the config for the user"""
+
     template = {}
     mapping = {
-        "${DTAAS_DIR}": DTaaSDirPath,
+        "${DTAAS_DIR}": path,
         "${username}" : username,
     }
-    
+
     if server==utils.LOCALHOST_SERVER:
         template, err = utils.importYaml('users.local.yml')
-        if err!=None:
+        if err is not None:
             return err
     else:
         template, err = utils.importYaml('users.server.yml')
-        if err!=None:
+        if err is not None:
             return err
         mapping["${SERVER_DNS}"] = server
-    
-    config = utils.replaceAll(template, mapping)
-    
+
+    config, err = utils.replaceAll(template, mapping)
+    if err is not None:
+        return None, err
+
     return config, None
 
-def __addUsersToCompose(users, compose, server, path):
+def addUsersToCompose(users, compose, server, path):
+    """Adds all the users config to the compose dictionary"""
+
     for username in users:
-        config, err = __getComposeConfig(username, server, path)
-        if err!=None:
+        config, err = getComposeConfig(username, server, path)
+        if err is not None:
             return err
         compose['services'][username] = config
     return None
 
-def __startUserContainers(users):
+def startUserContainers(users):
+    """Starts all the user containers in the 'users' list"""
 
     cmd = ["docker compose -f compose.users.yml up -d"]
     for username in users:
         cmd.append(username)
-    
+
     cmdStr = " ".join(cmd)
-    subprocess.run(cmdStr, shell=True)
+    subprocess.run(cmdStr, shell=True, check=False)
 
-    return None
-
-def __stopUserContainers(users):
+def stopUserContainers(users):
+    """Stops all the user containers in the 'users' list"""
 
     cmd = ["docker compose -f 'compose.users.yml' down"]
     for username in users:
         cmd.append(username)
-    
+
     cmdStr = " ".join(cmd)
-    subprocess.run(cmdStr, shell=True)
-
-    return None
-
-
+    subprocess.run(cmdStr, shell=True, check=False)
 
 def addUsers(configObj):
-    
+    """add cli command handler"""
+
     compose, err = utils.importYaml('compose.users.yml')
-    if err!=None:
+    if err is not None:
         return err
     userList, err = configObj.getAddUsersList()
-    if err!=None:
+    if err is not None:
         return err
     server, err= configObj.getServerDNS()
-    if err!=None:
+    if err is not None:
         return err
     path, err = configObj.getPath()
-    if err!=None:
+    if err is not None:
         return err
 
     if 'version' not in compose:
         compose['version'] = '3'
     if 'services' not in compose:
         compose['services'] = {}
+
+
+    err = addUsersToCompose(userList, compose, server, path)
+    if err is not None:
+        return err
     
-    
-    err = __addUsersToCompose(userList, compose, server, path)
-    if err!=None:
+    err = utils.exportYaml(compose, 'compose.users.yml')
+    if err is not None:
         return err
 
-    err = utils.exportYaml(compose, 'compose.users.yml')
-    if err!=None:
-        return err
-    
-    err = __startUserContainers(userList)
-    if err!=None:
-        return err
-    
+    startUserContainers(userList)
+
     return None
 
 def deleteUser(configObj):
+    """delete cli command handler"""
 
     compose,err = utils.importYaml('compose.users.yml')
-    if err!=None:
+    if err is not None:
         return err
     userList, err = configObj.getDeleteUsersList()
-    if err!=None:
+    if err is not None:
         return err
-    
-    err = __stopUserContainers(userList)
-    if err!=None:
-        return err
-    
+
+    stopUserContainers(userList)
+
     for username in userList:
         if 'services' not in compose:
-            return
+            return None
         if username not in compose['services']:
-            return
-        
+            return None
         del compose['services'][username]
 
     err = utils.exportYaml(compose, 'compose.users.yml')
-    if err!=None:
+    if err is not None:
         return err
     return None

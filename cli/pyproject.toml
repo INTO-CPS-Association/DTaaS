@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "dtaas-cli"
+version = "0.1.0"
+description = "DTaaS CLI"
+authors = ["Astitva Sehgal"]
+license = "INTO-CPS-Association"
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+PyYAML = "^6.0.1"
+click = "^8.1.7"
+tomlkit = "^0.12.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dtaas = "src.cmd:dtaas"
