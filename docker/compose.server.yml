@@ -94,5 +94,7 @@ services:
       - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
 
 networks:
-  default:
-    name: dtaas-network
+  frontend:
+    name: dtaas-frontend
+  users:
+    name: dtaas-users
