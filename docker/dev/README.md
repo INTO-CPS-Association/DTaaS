@@ -64,15 +64,24 @@ configuration files to be modified are given for each scenario.
 
 ### Development Environment
 
-This scenario is for software developers:
-
-### Client Website & Lib Configuration
+This scenario is for software developers.
 
 The configuration files to be updated are:
 
+1. docker/dev/.env
+   please see [docker README](../README.md) for help
+   with updating this config file)
+1. docker/conf.local
+   please see [server docs](../docs/admin/servers/auth.md) for help
+   with updating this config file)
 1. client/config/local.js
-1. deploy/config/lib.docker (optional)
+   please see [client config](../../docs/admin/client/CLIENT.md) for help
+   with updating this config file)
+1. servers/lib/config/.env.default
+   please see [lib config](../../docs/admin/servers/lib/LIB-MS.md) for help
+   with updating this config file)
 
+The docker commands need to be executed from this directory (`docker/dev`).
 The relevant docker commands are:
 
 ```bash

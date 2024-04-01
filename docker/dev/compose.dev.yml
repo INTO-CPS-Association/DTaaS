@@ -2,6 +2,7 @@ version: '3'
 services:
   traefik:
     image: traefik:v2.10
+    restart: unless-stopped
     command: 
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -20,6 +21,7 @@ services:
     build: 
       context: ${DTAAS_DIR}/
       dockerfile: ${DTAAS_DIR}/docker/dev/client.dockerfile
+    restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
     labels:
@@ -32,12 +34,12 @@ services:
       - frontend
 
   libms:
-    image: intocps/libms:latest
     build: 
       context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
+      dockerfile: ${DTAAS_DIR}/docker/dev/libms.dockerfile
+    restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
+      - ${DTAAS_DIR}/servers/lib/config/.env.default:/dtaas/libms/.env
       - ${DTAAS_DIR}/files:/dtaas/libms/files
     labels:
       - "traefik.enable=true"
@@ -50,6 +52,7 @@ services:
   
   user1:
     image: mltooling/ml-workspace-minimal:0.13.2
+    restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files/common:/workspace/common
       - ${DTAAS_DIR}/files/${username1}:/workspace
@@ -67,6 +70,7 @@ services:
   
   user2:
     image: mltooling/ml-workspace-minimal:0.13.2
+    restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files/common:/workspace/common 
       - ${DTAAS_DIR}/files/${username2}:/workspace
@@ -84,6 +88,7 @@ services:
 
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
+    restart: unless-stopped
     volumes:
       - ${OAUTH_CONF_FILEPATH}:/conf
     environment:

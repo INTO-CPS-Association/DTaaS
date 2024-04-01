@@ -43,7 +43,7 @@ accounts with specific usernames need to be created on gitlab.
 
 The first step is to finish the configuration for
 the traefik forward-auth container.
-The details are in [server docs](../../docs/admin/servers/auth.md).
+The details are in [server docs](../docs/admin/servers/auth.md).
 
 ### Docker Compose
 
@@ -57,7 +57,7 @@ Edit all the fields according to your specific case.
   |:------------|:---------------|:---------------|
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> or <http>_localhost_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
-  | BASE_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance |
+  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance |
   | CLIENT_ID | 'xx' | The ID of your OAuth application |
   | CLIENT_SECRET | 'xx' | The Secret of your OAuth application |
   | OAUTH_SECRET | 'random-secret-string' | Any private random string |
@@ -82,7 +82,7 @@ same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
   This file has to be configured properly.
 
   Further explanation on the client configuration is available in
-  [client config page](../../docs/admin/client/CLIENT.md).
+  [client config](../../docs/admin/client/CLIENT.md).
 
 ### Lib MS
 
