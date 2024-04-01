@@ -63,7 +63,7 @@ Edit all the fields according to your specific case.
   | OAUTH_SECRET | 'random-secret-string' | Any private random string |
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
+  | CLIENT_CONFIG | '/Users/<Username>/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
 Note: The Server DNS can also be an IP address.
 However, for proper working it is neccessary to use the
