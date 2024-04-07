@@ -1,7 +1,7 @@
 """This file has functions that handle the user cli commands"""
 
 import subprocess
-from . import utils
+from src.pkg import utils
 
 def getComposeConfig(username, server, path):
     """Makes and returns the config for the user"""
@@ -46,7 +46,10 @@ def startUserContainers(users):
         cmd.append(username)
 
     cmdStr = " ".join(cmd)
-    subprocess.run(cmdStr, shell=True, check=False)
+    result = subprocess.run(cmdStr, shell=True, check=False)
+    if result.returncode !=0:
+        return Exception("failed to start containers")
+    return None
 
 def stopUserContainers(users):
     """Stops all the user containers in the 'users' list"""
@@ -56,7 +59,10 @@ def stopUserContainers(users):
         cmd.append(username)
 
     cmdStr = " ".join(cmd)
-    subprocess.run(cmdStr, shell=True, check=False)
+    result = subprocess.run(cmdStr, shell=True, check=False)
+    if result.returncode != 0:
+        return Exception("failed to stop containers")
+    return None
 
 def addUsers(configObj):
     """add cli command handler"""
@@ -78,6 +84,13 @@ def addUsers(configObj):
         compose['version'] = '3'
     if 'services' not in compose:
         compose['services'] = {}
+    if 'networks' not in compose:
+        compose['networks'] = {
+            'users': {
+                'name': 'dtaas-users',
+                'external': True
+            }
+        }
 
 
     err = addUsersToCompose(userList, compose, server, path)
@@ -88,7 +101,9 @@ def addUsers(configObj):
     if err is not None:
         return err
 
-    startUserContainers(userList)
+    err = startUserContainers(userList)
+    if err is not None:
+        return err
 
     return None
 
@@ -102,7 +117,9 @@ def deleteUser(configObj):
     if err is not None:
         return err
 
-    stopUserContainers(userList)
+    err = stopUserContainers(userList)
+    if err is not None:
+        return err
 
     for username in userList:
         if 'services' not in compose:

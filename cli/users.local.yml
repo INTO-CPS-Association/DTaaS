@@ -9,5 +9,7 @@ shm_size: 512m
 labels:
   - "traefik.enable=true"
   - "traefik.http.routers.${username}.entryPoints=web"
-  - "traefik.http.routers.${username}.rule=PathPrefix(`/${username}`) "
+  - "traefik.http.routers.${username}.rule=PathPrefix(`/${username}`)"
   - "traefik.http.routers.${username}.middlewares=traefik-forward-auth"
+networks:
+  - users

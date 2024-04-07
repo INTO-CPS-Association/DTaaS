@@ -11,3 +11,5 @@ labels:
   - "traefik.http.routers.${username}.entryPoints=web"
   - "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username}`)"
   - "traefik.http.routers.${username}.middlewares=traefik-forward-auth"
+networks:
+  - users

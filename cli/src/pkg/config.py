@@ -1,7 +1,7 @@
 """This file supports the DTaaS config class"""
 
 import click
-from . import utils
+from src.pkg import utils
 
 class Config:
     """The Config class for DTaaS"""
