@@ -70,7 +70,7 @@ jobs:
       #     APOLLO_PATH: /lib
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v3
         with:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
