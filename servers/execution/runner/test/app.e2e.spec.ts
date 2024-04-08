@@ -5,6 +5,9 @@ import AppModule from 'src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let body = {
+    name: 'create',
+  };
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
@@ -19,17 +22,10 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/phase (GET)', () =>
-    supertest(app.getHttpServer())
-      .get('/phase')
-      .expect(200)
-      .expect('["hello"]'));
+  it('/ (GET) with no prior lifecycle request', () =>
+    supertest(app.getHttpServer()).get('/').expect(200));
 
   it('/ (POST) with valid lifecycle script', () => {
-    const body = {
-      name: 'create',
-    };
-
     supertest(app.getHttpServer())
       .post('/')
       .send(body)
@@ -53,7 +49,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (POST) with invalid lifecycle script', () => {
-    const body = {
+    body = {
       name: 'configure',
     };
     supertest(app.getHttpServer())

@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import LifeCycleManager from 'src/lifecycleManager.service';
 import { DTLifeCycle, PhaseStatus } from 'src/interfaces/lifecycle.interface';
+import { UpdatePhaseDto } from 'src/dto/phase.dto';
 
 describe('Check LifecycleManager', () => {
   it('Should create object', async () => {
@@ -51,12 +52,19 @@ describe('Check LifecycleManager', () => {
   it('Should hold correct phase history', async () => {
     const dt: DTLifeCycle = new LifeCycleManager();
     const status: boolean[] = [];
-    const pastPhases: Array<string> = ['date', 'whoami'];
+    const pastPhases: Array<UpdatePhaseDto> = [
+      {
+        name: 'date',
+      },
+      {
+        name: 'whoami',
+      },
+    ];
 
-    dt.changePhase(pastPhases[0]).then(([value]) => {
+    dt.changePhase(pastPhases[0].name).then(([value]) => {
       status.push(value);
     });
-    dt.changePhase(pastPhases[1]).then(([value]) => {
+    dt.changePhase(pastPhases[1].name).then(([value]) => {
       status.push(value);
     });
 

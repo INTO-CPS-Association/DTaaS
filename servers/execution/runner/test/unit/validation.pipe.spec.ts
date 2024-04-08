@@ -12,9 +12,7 @@ describe('Check UpdatePhaseDto validation pipe', () => {
       updatePhaseSchema,
     );
 
-    expect(updatePhaseValidator.transform(updatePhaseDto)).toBe({
-      name: 'create',
-    });
+    expect(updatePhaseValidator.transform(updatePhaseDto).name).toBe('create');
   });
 
   it('zod schema validator works correctly', async () => {

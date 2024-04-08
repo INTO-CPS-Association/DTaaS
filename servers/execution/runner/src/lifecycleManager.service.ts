@@ -8,6 +8,7 @@ import ExecaCMDRunner from './execaCMDRunner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
 import Config from './config/Config.interface.js';
+import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 const config: Config = readConfig();
 
@@ -63,7 +64,7 @@ export default class LifeCycleManager implements DTLifeCycle {
     return phaseStatus;
   }
 
-  checkHistory(): Array<string> {
+  checkHistory(): Array<UpdatePhaseDto> {
     return this.phaseQueue.phaseHistory();
   }
 }

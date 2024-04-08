@@ -1,3 +1,4 @@
+import { UpdatePhaseDto } from 'src/dto/phase.dto.js';
 import CMDRunner from './CMDRunner.interface.js';
 
 type Phase = {
@@ -17,7 +18,7 @@ type PhaseStatus = {
 
 interface DTLifeCycle {
   changePhase(name: string): Promise<[boolean, Map<string, string>]>;
-  checkHistory(): Array<string>;
+  checkHistory(): Array<UpdatePhaseDto>;
   checkPhase(): PhaseStatus;
 }
 

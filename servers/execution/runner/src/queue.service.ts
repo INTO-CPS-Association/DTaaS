@@ -12,8 +12,9 @@ export default class Queue {
   }
 
   phaseHistory(): Array<UpdatePhaseDto> {
-    const updatePhaseDto: Array<UpdatePhaseDto>:
-    return this.queue.map((phase) => updatePhaseDto.push({ "name": phase.name }));
+    const updatePhaseDto: Array<UpdatePhaseDto> = [];
+    this.queue.map((phase) => updatePhaseDto.push({ name: phase.name }));
+    return updatePhaseDto;
   }
 
   activePhase(): Phase | undefined {

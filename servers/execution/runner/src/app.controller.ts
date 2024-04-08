@@ -24,7 +24,7 @@ export default class AppController {
   ) {} // eslint-disable-line no-empty-function
 
   @Get('history')
-  getHello(): string[] {
+  getHello(): Array<UpdatePhaseDto> {
     const phase: Phase = {
       name: 'hello',
       status: 'valid',
