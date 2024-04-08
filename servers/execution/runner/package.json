@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/runner",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "DT Runner",
   "main": "dist/src/runner.js",
   "repository": "https://github.com/into-cps-association/DTaaS.git",
@@ -12,7 +12,7 @@
     "build": "npx tsc",
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "start": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-modules --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/main.js",
+    "start": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/main.js",
     "syntax": "npx eslint . --fix",
     "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
     "test:nocov": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false",
