@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -45,7 +45,7 @@ jobs:
           yarn test:unit
 
       - name: Upload unit and integration test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: client/coverage/clover.xml
           flags: client-unit-integration-tests
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         - name: Install jq
           run: sudo apt-get install -y jq
         - name: get version

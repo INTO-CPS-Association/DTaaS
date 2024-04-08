@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -48,7 +48,7 @@ jobs:
           yarn test
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner
@@ -68,10 +68,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -79,7 +79,7 @@ jobs:
           always-auth: true
           registry-url: 'https://npm.pkg.github.com/'
 
-      - name: Publish package
+      - name: Publish npm package
         run: |
           cd servers/execution/runner
           yarn install

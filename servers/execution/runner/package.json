@@ -1,5 +1,5 @@
 {
-  "name": "@into-cps-association/runner",
+  "name": "@prasadtalasila/runner",
   "version": "0.0.3",
   "description": "DT Runner",
   "main": "dist/src/runner.js",
