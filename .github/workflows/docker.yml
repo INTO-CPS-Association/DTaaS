@@ -43,4 +43,4 @@ jobs:
           context: .
           file: ./docker/dev/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}
+          tags: ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ inputs.registry }}/${{ inputs.image-name }}:latest

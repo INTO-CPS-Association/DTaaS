@@ -122,7 +122,7 @@ jobs:
         - name: get version
           id: get_version
           run: | 
-            version=`cat ./client/package.json | jq -r '.version'`
+            version=`cat ./servers/lib/package.json | jq -r '.version'`
             echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get_version.outputs.version }}
@@ -133,6 +133,6 @@ jobs:
     uses: ./.github/workflows/docker.yml
     with: 
         registry: ghcr.io
-        image-name: into-cps-association/dtaas-libms
+        image-name: into-cps-association/libms
         version: ${{ needs.get_version.outputs.version }}
         dockerfile: libms.dockerfile
