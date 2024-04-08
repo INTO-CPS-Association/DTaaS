@@ -155,5 +155,3 @@ This error is expected.
 If you want to do _client/_ development with a valid user workspace,
 please perform [localhost](../docs/admin/localhost.md) installation,
 and then perform client development within the installed environment.
-
-Check github actions

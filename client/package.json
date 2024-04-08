@@ -1,5 +1,5 @@
 {
-  "name": "@prasadtalasila/dtaas-web",
+  "name": "@into-cps-association/dtaas-web",
   "version": "0.3.4",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
