@@ -5,11 +5,20 @@ import AppModule from 'src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  let body = {
+  type CommandRequest = {
+    name: string;
+  };
+  type CommandResponse = {
+    status: string;
+  };
+  let body: CommandRequest = {
     name: 'create',
   };
 
-  function postRequest(route: string, HttpStatus: number, res: any) {
+  function postRequest(
+    route: string,    HttpStatus: number,
+    res: CommandResponse,
+  ) {
     return supertest(app.getHttpServer())
       .post(route)
       .send(body)
@@ -32,24 +41,22 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
- it('/ (GET) with no prior command executions', () => {
+  it('/ (GET) get execution status with no prior command executions', () => {
     return supertest(app.getHttpServer()).get('/').expect(200);
   });
 
-  it('/ (POST) with valid command', () => {
-    return postRequest('/', 200,
-      {
-        "status": "success"
-      });
+  it('/ (POST) execute a valid command', () => {
+    return postRequest('/', 200, {
+      status: 'success',
+    })
   });
 
-  it('/ (POST) with invalid command', () => {
+  it('/ (POST) execute an invalid command', () => {
     body = {
       name: 'configure',
     };
-    return postRequest('/', 400,
-      {
-        "status": "invalid command"
-      });
+    return postRequest('/', 400, {
+      status: 'invalid command',
+    });
   });
 });
