@@ -1,21 +1,14 @@
-# :runner: Digital Twin Runner
+# :runner: Runner
 
-A utility service to manage the lifecycle of one digital twin.
-The lifecycle of a digital twin is made of multiple phases.
-This digital twin runner utility
-helps with the managing the execution of lifecycle phases.
-This utility can be
-launched in two scenarios:
+A utility service to manage safe execution of remote commands.
+User launches this from commandline and let the utility
+manage the commands to be executed.
 
-1. User launches this from commandline and let the utility
-   manage the lifecycle of one digital twin.
-2. Execution infrastructure of Digital Twin as a Service (DTaaS)
-   launches this utility and instructs it to manage the lifecycle of
-   one digital twin.
-
-The digital twin runner utility runs as a service and will provide
-REST API interface to execute lifecycle scripts of a digital twin.
-One digital twin runner is responsible for execution of a digital twin.
+The runner utility runs as a service and provides
+REST API interface to safely execute remote commands.
+Multiple runners can be active simultaneously on one computer.
+The commands are sent via the REST API and are executed on the computer
+with active runner.
 
 ## :arrow_down: Install
 
@@ -72,14 +65,68 @@ you can access the same at `http://localhost:<port>`.
 
 Access to the service on network is available at `http://<ip or hostname>:<port>/`.
 
-Three REST API routes are active. The route paths and the responses given
+### Application Programming Interface (API)
+
+Two REST API methods are active. The route paths and the responses given
 for these two sources are:
 
-| REST API Route                 | Return Value | Comment |
-| :----------------------------- | :----------- | :------ |
-| localhost:port/phase | [ hello ] | Each invocation appends to _array_. |
-| localhost:port/lifecycle/phase | _true_       | Executes _lifecycle/create_ script |
-| localhost:port/phase | [ hello ] | array. |
+| REST API Route                 | HTTP Method | Return Value | Comment |
+| :----------------------------- |:--------|:----------- | :------ |
+| localhost:port | POST  | Returns the execution status of command | Executes the command provided. Each invocation appends to _array_ of commands executed so far. |
+| localhost:port/ | GET |  Returns the execution status of the last command sent via POST request. |  |
+
+#### POST Request
+
+Executes a command. The command name given here must exist
+in _location_ directory.
+
+```http
+{
+  "name": "<command-name>"
+}
+```
+
+If the command exists, a successful response will be
+
+```http
+{
+  "status": "success"
+}
+```
+
+If the does not exist, the response will be
+
+```http
+{
+  "status": "invalid command"
+}
+```
+
+#### GET Request
+
+Shows the status of the command last executed. If the execution
+was successful, the status will be
+
+```http
+{
+  "name": "<command-name>",
+  "status": "valid",
+  "logs": {
+    "stdout": "<output log of command>",
+    "stderr": "<error log of command>"
+  }
+}
+```
+
+If the execution is unsuccessful, the status will be
+
+```http
+{
+  "message": "Validation Failed",
+  "error": "Bad Request",
+  "statusCode": 400
+}
+```
 
 ## :balance_scale: License
 

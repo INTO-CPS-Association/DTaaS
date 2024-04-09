@@ -61,12 +61,13 @@ describe('Check LifecycleManager', () => {
       },
     ];
 
-    dt.changePhase(pastPhases[0].name).then(([value]) => {
-      status.push(value);
-    });
-    dt.changePhase(pastPhases[1].name).then(([value]) => {
-      status.push(value);
-    });
+    pastPhases.map((phase) => {
+      dt.changePhase(phase.name)
+      .then(([value]) => {
+        status.push(value);
+      });
+    }
+    );
 
     const pastPhasesActual = dt.checkHistory();
 

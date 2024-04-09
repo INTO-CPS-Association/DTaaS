@@ -48,7 +48,7 @@ export default class AppController {
       });
     } else {
       res.status(HttpStatus.BAD_REQUEST).send({
-        status: 'invalid phase',
+        status: 'invalid command',
       });
     }
   }
