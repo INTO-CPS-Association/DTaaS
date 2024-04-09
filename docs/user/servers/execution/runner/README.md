@@ -79,53 +79,105 @@ for these two sources are:
 Executes a command. The command name given here must exist
 in _location_ directory.
 
-```http
-{
-  "name": "<command name>"
-}
-```
+=== "Valid HTTP Request"
 
-If the command exists, a successful response will be
+    ``` http-request
+    POST / HTTP/1.1
+    Host: foo.com
+    Content-Type: application/json
+    Content-Length: 388
 
-```http
-{
-  "status": "success"
-}
-```
+    {
+      "name": "<command-name>"
+    }
+    ```
 
-If the does not exist, the response will be
+=== "HTTP Response - Valid Command"
 
-```http
-{
-  "status": "invalid command name"
-}
-```
+    ``` http-response
+    Connection: close
+    Content-Length: 134
+    Content-Type: application/json; charset=utf-8
+    Date: Tue, 09 Apr 2024 08:51:11 GMT
+    Etag: W/"86-ja15r8P5HJu72JcROfBTV4sAn2I"
+    X-Powered-By: Express
+
+    {
+      "status": "success"
+    }
+    ```
+
+=== "HTTP Response - Inalid Command"
+
+    ``` http-request
+    Connection: close
+    Content-Length: 28
+    Content-Type: application/json; charset=utf-8
+    Date: Tue, 09 Apr 2024 08:51:11 GMT
+    Etag: W/"86-ja15r8P5HJu72JcROfBTV4sAn2I"
+    X-Powered-By: Express
+
+    {
+      "status": "invalid command"
+    }
+    ```
 
 #### GET Request to /
 
-Shows the status of the command last executed. If the execution
-was successful, the status will be
+Shows the status of the command last executed.
 
-```http
-{
-  "name": "<command-name>",
-  "status": "valid",
-  "logs": {
-    "stdout": "<output log of command>",
-    "stderr": "<error log of command>"
-  }
-}
-```
+=== "Valid HTTP Request"
 
-If the execution is unsuccessful, the status will be
+    ``` http-request
+    GET / HTTP/1.1
+    Host: foo.com
+    Content-Type: application/json
+    Content-Length: 388
 
-```http
-{
-  "message": "Validation Failed",
-  "error": "Bad Request",
-  "statusCode": 400
-}
-```
+    {
+      "name": "<command-name>"
+    }
+    ```
+
+=== "HTTP Response - Valid Command"
+
+    ``` http-response
+    Connection: close
+    Content-Length: 134
+    Content-Type: application/json; charset=utf-8
+    Date: Tue, 09 Apr 2024 08:51:11 GMT
+    Etag: W/"86-ja15r8P5HJu72JcROfBTV4sAn2I"
+    X-Powered-By: Express
+
+    {
+      "name": "<command-name>",
+      "status": "valid",
+      "logs": {
+        "stdout": "<output log of command>",
+        "stderr": "<error log of command>"
+      }
+    }
+    ```
+
+=== "HTTP Response - Inalid Command"
+
+    ``` http-request
+    Connection: close
+    Content-Length: 70
+    Content-Type: application/json; charset=utf-8
+    Date: Tue, 09 Apr 2024 08:51:11 GMT
+    Etag: W/"86-ja15r8P5HJu72JcROfBTV4sAn2I"
+    X-Powered-By: Express
+
+    {
+      "name": "<command-name",
+      "status": "invalid",
+      "logs": {
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+    ```
 
 #### GET Request to /history
 
