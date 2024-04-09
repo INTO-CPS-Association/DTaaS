@@ -9,6 +9,16 @@ describe('AppController (e2e)', () => {
     name: 'create',
   };
 
+  function postRequest(route: string, HttpStatus: number, res: any) {
+    return supertest(app.getHttpServer())
+      .post(route)
+      .send(body)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(HttpStatus)
+      .expect(res);
+  }
+
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
@@ -22,38 +32,24 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET) with no prior command executions', () => {
+ it('/ (GET) with no prior command executions', () => {
     return supertest(app.getHttpServer()).get('/').expect(200);
   });
 
   it('/ (POST) with valid command', () => {
-    return supertest(app.getHttpServer())
-      .post('/')
-      .send(body)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .expect(200)
-      .expect(
-        {
-          "status": "success"
-        }
-      );
+    return postRequest('/', 200,
+      {
+        "status": "success"
+      });
   });
 
   it('/ (POST) with invalid command', () => {
     body = {
       name: 'configure',
     };
-    return supertest(app.getHttpServer())
-      .post('/')
-      .send(body)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .expect(400)
-      .expect(
-        {
-          "status": "invalid command"
-        }
-      );
+    return postRequest('/', 400,
+      {
+        "status": "invalid command"
+      });
   });
 });
