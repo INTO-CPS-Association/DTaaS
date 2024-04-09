@@ -5,7 +5,8 @@ import Config from './Config.interface.js';
 
 const YAML_CONFIG_FILENAME = 'runner.yaml';
 
-export default () =>
-  yaml.load(
+export default function readConfig(): Config {
+  return yaml.load(
     readFileSync(join(process.cwd(), YAML_CONFIG_FILENAME), 'utf8'),
-  ) as Record<string, Config>;
+  ) as Config;
+}

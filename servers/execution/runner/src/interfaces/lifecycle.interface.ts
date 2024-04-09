@@ -1,3 +1,4 @@
+import { UpdatePhaseDto } from 'src/dto/phase.dto.js';
 import CMDRunner from './CMDRunner.interface.js';
 
 type Phase = {
@@ -6,10 +7,19 @@ type Phase = {
   task: CMDRunner;
 };
 
+type PhaseStatus = {
+  name: string;
+  status: string;
+  logs: {
+    stdout: string | undefined;
+    stderr: string | undefined;
+  };
+};
+
 interface DTLifeCycle {
   changePhase(name: string): Promise<[boolean, Map<string, string>]>;
-  checkHistory(): Array<string>;
-  checkPhase(): Phase | undefined;
+  checkHistory(): Array<UpdatePhaseDto>;
+  checkPhase(): PhaseStatus;
 }
 
-export { Phase, DTLifeCycle };
+export { Phase, PhaseStatus, DTLifeCycle };

@@ -51,6 +51,7 @@ nav:
       - Digital Twins: 
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
+      - Runner: user/servers/execution/runner/README.md
       - Examples:
           - Overview: user/examples/index.md
           - Mass Spring Damper: user/examples/mass-spring-damper/README.md

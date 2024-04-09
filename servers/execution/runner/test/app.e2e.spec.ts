@@ -5,6 +5,28 @@ import AppModule from 'src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  type CommandRequest = {
+    name: string;
+  };
+  type CommandResponse = {
+    status: string;
+  };
+  let body: CommandRequest = {
+    name: 'create',
+  };
+
+  function postRequest(
+    route: string,    HttpStatus: number,
+    res: CommandResponse,
+  ) {
+    return supertest(app.getHttpServer())
+      .post(route)
+      .send(body)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(HttpStatus)
+      .expect(res);
+  }
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
@@ -19,15 +41,22 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/phase (GET)', () =>
-    supertest(app.getHttpServer())
-      .get('/phase')
-      .expect(200)
-      .expect('["hello"]'));
+  it('/ (GET) get execution status with no prior command executions', () => {
+    return supertest(app.getHttpServer()).get('/').expect(200);
+  });
 
-  it('/lifecycle/phase (GET)', () =>
-    supertest(app.getHttpServer())
-      .get('/lifecycle/phase')
-      .expect(200)
-      .expect('true'));
+  it('/ (POST) execute a valid command', () => {
+    return postRequest('/', 200, {
+      status: 'success',
+    })
+  });
+
+  it('/ (POST) execute an invalid command', () => {
+    body = {
+      name: 'configure',
+    };
+    return postRequest('/', 400, {
+      status: 'invalid command',
+    });
+  });
 });

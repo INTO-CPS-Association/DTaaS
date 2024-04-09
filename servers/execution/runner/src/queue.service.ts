@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Phase } from './interfaces/lifecycle.interface.js';
+import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 @Injectable()
 export default class Queue {
@@ -10,8 +11,10 @@ export default class Queue {
     return true;
   }
 
-  phaseHistory(): Array<string> {
-    return this.queue.map((phase) => phase.name);
+  phaseHistory(): Array<UpdatePhaseDto> {
+    const updatePhaseDto: Array<UpdatePhaseDto> = [];
+    this.queue.map((phase) => updatePhaseDto.push({ name: phase.name }));
+    return updatePhaseDto;
   }
 
   activePhase(): Phase | undefined {

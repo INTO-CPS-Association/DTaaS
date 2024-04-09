@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/runner",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "DT Runner",
   "main": "dist/src/runner.js",
   "repository": "https://github.com/into-cps-association/DTaaS.git",
@@ -14,7 +14,10 @@
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/main.js",
     "syntax": "npx eslint . --fix",
+    "pretest": "npx shx cp test/config/runner.yaml runner.yaml",
+    "posttest": "npx rimraf runner.yaml",
     "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
+    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/app.e2e.spec.ts",
     "test:nocov": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false",
     "test:watchAll": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --watchAll",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test"
@@ -26,8 +29,7 @@
     "runner": "./dist/src/main.js"
   },
   "files": [
-    "dist/",
-    "script/"
+    "dist/"
   ],
   "prettier": {
     "singleQuote": true
@@ -69,9 +71,11 @@
     "@nestjs/platform-express": "^10.3.7",
     "cross-env": "^7.0.3",
     "execa": "^8.0.1",
+    "express": "^4.18.3",
     "js-yaml": "^4.1.0",
     "reflect-metadata": "^0.2.1",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "zod": "^3.22.4"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

@@ -23,6 +23,8 @@ printf "generate and publish documents"
 mkdocs build --config-file mkdocs.yml --site-dir "site/online/${VERSION}"
 
 cp docs/redirect-page.html site/index.html
+mkdir site/assets
+cp docs/assets/dtaas-logo-with-text.png site/assets/.
 
 cd "${TOP_DIR}" || exit
 git checkout webpage-docs
@@ -47,6 +49,7 @@ fi
 
 cd "${TOP_DIR}" || exit
 mv site/index.html .
+mv site/assets .
 rm -rf site
 
 git add .
