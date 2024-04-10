@@ -23,6 +23,8 @@ plugins:
     enabled: true
   shellcheck:
     enabled: true
+  sonar-python:
+    enabled: true
 
 exclude_patterns:
   - "**.txt"
