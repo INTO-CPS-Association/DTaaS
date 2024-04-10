@@ -11,26 +11,25 @@ def getComposeConfig(username, server, path):
         "${DTAAS_DIR}": path,
         "${username}" : username,
     }
+    try:
+        if server==utils.LOCALHOST_SERVER:
+            template, err = utils.importYaml('users.local.yml')
+            utils.checkError(err)
+            
+        else:
+            template, err = utils.importYaml('users.server.yml')
+            utils.checkError(err)
+            mapping["${SERVER_DNS}"] = server
 
-    if server==utils.LOCALHOST_SERVER:
-        template, err = utils.importYaml('users.local.yml')
-        if err is not None:
-            return err
-    else:
-        template, err = utils.importYaml('users.server.yml')
-        if err is not None:
-            return err
-        mapping["${SERVER_DNS}"] = server
-
-    config, err = utils.replaceAll(template, mapping)
-    if err is not None:
-        return None, err
+        config, err = utils.replaceAll(template, mapping)
+        utils.checkError(err)
+    except Exception as e:
+        return e
 
     return config, None
 
 def addUsersToCompose(users, compose, server, path):
     """Adds all the users config to the compose dictionary"""
-
     for username in users:
         config, err = getComposeConfig(username, server, path)
         if err is not None:
@@ -67,18 +66,19 @@ def stopUserContainers(users):
 def addUsers(configObj):
     """add cli command handler"""
 
-    compose, err = utils.importYaml('compose.users.yml')
-    if err is not None:
-        return err
-    userList, err = configObj.getAddUsersList()
-    if err is not None:
-        return err
-    server, err= configObj.getServerDNS()
-    if err is not None:
-        return err
-    path, err = configObj.getPath()
-    if err is not None:
-        return err
+    try:
+        compose, err = utils.importYaml('compose.users.yml')
+        utils.checkError(err)
+        userList, err = configObj.getAddUsersList()
+        utils.checkError(err)
+        server, err= configObj.getServerDNS()
+        utils.checkError(err)
+        path, err = configObj.getPath()
+        utils.checkError(err)
+        if len(userList)==0:
+            return None
+    except Exception as e:
+        return e
 
     if 'version' not in compose:
         compose['version'] = '3'
@@ -92,34 +92,31 @@ def addUsers(configObj):
             }
         }
 
-
-    err = addUsersToCompose(userList, compose, server, path)
-    if err is not None:
-        return err
-    
-    err = utils.exportYaml(compose, 'compose.users.yml')
-    if err is not None:
-        return err
-
-    err = startUserContainers(userList)
-    if err is not None:
-        return err
+    try:
+        err = addUsersToCompose(userList, compose, server, path)
+        utils.checkError(err)
+        err = utils.exportYaml(compose, 'compose.users.yml')
+        utils.checkError(err)
+        err = startUserContainers(userList)
+        utils.checkError(err)
+    except Exception as e:
+        return e
 
     return None
 
 def deleteUser(configObj):
     """delete cli command handler"""
-
-    compose,err = utils.importYaml('compose.users.yml')
-    if err is not None:
-        return err
-    userList, err = configObj.getDeleteUsersList()
-    if err is not None:
-        return err
-
-    err = stopUserContainers(userList)
-    if err is not None:
-        return err
+    try:
+        compose,err = utils.importYaml('compose.users.yml')
+        utils.checkError(err)
+        userList, err = configObj.getDeleteUsersList()
+        utils.checkError(err)
+        if len(userList)==0:
+            return None
+        err = stopUserContainers(userList)
+        utils.checkError(err)
+    except Exception as e:
+        return e
 
     for username in userList:
         if 'services' not in compose:
@@ -131,4 +128,5 @@ def deleteUser(configObj):
     err = utils.exportYaml(compose, 'compose.users.yml')
     if err is not None:
         return err
+    
     return None

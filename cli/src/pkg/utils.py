@@ -65,3 +65,7 @@ def replaceAll(obj, mapping):
         return obj, None
 
     return None, Exception("Config substition failed: Object format not valid")
+
+def checkError(err):
+    if err is not None:
+        raise err
