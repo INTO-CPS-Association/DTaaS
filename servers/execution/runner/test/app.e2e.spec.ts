@@ -90,8 +90,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  //skipped tests have not been written correctly
-  it.skip('/ (GET) get execution status without any prior command executions', () =>
+  it('/ (GET) get execution status without any prior command executions', () =>
     getRequest(
       '/',
       200,
@@ -99,56 +98,60 @@ describe('AppController (e2e)', () => {
       { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
     ));
 
-    it.skip('/ (GET) get execution status after valid command execution', () => {
-      const reqBody: RequestBody = {
-        name: 'create',
-      };
-      postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
-      return getRequest(
-        '/',
-        200,
-        {},
-        { name: 'create', status: 'valid', logs: { stdout: '', stderr: '' } },
-      );
-    });  
-
-    it.skip('/ (GET) get execution status after invalid command execution', () => {
-      const reqBody: RequestBody = {
-        name: 'create',
-      };
-      postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
-      return getRequest(
-        '/',
-        200,
-        {},
-        { name: 'create', status: 'valid', logs: { stdout: '', stderr: '' } },
-      );
+  it('/ (GET) get execution status after valid command execution', async () => {
+    const reqBody: RequestBody = {
+      name: 'create',
+    };
+    await postRequest('/', 200, reqBody, {
+      status: 'success',
     });
+    return getRequest(
+      '/',
+      200,
+      {},
+      {
+        name: 'create',
+        status: 'valid',
+        logs: { stdout: 'hello world', stderr: '' },
+      },
+    );
+  });
 
-    it('/ (GET) get history without any prior command executions', () =>
-      getRequest(
-        '/history',
-        200,
-        {},
-        [],
-      ));
-
-      it.skip('/ (GET) get history after two command executions', () => {
-        const reqBody: RequestBody = {
-          name: 'create',
-        };
-        postRequest('/', 200, reqBody, {
-          status: 'success',
-        });
-        return getRequest(
-          '/history',
-          200,
-          {},
-          [reqBody],);
-      });
-    
+  it('/ (GET) get execution status after invalid command execution', async () => {
+    const reqBody: RequestBody = {
+      name: 'configure',
+    };
+    await postRequest('/', 400, reqBody, {
+      status: 'invalid command',
     });
+    return getRequest(
+      '/',
+      200,
+      {},
+      {
+        name: 'configure',
+        status: 'invalid',
+        logs: { stdout: '', stderr: '' },
+      },
+    );
+  });
+
+  it('/history (GET) get history without any prior command executions', () =>
+    getRequest('/history', 200, {}, []));
+
+  it('/history (GET) get history after two valid command executions', async () => {
+    const reqBody: RequestBody = {
+      name: 'create',
+    };
+    await postRequest('/', 200, reqBody, {
+      status: 'success',
+    });
+    await postRequest('/', 200, reqBody, {
+      status: 'success',
+    });
+    return getRequest('/history', 200, {}, [
+      { name: 'create' },
+      { name: 'create' },
+    ]);
+  });
+});
