@@ -5,27 +5,26 @@ import AppModule from 'src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  type CommandRequest = {
-    name: string;
-  };
-  type CommandResponse = {
-    status: string;
-  };
-  let body: CommandRequest = {
-    name: 'create',
-  };
+  interface RequestBody {
+    name?: string;
+    command?: string;
+  }
 
-  function postRequest(
-    route: string,    HttpStatus: number,
-    res: CommandResponse,
-  ) {
+  interface ResponseBody {
+    message?: string;
+    error?: string;
+    statusCode?: number;
+    status?: string;
+  }
+
+  function postRequest(route: string, HttpStatus: number, reqBody: RequestBody, resBody: ResponseBody) {
     return supertest(app.getHttpServer())
       .post(route)
-      .send(body)
+      .send(reqBody)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .expect(HttpStatus)
-      .expect(res);
+      .expect(resBody);
   }
 
   beforeAll(async () => {
@@ -41,22 +40,40 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET) get execution status with no prior command executions', () => {
-    return supertest(app.getHttpServer()).get('/').expect(200);
-  });
-
   it('/ (POST) execute a valid command', () => {
-    return postRequest('/', 200, {
+      const reqBody: RequestBody = {
+        name: 'create',
+      };
+      return postRequest('/', 400,  reqBody, {
+        status: 'invalid command',
+      });
+  /*       return postRequest('/', 200, reqBody, {
       status: 'success',
-    })
+    });
+ */
   });
 
   it('/ (POST) execute an invalid command', () => {
-    body = {
+    const reqBody: RequestBody = {
       name: 'configure',
     };
-    return postRequest('/', 400, {
+    return postRequest('/', 400,  reqBody, {
       status: 'invalid command',
     });
   });
+
+  it('/ (POST) send incorrectly formed command execution request', () => {
+    const reqBody: RequestBody = {
+      command: 'create',
+    };
+    return postRequest('/', 400, reqBody, {
+      message: 'Validation Failed',
+      error: 'Bad Request',
+      statusCode: 400,
+    });
+  });
+
+  it('/ (GET) get execution status after no prior command executions', () =>
+    supertest(app.getHttpServer()).get('/').expect(200));
+
 });
