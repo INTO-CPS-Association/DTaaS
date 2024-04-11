@@ -11,6 +11,7 @@ yarn syntax     # Analyze code for errors and style issues
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
 yarn test       # Run tests
+yarn test:e2e   # Run only end-to-end tests
 yarn test:nocov # Run the tests but do not report coverage
 yarn test:watchAll # Watch changes in test/ and run the tests
 yarn start      # Start the application
@@ -55,5 +56,11 @@ npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.
 ## Service Endpoint
 
 The URL endpoint for this microservice is located at: `localhost:<port>`
+
+The API calls of this microservice are documented in **runner.api.http**.
+This file can be used with
+[REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+of VS Code IDE. Launch the program using `yarn start` before using
+the **runner.api.http**.
 
 Please see [README](./README.md) for more information.
