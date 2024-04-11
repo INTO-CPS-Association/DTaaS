@@ -14,10 +14,10 @@
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "start": "npx cross-env NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-specifier-resolution=node' NODE_NO_WARNINGS=1 node dist/src/main.js",
     "syntax": "npx eslint . --fix",
-    "pretest": "npx shx cp test/config/runner.yaml runner.yaml",
-    "posttest": "npx rimraf runner.yaml",
+    "pretest": "npx rimraf runner.yaml lifecycle && npx shx cp test/config/runner.yaml runner.yaml && npx shx mkdir lifecycle && npx shx cp test/data/lifecycle/* lifecycle/.",
+    "posttest": "npx rimraf runner.yaml lifecycle",
     "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
-    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/app.e2e.spec.ts",
+    "test:e2e": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/app.e2e.spec.ts",
     "test:nocov": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false",
     "test:watchAll": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --watchAll",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test"

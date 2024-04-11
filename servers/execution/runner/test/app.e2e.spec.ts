@@ -44,13 +44,9 @@ describe('AppController (e2e)', () => {
       const reqBody: RequestBody = {
         name: 'create',
       };
-      return postRequest('/', 400,  reqBody, {
-        status: 'invalid command',
-      });
-  /*       return postRequest('/', 200, reqBody, {
+      return postRequest('/', 200, reqBody, {
       status: 'success',
     });
- */
   });
 
   it('/ (POST) execute an invalid command', () => {
