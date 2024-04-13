@@ -54,8 +54,15 @@ describe('Runner end-to-end tests', () => {
       },
       HttpStatus: 200,
       resBody: {
-        status: 'success',
-      },
+        POST: {
+          status: 'success',
+        },
+        GET: {
+          name: 'create',
+          status: 'valid',
+          logs: { stdout: 'hello world', stderr: '' },
+        },
+      }, 
     },
     invalid: {
       reqBody: {
@@ -63,8 +70,15 @@ describe('Runner end-to-end tests', () => {
       },
       HttpStatus: 400,
       resBody: {
-        status: 'invalid command',
-      },
+        POST: {
+          status: 'invalid command',
+        },
+        GET: {
+          name: 'configure',
+          status: 'invalid',
+          logs: { stdout: '', stderr: '' },
+        },
+      }, 
     },
     incorrect: {
       reqBody: {
@@ -72,9 +86,12 @@ describe('Runner end-to-end tests', () => {
       },
       HttpStatus: 400,
       resBody: {
-        message: 'Validation Failed',
-        error: 'Bad Request',
-        statusCode: 400,
+        POST: {
+          message: 'Validation Failed',
+          error: 'Bad Request',
+          statusCode: 400,
+        },
+        GET: { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
       },
     },
   };
@@ -98,79 +115,60 @@ describe('Runner end-to-end tests', () => {
     for(key in queriesJSON) {
       const query = queriesJSON[key];
       it(`execute ${key} command`, () =>
-      postRequest(
-        '/',
-        query.HttpStatus,
-        query.reqBody,
-        query.resBody,
-      ));
+        postRequest(
+          '/',
+          query.HttpStatus,
+          query.reqBody,
+          query.resBody.POST,
+        ));
     }
   });
 
   describe('GET /', () => {
-    it('get execution status without any prior command executions', () =>
-      getRequest(
-        '/',
-        200,
-        {},
-        { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
-      ));
+    let key: keyof typeof queriesJSON;
+    for(key in queriesJSON) {
+      const query = queriesJSON[key];
+      it(`execution status of ${key} command`, async () => {
+        await postRequest(
+          '/',
+          query.HttpStatus,
+          query.reqBody,
+          query.resBody.POST,
+        );
+        return getRequest(
+          '/',
+          200,
+          {},
+          query.resBody.GET
+        );
+      });
+    }
 
-    it('get execution status after valid command execution', async () => {
-      await postRequest(
-        '/',
-        queriesJSON.valid.HttpStatus,
-        queriesJSON.valid.reqBody,
-        queriesJSON.valid.resBody,
-      );
-      return getRequest(
-        '/',
-        200,
-        {},
-        {
-          name: 'create',
-          status: 'valid',
-          logs: { stdout: 'hello world', stderr: '' },
-        },
-      );
-    });
-
-    it('get execution status after invalid command execution', async () => {
-      await postRequest(
-        '/',
-        queriesJSON.invalid.HttpStatus,
-        queriesJSON.invalid.reqBody,
-        queriesJSON.invalid.resBody,
-      );
-      return getRequest(
-        '/',
-        200,
-        {},
-        {
-          name: 'configure',
-          status: 'invalid',
-          logs: { stdout: '', stderr: '' },
-        },
-      );
-    });
+    it('execution status without any prior command executions', () =>
+    getRequest(
+      '/',
+      200,
+      {},
+      { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
+    ));  
   });
 
   describe('GET /history', () => {
-    it('get history without any prior command executions', () =>
+    it('without any prior command executions', () =>
       getRequest('/history', 200, {}, []));
 
-    it('get history after two valid command executions', async () => {
+    it('after two valid command executions', async () => {
       await postRequest(
         '/',
         queriesJSON.valid.HttpStatus,
         queriesJSON.valid.reqBody,
-        queriesJSON.valid.resBody,
+        queriesJSON.valid.resBody.POST,
       );
       await postRequest(
         '/',
         queriesJSON.valid.HttpStatus,
         queriesJSON.valid.reqBody,
-        queriesJSON.valid.resBody,
+        queriesJSON.valid.resBody.POST,
       );
       return getRequest('/history', 200, {}, [
         { name: 'create' },
