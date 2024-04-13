@@ -7,6 +7,8 @@ import { getLogoutRedirectURI } from '../envUtil';
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
   removeUser: () => Promise<void>;
+  signoutSilent: () => Promise<void>; // Add signoutSilent to CustomAuthContext
+  revokeTokens: () => Promise<void>; // Add revokeTokens to CustomAuthContext
   user?: User | null | undefined;
 }
 
@@ -28,6 +30,21 @@ export async function signOut() {
     const idToken = auth.user.id_token; // camelCase for variable name
     localStorage.clear();
     sessionStorage.clear();
+
+    // Sign out silently
+    await auth.signoutSilent();
+
+    // Revoke tokens
+    await auth.revokeTokens();
+
+    // Make HTTP GET call to logout URL
+    await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json'
+      },
+    });
 
     await auth.removeUser();
     await auth.signoutRedirect({
