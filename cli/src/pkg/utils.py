@@ -38,10 +38,8 @@ def importToml(filename):
 def replaceAll(obj, mapping):
     """This function is used to replace all placeholders with values in a nested object"""
     if isinstance(obj,str):
-
-        for key in mapping:
-            obj = obj.replace(key, mapping[key])
-        return obj, None
+        obj, err = replaceString(obj,mapping)
+        return obj, err
 
     if isinstance(obj,list):
 
@@ -49,7 +47,6 @@ def replaceAll(obj, mapping):
             obj[ind], err = replaceAll(val, mapping)
             if err is not None:
                 return None, err
-
         return obj, None
 
     if isinstance(obj,dict):
@@ -57,14 +54,19 @@ def replaceAll(obj, mapping):
         for key in obj:
             if not isinstance(key,str):
                 return None, Exception("Config substitution failed: Key is not a string")
-
             obj[key], err = replaceAll(obj[key], mapping)
             if err is not None:
                 return None, err
-
         return obj, None
 
     return None, Exception("Config substition failed: Object format not valid")
+
+def replaceString(obj, mapping):
+    for key in mapping:
+        obj = obj.replace(key, mapping[key])
+    return obj, None
+
+
 
 def checkError(err):
     if err is not None:

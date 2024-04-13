@@ -1,6 +1,7 @@
 """This file has functions that handle the user cli commands"""
 
 import subprocess
+import shutil
 from src.pkg import utils
 
 def getComposeConfig(username, server, path):
@@ -27,6 +28,11 @@ def getComposeConfig(username, server, path):
         return e
 
     return config, None
+
+def createUserFiles(users, filePath):
+    """Creates all the users' workspace directories"""
+    for username in users:
+        shutil.copytree(filePath+'/template', filePath+'/'+username, dirs_exist_ok=True)
 
 def addUsersToCompose(users, compose, server, path):
     """Adds all the users config to the compose dictionary"""
@@ -65,7 +71,7 @@ def stopUserContainers(users):
 
 def addUsers(configObj):
     """add cli command handler"""
-
+    print("hi")
     try:
         compose, err = utils.importYaml('compose.users.yml')
         utils.checkError(err)
@@ -93,6 +99,8 @@ def addUsers(configObj):
         }
 
     try:
+        err = createUserFiles(userList, path+'/files')
+        utils.checkError(err)
         err = addUsersToCompose(userList, compose, server, path)
         utils.checkError(err)
         err = utils.exportYaml(compose, 'compose.users.yml')

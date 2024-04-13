@@ -8,7 +8,7 @@ git-repo = "https://github.com/into-cps-association/DTaaS.git"
 [common]
 # absolute path to the DTaaS application directory
 server-dns = "localhost"
-path = "/home/astitva/Desktop/yamlstuff"
+path = "/home/Desktop/DTaaS"
 
 [users]
 # matching user info must present in this config file
