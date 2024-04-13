@@ -71,7 +71,6 @@ def stopUserContainers(users):
 
 def addUsers(configObj):
     """add cli command handler"""
-    print("hi")
     try:
         compose, err = utils.importYaml('compose.users.yml')
         utils.checkError(err)
