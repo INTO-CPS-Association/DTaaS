@@ -4,7 +4,6 @@ import { INestApplication } from '@nestjs/common';
 import AppModule from 'src/app.module';
 
 describe('Runner end-to-end tests', () => {
-  let app: INestApplication;
   interface RequestBody {
     name?: string;
     command?: string;
@@ -48,6 +47,39 @@ describe('Runner end-to-end tests', () => {
       .expect(resBody);
   }
 
+  const queriesJSON = {
+    valid: {
+      reqBody: {
+        name: 'create',
+      },
+      HttpStatus: 200,
+      resBody: {
+        status: 'success',
+      },
+    },
+    invalid: {
+      reqBody: {
+        name: 'configure',
+      },
+      HttpStatus: 400,
+      resBody: {
+        status: 'invalid command',
+      },
+    },
+    incorrect: {
+      reqBody: {
+        command: 'create',
+      },
+      HttpStatus: 400,
+      resBody: {
+        message: 'Validation Failed',
+        error: 'Bad Request',
+        statusCode: 400,
+      },
+    },
+  };
+
+  let app: INestApplication;
   beforeEach(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
@@ -62,52 +94,47 @@ describe('Runner end-to-end tests', () => {
   });
 
   describe('POST /', () => {
-    it('execute a valid command', () => {
-      const reqBody: RequestBody = {
-        name: 'create',
-      };
-      return postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
-    });
-  
-    it('execute an invalid command', () => {
-      const reqBody: RequestBody = {
-        name: 'configure',
-      };
-      return postRequest('/', 400, reqBody, {
-        status: 'invalid command',
-      });
-    });
-  
-    it('send incorrectly formed command execution request', () => {
-      const reqBody: RequestBody = {
-        command: 'create',
-      };
-      return postRequest('/', 400, reqBody, {
-        message: 'Validation Failed',
-        error: 'Bad Request',
-        statusCode: 400,
-      });
-    });
+    it('execute a valid command', () =>
+      postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody,
+      ));
+
+    it('execute an invalid command', () =>
+      postRequest(
+        '/',
+        queriesJSON.invalid.HttpStatus,
+        queriesJSON.invalid.reqBody,
+        queriesJSON.invalid.resBody,
+      ));
+
+    it('send incorrectly formed command execution request', () =>
+      postRequest(
+        '/',
+        queriesJSON.incorrect.HttpStatus,
+        queriesJSON.incorrect.reqBody,
+        queriesJSON.incorrect.resBody,
+      ));
   });
 
   describe('GET /', () => {
     it('get execution status without any prior command executions', () =>
-    getRequest(
-      '/',
-      200,
-      {},
-      { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
-    ));
+      getRequest(
+        '/',
+        200,
+        {},
+        { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
+      ));
 
     it('get execution status after valid command execution', async () => {
-      const reqBody: RequestBody = {
-        name: 'create',
-      };
-      await postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
+      await postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody,
+      );
       return getRequest(
         '/',
         200,
@@ -121,12 +148,12 @@ describe('Runner end-to-end tests', () => {
     });
 
     it('get execution status after invalid command execution', async () => {
-      const reqBody: RequestBody = {
-        name: 'configure',
-      };
-      await postRequest('/', 400, reqBody, {
-        status: 'invalid command',
-      });
+      await postRequest(
+        '/',
+        queriesJSON.invalid.HttpStatus,
+        queriesJSON.invalid.reqBody,
+        queriesJSON.invalid.resBody,
+      );
       return getRequest(
         '/',
         200,
@@ -142,23 +169,25 @@ describe('Runner end-to-end tests', () => {
 
   describe('GET /history', () => {
     it('get history without any prior command executions', () =>
-    getRequest('/history', 200, {}, []));
+      getRequest('/history', 200, {}, []));
 
     it('get history after two valid command executions', async () => {
-      const reqBody: RequestBody = {
-        name: 'create',
-      };
-      await postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
-      await postRequest('/', 200, reqBody, {
-        status: 'success',
-      });
+      await postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody,
+      );
+      await postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody,
+      );
       return getRequest('/history', 200, {}, [
         { name: 'create' },
         { name: 'create' },
       ]);
     });
   });
-
 });
