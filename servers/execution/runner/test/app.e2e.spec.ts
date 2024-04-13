@@ -94,29 +94,17 @@ describe('Runner end-to-end tests', () => {
   });
 
   describe('POST /', () => {
-    it('execute a valid command', () =>
+    let key: keyof typeof queriesJSON;
+    for(key in queriesJSON) {
+      const query = queriesJSON[key];
+      it(`execute ${key} command`, () =>
       postRequest(
         '/',
-        queriesJSON.valid.HttpStatus,
-        queriesJSON.valid.reqBody,
-        queriesJSON.valid.resBody,
+        query.HttpStatus,
+        query.reqBody,
+        query.resBody,
       ));
-
-    it('execute an invalid command', () =>
-      postRequest(
-        '/',
-        queriesJSON.invalid.HttpStatus,
-        queriesJSON.invalid.reqBody,
-        queriesJSON.invalid.resBody,
-      ));
-
-    it('send incorrectly formed command execution request', () =>
-      postRequest(
-        '/',
-        queriesJSON.incorrect.HttpStatus,
-        queriesJSON.incorrect.reqBody,
-        queriesJSON.incorrect.resBody,
-      ));
+    }
   });
 
   describe('GET /', () => {
