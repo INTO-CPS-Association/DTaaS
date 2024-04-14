@@ -71,6 +71,7 @@ def stopUserContainers(users):
 
 def addUsers(configObj):
     """add cli command handler"""
+    print("hihi")
     try:
         compose, err = utils.importYaml('compose.users.yml')
         utils.checkError(err)
@@ -80,8 +81,6 @@ def addUsers(configObj):
         utils.checkError(err)
         path, err = configObj.getPath()
         utils.checkError(err)
-        if len(userList)==0:
-            return None
     except Exception as e:
         return e
 
@@ -118,8 +117,6 @@ def deleteUser(configObj):
         utils.checkError(err)
         userList, err = configObj.getDeleteUsersList()
         utils.checkError(err)
-        if len(userList)==0:
-            return None
         err = stopUserContainers(userList)
         utils.checkError(err)
     except Exception as e:

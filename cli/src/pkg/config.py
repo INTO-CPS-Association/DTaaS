@@ -68,6 +68,10 @@ class Config:
         if 'add' not in confUsers:
             return None, Exception("Config file error: No 'add' list in 'users' tag")
         addUsersList = [ str(username) for username in confUsers['add']]
+
+        if len(addUsersList)==0:
+            return None, Exception('Config file error: users.add list is empty')
+        
         return addUsersList, None
 
     def getDeleteUsersList(self):
@@ -79,4 +83,8 @@ class Config:
         if 'delete' not in confUsers:
             return None, Exception("Config file error: No 'delete' list in 'users' tag")
         deleteUsersList = [str(username) for username in confUsers['delete']]
+
+        if len(deleteUsersList)==0:
+            return None, Exception('Config file error: users.delete list is empty')
+        
         return deleteUsersList, None
