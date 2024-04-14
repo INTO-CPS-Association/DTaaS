@@ -171,32 +171,10 @@ and authorize access to the shown application.
 
 To add a new user to your DTaaS instance, follow these steps:
 
-- Add the user to your Gitlab instance.
-  Note the username and email ID used in 
-  their Gitlab instance account. Consider the
-  username to be `user4` and email ID to be
-  `user4@emailservice.com` for the following discussion
+- Use the DTaaS CLI to bring up the ML workspaces for new users.
+  This brings up the containers, without the AuthMS authentication.
 
-- Add a new ML workspace for the user
-  in the compose.users.yml file.
-  A sample user (user3) is shown there,
-  to add more users, simply copy the entire
-  `user3` service and paste it below.
-
-- Edit the required fields in the new
-  ML workspace. This includes
-  
-  - Changing the service name from
-    `user3` to `user4`
-  - Changing `${username3}` to
-    `${username4}`
-  - Changing `...routers.u3...` in `labels` to
-    `...routers.u4...`
-
-- Edit the `.env` file by adding a new username variable,
-  like `username4=user4`
-
-- Add two lines to the `conf.local` file
+- Now, Add two lines to the `conf.local` file
 
 ```txt
 rule.onlyu4.action=allow
@@ -211,20 +189,14 @@ rule.onlyu3.rule=PathPrefix(`/user3`)
 rule.onlyu3.whitelist = user3@emailservice.com
 ```
 
-A new user is now added to the DTaaS instance. 
-
-## Run with additional users
-
-To run the DTaaS instance with the additional users, use to commands:
-
-### Server deploy
+Run the appropritate command for a server/local installation:
 
 ```bash
-docker compose -f compose.server.yml -f compose.users.yml --env-file .env up -d
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate
 ```
-
-### Localhost deploy
 
 ```bash
-docker compose -f compose.local.yml -f compose.users.yml --env-file .env up -d
+docker compose -f compose.local.yml --env-file .env up -d --force-recreate
 ```
+
+The new users are now added to the DTaaS instance, with authorization enabled.

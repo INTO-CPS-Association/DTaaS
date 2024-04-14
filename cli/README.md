@@ -1,13 +1,15 @@
 # DTaaS Command Line Interface
 
-This is a command line tool for the INTO-CPS-Association Digital Twins as a Service. 
+This is a command line tool for the
+INTO-CPS-Association Digital Twins as a Service.
 
 ## Prerequisite
 
-Please visit and download the [DTaaS Tool](https://github.com/INTO-CPS-Association/DTaaS). 
+Please visit and download the
+[DTaaS Software](https://github.com/INTO-CPS-Association/DTaaS).
 
-The DTaaS service with base users and essential containers should be up and running before using the CLI.
-
+The DTaaS service with base users and essential
+containers should be up and running before using the CLI.
 
 ## Installation
 

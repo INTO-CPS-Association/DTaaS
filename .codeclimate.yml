@@ -25,6 +25,9 @@ plugins:
     enabled: true
   sonar-python:
     enabled: true
+    checks:
+      python:S1542:
+        enabled: false
 
 exclude_patterns:
   - "**.txt"
