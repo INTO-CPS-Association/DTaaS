@@ -62,7 +62,7 @@ describe('Runner end-to-end tests', () => {
           status: 'valid',
           logs: { stdout: 'hello world', stderr: '' },
         },
-      }, 
+      },
     },
     invalid: {
       reqBody: {
@@ -78,7 +78,7 @@ describe('Runner end-to-end tests', () => {
           status: 'invalid',
           logs: { stdout: '', stderr: '' },
         },
-      }, 
+      },
     },
     incorrect: {
       reqBody: {
@@ -91,7 +91,11 @@ describe('Runner end-to-end tests', () => {
           error: 'Bad Request',
           statusCode: 400,
         },
-        GET: { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
+        GET: {
+          name: 'none',
+          status: 'invalid',
+          logs: { stdout: '', stderr: '' },
+        },
       },
     },
   };
@@ -111,22 +115,25 @@ describe('Runner end-to-end tests', () => {
   });
 
   describe('POST /', () => {
-    let key: keyof typeof queriesJSON;
-    for(key in queriesJSON) {
+    const keys: (keyof typeof queriesJSON)[] = [
+      'valid',
+      'invalid',
+      'incorrect',
+    ];
+    keys.forEach((key) => {
       const query = queriesJSON[key];
       it(`execute ${key} command`, () =>
-        postRequest(
-          '/',
-          query.HttpStatus,
-          query.reqBody,
-          query.resBody.POST,
-        ));
-    }
+        postRequest('/', query.HttpStatus, query.reqBody, query.resBody.POST));
+    });
   });
 
   describe('GET /', () => {
-    let key: keyof typeof queriesJSON;
-    for(key in queriesJSON) {
+    const keys: (keyof typeof queriesJSON)[] = [
+      'valid',
+      'invalid',
+      'incorrect',
+    ];
+    keys.forEach((key) => {
       const query = queriesJSON[key];
       it(`execution status of ${key} command`, async () => {
         await postRequest(
@@ -135,22 +142,17 @@ describe('Runner end-to-end tests', () => {
           query.reqBody,
           query.resBody.POST,
         );
-        return getRequest(
-          '/',
-          200,
-          {},
-          query.resBody.GET
-        );
+        return getRequest('/', 200, {}, query.resBody.GET);
       });
-    }
+    });
 
     it('execution status without any prior command executions', () =>
-    getRequest(
-      '/',
-      200,
-      {},
-      { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
-    ));  
+      getRequest(
+        '/',
+        200,
+        {},
+        { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
+      ));
   });
 
   describe('GET /history', () => {
