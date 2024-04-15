@@ -1,2 +1,2 @@
 port: 5000
-location: "test/data/lifecycle" #directory location of scripts
+location: "lifecycle" #directory location of scripts
