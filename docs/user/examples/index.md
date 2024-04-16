@@ -36,5 +36,6 @@ to use the examples in the following order.
 1. [Flex Cell Digital Twin with Two Industrial Robots](./flex-cell/README.md)
 1. [Incubator](./incubator/README.md)
 1. [Firefighters in Emergency Environments](./o5g/README.md)
+1. [Incubator with NuRV run-time monitor service](./incubator-NuRV-monitor-service/README.md)
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

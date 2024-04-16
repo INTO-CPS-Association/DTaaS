@@ -162,3 +162,6 @@ runner.yml
 
 # Jupter Lab
 .workspace
+
+# command scripts for runner
+servers/execution/runner/lifecycle*

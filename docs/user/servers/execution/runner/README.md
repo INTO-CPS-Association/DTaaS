@@ -197,9 +197,3 @@ Both valid and invalid commands are recorded in the history.
   }
 ]
 ```
-
-## :balance_scale: License
-
-This software is owned by
-[The INTO-CPS Association](https://into-cps.org/)
-and is available under [the INTO-CPS License](./LICENSE.md).

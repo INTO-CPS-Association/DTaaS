@@ -3,32 +3,105 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import AppModule from 'src/app.module';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
-  type CommandRequest = {
-    name: string;
-  };
-  type CommandResponse = {
-    status: string;
-  };
-  let body: CommandRequest = {
-    name: 'create',
-  };
+describe('Runner end-to-end tests', () => {
+  interface RequestBody {
+    name?: string;
+    command?: string;
+  }
+  interface ResponseBody {
+    message?: string;
+    error?: string;
+    statusCode?: number;
+    status?: string;
+    name?: string;
+    logs?: { stdout: string; stderr: string };
+  }
 
   function postRequest(
-    route: string,    HttpStatus: number,
-    res: CommandResponse,
+    route: string,
+    HttpStatus: number,
+    reqBody: RequestBody,
+    resBody: ResponseBody,
   ) {
     return supertest(app.getHttpServer())
       .post(route)
-      .send(body)
+      .send(reqBody)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .expect(HttpStatus)
-      .expect(res);
+      .expect(resBody);
   }
 
-  beforeAll(async () => {
+  function getRequest(
+    route: string,
+    HttpStatus: number,
+    reqBody: RequestBody,
+    resBody: ResponseBody | RequestBody[],
+  ) {
+    return supertest(app.getHttpServer())
+      .get(route)
+      .send(reqBody)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(HttpStatus)
+      .expect(resBody);
+  }
+
+  const queriesJSON = {
+    valid: {
+      reqBody: {
+        name: 'create',
+      },
+      HttpStatus: 200,
+      resBody: {
+        POST: {
+          status: 'success',
+        },
+        GET: {
+          name: 'create',
+          status: 'valid',
+          logs: { stdout: 'hello world', stderr: '' },
+        },
+      },
+    },
+    invalid: {
+      reqBody: {
+        name: 'configure',
+      },
+      HttpStatus: 400,
+      resBody: {
+        POST: {
+          status: 'invalid command',
+        },
+        GET: {
+          name: 'configure',
+          status: 'invalid',
+          logs: { stdout: '', stderr: '' },
+        },
+      },
+    },
+    incorrect: {
+      reqBody: {
+        command: 'create',
+      },
+      HttpStatus: 400,
+      resBody: {
+        POST: {
+          message: 'Validation Failed',
+          error: 'Bad Request',
+          statusCode: 400,
+        },
+        GET: {
+          name: 'none',
+          status: 'invalid',
+          logs: { stdout: '', stderr: '' },
+        },
+      },
+    },
+  };
+
+  let app: INestApplication;
+  beforeEach(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -37,26 +110,72 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
-  it('/ (GET) get execution status with no prior command executions', () => {
-    return supertest(app.getHttpServer()).get('/').expect(200);
+  describe('POST /', () => {
+    const keys: (keyof typeof queriesJSON)[] = [
+      'valid',
+      'invalid',
+      'incorrect',
+    ];
+    keys.forEach((key) => {
+      const query = queriesJSON[key];
+      it(`execute ${key} command`, () =>
+        postRequest('/', query.HttpStatus, query.reqBody, query.resBody.POST));
+    });
   });
 
-  it('/ (POST) execute a valid command', () => {
-    return postRequest('/', 200, {
-      status: 'success',
-    })
+  describe('GET /', () => {
+    const keys: (keyof typeof queriesJSON)[] = [
+      'valid',
+      'invalid',
+      'incorrect',
+    ];
+    keys.forEach((key) => {
+      const query = queriesJSON[key];
+      it(`execution status of ${key} command`, async () => {
+        await postRequest(
+          '/',
+          query.HttpStatus,
+          query.reqBody,
+          query.resBody.POST,
+        );
+        return getRequest('/', 200, {}, query.resBody.GET);
+      });
+    });
+
+    it('execution status without any prior command executions', () =>
+      getRequest(
+        '/',
+        200,
+        {},
+        { name: 'none', status: 'invalid', logs: { stdout: '', stderr: '' } },
+      ));
   });
 
-  it('/ (POST) execute an invalid command', () => {
-    body = {
-      name: 'configure',
-    };
-    return postRequest('/', 400, {
-      status: 'invalid command',
+  describe('GET /history', () => {
+    it('without any prior command executions', () =>
+      getRequest('/history', 200, {}, []));
+
+    it('after two valid command executions', async () => {
+      await postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody.POST,
+      );
+      await postRequest(
+        '/',
+        queriesJSON.valid.HttpStatus,
+        queriesJSON.valid.reqBody,
+        queriesJSON.valid.resBody.POST,
+      );
+      return getRequest('/history', 200, {}, [
+        { name: 'create' },
+        { name: 'create' },
+      ]);
     });
   });
 });

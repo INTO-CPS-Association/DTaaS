@@ -63,6 +63,7 @@ nav:
           - Flex Cell: user/examples/flex-cell/README.md
           - Incubator: user/examples/incubator/README.md
           - Firefighters: user/examples/o5g/README.md
+          - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 
