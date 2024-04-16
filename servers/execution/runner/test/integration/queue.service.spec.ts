@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import Queue from 'src/queue.service';
-import { Command } from 'src/interfaces/lifecycle.interface';
+import { Command } from 'src/interfaces/command.interface';
 import ExecaRunner from 'src/execaRunner';
 
 const phases: Command[] = [

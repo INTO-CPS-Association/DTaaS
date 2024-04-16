@@ -3,7 +3,7 @@ import {
   Command,
   Manager,
   CommandStatus,
-} from './interfaces/lifecycle.interface.js';
+} from './interfaces/command.interface.js';
 import ExecaRunner from './execaRunner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
@@ -12,7 +12,7 @@ import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 const config: Config = readConfig();
 
-export default class LifeCycleManager implements Manager {
+export default class ExecaManager implements Manager {
   private phaseQueue: Queue = new Queue();
 
   async changePhase(name: string): Promise<[boolean, Map<string, string>]> {

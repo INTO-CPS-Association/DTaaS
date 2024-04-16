@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import AppController from './app.controller.js';
-import LifeCycleManager from './lifecycleManager.service.js';
+import ExecaManager from './execaManager.service.js';
 import Queue from './queue.service.js';
 import configuration from './config/configuration.js';
 
@@ -13,6 +13,6 @@ import configuration from './config/configuration.js';
     }),
   ],
   controllers: [AppController],
-  providers: [LifeCycleManager, Queue],
+  providers: [ExecaManager, Queue],
 })
 export default class AppModule {}

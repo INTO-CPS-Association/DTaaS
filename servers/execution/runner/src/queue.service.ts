@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Command } from './interfaces/lifecycle.interface.js';
+import { Command } from './interfaces/command.interface.js';
 import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 @Injectable()

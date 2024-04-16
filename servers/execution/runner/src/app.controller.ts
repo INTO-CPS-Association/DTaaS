@@ -8,15 +8,15 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { CommandStatus } from './interfaces/lifecycle.interface.js';
-import LifeCycleManager from './lifecycleManager.service.js';
+import { CommandStatus } from './interfaces/command.interface.js';
+import ExecaManager from './execaManager.service.js';
 import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private readonly lifecycle: LifeCycleManager) {} // eslint-disable-line no-empty-function
+  constructor(private readonly lifecycle: ExecaManager) {} // eslint-disable-line no-empty-function
 
   @Get('history')
   getHello(): Array<UpdatePhaseDto> {
