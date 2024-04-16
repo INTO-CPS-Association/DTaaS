@@ -18,7 +18,7 @@ describe('Check execution manager based on execa library', () => {
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
 
-    [status, logs] = await dt.changePhase('create');
+    [status, logs] = await dt.newCommand('create');
 
     expect(status).toBe(true);
     expect(logs.get('stdout')).toEqual(expect.any(String));
@@ -29,7 +29,7 @@ describe('Check execution manager based on execa library', () => {
     const dt: Manager = new ExecaManager();
     let status: boolean = true;
 
-    [status] = await dt.changePhase('asdfghjkl');
+    [status] = await dt.newCommand('asdfghjkl');
 
     expect(status).toBe(false);
   });
@@ -45,7 +45,7 @@ describe('Check execution manager based on execa library', () => {
     };
     const dt: Manager = new ExecaManager();
 
-    const commandStatus: CommandStatus = dt.checkPhase();
+    const commandStatus: CommandStatus = dt.checkStatus();
     expect(commandStatus).toEqual(expPhaseStatus);
   });
 
@@ -62,7 +62,7 @@ describe('Check execution manager based on execa library', () => {
     ];
 
     pastPhases.map(async (command) => {
-      await dt.changePhase(command.name).then(([value]) => {
+      await dt.newCommand(command.name).then(([value]) => {
         status.push(value);
       });
     });

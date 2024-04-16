@@ -15,7 +15,7 @@ const config: Config = readConfig();
 export default class ExecaManager implements Manager {
   private commandQueue: Queue = new Queue();
 
-  async changePhase(name: string): Promise<[boolean, Map<string, string>]> {
+  async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
     const command: Command = {
       name,
       status: 'invalid',
@@ -34,10 +34,10 @@ export default class ExecaManager implements Manager {
     return [success, command.task.checkLogs()];
   }
 
-  checkPhase(): CommandStatus {
+  checkStatus(): CommandStatus {
     let commandStatus: CommandStatus;
     const logs: Map<string, string> = new Map<string, string>();
-    const command: Command | undefined = this.commandQueue.activePhase();
+    const command: Command | undefined = this.commandQueue.activeCommand();
 
     logs.set('stdout', '');
     logs.set('stderr', '');
@@ -65,6 +65,6 @@ export default class ExecaManager implements Manager {
   }
 
   checkHistory(): Array<ExecuteCommandDto> {
-    return this.commandQueue.phaseHistory();
+    return this.commandQueue.checkHistory();
   }
 }

@@ -11,13 +11,13 @@ export default class Queue {
     return true;
   }
 
-  phaseHistory(): Array<ExecuteCommandDto> {
+  checkHistory(): Array<ExecuteCommandDto> {
     const updateCommandDto: Array<ExecuteCommandDto> = [];
     this.queue.map((command) => updateCommandDto.push({ name: command.name }));
     return updateCommandDto;
   }
 
-  activePhase(): Command | undefined {
+  activeCommand(): Command | undefined {
     return this.queue.at(this.queue.length - 1);
   }
 }

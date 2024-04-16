@@ -2,7 +2,7 @@ import { describe, it, expect } from '@jest/globals';
 import Runner from 'src/interfaces/runner.interface';
 import ExecaRunner from 'src/execaRunner';
 
-describe('check Execa CMD Runner', () => {
+describe('check command Runner based on execa library', () => {
   it('should execute a valid command', async () => {
     const cmdrunner: Runner = new ExecaRunner('date');
 

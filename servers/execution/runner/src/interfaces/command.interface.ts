@@ -17,9 +17,9 @@ type CommandStatus = {
 };
 
 interface Manager {
-  changePhase(name: string): Promise<[boolean, Map<string, string>]>;
+  newCommand(name: string): Promise<[boolean, Map<string, string>]>;
   checkHistory(): Array<ExecuteCommandDto>;
-  checkPhase(): CommandStatus;
+  checkStatus(): CommandStatus;
 }
 
 export { Command, CommandStatus, Manager };

@@ -31,7 +31,7 @@ describe('check Queue service', () => {
   it('should return active command as undefined when queue is empty', async () => {
     const queue: Queue = new Queue();
 
-    expect(queue.activePhase()).toBe(undefined);
+    expect(queue.activeCommand()).toBe(undefined);
   });
 
   it('should return active command when queue is non-empty', async () => {
@@ -39,7 +39,7 @@ describe('check Queue service', () => {
 
     queue.enqueue(commands[0]);
 
-    expect(queue.activePhase()).toBe(commands[0]);
+    expect(queue.activeCommand()).toBe(commands[0]);
   });
 
   it('should return correct active command when queue has more than one command', async () => {
@@ -48,6 +48,28 @@ describe('check Queue service', () => {
     queue.enqueue(commands[0]);
     queue.enqueue(commands[1]);
 
-    expect(queue.activePhase()).toBe(commands[1]);
+    expect(queue.activeCommand()).toBe(commands[1]);
+  });
+
+  it('should return empty array when queue is empty', async () => {
+    const queue: Queue = new Queue();
+
+    expect(queue.checkHistory()).toStrictEqual([]);
+  });
+
+  it('should return correct command history when queue has more than one command', async () => {
+    const queue: Queue = new Queue();
+    const history = [
+      {
+        name: 'hello',
+      },
+      {
+        name: 'world',
+      },
+    ];
+    queue.enqueue(commands[0]);
+    queue.enqueue(commands[1]);
+
+    expect(queue.checkHistory()).toStrictEqual(history);
   });
 });
