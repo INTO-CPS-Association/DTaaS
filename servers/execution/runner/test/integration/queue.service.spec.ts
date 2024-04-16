@@ -1,23 +1,23 @@
 import { describe, it, expect } from '@jest/globals';
 import Queue from 'src/queue.service';
 import { Command } from 'src/interfaces/lifecycle.interface';
-import ExecaCMDRunner from 'src/execaCMDRunner';
+import ExecaRunner from 'src/execaRunner';
 
 const phases: Command[] = [
   {
     name: 'hello',
     status: 'valid',
-    task: new ExecaCMDRunner(''),
+    task: new ExecaRunner(''),
   },
   {
     name: 'world',
     status: 'valid',
-    task: new ExecaCMDRunner(''),
+    task: new ExecaRunner(''),
   },
   {
     name: 'terminate',
     status: 'invalid',
-    task: new ExecaCMDRunner(''),
+    task: new ExecaRunner(''),
   },
 ];
 

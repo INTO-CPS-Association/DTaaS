@@ -4,7 +4,7 @@ import {
   Manager,
   CommandStatus,
 } from './interfaces/lifecycle.interface.js';
-import ExecaCMDRunner from './execaCMDRunner.js';
+import ExecaRunner from './execaRunner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
 import Config from './config/Config.interface.js';
@@ -19,13 +19,13 @@ export default class LifeCycleManager implements Manager {
     const phase: Command = {
       name,
       status: 'invalid',
-      task: new ExecaCMDRunner(''),
+      task: new ExecaRunner(''),
       // task attribute is deliberately left empty
     };
 
     let success: boolean = false;
 
-    phase.task = new ExecaCMDRunner(join(process.cwd(), config.location, name));
+    phase.task = new ExecaRunner(join(process.cwd(), config.location, name));
     this.phaseQueue.enqueue(phase);
     await phase.task.run().then((value) => {
       success = value;

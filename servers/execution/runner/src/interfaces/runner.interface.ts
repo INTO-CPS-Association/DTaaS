@@ -1,4 +1,4 @@
-export default interface CMDRunner {
+export default interface Runner {
   run(): Promise<boolean>;
   checkLogs(): Map<string, string>;
 }

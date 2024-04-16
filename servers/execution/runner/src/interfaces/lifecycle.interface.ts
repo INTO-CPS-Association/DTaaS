@@ -1,10 +1,10 @@
 import { UpdatePhaseDto } from 'src/dto/phase.dto.js';
-import CMDRunner from './CMDRunner.interface.js';
+import Runner from './runner.interface.js';
 
 type Command = {
   name: string;
   status: string;
-  task: CMDRunner;
+  task: Runner;
 };
 
 type CommandStatus = {
