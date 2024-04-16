@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
 import ExecaManager from 'src/execaManager.service';
 import { Manager, CommandStatus } from 'src/interfaces/command.interface';
-import { UpdatePhaseDto } from 'src/dto/phase.dto';
+import { ExecuteCommandDto } from 'src/dto/command.dto';
 
-describe('Check LifecycleManager', () => {
+describe('Check execution manager based on execa library', () => {
   it('Should create object', async () => {
     try {
       const dt: Manager = new ExecaManager();
@@ -13,7 +13,7 @@ describe('Check LifecycleManager', () => {
     }
   });
 
-  it('Should change to valid phase', async () => {
+  it('Should execute a valid command', async () => {
     const dt: Manager = new ExecaManager();
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
@@ -25,7 +25,7 @@ describe('Check LifecycleManager', () => {
     expect(logs.get('stderr')).toEqual('');
   });
 
-  it('Should not change to invalid phase', async () => {
+  it('Should not execute an invalid command', async () => {
     const dt: Manager = new ExecaManager();
     let status: boolean = true;
 
@@ -34,7 +34,7 @@ describe('Check LifecycleManager', () => {
     expect(status).toBe(false);
   });
 
-  it('Should return correct phase status if there has been no changePhase calls', async () => {
+  it('Should return correct command execution status if there has been no changePhase calls', async () => {
     const expPhaseStatus = {
       name: 'none',
       status: 'invalid',
@@ -49,10 +49,10 @@ describe('Check LifecycleManager', () => {
     expect(commandStatus).toEqual(expPhaseStatus);
   });
 
-  it('Should hold correct phase history', async () => {
+  it('Should hold correct history of command executions', async () => {
     const dt: Manager = new ExecaManager();
     const status: boolean[] = [];
-    const pastPhases: Array<UpdatePhaseDto> = [
+    const pastPhases: Array<ExecuteCommandDto> = [
       {
         name: 'date',
       },
@@ -61,8 +61,8 @@ describe('Check LifecycleManager', () => {
       },
     ];
 
-    pastPhases.map(async (phase) => {
-      await dt.changePhase(phase.name).then(([value]) => {
+    pastPhases.map(async (command) => {
+      await dt.changePhase(command.name).then(([value]) => {
         status.push(value);
       });
     });

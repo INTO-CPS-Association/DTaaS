@@ -1,4 +1,4 @@
-import { UpdatePhaseDto } from 'src/dto/phase.dto.js';
+import { ExecuteCommandDto } from 'src/dto/command.dto.js';
 import Runner from './runner.interface.js';
 
 type Command = {
@@ -18,7 +18,7 @@ type CommandStatus = {
 
 interface Manager {
   changePhase(name: string): Promise<[boolean, Map<string, string>]>;
-  checkHistory(): Array<UpdatePhaseDto>;
+  checkHistory(): Array<ExecuteCommandDto>;
   checkPhase(): CommandStatus;
 }
 

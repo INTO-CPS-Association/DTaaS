@@ -3,7 +3,7 @@ import Queue from 'src/queue.service';
 import { Command } from 'src/interfaces/command.interface';
 import ExecaRunner from 'src/execaRunner';
 
-const phases: Command[] = [
+const commands: Command[] = [
   {
     name: 'hello',
     status: 'valid',
@@ -22,32 +22,32 @@ const phases: Command[] = [
 ];
 
 describe('check Queue service', () => {
-  it('should store a phase', async () => {
+  it('should store a command', async () => {
     const queue: Queue = new Queue();
 
-    expect(queue.enqueue(phases[0])).toBe(true);
+    expect(queue.enqueue(commands[0])).toBe(true);
   });
 
-  it('should return active phase as undefined when queue is empty', async () => {
+  it('should return active command as undefined when queue is empty', async () => {
     const queue: Queue = new Queue();
 
     expect(queue.activePhase()).toBe(undefined);
   });
 
-  it('should return active phase when queue is non-empty', async () => {
+  it('should return active command when queue is non-empty', async () => {
     const queue: Queue = new Queue();
 
-    queue.enqueue(phases[0]);
+    queue.enqueue(commands[0]);
 
-    expect(queue.activePhase()).toBe(phases[0]);
+    expect(queue.activePhase()).toBe(commands[0]);
   });
 
-  it('should return correct active phase when queue has more than one phase', async () => {
+  it('should return correct active command when queue has more than one command', async () => {
     const queue: Queue = new Queue();
 
-    queue.enqueue(phases[0]);
-    queue.enqueue(phases[1]);
+    queue.enqueue(commands[0]);
+    queue.enqueue(commands[1]);
 
-    expect(queue.activePhase()).toBe(phases[1]);
+    expect(queue.activePhase()).toBe(commands[1]);
   });
 });

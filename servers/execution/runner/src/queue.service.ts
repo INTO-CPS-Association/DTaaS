@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from './interfaces/command.interface.js';
-import { UpdatePhaseDto } from './dto/phase.dto.js';
+import { ExecuteCommandDto } from './dto/command.dto.js';
 
 @Injectable()
 export default class Queue {
   private queue: Command[] = [];
 
-  enqueue(phase: Command): boolean {
-    this.queue.push(phase);
+  enqueue(command: Command): boolean {
+    this.queue.push(command);
     return true;
   }
 
-  phaseHistory(): Array<UpdatePhaseDto> {
-    const updatePhaseDto: Array<UpdatePhaseDto> = [];
-    this.queue.map((phase) => updatePhaseDto.push({ name: phase.name }));
-    return updatePhaseDto;
+  phaseHistory(): Array<ExecuteCommandDto> {
+    const updateCommandDto: Array<ExecuteCommandDto> = [];
+    this.queue.map((command) => updateCommandDto.push({ name: command.name }));
+    return updateCommandDto;
   }
 
   activePhase(): Command | undefined {

@@ -8,15 +8,15 @@ import ExecaRunner from './execaRunner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
 import Config from './config/Config.interface.js';
-import { UpdatePhaseDto } from './dto/phase.dto.js';
+import { ExecuteCommandDto } from './dto/command.dto.js';
 
 const config: Config = readConfig();
 
 export default class ExecaManager implements Manager {
-  private phaseQueue: Queue = new Queue();
+  private commandQueue: Queue = new Queue();
 
   async changePhase(name: string): Promise<[boolean, Map<string, string>]> {
-    const phase: Command = {
+    const command: Command = {
       name,
       status: 'invalid',
       task: new ExecaRunner(''),
@@ -25,23 +25,23 @@ export default class ExecaManager implements Manager {
 
     let success: boolean = false;
 
-    phase.task = new ExecaRunner(join(process.cwd(), config.location, name));
-    this.phaseQueue.enqueue(phase);
-    await phase.task.run().then((value) => {
+    command.task = new ExecaRunner(join(process.cwd(), config.location, name));
+    this.commandQueue.enqueue(command);
+    await command.task.run().then((value) => {
       success = value;
-      if (success) phase.status = 'valid';
+      if (success) command.status = 'valid';
     });
-    return [success, phase.task.checkLogs()];
+    return [success, command.task.checkLogs()];
   }
 
   checkPhase(): CommandStatus {
     let commandStatus: CommandStatus;
     const logs: Map<string, string> = new Map<string, string>();
-    const phase: Command | undefined = this.phaseQueue.activePhase();
+    const command: Command | undefined = this.commandQueue.activePhase();
 
     logs.set('stdout', '');
     logs.set('stderr', '');
-    if (phase === undefined) {
+    if (command === undefined) {
       commandStatus = {
         name: 'none',
         status: 'invalid',
@@ -52,19 +52,19 @@ export default class ExecaManager implements Manager {
       };
     } else {
       commandStatus = {
-        name: phase.name,
-        status: phase.status,
+        name: command.name,
+        status: command.status,
         logs: {
-          stdout: phase.task.checkLogs().get('stdout'),
-          stderr: phase.task.checkLogs().get('stderr'),
+          stdout: command.task.checkLogs().get('stdout'),
+          stderr: command.task.checkLogs().get('stderr'),
         },
       };
-      // console.log(phase.task.checkLogs());
+      // console.log(command.task.checkLogs());
     }
     return commandStatus;
   }
 
-  checkHistory(): Array<UpdatePhaseDto> {
-    return this.phaseQueue.phaseHistory();
+  checkHistory(): Array<ExecuteCommandDto> {
+    return this.commandQueue.phaseHistory();
   }
 }

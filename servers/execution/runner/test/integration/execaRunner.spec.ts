@@ -3,7 +3,7 @@ import Runner from 'src/interfaces/runner.interface';
 import ExecaRunner from 'src/execaRunner';
 
 describe('check Execa CMD Runner', () => {
-  it('should execute a valid operating system command', async () => {
+  it('should execute a valid command', async () => {
     const cmdrunner: Runner = new ExecaRunner('date');
 
     expect(await cmdrunner.run()).toBe(true);
@@ -14,7 +14,7 @@ describe('check Execa CMD Runner', () => {
     await cmdrunner.run();
   });
 
-  it('should not succeed in execution of an invalid command too', async () => {
+  it('should not succeed in execution of a command given in incorrect format', async () => {
     const cmdrunner: Runner = new ExecaRunner('asdfghjkl');
     const status: boolean = await cmdrunner.run();
 

@@ -10,27 +10,27 @@ import {
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
 import ExecaManager from './execaManager.service.js';
-import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
+import { ExecuteCommandDto, updateCommandSchema } from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private readonly lifecycle: ExecaManager) {} // eslint-disable-line no-empty-function
+  constructor(private readonly manager: ExecaManager) {} // eslint-disable-line no-empty-function
 
   @Get('history')
-  getHello(): Array<UpdatePhaseDto> {
-    return this.lifecycle.checkHistory();
+  getHello(): Array<ExecuteCommandDto> {
+    return this.manager.checkHistory();
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(updatePhaseSchema))
+  @UsePipes(new ZodValidationPipe(updateCommandSchema))
   async changePhase(
-    @Body() updatePhaseDto: UpdatePhaseDto,
+    @Body() updatePhaseDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
     let success = false;
-    [success] = await this.lifecycle.changePhase(updatePhaseDto.name);
+    [success] = await this.manager.changePhase(updatePhaseDto.name);
     if (success) {
       res.status(HttpStatus.OK).send({
         status: 'success',
@@ -44,6 +44,6 @@ export default class AppController {
 
   @Get()
   async reportPhase(): Promise<CommandStatus> {
-    return this.lifecycle.checkPhase();
+    return this.manager.checkPhase();
   }
 }
