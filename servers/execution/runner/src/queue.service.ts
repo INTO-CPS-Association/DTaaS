@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Phase } from './interfaces/lifecycle.interface.js';
+import { Command } from './interfaces/lifecycle.interface.js';
 import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 @Injectable()
 export default class Queue {
-  private queue: Phase[] = [];
+  private queue: Command[] = [];
 
-  enqueue(phase: Phase): boolean {
+  enqueue(phase: Command): boolean {
     this.queue.push(phase);
     return true;
   }
@@ -17,7 +17,7 @@ export default class Queue {
     return updatePhaseDto;
   }
 
-  activePhase(): Phase | undefined {
+  activePhase(): Command | undefined {
     return this.queue.at(this.queue.length - 1);
   }
 }

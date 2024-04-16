@@ -1,12 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import LifeCycleManager from 'src/lifecycleManager.service';
-import { DTLifeCycle, PhaseStatus } from 'src/interfaces/lifecycle.interface';
+import { Manager, CommandStatus } from 'src/interfaces/lifecycle.interface';
 import { UpdatePhaseDto } from 'src/dto/phase.dto';
 
 describe('Check LifecycleManager', () => {
   it('Should create object', async () => {
     try {
-      const dt: DTLifeCycle = new LifeCycleManager();
+      const dt: Manager = new LifeCycleManager();
       expect(dt).toBeInstanceOf(LifeCycleManager);
     } catch (error) {
       expect(fail);
@@ -14,7 +14,7 @@ describe('Check LifecycleManager', () => {
   });
 
   it('Should change to valid phase', async () => {
-    const dt: DTLifeCycle = new LifeCycleManager();
+    const dt: Manager = new LifeCycleManager();
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
 
@@ -26,7 +26,7 @@ describe('Check LifecycleManager', () => {
   });
 
   it('Should not change to invalid phase', async () => {
-    const dt: DTLifeCycle = new LifeCycleManager();
+    const dt: Manager = new LifeCycleManager();
     let status: boolean = true;
 
     [status] = await dt.changePhase('asdfghjkl');
@@ -43,14 +43,14 @@ describe('Check LifecycleManager', () => {
         stderr: '',
       },
     };
-    const dt: DTLifeCycle = new LifeCycleManager();
+    const dt: Manager = new LifeCycleManager();
 
-    const phaseStatus: PhaseStatus = dt.checkPhase();
-    expect(phaseStatus).toEqual(expPhaseStatus);
+    const commandStatus: CommandStatus = dt.checkPhase();
+    expect(commandStatus).toEqual(expPhaseStatus);
   });
 
   it('Should hold correct phase history', async () => {
-    const dt: DTLifeCycle = new LifeCycleManager();
+    const dt: Manager = new LifeCycleManager();
     const status: boolean[] = [];
     const pastPhases: Array<UpdatePhaseDto> = [
       {

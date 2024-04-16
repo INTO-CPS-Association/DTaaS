@@ -8,7 +8,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { PhaseStatus } from './interfaces/lifecycle.interface.js';
+import { CommandStatus } from './interfaces/lifecycle.interface.js';
 import LifeCycleManager from './lifecycleManager.service.js';
 import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
@@ -43,13 +43,7 @@ export default class AppController {
   }
 
   @Get()
-  async reportPhase(): Promise<PhaseStatus> {
+  async reportPhase(): Promise<CommandStatus> {
     return this.lifecycle.checkPhase();
   }
-  /*
-  @Get('lifecycle/phase')
-  async reportPhase(): Promise<PhaseStatus> {
-    return this.lifecycle.checkPhase();
-  }
-  */
 }

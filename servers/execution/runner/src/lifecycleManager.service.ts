@@ -1,8 +1,8 @@
 import { join } from 'path';
 import {
-  Phase,
-  DTLifeCycle,
-  PhaseStatus,
+  Command,
+  Manager,
+  CommandStatus,
 } from './interfaces/lifecycle.interface.js';
 import ExecaCMDRunner from './execaCMDRunner.js';
 import Queue from './queue.service.js';
@@ -12,11 +12,11 @@ import { UpdatePhaseDto } from './dto/phase.dto.js';
 
 const config: Config = readConfig();
 
-export default class LifeCycleManager implements DTLifeCycle {
+export default class LifeCycleManager implements Manager {
   private phaseQueue: Queue = new Queue();
 
   async changePhase(name: string): Promise<[boolean, Map<string, string>]> {
-    const phase: Phase = {
+    const phase: Command = {
       name,
       status: 'invalid',
       task: new ExecaCMDRunner(''),
@@ -34,15 +34,15 @@ export default class LifeCycleManager implements DTLifeCycle {
     return [success, phase.task.checkLogs()];
   }
 
-  checkPhase(): PhaseStatus {
-    let phaseStatus: PhaseStatus;
+  checkPhase(): CommandStatus {
+    let commandStatus: CommandStatus;
     const logs: Map<string, string> = new Map<string, string>();
-    const phase: Phase | undefined = this.phaseQueue.activePhase();
+    const phase: Command | undefined = this.phaseQueue.activePhase();
 
     logs.set('stdout', '');
     logs.set('stderr', '');
     if (phase === undefined) {
-      phaseStatus = {
+      commandStatus = {
         name: 'none',
         status: 'invalid',
         logs: {
@@ -51,7 +51,7 @@ export default class LifeCycleManager implements DTLifeCycle {
         },
       };
     } else {
-      phaseStatus = {
+      commandStatus = {
         name: phase.name,
         status: phase.status,
         logs: {
@@ -61,7 +61,7 @@ export default class LifeCycleManager implements DTLifeCycle {
       };
       // console.log(phase.task.checkLogs());
     }
-    return phaseStatus;
+    return commandStatus;
   }
 
   checkHistory(): Array<UpdatePhaseDto> {
