@@ -26,11 +26,11 @@ export default class AppController {
   @Post()
   @UsePipes(new ZodValidationPipe(executeCommandSchema))
   async changePhase(
-    @Body() updateCommandDto: ExecuteCommandDto,
+    @Body() executeCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
     let success = false;
-    [success] = await this.manager.newCommand(updateCommandDto.name);
+    [success] = await this.manager.newCommand(executeCommandDto.name);
     if (success) {
       res.status(HttpStatus.OK).send({
         status: 'success',
