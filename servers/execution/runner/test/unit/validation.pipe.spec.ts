@@ -1,7 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { ZodError } from 'zod';
 import ZodValidationPipe from 'src/validation.pipe';
-import { ExecuteCommandDto, updateCommandSchema } from 'src/dto/command.dto';
+import { ExecuteCommandDto, executeCommandSchema } from 'src/dto/command.dto';
 
 describe('Check UpdatePhaseDto validation pipe', () => {
   it('Validation successful for correct json request', async () => {
@@ -9,7 +9,7 @@ describe('Check UpdatePhaseDto validation pipe', () => {
       name: 'create',
     };
     const updateCommandValidator: ZodValidationPipe = new ZodValidationPipe(
-      updateCommandSchema,
+      executeCommandSchema,
     );
 
     expect(updateCommandValidator.transform(updateCommandDto).name).toBe(
@@ -21,6 +21,8 @@ describe('Check UpdatePhaseDto validation pipe', () => {
     const incorrectRequest = {
       name: 10,
     };
-    expect(() => updateCommandSchema.parse(incorrectRequest)).toThrow(ZodError);
+    expect(() => executeCommandSchema.parse(incorrectRequest)).toThrow(
+      ZodError,
+    );
   });
 });

@@ -10,7 +10,7 @@ import {
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
 import ExecaManager from './execaManager.service.js';
-import { ExecuteCommandDto, updateCommandSchema } from './dto/command.dto.js';
+import { ExecuteCommandDto, executeCommandSchema } from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
@@ -24,7 +24,7 @@ export default class AppController {
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(updateCommandSchema))
+  @UsePipes(new ZodValidationPipe(executeCommandSchema))
   async changePhase(
     @Body() updateCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-export const updateCommandSchema = z
+export const executeCommandSchema = z
   .object({
     name: z.string(),
   })
   .required();
 
-export type ExecuteCommandDto = z.infer<typeof updateCommandSchema>;
+export type ExecuteCommandDto = z.infer<typeof executeCommandSchema>;
