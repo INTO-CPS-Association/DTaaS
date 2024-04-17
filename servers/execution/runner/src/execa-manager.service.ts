@@ -5,7 +5,7 @@ import {
   Manager,
   CommandStatus,
 } from './interfaces/command.interface.js';
-import ExecaRunner from './execaRunner.js';
+import ExecaRunner from './execa-runner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
 import Config from './config/Config.interface.js';

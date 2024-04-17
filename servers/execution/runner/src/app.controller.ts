@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
-import ExecaManager from './execaManager.service.js';
+import ExecaManager from './execa-manager.service.js';
 import { ExecuteCommandDto, executeCommandSchema } from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 

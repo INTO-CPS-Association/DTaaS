@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import ExecaManager from 'src/execaManager.service';
+import ExecaManager from 'src/execa-manager.service';
 import { Manager, CommandStatus } from 'src/interfaces/command.interface';
 import { ExecuteCommandDto } from 'src/dto/command.dto';
 import Queue from 'src/queue.service';
