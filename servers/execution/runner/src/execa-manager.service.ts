@@ -5,30 +5,30 @@ import {
   Manager,
   CommandStatus,
 } from './interfaces/command.interface.js';
-import ExecaRunner from './execa-runner.js';
 import Queue from './queue.service.js';
 import readConfig from './config/configuration.js';
 import Config from './config/Config.interface.js';
 import { ExecuteCommandDto } from './dto/command.dto.js';
+import RunnerFactory from './runner-factory.service.js';
 
 const config: Config = readConfig();
 
 @Injectable()
 export default class ExecaManager implements Manager {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private commandQueue: Queue) {} // eslint-disable-line no-empty-function
+  constructor(private commandQueue: Queue, private runnerFactory: RunnerFactory) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
     const command: Command = {
       name,
       status: 'invalid',
-      task: new ExecaRunner(''),
+      task: this.runnerFactory.create(''),
       // task attribute is deliberately left empty
     };
 
     let success: boolean = false;
 
-    command.task = new ExecaRunner(join(process.cwd(), config.location, name));
+    command.task = this.runnerFactory.create(join(process.cwd(), config.location, name));
     this.commandQueue.enqueue(command);
     await command.task.run().then((value) => {
       success = value;
