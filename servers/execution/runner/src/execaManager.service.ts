@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { Injectable } from '@nestjs/common';
 import {
   Command,
   Manager,
@@ -12,8 +13,10 @@ import { ExecuteCommandDto } from './dto/command.dto.js';
 
 const config: Config = readConfig();
 
+@Injectable()
 export default class ExecaManager implements Manager {
-  private commandQueue: Queue = new Queue();
+  // eslint-disable-next-line no-useless-constructor
+  constructor(private commandQueue: Queue) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
     const command: Command = {
@@ -36,11 +39,8 @@ export default class ExecaManager implements Manager {
 
   checkStatus(): CommandStatus {
     let commandStatus: CommandStatus;
-    const logs: Map<string, string> = new Map<string, string>();
     const command: Command | undefined = this.commandQueue.activeCommand();
 
-    logs.set('stdout', '');
-    logs.set('stderr', '');
     if (command === undefined) {
       commandStatus = {
         name: 'none',

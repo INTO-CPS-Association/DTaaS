@@ -2,11 +2,12 @@ import { describe, expect, it } from '@jest/globals';
 import ExecaManager from 'src/execaManager.service';
 import { Manager, CommandStatus } from 'src/interfaces/command.interface';
 import { ExecuteCommandDto } from 'src/dto/command.dto';
+import Queue from 'src/queue.service';
 
 describe('Check execution manager based on execa library', () => {
   it('Should create object', async () => {
     try {
-      const dt: Manager = new ExecaManager();
+      const dt: Manager = new ExecaManager(new Queue());
       expect(dt).toBeInstanceOf(ExecaManager);
     } catch (error) {
       expect(fail);
@@ -14,7 +15,7 @@ describe('Check execution manager based on execa library', () => {
   });
 
   it('Should execute a valid command', async () => {
-    const dt: Manager = new ExecaManager();
+    const dt: Manager = new ExecaManager(new Queue());
     let status: boolean = false;
     let logs: Map<string, string> = new Map<string, string>();
 
@@ -26,7 +27,7 @@ describe('Check execution manager based on execa library', () => {
   });
 
   it('Should not execute an invalid command', async () => {
-    const dt: Manager = new ExecaManager();
+    const dt: Manager = new ExecaManager(new Queue());
     let status: boolean = true;
 
     [status] = await dt.newCommand('asdfghjkl');
@@ -43,14 +44,14 @@ describe('Check execution manager based on execa library', () => {
         stderr: '',
       },
     };
-    const dt: Manager = new ExecaManager();
+    const dt: Manager = new ExecaManager(new Queue());
 
     const commandStatus: CommandStatus = dt.checkStatus();
     expect(commandStatus).toEqual(expPhaseStatus);
   });
 
   it('Should hold correct history of command executions', async () => {
-    const dt: Manager = new ExecaManager();
+    const dt: Manager = new ExecaManager(new Queue());
     const status: boolean[] = [];
     const pastPhases: Array<ExecuteCommandDto> = [
       {
