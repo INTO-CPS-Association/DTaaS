@@ -16,19 +16,21 @@ const config: Config = readConfig();
 @Injectable()
 export default class ExecaManager implements Manager {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private commandQueue: Queue, private runnerFactory: RunnerFactory) {} // eslint-disable-line no-empty-function
+  constructor(private commandQueue: Queue) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
     const command: Command = {
       name,
       status: 'invalid',
-      task: this.runnerFactory.create(''),
+      task: RunnerFactory.create(''),
       // task attribute is deliberately left empty
     };
 
     let success: boolean = false;
 
-    command.task = this.runnerFactory.create(join(process.cwd(), config.location, name));
+    command.task = RunnerFactory.create(
+      join(process.cwd(), config.location, name),
+    );
     this.commandQueue.enqueue(command);
     await command.task.run().then((value) => {
       success = value;

@@ -4,7 +4,7 @@ import ExecaRunner from './execa-runner.js';
 
 @Injectable()
 export default class RunnerFactory {
-  create(command: string): Runner {
+  static create(command: string): Runner {
     return new ExecaRunner(command);
   }
 }

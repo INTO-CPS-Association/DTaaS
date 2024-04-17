@@ -15,12 +15,12 @@ describe('Check RunnerFactoryService', () => {
     service = module.get<RunnerFactory>(RunnerFactory);
   });
 
-  it('should create new ExecaRunner object', () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should be defined', () => {
-    const runner: Runner = service.create('date');
+  it('should create new ExecaRunner object', () => {
+    const runner: Runner = RunnerFactory.create('date');
     expect(runner).toBeInstanceOf(ExecaRunner);
   });
 });
