@@ -2,8 +2,8 @@
 
 import { NestFactory } from '@nestjs/core';
 import AppModule from './app.module.js';
-import Config from './config/Config.interface.js';
-import readConfig from './config/configuration.js';
+import { ConfigValues } from './config/Config.interface.js';
+import { readConfigDefault } from './config/configuration.service.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -11,7 +11,7 @@ See: https://stackoverflow.com/questions/62619058/appending-js-extension-on-rela
      https://github.com/microsoft/TypeScript/issues/16577
 */
 
-const config: Config = readConfig();
+const config: ConfigValues = readConfigDefault();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

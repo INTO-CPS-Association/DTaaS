@@ -1,10 +1,13 @@
-export type Command = {
+export type PermitCommand = {
   name: string;
   executable: string;
 };
 
-export default interface Config {
+export type ConfigValues = {
   port: number;
+  // os-compatible relative filepath of the config yaml file.
+  // The relative filepath is with reference to the execution
+  // directory of the runner
   location: string;
-  commands: Array<Command>;
-}
+  commands: Array<PermitCommand>;
+};

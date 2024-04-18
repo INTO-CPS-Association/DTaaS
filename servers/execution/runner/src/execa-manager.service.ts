@@ -6,12 +6,12 @@ import {
   CommandStatus,
 } from './interfaces/command.interface.js';
 import Queue from './queue.service.js';
-import readConfig from './config/configuration.js';
-import Config from './config/Config.interface.js';
+import { readConfigDefault } from './config/configuration.service.js';
+import { ConfigValues } from './config/Config.interface.js';
 import { ExecuteCommandDto } from './dto/command.dto.js';
 import RunnerFactory from './runner-factory.service.js';
 
-const config: Config = readConfig();
+const config: ConfigValues = readConfigDefault();
 
 @Injectable()
 export default class ExecaManager implements Manager {
