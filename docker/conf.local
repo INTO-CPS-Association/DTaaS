@@ -6,6 +6,3 @@ rule.onlyu1.rule=PathPrefix(`/user1`)
 
 rule.onlyu2.action=allow
 rule.onlyu2.rule=PathPrefix(`/user2`)
-
-rule.onlyu3.action=allow
-rule.onlyu3.rule=PathPrefix(`/user3`)
