@@ -192,11 +192,11 @@ rule.onlyu3.whitelist = user3@emailservice.com
 Run the appropritate command for a server/local installation:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
 ```bash
-docker compose -f compose.local.yml --env-file .env up -d --force-recreate
+docker compose -f compose.local.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
 The new users are now added to the DTaaS instance, with authorization enabled.
