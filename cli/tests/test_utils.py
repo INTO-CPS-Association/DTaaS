@@ -33,41 +33,9 @@ def test_import_yaml_users():
     assert template==expected
 
 def test_import_yaml_compose():
-    expected = {
-        "version": '3',
-        "services":{
-            "astitvasehgal05":{
-                "image": "mltooling/ml-workspace-minimal:0.13.2",
-                "volumes": [
-                "/home/astitva/Desktop/yamlstuff/files/common:/workspace/common",
-                "/home/astitva/Desktop/yamlstuff/files/astitvasehgal05:/workspace"
-                ],
-                "environment":[
-                "AUTHENTICATE_VIA_JUPYTER=",
-                "WORKSPACE_BASE_URL=astitvasehgal05"
-                ],
-                "shm_size": "512m",
-                "labels": [
-                "traefik.enable=true",
-                "traefik.http.routers.astitvasehgal05.entryPoints=web",
-                "traefik.http.routers.astitvasehgal05.rule=PathPrefix(`/astitvasehgal05`)",
-                "traefik.http.routers.astitvasehgal05.middlewares=traefik-forward-auth"
-                ],
-                "networks":[
-                    "users"
-                ]
-            }
+    expected = getTestComposeObject()
 
-        },
-        "networks":{
-            "users":{
-                "name":"dtaas-users",
-                "external": True,
-            }
-        }
-    }
-
-    compose, err = utils.importYaml('src/test_units/compose.users.test.yml')
+    compose, err = utils.importYaml('tests/compose.users.test.yml')
     if err is not None:
         raise Exception(err)
     assert expected==compose
@@ -79,7 +47,7 @@ def test_import_toml():
     
     expected = {
         "name" : "Digital Twin as a Service (DTaaS)",
-        "version" : "0.1",
+        "version" : "0.1.0",
         "owner" : "The INTO-CPS-Association",
         "git-repo" : "https://github.com/into-cps-association/DTaaS.git",
 
@@ -90,16 +58,16 @@ def test_import_toml():
         },
         "users":{
             # matching user info must present in this config file
-            "add" : ["astitvasehgal05","astitvasehgal19", "prasad"],
-            "delete" : ["astitvasehgal19", "prasad"],
+            "add" : ["username1","username2", "username3"],
+            "delete" : ["username2", "username3"],
 
-            "astitvasehgal05" :{
+            "username1" :{
             "email" : "username1@gitlab.foo.com"
             },
-            "astitvasehgal19" :{
+            "username2" :{
             "email" : "username2@gitlab.foo.com"
             },
-            "prasad" : {
+            "username3" : {
             "email" : "username3@gitlab.foo.com"
             }
         },
@@ -179,7 +147,16 @@ def test_replace_all():
 
 def test_export_yaml():
 
-    data = {
+    data = getTestComposeObject()
+
+    err = utils.exportYaml(data, 'tests/compose.users.exp.yml')
+    if err is not None:
+        raise Exception(err)
+    
+    assert filecmp.cmp('tests/compose.users.test.yml', 'tests/compose.users.exp.yml')
+
+def getTestComposeObject():
+    testCompose = {
         "version": '3',
         "services":{
             "astitvasehgal05":{
@@ -210,8 +187,4 @@ def test_export_yaml():
         }
     }
 
-    err = utils.exportYaml(data, 'src/test_units/compose.users.exp.yml')
-    if err is not None:
-        raise Exception(err)
-    
-    assert filecmp.cmp('src/test_units/compose.users.test.yml', 'src/test_units/compose.users.exp.yml')
+    return testCompose

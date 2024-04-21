@@ -1,7 +1,6 @@
 """ This file defines all cli entrypoints for dtaas"""
 
 import click
-#from . import service
 from .pkg import config as configPkg
 from .pkg import users as userPkg
 
