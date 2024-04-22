@@ -1,27 +1,32 @@
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { ConfigValues, PermitCommand } from './Config.interface';
+import { Injectable } from '@nestjs/common';
+import { ConfigValues } from './Config.interface';
 
 const YAML_CONFIG_FILENAME = 'runner.yaml';
 
+@Injectable()
 export default class Config {
+  private configValues: ConfigValues = {
+    port: 5000,
+    location: 'script',
+    commands: ['create'],
+  };
   // eslint-disable-next-line no-useless-constructor
-  constructor(private configValues: ConfigValues) {} // eslint-disable-line no-empty-function
+  // constructor(private configValues: ConfigValues) {} // eslint-disable-line no-empty-function
 
-  permitCommands(): Array<PermitCommand> {
+  permitCommands(): Array<string> {
     return this.configValues.commands;
   }
 
   getPort(): number {
     return this.configValues.port;
   }
-}
 
-export function readConfig(filename: string): ConfigValues {
-  return yaml.load(
-    readFileSync(join(process.cwd(), filename), 'utf8'),
-  ) as ConfigValues;
+  getLocation(): string {
+    return this.configValues.location;
+  }
 }
 
 export function readConfigDefault(): ConfigValues {

@@ -1,3 +1,4 @@
+// unused type
 export type PermitCommand = {
   name: string;
   executable: string;
@@ -9,5 +10,5 @@ export type ConfigValues = {
   // The relative filepath is with reference to the execution
   // directory of the runner
   location: string;
-  commands: Array<PermitCommand>;
+  commands: Array<string>;
 };

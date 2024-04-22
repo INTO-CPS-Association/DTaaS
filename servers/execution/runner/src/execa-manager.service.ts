@@ -6,17 +6,17 @@ import {
   CommandStatus,
 } from './interfaces/command.interface.js';
 import Queue from './queue.service.js';
-import { readConfigDefault } from './config/configuration.service.js';
-import { ConfigValues } from './config/Config.interface.js';
 import { ExecuteCommandDto } from './dto/command.dto.js';
 import RunnerFactory from './runner-factory.service.js';
-
-const config: ConfigValues = readConfigDefault();
+import Config from './config/configuration.service.js';
 
 @Injectable()
 export default class ExecaManager implements Manager {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private commandQueue: Queue) {} // eslint-disable-line no-empty-function
+  constructor(
+    private commandQueue: Queue,
+    private config: Config = new Config(),
+  ) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
     const command: Command = {
@@ -29,7 +29,7 @@ export default class ExecaManager implements Manager {
     let success: boolean = false;
 
     command.task = RunnerFactory.create(
-      join(process.cwd(), config.location, name),
+      join(process.cwd(), this.config.getLocation(), name),
     );
     this.commandQueue.enqueue(command);
     await command.task.run().then((value) => {
