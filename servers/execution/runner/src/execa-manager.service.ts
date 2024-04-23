@@ -15,22 +15,18 @@ export default class ExecaManager implements Manager {
   // eslint-disable-next-line no-useless-constructor
   constructor(
     private commandQueue: Queue,
-    private config: Config = new Config(),
+    private config: Config,
   ) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
+    let success: boolean = false;
     const command: Command = {
       name,
       status: 'invalid',
-      task: RunnerFactory.create(''),
-      // task attribute is deliberately left empty
+      task: RunnerFactory.create(
+        join(process.cwd(), this.config.getLocation(), name),
+      ),
     };
-
-    let success: boolean = false;
-
-    command.task = RunnerFactory.create(
-      join(process.cwd(), this.config.getLocation(), name),
-    );
     this.commandQueue.enqueue(command);
     await command.task.run().then((value) => {
       success = value;
@@ -61,7 +57,6 @@ export default class ExecaManager implements Manager {
           stderr: command.task.checkLogs().get('stderr'),
         },
       };
-      // console.log(command.task.checkLogs());
     }
     return commandStatus;
   }
