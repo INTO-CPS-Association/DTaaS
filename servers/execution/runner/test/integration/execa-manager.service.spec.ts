@@ -4,13 +4,14 @@ import ExecaManager from 'src/execa-manager.service';
 import { Manager, CommandStatus } from 'src/interfaces/command.interface';
 import { ExecuteCommandDto } from 'src/dto/command.dto';
 import Queue from 'src/queue.service';
+import Config from 'src/config/configuration.service';
 
 describe('Check execution manager based on execa library', () => {
   let dt: Manager;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ExecaManager, Queue],
+      providers: [ExecaManager, Queue, Config],
     }).compile();
 
     dt = module.get<Manager>(ExecaManager);
