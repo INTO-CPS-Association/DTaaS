@@ -1,6 +1,9 @@
 import { Command } from 'commander';
+import Keyv from 'keyv';
+import { ConfigValues } from './Config.interface';
 
 const program = new Command('runner');
+const keyv = new Keyv();
 
 program
   .description(
@@ -16,6 +19,11 @@ program
 
 program.parse(process.argv);
 const options = program.opts();
-
 // eslint-disable-next-line no-console
 console.log(options.config);
+
+if (options.config !== undefined) {
+  const config: ConfigValues = options.config;
+  await keyv.set('configValues', config);
+  console.log(await keyv.get('configValues'));
+}
