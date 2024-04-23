@@ -1,13 +1,12 @@
 import { Command } from 'commander';
 import Keyv from 'keyv';
-import { ConfigValues } from './Config.interface';
 
 const program = new Command('runner');
 const keyv = new Keyv();
 
 program
   .description(
-    'Runner is a remote code execution server accessible via REST API.',
+    'Remote code execution for humans',
   )
   .option(
     '-c --config <string>',
@@ -23,7 +22,7 @@ const options = program.opts();
 console.log(options.config);
 
 if (options.config !== undefined) {
-  const config: ConfigValues = options.config;
-  await keyv.set('configValues', config);
-  console.log(await keyv.get('configValues'));
+  const configFile: string = options.config;
+  await keyv.set('configFile', configFile);
+  console.log(await keyv.get('configFile'));
 }

@@ -12,3 +12,9 @@ export type ConfigValues = {
   location: string;
   commands: Array<string>;
 };
+
+export const configDefault: ConfigValues = {
+  port: 5000,
+  location: 'script',
+  commands: ['create'],
+};
