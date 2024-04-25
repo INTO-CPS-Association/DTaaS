@@ -12,6 +12,8 @@ See: https://stackoverflow.com/questions/62619058/appending-js-extension-on-rela
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(new Config().getPort());
+  const config = app.get(Config);
+  await config.loadConfig();
+  await app.listen(config.getPort());
 }
 bootstrap();

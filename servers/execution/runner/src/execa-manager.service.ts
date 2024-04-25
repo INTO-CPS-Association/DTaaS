@@ -28,6 +28,7 @@ export default class ExecaManager implements Manager {
       ),
     };
     this.commandQueue.enqueue(command);
+    await this.config.loadConfig();
     await command.task.run().then((value) => {
       success = value;
       if (success) command.status = 'valid';
