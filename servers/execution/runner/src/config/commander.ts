@@ -1,4 +1,7 @@
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import chalk from 'chalk';
 import Keyv from 'keyv';
 
 export default async function CLI(): Promise<Keyv> {
@@ -17,14 +20,17 @@ export default async function CLI(): Promise<Keyv> {
 
   program.parse(process.argv);
   const options = program.opts();
-  // eslint-disable-next-line no-console
-  console.log(options.config);
 
   if (options.config !== undefined) {
     const configFile: string = options.config;
+    try {
+      readFileSync(join(process.cwd(), configFile.toString()), 'utf8');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(chalk.bold.redBright('Config file can not be read. Exiting'));
+      throw new Error('Invalid configuration');
+    }
     await keyv.set('configFile', configFile);
-    // eslint-disable-next-line no-console
-    console.log(await keyv.get('configFile'));
   }
   return keyv;
 }
