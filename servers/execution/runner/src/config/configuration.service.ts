@@ -5,22 +5,15 @@ import { Injectable } from '@nestjs/common';
 import Keyv from 'keyv';
 import { configDefault, ConfigValues } from './config.interface.js';
 
-const YAML_CONFIG_FILENAME = 'runner.yaml';
-
 @Injectable()
 export default class Config {
   private configValues: ConfigValues = configDefault;
 
-  private keyv = new Keyv();
-
-  async loadConfig(): Promise<void> {
-    const configFile = this.keyv.get('configFile');
-    /*     console.log(typeof configFile);
-    console.log(configFile); */
+  async loadConfig(CLIOptions: Keyv): Promise<void> {
+    const configFile = await CLIOptions.get('configFile');
     if (configFile !== undefined) {
       this.configValues = yaml.load(
-        /*         readFileSync(join(process.cwd(), configFile.toString()), 'utf8'), */
-        readFileSync(join(process.cwd(), YAML_CONFIG_FILENAME), 'utf8'),
+        readFileSync(join(process.cwd(), configFile.toString()), 'utf8'),
       ) as ConfigValues;
     }
   }
@@ -37,10 +30,3 @@ export default class Config {
     return this.configValues.location;
   }
 }
-
-/* export function readConfigDefault(): ConfigValues {
-  return yaml.load(
-    readFileSync(join(process.cwd(), YAML_CONFIG_FILENAME), 'utf8'),
-  ) as ConfigValues;
-}
- */
