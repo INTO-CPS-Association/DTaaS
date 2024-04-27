@@ -46,27 +46,27 @@ def addUsersToCompose(users, compose, server, path):
 def startUserContainers(users):
     """Starts all the user containers in the 'users' list"""
 
-    cmd = ["docker compose -f compose.users.yml up -d"]
-    for username in users:
-        cmd.append(username)
-
-    cmdStr = " ".join(cmd)
-    result = subprocess.run(cmdStr, shell=True, check=False)
-    if result.returncode !=0:
-        return Exception("failed to start containers")
-    return None
+    cmd = "docker compose -f compose.users.yml up -d"
+    err = runCommandForContainers(cmd, users)
+    return err
 
 def stopUserContainers(users):
     """Stops all the user containers in the 'users' list"""
 
-    cmd = ["docker compose -f 'compose.users.yml' down"]
-    for username in users:
-        cmd.append(username)
+    cmd = "docker compose -f 'compose.users.yml' down"
+    err = runCommandForContainers(cmd, users)
+    return err
+
+def runCommandForContainers(command, containers):
+
+    cmd = [command]
+    for name in containers:
+        cmd.append(name)
 
     cmdStr = " ".join(cmd)
     result = subprocess.run(cmdStr, shell=True, check=False)
-    if result.returncode != 0:
-        return Exception("failed to stop containers")
+    if result.returncode !=0:
+        return Exception(f"failed to run '{cmdStr}' command")
     return None
 
 def addUsers(configObj):
