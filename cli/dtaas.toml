@@ -8,7 +8,7 @@ git-repo = "https://github.com/into-cps-association/DTaaS.git"
 [common]
 # absolute path to the DTaaS application directory
 server-dns = "localhost"
-path = "/home/Desktop/yamlstuff"
+path = "/home/Desktop/DTaaS"
 
 [users]
 # matching user info must present in this config file
@@ -25,4 +25,4 @@ email = "username2@gitlab.foo.com"
 email = "username3@gitlab.foo.com"
 
 [client.web]
-config = "/home/Desktop/yamlstuff/env.local.js"
+config = "/home/Desktop/DTaaS/env.local.js"
