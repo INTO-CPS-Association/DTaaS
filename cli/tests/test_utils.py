@@ -54,7 +54,7 @@ def test_import_toml():
         "common":{
         # absolute path to the DTaaS application directory
         "server-dns" : "localhost",
-        "path" : "/home/astitva/Desktop/yamlstuff"
+        "path" : "/home/Desktop/DTaaS"
         },
         "users":{
             # matching user info must present in this config file
@@ -75,7 +75,7 @@ def test_import_toml():
         "client":{
             "web":
                 {
-                "config" : "/home/astitva/Desktop/yamlstuff/env.local.js"
+                "config" : "/home/Desktop/DTaaS/env.local.js"
                 }
         }
     }

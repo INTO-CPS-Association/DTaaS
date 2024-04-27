@@ -95,6 +95,17 @@ _test_*_.py_. To run all tests, with coverage:
 pytest --cov
 ```
 
+### Caveat
+
+Before running all tests, remember to set the appropriate
+_path_ in _dtaas.toml_. Also set this same path in the
+dictionary in test_utils.py, in the test_import_toml
+function.
+
+This is to be done because the integration tests in test_cli.py
+directly run cli commands for add, delete which will fail
+if the DTaaS path directly isn't set correctly.
+
 ## Publishing
 
 The CLI is published to [PyPI](https://pypi.org/).
