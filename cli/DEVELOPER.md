@@ -22,6 +22,11 @@ The CLI is coded in python, and uses the following important modules:
   has been wrapped in a funciton in _cli/src/pkg/utils.py_ file.
   This function should be used directly to read toml files.
 
+- [Poetry Package](https://python-poetry.org/docs/) to manage
+  dependencies and build the CLI. The configuration file for this is
+  _cli/pyproject.toml_. New source packages and dependencies need to be
+  added here.
+
 ## Code Structure
 
 The CLI has two layers of code:
@@ -35,17 +40,26 @@ The CLI has two layers of code:
   singleton Config class, which is used throughout the CLI. Additionally,
   it contains the handling functions for each CLI. These functions perform
   the actual operations that the CLI command is responsible for. It also
-  has helper functions that can be used across the CLI. 
+  has helper functions that can be used across the CLI.
 
-## Poetry
+## Setup
 
-We use [Poetry Package](https://python-poetry.org/docs/) to manage dependencies and build the CLI. The configuration file for this is
-_cli/pyproject.toml_. New source packages and dependencies need to be
-added here.
+Switch to the cli directory:
 
-## Usage
+```bash
+cd cli
+```
 
-To test new changes, or the existing working CLI:
+Install all required python packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Development
+
+Work on the development by making changes to _cli/src_.
+To test these changes:
 
 - Install relevant dependencies
 
@@ -57,4 +71,37 @@ poetry install
 
 ```bash
 poetry build
+```
+
+## Linting checks
+
+To perform linting checks on the code:
+
+```bash
+pylint cli/src
+```
+
+## Testing
+
+Write automation tests for the new code written in the
+_cli/tests_ directory. Be sure to name any new files as
+_test_*_.py_. To run all tests, with coverage:
+
+```bash
+pytest --cov
+```
+
+## Publishing
+
+The CLI is published to [PyPI](https://pypi.org/).
+Once new changes to the CLI are merged to the DTaaS
+repository, the CLI is also published to the official
+DTaaS PyPI account. 
+
+Additionally, to test your changes as they would be
+in a published package, you can create your own PyPI
+account, create and add an [API token](https://pypi.org/help/#apitoken), and publish your package to PyPI using poetry:
+
+```bash
+poetry publish
 ```
