@@ -1,28 +1,28 @@
 import { describe, it, expect } from '@jest/globals';
-import CMDRunner from 'src/interfaces/CMDRunner.interface';
-import ExecaCMDRunner from 'src/execaCMDRunner';
+import Runner from 'src/interfaces/runner.interface';
+import ExecaRunner from 'src/execaRunner';
 
-describe('check Execa CMD Runner', () => {
-  it('should execute a valid operating system command', async () => {
-    const cmdrunner: CMDRunner = new ExecaCMDRunner('date');
+describe('check command Runner based on execa library', () => {
+  it('should execute a valid command', async () => {
+    const cmdrunner: Runner = new ExecaRunner('date');
 
     expect(await cmdrunner.run()).toBe(true);
   });
 
   it('should attempt execution of an invalid command', async () => {
-    const cmdrunner: CMDRunner = new ExecaCMDRunner('asdfghjkl');
+    const cmdrunner: Runner = new ExecaRunner('asdfghjkl');
     await cmdrunner.run();
   });
 
-  it('should not succeed in execution of an invalid command too', async () => {
-    const cmdrunner: CMDRunner = new ExecaCMDRunner('asdfghjkl');
+  it('should not succeed in execution of a command given in incorrect format', async () => {
+    const cmdrunner: Runner = new ExecaRunner('asdfghjkl');
     const status: boolean = await cmdrunner.run();
 
     expect(status).toBe(false);
   });
 
   it('should capture single line output log', async () => {
-    const cmdrunner: CMDRunner = new ExecaCMDRunner('date');
+    const cmdrunner: Runner = new ExecaRunner('date');
 
     const status: boolean = await cmdrunner.run();
     const logs: Map<string, string> = cmdrunner.checkLogs();

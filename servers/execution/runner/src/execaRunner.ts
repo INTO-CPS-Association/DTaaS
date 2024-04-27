@@ -1,7 +1,7 @@
 import { execa } from 'execa';
-import CMDRunner from './interfaces/CMDRunner.interface.js';
+import Runner from './interfaces/runner.interface.js';
 
-export default class ExecaCMDRunner implements CMDRunner {
+export default class ExecaRunner implements Runner {
   command: string;
 
   stdin?: string;

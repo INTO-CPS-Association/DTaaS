@@ -1,24 +1,28 @@
 import { describe, it, expect } from '@jest/globals';
 import { ZodError } from 'zod';
 import ZodValidationPipe from 'src/validation.pipe';
-import { UpdatePhaseDto, updatePhaseSchema } from 'src/dto/phase.dto';
+import { ExecuteCommandDto, executeCommandSchema } from 'src/dto/command.dto';
 
 describe('Check UpdatePhaseDto validation pipe', () => {
   it('Validation successful for correct json request', async () => {
-    const updatePhaseDto: UpdatePhaseDto = {
+    const updateCommandDto: ExecuteCommandDto = {
       name: 'create',
     };
-    const updatePhaseValidator: ZodValidationPipe = new ZodValidationPipe(
-      updatePhaseSchema,
+    const updateCommandValidator: ZodValidationPipe = new ZodValidationPipe(
+      executeCommandSchema,
     );
 
-    expect(updatePhaseValidator.transform(updatePhaseDto).name).toBe('create');
+    expect(updateCommandValidator.transform(updateCommandDto).name).toBe(
+      'create',
+    );
   });
 
   it('zod schema validator works correctly', async () => {
     const incorrectRequest = {
       name: 10,
     };
-    expect(() => updatePhaseSchema.parse(incorrectRequest)).toThrow(ZodError);
+    expect(() => executeCommandSchema.parse(incorrectRequest)).toThrow(
+      ZodError,
+    );
   });
 });

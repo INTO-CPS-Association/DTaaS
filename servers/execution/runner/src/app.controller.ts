@@ -8,29 +8,29 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { PhaseStatus } from './interfaces/lifecycle.interface.js';
-import LifeCycleManager from './lifecycleManager.service.js';
-import { UpdatePhaseDto, updatePhaseSchema } from './dto/phase.dto.js';
+import { CommandStatus } from './interfaces/command.interface.js';
+import ExecaManager from './execaManager.service.js';
+import { ExecuteCommandDto, executeCommandSchema } from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private readonly lifecycle: LifeCycleManager) {} // eslint-disable-line no-empty-function
+  constructor(private readonly manager: ExecaManager) {} // eslint-disable-line no-empty-function
 
   @Get('history')
-  getHello(): Array<UpdatePhaseDto> {
-    return this.lifecycle.checkHistory();
+  getHello(): Array<ExecuteCommandDto> {
+    return this.manager.checkHistory();
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(updatePhaseSchema))
+  @UsePipes(new ZodValidationPipe(executeCommandSchema))
   async changePhase(
-    @Body() updatePhaseDto: UpdatePhaseDto,
+    @Body() executeCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
     let success = false;
-    [success] = await this.lifecycle.changePhase(updatePhaseDto.name);
+    [success] = await this.manager.newCommand(executeCommandDto.name);
     if (success) {
       res.status(HttpStatus.OK).send({
         status: 'success',
@@ -43,13 +43,7 @@ export default class AppController {
   }
 
   @Get()
-  async reportPhase(): Promise<PhaseStatus> {
-    return this.lifecycle.checkPhase();
+  async cmdStatus(): Promise<CommandStatus> {
+    return this.manager.checkStatus();
   }
-  /*
-  @Get('lifecycle/phase')
-  async reportPhase(): Promise<PhaseStatus> {
-    return this.lifecycle.checkPhase();
-  }
-  */
 }
