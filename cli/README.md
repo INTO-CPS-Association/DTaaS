@@ -100,6 +100,7 @@ Then simply:
 ```bash
 dtaas admin user delete
 ```
+
 ### Additional Points to Remember
 
 - The base DTaaS system should be up and

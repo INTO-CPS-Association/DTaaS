@@ -100,7 +100,7 @@ pytest --cov
 The CLI is published to [PyPI](https://pypi.org/).
 Once new changes to the CLI are merged to the DTaaS
 repository, the CLI is also published to the official
-DTaaS PyPI account. 
+DTaaS PyPI account.
 
 Additionally, to test your changes as they would be
 in a published package, you can create your own PyPI

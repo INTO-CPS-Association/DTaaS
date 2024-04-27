@@ -42,31 +42,35 @@ def replaceAll(obj, mapping):
         return obj, err
 
     if isinstance(obj,list):
-
-        for ind, val in enumerate(obj):
-            obj[ind], err = replaceAll(val, mapping)
-            if err is not None:
-                return None, err
-        return obj, None
+        obj, err = replaceList(obj, mapping)
+        return obj, err
 
     if isinstance(obj,dict):
-
-        for key in obj:
-            if not isinstance(key,str):
-                return None, Exception("Config substitution failed: Key is not a string")
-            obj[key], err = replaceAll(obj[key], mapping)
-            if err is not None:
-                return None, err
-        return obj, None
+        obj, err = replaceDict(obj, mapping)
+        return obj, err
 
     return None, Exception("Config substition failed: Object format not valid")
 
-def replaceString(obj, mapping):
+def replaceString(s, mapping):
     for key in mapping:
-        obj = obj.replace(key, mapping[key])
-    return obj, None
+        s = s.replace(key, mapping[key])
+    return s, None
 
+def replaceList(arr, mapping):
+    for ind, val in enumerate(arr):
+        arr[ind], err = replaceAll(val, mapping)
+        if err is not None:
+            return None, err
+    return arr, None
 
+def replaceDict(dictionary, mapping):
+    for key in dictionary:
+        if not isinstance(key,str):
+            return None, Exception("Config substitution failed: Key is not a string")
+        dictionary[key], err = replaceAll(dictionary[key], mapping)
+        if err is not None:
+            return None, err
+    return dictionary, None
 
 def checkError(err):
     if err is not None:
