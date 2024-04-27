@@ -36,10 +36,14 @@ The CLI has two layers of code:
   CLI commands itself. The CLI functions in this file call
   the Package layer functions.
 
-- Package layer: This is the _cli/src/pkg_ directory. It contains the
-  singleton Config class, which is used throughout the CLI. Additionally,
-  it contains the handling functions for each CLI. These functions perform
-  the actual operations that the CLI command is responsible for. It also
+- Package layer: This is the _cli/src/pkg_ directory.
+  It contains the
+  singleton Config class, which is used throughout the CLI.
+  Additionally,
+  it contains the handling functions for each CLI.
+  These functions perform
+  the actual operations that the CLI command
+  is responsible for. It also
   has helper functions that can be used across the CLI.
 
 ## Setup
@@ -100,7 +104,8 @@ DTaaS PyPI account.
 
 Additionally, to test your changes as they would be
 in a published package, you can create your own PyPI
-account, create and add an [API token](https://pypi.org/help/#apitoken), and publish your package to PyPI using poetry:
+account, create and add an [API token](https://pypi.org/help/#apitoken),
+and publish your package to PyPI using poetry:
 
 ```bash
 poetry publish

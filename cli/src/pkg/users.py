@@ -71,7 +71,6 @@ def stopUserContainers(users):
 
 def addUsers(configObj):
     """add cli command handler"""
-    print("hihi")
     try:
         compose, err = utils.importYaml('compose.users.yml')
         utils.checkError(err)
@@ -119,18 +118,15 @@ def deleteUser(configObj):
         utils.checkError(err)
         err = stopUserContainers(userList)
         utils.checkError(err)
+
+        for username in userList:
+            if 'services' in compose and username in compose['services']:
+                del compose['services'][username]
+
+        err = utils.exportYaml(compose, 'compose.users.yml')
+        utils.checkError(err)
+    
     except Exception as e:
         return e
-
-    for username in userList:
-        if 'services' not in compose:
-            return None
-        if username not in compose['services']:
-            return None
-        del compose['services'][username]
-
-    err = utils.exportYaml(compose, 'compose.users.yml')
-    if err is not None:
-        return err
     
     return None

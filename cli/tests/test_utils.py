@@ -84,53 +84,9 @@ def test_import_toml():
 
 def test_replace_all():
 
-    template = {
-        "key1": "stringval1",
-        "key2": ["listval1", "listval2", "listval3"],
-        "dictkey1":{
-            "dict1key1": "stringval2",
-            "dict2key2": ["listval1","listval3"],
-            "dict3key3": {
-                "key3":"stringval1",
-                "key4":{
-                    "listkey": ["listval2"]
-                }
-            }
-        },
-        "dictkey2": {
-            "dict2key1" : {
-                "key5": "stringval3",
-                "key6": "listval1",
-                "key7": ["listval2", "listval3"]
-            },
-            "dict2key2": "stringval2",
-            "dict2key3": "listval2"
-        } 
-    }
+    template = getReplaceAllObject("stringval1", "stringval2", "stringval3", "listval1", "listval2", "listval3")
 
-    expected = {
-        "key1": "one",
-        "key2": ["foo", "bar", "qux"],
-        "dictkey1":{
-            "dict1key1": "two",
-            "dict2key2": ["foo","qux"],
-            "dict3key3": {
-                "key3":"one",
-                "key4":{
-                    "listkey": ["bar"]
-                }
-            }
-        },
-        "dictkey2": {
-            "dict2key1" : {
-                "key5": "three",
-                "key6": "foo",
-                "key7": ["bar", "qux"]
-            },
-            "dict2key2": "two",
-            "dict2key3": "bar"
-        } 
-    }
+    expected = getReplaceAllObject("one", "two", "three", "foo", "bar", "qux")
 
     mapping = {
         "stringval1": "one",
@@ -154,6 +110,34 @@ def test_export_yaml():
         raise Exception(err)
     
     assert filecmp.cmp('tests/compose.users.test.yml', 'tests/compose.users.exp.yml')
+
+def getReplaceAllObject(stringval1, stringval2, stringval3, listval1, listval2, listval3):
+
+    obj = {
+        "key1": stringval1,
+        "key2": [listval1, listval2, listval3],
+        "dictkey1":{
+            "dict1key1": stringval2,
+            "dict2key2": [listval1,listval3],
+            "dict3key3": {
+                "key3":stringval1,
+                "key4":{
+                    "listkey": [listval2]
+                }
+            }
+        },
+        "dictkey2": {
+            "dict2key1" : {
+                "key5": stringval3,
+                "key6": listval1,
+                "key7": [listval2, listval3]
+            },
+            "dict2key2": stringval2,
+            "dict2key3": listval2
+        }
+    }
+
+    return obj
 
 def getTestComposeObject():
     testCompose = {
