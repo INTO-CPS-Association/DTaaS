@@ -65,6 +65,12 @@ pip install -r requirements.txt
 Work on the development by making changes to _cli/src_.
 To test these changes:
 
+- Switch to the poetry virtual environment
+
+```bash
+poetry shell
+```
+
 - Install relevant dependencies
 
 ```bash
