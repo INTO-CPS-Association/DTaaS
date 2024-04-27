@@ -18,73 +18,68 @@ class Config:
             return self.data,None
         return None, Exception("Config not initialised")
 
-    def getCommon(self):
-        """Gets the 'common' section of config """
+    def getFromConfig(self, key):
+        """Gets the specific key from config"""
         conf, err = self.getConfig()
         if err is not None:
             return None, err
 
-        if 'common' not in conf:
-            return None, Exception("Config file error: Missing 'common' tag")
-        return conf['common'], None
+        if key not in conf:
+            return None, Exception(f"Config file error: Missing {key} tag")
+        return conf[key], None
+
+    def getCommon(self):
+        """Gets the 'common' section of config """
+        common, err = self.getFromConfig('common')
+        return common, err
+
+    def getStringFromCommon(self, key):
+        """Gets the specific string key from config.common"""
+        confCommon, err = self.getCommon()
+        if err is not None:
+            return None, err
+
+        if key not in confCommon or confCommon[key]=="":
+            return None, Exception(f"Config file error: config.common.{key} not set in TOML")
+        return  str(confCommon[key]), None
 
     def getUsers(self):
         """Gets the 'users' section of config """
-        conf, err = self.getConfig()
+        users, err = self.getFromConfig('users')
+        return users, err
+
+    def getStringListFromUsers(self, key):
+        """Gets the specific key as a list of strings from config.users"""
+        confUsers, err = self.getUsers()
         if err is not None:
             return None, err
 
-        if 'users' not in conf:
-            return None, Exception("Config file error: Missing 'users' tag")
-        return conf['users'], None
+        if key not in confUsers:
+            return None, Exception(f"Config file error: No {key} list in 'users' tag")
+        stringsList = [ str(x) for x in confUsers[key]]
+
+        if len(stringsList)==0:
+            return None, Exception(f'Config file error: users.{key} list is empty')
+        
+        return stringsList, None
 
 
     def getPath(self):
         """Gets the 'path' from config.common """
-        confCommon, err = self.getCommon()
-        if err is not None:
-            return None, err
-
-        if 'path' not in confCommon or confCommon['path']=="":
-            return None, Exception("Config file error: DTaaS directory path not set in TOML")
-        return  str(confCommon['path']), None
+        path, err = self.getStringFromCommon('path')
+        return path, err
 
     def getServerDNS(self):
         """Gets the 'server-dns' from config.common """
-        confCommon, err = self.getCommon()
-        if err is not None:
-            return None, err
-
-        if 'server-dns' not in confCommon and confCommon['server-dns']=="":
-            return None, Exception("Config file error: The server dns isn't set in TOML")
-        return str(confCommon['server-dns']), None
+        server, err = self.getStringFromCommon('server-dns')
+        return server, err
 
     def getAddUsersList(self):
         """Gets the 'add' list from config.users """
-        confUsers, err = self.getUsers()
-        if err is not None:
-            return None, err
-
-        if 'add' not in confUsers:
-            return None, Exception("Config file error: No 'add' list in 'users' tag")
-        addUsersList = [ str(username) for username in confUsers['add']]
-
-        if len(addUsersList)==0:
-            return None, Exception('Config file error: users.add list is empty')
-        
-        return addUsersList, None
+        addUsersList, err = self.getStringListFromUsers('add')
+        return addUsersList, err
 
     def getDeleteUsersList(self):
         """Gets the 'delete' list from config.users """
-        confUsers, err = self.getUsers()
-        if err is not None:
-            return None, err
-
-        if 'delete' not in confUsers:
-            return None, Exception("Config file error: No 'delete' list in 'users' tag")
-        deleteUsersList = [str(username) for username in confUsers['delete']]
-
-        if len(deleteUsersList)==0:
-            return None, Exception('Config file error: users.delete list is empty')
-        
-        return deleteUsersList, None
+        deleteUsersList, err = self.getStringListFromUsers('delete')
+        return deleteUsersList, err

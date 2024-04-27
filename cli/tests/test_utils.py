@@ -84,20 +84,19 @@ def test_import_toml():
 
 def test_replace_all():
 
-    template = getReplaceAllObject("stringval1", "stringval2", "stringval3", "listval1", "listval2", "listval3")
+    templateRandomVals = ["stringval1", "stringval2", "stringval3", "listval1", "listval2", "listval3"]
+    template = getReplaceAllObject(templateRandomVals)
 
-    expected = getReplaceAllObject("one", "two", "three", "foo", "bar", "qux")
+    expectedRandomVals = ["one", "two", "three", "foo", "bar", "qux"]
+    expected = getReplaceAllObject(expectedRandomVals)
 
-    mapping = {
-        "stringval1": "one",
-        "stringval2": "two",
-        "stringval3": "three",
-        "listval1": "foo",
-        "listval2": "bar",
-        "listval3": "qux",
-    }
+    mapping = {}
+    for i in range(len(templateRandomVals)):
+        mapping[templateRandomVals[i]] = expectedRandomVals[i]
     
     ans, err = utils.replaceAll(template, mapping)
+    if err is not None:
+        raise Exception(err)
 
     assert ans==expected
 
@@ -111,29 +110,29 @@ def test_export_yaml():
     
     assert filecmp.cmp('tests/compose.users.test.yml', 'tests/compose.users.exp.yml')
 
-def getReplaceAllObject(stringval1, stringval2, stringval3, listval1, listval2, listval3):
+def getReplaceAllObject(randomVals):
 
     obj = {
-        "key1": stringval1,
-        "key2": [listval1, listval2, listval3],
+        "key1": randomVals[0],
+        "key2": [randomVals[3], randomVals[4], randomVals[5]],
         "dictkey1":{
-            "dict1key1": stringval2,
-            "dict2key2": [listval1,listval3],
+            "dict1key1": randomVals[1],
+            "dict2key2": [randomVals[3],randomVals[5]],
             "dict3key3": {
-                "key3":stringval1,
+                "key3":randomVals[0],
                 "key4":{
-                    "listkey": [listval2]
+                    "listkey": [randomVals[4]]
                 }
             }
         },
         "dictkey2": {
             "dict2key1" : {
-                "key5": stringval3,
-                "key6": listval1,
-                "key7": [listval2, listval3]
+                "key5": randomVals[2],
+                "key6": randomVals[3],
+                "key7": [randomVals[4], randomVals[5]]
             },
-            "dict2key2": stringval2,
-            "dict2key3": listval2
+            "dict2key2": randomVals[1],
+            "dict2key3": randomVals[4]
         }
     }
 
