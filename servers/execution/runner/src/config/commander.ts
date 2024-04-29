@@ -24,14 +24,15 @@ export default async function CLI(): Promise<Keyv> {
 
   if (options.config !== undefined) {
     const configFile: string = options.config;
+    const resolvedFilename: string = resolveFile(configFile.toString());
     try {
-      readFileSync(resolveFile(configFile.toString()), 'utf8');
+      readFileSync(resolvedFilename, 'utf8');
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(chalk.bold.redBright('Config file can not be read. Exiting'));
       throw new Error('Invalid configuration');
     }
-    await keyv.set('configFile', configFile);
+    await keyv.set('configFile', resolvedFilename);
   }
   return keyv;
 }

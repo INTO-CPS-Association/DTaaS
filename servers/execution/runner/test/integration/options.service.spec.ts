@@ -23,7 +23,7 @@ describe('Check Configuration Service', () => {
   it('Should have correct default config after creation', async () => {
     expect(config.getPort()).toEqual(5000);
     expect(config.permitCommands()).toHaveLength(0);
-    expect(config.getLocation()).toEqual(resolveFile('script'));
+    expect(config.getLocation()).toEqual('script');
   });
 
   it('Should load correct configuration', async () => {

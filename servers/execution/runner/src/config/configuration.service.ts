@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { Injectable } from '@nestjs/common';
 import Keyv from 'keyv';
@@ -16,6 +17,8 @@ export default class Config {
         readFileSync(resolveFile(configFile.toString()), 'utf8'),
       ) as ConfigValues;
     }
+    const dir = path.dirname(resolveFile(configFile.toString()));
+    this.configValues.location = path.join(dir, this.configValues.location);
   }
 
   permitCommands(): Array<string> {
@@ -27,6 +30,6 @@ export default class Config {
   }
 
   getLocation(): string {
-    return resolveFile(this.configValues.location);
+    return this.configValues.location;
   }
 }
