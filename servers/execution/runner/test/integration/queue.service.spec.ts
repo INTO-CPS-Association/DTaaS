@@ -2,23 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import Queue from 'src/queue.service';
 import { Command } from 'src/interfaces/command.interface';
-import ExecaRunner from 'src/execa-runner';
+import RunnerFactory from 'src/runner-factory.service';
 
 const commands: Command[] = [
   {
     name: 'hello',
     status: 'valid',
-    task: new ExecaRunner(''),
+    task: RunnerFactory.create('cd .'),
   },
   {
     name: 'world',
     status: 'valid',
-    task: new ExecaRunner(''),
+    task: RunnerFactory.create('cd .'),
   },
   {
     name: 'terminate',
     status: 'invalid',
-    task: new ExecaRunner(''),
+    task: RunnerFactory.create('cd .'),
   },
 ];
 

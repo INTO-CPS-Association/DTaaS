@@ -20,7 +20,7 @@ describe('Check RunnerFactoryService', () => {
   });
 
   it('should create new ExecaRunner object', () => {
-    const runner: Runner = RunnerFactory.create('date');
+    const runner: Runner = RunnerFactory.create('cd .');
     expect(runner).toBeInstanceOf(ExecaRunner);
   });
 });

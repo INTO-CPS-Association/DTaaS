@@ -23,9 +23,7 @@ export default class ExecaManager implements Manager {
     const command: Command = {
       name,
       status: 'invalid',
-      task: RunnerFactory.create(
-        join(process.cwd(), this.config.getLocation(), name),
-      ),
+      task: RunnerFactory.create(join(this.config.getLocation(), name)),
     };
     this.commandQueue.enqueue(command);
     await command.task.run().then((value) => {

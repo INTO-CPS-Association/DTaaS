@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import Config from 'src/config/configuration.service';
 import Keyv from 'keyv';
+import resolveFile from 'src/config/util';
 
 /*
 This file tests Config class. It should have been called
@@ -22,18 +23,20 @@ describe('Check Configuration Service', () => {
   it('Should have correct default config after creation', async () => {
     expect(config.getPort()).toEqual(5000);
     expect(config.permitCommands()).toHaveLength(0);
-    expect(config.getLocation()).toEqual('script');
+    expect(config.getLocation()).toEqual(resolveFile('script'));
   });
 
   it('Should load correct configuration', async () => {
     const CLIOptions = new Keyv();
     await CLIOptions.set('configFile', 'runner.yaml');
+    const spyOnCLIOptions = jest.spyOn(CLIOptions, 'get');
 
     await config.loadConfig(CLIOptions);
 
     expect(config.getPort()).toEqual(5000);
     expect(config.permitCommands()).toHaveLength(1);
     expect(config.permitCommands()).toContain('create');
-    expect(config.getLocation()).toEqual('script');
+    expect(config.getLocation()).toEqual(resolveFile('script'));
+    expect(spyOnCLIOptions).toBeCalled();
   });
 });

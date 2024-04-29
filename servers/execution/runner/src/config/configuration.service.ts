@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
-import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import Keyv from 'keyv';
 import { configDefault, ConfigValues } from './config.interface.js';
+import resolveFile from './util.js';
 
 @Injectable()
 export default class Config {
@@ -13,7 +13,7 @@ export default class Config {
     const configFile = await CLIOptions.get('configFile');
     if (configFile !== undefined) {
       this.configValues = yaml.load(
-        readFileSync(join(process.cwd(), configFile.toString()), 'utf8'),
+        readFileSync(resolveFile(configFile.toString()), 'utf8'),
       ) as ConfigValues;
     }
   }
@@ -27,6 +27,6 @@ export default class Config {
   }
 
   getLocation(): string {
-    return this.configValues.location;
+    return resolveFile(this.configValues.location);
   }
 }

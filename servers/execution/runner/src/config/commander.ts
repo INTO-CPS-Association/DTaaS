@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
-import { join } from 'path';
 import chalk from 'chalk';
 import Keyv from 'keyv';
+import resolveFile from './util.js';
 
 export default async function CLI(): Promise<Keyv> {
   const program = new Command('runner');
@@ -25,7 +25,7 @@ export default async function CLI(): Promise<Keyv> {
   if (options.config !== undefined) {
     const configFile: string = options.config;
     try {
-      readFileSync(join(process.cwd(), configFile.toString()), 'utf8');
+      readFileSync(resolveFile(configFile.toString()), 'utf8');
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(chalk.bold.redBright('Config file can not be read. Exiting'));
