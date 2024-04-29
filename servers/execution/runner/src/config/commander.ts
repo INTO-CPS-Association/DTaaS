@@ -16,6 +16,7 @@ export default async function CLI(): Promise<Keyv> {
       'runner.yaml',
     )
     .helpOption('-h --help', 'display help')
+    .showHelpAfterError()
     .helpInformation();
 
   program.parse(process.argv);

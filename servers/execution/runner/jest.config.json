@@ -16,8 +16,7 @@
     "node_modules",
     "./dist",
     "../src/app.module.ts",
-    "../src/main.ts",
-    "../src/runner.ts"
+    "../src/main.ts"
   ],
   "extensionsToTreatAsEsm": [".ts"],
   "moduleFileExtensions": [
