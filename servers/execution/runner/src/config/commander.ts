@@ -4,10 +4,14 @@ import chalk from 'chalk';
 import Keyv from 'keyv';
 import resolveFile from './util.js';
 
-export default async function CLI(): Promise<Keyv> {
-  const program = new Command('runner');
-  const keyv = new Keyv();
+export function createCommand(name: string): [Command, Keyv] {
+  return [new Command(name), new Keyv()];
+}
 
+export default async function CLI(
+  program: Command,
+  CLIOptions: Keyv,
+): Promise<Keyv> {
   program
     .description('Remote code execution for humans')
     .option(
@@ -32,7 +36,7 @@ export default async function CLI(): Promise<Keyv> {
       console.log(chalk.bold.redBright('Config file can not be read. Exiting'));
       throw new Error('Invalid configuration');
     }
-    await keyv.set('configFile', resolvedFilename);
+    await CLIOptions.set('configFile', resolvedFilename);
   }
-  return keyv;
+  return CLIOptions;
 }

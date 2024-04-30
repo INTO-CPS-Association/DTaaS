@@ -3,12 +3,6 @@ import Config from 'src/config/configuration.service';
 import Keyv from 'keyv';
 import resolveFile from 'src/config/util';
 
-/*
-This file tests Config class. It should have been called
-"configuration.service.spec.ts". Unfortunately jest does not
-detect files with "configuration" in their name.
-So the filename has been changed to "options.service.spec.ts."
-*/
 describe('Check Configuration Service', () => {
   let config: Config;
 

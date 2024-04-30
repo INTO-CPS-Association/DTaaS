@@ -24,7 +24,7 @@
     "json",
     "ts"
   ],
-  "modulePathIgnorePatterns": ["config"],
+  "modulePathIgnorePatterns": [],
   "coverageDirectory": "<rootDir>/coverage/",
   "coverageThreshold": {
     "global": {
