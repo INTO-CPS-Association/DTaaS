@@ -25,12 +25,8 @@ Steps to install:
 cd <DTaaS-directory>/cli
 ```
 
-- Recommended (for windows) to install this in a virtual environment
-
-```bash
-python -m venv env
-env\Scripts\activate
-```
+- We recommend installing this in a virtual environment.
+  Create and activate a virtual environment.
 
 - To install, simply:
 
@@ -42,14 +38,38 @@ pip install dtaas-cli
 
 ### Setup
 
-Setup the _dtaas.toml_ file in the _cli_ directory,
-edit the fields appropriately.
+The base DTaaS system should be up and
+running before adding/deleting users with the CLI.
+
+Additionally,
+Setup the _dtaas.toml_ file in the _cli_ directory:
+
+- Set _common.server-dns_ to domain name of your server.
+  If you want to bring up the server locally,
+  please set this to _"localhost"_.
+
+- Set the _path_ to the full system path
+  of the DTaaS directory.
+
+```toml
+[common]
+# absolute path to the DTaaS application directory
+server-dns = "localhost"
+path = "/home/Desktop/DTaaS"
+```
 
 ### Add users
 
-To add new users using the CLI, fill in the _users.add_ list in
+To add new users using the CLI, fill in the
+_users.add_ list in
 _dtaas.toml_ with the Gitlab instance
 usernames of the users to be added
+
+```toml
+[users]
+# matching user info must present in this config file
+add = ["username1","username2", "username3"] 
+```
 
 Then simply:
 
@@ -61,7 +81,20 @@ dtaas admin user add
 
 This brings up the containers, without the AuthMS authentication.
 
-- Now, Add two lines to the `conf.local` file
+- Currently the _email_ fields for each user in
+  _dtaas.toml_ are not in use, and are not necessary
+  to fill in. These emails must be configured manually
+  for each user in the docker/conf.local or
+  docker/conf.server files and the _traefik-forward-auth_
+  container must be restarted. This is done as follows:
+
+- Go to the _docker_ directory
+
+```bash
+cd <DTaaS>/docker
+```
+
+- Add two lines to the `conf.local` file
 
 ```txt
 rule.onlyu4.action=allow
@@ -95,6 +128,8 @@ TO delete existing users, fill in the _users.delete_ list in
 _dtaas_.toml_ with the Gitlab instance
 usernames of the users to be deleted.
 
+Make sure you are in the _cli_ directory.
+
 Then simply:
 
 ```bash
@@ -103,29 +138,14 @@ dtaas admin user delete
 
 ### Additional Points to Remember
 
-- The base DTaaS system should be up and
-  running before adding/deleting users with the CLI
-
-- The _user add_ CLI will add and start a container for a new user.
+- The _user add_ CLI will add and start a
+  container for a new user.
   It can also start a container for an existing
   user if that container was somehow stopped.
   It shows a _Running_ status for existing user
   containers that are already up and running,
   it doesn't restart them.
 
-- Configure the _server-dns_ in the _dtaas.toml_
-  file with the domain name of your server.
-  If you want to bring up the server locally,
-  please set this to _"localhost"_.
-
 - _user add_ and _user delete_ CLIs return an
   error if the _add_ and _delete_ lists in
   _dtaas.toml_ are empty, respectively.
-
-- Currently the _email_ fields for each user in
-  dtaas.toml are not in use, and are not necessary
-  to fill in. These emails must be configured manually
-  for each user in the docker/conf.local or
-  docker/conf.server files and the _traefik-forward-auth_
-  container must be restarted as described above.
-

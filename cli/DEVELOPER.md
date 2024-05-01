@@ -48,47 +48,35 @@ The CLI has two layers of code:
 
 ## Setup
 
-Switch to the cli directory:
 
 ```bash
-cd cli
-```
-
-Install all required python packages:
-
-```bash
-pip install -r requirements.txt
+pip install poetry               #Specifically install poetry to your system
+poetry shell                     #Switch to the poetry virtual environment
+cd cli                           #Switch to the cli directory
+pip install -r requirements.txt  #Install all required python packages
 ```
 
 ## Development
 
+.
 Work on the development by making changes to _cli/src_.
 To test these changes:
 
-- Switch to the poetry virtual environment
-
 ```bash
-poetry shell
+poetry shell   #Make sure you are in the poetry virtual environment
+poetry install #Install relevant dependencies
+poetry build   #Build the python package
 ```
 
-- Install relevant dependencies
-
-```bash
-poetry install
-```
-
-- Build the python package
-
-```bash
-poetry build
-```
+You can now run the dtaas cli commands.
 
 ## Linting checks
 
+Make sure you are in the _cli_ directory.
 To perform linting checks on the code:
 
 ```bash
-pylint cli/src
+pylint src --rcfile=../.pylintrc
 ```
 
 ## Testing

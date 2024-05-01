@@ -41,7 +41,7 @@ def test_import_yaml_compose():
     assert expected==compose
 
 def test_import_toml():
-    toml, err = utils.importToml('dtaas.toml')
+    toml, err = utils.importToml('tests/dtaas.test.toml')
     if err is not None:
         raise Exception(err)
     

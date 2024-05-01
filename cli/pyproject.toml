@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dtaas-cli"
+name = "dtaas"
 version = "0.1.0"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
@@ -12,6 +12,10 @@ python = "^3.7"
 PyYAML = "^6.0.1"
 click = "^8.1.7"
 tomlkit = "^0.12.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+pylint = "^2.11"
 
 
 [build-system]
