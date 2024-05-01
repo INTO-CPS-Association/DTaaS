@@ -12,7 +12,7 @@ plugins:
         javascript:
         python:
           python_version: 3
-          mass_threshold: 7
+          threshold: 10
   eslint:
     enabled: true
     channel: "eslint-8"
