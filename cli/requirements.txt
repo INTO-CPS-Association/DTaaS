@@ -1,7 +1,0 @@
-pylint
-pytest
-pytest-cov
-poetry
-click
-pyyaml
-tomlkit
