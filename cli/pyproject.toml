@@ -16,6 +16,7 @@ tomlkit = "^0.12.4"
 [tool.poetry.dev-dependencies]
 pytest = "^7.0"
 pylint = "^2.11"
+pytest-cov = "^3.0"
 
 
 [build-system]

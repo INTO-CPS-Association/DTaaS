@@ -31,7 +31,7 @@ cd <DTaaS-directory>/cli
 - To install, simply:
 
 ```bash
-pip install dtaas-cli
+pip install dtaas
 ```
 
 ## Usage

@@ -52,7 +52,7 @@ The CLI has two layers of code:
 pip install poetry               #Specifically install poetry to your system
 poetry shell                     #Switch to the poetry virtual environment
 cd cli                           #Switch to the cli directory
-pip install -r requirements.txt  #Install all required python packages
+poetry install                   #Install all required python packages
 ```
 
 ## Development
@@ -63,7 +63,6 @@ To test these changes:
 
 ```bash
 poetry shell   #Make sure you are in the poetry virtual environment
-poetry install #Install relevant dependencies
 poetry build   #Build the python package
 ```
 
