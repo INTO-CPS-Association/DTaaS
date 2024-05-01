@@ -19,7 +19,7 @@ export default class AppController {
   constructor(private readonly manager: ExecaManager) {} // eslint-disable-line no-empty-function
 
   @Get('history')
-  getHello(): Array<ExecuteCommandDto> {
+  getHistory(): Array<ExecuteCommandDto> {
     return this.manager.checkHistory();
   }
 

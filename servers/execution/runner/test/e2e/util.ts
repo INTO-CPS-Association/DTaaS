@@ -1,10 +1,10 @@
 import supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
-export interface RequestBody{
+export interface RequestBody {
   name?: string;
   command?: string;
-};
+}
 
 type ResponseBody = {
   message?: string;
@@ -16,11 +16,11 @@ type ResponseBody = {
 };
 
 type Query = {
-  'app': INestApplication,
-  'route': string,
-  'HttpStatus': number,
-  'reqBody': RequestBody,
-  'resBody': ResponseBody | Array<RequestBody>,  
+  app: INestApplication;
+  route: string;
+  HttpStatus: number;
+  reqBody: RequestBody;
+  resBody: ResponseBody | Array<RequestBody>;
 };
 
 export function postRequest(query: Query) {

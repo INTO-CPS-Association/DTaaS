@@ -3,7 +3,6 @@ import CLI, { createCommand } from 'src/config/commander';
 import Keyv from 'keyv';
 
 describe('Commander functionality', () => {
-
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -16,7 +15,7 @@ describe('Commander functionality', () => {
 
     expect(argvCall).toHaveBeenCalled();
     expect(program.opts()).toEqual({
-      "config": "runner.yaml"
+      config: 'runner.yaml',
     });
   });
 
@@ -29,23 +28,30 @@ describe('Commander functionality', () => {
 
   it('Should process config correctly', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
-    jest.replaceProperty(process, 'argv', ['node', 'main.js', '--config', 'runner.test.yaml']);
+    jest.replaceProperty(process, 'argv', [
+      'node',
+      'main.js',
+      '--config',
+      'runner.test.yaml',
+    ]);
     await CLI(program, CLIOptionsExp);
 
     expect(program.opts()).toEqual({
-      "config": "runner.test.yaml"
+      config: 'runner.test.yaml',
     });
   });
 
   it('Should throw exception of the config file is not found', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
-    jest.replaceProperty(process, 'argv', ['node', 'main.js', '--config', 'runner.test.yaml.nonexistent']);
+    jest.replaceProperty(process, 'argv', [
+      'node',
+      'main.js',
+      '--config',
+      'runner.test.yaml.nonexistent',
+    ]);
     const callCLI = async () => {
       await CLI(program, CLIOptionsExp);
     };
-    await expect(callCLI())
-    .rejects
-    .toThrow(Error) ;
+    await expect(callCLI()).rejects.toThrow(Error);
   });
-
 });
