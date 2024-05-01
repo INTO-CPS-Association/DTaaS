@@ -7,6 +7,7 @@ plugins:
   duplication:
     enabled: true
     config:
+      count_threshold: 3
       languages:
         typescript:
         javascript:
