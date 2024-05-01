@@ -1,49 +1,46 @@
 import supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
-interface RequestBody {
+export interface RequestBody{
   name?: string;
   command?: string;
-}
-interface ResponseBody {
+};
+
+type ResponseBody = {
   message?: string;
   error?: string;
   statusCode?: number;
   status?: string;
   name?: string;
   logs?: { stdout: string; stderr: string };
-}
+};
 
-export function postRequest(
-  app: INestApplication,
-  route: string,
-  HttpStatus: number,
-  reqBody: RequestBody,
-  resBody: ResponseBody,
-) {
-  return supertest(app.getHttpServer())
-    .post(route)
-    .send(reqBody)
+type Query = {
+  'app': INestApplication,
+  'route': string,
+  'HttpStatus': number,
+  'reqBody': RequestBody,
+  'resBody': ResponseBody | Array<RequestBody>,  
+};
+
+export function postRequest(query: Query) {
+  return supertest(query.app.getHttpServer())
+    .post(query.route)
+    .send(query.reqBody)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .expect(HttpStatus)
-    .expect(resBody);
+    .expect(query.HttpStatus)
+    .expect(query.resBody);
 }
 
-export function getRequest(
-  app: INestApplication,
-  route: string,
-  HttpStatus: number,
-  reqBody: RequestBody,
-  resBody: ResponseBody | RequestBody[],
-) {
-  return supertest(app.getHttpServer())
-    .get(route)
-    .send(reqBody)
+export function getRequest(query: Query) {
+  return supertest(query.app.getHttpServer())
+    .get(query.route)
+    .send(query.reqBody)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .expect(HttpStatus)
-    .expect(resBody);
+    .expect(query.HttpStatus)
+    .expect(query.resBody);
 }
 
 export const queriesJSON = {
