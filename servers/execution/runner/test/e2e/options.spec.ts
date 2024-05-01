@@ -106,20 +106,21 @@ OptionsArray.forEach((element) => {
             'resBody': new Array<RequestBody>(),
       }));
   
-      it('after two valid command executions', async () => {
-        await postRequest({
-          'app': app,
-          'route': '/',
-          'HttpStatus': queriesJSON.valid.HttpStatus,
-          'reqBody': queriesJSON.valid.reqBody,
-          'resBody': queriesJSON.valid.resBody.POST,
-        });
-        await postRequest({
-          'app': app,
-          'route': '/',
-          'HttpStatus': queriesJSON.valid.HttpStatus,
-          'reqBody': queriesJSON.valid.reqBody,
-          'resBody': queriesJSON.valid.resBody.POST,
+      it('after multiple command executions', async () => {
+        const keys: (keyof typeof queriesJSON)[] = [
+          'valid',
+          'invalid',
+          'incorrect',
+        ];
+        keys.forEach(async (key) => {
+          const query = queriesJSON[key];
+          await postRequest({
+            'app': app,
+            'route': '/',
+            'HttpStatus': query.HttpStatus,
+            'reqBody': query.reqBody,
+            'resBody': query.resBody.POST,
+          });
         });
         return getRequest(
           {
@@ -129,7 +130,7 @@ OptionsArray.forEach((element) => {
             'reqBody': {},
             'resBody': [
               { name: 'create' },
-              { name: 'create' },
+              { name: 'configure' },
             ],
       });
       });

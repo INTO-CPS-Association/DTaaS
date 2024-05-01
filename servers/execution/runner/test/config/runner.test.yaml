@@ -1,4 +1,4 @@
-port: 5000
+port: 5002
 location: 'script' #directory location of scripts
 commands:
   - create

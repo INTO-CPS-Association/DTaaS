@@ -22,12 +22,12 @@ describe('Check Configuration Service', () => {
 
   it('Should load correct configuration', async () => {
     const CLIOptions = new Keyv();
-    await CLIOptions.set('configFile', 'runner.yaml');
+    await CLIOptions.set('configFile', 'runner.test.yaml');
     const spyOnCLIOptions = jest.spyOn(CLIOptions, 'get');
 
     await config.loadConfig(CLIOptions);
 
-    expect(config.getPort()).toEqual(5000);
+    expect(config.getPort()).toEqual(5002);
     expect(config.permitCommands()).toHaveLength(1);
     expect(config.permitCommands()).toContain('create');
     expect(config.getLocation()).toEqual(resolveFile('script'));
