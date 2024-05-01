@@ -68,7 +68,7 @@ usernames of the users to be added
 ```toml
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"] 
+add = ["username1","username2", "username3"]
 ```
 
 Then simply:

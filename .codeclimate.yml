@@ -41,3 +41,4 @@ exclude_patterns:
   - client/config/
   - servers/lib/src/types.ts
   - "deploy/config/client/env*.js"
+  - .pylintrc

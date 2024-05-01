@@ -48,7 +48,6 @@ The CLI has two layers of code:
 
 ## Setup
 
-
 ```bash
 pip install poetry               #Specifically install poetry to your system
 poetry shell                     #Switch to the poetry virtual environment
