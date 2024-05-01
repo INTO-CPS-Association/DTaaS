@@ -1,0 +1,15 @@
+image: mltooling/ml-workspace-minimal:0.13.2
+volumes:
+  - ${DTAAS_DIR}/files/common:/workspace/common
+  - ${DTAAS_DIR}/files/${username}:/workspace
+environment:
+  - AUTHENTICATE_VIA_JUPYTER=
+  - WORKSPACE_BASE_URL=${username}
+shm_size: 512m
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.${username}.entryPoints=web"
+  - "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username}`)"
+  - "traefik.http.routers.${username}.middlewares=traefik-forward-auth"
+networks:
+  - users

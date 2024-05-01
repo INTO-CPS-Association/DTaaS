@@ -166,3 +166,37 @@ through the single page client now.
 
 You may have to click Sign in to Gitlab on the Client page
 and authorize access to the shown application.
+
+## Adding a new user
+
+To add a new user to your DTaaS instance, follow these steps:
+
+- Use the DTaaS CLI to bring up the ML workspaces for new users.
+  This brings up the containers, without the AuthMS authentication.
+
+- Now, Add two lines to the `conf.local` file
+
+```txt
+rule.onlyu4.action=allow
+rule.onlyu4.rule=PathPrefix(`/user4`)
+```
+
+- Add three lines to the `conf.server` file
+
+```txt
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/user3`)
+rule.onlyu3.whitelist = user3@emailservice.com
+```
+
+Run the appropritate command for a server/local installation:
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
+
+```bash
+docker compose -f compose.local.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
+
+The new users are now added to the DTaaS instance, with authorization enabled.
