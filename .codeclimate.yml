@@ -7,8 +7,10 @@ plugins:
   duplication:
     enabled: true
     config:
+      count_threshold: 3
       languages:
         typescript:
+          mass_threshold: 45
         javascript:
         python:
           python_version: 3
