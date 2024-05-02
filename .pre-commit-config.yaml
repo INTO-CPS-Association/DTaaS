@@ -28,21 +28,21 @@ repos:
         language: system
         files: "^client/.*"
         args: ["-c", "cd client && yarn jest . --coverage=false"]
-        stages: [pre-push]
+        stages: [push]
       - id: yarn-test-runner
         name: yarn test runner
         entry: bash
         language: system
         files: "^servers/execution/runner/.*"
         args: ["-c", "cd servers/execution/runner && yarn test:nocov"]
-        stages: [pre-push]
+        stages: [push]
       - id: yarn-test-lib
         name: yarn test lib
         entry: bash
         language: system
         files: "^servers/lib/.*"
         args: ["-c", "cd servers/lib && yarn test:nocov"]
-        stages: [pre-push]
+        stages: [push]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
@@ -50,7 +50,7 @@ repos:
       - id: prettier
         args: ["--ignore-path", "../.gitignore", "--write"]
         files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
-        stages: [pre-commit]
+        stages: [commit]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.54.0
@@ -58,7 +58,7 @@ repos:
       - id: eslint
         args: ["--fix"]
         files: "^(client|servers/execution/runner|servers/lib)/.*"
-        stages: [pre-commit]
+        stages: [commit]
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.37.0
@@ -67,22 +67,22 @@ repos:
         files: '.*\.md$'
         entry: ./script/markdownlint-hook.sh
         verbose: true
-        stages: [pre-commit]
+        stages: [commit]
 
   - repo: https://github.com/syntaqx/git-hooks
     rev: v0.0.18
     hooks:
       - id: shellcheck
         files: '.*'
-        stages: [pre-commit]
+        stages: [commit]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: check-json
         files: '^(docs|deploy|script|ssl)/.*'
-        stages: [pre-commit]
+        stages: [commit]
       - id: check-yaml
         files: '^(docs|deploy|script|ssl)/.*'
-        stages: [pre-commit]
+        stages: [commit]
   
