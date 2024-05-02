@@ -2,6 +2,8 @@ import * as React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from 'react-router-dom';
@@ -88,8 +90,22 @@ function MenuToolbar({
         </Typography>
 
         <Box sx={{ flexGrow: 0 }}>
+          <IconButton
+            component={Link}
+            to="https://github.com/INTO-CPS-Association/DTaaS"
+            size="large"
+          >
+            <GitHubIcon fontSize="inherit"></GitHubIcon>
+          </IconButton>
+          <IconButton
+            component={Link}
+            to="https://into-cps-association.github.io/DTaaS"
+            size="large"
+          >
+            <HelpOutlineIcon fontSize="inherit"></HelpOutlineIcon>
+          </IconButton>
           <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>
           </Tooltip>
