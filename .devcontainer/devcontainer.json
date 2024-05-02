@@ -1,0 +1,24 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "Digital Twin as a Service",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"configureZshAsDefaultShell": true,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
+			"username": "devcontainer",
+			"userUid": "1001",
+			"userGid": "1001"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "os-provided"
+		},
+		"ghcr.io/devcontainers-contrib/features/exa:1": {
+			"version": "latest"
+		}
+	}
+}
