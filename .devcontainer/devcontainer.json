@@ -8,7 +8,7 @@
 		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
 			"clean_ppas": true,
 			"preserve_apt_list": true,
-			"packages": "htop"
+			"packages": "curl graphviz htop net-tools"
 		},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
@@ -35,6 +35,9 @@
 		"ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {
 			"version": "latest"
 		},
+		"ghcr.io/devcontainers-contrib/features/npm-package:1": {
+			"package": "madge"
+		},
 		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {},
 		"ghcr.io/devcontainers-contrib/features/poetry:2": {
 			"version": "latest"
@@ -50,9 +53,54 @@
 			"version": "latest"
 		},
 		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
-			"plugins": "ssh-agent npm",
+			"plugins": "ssh-agent npm zsh-autosuggestions",
 			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
-			"username": "vscode"
+			"username": "node"
 		}
-	}
+	},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+				"AlexShen.classdiagram-ts",
+				"christian-kohler.npm-intellisense",
+				"DavidAnson.vscode-markdownlin",
+				"donjayamanne.githistory",
+				"eamodio.gitlens",
+				"humao.rest-client",
+				"johnpapa.vscode-peacock",
+				"mhutchie.git-graph",
+				"SimonSiefke.svg-preview",
+				"redhat.vscode-yaml",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"vscode-icons-team.vscode-icons"
+			],
+      "settings": {
+        "editor.tabSize": 2,
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          },
+          "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+          },
+          "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+          }
+        }
+      }
+    }
+  },
+	"forwardPorts": [
+    4000,		//react client
+    4001,		// lib microservice
+    5000,		// DT runner
+		8000		// mkdocs
+	]
 }
