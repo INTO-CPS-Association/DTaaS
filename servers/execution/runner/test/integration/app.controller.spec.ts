@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import AppModule from "src/app.module";
 import AppController from "src/app.controller";
 import { INestApplication } from "@nestjs/common";
-import { response } from 'express';
+import { Response } from 'express';
 import { ExecuteCommandDto } from "src/dto/command.dto";
 
 describe('Test AppController', () => {
@@ -17,8 +17,6 @@ describe('Test AppController', () => {
 
     app = moduleFixture.createNestApplication();
     controller = app.get<AppController>(AppController);
-
-
   });
 
   afterEach(() => jest.resetAllMocks());
@@ -28,12 +26,21 @@ describe('Test AppController', () => {
       .getHistory()).toEqual([]);
   });
 
-  it.skip('Should execute valid command', () => {
-    const command: ExecuteCommandDto = { 'name': 'create' };
+  it('should call newCommand with the correct arguments', async () => {
+    const executeCommandDto: ExecuteCommandDto = { name: 'test' };
+    const res: Response = {} as Response;
+    res.status = function status(): Response {
+      return res;
+    };
+    res.send = function send(): Response {
+      return res;
+    };
+    const resStatus = jest.spyOn(res, 'status');
+    const resSend = jest.spyOn(res, 'send');
+    await controller.changePhase(executeCommandDto, res);
 
-    expect(controller
-      .changePhase(command, response))
-      .resolves;
+    expect(resStatus).toHaveBeenCalled();
+    expect(resSend).toHaveBeenCalled();
   });
 
 });
