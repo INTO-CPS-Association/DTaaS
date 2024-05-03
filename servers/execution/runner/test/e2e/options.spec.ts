@@ -67,7 +67,7 @@ OptionsArray.forEach((element) => {
       ];
       keys.forEach((key) => {
         const query = queriesJSON[key];
-       it(`execution status of ${key} command`, async () => {
+        it(`execution status of ${key} command`, async () => {
           await postRequest({
             app,
             route: '/',
