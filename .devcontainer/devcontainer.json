@@ -5,6 +5,11 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
 	"features": {
+		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+			"clean_ppas": true,
+			"preserve_apt_list": true,
+			"packages": "htop"
+		},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
 			"configureZshAsDefaultShell": true,
@@ -12,13 +17,42 @@
 			"installOhMyZshConfig": true,
 			"username": "devcontainer",
 			"userUid": "1001",
-			"userGid": "1001"
+			"userGid": "automatic"
+		},
+		"ghcr.io/devcontainers-contrib/features/exa:1": {
+			"version": "latest"
 		},
 		"ghcr.io/devcontainers/features/git:1": {
 			"version": "os-provided"
 		},
-		"ghcr.io/devcontainers-contrib/features/exa:1": {
+		"ghcr.io/devcontainers-contrib/features/markdownlint-cli:1": {
 			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/mkdocs:2": {
+			"version": "latest",
+			"plugins": "mkdocs-material pymdown-extensions mkdocstrings[crystal,python] mkdocs-monorepo-plugin mkdocs-pdf-export-plugin mkdocs-awesome-pages-plugin python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode"
+		},
+		"ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {},
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pre-commit:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/tmux-apt-get:1": {},
+		"ghcr.io/devcontainers-contrib/features/typescript:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/vercel-serve:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
+			"plugins": "ssh-agent npm",
+			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
+			"username": "vscode"
 		}
 	}
 }
