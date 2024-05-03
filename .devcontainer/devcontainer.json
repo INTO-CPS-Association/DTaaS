@@ -8,7 +8,7 @@
 		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
 			"clean_ppas": true,
 			"preserve_apt_list": true,
-			"packages": "curl graphviz htop net-tools"
+			"packages": "curl graphviz htop net-tools powerline"
 		},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
@@ -104,3 +104,5 @@
 		8000		// mkdocs
 	]
 }
+// Execute after login:
+//	source /usr/share/powerline/bindings/zsh/powerline.zsh
