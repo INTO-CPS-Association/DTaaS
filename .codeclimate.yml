@@ -14,6 +14,7 @@ plugins:
         javascript:
         python:
           python_version: 3
+          mass_threshold: 40
   eslint:
     enabled: true
     channel: "eslint-8"
@@ -25,6 +26,11 @@ plugins:
     enabled: true
   shellcheck:
     enabled: true
+  sonar-python:
+    enabled: true
+    checks:
+      python:S1542:
+        enabled: false
 
 exclude_patterns:
   - "**.txt"
@@ -38,3 +44,4 @@ exclude_patterns:
   - client/config/
   - servers/lib/src/types.ts
   - "deploy/config/client/env*.js"
+  - .pylintrc
