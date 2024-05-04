@@ -39,7 +39,7 @@ describe('Test AppController', () => {
     const resSend = jest.spyOn(res, 'send');
     const spyManager = jest.spyOn(manager, 'newCommand');
 
-    await controller.changePhase(executeCommandDto, res);
+    await controller.newCommand(executeCommandDto, res);
 
     expect(spyManager).toHaveBeenCalledWith(executeCommandDto.name);
     expect(resStatus).toHaveBeenCalledWith(httpStatus);

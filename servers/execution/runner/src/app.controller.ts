@@ -25,7 +25,7 @@ export default class AppController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(executeCommandSchema))
-  async changePhase(
+  async newCommand(
     @Body() executeCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
