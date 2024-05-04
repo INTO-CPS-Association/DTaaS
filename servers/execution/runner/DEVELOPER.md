@@ -18,6 +18,12 @@ yarn start      # Start the application
 yarn clean      # Deletes directories "build", "coverage", and "dist"
 ```
 
+### On Filenames in Tests
+
+The jest and nestjs combination can not detect tests in files
+with _config_ in their names. Hence, the config word has been
+replaced with _options_ in the names of test files.
+
 ## :package: :ship: NPM package
 
 ### Github Package Registry
