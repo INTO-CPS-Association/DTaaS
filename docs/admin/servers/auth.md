@@ -41,7 +41,7 @@ Here are the steps to get started:
   It's recommended to use a self-hosted GitLab instance, which you will use in
   other parts of the DTaaS application.
 
-**3. Define Callback and Logout URLs:**
+**3. Callback and Logout URLs:**
 
 - For the web / server authorization flow to function correctly, you need two URLs:
   a callback URL and a logout URL.
@@ -146,7 +146,7 @@ allowing only users mentioned in the whitelist.
 The rules in _conf.*_ file are not dynamically loaded into
 the **traefik-forward-auth** microservice.
 Any change in the _conf_ file requires
-retart of **traefik-forward-auth** for the changes to take effect.
+restart of **traefik-forward-auth** for the changes to take effect.
 All the existing user sessions get invalidated when
 the **traefik-forward-auth** restarts.
 
