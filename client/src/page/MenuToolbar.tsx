@@ -2,8 +2,6 @@ import * as React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from 'react-router-dom';
@@ -13,6 +11,8 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
+import LinkButtons from 'components/LinkButtons';
+import toolbarLinkValues from 'util/toolbarUtil';
 import { signOut } from '../util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
@@ -70,6 +70,7 @@ function MenuToolbar({
       await signOut();
     }
   };
+
   return (
     <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -89,21 +90,8 @@ function MenuToolbar({
           The Digital Twin as a Service
         </Typography>
 
-        <Box sx={{ flexGrow: 0 }}>
-          <IconButton
-            component={Link}
-            to="https://github.com/INTO-CPS-Association/DTaaS"
-            size="large"
-          >
-            <GitHubIcon fontSize="inherit"></GitHubIcon>
-          </IconButton>
-          <IconButton
-            component={Link}
-            to="https://into-cps-association.github.io/DTaaS"
-            size="large"
-          >
-            <HelpOutlineIcon fontSize="inherit"></HelpOutlineIcon>
-          </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
+          <LinkButtons buttons={toolbarLinkValues} size={2.5} />
           <Tooltip title="Open settings">
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>

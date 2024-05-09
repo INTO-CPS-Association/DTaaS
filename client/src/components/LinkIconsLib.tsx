@@ -4,6 +4,8 @@ import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 type LinkIconsType = {
   [key: string]: { icon: React.ReactElement; name: string | undefined };
@@ -25,6 +27,14 @@ const LinkIcons: LinkIconsType = {
   JUPYTERNOTEBOOK: {
     icon: <NoteAltOutlinedIcon />,
     name: 'Jupyter Notebook',
+  },
+  GITHUB: {
+    icon: <GitHubIcon />,
+    name: undefined,
+  },
+  HELP: {
+    icon: <HelpOutlineIcon />,
+    name: undefined,
   },
   NO_ICON: {
     icon: <OpenInNewIcon />,

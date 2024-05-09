@@ -17,13 +17,12 @@ const ButtonRow = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
-  gap: '50px',
 });
 
 interface IconButtonData {
   link: string;
   icon: React.ReactElement;
-  name: string;
+  name: string | undefined;
 }
 const getIconButtons = (buttons: KeyLinkPair[]): IconButtonData[] =>
   buttons.map((button) => {
@@ -31,7 +30,7 @@ const getIconButtons = (buttons: KeyLinkPair[]): IconButtonData[] =>
     return {
       link: button.link,
       icon: iconData.icon,
-      name: iconData.name || button.key,
+      name: iconData.name,
     };
   });
 
@@ -53,22 +52,26 @@ interface LinkButtonProps {
   return (
     <ButtonRow>
       {iconButtons.map((button, index) => (
-        <Tooltip key={index} title={button.link}>
-          <IconLabel>
-            <IconButton
-              onClick={() => {
-                window.open(button.link, '_blank');
-              }}
-              role="link"
-              title={`${button.name}-btn`}
-            >
-              {React.cloneElement(button.icon, {
-                style: { fontSize: `${size?.toString() ?? 4}rem` },
-              })}
-            </IconButton>
-            <Typography variant="h6">{button.name}</Typography>
-          </IconLabel>
-        </Tooltip>
+        <div key={index} style={{ marginRight: button.name ? '40px' : '0' }}>
+          <Tooltip key={index} title={button.link}>
+            <IconLabel>
+              <IconButton
+                onClick={() => {
+                  window.open(button.link, '_blank');
+                }}
+                role="link"
+                {...(button.name && { title: `${button.name}-btn` })}
+              >
+                {React.cloneElement(button.icon, {
+                  style: { fontSize: `${size?.toString() ?? 4}rem` },
+                })}
+              </IconButton>
+              {button.name && (
+                <Typography variant="h6">{button.name}</Typography>
+              )}
+            </IconLabel>
+          </Tooltip>
+        </div>
       ))}
     </ButtonRow>
   );
