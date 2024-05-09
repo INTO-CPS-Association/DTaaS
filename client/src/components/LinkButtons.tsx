@@ -26,7 +26,8 @@ interface IconButtonData {
 }
 const getIconButtons = (buttons: KeyLinkPair[]): IconButtonData[] =>
   buttons.map((button) => {
-    const iconData = LinkIcons[button.key.toUpperCase()] || LinkIcons.NO_ICON;
+    const iconData = LinkIcons[button.key.toUpperCase()];
+
     return {
       link: button.link,
       icon: iconData.icon,

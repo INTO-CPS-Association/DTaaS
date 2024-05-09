@@ -12,18 +12,19 @@ const buttons: KeyLinkPair[] = [
 ];
 
 const getButton = (key: string) =>
-  screen.getByRole('link', { name: `${LinkIcons[key]?.name ?? key}-btn` });
+  screen.getByRole('link', {
+    name: `${LinkIcons[key]?.name ? `${LinkIcons[key].name}-btn` : ''}`,
+  });
 
 const getLabel = (key: string) =>
-  screen.getByRole('heading', { level: 6, name: LinkIcons[key]?.name ?? key });
-
-const getButtonIcon = (key: string) =>
-  screen.getByTitle(`${LinkIcons[key]?.name ?? key}-btn`).children[0];
+  screen.getByRole('heading', { level: 6, name: LinkIcons[key].name });
 
 const evaluateButtonSize = (expectedSize: number) => {
   buttons.forEach((button) => {
     expect(
-      getComputedStyle(getButtonIcon(button.key)).getPropertyValue('font-size'),
+      getComputedStyle(getButton(button.key).children[0]).getPropertyValue(
+        'font-size',
+      ),
     ).toBe(`${expectedSize}rem`);
   });
 };
@@ -39,7 +40,10 @@ describe('LinkButtons component default size', () => {
         'aria-label',
         button.link,
       );
-      expect(getLabel(button.key).tagName).toBe('H6');
+      const labelName = LinkIcons[button.key]?.name;
+      if (labelName) {
+        expect(getLabel(button.key).tagName).toBe('H6');
+      }
     });
   });
 
@@ -59,11 +63,7 @@ describe('LinkButtons component default size', () => {
     evaluateButtonSize(4);
   });
 
-  it('should set the name of key as label when icon is not part of iconLib', () => {
-    expect(getLabel('NO_ICON').textContent).toBe('NO_ICON');
-  });
-
-  it('should use name from iconLib as label when avaiable', () => {
+  it('should use name from iconLib as label when available', () => {
     expect(getLabel(buttons[0].key).textContent).toBe(
       LinkIcons[buttons[0].key]?.name,
     );
