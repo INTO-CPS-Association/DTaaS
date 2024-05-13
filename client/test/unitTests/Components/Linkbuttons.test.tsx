@@ -8,12 +8,14 @@ jest.deepUnmock('components/LinkButtons');
 
 const buttons: KeyLinkPair[] = [
   { key: 'VNCDESKTOP', link: 'https://example.com/desktop' },
-  { key: 'NO_ICON', link: 'https://example.com/noicon' },
+  { key: 'GITHUB', link: 'https://example.com/github' },
 ];
 
 const getButton = (key: string) =>
   screen.getByRole('link', {
-    name: `${LinkIcons[key]?.name ? `${LinkIcons[key].name}-btn` : ''}`,
+    name: `${
+      LinkIcons[key]?.name !== 'ToolbarIcon' ? `${LinkIcons[key].name}-btn` : ''
+    }`,
   });
 
 const getLabel = (key: string) =>
@@ -29,6 +31,19 @@ const evaluateButtonSize = (expectedSize: number) => {
   });
 };
 
+const evaluateMarginRight = (expectedMargin: number) => {
+  buttons.forEach((button) => {
+    const buttonElement = getButton(button.key);
+    if (buttonElement) {
+      expect(
+        getComputedStyle(
+          buttonElement.parentElement!.parentElement!,
+        ).getPropertyValue('margin-right'),
+      ).toBe(`${expectedMargin}px`);
+    }
+  });
+};
+
 describe('LinkButtons component default size', () => {
   beforeEach(() => {
     render(<LinkButtons buttons={buttons} />);
@@ -41,7 +56,7 @@ describe('LinkButtons component default size', () => {
         button.link,
       );
       const labelName = LinkIcons[button.key]?.name;
-      if (labelName) {
+      if (labelName !== 'ToolbarIcon') {
         expect(getLabel(button.key).tagName).toBe('H6');
       }
     });
@@ -76,5 +91,14 @@ describe('LinkButtons component with specified size', () => {
     render(<LinkButtons buttons={buttons} size={customSize} />);
 
     evaluateButtonSize(customSize);
+  });
+});
+
+describe('LinkButtons component with specified marginRight', () => {
+  it('should render icon buttons with specified marginRight', () => {
+    const customMarginRight = 40;
+    render(<LinkButtons buttons={buttons} marginRight={customMarginRight} />);
+
+    evaluateMarginRight(customMarginRight);
   });
 });

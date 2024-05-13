@@ -38,22 +38,27 @@ const getIconButtons = (buttons: KeyLinkPair[]): IconButtonData[] =>
 interface LinkButtonProps {
   buttons: KeyLinkPair[];
   size?: number;
+  marginRight?: number;
 }
 
 /**
  * @description Renders a row of buttons with icons and labels. The buttons open a new tab with the link.
  * @param buttons: KeyLinkPair[] (required) - an array of objects with a key and link
  * @param size: number (optional) - the size of the icons
+ * @param marginRight: number (optional) - the margin right to be applied to each button
  * @returns React.ReactElement - a row of buttons with icons and labels
  * @example
  * const linkValues = getWorkbenchLinkValues();
  * <LinkButtons buttons={linkValues} size={6} />
- */ const LinkButtons = ({ buttons, size }: LinkButtonProps) => {
+ */ const LinkButtons = ({ buttons, size, marginRight }: LinkButtonProps) => {
   const iconButtons = getIconButtons(buttons);
   return (
     <ButtonRow>
       {iconButtons.map((button, index) => (
-        <div key={index} style={{ marginRight: button.name ? '40px' : '0' }}>
+        <div
+          key={index}
+          style={{ marginRight: marginRight ? `${marginRight}px` : '0px' }}
+        >
           <Tooltip key={index} title={button.link}>
             <IconLabel>
               <IconButton
@@ -61,13 +66,15 @@ interface LinkButtonProps {
                   window.open(button.link, '_blank');
                 }}
                 role="link"
-                {...(button.name && { title: `${button.name}-btn` })}
+                {...(button.name !== 'ToolbarIcon' && {
+                  title: `${button.name}-btn`,
+                })}
               >
                 {React.cloneElement(button.icon, {
                   style: { fontSize: `${size?.toString() ?? 4}rem` },
                 })}
               </IconButton>
-              {button.name && (
+              {button.name !== 'ToolbarIcon' && (
                 <Typography variant="h6">{button.name}</Typography>
               )}
             </IconLabel>

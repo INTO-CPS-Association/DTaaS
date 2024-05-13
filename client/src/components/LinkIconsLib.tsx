@@ -30,11 +30,11 @@ const LinkIcons: LinkIconsType = {
   },
   GITHUB: {
     icon: <GitHubIcon />,
-    name: undefined,
+    name: 'ToolbarIcon',
   },
   HELP: {
     icon: <HelpOutlineIcon />,
-    name: undefined,
+    name: 'ToolbarIcon',
   },
   NO_ICON: {
     icon: <OpenInNewIcon />,
