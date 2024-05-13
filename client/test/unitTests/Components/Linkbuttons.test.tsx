@@ -85,20 +85,19 @@ describe('LinkButtons component default size', () => {
   });
 });
 
-describe('LinkButtons component with specified size', () => {
-  it('should render icon buttons with specified size', () => {
+describe('LinkButtons component with specified size and specified marginRight', () => {
+  it('should render icon buttons with specified size and specified marginRight', () => {
     const customSize = 6;
-    render(<LinkButtons buttons={buttons} size={customSize} />);
+    const customMarginRight = 40;
+    render(
+      <LinkButtons
+        buttons={buttons}
+        size={customSize}
+        marginRight={customMarginRight}
+      />,
+    );
 
     evaluateButtonSize(customSize);
-  });
-});
-
-describe('LinkButtons component with specified marginRight', () => {
-  it('should render icon buttons with specified marginRight', () => {
-    const customMarginRight = 40;
-    render(<LinkButtons buttons={buttons} marginRight={customMarginRight} />);
-
     evaluateMarginRight(customMarginRight);
   });
 });
