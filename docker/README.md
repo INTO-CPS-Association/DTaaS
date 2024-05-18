@@ -25,7 +25,7 @@ There are two dockerfiles for building the containers:
 The installation requirements to run this development version of
 the DTaaS are:
 
-- docker-compose
+- docker with compose plugin
 - User account on a gitlab instance (could be _gitlab.com_)
 - OAuth2 application registrations
 
@@ -71,12 +71,12 @@ The configuration files to be updated are:
 ## Development Environment
 
 The development environment requires docker images to be built
-become the docker-compose application can be brought up.
+become the docker compose application can be brought up.
 
 The images can be built using
 
 ```sh
-docker-compose -f compose.dev.yml build
+docker compose -f compose.dev.yml build
 ```
 
 The first build requires download of base docker images and building
@@ -89,8 +89,8 @@ The docker commands need to be executed from this directory(`docker`).
 The relevant docker commands are:
 
 ```bash
-docker-compose -f compose.dev.yml up -d #start the application
-docker-compose -f compose.dev.yml down  #terminate the application
+docker compose -f compose.dev.yml up -d #start the application
+docker compose -f compose.dev.yml down  #terminate the application
 ```
 
 ### Access the Application
