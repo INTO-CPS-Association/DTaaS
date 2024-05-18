@@ -23,8 +23,8 @@ nav:
         - Servers: admin/servers/auth.md
       - Host Install:
         - Localhost: admin/localhost.md
-        - Trial: admin/trial.md
         - Production: admin/host.md
+      - CLI: admin/cli.md
       - Vagrant:
         - Base Box: admin/vagrant/base-box.md
         - Single Machine: admin/vagrant/single-machine.md

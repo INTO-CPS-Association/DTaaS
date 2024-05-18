@@ -39,8 +39,7 @@ Follow the installation that fits your usecase.
 
 | Installation Setup | Purpose |
 |:-----|:-----|
-| [Trial installation on localhost](./trial.md) | Install DTaaS on your computer for a single user; does not need a web server. _This setup also does not require reverse proxy and domain name._ |
-| [Trial installation on single host](./trial.md) | Install DTaaS on server for a single user. |
+| [Trial installation on localhost](./localhost.md) | Install DTaaS on your computer for a single user; does not need a web server. _This setup also does not require reverse proxy and domain name._ |
 | [Production installation on single host](./host.md) | Install DTaaS on server for multiple users. |
 | [One vagrant machine](vagrant/single-machine.md) | Install DTaaS on a virtual machine; can be used for single or multiple users. |
 | [Two vagrant machines](vagrant/two-machines.md) | Install DTaaS on two virtual machines; can be used for single or multiple users. |
