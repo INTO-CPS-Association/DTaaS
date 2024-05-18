@@ -23,8 +23,7 @@ The installation requirements to run this docker version of the DTaaS are:
 :clipboard: The frontend website requires authorization.
 The default authorization configuration works for _gitlab.com_.
 If you desire to use locally hosted gitlab instance, please see
-the client
-[client docs](../docs/admin/client/auth.md).
+the [client docs](../docs/admin/client/auth.md).
 
 
 ## Configuration
@@ -42,6 +41,23 @@ Edit all the fields according to your specific case.
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
   | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.local.js' | Full path to env.js file for client |
+
+:clipboard: The path examples given here are for Linux OS.
+These paths can be Windows OS compatible paths as well.
+
+### Create User Workspace
+
+The existing filesystem for installation is setup for `user1`.
+A new filesystem directory needs to be created for the selected user.
+
+Please execute the following commands from the top-level directory
+of the DTaaS project.
+
+```bash
+cp -R files/user1 files/username
+```
+
+where _username_ is the selected username registered on _gitlab.com_.
 
 ## Run
 

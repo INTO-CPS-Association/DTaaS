@@ -26,7 +26,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
-      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
     networks:
       - frontend

@@ -17,7 +17,7 @@ In the new application configuration, there are two OAuth2 applications.
 
 The installation requirements to run this docker version of the DTaaS are:
 
-- DNS name
+- DNS name for the server
 - docker with compose plugin
 - User accounts on a gitlab instance
 - OAuth2 application registrations
@@ -29,7 +29,7 @@ Create user accounts in a gitlab instance for all the users.
 The default docker compose file contains two - _user1_ and _user2_.
 These names need to be changed to suitable usernames.
 
-It is possible to use _gitlab.com_ as well.
+It is possible to use _gitlab.com_ as well for OAuth2 authorization purposes.
 
 ### OAuth2 Application Registration
 
@@ -80,20 +80,39 @@ Edit all the fields according to your specific case.
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
   | CLIENT_CONFIG | '/home/dtaas/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
-Note: The Server DNS can also be an IP address.
-However, for proper working it is neccessary to use the
-same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
+:clipboard: Important points to note:
+
+1. The path examples given here are for Linux OS.
+   These paths can be Windows OS compatible paths as well.
+1. The Server DNS can also be an IP address.
+   However, for proper working it is neccessary to use the
+   same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
 
 ### Website Client
 
 The frontend React website requires configuration which is specified
-via a filenamr provided in `CLIENT_CONFIG` variable of `.env.server` file.
+via a filename provided in `CLIENT_CONFIG` variable of `.env.server` file.
 
 The `CLIENT_CONFIG` file is in relative directory of
 _deploy/config/client/env.trial.js_.
 
 Further explanation on the client configuration is available in
 [client config](../../docs/admin/client/CLIENT.md).
+
+### Create User Workspace
+
+The existing filesystem for installation is setup for `user1`.
+A new filesystem directory needs to be created for the selected user.
+
+Please execute the following commands from the top-level directory
+of the DTaaS project.
+
+```bash
+cp -R files/user1 files/username
+```
+
+where _username_ is one of the selected usernames. This command
+needs to be repeated for all the selected users.
 
 ### Library Microservice
 
@@ -126,7 +145,7 @@ The usernames in the `.env.server` file need to match those in
 the `conf.server` file.
 
 Traefik routes are controlled by the `.env.server` file
-Authentication on these routes is controlled by the `conf.server` file.
+Authorization on these routes is controlled by the `conf.server` file.
 If a route is not specified in `conf` file but an authorisation is
 requested by traefik for this unknown route, the default behavior of
 traefik forward-auth kicks in. This default behavior is to enable
