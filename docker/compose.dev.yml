@@ -20,7 +20,7 @@ services:
   client:
     build: 
       context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/dev/client.dockerfile
+      dockerfile: ${DTAAS_DIR}/docker/client.dockerfile
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
@@ -36,7 +36,7 @@ services:
   libms:
     build: 
       context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/dev/libms.dockerfile
+      dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/servers/lib/config/.env.default:/dtaas/libms/.env
