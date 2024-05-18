@@ -3,7 +3,7 @@
 This readme will explain the building and use of different docker files
 for use in development and installation of the DTaaS software.
 
-**NOTE**: A local docker and docker-compose installation is a pre-requisite
+:clipboard: A local docker and docker-compose installation is a pre-requisite
 for using docker workflows.
 
 ## Folder Structure

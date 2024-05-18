@@ -40,7 +40,7 @@ _[fileConfig](config/gateway/fileConfig.yml)_.
 Change `foo.com` to your local hostname and user1/user2 to the usernames
 chosen by you.
 
-**NOTE**: Do not use `http://` or `https://`
+:clipboard: Do not use `http://` or `https://`
 in [fileConfig](config/gateway/fileConfig.yml).
 
 #### Authorization

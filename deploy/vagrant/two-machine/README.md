@@ -35,7 +35,7 @@ directory (`deploy/vagrant/two-machine`).
 
 ## Configure Server Settings
 
-**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs has been used for
+:clipboard: A dummy **foo.com** and **services.foo.com**  URLs has been used for
 illustration.
 Please change these to your unique website URLs.
 

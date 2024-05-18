@@ -56,7 +56,7 @@ two vagrant configuration files, namely _boxes.json_ and _Vagrantfile_.
 
 ## Configure Server Settings
 
-**NOTE**: A dummy **foo.com** and **services.foo.com**  URLs
+:clipboard: A dummy **foo.com** and **services.foo.com**  URLs
 has been used for illustration.
 Please change these to your unique website URLs.
 
