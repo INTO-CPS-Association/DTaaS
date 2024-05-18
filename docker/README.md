@@ -62,10 +62,10 @@ The configuration files to be updated are:
    please see [server docs](../docs/admin/servers/auth.md) for help
    with updating this config file)
 3. client/config/local.js
-   please see [client config](../../docs/admin/client/CLIENT.md) for help
+   please see [client config](../docs/admin/client/CLIENT.md) for help
    with updating this config file)
 4. servers/lib/config/.env.default
-   please see [lib config](../../docs/admin/servers/lib/LIB-MS.md) for help
+   please see [lib config](../docs/admin/servers/lib/LIB-MS.md) for help
    with updating this config file)
 
 ## Development Environment

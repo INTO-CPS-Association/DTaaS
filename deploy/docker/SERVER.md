@@ -212,3 +212,11 @@ docker compose -f compose.server.yml --env-file .env.server up -d --force-recrea
 ```
 
 The new users are now added to the DTaaS instance, with authorization enabled.
+
+## References
+
+Image sources:
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[reactjs](https://krify.co/about-reactjs/),
+[gitlab](https://gitlab.com)

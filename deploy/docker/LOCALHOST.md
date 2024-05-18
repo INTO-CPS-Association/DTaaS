@@ -87,3 +87,11 @@ through the single page client now.
 
 The [library microservice](../servers/lib/README.md) is not
 included in the localhost installation scenario.
+
+## References
+
+Image sources:
+[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
+[ml-workspace](https://github.com/ml-tooling/ml-workspace),
+[reactjs](https://krify.co/about-reactjs/),
+[gitlab](https://gitlab.com)
