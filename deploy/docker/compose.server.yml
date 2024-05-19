@@ -86,7 +86,7 @@ services:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/docker/conf.server:/conf
+      - ${DTAAS_DIR}/deploy/docker/conf.server:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
