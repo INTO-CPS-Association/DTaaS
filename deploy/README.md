@@ -11,4 +11,4 @@ on all the supported Operating Systems.
 There are two installation scenarios each with a dedicated set of instructions:
 
 1. Single user [localhost](./docker/LOCALHOST.md)
-2. Multi-user [web application](./docker/SERVER.md)
+1. Multi-user [web application](./docker/SERVER.md)

@@ -25,7 +25,6 @@ The default authorization configuration works for _gitlab.com_.
 If you desire to use locally hosted gitlab instance, please see
 the [client docs](../docs/admin/client/auth.md).
 
-
 ## Configuration
 
 ### Docker Compose

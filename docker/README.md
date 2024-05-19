@@ -2,7 +2,7 @@
 
 Use of docker images is handy for developers. It is suggested
 that developers build the required images locally on their computer and
-use them for development purposes. 
+use them for development purposes.
 
 This readme will explain the building and use of different docker files
 for development purposes.
@@ -58,13 +58,13 @@ The configuration files to be updated are:
 1. docker/.env
    please see [docker README](../deploy/docker/SERVER.md) for help
    with updating this config file)
-2. docker/conf.local
+1. docker/conf.local
    please see [server docs](../docs/admin/servers/auth.md) for help
    with updating this config file)
-3. client/config/local.js
+1. client/config/local.js
    please see [client config](../docs/admin/client/CLIENT.md) for help
    with updating this config file)
-4. servers/lib/config/.env.default
+1. servers/lib/config/.env.default
    please see [lib config](../docs/admin/servers/lib/LIB-MS.md) for help
    with updating this config file)
 
@@ -96,7 +96,7 @@ docker compose -f compose.dev.yml down  #terminate the application
 ### Access the Application
 
 The application will be accessible at:
-<http>_http://localhost_</http> from web browser.
+<http://localhost> from web browser.
 Sign in using your gitlab.com account.
 
 All the functionality of DTaaS should be available to you
@@ -105,7 +105,7 @@ through the single page client now.
 ## Publish Docker Images
 
 Build and publish the docker images. This step is required only for
-the publication of images to Docker Hub. 
+the publication of images to Docker Hub.
 
 :stop_sign: This publishing step is managed
 only by project maintainers. Regular developers can skip this step.
