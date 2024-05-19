@@ -1,4 +1,4 @@
-# DTaaS on a Production Server
+# Docker Compose for DTaaS with Backend Authorization
 
 The installation instructions provided in this README are
 ideal for hosting the DTaaS as web application
@@ -40,11 +40,11 @@ using OAuth2 protocol.
 
 - The frontend website is a React single page application (SPA).
 - The details of Oauth2 app for the frontend website are in
-  [client docs](client/auth.md).
+  [client docs](../../docs/admin/client/auth.md).
 - The Oauth2 authorization for backend services is managed
   by [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
   The details of this authorization setup are in
-  [server docs](servers/auth.md).
+  [server docs](../../docs/admin/servers/auth.md).
 
 Based on your selection of gitlab instance, it is necessary
 to register these two OAuth2 applications and link them
@@ -61,17 +61,14 @@ git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd DTaaS
 ```
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip file pathnames
+:clipboard: Tip on file pathnames
 
-    1. The filepaths shown here follow Linux OS.
-       The installation procedures also work with Windows
-       OS.
-    1. The description below refers to filenames. All the file
-       paths mentioned below are relatively to the top-level
-       **DTaaS** directory.
-<!-- markdownlint-enable MD046 -->
+1. The filepaths shown here follow POSIX convention.
+   The installation procedures also work with Windows
+   paths.
+1. The description below refers to filenames. All the file
+   paths mentioned below are relatively to the top-level
+   **DTaaS** directory.
 
 ## Configuration
 
@@ -90,7 +87,7 @@ Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
   |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | DTAAS_DIR | '/home/dtaas/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
   | CLIENT_ID | 'xx' | The ID of your server OAuth application |
@@ -98,19 +95,15 @@ Edit all the fields according to your specific case.
   | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | CLIENT_CONFIG | '/Users/username/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
+  | CLIENT_CONFIG | '/home/dtaas/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip
-    Important points to note:
+:clipboard: Important points to note:
 
-    1. The path examples given here are for Linux OS.
-       These paths can be Windows OS compatible paths as well.
-    1. The Server DNS can also be an IP address.
-       However, for proper working it is neccessary to use the
-       same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
-<!-- markdownlint-enable MD046 -->
+1. The path examples given here are for Linux OS.
+   These paths can be Windows OS compatible paths as well.
+1. The Server DNS can also be an IP address.
+   However, for proper working it is neccessary to use the
+   same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
 
 ### Website Client
 
@@ -122,23 +115,19 @@ The `CLIENT_CONFIG` file is in relative directory of
 `deploy/config/client/env.js`.
 
 Further explanation on the client configuration is available in
-[client config](client/config.md).
+[client config](../../docs/admin/client/config.md).
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip
-    There is a default OAuth application registered on <https://gitlab.com>
-    for client. The corresponding OAuth application
-    details are:
+There is a default OAuth application registered on <https://gitlab.com>
+for client. The corresponding OAuth application
+details are:
 
-    ```js
-    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
-    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
-    ```
+```js
+REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+```
 
-    **This can be used for test purposes**. Please use your own OAuth application
-    for secure production deployments.
-<!-- markdownlint-enable MD046 -->
+**This can be used for test purposes**. Please use your own OAuth application
+for secure production deployments.
 
 ### Create User Workspace
 
@@ -201,7 +190,7 @@ Please change the usernames and email addresses to the matching
 user accounts on the OAuth provider
 (either <https://gitlab.foo.com> or <https://gitlab.com>).
 
-### Caveat
+#### Caveat
 
 The usernames in the `deploy/docker/.env.server` file need to match those in
 the `deploy/docker/conf.server` file.
@@ -250,8 +239,10 @@ and authorize access to the shown application.
 
 To add a new user to your DTaaS instance, follow these steps:
 
-- Use the [DTaaS CLI](cli.md) to bring up the ML workspaces for new users.
-  This brings up the containers, without the authorization enforced by Traefik forward-auth.
+- Use the [DTaaS CLI](../../cli/README.md) to bring up
+  the ML workspaces for new users.
+  This brings up the containers, without the authorization
+  enforced by Traefik forward-auth.
 - Add three lines to the `conf.server` file
 
   ```txt

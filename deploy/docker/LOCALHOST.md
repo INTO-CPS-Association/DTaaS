@@ -1,4 +1,4 @@
-# DTaaS on localhost
+# Docker Compose for DTaaS with Backend Authorization
 
 The installation instructions provided in this README are
 ideal for running the DTaaS on both localhost.
@@ -17,16 +17,12 @@ setup is shown here.
 The installation requirements to run this docker version of the DTaaS are:
 
 - docker desktop / docker CLI with compose plugin
-- User account on _gitlab.com_
+- User account on <https://gitlab.com>
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip
-    The frontend website requires authorization.
-    The default authorization configuration works for _gitlab.com_.
-    If you desire to use locally hosted gitlab instance, please see
-    the [client docs](client/auth.md).
-<!-- markdownlint-enable MD046 -->
+:clipboard: The frontend website requires authorization.
+The default authorization configuration works for <https://gitlab.com>.
+If you desire to use locally hosted gitlab instance, please see
+the [client config](../../docs/admin/client/config.md).
 
 ## Clone Codebase
 
@@ -35,17 +31,14 @@ git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd DTaaS
 ```
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip file pathnames
+:clipboard: file pathnames
 
-    1. The filepaths shown here follow POSIX convention.
-       The installation procedures also work with Windows
-       paths.
-    1. The description below refers to filenames. All the file
-       paths mentioned below are relatively to the top-level
-       **DTaaS** directory.
-<!-- markdownlint-enable MD046 -->
+1. The filepaths shown here follow POSIX convention.
+   The installation procedures also work with Windows
+   paths.
+1. The description below refers to filenames. All the file
+   paths mentioned below are relatively to the top-level
+   **DTaaS** directory.
 
 ## Configuration
 
@@ -66,12 +59,8 @@ Edit all the fields according to your specific case.
   | username1 | 'user1' | Your gitlab username |
   | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.local.js' | Full path to env.js file for client |
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip
-    The path examples given here are for Linux OS.
-    These paths can be Windows OS compatible paths as well.
-<!-- markdownlint-enable MD046 -->
+:clipboard: The path examples given here are for Linux OS.
+These paths can be Windows OS compatible paths as well.
 
 ### Create User Workspace
 
@@ -113,7 +102,7 @@ through the single page client now.
 
 ## Limitations
 
-The [library microservice](servers/lib/docker.md) is not
+The [library microservice](../../docs/admin/servers/lib/docker.md) is not
 included in the localhost installation scenario.
 
 ## References
