@@ -1,4 +1,4 @@
-# DTaaS on localhost
+# Install DTaaS on localhost
 
 The installation instructions provided in this README are
 ideal for running the DTaaS on both localhost.

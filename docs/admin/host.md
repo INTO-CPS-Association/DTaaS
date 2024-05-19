@@ -1,4 +1,4 @@
-# DTaaS on a Production Server
+# Install DTaaS on a Production Server
 
 The installation instructions provided in this README are
 ideal for hosting the DTaaS as web application
