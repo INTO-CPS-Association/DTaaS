@@ -17,7 +17,7 @@ There are two dockerfiles for building the containers:
 - **compose.dev.yml:** Docker Compose configuration for
   development environment.
 - **.env**: environment variables for docker compose file
-- **conf.local** OAuth2 configuration required by
+- **conf.dev** OAuth2 configuration required by
   the Traefik forward-auth service
 
 ## Requirements
@@ -58,14 +58,14 @@ The configuration files to be updated are:
 1. docker/.env
    please see [docker README](../deploy/docker/SERVER.md) for help
    with updating this config file)
-1. docker/conf.local
+1. docker/conf.dev
    please see [server docs](../docs/admin/servers/auth.md) for help
    with updating this config file)
 1. client/config/local.js
-   please see [client config](../docs/admin/client/CLIENT.md) for help
+   please see [client config](../docs/admin/client/config.md) for help
    with updating this config file)
-1. servers/lib/config/.env.default
-   please see [lib config](../docs/admin/servers/lib/LIB-MS.md) for help
+2. servers/lib/config/.env.default
+   please see [lib config](../docs/admin/servers/lib/docker.md) for help
    with updating this config file)
 
 ## Development Environment
