@@ -21,7 +21,7 @@ nav:
       - Authorization:
         - Client: admin/client/auth.md
         - Servers: admin/servers/auth.md
-      - Host Install:
+      - Docker:
         - Localhost: admin/localhost.md
         - Production: admin/host.md
       - CLI: admin/cli.md
@@ -30,8 +30,12 @@ nav:
         - Single Machine: admin/vagrant/single-machine.md
         - Two Machines: admin/vagrant/two-machines.md
       - Separate Packages:
-        - Website: admin/client/CLIENT.md
-        - Library microservice: admin/servers/lib/LIB-MS.md
+        - Website: 
+          - config: admin/client/config.md
+          - docker: admin/client/docker.md
+        - Library microservice:
+          - npm: admin/servers/lib/npm.md
+          - docker: admin/servers/lib/docker.md
       - Services: admin/services.md
       - Guides:
         - New user: admin/guides/add_user.md

@@ -1,5 +1,11 @@
 # Update basepath/route for the application
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+:clipboard:
+    Update the instructions for client docker container.
+<!-- markdownlint-enable MD046 -->
+
 The updates required to make the application
 work with basepath (say bar):
 
@@ -53,7 +59,7 @@ http:
 
 **3. Update deploy/config/client/env.js:**
 
-See the [client documentation](../client/CLIENT.md) for an example.
+See the [client documentation](../client/config.md) for an example.
 
 **4. Update install scripts:**
 

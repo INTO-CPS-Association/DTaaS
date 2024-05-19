@@ -20,11 +20,14 @@ The installation requirements to run this docker version of the DTaaS are:
 - docker desktop / docker CLI with compose plugin
 - User account on _gitlab.com_
 
-:clipboard: The frontend website requires authorization.
-The default authorization configuration works for _gitlab.com_.
-If you desire to use locally hosted gitlab instance, please see
-the [client docs](client/auth.md).
-
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    The frontend website requires authorization.
+    The default authorization configuration works for _gitlab.com_.
+    If you desire to use locally hosted gitlab instance, please see
+    the [client docs](client/auth.md).
+<!-- markdownlint-enable MD046 -->
 
 ## Configuration
 
@@ -42,8 +45,12 @@ Edit all the fields according to your specific case.
   | username1 | 'user1' | Your gitlab username |
   | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.local.js' | Full path to env.js file for client |
 
-:clipboard: The path examples given here are for Linux OS.
-These paths can be Windows OS compatible paths as well.
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    The path examples given here are for Linux OS.
+    These paths can be Windows OS compatible paths as well.
+<!-- markdownlint-enable MD046 -->
 
 ### Create User Workspace
 
@@ -85,7 +92,7 @@ through the single page client now.
 
 ## Limitations
 
-The [library microservice](servers/lib/LIB-MS.md) is not
+The [library microservice](servers/lib/docker.md) is not
 included in the localhost installation scenario.
 
 ## References

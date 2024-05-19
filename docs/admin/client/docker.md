@@ -2,11 +2,16 @@
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
+!!! failure
+    Replace zip file with docker container
+<!-- markdownlint-enable MD046 -->
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
 !!! tip
     The [Localhost](../localhost.md) installation setup is a faster
      way to use the DTaaS software. You might want to consider the localhost
     option before using only the **DTaaS-client.zip** package.
-
 <!-- markdownlint-enable MD046 -->
 
 To host DTaaS client website on your server, follow these steps:

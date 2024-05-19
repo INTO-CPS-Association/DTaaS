@@ -80,13 +80,17 @@ Edit all the fields according to your specific case.
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
   | CLIENT_CONFIG | '/home/dtaas/Desktop/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
-:clipboard: Important points to note:
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    Important points to note:
 
-1. The path examples given here are for Linux OS.
-   These paths can be Windows OS compatible paths as well.
-1. The Server DNS can also be an IP address.
-   However, for proper working it is neccessary to use the
-   same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
+    1. The path examples given here are for Linux OS.
+       These paths can be Windows OS compatible paths as well.
+    1. The Server DNS can also be an IP address.
+       However, for proper working it is neccessary to use the
+       same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
+<!-- markdownlint-enable MD046 -->
 
 ### Website Client
 
@@ -97,7 +101,7 @@ The `CLIENT_CONFIG` file is in relative directory of
 _deploy/config/client/env.trial.js_.
 
 Further explanation on the client configuration is available in
-[client config](client/CLIENT.md).
+[client config](client/docker.md).
 
 ### Create User Workspace
 
