@@ -84,13 +84,14 @@ Here are the steps to get started:
 
 ## Development Environment
 
-The development environment does not required traefik forward-auth.
+The development environment and server installation scenarios
+requires traefik forward-auth.
 
 ## Configure Authorization Rules for Traefik Forward-Auth
 
 The Traefik forward-auth microservices requires configuration rules to manage
 authorization for different URL paths.
-The _conf_ file can be used to configure the specific rules.
+The _conf.*_ file can be used to configure the specific rules.
 There are broadly three kinds of URLs:
 
 ### Public Path Without Authorization
@@ -142,7 +143,7 @@ allowing only users mentioned in the whitelist.
 
 ## Limitation
 
-The rules in _conf_ file are not dynamically loaded into
+The rules in _conf.*_ file are not dynamically loaded into
 the **traefik-forward-auth** microservice.
 Any change in the _conf_ file requires
 retart of **traefik-forward-auth** for the changes to take effect.

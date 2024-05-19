@@ -1,9 +1,8 @@
 # Docker Compose for DTaaS with Backend Authorization
 
-This directory contains docker compose files for running the DTaaS on both
-localhost and server.
 The installation instructions provided in this README are
-ideal for single users intending to use
+ideal for running the DTaaS on both localhost.
+This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
 ## Design
@@ -18,20 +17,39 @@ setup is shown here.
 The installation requirements to run this docker version of the DTaaS are:
 
 - docker desktop / docker CLI with compose plugin
-- User account on _gitlab.com_
+- User account on <https://gitlab.com>
 
 :clipboard: The frontend website requires authorization.
-The default authorization configuration works for _gitlab.com_.
+The default authorization configuration works for <https://gitlab.com>.
 If you desire to use locally hosted gitlab instance, please see
-the [client docs](../docs/admin/client/auth.md).
+the [client config](../../docs/admin/client/config.md).
+
+## Clone Codebase
+
+```bash
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
+cd DTaaS
+```
+
+:clipboard: file pathnames
+
+1. The filepaths shown here follow POSIX convention.
+   The installation procedures also work with Windows
+   paths.
+1. The description below refers to filenames. All the file
+   paths mentioned below are relatively to the top-level
+   **DTaaS** directory.
 
 ## Configuration
 
 ### Docker Compose
 
-The docker compose configuration is in `.env.local`; it is a sample file.
+The docker compose configuration is in `deploy/docker/.env.local`;
+it is a sample file.
 It contains environment variables
 that are used by the docker compose files.
+It can be updated to suit your local installation scenario.
+It contains the following environment variables.
 
 Edit all the fields according to your specific case.
 
@@ -56,7 +74,7 @@ of the DTaaS project.
 cp -R files/user1 files/username
 ```
 
-where _username_ is the selected username registered on _gitlab.com_.
+where _username_ is the selected username registered on <https://gitlab.com>.
 
 ## Run
 
@@ -77,7 +95,7 @@ docker compose -f compose.local.yml --env-file .env up -d --force-recreate clien
 
 The application will be accessible at:
 <http://localhost> from web browser.
-Sign in using your gitlab.com account.
+Sign in using your <https://gitlab.com> account.
 
 All the functionality of DTaaS should be available to you
 through the single page client now.

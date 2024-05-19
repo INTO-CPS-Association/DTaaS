@@ -29,7 +29,7 @@ Create user accounts in a gitlab instance for all the users.
 The default docker compose file contains two - _user1_ and _user2_.
 These names need to be changed to suitable usernames.
 
-It is possible to use _gitlab.com_ as well for OAuth2 authorization purposes.
+It is possible to use <https://gitlab.com> as well for OAuth2 authorization purposes.
 
 ### OAuth2 Application Registration
 
@@ -40,11 +40,11 @@ using OAuth2 protocol.
 
 - The frontend website is a React single page application (SPA).
 - The details of Oauth2 app for the frontend website are in
-  [client docs](../docs/admin/client/auth.md).
+  [client docs](../../docs/admin/client/auth.md).
 - The Oauth2 authorization for backend services is managed
   by [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
   The details of this authorization setup are in
-  [server docs](../docs/admin/servers/auth.md).
+  [server docs](../../docs/admin/servers/auth.md).
 
 Based on your selection of gitlab instance, it is necessary
 to register these two OAuth2 applications and link them
@@ -54,17 +54,34 @@ Please see
 [gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 documentation for further help with creating these two OAuth applications.
 
+## Clone Codebase
+
+```bash
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
+cd DTaaS
+```
+
+:clipboard: Tip on file pathnames
+
+1. The filepaths shown here follow POSIX convention.
+   The installation procedures also work with Windows
+   paths.
+1. The description below refers to filenames. All the file
+   paths mentioned below are relatively to the top-level
+   **DTaaS** directory.
+
 ## Configuration
 
 Three following configuration files need to be updated.
 
 ### Docker Compose
 
-The docker compose configuration is in `.env.server` is
-a configuration template. It can be updated to suit your local
-installation scenario.
-
-The `.env.local` contains the following environment variables.
+The docker compose configuration is in `deploy/docker/.env.server`.
+it is a sample file.
+It contains environment variables
+that are used by the docker compose files.
+It can be updated to suit your local installation scenario.
+It contains the following environment variables.
 
 Edit all the fields according to your specific case.
 
@@ -91,17 +108,30 @@ Edit all the fields according to your specific case.
 ### Website Client
 
 The frontend React website requires configuration which is specified
-via a filename provided in `CLIENT_CONFIG` variable of `.env.server` file.
+via a filename provided in `CLIENT_CONFIG` variable of
+`deploy/docker/.env.server` file.
 
 The `CLIENT_CONFIG` file is in relative directory of
-_deploy/config/client/env.trial.js_.
+`deploy/config/client/env.js`.
 
 Further explanation on the client configuration is available in
-[client config](../../docs/admin/client/CLIENT.md).
+[client config](../../docs/admin/client/config.md).
+
+There is a default OAuth application registered on <https://gitlab.com>
+for client. The corresponding OAuth application
+details are:
+
+```js
+REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+```
+
+**This can be used for test purposes**. Please use your own OAuth application
+for secure production deployments.
 
 ### Create User Workspace
 
-The existing filesystem for installation is setup for `user1`.
+The existing filesystem for installation is setup for `files/user1`.
 A new filesystem directory needs to be created for the selected user.
 
 Please execute the following commands from the top-level directory
@@ -128,7 +158,7 @@ The config specified in INI format. The template configuration file is:
 ```ini
 PORT='4001'
 MODE='local'
-LOCAL_PATH ='/home/dtaas/Desktop/DTaaS/files'
+LOCAL_PATH ='/Users/<username>/DTaaS/files'
 LOG_LEVEL='debug'
 APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
@@ -139,20 +169,42 @@ location of the local directory which will be served to users
 by the Library microservice.
 Replace the default values the appropriate values for your setup.
 
-### Caveat
+### Configure Authorization Rules for Traefik Forward-Auth
 
-The usernames in the `.env.server` file need to match those in
-the `conf.server` file.
+The Traefik forward-auth microservices requires configuration rules to manage
+authorization for different URL paths.
+The `deploy/docker/conf.server` file can be used to
+configure the authorization for user workspaces.
 
-Traefik routes are controlled by the `.env.server` file
-Authorization on these routes is controlled by the `conf.server` file.
-If a route is not specified in `conf` file but an authorisation is
-requested by traefik for this unknown route, the default behavior of
+```text
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user1`)
+rule.onlyu1.whitelist = user1@localhost
+
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user2`)
+rule.onlyu1.whitelist = user2@localhost
+```
+
+Please change the usernames and email addresses to the matching
+user accounts on the OAuth provider
+(either <https://gitlab.foo.com> or <https://gitlab.com>).
+
+#### Caveat
+
+The usernames in the `deploy/docker/.env.server` file need to match those in
+the `deploy/docker/conf.server` file.
+
+Traefik routes are controlled by the `deploy/docker/.env.server` file.
+Authorization on these routes is controlled by the `deploy/docker/conf.server` file.
+If a route is not specified in `deploy/docker/conf.server` file
+but an authorisation is requested by traefik for this unknown route,
+the default behavior of
 traefik forward-auth kicks in. This default behavior is to enable
 endpoint being available to any signed in user.
 
-If there are extra routes in `conf.server` file but these are not
-in `.env.server` file,
+If there are extra routes in `deploy/docker/conf.server` file but these are not
+in `deploy/docker/.env.server` file,
 such routes are not served by traefik; it will give **404 server response**.
 
 ## Run
@@ -187,23 +239,15 @@ and authorize access to the shown application.
 
 To add a new user to your DTaaS instance, follow these steps:
 
-- Use the [DTaaS CLI](../cli/README.md) to bring up the ML workspaces for new users.
+- Use the [DTaaS CLI](../../cli/README.md) to bring up the ML workspaces for new users.
   This brings up the containers, without the authorization enforced by Traefik forward-auth.
-
-- Now, Add two lines to the `conf.local` file
-
-```txt
-rule.onlyu4.action=allow
-rule.onlyu4.rule=PathPrefix(`/user4`)
-```
-
 - Add three lines to the `conf.server` file
 
-```txt
-rule.onlyu3.action=auth
-rule.onlyu3.rule=PathPrefix(`/user3`)
-rule.onlyu3.whitelist = user3@emailservice.com
-```
+  ```txt
+  rule.onlyu3.action=auth
+  rule.onlyu3.rule=PathPrefix(`/user3`)
+  rule.onlyu3.whitelist = user3@emailservice.com
+  ```
 
 Run the appropritate command for a server/local installation:
 
