@@ -5,7 +5,7 @@
 !!! failure
     Please note that the development documentation is being
     rewritten heavily. This rework is being done to prepare
-    the software for the next release. Please use
+    the documentation for the next release. Please use
     [DTaaS v0.4](https://into-cps-association.github.io/DTaaS/version0.4/index.html)
     for installation and use. Thank you.
 <!-- markdownlint-enable MD046 -->
