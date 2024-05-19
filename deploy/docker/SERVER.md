@@ -173,7 +173,7 @@ docker compose -f compose.server.yml --env-file .env.server up -d --force-recrea
 ## Use
 
 The application will be accessible at:
-<http>_http://foo.com_</http> from web browser.
+<http://foo.com> from web browser.
 Sign in using your account linked to
 either _gitlab.com_ or your local gitlab instance.
 

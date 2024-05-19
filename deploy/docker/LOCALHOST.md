@@ -76,7 +76,7 @@ docker compose -f compose.local.yml --env-file .env up -d --force-recreate clien
 ## Use
 
 The application will be accessible at:
-<http>_http://localhost_</http> from web browser.
+<http://localhost> from web browser.
 Sign in using your gitlab.com account.
 
 All the functionality of DTaaS should be available to you
