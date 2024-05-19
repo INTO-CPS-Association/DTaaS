@@ -12,7 +12,7 @@
         <link rel="prev" href="servers/auth.html">
       
       
-        <link rel="next" href="trial.html">
+        <link rel="next" href="host.html">
       
       
       <link rel="icon" href="../assets/dtaas-logo.png">
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#localhot-installation" class="md-skip">
+        <a href="#install-dtaas-on-localhost" class="md-skip">
           Skip to content
         </a>
       
@@ -557,7 +557,7 @@
             
   
   <span class="md-ellipsis">
-    Host Install
+    Docker
   </span>
   
 
@@ -567,7 +567,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Host Install
+            Docker
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -624,19 +624,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pre-requisites" class="md-nav__link">
+  <a href="#design" class="md-nav__link">
     <span class="md-ellipsis">
-      Pre-requisites
+      Design
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pre-requisites">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clone-codebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clone Codebase
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-gitlab-oauth-application" class="md-nav__link">
+  <a href="#docker-compose" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Gitlab OAuth application
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-user-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create User Workspace
     </span>
   </a>
   
@@ -648,27 +684,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
+  <a href="#run" class="md-nav__link">
     <span class="md-ellipsis">
-      Install
+      Run
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#post-install" class="md-nav__link">
+  <a href="#use" class="md-nav__link">
     <span class="md-ellipsis">
-      Post install
+      Use
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#post-install-check" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
-      Post-install Check
+      Limitations
     </span>
   </a>
   
@@ -687,27 +723,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="trial.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Trial
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -748,6 +763,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="cli.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -759,10 +795,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
         
           
-          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -773,8 +809,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
             <span class="md-nav__icon md-icon"></span>
             Vagrant
           </label>
@@ -868,10 +904,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
         
           
-          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -882,8 +918,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_5">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
             <span class="md-nav__icon md-icon"></span>
             Separate Packages
           </label>
@@ -895,12 +931,50 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="client/CLIENT.html" class="md-nav__link">
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_1" id="__nav_2_6_1_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Website
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            Website
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="client/config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    config
   </span>
   
 
@@ -917,15 +991,111 @@
   
   
     <li class="md-nav__item">
-      <a href="servers/lib/LIB-MS.html" class="md-nav__link">
+      <a href="client/docker.html" class="md-nav__link">
         
+  
+  <span class="md-ellipsis">
+    docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_2" id="__nav_2_6_2_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Library microservice
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Library microservice
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="servers/lib/npm.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    npm
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="servers/lib/docker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -977,10 +1147,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
         
           
-          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -991,8 +1161,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_7">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
             <span class="md-nav__icon md-icon"></span>
             Guides
           </label>
@@ -2242,19 +2412,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pre-requisites" class="md-nav__link">
+  <a href="#design" class="md-nav__link">
     <span class="md-ellipsis">
-      Pre-requisites
+      Design
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pre-requisites">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clone-codebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clone Codebase
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-gitlab-oauth-application" class="md-nav__link">
+  <a href="#docker-compose" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Gitlab OAuth application
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-user-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create User Workspace
     </span>
   </a>
   
@@ -2266,27 +2472,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
+  <a href="#run" class="md-nav__link">
     <span class="md-ellipsis">
-      Install
+      Run
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#post-install" class="md-nav__link">
+  <a href="#use" class="md-nav__link">
     <span class="md-ellipsis">
-      Post install
+      Use
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#post-install-check" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
-      Post-install Check
+      Limitations
     </span>
   </a>
   
@@ -2319,98 +2525,128 @@
   
 
 
-<h1 id="localhot-installation">Localhot Installation</h1>
-<p>To try out the software, you can install it on Ubuntu 22.04
-Desktop Operating System. The setup requires a
-machine which can spare 4GB RAM, 2 vCPUs and 15GB Hard Disk
-space to a the DTaaS application.
-A successful installation will create a setup
-similar to the one shown in the figure.</p>
-<p><img alt="localhost install" src="localhost.png" /></p>
-<p>A one-step installation script is provided on this page. This script sets up
-the DTaaS software for a single user.
-You can use it to check a test installation of the DTaaS software.</p>
-<h2 id="pre-requisites">Pre-requisites</h2>
-<h3 id="1-gitlab-oauth-application">1. Gitlab OAuth application</h3>
-<p>The DTaaS react website requires Gitlab OAuth provider.
-If you need more help with this step, please see
-the <a href="client/auth.html">Authorization page</a>.</p>
-<div class="admonition information">
-<p class="admonition-title">Information</p>
-<p><!-- markdownlint-disable-file MD013 -->
-It is sufficient to have <a href="https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application">user-owned oauth</a>
-application. You can create this application
-in your gitlab account.</p>
+<h1 id="install-dtaas-on-localhost">Install DTaaS on localhost</h1>
+<p>The installation instructions provided in this README are
+ideal for running the DTaaS on both localhost.
+This installation is ideal for single users intending to use
+DTaaS on their own computers.</p>
+<h2 id="design">Design</h2>
+<p>An illustration of the docker containers used and the authorization
+setup is shown here.</p>
+<p><img alt="Traefik OAuth" src="localhost.png" /></p>
+<h2 id="requirements">Requirements</h2>
+<p>The installation requirements to run this docker version of the DTaaS are:</p>
+<ul>
+<li>docker desktop / docker CLI with compose plugin</li>
+<li>User account on <em>gitlab.com</em></li>
+</ul>
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The frontend website requires authorization.
+The default authorization configuration works for <em>gitlab.com</em>.
+If you desire to use locally hosted gitlab instance, please see
+the <a href="client/auth.html">client docs</a>.</p>
 </div>
-<p>You need the following information from the Gitlab OAuth application
-registered on Gitlab:</p>
+<!-- markdownlint-enable MD046 -->
+
+<h2 id="clone-codebase">Clone Codebase</h2>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/INTO-CPS-Association/DTaaS.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>DTaaS
+</span></code></pre></div></td></tr></table></div>
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+<div class="admonition tip file pathnames">
+<p class="admonition-title">Tip</p>
+<ol>
+<li>The filepaths shown here follow POSIX convention.
+   The installation procedures also work with Windows
+   paths.</li>
+<li>The description below refers to filenames. All the file
+   paths mentioned below are relatively to the top-level
+   <strong>DTaaS</strong> directory.</li>
+</ol>
+</div>
+<!-- markdownlint-enable MD046 -->
+
+<h2 id="configuration">Configuration</h2>
+<h3 id="docker-compose">Docker Compose</h3>
+<p>The docker compose configuration is in <code>deploy/docker/.env.local</code>;
+it is a sample file.
+It contains environment variables
+that are used by the docker compose files.
+It can be updated to suit your local installation scenario.
+It contains the following environment variables.</p>
+<p>Edit all the fields according to your specific case.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Gitlab Variable Name</th>
-<th style="text-align: left;">Variable name in Client env.js</th>
-<th style="text-align: left;">Default Value</th>
+<th style="text-align: left;">URL Path</th>
+<th style="text-align: left;">Example Value</th>
+<th style="text-align: left;">Explanation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">OAuth Provider</td>
-<td style="text-align: left;">REACT_APP_AUTH_AUTHORITY</td>
-<td style="text-align: left;"><a href="https://gitlab.com">https://gitlab.com</a> or <a href="https://gitlab.foo.com">https://gitlab.foo.com</a></td>
+<td style="text-align: left;">DTAAS_DIR</td>
+<td style="text-align: left;">'/home/Desktop/DTaaS'</td>
+<td style="text-align: left;">Full path to the DTaaS directory. This is an absolute path with no trailing slash.</td>
 </tr>
 <tr>
-<td style="text-align: left;">Application ID</td>
-<td style="text-align: left;">REACT_APP_CLIENT_ID</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">username1</td>
+<td style="text-align: left;">'user1'</td>
+<td style="text-align: left;">Your gitlab username</td>
 </tr>
 <tr>
-<td style="text-align: left;">Callback URL</td>
-<td style="text-align: left;">REACT_APP_REDIRECT_URI</td>
-<td style="text-align: left;"><a href="http://localhost/Library">http://localhost/Library</a></td>
-</tr>
-<tr>
-<td style="text-align: left;">Scopes</td>
-<td style="text-align: left;">REACT_APP_GITLAB_SCOPES</td>
-<td style="text-align: left;">openid, profile, read_user, read_repository, api</td>
+<td style="text-align: left;">CLIENT_CONFIG</td>
+<td style="text-align: left;">'/home/Desktop/DTaaS/deploy/config/client/env.local.js'</td>
+<td style="text-align: left;">Full path to env.js file for client</td>
 </tr>
 </tbody>
 </table>
-<p>You can also see
-<a href="https://docs.gitlab.com/ee/integration/oauth_provider.html">Gitlab help page</a>
-for getting the Gitlab OAuth application details.</p>
-<h2 id="install">Install</h2>
+<!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>While installing you might encounter multiple dialogs asking,
-which services should be restarted. Just click <strong>OK</strong> to all of those.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The path examples given here are for Linux OS.
+These paths can be Windows OS compatible paths as well.</p>
 </div>
-<p>Run the following commands.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>wget<span class="w"> </span>https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>bash<span class="w"> </span>single-script-install.sh<span class="w"> </span>--env<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--username<span class="w"> </span>&lt;username&gt;
+<!-- markdownlint-enable MD046 -->
+
+<h3 id="create-user-workspace">Create User Workspace</h3>
+<p>The existing filesystem for installation is setup for <code>user1</code>.
+A new filesystem directory needs to be created for the selected user.</p>
+<p>Please execute the following commands from the top-level directory
+of the DTaaS project.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>cp<span class="w"> </span>-R<span class="w"> </span>files/user1<span class="w"> </span>files/username
 </span></code></pre></div></td></tr></table></div>
-<p>The <code>--env local</code> argument is added to the script specifies <code>localhost</code>
-as the installation scenario. The <code>--username username</code> uses your
-Gitlab username to configure the DTaaS application.</p>
-<h2 id="post-install">Post install</h2>
-<p>After the single-install-script is successfully run. Please change
-<a href="#1-gitlab-oauth-application">Gitlab OAuth</a> details in</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>~/DTaaS/client/build/env.js
+<p>where <em>username</em> is the selected username registered on <a href="https://gitlab.com">https://gitlab.com</a>.</p>
+<h2 id="run">Run</h2>
+<p>The commands to start and stop the appliation are:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.local.yml<span class="w"> </span>--env-file<span class="w"> </span>.env.local<span class="w"> </span>up<span class="w"> </span>-d
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.local.yml<span class="w"> </span>--env-file<span class="w"> </span>.env.local<span class="w"> </span>down
 </span></code></pre></div></td></tr></table></div>
-<h2 id="post-install-check">Post-install Check</h2>
-<p>Now when you visit <a href="http://localhost">http://localhost</a>, you should be able to login through
-Gitlab OAuth Provider and access the DTaas web UI.</p>
-<p>If you can following along to see all the screenshots from
-<a href="../user/website/index.html">user website</a>.
-Everything is correctly setup.</p>
+<p>To restart only a specific container, for example `client``</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.local.yml<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>client
+</span></code></pre></div></td></tr></table></div>
+<h2 id="use">Use</h2>
+<p>The application will be accessible at:
+<a href="http://localhost">http://localhost</a> from web browser.
+Sign in using your <a href="https://gitlab.com">https://gitlab.com</a> account.</p>
+<p>All the functionality of DTaaS should be available to you
+through the single page client now.</p>
+<h2 id="limitations">Limitations</h2>
+<p>The <a href="servers/lib/docker.html">library microservice</a> is not
+included in the localhost installation scenario.</p>
 <h2 id="references">References</h2>
-<p>Image sources: <a href="https://logodix.com/linux-ubuntu">Ubuntu logo</a>,
+<p>Image sources:
 <a href="https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container">Traefik logo</a>,
 <a href="https://github.com/ml-tooling/ml-workspace">ml-workspace</a>,
-<a href="https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/">nodejs</a>,
 <a href="https://krify.co/about-reactjs/">reactjs</a>,
-<a href="https://camunda.com/blog/2019/10/nestjs-tx-email/">nestjs</a></p>
+<a href="https://gitlab.com">gitlab</a></p>
 
 
 
@@ -2457,13 +2693,13 @@ Everything is correctly setup.</p>
         
         
           
-          <a href="trial.html" class="md-footer__link md-footer__link--next" aria-label="Next: Trial">
+          <a href="host.html" class="md-footer__link md-footer__link--next" aria-label="Next: Production">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Trial
+                Production
               </div>
             </div>
             <div class="md-footer__button md-icon">
