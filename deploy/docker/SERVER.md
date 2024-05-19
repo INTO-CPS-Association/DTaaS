@@ -240,7 +240,8 @@ and authorize access to the shown application.
 To add a new user to your DTaaS instance, follow these steps:
 
 - Use the [DTaaS CLI](../../cli/README.md) to bring up the ML workspaces for new users.
-  This brings up the containers, without the authorization enforced by Traefik forward-auth.
+  This brings up the containers, without the authorization
+  enforced by Traefik forward-auth.
 - Add three lines to the `conf.server` file
 
   ```txt

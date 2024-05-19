@@ -65,9 +65,9 @@ cd DTaaS
 <!-- prettier-ignore -->
 !!! tip file pathnames
 
-    1. The filepaths shown here follow POSIX convention.
+    1. The filepaths shown here follow Linux OS.
        The installation procedures also work with Windows
-       paths.
+       OS.
     1. The description below refers to filenames. All the file
        paths mentioned below are relatively to the top-level
        **DTaaS** directory.
@@ -107,7 +107,7 @@ Edit all the fields according to your specific case.
 
     1. The path examples given here are for Linux OS.
        These paths can be Windows OS compatible paths as well.
-    2. The Server DNS can also be an IP address.
+    1. The Server DNS can also be an IP address.
        However, for proper working it is neccessary to use the
        same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
 <!-- markdownlint-enable MD046 -->

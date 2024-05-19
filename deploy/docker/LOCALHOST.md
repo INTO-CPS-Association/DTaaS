@@ -102,7 +102,7 @@ through the single page client now.
 
 ## Limitations
 
-The [library microservice](../servers/lib/README.md) is not
+The [library microservice](../../docs/admin/servers/lib/docker.md) is not
 included in the localhost installation scenario.
 
 ## References
