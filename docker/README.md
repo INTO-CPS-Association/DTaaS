@@ -64,7 +64,7 @@ The configuration files to be updated are:
 1. client/config/local.js
    please see [client config](../docs/admin/client/config.md) for help
    with updating this config file)
-2. servers/lib/config/.env.default
+1. servers/lib/config/.env.default
    please see [lib config](../docs/admin/servers/lib/docker.md) for help
    with updating this config file)
 
