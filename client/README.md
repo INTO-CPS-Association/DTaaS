@@ -95,4 +95,5 @@ This error can be seen on the **Library** and **Digital Twins** pages.
 This error is expected.
 
 If you would like to try the complete DTaaS application, please see
-[localhost installation](../docs/admin/localhost.md).
+localhost installation in
+[docs](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).
