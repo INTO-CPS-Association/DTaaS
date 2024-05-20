@@ -1,6 +1,0 @@
-PORT='4001'
-MODE='local'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='true'

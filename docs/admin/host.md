@@ -155,31 +155,6 @@ cp -R files/user1 files/username
 where _username_ is one of the selected usernames. This command
 needs to be repeated for all the selected users.
 
-### Library Microservice
-
-The library microservice (Lib MS) acts like as a standalone file server for
-users. It does not interact directly with user workspaces and is not
-needed for the regular use cases of the DTaaS.
-
-In case you wish to use the Lib MS, please update
-the `deploy/config/lib.docker` configuration file.
-
-The config specified in INI format. The template configuration file is:
-
-```ini
-PORT='4001'
-MODE='local'
-LOCAL_PATH ='/Users/<username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='true'
-```
-
-The `LOCAL_PATH` variable is the absolute filepath to the
-location of the local directory which will be served to users
-by the Library microservice.
-Replace the default values the appropriate values for your setup.
-
 ### Configure Authorization Rules for Traefik Forward-Auth
 
 The Traefik forward-auth microservices requires configuration rules to manage
