@@ -172,3 +172,9 @@ is available to test the DTaaS application on your local machine.
 
 Please note that it is currently not easy to test for different
 port and basename options in the docker-based development environment.
+
+## Publish Docker Images
+
+Each new release of client web application is published as a docker
+container image. Please see [publishing](../docker/README.md) page
+for more information publishing docker images.
