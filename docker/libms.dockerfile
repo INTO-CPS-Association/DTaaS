@@ -6,9 +6,10 @@ FROM node:20.10.0-slim
 WORKDIR /dtaas/libms
 
 # pull the libms package from npm registry
-RUN npm i -g @into-cps-association/libms@0.3.1
+RUN npm i -g @into-cps-association/libms@0.4.4
 
 COPY ./deploy/config/lib .
+COPY ./servers/lib/config/http.json .
 
 # Define the command to run your app
-CMD ["libms"]
+CMD ["libms", "-H", "http.json"]

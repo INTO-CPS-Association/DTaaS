@@ -37,16 +37,47 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
-## :package: :ship: NPM package
+## Service Endpoint
 
-### Github Package Registry
+The URL endpoint for this microservice is located at: `localhost:PORT/lib`
+
+The [API](./API.md) page shows sample queries and responses.
+
+## :package: :ship: Packages
+
+### Docker images
+
+The docker version of lib microservice is packaged with the DTaaS
+application release.
+Please see [publishing](../../docker/README.md) page
+for more information publishing docker images.
+
+### Default NPM Registry
+
+The default registry for npm packages is [npmjs](https://registry.npmjs.org).
+
+```bash
+sudo npm install -g @into-cps-association/libms
+```
+
+The steps for publishing the package to npmjs are listed in
+[npm packages](../../docs/developer/npm-packages.md) page.
+
+The libms is also published on this registry, usually per release
+of the DTaaS application. The package on npmjs is more stable
+than the package on github npm registry.
+
+### Github NPM Package Registry
 
 The Github actions workflow of
 [lib microservice](../../.github/workflows/lib-ms.yml) publishes the **libms**
 into
 [packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
-### Verdaccio - Local Package Registry
+A new libmspackage is published to github packages for each version
+of libms microservice.
+
+### Verdaccio - Local NPM Package Registry
 
 Use the instructions in
 [publish npm package](../../docs/developer/npm-packages.md) for help
@@ -69,9 +100,3 @@ yarn publish #increments version, publishes to registry and adds a git tag
 ```bash
 npm unpublish  --registry http://localhost:4873/ @into-cps-association/libms@0.2.0
 ```
-
-## Service Endpoint
-
-The URL endpoint for this microservice is located at: `localhost:PORT/lib`
-
-The [API](./API.md) page shows sample queries and responses.
