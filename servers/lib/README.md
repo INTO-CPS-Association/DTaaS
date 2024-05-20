@@ -342,11 +342,13 @@ Here are examples of the HTTP requests and responses for the HTTP API calls.
 #### Directory listing
 
 <!-- markdownlint-disable MD013 -->
+
 ```http
 POST /lib HTTP/1.1
 Host: localhost:4001
 Content-Type: application/json
 Content-Length: 388
+
 {
    "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
 }
@@ -362,6 +364,7 @@ Content-Length: 306
 Content-Type: application/json; charset=utf-8
 Date: Tue, 26 Sep 2023 20:26:49 GMT
 X-Powered-By: Express
+
 {"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
 ```
 
@@ -377,6 +380,7 @@ POST /lib HTTP/1.1
 Host: localhost:4001
 Content-Type: application/json
 Content-Length: 217
+
 {
    "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
 }
@@ -390,7 +394,9 @@ Content-Length: 134
 Content-Type: application/json; charset=utf-8
 Date: Wed, 27 Sep 2023 09:17:18 GMT
 X-Powered-By: Express
+
 {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
 ```
+
 <!-- markdownlint-enable MD013 -->
 </details>
