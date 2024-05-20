@@ -326,7 +326,8 @@ the request body. Make sure to set the Content-Type header to
 "application/json".
 
 The easiest way to perform HTTP requests is to use
-[HTTPie](https://github.com/httpie/desktop/releases) desktop application.
+[HTTPie](https://github.com/httpie/desktop/releases)
+desktop application.
 You can download the Ubuntu AppImage and run it. Select the following options:
 
 ```txt
@@ -340,6 +341,7 @@ Here are examples of the HTTP requests and responses for the HTTP API calls.
 
 #### Directory listing
 
+<!-- markdownlint-disable MD013 -->
 ```http
 POST /lib HTTP/1.1
 Host: localhost:4001
@@ -390,5 +392,5 @@ Date: Wed, 27 Sep 2023 09:17:18 GMT
 X-Powered-By: Express
 {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
 ```
-
+<!-- markdownlint-enable MD013 -->
 </details>

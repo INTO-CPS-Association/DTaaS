@@ -77,7 +77,7 @@ you can use the `yarn config` sub-command to copy a configuration
 file from `client/config/` to the `build` directory.
 
 1. Save the file as `client/config/<config-name>.js`.
-2. Run the config command to copy the file to the `public` directory
+1. Run the config command to copy the file to the `public` directory
    and the `build` directory, if a build is present.
 
 ```bash
