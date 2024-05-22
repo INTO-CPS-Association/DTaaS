@@ -17,10 +17,27 @@ In the new application configuration, there are two OAuth2 applications.
 
 The installation requirements to run this docker version of the DTaaS are:
 
-- DNS name for the server
-- docker with compose plugin
-- User accounts on a gitlab instance
-- OAuth2 application registrations
+### Docker with Compose Plugin
+
+[Docker](https://www.docker.com/)** - It is important to have docker installed on your system/ server. We highly recommend using [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+### Domain name
+
+The DTaaS software is a web application and is preferably hosted
+on a server with a domain name like <http:>_foo.com_</http:>.
+However, it is possible to install the software on your computer
+and use access it at <http:>_localhost_</http:>.
+
+### Reverse Proxy
+
+The installation setup recommends that the _foo.com_ server is behind a reverse
+proxy / load balancer that provides https termination. You can still use
+the DTaaS software even if you do not have this reverse proxy.
+
+### OAuth Provider
+
+**[Gitlab Instance](https://about.gitlab.com/install/)** - DTaaS Authorization uses Gitlab OAuth2.0 authentication. Thus, to enable user authentication and authorization for your DTaaS instance, you will need a Gitlab Instance. You can bring up a private instance (recommended), or you can use [gitlab.com](www.gitlab.com) itself.
+
 
 ### Create User Accounts
 
