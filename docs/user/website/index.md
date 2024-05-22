@@ -3,38 +3,62 @@
 This page contains a screenshot driven preview of the website serving
 the DTaaS software platform.
 
-## Login to enter the DTaaS software platform
+## Visit the DTaaS software instance
 
-![Login](login.png)
+Start off by simply visiting the website
+of the DTaaS instance for which you are a user.
 
-The screen presents with HTTP authorization form. You can enter the user
-credentials. If the DTaaS is being served over HTTPS secure communication
-protocol, the username and password are secure.
+![Visit the URL](visit-dtaas-1.png)
 
-## Start the Authorization
+## Redirected to Authorization
 
-You are now logged into the DTaaS server. The DTaaS uses third-party authorization
+You will be redirected to the Gitlab
+Authorization for DTaaS.
+
+![Gitlab Sign on](gitlab-auth-1.png)
+
+Enter your email/username and password.
+If the email ID registered with DTaaS, is
+the same as your Google Login email ID, you
+can also opt to sign in using Google.
+
+You will be redirected to the OAuth
+Application page.
+
+## Permit DTaaS Server to Use Gitlab
+
+![Server Auth Permission](gitlab-auth-2.png)
+
+Click on Authorize to allow the OAuth
+application to access the information
+connected to your Gitlab account. This
+is a necessary step.
+
+You are now logged into the DTaaS server.
+You will be redirected to the login page
+of the DTaaS website.
+
+The DTaaS website uses 
+an additional layer of security -
+the third-party authorization
 protocol known as
 [OAuth](https://auth0.com/docs/get-started/authorization-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
-service provider. The DTaaS uses Gitlab as OAuth provider.
+service provider. This also uses Gitlab as OAuth provider.
+
 
 ![Gitlab signin button](gitlab-sso-1.png)
 
 You can see the Gitlab signin button. A click on this button takes you to
-Gitlab instance providing authorization for DTaaS.
+Gitlab instance providing authorization for DTaaS. You will not need to sign in to
+Gitlab again, unless you have explicitly
+logged out
+of your Gitlab account.
 
-## Authorize at Gitlab
+## Permit DTaaS Website to Use Gitlab
 
-The username and password authorization takes place on the gitlab website.
-Enter your username and password in the login form.
-
-![Gitlab login form](gitlab-sso-2.png)
-
-## Permit DTaaS to Use Gitlab
-
-The DTaaS application needs your permission to use your Gitlab account for
+The DTaaS website needs your permission to use your Gitlab account for
 authorization. Click on **Authorize** button.
 
 ![Gitlab OAuth permission](gitlab-sso-3.png)
