@@ -22,6 +22,16 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
+function clearCookies() {
+  const cookies = document.cookie.split(';');
+
+  for (const cookie of cookies) {
+    const eqPos = cookie.indexOf('=');
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+  }
+}
+
 export async function signOut() {
   const auth = useAuth();
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
@@ -30,6 +40,7 @@ export async function signOut() {
     const idToken = auth.user.id_token; // camelCase for variable name
     localStorage.clear();
     sessionStorage.clear();
+    clearCookies();
 
     // Sign out silently
     await auth.signoutSilent();
