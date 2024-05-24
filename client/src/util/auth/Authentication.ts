@@ -64,7 +64,7 @@ export async function signOut() {
           body: new URLSearchParams(revokeBody).toString(),
         });
       } else {
-        console.error('Client secret is not defined');
+        // console.error('Client secret is not defined');
       }
 
       // Clear storage
@@ -81,7 +81,7 @@ export async function signOut() {
         },
       });
     } catch (error) {
-      console.error('Error during logout:', error);
+      
       // Handle the error scenario, e.g., log the error or show an error message to the user
     }
 
