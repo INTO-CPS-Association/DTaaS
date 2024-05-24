@@ -37,25 +37,53 @@ export async function signOut() {
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
   if (auth.user) {
-    const idToken = auth.user.id_token; // camelCase for variable name
-    localStorage.clear();
-    sessionStorage.clear();
-    clearCookies();
+    const idToken = auth.user.id_token;
+    const accessToken = auth.user.access_token;
 
-    // Sign out silently
-    await auth.signoutSilent();
+    try {
+      // Sign out silently
+      await auth.signoutSilent();
 
-    // Revoke tokens
-    await auth.revokeTokens();
+      // Revoke tokens using the OAuth revoke API
+      const revokeUrl = `${process.env.REACT_APP_REVOKE_URL}`;
+      const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 
-    // Make HTTP GET call to logout URL
-    await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${idToken}`,
-        'Content-Type': 'application/json'
-      },
-    });
+      if (clientSecret) {
+        const revokeBody = {
+          token: accessToken,
+          token_type_hint: 'access_token',
+          client_id: process.env.REACT_APP_CLIENT_ID,
+          client_secret: clientSecret,
+        };
+
+        await fetch(revokeUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(revokeBody).toString(),
+        });
+      } else {
+        console.error('Client secret is not defined');
+      }
+
+      // Clear storage
+      localStorage.clear();
+      sessionStorage.clear();
+      clearCookies();
+
+      // Make HTTP GET call to logout URL (if needed)
+      await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Handle the error scenario, e.g., log the error or show an error message to the user
+    }
 
     await auth.removeUser();
     await auth.signoutRedirect({
