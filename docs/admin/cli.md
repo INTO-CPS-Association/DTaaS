@@ -81,21 +81,14 @@ This brings up the containers, without the AuthMS authentication.
 - Currently the _email_ fields for each user in
   _dtaas.toml_ are not in use, and are not necessary
   to fill in. These emails must be configured manually
-  for each user in the docker/conf.local or
-  docker/conf.server files and the _traefik-forward-auth_
+  for each user in the
+  deploy/docker/conf.server files and the _traefik-forward-auth_
   container must be restarted. This is done as follows:
 
 - Go to the _docker_ directory
 
 ```bash
 cd <DTaaS>/deploy/docker
-```
-
-- Add two lines to the `conf.local` file
-
-```txt
-rule.onlyu4.action=allow
-rule.onlyu4.rule=PathPrefix(`/user4`)
 ```
 
 - Add three lines to the `conf.server` file
@@ -106,14 +99,10 @@ rule.onlyu3.rule=PathPrefix(`/user3`)
 rule.onlyu3.whitelist = user3@emailservice.com
 ```
 
-Run the appropritate command for a server/local installation:
+Run the appropritate command for a server installation:
 
 ```bash
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-```
-
-```bash
-docker compose -f compose.local.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
 The new users are now added to the DTaaS

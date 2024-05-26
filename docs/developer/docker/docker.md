@@ -68,20 +68,20 @@ This scenario is for software developers.
 
 The configuration files to be updated are:
 
-1. docker/dev/.env
-   please see [docker README](../README.md) for help
-   with updating this config file)
-1. docker/conf.local
-   please see [server docs](../docs/admin/servers/auth.md) for help
-   with updating this config file)
+1. docker/.env :
+   please see [docker installation docs](../../admin/host.md) for help
+   with updating this config file
+1. docker/conf.dev :
+   please see  [docker installation docs](../../admin/host.md) for help
+   with updating this config file
 1. client/config/local.js
-   please see [client config](../../docs/admin/client/CLIENT.md) for help
-   with updating this config file)
+   please see [client config](../../admin/client/config.md) for help
+   with updating this config file
 1. servers/lib/config/.env.default
-   please see [lib config](../../docs/admin/servers/lib/LIB-MS.md) for help
-   with updating this config file)
+   please see [lib config](../../admin/servers/lib/docker.md) for help
+   with updating this config file
 
-The docker commands need to be executed from this directory (`docker/dev`).
+The docker commands need to be executed from this directory (`docker`).
 The relevant docker commands are:
 
 ```bash
