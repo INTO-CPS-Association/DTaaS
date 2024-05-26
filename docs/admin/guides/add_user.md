@@ -2,80 +2,42 @@
 
 This page will guide you on, how to add more users to the DTaas. Please do the following:
 
-<!-- prettier-ignore -->
-!!! important
-    Make sure to replace **<username\>** and **<port\>**
-    Select a port that is not already being used by the system.
 
-**1. Add user:**
+**1. Add user to Gitlab instance:**
 
-Add the new user on the Gitlab instance.
+Add a new account for the new user on the Gitlab instance.
+Note the username and email of the added account
 
-**2. Setup a new workspace:**
+**2. Add user to DTaaS software using CLI**
 
-The above code creates a new workspace for the new user based on _user2_.
+Add a new user with the easy-to-use
+[DTaaS CLI](../cli.md)
 
-```bash
-cd DTaaS/files
-cp -R user2 <username>
-cd ..
-docker run -d \
- -p <port>:8080 \
-  --name "ml-workspace-<username>" \
-  -v "${TOP_DIR}/files/<username>:/workspace" \
-  -v "${TOP_DIR}/files/<username>:/workspace/common" \
-  --env AUTHENTICATE_VIA_JUPYTER="" \
-  --env WORKSPACE_BASE_URL="<username>" \
-  --shm-size 512m \
-  --restart always \
-  mltooling/ml-workspace-minimal:0.13.2
-```
+**3. Add backend authorization for these users:**
 
-**3. Add username and password:**
-
-The following code adds basic authorization for the new user.
+- Go to the _docker_ directory
 
 ```bash
-cd DTaaS/servers/config/gateway
-htpasswd auth <username>
+cd <DTaaS>/docker
 ```
 
-**4. Add 'route' for new user:**
+- Add three lines to the `conf.server` file
 
-We need to add a new route to the servers ingress.
+```txt
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/user3`)
+rule.onlyu3.whitelist = user3@emailservice.com
+```
 
-Open the following file with your preffered editor (e.g. VIM/nano).
+Run the command for these changes to take effect:
 
 ```bash
-vi DTaaS/servers/config/gateway/dynamic/fileConfig.yml
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
-Now add the new route and service for the user.
+The new users are now added to the DTaaS
+instance, with authorization enabled.
 
-<!-- prettier-ignore -->
-!!! important
-  foo.com should be replaced with your own domain.
-
-```yml
-http:
-  routers:
-    ....
-    <username>:
-      entryPoints:
-        - http
-      rule: 'Host(`foo.com`) && PathPrefix(`/<username>`)'
-      middlewares:
-        - basic-auth
-      service: <username>
-
-  services:
-    ...
-    <username>:
-      loadBalancer:
-        servers:
-          - url: 'http://localhost:<port>'
-```
-
-**5. Access the new user:**
+**4. Access the new user:**
 
 Log into the DTaaS application as new user.
