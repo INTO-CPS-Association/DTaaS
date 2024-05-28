@@ -1,16 +1,26 @@
-import { User } from 'oidc-client-ts';
+import React from 'react';
+import { AuthProvider, useAuth, User } from 'react-oidc-context';
+import { useOidcConfig, createUserManager } from './useOidcConfig';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
-import { useAuth } from 'react-oidc-context';
 import { getLogoutRedirectURI } from '../envUtil';
+import { UserManager } from 'oidc-client-ts';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
   removeUser: () => Promise<void>;
-  signoutSilent: () => Promise<void>; // Add signoutSilent to CustomAuthContext
-  revokeTokens: () => Promise<void>; // Add revokeTokens to CustomAuthContext
+  signoutSilent: () => Promise<void>;
+  revokeTokens: () => Promise<void>;
   user?: User | null | undefined;
 }
+
+const onSigninCallback = (_user: User | void): void => {
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname
+  );
+};
 
 export function getAndSetUsername(auth: CustomAuthContext) {
   const dispatch = useDispatch();
@@ -30,7 +40,7 @@ function clearCookies() {
   });
 }
 
-export async function signOut() {
+export async function signOut(userManager: UserManager) {
   const auth = useAuth();
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
@@ -40,7 +50,7 @@ export async function signOut() {
 
     try {
       // Sign out silently
-      await auth.signoutSilent();
+      await userManager.signoutSilent();
 
       // Revoke tokens using the OAuth revoke API
       const revokeUrl = `${process.env.REACT_APP_REVOKE_URL}`;
@@ -79,15 +89,15 @@ export async function signOut() {
         },
       });
     } catch (error) {
-      
       // Handle the error scenario, e.g., log the error or show an error message to the user
     }
-
-    await auth.removeUser();
-    await auth.signoutRedirect({
-      post_logout_redirect_uri: LOGOUT_URL.toString(),
-      id_token_hint: idToken,
-    });
+    await userManager.removeUser();
+    await userManager.signoutRedirect();
+    await userManager.getUser();
+    // {
+    //   post_logout_redirect_uri: LOGOUT_URL.toString(),
+    //   id_token_hint: idToken,
+    // }
   }
 }
 
@@ -99,3 +109,19 @@ export function wait(milliseconds: number): Promise<void> {
     setTimeout(onTimeout, milliseconds);
   });
 }
+
+// function App() {
+//   const oidcConfig = useOidcConfig();
+
+//   if (!oidcConfig) return null;
+
+//   const userManager = createUserManager(oidcConfig);
+
+//   return (
+//     <AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
+//       {/* Your app components */}
+//     </AuthProvider>
+//   );
+// }
+
+// export default App;
