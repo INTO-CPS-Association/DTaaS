@@ -1,9 +1,8 @@
-import React from 'react';
-import { AuthProvider, useAuth, User } from 'react-oidc-context';
-import { useOidcConfig, createUserManager } from './useOidcConfig';
+// import React from 'react';
+import { useAuth, User } from 'react-oidc-context';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
-import { getLogoutRedirectURI } from '../envUtil';
+// import { getLogoutRedirectURI } from '../envUtil';
 import { UserManager } from 'oidc-client-ts';
 
 export interface CustomAuthContext {
@@ -14,13 +13,13 @@ export interface CustomAuthContext {
   user?: User | null | undefined;
 }
 
-const onSigninCallback = (_user: User | void): void => {
-  window.history.replaceState(
-    {},
-    document.title,
-    window.location.pathname
-  );
-};
+// const onSigninCallback = (_user: User | void): void => {
+//   window.history.replaceState(
+//     {},
+//     document.title,
+//     window.location.pathname
+//   );
+// };
 
 export function getAndSetUsername(auth: CustomAuthContext) {
   const dispatch = useDispatch();
@@ -42,7 +41,7 @@ function clearCookies() {
 
 export async function signOut(userManager: UserManager) {
   const auth = useAuth();
-  const LOGOUT_URL = getLogoutRedirectURI() ?? '';
+  // const LOGOUT_URL = getLogoutRedirectURI() ?? '';
 
   if (auth.user) {
     const idToken = auth.user.id_token;
