@@ -2,6 +2,7 @@ import { useAuth, User } from 'react-oidc-context';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { UserManager } from 'oidc-client-ts';
+import { getLogoutRedirectURI } from '../envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -32,6 +33,7 @@ function clearCookies() {
 
 export async function signOut(userManager: UserManager) {
   const auth = useAuth();
+  const LOGOUT_URL = getLogoutRedirectURI() ?? '';
  
 
   if (auth.user) {
@@ -82,12 +84,12 @@ export async function signOut(userManager: UserManager) {
       // Handle the error scenario, e.g., log the error or show an error message to the user
     }
     await userManager.removeUser();
-    await userManager.signoutRedirect();
+    await userManager.signoutRedirect({
+      post_logout_redirect_uri: LOGOUT_URL.toString(),
+      id_token_hint: idToken,
+    });
     await userManager.getUser();
-    // {
-    //   post_logout_redirect_uri: LOGOUT_URL.toString(),
-    //   id_token_hint: idToken,
-    // }
+    
   }
 }
 
