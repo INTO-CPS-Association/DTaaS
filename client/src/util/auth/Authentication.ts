@@ -1,7 +1,7 @@
-import { useAuth, User } from 'react-oidc-context';
+import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
-import { UserManager } from 'oidc-client-ts';
+import { useAuth } from 'react-oidc-context';
 import { getLogoutRedirectURI } from '../envUtil';
 
 export interface CustomAuthContext {
@@ -11,7 +11,6 @@ export interface CustomAuthContext {
   revokeTokens: () => Promise<void>;
   user?: User | null | undefined;
 }
-
 
 export function getAndSetUsername(auth: CustomAuthContext) {
   const dispatch = useDispatch();
@@ -23,28 +22,20 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
-function clearCookies() {
-  document.cookie.split(';').forEach(cookie => {
-    const eqPos = cookie.indexOf('=');
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-  });
-}
-
-export async function signOut(userManager: UserManager) {
+export async function signOut() {
   const auth = useAuth();
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
- 
 
   if (auth.user) {
-    const idToken = auth.user.id_token;
-    const accessToken = auth.user.access_token;
+    const idToken = auth.user.id_token; // camelCase for variable name
+    const accessToken = auth.user.access_token; //console log to see if this works
 
     try {
       // Sign out silently
-      await userManager.signoutSilent();
+      await auth.signoutSilent();
 
       // Revoke tokens using the OAuth revoke API
+      await auth.revokeTokens();
       const revokeUrl = `${process.env.REACT_APP_REVOKE_URL}`;
       const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 
@@ -70,7 +61,12 @@ export async function signOut(userManager: UserManager) {
       // Clear storage
       localStorage.clear();
       sessionStorage.clear();
-      clearCookies();
+
+      await auth.removeUser();
+      await auth.signoutRedirect({
+        post_logout_redirect_uri: LOGOUT_URL.toString(),
+        id_token_hint: idToken,
+      });
 
       // Make HTTP GET call to logout URL (if needed)
       await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
@@ -83,13 +79,6 @@ export async function signOut(userManager: UserManager) {
     } catch (error) {
       // Handle the error scenario, e.g., log the error or show an error message to the user
     }
-    await userManager.removeUser();
-    await userManager.signoutRedirect({
-      post_logout_redirect_uri: LOGOUT_URL.toString(),
-      id_token_hint: idToken,
-    });
-    await userManager.getUser();
-    
   }
 }
 
@@ -101,19 +90,3 @@ export function wait(milliseconds: number): Promise<void> {
     setTimeout(onTimeout, milliseconds);
   });
 }
-
-// function App() {
-//   const oidcConfig = useOidcConfig();
-
-//   if (!oidcConfig) return null;
-
-//   const userManager = createUserManager(oidcConfig);
-
-//   return (
-//     <AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
-//       {/* Your app components */}
-//     </AuthProvider>
-//   );
-// }
-
-// export default App;
