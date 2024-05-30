@@ -11,6 +11,8 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
+import LinkButtons from 'components/LinkButtons';
+import toolbarLinkValues from 'util/toolbarUtil';
 import { signOut } from '../util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
@@ -69,6 +71,7 @@ function MenuToolbar({
       await signOut();
     }
   };
+
   return (
     <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -88,9 +91,10 @@ function MenuToolbar({
           The Digital Twin as a Service
         </Typography>
 
-        <Box sx={{ flexGrow: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
+          <LinkButtons buttons={toolbarLinkValues} size={2.5} />
           <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>
           </Tooltip>

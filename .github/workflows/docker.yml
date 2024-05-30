@@ -41,6 +41,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./docker/dev/${{ inputs.dockerfile }}
+          file: ./docker/${{ inputs.dockerfile }}
           push: true
           tags: ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ inputs.registry }}/${{ inputs.image-name }}:latest

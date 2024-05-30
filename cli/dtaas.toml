@@ -1,0 +1,28 @@
+# This is the config for DTaaS CLI
+
+name = "Digital Twin as a Service (DTaaS)"
+version = "0.1.0"
+owner = "The INTO-CPS-Association"
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+
+[common]
+# absolute path to the DTaaS application directory
+server-dns = "localhost"
+path = "/home/Desktop/DTaaS"
+
+[users]
+# matching user info must present in this config file
+add = ["username1","username2", "username3"] 
+delete = ["username2", "username3"]
+
+[users.username1]
+email = "username1@gitlab.foo.com"
+
+[users.username2]
+email = "username2@gitlab.foo.com"
+
+[users.username3]
+email = "username3@gitlab.foo.com"
+
+[client.web]
+config = "/home/Desktop/DTaaS/env.local.js"

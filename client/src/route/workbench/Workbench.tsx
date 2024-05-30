@@ -27,7 +27,7 @@ function WorkBenchContent() {
       >
         <Typography variant="h4">Workbench Tools</Typography>
         <Container>
-          <LinkButtons buttons={linkValues} size={6} />
+          <LinkButtons buttons={linkValues} size={6} marginRight={40} />
         </Container>
       </Paper>
     </Layout>

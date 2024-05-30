@@ -67,18 +67,14 @@ vagrant ssh
 
 Set a cronjob inside the vagrant virtual
 machine to remote the conflicting default route.
+Download the [route script](./route.sh) and run
+the following command.
 
 ```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/vagrant/route.sh
 sudo bash route.sh
 ```
 
-If you only want to test the application and
-are not setting up a production instance, you can
-follow the instructions of [single script install](../trial.md).
-
-If you are not in a hurry and would rather have a production
-instance, follow the instructions of [regular server installation](../host.md)
+Please follow the instructions of [regular server installation](../host.md)
 setup to complete the installation.
 
 ## References

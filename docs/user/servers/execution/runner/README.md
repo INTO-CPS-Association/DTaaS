@@ -1,6 +1,6 @@
 # :runner: Runner
 
-A utility service to manage safe execution of remote commands.
+A utility service to manage safe execution of remote scripts / commands.
 User launches this from commandline and let the utility
 manage the commands to be executed.
 
@@ -10,7 +10,27 @@ Multiple runners can be active simultaneously on one computer.
 The commands are sent via the REST API and are executed on the computer
 with active runner.
 
+:warning: Thanks for trying out this software.
+This software is in early stages of development and is not
+recommended for production use. Each released package will have
+a working API and matching documentation in this README.
+However, there will be breaking changes in the API across each release
+until the package reaches version 1.0.0.
+
 ## :arrow_down: Install
+
+### NPM Registry
+
+The package is available on
+[npmjs](https://www.npmjs.com/package/@into-cps-association/runner).
+
+Install the package with the following command:
+
+```bash
+sudo npm install -g @into-cps-association/runner
+```
+
+### Github Registry
 
 The package is available in Github
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
@@ -30,16 +50,24 @@ needs to have _read:packages_ scope.
 
 ## :gear: Configure
 
-The microservices requires config specified in YAML format.
+The utility requires config specified in YAML format.
 The template configuration file is:
 
 ```ini
 port: 5000
-location: "lifecycle" #directory location of scripts
+location: 'script' #directory location of scripts
 ```
 
-The file should be named as _runner.yaml_ and placed in the directory
-in which the _runner_ microservice is run.
+It is suggested that the configuration file be named as _runner.yaml_
+and placed in the directory in which the _runner_ microservice is run.
+
+The `location` refers to the relative location of the scripts directory
+with respect to the location of _runner.yaml_ file.
+
+However, there is no limitation on either the configuration filename or
+the `location`. The path to _runner.yaml_ can either be relative or
+absolute path. However, the `location` path is always relative path
+with respect to the path of _runner.yaml_ file.
 
 ## :pen: Create Commands
 
@@ -51,12 +79,29 @@ run.
 
 ## :rocket: Use
 
+Display help.
+
 ```bash
-runner # launch the digital twin runner
+$runner -h
+Usage: runner [options]
+
+Remote code execution for humans
+
+Options:
+  -c --config <string>  runner config file specified in yaml format (default: "runner.yaml")
+  -h --help             display help
 ```
 
+The config option is not mandatory. If it is not used, **runner** looks for
+_runner.yaml_ in the directory from which it is being run.
 Once launched, the utility runs at the port specified in
 _runner.yaml_ file.
+
+```bash
+runner  #use runner.yaml of the present working directory
+runner -c FILE-PATH       #absolute or relative path to config file
+runner --config FILE-PATH #absolute or relative path to config file
+```
 
 If launched on one computer,
 you can access the same at `http://localhost:<port>`.

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { Command } from './interfaces/command.interface.js';
 import { ExecuteCommandDto } from './dto/command.dto.js';
 
-@Injectable()
+@Injectable({ scope: Scope.DEFAULT })
 export default class Queue {
   private queue: Command[] = [];
 
