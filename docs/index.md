@@ -1,5 +1,15 @@
 # What is DTaaS?
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! failure
+    Please note that the development documentation is being
+    rewritten heavily. This rework is being done to prepare
+    the documentation for the next release. Please use
+    [DTaaS v0.4](https://into-cps-association.github.io/DTaaS/version0.4/index.html)
+    for installation and use. Thank you.
+<!-- markdownlint-enable MD046 -->
+
 The Digital Twin as a Service (DTaaS) software platform is useful
 to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 

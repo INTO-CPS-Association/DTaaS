@@ -1,0 +1,54 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:v2.10
+    restart: unless-stopped
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+      - "--entrypoints.web.forwardedHeaders.insecure=true"
+      - "--entrypoints.web.proxyProtocol.insecure=true"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - frontend
+      - users
+
+  client:
+    image: intocps/dtaas-web:latest
+    restart: unless-stopped
+    volumes:
+      - ${CLIENT_CONFIG}:/dtaas/client/build/env.js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.entryPoints=web"
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+    networks:
+      - frontend
+
+  user1:
+    image: mltooling/ml-workspace-minimal:0.13.2
+    restart: unless-stopped
+    volumes:
+      - ${DTAAS_DIR}/files/common:/workspace/common
+      - ${DTAAS_DIR}/files/${username1}:/workspace
+    environment:
+      - AUTHENTICATE_VIA_JUPYTER=
+      - WORKSPACE_BASE_URL=${username1}
+    shm_size: 512m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.u1.entryPoints=web"
+      - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`) "
+    networks:
+      - users
+
+networks:
+  frontend:
+    name: dtaas-frontend
+  users:
+    name: dtaas-users

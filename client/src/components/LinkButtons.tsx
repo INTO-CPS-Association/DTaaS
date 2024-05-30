@@ -17,58 +17,69 @@ const ButtonRow = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
-  gap: '50px',
 });
 
 interface IconButtonData {
   link: string;
   icon: React.ReactElement;
-  name: string;
+  name: string | undefined;
 }
 const getIconButtons = (buttons: KeyLinkPair[]): IconButtonData[] =>
   buttons.map((button) => {
-    const iconData = LinkIcons[button.key.toUpperCase()] || LinkIcons.NO_ICON;
+    const iconData = LinkIcons[button.key.toUpperCase()];
+
     return {
       link: button.link,
       icon: iconData.icon,
-      name: iconData.name || button.key,
+      name: iconData.name,
     };
   });
 
 interface LinkButtonProps {
   buttons: KeyLinkPair[];
   size?: number;
+  marginRight?: number;
 }
 
 /**
  * @description Renders a row of buttons with icons and labels. The buttons open a new tab with the link.
  * @param buttons: KeyLinkPair[] (required) - an array of objects with a key and link
  * @param size: number (optional) - the size of the icons
+ * @param marginRight: number (optional) - the margin right to be applied to each button
  * @returns React.ReactElement - a row of buttons with icons and labels
  * @example
  * const linkValues = getWorkbenchLinkValues();
  * <LinkButtons buttons={linkValues} size={6} />
- */ const LinkButtons = ({ buttons, size }: LinkButtonProps) => {
+ */ const LinkButtons = ({ buttons, size, marginRight }: LinkButtonProps) => {
   const iconButtons = getIconButtons(buttons);
   return (
     <ButtonRow>
       {iconButtons.map((button, index) => (
-        <Tooltip key={index} title={button.link}>
-          <IconLabel>
-            <IconButton
-              onClick={() => {
-                window.open(button.link, '_blank');
-              }}
-              role="link"
-              title={`${button.name}-btn`}
-            >
-              {React.cloneElement(button.icon, {
-                style: { fontSize: `${size?.toString() ?? 4}rem` },
-              })}
-            </IconButton>
-            <Typography variant="h6">{button.name}</Typography>
-          </IconLabel>
-        </Tooltip>
+        <div
+          key={index}
+          style={{ marginRight: marginRight ? `${marginRight}px` : '0px' }}
+        >
+          <Tooltip key={index} title={button.link}>
+            <IconLabel>
+              <IconButton
+                onClick={() => {
+                  window.open(button.link, '_blank');
+                }}
+                role="link"
+                {...(button.name !== 'ToolbarIcon' && {
+                  title: `${button.name}-btn`,
+                })}
+              >
+                {React.cloneElement(button.icon, {
+                  style: { fontSize: `${size?.toString() ?? 4}rem` },
+                })}
+              </IconButton>
+              {button.name !== 'ToolbarIcon' && (
+                <Typography variant="h6">{button.name}</Typography>
+              )}
+            </IconLabel>
+          </Tooltip>
+        </div>
       ))}
     </ButtonRow>
   );
