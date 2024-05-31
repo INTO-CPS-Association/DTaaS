@@ -36,8 +36,7 @@ export async function signOut() {
 
       // Revoke tokens using the OAuth revoke API
       await auth.revokeTokens();
-      const revokeUrl = `${process.env.REACT_APP_REVOKE_URL}`;
-      const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
+      const clientSecret = process.env.REACT_APP_CLIENT_SECRET; // TELL ARYAN
 
       if (clientSecret) {
         const revokeBody = {
@@ -47,7 +46,7 @@ export async function signOut() {
           client_secret: clientSecret,
         };
 
-        await fetch(revokeUrl, {
+        await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
