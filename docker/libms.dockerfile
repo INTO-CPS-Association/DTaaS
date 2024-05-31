@@ -8,7 +8,7 @@ WORKDIR /dtaas/libms
 # pull the libms package from npm registry
 RUN npm i -g @into-cps-association/libms@0.4.4
 
-COPY ./deploy/config/lib .
+COPY ./deploy/config/lib.docker .
 COPY ./servers/lib/config/http.json .
 
 # Define the command to run your app

@@ -28,34 +28,10 @@ export async function signOut() {
 
   if (auth.user) {
     const idToken = auth.user.id_token; // camelCase for variable name
-    const accessToken = auth.user.access_token; //console log to see if this works
 
     try {
       // Sign out silently
       await auth.signoutSilent();
-
-      // Revoke tokens using the OAuth revoke API
-      await auth.revokeTokens();
-      const clientSecret = process.env.REACT_APP_CLIENT_SECRET; // TELL ARYAN
-
-      if (clientSecret) {
-        const revokeBody = {
-          token: accessToken,
-          token_type_hint: 'access_token',
-          client_id: process.env.REACT_APP_CLIENT_ID,
-          client_secret: clientSecret,
-        };
-
-        await fetch(`${process.env.REACT_APP_URL}/_oauth/logout`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams(revokeBody).toString(),
-        });
-      } else {
-        // console.error('Client secret is not defined');
-      }
 
       // Clear storage
       localStorage.clear();
