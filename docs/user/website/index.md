@@ -3,14 +3,14 @@
 This page contains a screenshot driven preview of the website serving
 the DTaaS software platform.
 
-## Visit the DTaaS software instance
+## Visit the DTaaS Application
 
 Start off by simply visiting the website
 of the DTaaS instance for which you are a user.
 
 ![Visit the URL](visit-dtaas-1.png)
 
-## Redirected to Authorization
+## Redirected to Authorization Provider
 
 You will be redirected to the Gitlab
 Authorization for DTaaS.
@@ -38,15 +38,14 @@ You are now logged into the DTaaS server.
 You will be redirected to the login page
 of the DTaaS website.
 
-The DTaaS website uses 
+The DTaaS website uses
 an additional layer of security -
 the third-party authorization
 protocol known as
-[OAuth](https://auth0.com/docs/get-started/authorization-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
+[OAuth](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce).
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
 service provider. This also uses Gitlab as OAuth provider.
-
 
 ![Gitlab signin button](gitlab-sso-1.png)
 

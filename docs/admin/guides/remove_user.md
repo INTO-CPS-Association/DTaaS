@@ -1,43 +1,43 @@
-# Remove a new user
+# Remove User
 
-This page will guide you on, how to remove extra users to the DTaaS. Please do the following:
+This page provides steps to remove a user from a DTaaS installation.
+The username **alice** is used here to illustrate the steps involved in
+removing a user account.
 
-**1. Remove backend authorization for these users:**
+Please do the following:
 
-- Go to the _docker_ directory
+1. Remove an existing user with the [DTaaS CLI](../cli.md)
 
-```bash
-cd <DTaaS>/docker
-```
+1. Remove backend authorization for the user:
 
-- Remove these three lines from the `conf.server` file
+   - Go to the _docker_ directory
 
-```txt
-rule.onlyu3.action=auth
-rule.onlyu3.rule=PathPrefix(`/user3`)
-rule.onlyu3.whitelist = user3@emailservice.com
-```
+      ```bash
+      cd <DTaaS>/docker
+      ```
 
-Run the command for these changes to take effect:
+   - Remove these three lines from the `conf.server` file
 
-```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-```
+      ```txt
+      rule.onlyu3.action=auth
+      rule.onlyu3.rule=PathPrefix(`/alice`)
+      rule.onlyu3.whitelist = alice@foo.com
+      ```
 
-The extra users now have no backend authorization.
+   - Run the command for these changes to take effect:
 
-**2. Remove users from DTaaS software using CLI**
+      ```bash
+      docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+      ```
 
-Remove a new user with the easy-to-use
-[DTaaS CLI](../cli.md)
+   The extra users now have no backend authorization.
 
-**1. Remove users to Gitlab instance:**
+1. Remove users to Gitlab instance (optional)
+   Please see
+   [gitlab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
+   for more help.
 
-Cleanup the deleted users account from your Gitlab instance.
-
-**4. New user now deleted!**
-
-The new user is now deleted completely from the DTaaS instance
+1. **The user account is now deleted**
 
 ## Caveat
 

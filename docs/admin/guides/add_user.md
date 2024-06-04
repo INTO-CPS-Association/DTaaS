@@ -1,43 +1,38 @@
-# Add a new user
+# Add User
 
-This page will guide you on, how to add more users to the DTaas. Please do the following:
+This page provides steps to adding a user from a DTaaS installation.
+The username **alice** is used here to illustrate the steps involved in
+removing a user account.
 
+Please do the following:
 
-**1. Add user to Gitlab instance:**
+1. **Add user to Gitlab instance:**
+   Add a new account for the new user on the Gitlab instance.
+   Note the username and email of the new account.
 
-Add a new account for the new user on the Gitlab instance.
-Note the username and email of the added account
+1. Use the [DTaaS CLI](../cli.md) to bring up the workspaces for new users.
+  This brings up the containers, without the backend authorization.
 
-**2. Add user to DTaaS software using CLI**
+1. Add backend authorization for the user
 
-Add a new user with the easy-to-use
-[DTaaS CLI](../cli.md)
+   1. Go to the _docker_ directory
 
-**3. Add backend authorization for these users:**
+      ```bash
+      cd <DTaaS>/docker
+      ```
 
-- Go to the _docker_ directory
+   2. Add three lines to the `conf.server` file
 
-```bash
-cd <DTaaS>/docker
-```
+      ```txt
+      rule.onlyu3.action=auth
+      rule.onlyu3.rule=PathPrefix(`/alice`)
+      rule.onlyu3.whitelist = alice@foo.com
+      ```
 
-- Add three lines to the `conf.server` file
+1. Restart the docker container responsible for backend authorization.
 
-```txt
-rule.onlyu3.action=auth
-rule.onlyu3.rule=PathPrefix(`/user3`)
-rule.onlyu3.whitelist = user3@emailservice.com
-```
+   ```bash
+   docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+   ```
 
-Run the command for these changes to take effect:
-
-```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-```
-
-The new users are now added to the DTaaS
-instance, with authorization enabled.
-
-**4. Access the new user:**
-
-Log into the DTaaS application as new user.
+1. The new users are now added to the DTaaS instance, with authorization enabled.
