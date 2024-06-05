@@ -1,11 +1,5 @@
 # OAuth for Traefik Gateway
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! failure
-    Add screenshots from dtaas-digitaltwin.com demo.
-<!-- markdownlint-enable MD046 -->
-
 The traefik gateway is used to serve the DTaaS. All the services
 provided as part of the application are secured at the traefik gateway.
 The security is based on [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
@@ -24,24 +18,24 @@ authorization flow.
 Here are the steps to get started:
 
 1. **Choose GitLab Server**
-   - You need to set up OAuth authorization on a GitLab server.
-     The commercial gitlab.com is not suitable for multi-user authorization
-     (DTaaS requires this), so you'll need an on-premise GitLab instance.
-   - You can use
-     [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
-   - Configure the OAuth application as an
-     [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
-     Select option to generate client secret and also selection option
-     for trusted application.
+     - You need to set up OAuth authorization on a GitLab server.
+       The commercial gitlab.com is not suitable for multi-user authorization
+       (DTaaS requires this), so you'll need an on-premise GitLab instance.
+     - You can use
+       [GitLab Omnibus Docker for this purpose](https://docs.gitlab.com/ee/install/docker.html).
+     - Configure the OAuth application as an
+       [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+       Select option to generate client secret and also selection option
+       for trusted application.
 
-1. **Determine Website Hostname**
-   - Before setting up OAuth on GitLab, decide on the hostname for your website.
-     It's recommended to use a self-hosted GitLab instance, which you will use in
-     other parts of the DTaaS application.
+2. **Determine Website Hostname**  
+   Before setting up OAuth on GitLab, decide on the hostname for your website.
+   It's recommended to use a self-hosted GitLab instance, which you will use in
+   other parts of the DTaaS application.
 
-1. **Callback and Logout URLs**
-   - For the web / server authorization flow to function correctly,
-     you need two URLs: a _callback URL_ and a _logout URL_.
+3. **Determine Callback and Logout URLs**  
+    For the web / server authorization flow to function correctly,
+    you need two URLs: a _callback URL_ and a _logout URL_.
      - The callback URL informs the OAuth provider of the
        page where
        signed-in users should be redirected. It is the landing
@@ -53,28 +47,34 @@ Here are the steps to get started:
      The logout URL is to help users logout of traefik forward-auth. The logout
      URL should not be entered into Gitlab OAuth application setup.
 
-1. **Create OAuth Application**
-   - During the creation of the OAuth application on GitLab, you need to specify
-     the scope. Choose **_read_user_** scope.
+4. **Create OAuth Application**  
+   During the creation of the OAuth application on GitLab, you need to specify
+   the scope. Choose **_read_user_** scope.
 
-1. **Application Credentials**
-   - After successfully creating the OAuth application, GitLab generates
-     an _application ID_ and _client secret_.
-     Both these values are long string of HEX values that you will need for
-     your configuration files.
+     ![Creation of Server OAuth Application](server-oauth.png)
 
-1. **Required Information from OAuth Application:**
+5. **Copy Application Credentials**  
+   After successfully creating the OAuth application, GitLab generates
+   an _application ID_ and _client secret_.
+   Both these values are long string of HEX values that you will need for
+   your configuration files.
+
+     ![Server OAuth Application Credentials](server-oauth2.png)
+
+<!-- markdownlint-disable MD013 -->
+1. **Checklist: Required Information from OAuth Application:**  
     You will need the following information from
     the OAuth application registered on GitLab:
 
-    |GitLab Variable Name|Variable Name in .env of docker compose file |Default Value|
-    |---|---|---|
+    | GitLab Variable Name | Variable Name in .env of docker compose file | Default Value |
+    |:---|:---|:---|
     |OAuth Provider|OAUTH_URL|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
     |Application ID|CLIENT_ID| _xx_ |
     |Application Secret|CLIENT_SECRET| _xx_ |
     |Callback URL|(to be directly entered in Gitlab OAuth registration)||
     |Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
     |Scopes| read_user ||
+<!-- markdownlint-enable MD013 -->
 
 ## Development Environment
 

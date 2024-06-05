@@ -1,11 +1,5 @@
 # OAuth for React Client
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! failure
-    Add screenshots from dtaas-digitaltwin.com demo.
-<!-- markdownlint-enable MD046 -->
-
 To enable user authorization on DTaaS React client website, you will use
 the OAuth authorization protocol, specifically the PKCE authorization flow.
 Here are the steps to get started:
@@ -35,16 +29,20 @@ Here are the steps to get started:
   homepage of the DTaaS application.
 - The logout URL is where users will be directed after logging out.
 
-**4. OAuth Application Creation:**
+**4. OAuth Application Creation:**  
 
 - During the creation of the OAuth application on GitLab, you need to specify
   the scope. Choose openid, profile, read_user, read_repository, and api scopes.
+
+  ![Creation of Client OAuth Application](client-oauth-name.png)
 
 **5. Application ID:**
 
 - After successfully creating the OAuth application, GitLab generates
   an application ID. This is a long string of HEX values that you will need for
   your configuration files.
+
+  ![Scopes for Client OAuth Application](client-oauth-scopes.png)
 
 **6. Required Information from OAuth Application:**
 
@@ -57,6 +55,8 @@ Here are the steps to get started:
 |Application ID|REACT_APP_CLIENT_ID||
 |Callback URL|REACT_APP_REDIRECT_URI|[https://foo.com/Library](https://foo.com/Library)|
 |Scopes|REACT_APP_GITLAB_SCOPES|openid, profile, read_user, read_repository, api|
+
+  ![Summary for Client OAuth Application](client-oauth-id.png)
 
 **7. Create User Accounts:**
 
