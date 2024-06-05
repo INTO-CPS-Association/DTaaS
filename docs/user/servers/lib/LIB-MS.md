@@ -14,15 +14,40 @@ This document provides instructions for using the library microservice.
 Please see [assets](assets.md) for a suggested storage
 conventions of your library assets.
 
-Once the assets are stored in the library,
-you can access the server's endpoint by typing
-in the following URL: `http://foo.com/lib`.
+Once the assets are stored in the library, they become
+available in user workspace.
 
-The URL opens a graphql playground.
+## Application Programming Interface (API)
+
+The lib microservice application provides services at
+two end points:
+
+**GraphQL API Endpoint:** `http://foo.com/lib`.
+
+**HTTP Endpoint:** `http://foo.com/lib`
+(need to be [enabled](../../../admin/servers/lib/npm.md)).
+
+### HTTP protocol
+
+Endpoint: `localhost:PORT/lib/files`
+
+This option needs to be enabled with `-H http.json` flag.
+The regular file upload and download options become available.
+
+Here are sample screenshots.
+
+![top-level](top-level.png)
+
+![inside](inside.png)
+
+### GraphQL protocol
+
+Endpoint: `localhost:PORT/lib`
+
+The `http://foo.com/lib` URL opens a graphql playground.
+
 You can check the query schema and try sample queries here.
-You can also send graphql queries as HTTP POST requests and get responses.
-
-## API Queries
+The graphql queries need to be sent as HTTP POST requests and get responses.
 
 The library microservice services two API calls:
 

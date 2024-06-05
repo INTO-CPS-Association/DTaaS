@@ -64,20 +64,3 @@ Create user accounts in gitlab for all the usernames chosen during
 installation. The _trial_ installation script comes with two default
 usernames - _user1_ and _user2_. For all other installation scenarios,
 accounts with specific usernames need to be created on gitlab.
-
-## Development Environment
-
-There needs to be a valid callback and logout URLs for development and testing
-purposes. You can use the same oauth application id for both development, testing
-and deployment scenarios. Only the callback and logout URLs change. It is possible
-to register multiple callback URLs in one oauth application. In order to use oauth
-for development and testing on developer computer (localhost), you need to add the
-following to oauth callback URL.
-
-```txt
-DTaaS application URL: http://localhost:4000
-Callback URL: http://localhost:4000/Library
-Logout URL: http://localhost:4000
-```
-
-The port 4000 is the default port for running the client website.
