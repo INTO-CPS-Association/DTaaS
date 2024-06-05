@@ -29,7 +29,7 @@ Here are the steps to get started:
   homepage of the DTaaS application.
 - The logout URL is where users will be directed after logging out.
 
-**4. OAuth Application Creation:**  
+**4. OAuth Application Creation:**
 
 - During the creation of the OAuth application on GitLab, you need to specify
   the scope. Choose openid, profile, read_user, read_repository, and api scopes.

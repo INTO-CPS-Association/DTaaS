@@ -6,38 +6,39 @@ removing a user account.
 
 Please do the following:
 
-1. Remove an existing user with the [DTaaS CLI](../cli.md)
+**1. Remove an existing user with the [DTaaS CLI](../cli.md)**
 
-1. Remove backend authorization for the user:
+**2. Remove backend authorization for the user:**
 
-   - Go to the _docker_ directory
+- Go to the _docker_ directory
 
-     ```bash
-     cd <DTaaS>/docker
-     ```
+  ```bash
+  cd <DTaaS>/docker
+  ```
 
-   - Remove these three lines from the `conf.server` file
+- Remove these three lines from the `conf.server` file
 
-     ```txt
-     rule.onlyu3.action=auth
-     rule.onlyu3.rule=PathPrefix(`/alice`)
-     rule.onlyu3.whitelist = alice@foo.com
-     ```
+  ```txt
+  rule.onlyu3.action=auth
+  rule.onlyu3.rule=PathPrefix(`/alice`)
+  rule.onlyu3.whitelist = alice@foo.com
+  ```
 
-   - Run the command for these changes to take effect:
+- Run the command for these changes to take effect:
 
-     ```bash
-     docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-     ```
+  ```bash
+  docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+  ```
 
-    The extra users now have no backend authorization.
+The extra users now have no backend authorization.
 
-1. Remove users to Gitlab instance (optional)
-   Please see
-   [gitlab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
-   for more help.
+**3. Remove users to Gitlab instance (optional):**
 
-1. **The user account is now deleted**
+Please see
+[gitlab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
+for more help.
+
+**4. The user account is now deleted.**
 
 ## Caveat
 

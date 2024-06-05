@@ -6,33 +6,36 @@ removing a user account.
 
 Please do the following:
 
-1. **Add user to Gitlab instance:**
-   Add a new account for the new user on the Gitlab instance.
-   Note the username and email of the new account.
+**1. Add user to Gitlab instance:**
 
-1. Use the [DTaaS CLI](../cli.md) to bring up the workspaces for new users.
-  This brings up the containers, without the backend authorization.
+Add a new account for the new user on the Gitlab instance.
+Note the username and email of the new account.
 
-1. Add backend authorization for the user
+**2. Create User Workspace:**
 
-   1. Go to the _docker_ directory
+Use the [DTaaS CLI](../cli.md) to bring up the workspaces for new users.
+This brings up the containers, without the backend authorization.
 
-     ```bash
-     cd <DTaaS>/docker
-     ```
+**3. Add backend authorization for the user:**
 
-   1. Add three lines to the `conf.server` file
+- Go to the _docker_ directory
 
-     ```txt
-     rule.onlyu3.action=auth
-     rule.onlyu3.rule=PathPrefix(`/alice`)
-     rule.onlyu3.whitelist = alice@foo.com
-     ```
+  ```bash
+  cd <DTaaS>/docker
+  ```
 
-1. Restart the docker container responsible for backend authorization.
+- Add three lines to the `conf.server` file
 
-    ```bash
-    docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-    ```
+  ```txt
+  rule.onlyu3.action=auth
+  rule.onlyu3.rule=PathPrefix(`/alice`)
+  rule.onlyu3.whitelist = alice@foo.com
+  ```
 
-1. The new users are now added to the DTaaS instance, with authorization enabled.
+**4. Restart the docker container responsible for backend authorization.**
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
+
+**5. The new users are now added to the DTaaS instance, with authorization enabled.**
