@@ -17,22 +17,22 @@ Please do the following:
 
    1. Go to the _docker_ directory
 
-      ```bash
-      cd <DTaaS>/docker
-      ```
+     ```bash
+     cd <DTaaS>/docker
+     ```
 
-   2. Add three lines to the `conf.server` file
+   1. Add three lines to the `conf.server` file
 
-      ```txt
-      rule.onlyu3.action=auth
-      rule.onlyu3.rule=PathPrefix(`/alice`)
-      rule.onlyu3.whitelist = alice@foo.com
-      ```
+     ```txt
+     rule.onlyu3.action=auth
+     rule.onlyu3.rule=PathPrefix(`/alice`)
+     rule.onlyu3.whitelist = alice@foo.com
+     ```
 
 1. Restart the docker container responsible for backend authorization.
 
-   ```bash
-   docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-   ```
+    ```bash
+    docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+    ```
 
 1. The new users are now added to the DTaaS instance, with authorization enabled.

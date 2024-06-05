@@ -1,4 +1,4 @@
-# Make Common Asset Read Only
+# Make Common Assets Read Only
 
 ## Why
 

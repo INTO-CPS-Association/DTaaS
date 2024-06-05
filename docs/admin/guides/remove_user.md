@@ -12,25 +12,25 @@ Please do the following:
 
    - Go to the _docker_ directory
 
-      ```bash
-      cd <DTaaS>/docker
-      ```
+     ```bash
+     cd <DTaaS>/docker
+     ```
 
    - Remove these three lines from the `conf.server` file
 
-      ```txt
-      rule.onlyu3.action=auth
-      rule.onlyu3.rule=PathPrefix(`/alice`)
-      rule.onlyu3.whitelist = alice@foo.com
-      ```
+     ```txt
+     rule.onlyu3.action=auth
+     rule.onlyu3.rule=PathPrefix(`/alice`)
+     rule.onlyu3.whitelist = alice@foo.com
+     ```
 
    - Run the command for these changes to take effect:
 
-      ```bash
-      docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-      ```
+     ```bash
+     docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+     ```
 
-   The extra users now have no backend authorization.
+    The extra users now have no backend authorization.
 
 1. Remove users to Gitlab instance (optional)
    Please see
