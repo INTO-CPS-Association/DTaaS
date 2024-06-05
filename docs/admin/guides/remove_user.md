@@ -6,7 +6,7 @@ removing a user account.
 
 Please do the following:
 
-**1. Remove an existing user with the [DTaaS CLI](../cli.md)**
+**1. Remove an existing user with the [DTaaS CLI](../cli.md).**
 
 **2. Remove backend authorization for the user:**
 
