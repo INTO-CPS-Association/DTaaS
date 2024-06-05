@@ -1,6 +1,7 @@
-# Hosting site without https
+# Hosting site without HTTPS
 
-In the default trial or production installation setup,
-the https connection is provided by the reverse proxy.
+It is recommended that the DTaaS application is hosted
+behind a secure reverse proxy which provides HTTPS
+termination.
 The DTaaS application by default runs in http mode.
 So removing the reverse proxy removes the https mode.

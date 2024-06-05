@@ -1,81 +1,41 @@
-# Add a new user
+# Add User
 
-This page will guide you on, how to add more users to the DTaas. Please do the following:
+This page provides steps to adding a user from a DTaaS installation.
+The username **alice** is used here to illustrate the steps involved in
+removing a user account.
 
-<!-- prettier-ignore -->
-!!! important
-    Make sure to replace **<username\>** and **<port\>**
-    Select a port that is not already being used by the system.
+Please do the following:
 
-**1. Add user:**
+**1. Add user to Gitlab instance:**
 
-Add the new user on the Gitlab instance.
+Add a new account for the new user on the Gitlab instance.
+Note the username and email of the new account.
 
-**2. Setup a new workspace:**
+**2. Create User Workspace:**
 
-The above code creates a new workspace for the new user based on _user2_.
+Use the [DTaaS CLI](../cli.md) to bring up the workspaces for new users.
+This brings up the containers, without the backend authorization.
 
-```bash
-cd DTaaS/files
-cp -R user2 <username>
-cd ..
-docker run -d \
- -p <port>:8080 \
-  --name "ml-workspace-<username>" \
-  -v "${TOP_DIR}/files/<username>:/workspace" \
-  -v "${TOP_DIR}/files/<username>:/workspace/common" \
-  --env AUTHENTICATE_VIA_JUPYTER="" \
-  --env WORKSPACE_BASE_URL="<username>" \
-  --shm-size 512m \
-  --restart always \
-  mltooling/ml-workspace-minimal:0.13.2
-```
+**3. Add backend authorization for the user:**
 
-**3. Add username and password:**
+- Go to the _docker_ directory
 
-The following code adds basic authorization for the new user.
+  ```bash
+  cd <DTaaS>/docker
+  ```
 
-```bash
-cd DTaaS/servers/config/gateway
-htpasswd auth <username>
-```
+- Add three lines to the `conf.server` file
 
-**4. Add 'route' for new user:**
+  ```txt
+  rule.onlyu3.action=auth
+  rule.onlyu3.rule=PathPrefix(`/alice`)
+  rule.onlyu3.whitelist = alice@foo.com
+  ```
 
-We need to add a new route to the servers ingress.
-
-Open the following file with your preffered editor (e.g. VIM/nano).
+**4. Restart the docker container responsible for backend authorization.**
 
 ```bash
-vi DTaaS/servers/config/gateway/dynamic/fileConfig.yml
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
-Now add the new route and service for the user.
-
-<!-- prettier-ignore -->
-!!! important
-  foo.com should be replaced with your own domain.
-
-```yml
-http:
-  routers:
-    ....
-    <username>:
-      entryPoints:
-        - http
-      rule: 'Host(`foo.com`) && PathPrefix(`/<username>`)'
-      middlewares:
-        - basic-auth
-      service: <username>
-
-  services:
-    ...
-    <username>:
-      loadBalancer:
-        servers:
-          - url: 'http://localhost:<port>'
-```
-
-**5. Access the new user:**
-
-Log into the DTaaS application as new user.
+**5. The new users are now added to the DTaaS instance, with authorization enabled.**

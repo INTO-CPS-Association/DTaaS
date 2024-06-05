@@ -7,7 +7,7 @@
 
 ### ML Workspace
 
-- the docker container slows down a bit after ten days.
+- the docker container might down a bit after two weeks.
   The only known solution is to restart the docker container.
   You don't need to restart the complete DTaaS platform, restart of
   the docker container of ml-workspace is sufficient.

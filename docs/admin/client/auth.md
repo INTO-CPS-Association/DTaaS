@@ -1,11 +1,5 @@
 # OAuth for React Client
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! failure
-    Add screenshots from dtaas-digitaltwin.com demo.
-<!-- markdownlint-enable MD046 -->
-
 To enable user authorization on DTaaS React client website, you will use
 the OAuth authorization protocol, specifically the PKCE authorization flow.
 Here are the steps to get started:
@@ -40,11 +34,15 @@ Here are the steps to get started:
 - During the creation of the OAuth application on GitLab, you need to specify
   the scope. Choose openid, profile, read_user, read_repository, and api scopes.
 
+  ![Creation of Client OAuth Application](client-oauth-name.png)
+
 **5. Application ID:**
 
 - After successfully creating the OAuth application, GitLab generates
   an application ID. This is a long string of HEX values that you will need for
   your configuration files.
+
+  ![Scopes for Client OAuth Application](client-oauth-scopes.png)
 
 **6. Required Information from OAuth Application:**
 
@@ -58,26 +56,11 @@ Here are the steps to get started:
 |Callback URL|REACT_APP_REDIRECT_URI|[https://foo.com/Library](https://foo.com/Library)|
 |Scopes|REACT_APP_GITLAB_SCOPES|openid, profile, read_user, read_repository, api|
 
+  ![Summary for Client OAuth Application](client-oauth-id.png)
+
 **7. Create User Accounts:**
 
 Create user accounts in gitlab for all the usernames chosen during
 installation. The _trial_ installation script comes with two default
 usernames - _user1_ and _user2_. For all other installation scenarios,
 accounts with specific usernames need to be created on gitlab.
-
-## Development Environment
-
-There needs to be a valid callback and logout URLs for development and testing
-purposes. You can use the same oauth application id for both development, testing
-and deployment scenarios. Only the callback and logout URLs change. It is possible
-to register multiple callback URLs in one oauth application. In order to use oauth
-for development and testing on developer computer (localhost), you need to add the
-following to oauth callback URL.
-
-```txt
-DTaaS application URL: http://localhost:4000
-Callback URL: http://localhost:4000/Library
-Logout URL: http://localhost:4000
-```
-
-The port 4000 is the default port for running the client website.

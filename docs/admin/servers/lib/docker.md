@@ -1,5 +1,20 @@
 # Host Library Microservice
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! failure
+    update the page
+<!-- markdownlint-enable MD046 -->
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The default setting in docker compose file exposes
+    all user files at <http://foo.com/lib/files>.
+    The `compose.server.yml` file needs to updated to
+    expose another directory like common assets directory.
+<!-- markdownlint-enable MD046 -->
+
 The **lib microservice** is a simplified file manager providing graphQL API.
 It has three features:
 
@@ -24,86 +39,7 @@ There is a skeleton file structure in
 [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
 You can copy and create file system for your users.
 
-## :arrow_down: Install
-
-The package is available in Github
-[packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
-and on
-[npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
-
-Set the registry and install the package with the one of
-the two following commands
-
-```bash
-sudo npm install -g @into-cps-association/libms  # requires no login
-sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
-```
-
-The _github package registry_ asks for username and password. The username is
-your Github username and the password is your Github
-[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, your personal access token
-needs to have _read:packages_ scope.
-
-## :gear: Configure
-
-The microservices requires config specified in INI format.
-The template configuration file is:
-
-```ini
-PORT='4001'
-MODE='local'
-LOCAL_PATH='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
-```
-
-The `LOCAL_PATH` variable is the absolute filepath to the
-location of the local directory which will be served to users
-by the Library microservice.
-
-Replace the default values the appropriate values for your setup.
-
 ## :rocket: Use
-
-Display help.
-
-```bash
-libms -h
-```
-
-The config is saved `.env` file by convention. The **libms** looks for
-`.env` file in the working directory from which it is run.
-If you want to run **libms** without explicitly specifying the configuration
-file, run
-
-```bash
-libms
-```
-
-To run **libms** with a custom config file,
-
-```bash
-libms -c FILE-PATH
-libms --config FILE-PATH
-```
-
-If the environment file is named something other than `.env`,
-for example as `.env.development`, you can run
-
-```sh
-libms -c ".env.development"
-```
-
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
-
-```bash
-nohup libms [-c FILE-PATH] & disown
-```
-
-The lib microservice is now running and ready to serve files, functions, and models.
 
 ## Service Endpoint
 

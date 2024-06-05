@@ -22,3 +22,20 @@ The installation requirements to run this docker version of the DTaaS are:
   for trusted application.
 - DNS name (optional, required only when the DTaaS is to be
 - deployed on a web server)
+
+## React Website Development Environment
+
+There needs to be a valid callback and logout URLs for development and testing
+purposes. You can use the same oauth application id for both development, testing
+and deployment scenarios. Only the callback and logout URLs change. It is possible
+to register multiple callback URLs in one oauth application. In order to use oauth
+for development and testing on developer computer (localhost), you need to add the
+following to oauth callback URL.
+
+```txt
+DTaaS application URL: http://localhost:4000
+Callback URL: http://localhost:4000/Library
+Logout URL: http://localhost:4000
+```
+
+The port 4000 is the default port for running the client website.
