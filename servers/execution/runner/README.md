@@ -35,7 +35,7 @@ The template configuration file is:
 
 ```ini
 port: 5000
-location: "lifecycle" #directory location of scripts
+location: "script" #directory location of scripts
 ```
 
 The file should be named as _runner.yaml_ and placed in the directory

@@ -21,26 +21,24 @@ nav:
       - Authorization:
         - Client: admin/client/auth.md
         - Servers: admin/servers/auth.md
-      - Host Install:
+      - Docker:
         - Localhost: admin/localhost.md
-        - Trial: admin/trial.md
         - Production: admin/host.md
+      - CLI: admin/cli.md
       - Vagrant:
         - Base Box: admin/vagrant/base-box.md
         - Single Machine: admin/vagrant/single-machine.md
         - Two Machines: admin/vagrant/two-machines.md
-      - Separate Packages:
-        - Website: admin/client/CLIENT.md
-        - Library microservice: admin/servers/lib/LIB-MS.md
+      - Independent Packages: admin/packages.md
       - Services: admin/services.md
       - Guides:
-        - New user: admin/guides/add_user.md
-        - New Service: admin/guides/add_service.md
+        - Add user: admin/guides/add_user.md
+        - Remove user: admin/guides/remove_user.md
+        - Add Service: admin/guides/add_service.md
         - Install Gitlab: admin/guides/gitlab.md
         - Link services: admin/guides/link_service.md
         - Common Assets: admin/guides/common_workspace_readonly.md
         - HTTP Mode: admin/guides/hosting_site_without_https.md
-        - Basepath: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
@@ -63,7 +61,10 @@ nav:
           - Flex Cell: user/examples/flex-cell/README.md
           - Incubator: user/examples/incubator/README.md
           - Firefighters: user/examples/o5g/README.md
+          - Mass Spring Damper with NuRV: user/examples/mass-spring-damper-monitor/README.md
+          - Incubator with NuRV: user/examples/incubator-NuRV-monitor-validation/README.md
           - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
+          - Water Tank Fault Injection with NuRV: user/examples/water_tank_FI_monitor/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - FAQ: FAQ.md
   - Developer: 

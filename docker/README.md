@@ -1,168 +1,164 @@
-# Docker Compose for DTaaS with Backend Authorization
+# Docker workflow for DTaaS
 
-This directory contains docker compose files for running the DTaaS with
-backend authorization. The authorization happens at traefik using
-[Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
-The Traefik forward-auth uses OAuth2 for protecting all routes to user workspaces.
+Use of docker images is handy for developers. It is suggested
+that developers build the required images locally on their computer and
+use them for development purposes.
 
-## Design
+This readme will explain the building and use of different docker files
+for development purposes.
 
-An illustration of the docker containers used and the authorization
-setup is shown here.
+## Folder Structure
 
-![Traefik OAuth](./traefik-forward-auth.png)
+There are two dockerfiles for building the containers:
 
-In the new application configuration, there are two OAuth2 applications.
-
-- The React single page application (SPA). The details of
-  this Oauth2 app are in
-  [client docs](../../docs/admin/client/auth.md).
-- The Oauth2 server-side or web application for traefik forward-auth container.
-  The details are in [server docs](../../docs/admin/servers/auth.md).
+- **client.dockerfile**: Dockerfile for building
+  the client application container.
+- **libms.dockerfile**: Dockerfile for building the library
+  microservice container from source code.
+- **libms.npm.dockerfile**: Dockerfile for building the library
+  microservice container from published npm package at npmjs.com.
+  This Dockerfile is only used during publishing. It is used neither
+  in the development builds nor in Github actions.
+- **compose.dev.yml:** Docker Compose configuration for
+  development environment.
+- **.env**: environment variables for docker compose file
+- **conf.dev** OAuth2 configuration required by
+  the Traefik forward-auth service
 
 ## Requirements
 
-The installation requirements to run this docker version of the DTaaS are:
+The installation requirements to run this development version of
+the DTaaS are:
 
 - docker with compose plugin
-- [gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application)
-- DNS name (optional, required only when the DTaaS is to be deployed on a web server)
-- User accounts
+- User account on a gitlab instance (could be _gitlab.com_)
+- OAuth2 application registrations
 
-### Create User Accounts
+### OAuth2 Application Registration
 
-Create user accounts in gitlab for all the usernames mentioned in
-`.env` and `conf` files.
-The _trial_ installation script comes with two default
-usernames - _user1_ and _user2_. For all other installation scenarios,
-accounts with specific usernames need to be created on gitlab.
+The development docker setup requires dedicated authorization
+setup for both frontend website and backend services.
+Both these authorization requirements are satisfied
+using OAuth2 protocol.
+
+- The frontend website is a React single page application (SPA).
+- The details of Oauth2 app for the frontend website are in
+  [client docs](../docs/admin/client/auth.md).
+- The Oauth2 authorization for backend services is managed
+  by [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
+  The details of this authorization setup are in
+  [server docs](../docs/admin/servers/auth.md).
+
+It is necessary to register these two OAuth2 applications and
+link them to your DTaaS development instance.
+
+Please see
+[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+documentation for further help with creating these two OAuth applications.
 
 ## Configuration
 
-### Traefik forward-auth
+The configuration files to be updated are:
 
-The first step is to finish the configuration for
-the traefik forward-auth container.
-The details are in [server docs](../docs/admin/servers/auth.md).
+1. docker/.env
+   please see [docker README](../deploy/docker/SERVER.md) for help
+   with updating this config file)
+1. docker/conf.dev
+   please see [server docs](../docs/admin/servers/auth.md) for help
+   with updating this config file)
+1. client/config/local.js
+   please see [client config](../docs/admin/client/config.md) for help
+   with updating this config file)
 
-### Docker Compose
+## Development Environment
 
-The docker compose configuration is in `.env`; it is a sample file.
-It contains environment variables
-that are used by the docker compose files.
+The development environment requires docker images to be built
+become the docker compose application can be brought up.
 
-Edit all the fields according to your specific case.
+The images can be built using
 
-  | URL Path | Access Granted to |Access Granted to |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | SERVER_DNS | <http>_foo.com_</http> or <http>_localhost_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
-  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance |
-  | CLIENT_ID | 'xx' | The ID of your OAuth application |
-  | CLIENT_SECRET | 'xx' | The Secret of your OAuth application |
-  | OAUTH_SECRET | 'random-secret-string' | Any private random string |
-  | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
-  | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | CLIENT_CONFIG | '/Users/<Username>/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
-
-Note: The Server DNS can also be an IP address.
-However, for proper working it is neccessary to use the
-same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
-
-### Website Client
-
-- Assign the correct client config file to `CLIENT_CONFIG` and
-  update the values.
-
-  | Deployment Scenario | client env file |
-  |:-------|:------|
-  | localhost | deploy/config/client/env.local.js |
-  | trial | deploy/config/client/env.trial.js |
-
-  This file has to be configured properly.
-
-  Further explanation on the client configuration is available in
-  [client config](../../docs/admin/client/CLIENT.md).
-
-### Lib MS
-
-No configuration change is needed for a general use case to bring up the LibMS.
-
-In a specific case,
-you can change the configuration of the LibMS by editing the file:
-
-- deploy/config/lib.docker
-
-This is not recommended for a general use.
-It should be done with care, making relevant changes
-in all other related files,
-and the compose file being used.
-
-### Caveat
-
-The usernames in the `.env` file need to match those in the conf file.
-The conf.local is used by compose.local.yml and
-conf.server is used by compose.server.yml.
-
-Traefik routes are controlled by the `.env` file
-Authentication on these routes is controlled by the `conf` file.
-If a route is not specified in `conf` file but an authorisation is
-requested by traefik for this unknown route, the default behavior of
-traefik forward-auth kicks in. This default behavior is to enable
-endpoint being available to any signed in user.
-
-If there are extra routes in `conf` file but these are not in `.env` file,
-such routes are not served by traefik; it will give **404 server response**.
-
-## Run
-
-There are two usage scenarios, namely **localhost** and **trial** installation.
-
-Both the installation scenarios use the images already built and
-deployed on docker hub, for the ML-workspace, client, and LibMS.
-Both incorporate traefik forward-auth microservice for backend authorization.
-
-### Localhost
-
-The commands to start and stop the appliation are:
-
-```bash
-docker compose -f compose.local.yml --env-file .env up -d
-docker compose -f compose.local.yml --env-file .env down
+```sh
+docker compose -f compose.dev.yml build
 ```
 
-To restart only a specific container, for example `client``
+The first build requires download of base docker images and building
+requires docker image layers.
+It does take time but the subsequent builds will happen quickly.
+
+### Running Docker Containers
+
+The docker commands need to be executed from this directory(`docker`).
+The relevant docker commands are:
 
 ```bash
-docker compose -f compose.local.yml --env-file .env up -d --force-recreate client
+docker compose -f compose.dev.yml up -d #start the application
+docker compose -f compose.dev.yml down  #terminate the application
 ```
 
-## Trial Server Installation
+### Access the Application
 
-The commands to start and stop the appliation are:
-
-```bash
-docker compose -f compose.server.yml --env-file .env up -d
-docker compose -f compose.server.yml --env-file .env down
-```
-
-To restart only a specific container, for example `client``
-
-```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate client
-```
-
-## Use
-
-| Deployment Scenario | URL |
-|:----|:----|
-| localhost | <http>_localhost_</http> |
-| trial server | <http>_foo.com_</http> |
-
-Sign in to gitlab instance with the your account.
+The application will be accessible at:
+<http://localhost> from web browser.
+Sign in using your gitlab.com account.
 
 All the functionality of DTaaS should be available to you
 through the single page client now.
 
-You may have to click Sign in to Gitlab on the Client page
-and authorize access to the shown application.
+## Publish Docker Images
+
+Build and publish the docker images. This step is required only for
+the publication of images to Docker Hub.
+
+:stop_sign: This publishing step is managed
+only by project maintainers. Regular developers can skip this step.
+
+### React Website
+
+```sh
+docker build -t intocps/dtaas-web:latest -f ./docker/client.dockerfile .
+docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
+docker push intocps/dtaas-web:latest
+docker push intocps/dtaas-web:<version>
+```
+
+To tag version **0.3.1** for example, use
+
+```sh
+docker tag intocps/dtaas-web:latest intocps/dtaas-web:0.3.1
+```
+
+To test the react website container on localhost, please use
+
+```bash
+docker run -d \
+  -v ${PWD}/client/config/local.js:/dtaas/client/build/env.js \
+  -p 4000:4000 intocps/dtaas-web:latest
+```
+
+### Library Microservice
+
+The Dockerfile of library microservice has `VERSION` argument.
+This argument helps pick the right package version from <http://npmjs.com>.
+
+```sh
+docker login -u <username> -p <password>
+docker build -t intocps/libms:latest -f ./docker/libms.npm.dockerfile .
+docker push intocps/libms:latest
+docker build --build-arg="VERSION=<version>" \
+  -t intocps/libms:<version> -f ./docker/libms.npm.dockerfile .
+docker push intocps/libms:<version>
+```
+
+To tag version 0.3.1 for example, use
+
+```sh
+docker build --build-arg="VERSION=0.3.1" \
+  -t intocps/libms:0.3.1 -f ./docker/libms.npm.dockerfile .
+```
+
+To test the library microservice on localhost, please use
+
+```bash
+docker run -d -v ${PWD}/files:/dtaas/libms/files \
+  -p 4001:4001 intocps/libms:latest
+```

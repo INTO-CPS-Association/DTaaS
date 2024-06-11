@@ -1,189 +1,243 @@
-# DTaaS on Linux Operating System
+# Install DTaaS on a Production Server
 
-These are installation instructions for running DTaaS application
-on a Ubuntu Server 22.04 Operating System.
-The setup requires a machine which can
-spare 16GB RAM, 8 vCPUs and 50GB Hard Disk space.
+The installation instructions provided in this README are
+ideal for hosting the DTaaS as web application
+for multiple users.
 
-A dummy **foo.com** URL has been used for illustration.
-Please change this to your unique website URL.
-It is assumed that you are going to serve the application in only HTTPS mode.
+## Design
 
-A successful installation will create a setup
-similar to the one shown in the figure.
+An illustration of the docker containers used and the authorization
+setup is shown here.
 
-![Single host install](./single-host.png)
+![Traefik OAuth](./server.png)
 
-Please follow these steps to make this work in your local environment.
-Download the **DTaaS.zip** from the
-[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
-Unzip the same into a directory named **DTaaS**.
-The rest of the instructions assume that your working directory is **DTaaS**.
+In the new application configuration, there are two OAuth2 applications.
+
+## Requirements
+
+The installation requirements to run this docker version of the DTaaS are:
+
+### Docker with Compose Plugin
+
+It is mandatory to have [Docker](https://www.docker.com/) installed
+on your computer. We highly recommend using
+[Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+### Domain name
+
+The DTaaS software is a web application and is preferably hosted
+on a server with a domain name like <http:>_foo.com_</http:>.
+It is also possible to use an IP address in place of domain name.
+
+### OAuth Provider
+
+**[Gitlab Instance](https://about.gitlab.com/install/)** -
+The DTaaS uses Gitlab OAuth2.0 authorization for user authorization.
+You can either have an on-premise instance of gitlab, or
+use [gitlab.com](https://gitlab.com) itself.
+
+### User Accounts
+
+Create user accounts in the linked gitlab instance for all the users.
+
+### OAuth2 Application Registration
+
+The multi-user installation setup requires dedicated authorization
+setup for both frontend website and backend services.
+Both these authorization requirements are satisfied
+using OAuth2 protocol.
+
+- The frontend website is a React single page application (SPA).
+- The details of Oauth2 app for the frontend website are in
+  [client docs](client/auth.md).
+- The Oauth2 authorization for backend services is managed
+  by [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
+  The details of this authorization setup are in
+  [server docs](servers/auth.md).
+
+Based on your selection of gitlab instance, it is necessary
+to register these two OAuth2 applications and link them
+to your intended DTaaS installation.
+
+Please see
+[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+documentation for further help with creating these two OAuth applications.
+
+## Clone Codebase
+
+```bash
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
+cd DTaaS
+```
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
-!!! note
-    If you only want to test the application
-    and are not setting up a production instance,
-    you can follow the instructions of [trial installation](trial.md).
+!!! tip file pathnames
 
+    1. The filepaths shown here follow Linux OS.
+       The installation procedures also work with Windows
+       OS.
+    1. The description below refers to filenames. All the file
+       paths mentioned below are relatively to the top-level
+       **DTaaS** directory.
 <!-- markdownlint-enable MD046 -->
 
 ## Configuration
 
-You need to configure the Traefik gateway,
-library microservice and react client website.
+Three following configuration files need to be updated.
 
-The first step is to decide on the number of users and their usenames.
-The traefik gateway configuration has a template for two users.
-You can modify the usernames in the template to the usernames chosen by you.
+### Docker Compose
 
-### Traefik gateway server
+The docker compose configuration is in `deploy/docker/.env.server`.
+it is a sample file.
+It contains environment variables
+that are used by the docker compose files.
+It can be updated to suit your local installation scenario.
+It contains the following environment variables.
 
-You can run the Traefik gateway server in both
-HTTP and HTTPS mode to experience the DTaaS application.
-The installation guide assumes that you can run the application in HTTPS mode.
+Edit all the fields according to your specific case.
 
-The Traefik gateway configuration is
-at _deploy/config/gateway/fileConfig.yml_.
-Change `foo.com` to your local hostname and user1/user2 to
-the usernames chosen by you.
+  | URL Path | Example Value | Explanation |
+  |:------------|:---------------|:---------------|
+  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
+  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
+  | CLIENT_ID | 'xx' | The ID of your server OAuth application |
+  | CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
+  | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
+  | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
+  | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
+  | CLIENT_CONFIG | '/Users/username/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
 !!! tip
-    Do not use `http://` or `https://`
-    in _deploy/config/gateway/fileConfig.yml_.
+    Important points to note:
 
+    1. The path examples given here are for Linux OS.
+       These paths can be Windows OS compatible paths as well.
+    1. The Server DNS can also be an IP address.
+       However, for proper working it is neccessary to use the
+       same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
 <!-- markdownlint-enable MD046 -->
 
-#### Authorization
+### Website Client
 
-This step requires `htpasswd` commandline utility. If
-it is not available on your system, please install the same by using
+The frontend React website requires configuration which is specified
+via a filename provided in `CLIENT_CONFIG` variable of
+`deploy/docker/.env.server` file.
 
-```bash
-sudo apt-get update
-sudo apt-get install -y apache2-utils
-```
+The `CLIENT_CONFIG` file is in relative directory of
+`deploy/config/client/env.js`.
 
-You can now proceed with update of the gateway authorization setup.
-The dummy username is `foo` and the password is `bar`.
-Please change this before starting the gateway.
+Further explanation on the client configuration is available in
+[client config](client/config.md).
 
-```bash
-rm deploy/config/gateway/auth
-touch deploy/config/gateway/auth
-htpasswd deploy/config/gateway/auth <first_username>
-password: <your password>
-```
-
-The user credentials added in _deploy/config/gateway/auth_ should
-match the usernames in _deploy/config/gateway/fileConfig.yml_.
-
-## Lib microservice
-
-The library microservice requires configuration.
-A template of this configuration file is given in _deploy/config/lib_ file.
-Please modify this file as per your needs.
-
-The first step in this configuration is to prepare a filesystem for users.
-An example file system is in `files/` directory.
-You can rename the top-level user1/user2 to the usernames chosen by you.
-
-The simplest possibility is to use `local` mode with the following example.
-The filepath is the absolute filepath to `files/` directory.
-You can copy this configuration into _deploy/config/lib_ file to get started.
-
-```env
-PORT='4001'
-MODE='local'
-LOCAL_PATH ='filepath'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='true'
-```
-
-## React Client Website
-
-### Gitlab OAuth application
-
-The DTaaS react website requires Gitlab OAuth provider.
-If you need more help with this step, please see
-the [Authorization page](client/auth.md).
-
-You need the following information from the OAuth application registered on Gitlab:
-
-| Gitlab Variable Name | Variable name in Client env.js | Default Value                                    |
-| :------------------- | :----------------------------- | :----------------------------------------------- |
-| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | <https://gitlab.foo.com/>                        |
-| Application ID       | REACT_APP_CLIENT_ID            |
-| Callback URL         | REACT_APP_REDIRECT_URI         | <https://foo.com/Library>                        |
-| Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api |
-
-You can also see
-[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-for getting the Gitlab OAuth application details.
-Remember to Create gitlab accounts for usernames chosen by you.
-
-### Update Client Config
-
-Change the React website configuration in _deploy/config/client/env.js_.
-
-```js
-if (typeof window !== 'undefined') {
-  window.env = {
-    REACT_APP_ENVIRONMENT: 'prod',
-    REACT_APP_URL: 'https://foo.com/',
-    REACT_APP_URL_BASENAME: 'dtaas',
-    REACT_APP_URL_DTLINK: '/lab',
-    REACT_APP_URL_LIBLINK: '',
-    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-
-    REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
-    REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
-    REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
-    REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
-  };
-};
-```
-
-## Update the installation script
-
-Open `deploy/install.sh` and update user1/user2 to usernames chosen by you.
-
-## Perform the Installation
-
-Go to the DTaaS directory and execute
-
-```sh
-source deploy/install.sh
-```
-
-You can run this script multiple times until the installation is successful.
-
+<!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
-!!! note
-    While installing you might encounter multiple dialogs asking,
-    which services should be restarted.
-    Just click **OK** to all of those.
+!!! tip
+    There is a default OAuth application registered on <https://gitlab.com>
+    for client. The corresponding OAuth application
+    details are:
 
-## Post-install Check
+    ```js
+    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+    ```
 
-Now you should be able to access the DTaaS application at: <https://foo.com>
+    **This can be used for test purposes**. Please use your own OAuth application
+    for secure production deployments.
+<!-- markdownlint-enable MD046 -->
 
-If you can following all the screenshots from [user website](../user/website/index.md).
-Everything is correctly setup.
+### Create User Workspace
+
+The existing filesystem for installation is setup for `files/user1`.
+A new filesystem directory needs to be created for the selected user.
+
+Please execute the following commands from the top-level directory
+of the DTaaS project.
+
+```bash
+cp -R files/user1 files/username
+```
+
+where _username_ is one of the selected usernames. This command
+needs to be repeated for all the selected users.
+
+### Configure Authorization Rules for Backend Authorization
+
+The Traefik forward-auth microservices requires configuration rules to manage
+authorization for different URL paths.
+The `deploy/docker/conf.server` file can be used to
+configure the authorization for user workspaces.
+
+```text
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user1`)
+rule.onlyu1.whitelist = user1@localhost
+
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user2`)
+rule.onlyu1.whitelist = user2@localhost
+```
+
+Please change the usernames and email addresses to the matching
+user accounts on the OAuth provider
+(either <https://gitlab.foo.com> or <https://gitlab.com>).
+
+### Caveat
+
+The usernames in the `deploy/docker/.env.server` file need to match those in
+the `deploy/docker/conf.server` file.
+
+Traefik routes are controlled by the `deploy/docker/.env.server` file.
+Authorization on these routes is controlled by the `deploy/docker/conf.server` file.
+If a route is not specified in `deploy/docker/conf.server` file
+but an authorisation is requested by traefik for this unknown route,
+the default behavior of
+traefik forward-auth kicks in. This default behavior is to enable
+endpoint being available to any signed in user.
+
+If there are extra routes in `deploy/docker/conf.server` file but these are not
+in `deploy/docker/.env.server` file,
+such routes are not served by traefik; it will give **404 server response**.
+
+## Run
+
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.server.yml --env-file .env.server up -d
+docker compose -f compose.server.yml --env-file .env.server down
+```
+
+To restart only a specific container, for example `client``
+
+```bash
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+```
+
+## Use
+
+The application will be accessible at:
+<http://foo.com> from web browser.
+Sign in using your account linked to
+either _gitlab.com_ or your local gitlab instance.
+
+All the functionality of DTaaS should be available to your users
+through the single page client now.
+
+You may have to click Sign in to Gitlab on the Client page
+and authorize access to the shown application.
+
+### Adding a new user
+
+Please see the [add new user](guides/add_user.md) to add new users.
 
 ## References
 
-Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
-[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
 [reactjs](https://krify.co/about-reactjs/),
-[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)
+[gitlab](https://gitlab.com)

@@ -1,87 +1,125 @@
-# Localhot Installation
+# Install DTaaS on localhost
 
-To try out the software, you can install it on Ubuntu 22.04
-Desktop Operating System. The setup requires a
-machine which can spare 4GB RAM, 2 vCPUs and 15GB Hard Disk
-space to a the DTaaS application.
-A successful installation will create a setup
-similar to the one shown in the figure.
+The installation instructions provided in this README are
+ideal for running the DTaaS on both localhost.
+This installation is ideal for single users intending to use
+DTaaS on their own computers.
 
-![localhost install](./localhost.png)
+## Design
 
-A one-step installation script is provided on this page. This script sets up
-the DTaaS software for a single user.
-You can use it to check a test installation of the DTaaS software.
+An illustration of the docker containers used and the authorization
+setup is shown here.
 
-## Pre-requisites
+![Traefik OAuth](./localhost.png)
 
-### 1. Gitlab OAuth application
+## Requirements
 
-The DTaaS react website requires Gitlab OAuth provider.
-If you need more help with this step, please see
-the [Authorization page](client/auth.md).
+The installation requirements to run this docker version of the DTaaS are:
 
-!!! Information
-    <!-- markdownlint-disable-file MD013 -->
-    It is sufficient to have [user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
-    application. You can create this application
-    in your gitlab account.
+- docker desktop / docker CLI with compose plugin
+- User account on _gitlab.com_
 
-You need the following information from the Gitlab OAuth application
-registered on Gitlab:
-
-| Gitlab Variable Name | Variable name in Client env.js | Default Value                                    |
-| :------------------- | :----------------------------- | :----------------------------------------------- |
-| OAuth Provider       | REACT_APP_AUTH_AUTHORITY       | <https://gitlab.com> or <https://gitlab.foo.com>      |
-| Application ID       | REACT_APP_CLIENT_ID            |
-| Callback URL         | REACT_APP_REDIRECT_URI         | <http://localhost/Library>                        |
-| Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api |
-
-You can also see
-[Gitlab help page](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-for getting the Gitlab OAuth application details.
-
-## Install
-
+<!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
-!!! note
-    While installing you might encounter multiple dialogs asking,
-    which services should be restarted. Just click **OK** to all of those.
+!!! tip
+    The frontend website requires authorization.
+    The default authorization configuration works for _gitlab.com_.
+    If you desire to use locally hosted gitlab instance, please see
+    the [client docs](client/auth.md).
+<!-- markdownlint-enable MD046 -->
 
-Run the following commands.
+## Clone Codebase
 
 ```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/deploy/single-script-install.sh
-bash single-script-install.sh --env local --username <username>
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
+cd DTaaS
 ```
 
-The `--env local` argument is added to the script specifies `localhost`
-as the installation scenario. The `--username username` uses your
-Gitlab username to configure the DTaaS application.
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip file pathnames
 
-## Post install
+    1. The filepaths shown here follow POSIX convention.
+       The installation procedures also work with Windows
+       paths.
+    1. The description below refers to filenames. All the file
+       paths mentioned below are relatively to the top-level
+       **DTaaS** directory.
+<!-- markdownlint-enable MD046 -->
 
-After the single-install-script is successfully run. Please change
-[Gitlab OAuth](#1-gitlab-oauth-application) details in
+## Configuration
 
-```txt
-~/DTaaS/client/build/env.js
+### Docker Compose
+
+The docker compose configuration is in `deploy/docker/.env.local`;
+it is a sample file.
+It contains environment variables
+that are used by the docker compose files.
+It can be updated to suit your local installation scenario.
+It contains the following environment variables.
+
+Edit all the fields according to your specific case.
+
+  | URL Path | Example Value | Explanation |
+  |:------------|:---------------|:---------------|
+  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | username1 | 'user1' | Your gitlab username |
+  | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.local.js' | Full path to env.js file for client |
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    The path examples given here are for Linux OS.
+    These paths can be Windows OS compatible paths as well.
+<!-- markdownlint-enable MD046 -->
+
+### Create User Workspace
+
+The existing filesystem for installation is setup for `user1`.
+A new filesystem directory needs to be created for the selected user.
+
+Please execute the following commands from the top-level directory
+of the DTaaS project.
+
+```bash
+cp -R files/user1 files/username
 ```
 
-## Post-install Check
+where _username_ is the selected username registered on <https://gitlab.com>.
 
-Now when you visit <http://localhost>, you should be able to login through
-Gitlab OAuth Provider and access the DTaas web UI.
+## Run
 
-If you can following along to see all the screenshots from
-[user website](../user/website/index.md).
-Everything is correctly setup.
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.local.yml --env-file .env.local up -d
+docker compose -f compose.local.yml --env-file .env.local down
+```
+
+To restart only a specific container, for example `client``
+
+```bash
+docker compose -f compose.local.yml --env-file .env up -d --force-recreate client
+```
+
+## Use
+
+The application will be accessible at:
+<http://localhost> from web browser.
+Sign in using your <https://gitlab.com> account.
+
+All the functionality of DTaaS should be available to you
+through the single page client now.
+
+## Limitations
+
+The [library microservice](servers/lib/docker.md) is not
+included in the localhost installation scenario.
 
 ## References
 
-Image sources: [Ubuntu logo](https://logodix.com/linux-ubuntu),
+Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
-[nodejs](https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/),
 [reactjs](https://krify.co/about-reactjs/),
-[nestjs](https://camunda.com/blog/2019/10/nestjs-tx-email/)
+[gitlab](https://gitlab.com)

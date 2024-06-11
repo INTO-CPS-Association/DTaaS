@@ -17,7 +17,7 @@ authorization flow.
 
 Here are the steps to get started:
 
-**1. Choose Your GitLab Server:**
+**1. Choose GitLab Server:**
 
 - You need to set up OAuth authorization on a GitLab server.
   The commercial gitlab.com is not suitable for multi-user authorization
@@ -29,62 +29,71 @@ Here are the steps to get started:
   Select option to generate client secret and also selection option
   for trusted application.
 
-**2. Determine Your Website's Hostname:**
+**2. Determine Website Hostname:**
 
-- Before setting up OAuth on GitLab, decide on the hostname for your website.
-  It's recommended to use a self-hosted GitLab instance, which you will use in
-  other parts of the DTaaS application.
+Before setting up OAuth on GitLab, decide on the hostname for your website.
+It's recommended to use a self-hosted GitLab instance, which you will use in
+other parts of the DTaaS application.
 
-**3. Define Callback and Logout URLs:**
+**3. Determine Callback and Logout URLs:**
 
-- For the web / server authorization flow to function correctly, you need two URLs:
-  a callback URL and a logout URL.
-  - The callback URL informs the OAuth provider of the
-    page where
-    signed-in users should be redirected. It is the landing
-    homepage of the DTaaS application.
+For the web / server authorization flow to function correctly,
+you need two URLs: a _callback URL_ and a _logout URL_.
+
+- The callback URL informs the OAuth provider of the
+  page where
+  signed-in users should be redirected. It is the landing
+  homepage of the DTaaS application.
   (either <http://foo.com/_oauth/> or <http://localhost/_oauth/>)
-  - The logout URL is the URL for signout of gitlab and clear authorization
+- The logout URL is the URL for signout of gitlab and clear authorization
   within traefik-forward auth.
   (either <http://foo.com/_oauth/logout> or <http://localhost/_oauth/logout>).
   The logout URL is to help users logout of traefik forward-auth. The logout
   URL should not be entered into Gitlab OAuth application setup.
 
-**4. OAuth Application Creation:**
+**4. Create OAuth Application:**
 
-- During the creation of the OAuth application on GitLab, you need to specify
-  the scope. Choose _read_user_ scope.
+During the creation of the OAuth application on GitLab, you need to specify
+the scope. Choose **_read_user_** scope.
 
-**5. Application Credentials:**
+![Creation of Server OAuth Application](server-oauth.png)
 
-- After successfully creating the OAuth application, GitLab generates
-  an _application ID_ and _client secret_.
-  Both these values are long string of HEX values that you will need for
-  your configuration files.
+**5. Copy Application Credentials:**
 
-**6. Required Information from OAuth Application:**
+After successfully creating the OAuth application, GitLab generates
+an _application ID_ and _client secret_.
 
-- You will need the following information from the OAuth application
-  registered on GitLab:
+Both these values are long string of HEX values that you will need for
+your configuration files.
 
-|GitLab Variable Name|Variable Name in .env of docker compose file |Default Value|
-|---|---|---|
+![Server OAuth Application Credentials](server-oauth2.png)
+
+**6. Checklist: Required Information from OAuth Application:**
+
+You will need the following information from
+the OAuth application registered on GitLab:
+
+<!-- markdownlint-disable MD013 -->
+| GitLab Variable Name | Variable Name in .env of docker compose file | Default Value |
+|:---|:---|:---|
 |OAuth Provider|OAUTH_URL|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
 |Application ID|CLIENT_ID| _xx_ |
 |Application Secret|CLIENT_SECRET| _xx_ |
 |Callback URL|(to be directly entered in Gitlab OAuth registration)||
 |Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
 |Scopes| read_user ||
+<!-- markdownlint-enable MD013 -->
 
 ## Development Environment
 
-The development environment does not required traefik forward-auth.
+The development environment and server installation scenarios
+requires traefik forward-auth.
 
 ## Configure Authorization Rules for Traefik Forward-Auth
 
 The Traefik forward-auth microservices requires configuration rules to manage
 authorization for different URL paths.
-The _conf_ file can be used to configure the specific rules.
+The _conf.*_ file can be used to configure the specific rules.
 There are broadly three kinds of URLs:
 
 ### Public Path Without Authorization
@@ -136,10 +145,10 @@ allowing only users mentioned in the whitelist.
 
 ## Limitation
 
-The rules in _conf_ file are not dynamically loaded into
+The rules in _conf.*_ file are not dynamically loaded into
 the **traefik-forward-auth** microservice.
 Any change in the _conf_ file requires
-retart of **traefik-forward-auth** for the changes to take effect.
+restart of **traefik-forward-auth** for the changes to take effect.
 All the existing user sessions get invalidated when
 the **traefik-forward-auth** restarts.
 
