@@ -143,6 +143,15 @@ account should be included in the whitelist.
 This restricts access of the resource,
 allowing only users mentioned in the whitelist.
 
+## User management
+
+DTaaS provides an easy way to add
+and remove additional users from your
+DTaaS instance. 
+
+All such user management can be
+done via the [DTaaS CLI](../cli.md) 
+
 ## Limitation
 
 The rules in _conf.*_ file are not dynamically loaded into
@@ -153,3 +162,15 @@ All the existing user sessions get invalidated when
 the **traefik-forward-auth** restarts.
 
 Use a simple command on the terminal.
+
+- For a local instance:
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
+
+- For a server instance:
+
+```bash
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+```

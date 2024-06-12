@@ -46,6 +46,76 @@ The CLI has two layers of code:
   is responsible for. It also
   has helper functions that can be used across the CLI.
 
+### TOML File
+
+The base configuration file used by the CLI is
+the _dtaas.toml_ file. 
+
+This is divided into 3 sections:
+
+- The Global variables:
+
+```toml
+name = "Digital Twin as a Service (DTaaS)"
+version = "0.1.0"
+owner = "The INTO-CPS-Association"
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+```
+
+These define the name, version, owner and git-repo of the DTaaS instance.
+Currently, these aren't directly used in the CLI and serve the purpose
+of documentation and reference.
+
+- Common Instance Variables
+
+```toml
+[common]
+# absolute path to the DTaaS application directory
+server-dns = "localhost"
+path = "/home/Desktop/DTaaS"
+```
+
+The _path_ variable is used globally by the CLI.
+It is required while creating new workspace files,
+to run bash commands and create new docker services.
+
+The _server-dns_ variable is used to decide if
+the DTaaS instance is a localhost instance or a server
+deploy instance. In the case of server deploy, 
+it is used to define the routes of the server type
+docker compose services appropriately.
+
+- Users variables
+
+```toml
+[users]
+# matching user info must present in this config file
+add = ["username1","username2", "username3"] 
+delete = ["username2", "username3"]
+
+[users.username1]
+email = "username1@gitlab.foo.com"
+```
+
+This section firstly has two important lists, add and delete.
+The new users to be created, or current users to be removed
+from the instance using the CLI are fetched from here in the code.
+
+Additionally, each unique _user_ identified by their _username_
+has an _email_ variable, which should have the email of the user
+as registered on the Gitlab instance. This is currently NOT IN USE.
+It is aimed to be incorporated in future versions.
+
+- Website Client variables
+
+```toml
+[client.web]
+config = "/home/Desktop/DTaaS/env.local.js"
+```
+
+These variables are currently not in use, and will be incorporated
+in future work.
+
 ## Setup
 
 ```bash
@@ -113,3 +183,22 @@ and publish your package to PyPI using poetry:
 ```bash
 poetry publish
 ```
+
+## Future work
+
+The final aim for the CLI is to be the standard way that
+admins setup, manage, and interact with the DTaaS instance.
+Although the base structure for the CLI is set up and
+the commands to manage users have been incorporated, we are
+a long way from our final aim.
+
+The following are the next steps for the CLI:
+
+- Incorporating the AuthMS _conf_ file rules
+  in the user management commands.
+
+- [Bug fix] Currently users with usernames containing
+  a '.' in it aren't handled well by the CLI and result in errors.
+  This is because '.' is a special character for labels in docker compose.
+  We need to include such usernames, simply by internally replacing
+  '.' instances in usernames by '-' or '_'. 
