@@ -26,13 +26,15 @@ export async function signOut(auth: AuthContextProps) {
   if (!auth.user) {
     return;
   }
-
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
   const idToken = auth.user.id_token;
 
   try {
     await auth.revokeTokens();
     await auth.removeUser();
+    await auth.clearStaleState();
+    sessionStorage.clear();
+    document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     await auth.signoutRedirect({
       post_logout_redirect_uri: LOGOUT_URL.toString(),
       id_token_hint: idToken,
