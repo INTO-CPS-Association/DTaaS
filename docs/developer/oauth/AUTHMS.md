@@ -11,6 +11,7 @@ understand the content here better.
 ### User Identity using OAuth2.0
 
 We define some constants that will help with the following discussion:
+
 - CLIENT ID: The OAuth2 Client ID of the Auth MS
 - CLIENT SECRET: The OAuth2 Client Secret of Auth MS
 - REDIRECT URI: The URI where the user is redirected to after the
