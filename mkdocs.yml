@@ -20,6 +20,8 @@ nav:
       - Overview: admin/overview.md
       - Authorization:
         - Client: admin/client/auth.md
+        - Localhost: admin/localhost.md
+        - Production: admin/host.md
         - Servers: admin/servers/auth.md
       - Docker:
         - Localhost: admin/localhost.md
@@ -30,6 +32,12 @@ nav:
         - Single Machine: admin/vagrant/single-machine.md
         - Two Machines: admin/vagrant/two-machines.md
       - Independent Packages: admin/packages.md
+      - Client Website:
+        - Docker: admin/client/docker.md
+        - Configuration: admin/client/config.md
+      - Library Microservice:
+        - NPM: admin/servers/lib/npm.md
+        - Docker: admin/servers/lib/docker.md
       - Services: admin/services.md
       - Guides:
         - Add user: admin/guides/add_user.md
@@ -72,12 +80,16 @@ nav:
       - System:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md
-      - Authorization: developer/oauth.md
+      - OAuth2 Authorization:
+        - Concepts: developer/oauth/OAUTH2.0.md
+        - System Design: developer/oauth/DESIGN.md
+        - Microservice: developer/oauth/AUTHMS.md
       - Components:
         - Client: developer/client/client.md
         - Library Microservice: developer/servers/lib/lib-ms.md
       - Testing: developer/testing/intro.md
-      - Publish NPM Packages: developer/npm-packages.md
+      - Docker: developer/docker/docker.md
+      - NPM Packages: developer/npm-packages.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 
