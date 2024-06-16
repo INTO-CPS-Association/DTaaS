@@ -24,7 +24,7 @@ after user approval.
 Additionally, let's say DTaaS uses a dedicated gitlab instance hosted at the URL
 ”maestro.cps.digit.au.dk” (instead of ”gitlab.com”)
 
-![alt text](oauth2-workflow.jpg)
+![alt text](oauth2-workflow.png)
 
 A successful OAuth2 workflow (Figure 3.3) has the following steps:
 - The user requests a resource, say _GET/BackendMS_

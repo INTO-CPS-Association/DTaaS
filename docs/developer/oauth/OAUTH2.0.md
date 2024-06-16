@@ -60,7 +60,7 @@ obtain an access token, using which it can gather user information. Once it
 has user information, it can know the identity of the user and check whether
 the user has permission to access the requested resource.
 
-![alt text](oauth2-workflow.jpg)
+![alt text](oauth2-workflow.png)
 
 The requests made by the Auth MS to the OAuth2 provider
 are abbreviated. A detailed explanation of the workflow for

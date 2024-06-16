@@ -45,7 +45,7 @@ of users for any request through the gateway
 The integrated Auth MS should thus work as described in the sequence
 diagram.
 
-![alt text](design-sequence.jpg)
+![alt text](design-sequence.png)
 
 - Any request made by the user is made on the React website, i.e. the
 frontend of the DTaaS software.
