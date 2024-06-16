@@ -24,7 +24,7 @@ We define some constants that will help with the following discussion:
 
 Additionally, let's say DTaaS uses a dedicated
 gitlab instance hosted at the URL
-”maestro.cps.digit.au.dk” (instead of ”gitlab.com”)
+”gitlab.foo.com” (instead of ”gitlab.com”)
 
 ![alt text](oauth2-workflow.png)
 
@@ -38,7 +38,7 @@ This is written in shorthand as _GET/authcode_. The
 actual request (a user redirect) looks like:
 
 ```json
-https :// maestro.cps.digit.au.dk/oauth/
+https://gitlab.foo.com/oauth/
 authorize ?
 response_type = code &
 client_id = CLIENT_ID &
@@ -46,7 +46,7 @@ redirect_uri = REDIRECT_URI &
 scope = read_user & state = STATE
 ```
 
-Here the maestro.cps.digit.au.dk/oauth/authorize
+Here the gitlab.foo.com/oauth/authorize
 is the specific
 endpoint of the Gitlab instance that handles
 authorisation code requests.
@@ -154,8 +154,7 @@ authentication code for an access token.
   of the form:
 
 ```json
-GET https :// maestro . cps . digit . au . dk / api / v4 /
-user
+GET https://gitlab.foo.com/api/v4/user
 - - header " Authorization : Bearer TOKEN "
 ```
 
@@ -172,7 +171,7 @@ user
 ```json
 {" id ":8 ," username ":" UserX " ,
 " name ":" XX " ," state ":" active " ,
-" web_url ":" http :// maestro . cps . digit . au . dk /
+" web_url ":" https://gitlab.foo.com/
 UserX " ,
 " created_at ":"2023 -12 -03 T10 :47:21.970 Z " ," bio
 ":"" ,
