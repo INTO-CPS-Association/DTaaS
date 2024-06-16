@@ -115,7 +115,7 @@ of the workflow for
 DTaaS specifically can be found in the
 [AuthMS implementation docs](AUTHMS.md)
 
-### OAuth2 PKCE (Proof Key for Code Exchange) Flow:
+### OAuth2 PKCE (Proof Key for Code Exchange) Flow
 
 This is an extension to the OAuth2
 Authorization Code Flow designed to
