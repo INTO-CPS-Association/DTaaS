@@ -147,10 +147,10 @@ allowing only users mentioned in the whitelist.
 
 DTaaS provides an easy way to add
 and remove additional users from your
-DTaaS instance. 
+DTaaS instance.
 
 All such user management can be
-done via the [DTaaS CLI](../cli.md) 
+done via the [DTaaS CLI](../cli.md)
 
 ## Limitation
 

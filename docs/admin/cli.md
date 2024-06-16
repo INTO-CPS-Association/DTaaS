@@ -76,41 +76,34 @@ dtaas admin user add
 
 #### Caveats
 
-1. '.' are a special character. Currently, usernames which have
-   '.'s in them cannot be added properly through the CLI.
-   This is an active issue that will be resolved in future releases.
+This brings up the containers, without the AuthMS authentication.
 
-2. This brings up the containers, without the AuthMS authentication.
+- Currently the _email_ fields for each user in
+  _dtaas.toml_ are not in use, and are not necessary
+  to fill in. These emails must be configured manually
+  for each user in the
+  deploy/docker/conf.server files and the _traefik-forward-auth_
+  container must be restarted. This is done as follows:
 
-  - Currently the _email_ fields for each user in
-    _dtaas.toml_ are not in use, and are not necessary
-    to fill in. These emails must be configured manually
-    for each user in the
-    deploy/docker/conf.server files and the _traefik-forward-auth_
-    container must be restarted. This is done as follows:
-
-  - Go to the _docker_ directory
+- Go to the _docker_ directory
 
   ```bash
   cd <DTaaS>/deploy/docker
   ```
-
-  - Add three lines to the `conf.server` file
-
+- Add three lines to the `conf.server` file
   ```txt
   rule.onlyu3.action=auth
   rule.onlyu3.rule=PathPrefix(`/user3`)
   rule.onlyu3.whitelist = user3@emailservice.com
   ```
 
-  Run the appropritate command for a server installation:
-
+- Run the appropritate command for a server installation:
   ```bash
   docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
   ```
 
-  The new users are now added to the DTaaS
-  instance, with authorization enabled.
+The new users are now added to the DTaaS
+instance, with authorization enabled.
 
 ### Delete users
 
@@ -139,3 +132,7 @@ dtaas admin user delete
 - _user add_ and _user delete_ CLIs return an
   error if the _add_ and _delete_ lists in
   _dtaas.toml_ are empty, respectively.
+
+- '.' are a special character. Currently, usernames which have
+  '.'s in them cannot be added properly through the CLI.
+  This is an active issue that will be resolved in future releases.
