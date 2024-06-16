@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../testing/intro.html">
+        <link rel="prev" href="DESIGN.html">
       
       
-        <link rel="next" href="../npm-packages.html">
+        <link rel="next" href="../client/client.html">
       
       
       <link rel="icon" href="../../assets/dtaas-logo.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Docker - Digital Twin as a Service (DTaaS)</title>
+        <title>Microservice - Digital Twin as a Service (DTaaS)</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#docker-workflow-for-dtaas" class="md-skip">
+        <a href="#auth-microservice" class="md-skip">
           Skip to content
         </a>
       
@@ -97,7 +97,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Docker
+              Microservice
             
           </span>
         </div>
@@ -2046,6 +2046,8 @@
                 
   
   
+    
+  
   
   
     
@@ -2055,11 +2057,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
         
           
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
@@ -2073,7 +2075,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
             OAuth2 Authorization
@@ -2087,7 +2089,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../oauth/OAUTH2.0.html" class="md-nav__link">
+      <a href="OAUTH2.0.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2108,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../oauth/DESIGN.html" class="md-nav__link">
+      <a href="DESIGN.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2126,10 +2128,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../oauth/AUTHMS.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Microservice
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="AUTHMS.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -2138,6 +2160,83 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-identity-using-oauth20" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Identity using OAuth2.0
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-user-permissions-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checking User permissions - Authorization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#traefik-forward-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Traefik-forward-auth
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2264,30 +2363,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Docker
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="docker.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../docker/docker.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2296,125 +2375,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#folder-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Folder Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build-and-publish-docker-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build and Publish Docker Images
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Build and Publish Docker Images">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#project-managers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Project Managers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Project Managers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#react-website" class="md-nav__link">
-    <span class="md-ellipsis">
-      React Website
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#library-microservice" class="md-nav__link">
-    <span class="md-ellipsis">
-      Library Microservice
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#developers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Developers
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-docker-containers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running Docker Containers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Running Docker Containers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development Environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#access-the-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      Access the Application
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2602,61 +2562,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#folder-structure" class="md-nav__link">
+  <a href="#workflow" class="md-nav__link">
     <span class="md-ellipsis">
-      Folder Structure
+      Workflow
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build-and-publish-docker-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build and Publish Docker Images
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Build and Publish Docker Images">
+    <nav class="md-nav" aria-label="Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#project-managers" class="md-nav__link">
+  <a href="#user-identity-using-oauth20" class="md-nav__link">
     <span class="md-ellipsis">
-      Project Managers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Project Managers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#react-website" class="md-nav__link">
-    <span class="md-ellipsis">
-      React Website
+      User Identity using OAuth2.0
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#library-microservice" class="md-nav__link">
+  <a href="#checking-user-permissions-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      Library Microservice
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#developers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Developers
+      Checking User permissions - Authorization
     </span>
   </a>
   
@@ -2668,28 +2595,19 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-docker-containers" class="md-nav__link">
+  <a href="#implementation" class="md-nav__link">
     <span class="md-ellipsis">
-      Running Docker Containers
+      Implementation
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Running Docker Containers">
+    <nav class="md-nav" aria-label="Implementation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#development-environment" class="md-nav__link">
+  <a href="#traefik-forward-auth" class="md-nav__link">
     <span class="md-ellipsis">
-      Development Environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#access-the-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      Access the Application
+      Traefik-forward-auth
     </span>
   </a>
   
@@ -2718,112 +2636,512 @@
   
 
 
-<h1 id="docker-workflow-for-dtaas">Docker workflow for DTaaS</h1>
-<p>This readme will explain the building and use of different docker files
-for use in development and installation of the DTaaS software.</p>
-<p><strong>NOTE</strong>: A local docker installation with compose plugin is a pre-requisite
-for using docker workflows.</p>
-<h2 id="folder-structure">Folder Structure</h2>
-<p>There are two dockerfiles for building the containers:</p>
+<h1 id="auth-microservice">Auth Microservice</h1>
+<p>This document details the workflow and implementation
+of the DTaaS Auth Microservice. Please go through
+the <a href="DESIGN.html">System Design</a> and the summary of
+the <a href="OAUTH2.0.html">OAuth2.0 technology</a> to be able to
+understand the content here better.</p>
+<h2 id="workflow">Workflow</h2>
+<h3 id="user-identity-using-oauth20">User Identity using OAuth2.0</h3>
+<p>We define some constants that will help with the following discussion:</p>
 <ul>
-<li><strong>client.dockerfile</strong>: Dockerfile for building
-  the client application container.</li>
-<li><strong>libms.dockerfile</strong>: Dockerfile for building the library
-  microservice container from source code.</li>
-<li><strong>libms.npm.dockerfile</strong>: Dockerfile for building the library
-  microservice container from published npm package at npmjs.com.
-  This Dockerfile is only used during publishing. It is used neither
-  in the development builds nor in Github actions.</li>
+<li>CLIENT ID: The OAuth2 Client ID of the Auth MS</li>
+<li>CLIENT SECRET: The OAuth2 Client Secret of Auth MS</li>
+<li>REDIRECT URI: The URI where the user is redirected to after the
+  user has approved sharing of information with the client.</li>
+<li>STATE: A random string used as an identifier for the specific "GET
+  authcode" request (Figure 3.3)</li>
+<li>AUTHCODE: The one-use-only Authorization code returned by the
+  OAuth2 provider (GitLab instance) in response to "GET authcode"
+  after user approval.</li>
 </ul>
-<p>There is a specific compose file for development:</p>
-<p>The <strong>compose.dev.yml:</strong> file is the docker compose file
-for development environment.</p>
-<h2 id="build-and-publish-docker-images">Build and Publish Docker Images</h2>
-<h3 id="project-managers">Project Managers</h3>
-<p>Build and publish the docker images. This step is required only for
-the publication of images to Docker Hub.</p>
-<p><img alt="🛑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f6d1.svg" title=":stop_sign:" /> This publishing step is managed
-only by project managers. Regular developers can skip this step.</p>
-<h4 id="react-website">React Website</h4>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<p>Additionally, let's say DTaaS uses a dedicated
+gitlab instance hosted at the URL
+<a href="https://gitlab.foo.com">https://gitlab.foo.com</a> (instead of <a href="https://foo.com">https://foo.com</a>)</p>
+<p><img alt="alt text" src="oauth2-workflow.png" /></p>
+<p>A successful OAuth2 workflow (Figure 3.3) has the following steps:</p>
+<ul>
+<li>The user requests a resource, say <em>GET/BackendMS</em></li>
+<li>The Auth MS intercepts this request, and starts the OAuth2 process.</li>
+<li>The Auth MS sends a authorization request to the Gitlab instance.</li>
+</ul>
+<p>This is written in shorthand as <em>GET/authcode</em>. The
+actual request (a user redirect) looks like:</p>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>intocps/dtaas-web:latest<span class="w"> </span>-f<span class="w"> </span>./docker/client.dockerfile<span class="w"> </span>.
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>docker<span class="w"> </span>tag<span class="w"> </span>intocps/dtaas-web:latest<span class="w"> </span>intocps/dtaas-web:&lt;version&gt;
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>docker<span class="w"> </span>push<span class="w"> </span>intocps/dtaas-web:latest
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>docker<span class="w"> </span>push<span class="w"> </span>intocps/dtaas-web:&lt;version&gt;
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span>
+<span class="normal"><a href="#__codelineno-0-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="err">h</span><span class="kc">tt</span><span class="err">ps</span><span class="w"> </span><span class="p">:</span><span class="c1">//gitlab.foo.com/oauth/</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="err">au</span><span class="kc">t</span><span class="err">horize?</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="err">respo</span><span class="kc">nse</span><span class="err">_</span><span class="kc">t</span><span class="err">ype=code&amp;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="err">clie</span><span class="kc">nt</span><span class="err">_id=CLIENT_ID&amp;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="err">redirec</span><span class="kc">t</span><span class="err">_uri=REDIRECT_URI&amp;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="err">scope=read_user&amp;s</span><span class="kc">tate</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">STATE</span>
 </span></code></pre></div></td></tr></table></div>
-<p>To tag version <strong>0.3.1</strong> for example, use</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>docker<span class="w"> </span>tag<span class="w"> </span>intocps/dtaas-web:latest<span class="w"> </span>intocps/dtaas-web:0.3.1
+<p>Here the gitlab.foo.com/oauth/authorize
+is the specific
+endpoint of the Gitlab instance that handles
+authorisation code requests.</p>
+<p>The query parameters in the request include
+the expected response
+type, which is fixed as ”code”,
+meaning that we expect an Authorization code.
+Other query parameters are the client id, the redirect uri,
+the scope which is set to read user
+for our purpose, and the state (the
+random string to identify the specific request).</p>
+<ul>
+<li>
+<p>The OAuth2 provider redirects the user to the login page. Here the
+  user logs into their protected account with their username/email ID
+  and password.</p>
+</li>
+<li>
+<p>The OAuth2 provider then asks the user to approve/deny sharing the
+  requested information with the Auth MS. The user should approve this
+  for successful authentication.</p>
+</li>
+<li>
+<p>After approval, the user is redirected by the GitLab instance to the
+  REDIRECT URI. This URI has the following form:</p>
+</li>
+</ul>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="err">REDIRECT_URI?code=AUTHCODE&amp;s</span><span class="kc">tate</span><span class="err">=STATE</span>
 </span></code></pre></div></td></tr></table></div>
-<p>To test the react website container on localhost, please use</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<p>The REDIRECT URI is as defined previously, during the OAuth2
+  Client initialisation, i.e. the same as the one provided in the ”GET
+  authcode” request by the Auth MS.
+  The query parameters are provided by the Gitlab instance.
+  These include the AUTHCODE which is
+  the authoriation code that the Auth MS had requested, and the STATE
+  which is the same random string in the ”GET authcode” request.</p>
+<ul>
+<li>
+<p>The Auth MS retrieves these query parameters. It verifies that the
+  STATE is the same as the random string it provided during the "GET
+  authcode" request. This confirms that the AUTHCODE it has received
+  is in response to the specific request it had made.</p>
+</li>
+<li>
+<p>The Auth MS uses this one-use-only AUTHCODE to exchange it for
+  a general access token. This access token wouldn’t be one-use-only,
+  although it would expire after a specified duration of time. To perform
+  this exchange, the Auth MS makes another request to the GitLab instance.
+  This request is written in shorthand as <em>GET/access_token</em> in
+  the sequence diagram. The true form of the request is:</p>
+</li>
+</ul>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span>/client/config/local.js:/dtaas/client/build/env.js<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span>-p<span class="w"> </span><span class="m">4000</span>:4000<span class="w"> </span>intocps/dtaas-web:latest
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="err">POST</span><span class="w"> </span><span class="err">h</span><span class="kc">tt</span><span class="err">ps</span><span class="p">:</span><span class="c1">//gitlab.foo.com/oauth/token,</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="err">parame</span><span class="kc">ters</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">&#39;clie</span><span class="kc">nt</span><span class="err">_id=CLIENT_ID&amp;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="err">clie</span><span class="kc">nt</span><span class="err">_secre</span><span class="kc">t</span><span class="err">=CLIENT_SECRET&amp;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="err">code=AUTHCODE&amp;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="err">gra</span><span class="kc">nt</span><span class="err">_</span><span class="kc">t</span><span class="err">ype=au</span><span class="kc">t</span><span class="err">horiza</span><span class="kc">t</span><span class="err">io</span><span class="kc">n</span><span class="err">_code&amp;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="err">redirec</span><span class="kc">t</span><span class="err">_uri=REDIRECT_URI&#39;</span>
 </span></code></pre></div></td></tr></table></div>
-<h4 id="library-microservice">Library Microservice</h4>
-<p>The Dockerfile of library microservice has <code>VERSION</code> argument.
-This argument helps pick the right package version from <a href="http://npmjs.com">http://npmjs.com</a>.</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<p>The request to get a token by exchanging an authorization code,
+is actually a POST request (for most OAuth2 providers).
+The <http:>https://gitlab.foo.com/oauth/token</http:> API endpoint handles
+the token exchange requests. The parameters sent with the
+POST request are the client ID, the client secret, the AUTHCODE and the
+redirect uri. The grant type parameter is always set to the string
+”authorization code”, which conveys that we will be exchanging an
+authentication code for an access token.</p>
+<ul>
+<li>The Gitlab instance exchanges a valid AUTHCODE for an Access Token.
+  This is sent as a response to the Auth MS. An example response
+  is of the following form:</li>
+</ul>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
 <span class="normal"><a href="#__codelineno-3-2">2</a></span>
 <span class="normal"><a href="#__codelineno-3-3">3</a></span>
 <span class="normal"><a href="#__codelineno-3-4">4</a></span>
 <span class="normal"><a href="#__codelineno-3-5">5</a></span>
-<span class="normal"><a href="#__codelineno-3-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>docker<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>&lt;username&gt;<span class="w"> </span>-p<span class="w"> </span>&lt;password&gt;
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>intocps/libms:latest<span class="w"> </span>-f<span class="w"> </span>./docker/libms.npm.dockerfile<span class="w"> </span>.
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a>docker<span class="w"> </span>push<span class="w"> </span>intocps/libms:latest
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>docker<span class="w"> </span>build<span class="w"> </span>--build-arg<span class="o">=</span><span class="s2">&quot;VERSION=&lt;version&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span>-t<span class="w"> </span>intocps/libms:&lt;version&gt;<span class="w"> </span>-f<span class="w"> </span>./docker/libms.npm.dockerfile<span class="w"> </span>.
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a>docker<span class="w"> </span>push<span class="w"> </span>intocps/libms:&lt;version&gt;
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d8aed28aa506f9dd350e54&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;token_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;expires_in&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7200</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;refresh_token&quot;</span><span class="p">:</span><span class="s2">&quot;825f3bffb2544b976633a1&quot;</span><span class="p">,</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1607635748</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
-<p>To tag version 0.3.1 for example, use</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
-<span class="normal"><a href="#__codelineno-4-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>docker<span class="w"> </span>build<span class="w"> </span>--build-arg<span class="o">=</span><span class="s2">&quot;VERSION=0.3.1&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">  </span>-t<span class="w"> </span>intocps/libms:0.3.1<span class="w"> </span>-f<span class="w"> </span>./docker/libms.npm.dockerfile<span class="w"> </span>.
+<p>The access token field provides the string that can be used as an access
+  token in the headers of requests tryng to access user information.
+  The token type field is usually ”bearer”, the expires in field specifies
+  the time in seconds for which the access token will be valid, and the</p>
+<p>created at field is the Epoch timestamp at which the token was created.
+  The refresh token field has a string that can be used to refresh the
+  access token, increasing it’s lifetime. However we do not make use of
+  the refresh token field. If an access token expires, the Auth MS simply
+  asks for a new one.
+  TOKEN is the access token string returned in
+  the response.</p>
+<ul>
+<li>
+<p>The Auth MS has finally obtained an access token that it can use to
+  retrieve the user’s information. Note that if the Auth MS already had
+  an existing valid access token for information about this user, the steps
+  above wouldn’t be necessary, and thus wouldn’t be performed by the
+  Auth MS. The steps till now in the sequence diagram are simply to get
+  a valid access token for the user information.</p>
+</li>
+<li>
+<p>The Auth MS makes a final request to the Gitlab instance, shorthanded
+  as <em>GET user_details</em> in the sequence diagram. The actual request is
+  of the form:</p>
+</li>
+</ul>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="err">GET</span><span class="w"> </span><span class="err">h</span><span class="kc">tt</span><span class="err">ps</span><span class="w"> </span><span class="p">:</span><span class="c1">//gitlab.foo.com/api/v4/user</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nt">&quot;Authorization&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">Bearer</span><span class="w"> </span><span class="err">&lt;TOKEN&gt;</span>
 </span></code></pre></div></td></tr></table></div>
-<p>To test the library microservice on localhost, please use</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
-<span class="normal"><a href="#__codelineno-5-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span>/files:/dtaas/libms/files<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">  </span>-p<span class="w"> </span><span class="m">4001</span>:4001<span class="w"> </span>intocps/libms:latest
+<p>Here, <http:>https://gitlab.foo.com/api/v4/user</http:> is the API endpoint
+that responds with user information.
+An authorization header is required on the request,
+with a valid access token. The required header
+is added here, and TOKEN is the access token that the Auth MS holds.</p>
+<ul>
+<li>The Gitlab instance verifies the access token, and if it is valid, responds
+  with the required user information. This includes username, email ID,
+  etc. An example response looks like:</li>
+</ul>
+<div class="language-json highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span>
+<span class="normal"><a href="#__codelineno-5-13">13</a></span>
+<span class="normal"><a href="#__codelineno-5-14">14</a></span>
+<span class="normal"><a href="#__codelineno-5-15">15</a></span>
+<span class="normal"><a href="#__codelineno-5-16">16</a></span>
+<span class="normal"><a href="#__codelineno-5-17">17</a></span>
+<span class="normal"><a href="#__codelineno-5-18">18</a></span>
+<span class="normal"><a href="#__codelineno-5-19">19</a></span>
+<span class="normal"><a href="#__codelineno-5-20">20</a></span>
+<span class="normal"><a href="#__codelineno-5-21">21</a></span>
+<span class="normal"><a href="#__codelineno-5-22">22</a></span>
+<span class="normal"><a href="#__codelineno-5-23">23</a></span>
+<span class="normal"><a href="#__codelineno-5-24">24</a></span>
+<span class="normal"><a href="#__codelineno-5-25">25</a></span>
+<span class="normal"><a href="#__codelineno-5-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UserX&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XX&quot;</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">  </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;active&quot;</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">  </span><span class="nt">&quot;web_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://gitlab.foo.com/UserX&quot;</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2023-12-03 T10:47:21.970 Z&quot;</span><span class="p">,</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">  </span><span class="nt">&quot;bio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="w">  </span><span class="nt">&quot;public_email&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="w">  </span><span class="nt">&quot;skype&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="w">  </span><span class="nt">&quot;linkedin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="w">  </span><span class="nt">&quot;twitter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14"></a><span class="w">  </span><span class="nt">&quot;organization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15"></a><span class="w">  </span><span class="nt">&quot;job_title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16"></a><span class="w">  </span><span class="nt">&quot;work_information&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">  </span><span class="nt">&quot;followers&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">  </span><span class="nt">&quot;following&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19"></a><span class="w">  </span><span class="nt">&quot;is_followed &quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20"></a><span class="w">  </span><span class="nt">&quot;local_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21"></a><span class="w">  </span><span class="nt">&quot;last_sign_in_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-12-13 T12:46:21.223 Z&quot;</span><span class="p">,</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22"></a><span class="w">  </span><span class="nt">&quot;confirmed_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-12-03 T10:47:21.542 Z &quot;</span><span class="p">,</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23"></a><span class="w">  </span><span class="nt">&quot;last_activity_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-12-13&quot;</span><span class="p">,</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24"></a><span class="w">  </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UserX@localhost&quot;</span><span class="p">,</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25"></a><span class="w">  </span><span class="nt">&quot;projects_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100000</span><span class="p">,</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
-<h3 id="developers">Developers</h3>
-<p>Use of docker images is handy for developers as well. It is suggested
-that developers build the required images locally on their computer and
-use them for development purposes. The images can be built using</p>
-<div class="language-sh highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.dev.yml<span class="w"> </span>build
+<p>The important fields from this response are the ”email”, ”username”
+  keys. These keys are unique to a user, and thus provide an identity to
+  the user.</p>
+<ul>
+<li>The Auth MS retrieves the values of candidate key fields like ”email”,
+  ”username” from the response. Thus, the Auth MS now knows the
+  identity of the user.</li>
+</ul>
+<h3 id="checking-user-permissions-authorization">Checking User permissions - Authorization</h3>
+<p>An important feature of the Auth MS is to
+implement access policies for
+DTaaS resources. We may have requirements
+that certain resources and/or
+microservices in DTaaS should only be accessible
+to certain users.
+For example, we may want that /BackendMS/user1
+should only be accessible to the user who
+has username user1. Another example may be
+that we may want /BackendMS/group3 to only
+be available to users who have an
+email ID in the domain @gmail.com.
+The Auth MS should be able to impose these
+restrictions and make certain
+services selectively available to certain users.
+There are two steps to doing
+this:</p>
+<ul>
+<li>
+<p>Firstly, the user’s identity should be
+  known and trusted. The Auth MS
+  should know the identity of a user and
+  believe that the user is who they
+  claim to be. This has been achieved
+  in the previous section</p>
+</li>
+<li>
+<p>Secondly, this identity should be analysed
+  against certain rules or against
+  a database of allowed users, to determine
+  whether this user should be
+  allowed to access the requested resource.</p>
+</li>
+</ul>
+<p>The second step requires, for every service,
+either a set of rules that define
+which users should be allowed access to the service,
+or a database of user
+identities that are allowed to access the service.
+This database and/or set of
+rules should use the user identities, in our case
+the email ID or username, to
+decide whether the user should be allowed or not.
+This means that the rules
+should be built based on the kind of username/ email
+ID the user has, say
+maybe using some RegEx. In the case of a database,
+the database should
+have the user identity as a key. For any service,
+we can simply look up if the
+key exists in the database or not and allow/deny
+the user access based on that.</p>
+<p>In the sequence diagram, the Auth MS has a self-request
+marked as ”Checks user permissions” after receiving
+the user identity from
+the Gitlab instance. This is when the Auth MS
+compares the identity of the
+user to the rules and/or database it has for
+the requested service. Based on
+this, if the given identity has access to the
+requested resource, the Auth MS
+responds with a 200 OK. This finally marks a
+succcessful authentication, and
+the user can now access the requested resource.
+Note: Again, the Auth MS and user do
+not communicate directly. All
+requests/responses of the Auth MS are
+with the Traefik gateway, not the User
+directly. Infact, the Auth MS is the
+external server used by the ForwardAuth
+middleware of the specific route, and
+communicates with this middleware.
+If the authentication is successful,
+The gateway forwards the request to the
+specific resource when the 200 OK is recieved,
+else it drops the request and
+returns the error code to the user.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="traefik-forward-auth">Traefik-forward-auth</h3>
+<p>The implementation approach is
+setting up and configuring the open source
+<a href="https://github.com/thomseddon/traefik-forward-auth">thomseddon/traefik-forward-auth</a>
+for our specific use case.
+This would work as our Auth microservice.</p>
+<p>The traefik-forward-auth software is available
+as a docker.io image. This
+works as a docker container. Thus there are
+no dependency management
+issues. Additionally, it can be added as a
+middleware server to traefik routers.
+Thus, it needs atleast Traefik to work along
+with it properly. It also needs
+active services that it will be controlling access to.
+Traefik, the traefikforward-auth service and any
+services are thus, treated as a stack of docker
+containers. The main setup needed for this system
+is configuring the compose.yml file.</p>
+<p>There are three main steps of configuring the Auth MS properly.</p>
+<ul>
+<li>The traefik-forward-auth service needs to be configured carefully.
+  Firstly,
+  we set the environment variables for our specific case.
+  Since, we are using Gitlab, we use the
+  generic-oauth provider configuration.
+  Some important variables that are required are
+  the OAuth2 Client ID, Client Secret, Scope.
+  The API endpoints
+  for getting an AUTHCODE, exchanging the code for an access token and
+  getting user information are also necessary</li>
+</ul>
+<p>Additionally, it is necessary to create a router
+  that handles the REDIRECT URI path.
+  This router should have a middleware which is set to
+  traefik-forward-auth itself. This is so that after
+  approval, when the user is
+  taken to REDIRECT URI, this can be handled by
+  the gateway and passed
+  to the Auth service for token exchange.
+  We add the ForwardAuth middleware here,
+  which is a necessary part of
+  our design as discussed before. We also
+  add a load balancer for the service.
+  We also need to add a conf file as a volume, for
+  selective authorization rules (discussed later).
+  This is according to the suggested configuration.
+  Thus, we add the following
+  to our docker services:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span>
+<span class="normal"><a href="#__codelineno-6-11">11</a></span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span>
+<span class="normal"><a href="#__codelineno-6-13">13</a></span>
+<span class="normal"><a href="#__codelineno-6-14">14</a></span>
+<span class="normal"><a href="#__codelineno-6-15">15</a></span>
+<span class="normal"><a href="#__codelineno-6-16">16</a></span>
+<span class="normal"><a href="#__codelineno-6-17">17</a></span>
+<span class="normal"><a href="#__codelineno-6-18">18</a></span>
+<span class="normal"><a href="#__codelineno-6-19">19</a></span>
+<span class="normal"><a href="#__codelineno-6-20">20</a></span>
+<span class="normal"><a href="#__codelineno-6-21">21</a></span>
+<span class="normal"><a href="#__codelineno-6-22">22</a></span>
+<span class="normal"><a href="#__codelineno-6-23">23</a></span>
+<span class="normal"><a href="#__codelineno-6-24">24</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nt">traefik−forward−auth</span><span class="p">:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">thomseddon/traefik−forward−auth:latest</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="nt">volumes</span><span class="p">:</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;filepath&gt;/conf:/conf</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="nt">environment</span><span class="p">:</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEFAULT_PROVIDER = generic - oauth</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.foo.com/oauth/authorize</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.foo.com/oauth/token</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.foo.com/api/v4/user</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_CLIENT_ID=CLIENT_ID</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=CLIENT_SECRET</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROVIDERS_GENERIC_OAUTH_SCOPE = read_user</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SECRET = a - random - string</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">  </span><span class="c1"># INSECURE_COOKIE is required if</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">  </span><span class="c1"># not using a https entrypoint</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INSECURE_COOKIE = true</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17"></a><span class="nt">labels</span><span class="p">:</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.enable=true&quot;</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.routers.redirect.entryPoints=web&quot;</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.routers.redirect.rule=PathPrefix(/_oauth)&quot;</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.routers.redirect.middlewares=traefik-forward-auth&quot;</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181&quot;</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User&quot;</span>
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181&quot;</span>
 </span></code></pre></div></td></tr></table></div>
-<h2 id="running-docker-containers">Running Docker Containers</h2>
-<p>Follow these steps to use the application with docker.</p>
-<p>The DTaaS application requires multiple configuration files. The list of
-configuration files to be modified are given for each scenario.</p>
-<h3 id="development-environment">Development Environment</h3>
-<p>This scenario is for software developers.</p>
-<p>The configuration files to be updated are:</p>
-<ol>
-<li><strong>docker/.env</strong> :
-   please see <a href="../../admin/host.html">docker installation docs</a> for help
-   with updating this config file</li>
-<li><strong>docker/conf.dev</strong> :
-   please see  <a href="../../admin/host.html">docker installation docs</a> for help
-   with updating this config file</li>
-<li><strong>client/config/local.js</strong>
-   please see <a href="../../admin/client/config.html">client config</a> for help
-   with updating this config file</li>
-<li><strong>servers/lib/config/.env.default</strong>
-   please see <a href="../../admin/servers/lib/docker.html">lib config</a> for help
-   with updating this config file</li>
-</ol>
-<p>The docker commands need to be executed from this directory (<code>docker</code>).
-The relevant docker commands are:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
-<span class="normal"><a href="#__codelineno-7-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.dev.yml<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span><span class="c1">#start the application</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.dev.yml<span class="w"> </span>down<span class="w">  </span><span class="c1">#terminate the application</span>
+<ul>
+<li>The traefik-forward-auth service should be
+  added to the backend services
+  as a middleware.</li>
+</ul>
+<p>To do this, the docker-compose configurations
+  of the services need to be updated
+  by adding the following lines:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.routers.&lt;service-router&gt;.rule=Path(/&lt;path&gt;)&quot;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;traefik.http.routers.&lt;service-router&gt;.middlewares=traefik-forward-auth&quot;</span>
 </span></code></pre></div></td></tr></table></div>
-<h3 id="access-the-application">Access the Application</h3>
-<p>You should access the application through the PORT mapped to the Traefik container.
-e.g. <code>localhost</code></p>
+<p>This creates a router that maps to the required route,
+  and adds the auth middleware to
+  the required route.</p>
+<ul>
+<li>
+<p>Finally, we need to set user permissions on
+  user identities by creating rules in the conf file.
+  Each rule has a name (an identifier for the rule),
+  and an associated
+  route for which the rule will be invoked.
+  The rule also has an action property,
+  which can be either ”auth” or ”allow”.
+  If action is set to ”allow”, any requests
+  on this route are allowed to bypass even
+  the OAuth2 identification. If the
+  action is set to ”auth”, requests on this
+  route will require User identity
+  OAuth2 and the system will follow the sequence diagram.
+  For rules with action=”auth”, the user information
+  is retrieved. The
+  identity we use for a user is the user’s email ID.
+  For ”auth” rules, we can
+  configure two types of User
+  restrictions/permissions on this identity:</p>
+</li>
+<li>
+<p>Whitelist - This would be a list of user
+  identities (email IDs in our case)
+  that are allowed to access the
+  corresponding route.</p>
+</li>
+<li>Domain - This would be a domain
+  (example: gmail.com), and only
+  email IDs (user identities) of that
+  domain (example: johndoe@gmail.com)
+  would be allowed access to the corresponding route.</li>
+</ul>
+<p>Configuring any of these two properties of
+an ”auth” rule allows us to
+selectively permit access to certain users
+for certain resources.
+Not configuring any of these properties for an ”auth” rule means
+that the OAuth2 process is carried out
+and the user identity is retrieved, but all
+known user identities (i.e. all users
+that successfully complete the OAuth) are
+allowed to access the resource.</p>
+<p>DTaaS currently uses only the whitelist type of rules.</p>
+<p>These rules can be used in 3 different ways
+described below. The exact format of
+lines to be added to the conf file are also shown.</p>
+<ul>
+<li>No Auth - Serves the Path(‘/public‘) route.
+  A rule with action=”allow”
+  should be imposed on this.</li>
+</ul>
+<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="na">rule.noauth.action</span><span class="o">=</span><span class="s">allow</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="na">rule.noauth.rule</span><span class="o">=</span><span class="s">Path(`/public`)</span>
+</span></code></pre></div></td></tr></table></div>
+<ul>
+<li>User specific: Serves the Path(‘/user1‘) route.
+  A rule that only allows ”user1@localhost”
+  identity should be imposed on this</li>
+</ul>
+<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
+<span class="normal"><a href="#__codelineno-9-2">2</a></span>
+<span class="normal"><a href="#__codelineno-9-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="na">rule.onlyu1.action</span><span class="o">=</span><span class="s">auth</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="na">rule.onlyu1.rule</span><span class="o">=</span><span class="s">Path(`/user1`)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="na">rule.onlyu1.whitelist</span><span class="o">=</span><span class="s">user1@localhost</span>
+</span></code></pre></div></td></tr></table></div>
+<ul>
+<li>Common Auth - Serves the Path(‘/common‘) route.
+  A rule that requires
+  OAuth, i.e. with action=”allow”, but allows
+  all valid and known user
+  identities should be imposed on this.</li>
+</ul>
+<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="na">rule.all.action</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">auth</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="na">rule.all.rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Path(`/common`)</span>
+</span></code></pre></div></td></tr></table></div>
 
 
 
@@ -2853,7 +3171,7 @@ e.g. <code>localhost</code></p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../testing/intro.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Testing">
+          <a href="DESIGN.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: System Design">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2863,20 +3181,20 @@ e.g. <code>localhost</code></p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Testing
+                System Design
               </div>
             </div>
           </a>
         
         
           
-          <a href="../npm-packages.html" class="md-footer__link md-footer__link--next" aria-label="Next: NPM Packages">
+          <a href="../client/client.html" class="md-footer__link md-footer__link--next" aria-label="Next: Client">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                NPM Packages
+                Client
               </div>
             </div>
             <div class="md-footer__button md-icon">
