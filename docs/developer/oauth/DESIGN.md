@@ -4,7 +4,7 @@ DTaaS requires backend authorization to protect its
 backend services and user workspaces. This document
 details the system design of the
 DTaaS Auth Microservice which
-is responsible for the same. 
+is responsible for the same.
 
 ## Requirements
 

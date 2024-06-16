@@ -11,13 +11,13 @@ understand the content here better.
 ### User Identity using OAuth2.0
 
 We define some constants that will help with the following discussion:
-- CLIENT ID - The OAuth2 Client ID of the Auth MS
-- CLIENT SECRET - The OAuth2 Client Secret of Auth MS
-- REDIRECT URI - The URI where the user is redirected to after the
+- CLIENT ID: The OAuth2 Client ID of the Auth MS
+- CLIENT SECRET: The OAuth2 Client Secret of Auth MS
+- REDIRECT URI: The URI where the user is redirected to after the
   user has approved sharing of information with the client.
-- STATE - A random string used as an identifier for the specific "GET
+- STATE: A random string used as an identifier for the specific "GET
   authcode" request (Figure 3.3)
-- AUTHCODE - The one-use-only Authorization code returned by the
+- AUTHCODE: The one-use-only Authorization code returned by the
   OAuth2 provider (GitLab instance) in response to "GET authcode"
   after user approval.
 
@@ -28,6 +28,7 @@ gitlab instance hosted at the URL
 ![alt text](oauth2-workflow.png)
 
 A successful OAuth2 workflow (Figure 3.3) has the following steps:
+
 - The user requests a resource, say _GET/BackendMS_
 - The Auth MS intercepts this request, and starts the OAuth2 process.
 - The Auth MS sends a authorization request to the Gitlab instance.
@@ -69,9 +70,9 @@ random string to identify the specific request).
 - After approval, the user is redirected by the GitLab instance to the
   REDIRECT URI. This URI has the following form:
 
-  ```
-  REDIRECT_URI ? code = AUTHCODE & state = STATE
-  ```
+```json
+REDIRECT_URI ? code = AUTHCODE & state = STATE
+```
 
   The REDIRECT URI is as defined previously, during the OAuth2
   Client initialisation, i.e. the same as the one provided in the ”GET
@@ -93,18 +94,18 @@ random string to identify the specific request).
   This request is written in shorthand as _GET/access\_token_ in
   the sequence diagram. The true form of the request is:
 
-  ```json
-  POST https://maestro.cps.digit.au.dk/oauth/token,
-  parameters = 'client_id=CLIENT_ID&
-  client_secret=CLIENT_SECRET&
-  code=AUTHCODE&
-  grant_type=authorization_code&
-  redirect_uri=REDIRECT_URI'
-
+```json
+POST https://maestro.cps.digit.au.dk/oauth/token,
+parameters = 'client_id=CLIENT_ID&
+client_secret=CLIENT_SECRET&
+code=AUTHCODE&
+grant_type=authorization_code&
+redirect_uri=REDIRECT_URI'
+```
 
 The request to get a token by exchanging an authorization code,
 is actually a POST request (for most OAuth2 providers).
-The https://maestro.cps.digit.au.dk/oauth/token API endpoint handles
+The <http:>https://maestro.cps.digit.au.dk/oauth/token</http:> API endpoint handles
 the token exchange requests. The parameters sent with the
 POST request are the client ID, the client secret, the AUTHCODE and the
 redirect uri. The grant type parameter is always set to the string
@@ -115,17 +116,17 @@ authentication code for an access token.
   This is sent as a response to the Auth MS. An example response
   is of the following form:
 
-  ```json
-  {
-  " access_token ": " d8aed28aa506f9dd350e54
-  " ,
-  " token_type ": " bearer " ,
-  " expires_in ": 7200 ,
-  " refresh_token ":"825 f3bffb2544b976633a1
-  " ,
-  " created_at ": 1607635748
-  }
-  ```
+```json
+{
+" access_token ": " d8aed28aa506f9dd350e54
+" ,
+" token_type ": " bearer " ,
+" expires_in ": 7200 ,
+" refresh_token ":"825 f3bffb2544b976633a1
+" ,
+" created_at ": 1607635748
+}
+```
 
   The access token field provides the string that can be used as an access
   token in the headers of requests tryng to access user information.
@@ -151,13 +152,13 @@ authentication code for an access token.
   as _GET user\_details_ in the sequence diagram. The actual request is
   of the form:
 
-  ```json
-  GET https :// maestro . cps . digit . au . dk / api / v4 /
-  user
-  - - header " Authorization : Bearer TOKEN "
-  ```
+```json
+GET https :// maestro . cps . digit . au . dk / api / v4 /
+user
+- - header " Authorization : Bearer TOKEN "
+```
 
-  Here, https://maestro.cps.digit.au.dk/api/v4/user is the API endpoint
+  Here, <http:>https://maestro.cps.digit.au.dk/api/v4/user</http:> is the API endpoint
   that responds with user information.
   An authorization header is required on the request,
   with a valid access token. The required header
@@ -167,29 +168,28 @@ authentication code for an access token.
   with the required user information. This includes username, email ID,
   etc. An example response looks like:
 
-  ```json
-  {" id ":8 ," username ":" UserX " ,
-  " name ":" XX " ," state ":" active " ,
-  " web_url ":" http :// maestro . cps . digit . au . dk /
-  UserX " ,
-  " created_at ":"2023 -12 -03 T10 :47:21.970 Z " ," bio
-  ":"" ,
-  " location ":"" ,
-  " public_email ": null ," skype ":"" ,
-  " linkedin ":"" ," twitter ":"" ,
-  " organization ":"" ," job_title ":"" ,
-  " work_information ": null ,
-  " followers ":0 ," following ":0 ,
-  " is_followed ": false ," local_time ": null ,
-  " last_sign_in_at ":"2023 -12 -13 T12 :46:21.223 Z
-  " ,
-  " confirmed_at ":"2023 -12 -03 T10 :47:21.542 Z " ,
-  " last_activity_on ":"2023 -12 -13" ,
-  " email ":" UserX@localhost " ,
-  " projects_limit ":100000 ,
-  ....}
-
-  ```
+```json
+{" id ":8 ," username ":" UserX " ,
+" name ":" XX " ," state ":" active " ,
+" web_url ":" http :// maestro . cps . digit . au . dk /
+UserX " ,
+" created_at ":"2023 -12 -03 T10 :47:21.970 Z " ," bio
+":"" ,
+" location ":"" ,
+" public_email ": null ," skype ":"" ,
+" linkedin ":"" ," twitter ":"" ,
+" organization ":"" ," job_title ":"" ,
+" work_information ": null ,
+" followers ":0 ," following ":0 ,
+" is_followed ": false ," local_time ": null ,
+" last_sign_in_at ":"2023 -12 -13 T12 :46:21.223 Z
+" ,
+" confirmed_at ":"2023 -12 -03 T10 :47:21.542 Z " ,
+" last_activity_on ":"2023 -12 -13" ,
+" email ":" UserX@localhost " ,
+" projects_limit ":100000 ,
+....}
+```
 
   The important fields from this response are the ”email”, ”username”
   keys. These keys are unique to a user, and thus provide an identity to
@@ -308,7 +308,8 @@ There are three main steps of configuring the Auth MS properly.
   we set the environment variables for our specific case.
   Since, we are using Gitlab, we use the
   generic-oauth provider configuration.
-  Some important variables that are required are the OAuth2 Client ID, Client Secret, Scope.
+  Some important variables that are required are
+  the OAuth2 Client ID, Client Secret, Scope.
   The API endpoints
   for getting an AUTHCODE, exchanging the code for an access token and
   getting user information are also necessary
@@ -316,73 +317,93 @@ There are three main steps of configuring the Auth MS properly.
   Additionally, it is necessary to create a router
   that handles the REDIRECT URI path.
   This router should have a middleware which is set to
-  traefik-forward-auth itself. This is so that after approval, when the user is
-  taken to REDIRECT URI, this can be handled by the gateway and passed
+  traefik-forward-auth itself. This is so that after
+  approval, when the user is
+  taken to REDIRECT URI, this can be handled by
+  the gateway and passed
   to the Auth service for token exchange.
-  We add the ForwardAuth middleware here, 
+  We add the ForwardAuth middleware here,
   which is a necessary part of
-  our design as discussed before. We also add a load balancer for the service.
-  We also need to add a conf file as a volume, for selective authorization rules (discussed later).
-  This is according to the suggested configuration. Thus, we add the following
+  our design as discussed before. We also
+  add a load balancer for the service.
+  We also need to add a conf file as a volume, for
+  selective authorization rules (discussed later).
+  This is according to the suggested configuration.
+  Thus, we add the following
   to our docker services:
 
-  ```yaml
-  traefik−forward−auth:
-  image: thomseddon/traefik−forward−auth:latest
-  volumes:
-  - <filepath>/conf:/conf
-  environment:
-  - DEFAULT_PROVIDER = generic - oauth
-  - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
-  - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
-  - PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
-  - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=CLIENT_ID
-  - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=CLIENT_SECRET
-  - PROVIDERS_GENERIC_OAUTH_SCOPE = read_user
-  - SECRET = a - random - string
-  # INSECURE_COOKIE is required if
-  # not using a https entrypoint
-  - INSECURE_COOKIE = true
-  labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.redirect.entryPoints=web"
-  - "traefik.http.routers.redirect.rule=PathPrefix(/_oauth)"
-  - "traefik.http.routers.redirect.middlewares=traefik-forward-auth"
-  - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
-  - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
-  - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
-  ```
+```yaml
+traefik−forward−auth:
+image: thomseddon/traefik−forward−auth:latest
+volumes:
+- <filepath>/conf:/conf
+environment:
+- DEFAULT_PROVIDER = generic - oauth
+- PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
+- PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
+- PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
+- PROVIDERS_GENERIC_OAUTH_CLIENT_ID=CLIENT_ID
+- PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=CLIENT_SECRET
+- PROVIDERS_GENERIC_OAUTH_SCOPE = read_user
+- SECRET = a - random - string
+# INSECURE_COOKIE is required if
+# not using a https entrypoint
+- INSECURE_COOKIE = true
+labels:
+- "traefik.enable=true"
+- "traefik.http.routers.redirect.entryPoints=web"
+- "traefik.http.routers.redirect.rule=PathPrefix(/_oauth)"
+- "traefik.http.routers.redirect.middlewares=traefik-forward-auth"
+- "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
+- "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+- "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
+```
 
-- The traefik-forward-auth service should be added to the backend services
-  as a middleware. 
+- The traefik-forward-auth service should be
+  added to the backend services
+  as a middleware.
 
-  To do this, the docker-compose configurations of the services need to be updated
+  To do this, the docker-compose configurations
+  of the services need to be updated
   by adding the following lines:
 
-  ```yaml
-      - "traefik.http.routers.<service-router>.rule=Path(/<path>)"
-      - "traefik.http.routers.<service-router>.middlewares=traefik-forward-auth"
-  ```
+```yaml
+    - "traefik.http.routers.<service-router>.rule=Path(/<path>)"
+    - "traefik.http.routers.<service-router>.middlewares=traefik-forward-auth"
+```
 
   This creates a router that maps to the required route,
   and adds the auth middleware to
   the required route.
 
-- Finally, we need to set user permissions on user identities by creating rules in the conf file.
-  Each rule has a name (an identifier for the rule), and an associated
-  route for which the rule will be invoked. The rule also has an action property,
-  which can be either ”auth” or ”allow”. If action is set to ”allow”, any requests
-  on this route are allowed to bypass even the OAuth2 identification. If the
-  action is set to ”auth”, requests on this route will require User identity
+- Finally, we need to set user permissions on
+  user identities by creating rules in the conf file.
+  Each rule has a name (an identifier for the rule),
+  and an associated
+  route for which the rule will be invoked.
+  The rule also has an action property,
+  which can be either ”auth” or ”allow”.
+  If action is set to ”allow”, any requests
+  on this route are allowed to bypass even
+  the OAuth2 identification. If the
+  action is set to ”auth”, requests on this
+  route will require User identity
   OAuth2 and the system will follow the sequence diagram.
-  For rules with action=”auth”, the user information is retrieved. The
-  identity we use for a user is the user’s email ID. For ”auth” rules, we can
-  configure two types of User restrictions/permissions on this identity:
+  For rules with action=”auth”, the user information
+  is retrieved. The
+  identity we use for a user is the user’s email ID.
+  For ”auth” rules, we can
+  configure two types of User
+  restrictions/permissions on this identity:
 
-- Whitelist - This would be a list of user identities (email IDs in our case)
-  that are allowed to access the corresponding route.
-- Domain - This would be a domain (example: gmail.com), and only
-  email IDs (user identities) of that domain (example: johndoe@gmail.com)
+- Whitelist - This would be a list of user
+  identities (email IDs in our case)
+  that are allowed to access the
+  corresponding route.
+- Domain - This would be a domain
+  (example: gmail.com), and only
+  email IDs (user identities) of that
+  domain (example: johndoe@gmail.com)
   would be allowed access to the corresponding route.
 
 Configuring any of these two properties of
@@ -406,21 +427,21 @@ lines to be added to the conf file are also shown.
   A rule with action=”allow”
   should be imposed on this.
 
-  ```ini
-  rule.noauth.action=allow
-  rule.noauth.rule=Path(`/public`)
+```ini
+rule.noauth.action=allow
+rule.noauth.rule=Path(`/public`)
 
-  ```
+```
 
 - User specific: Serves the Path(‘/user1‘) route.
   A rule that only allows ”user1@localhost”
   identity should be imposed on this
 
-  ```ini
-  rule.onlyu1.action=auth
-  rule.onlyu1.rule=Path(`/user1`)
-  rule.onlyu1.whitelist=user1@localhost
-  ```
+```ini
+rule.onlyu1.action=auth
+rule.onlyu1.rule=Path(`/user1`)
+rule.onlyu1.whitelist=user1@localhost
+```
 
 - Common Auth - Serves the Path(‘/common‘) route.
   A rule that requires
@@ -428,7 +449,7 @@ lines to be added to the conf file are also shown.
   all valid and known user
   identities should be imposed on this.
 
-  ```ini
-  rule.all.action = auth
-  rule.all.rule = Path(`/common`)
-  ```
+```ini
+rule.all.action = auth
+rule.all.rule = Path(`/common`)
+```

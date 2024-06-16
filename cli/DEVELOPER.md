@@ -49,7 +49,7 @@ The CLI has two layers of code:
 ### TOML File
 
 The base configuration file used by the CLI is
-the _dtaas.toml_ file. 
+the _dtaas.toml_ file.
 
 This is divided into 3 sections:
 
@@ -81,7 +81,7 @@ to run bash commands and create new docker services.
 
 The _server-dns_ variable is used to decide if
 the DTaaS instance is a localhost instance or a server
-deploy instance. In the case of server deploy, 
+deploy instance. In the case of server deploy,
 it is used to define the routes of the server type
 docker compose services appropriately.
 
@@ -90,7 +90,7 @@ docker compose services appropriately.
 ```toml
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"] 
+add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
@@ -201,4 +201,4 @@ The following are the next steps for the CLI:
   a '.' in it aren't handled well by the CLI and result in errors.
   This is because '.' is a special character for labels in docker compose.
   We need to include such usernames, simply by internally replacing
-  '.' instances in usernames by '-' or '_'. 
+  '.' instances in usernames by '-' or '_'.

@@ -87,20 +87,23 @@ This brings up the containers, without the AuthMS authentication.
 
 - Go to the _docker_ directory
 
-  ```bash
-  cd <DTaaS>/deploy/docker
-  ```
+```bash
+cd <DTaaS>/deploy/docker
+```
+
 - Add three lines to the `conf.server` file
-  ```txt
-  rule.onlyu3.action=auth
-  rule.onlyu3.rule=PathPrefix(`/user3`)
-  rule.onlyu3.whitelist = user3@emailservice.com
-  ```
+
+```txt
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/user3`)
+rule.onlyu3.whitelist = user3@emailservice.com
+```
 
 - Run the appropritate command for a server installation:
-  ```bash
-  docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
-  ```
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
 
 The new users are now added to the DTaaS
 instance, with authorization enabled.
