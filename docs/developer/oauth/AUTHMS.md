@@ -96,7 +96,7 @@ REDIRECT_URI ? code = AUTHCODE & state = STATE
   the sequence diagram. The true form of the request is:
 
 ```json
-POST https://maestro.cps.digit.au.dk/oauth/token,
+POST https://gitlab.foo.com/oauth/token,
 parameters = 'client_id=CLIENT_ID&
 client_secret=CLIENT_SECRET&
 code=AUTHCODE&
@@ -106,7 +106,7 @@ redirect_uri=REDIRECT_URI'
 
 The request to get a token by exchanging an authorization code,
 is actually a POST request (for most OAuth2 providers).
-The <http:>https://maestro.cps.digit.au.dk/oauth/token</http:> API endpoint handles
+The <http:>https://gitlab.foo.com/oauth/token</http:> API endpoint handles
 the token exchange requests. The parameters sent with the
 POST request are the client ID, the client secret, the AUTHCODE and the
 redirect uri. The grant type parameter is always set to the string
@@ -159,7 +159,7 @@ user
 - - header " Authorization : Bearer TOKEN "
 ```
 
-  Here, <http:>https://maestro.cps.digit.au.dk/api/v4/user</http:> is the API endpoint
+  Here, <http:>https://gitlab.foo.com/api/v4/user</http:> is the API endpoint
   that responds with user information.
   An authorization header is required on the request,
   with a valid access token. The required header
@@ -340,9 +340,9 @@ volumes:
 - <filepath>/conf:/conf
 environment:
 - DEFAULT_PROVIDER = generic - oauth
-- PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://maestro.cps.digit.au.dk/oauth/authorize
-- PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://maestro.cps.digit.au.dk/oauth/token
-- PROVIDERS_GENERIC_OAUTH_USER_URL=https://maestro.cps.digit.au.dk/api/v4/user
+- PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.foo.com/oauth/authorize
+- PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.foo.com/oauth/token
+- PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.foo.com/api/v4/user
 - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=CLIENT_ID
 - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=CLIENT_SECRET
 - PROVIDERS_GENERIC_OAUTH_SCOPE = read_user

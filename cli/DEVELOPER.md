@@ -40,7 +40,7 @@ The CLI has two layers of code:
   It contains the
   singleton Config class, which is used throughout the CLI.
   Additionally,
-  it contains the handling functions for each CLI.
+  it contains the handling functions for each CLI subcommand.
   These functions perform
   the actual operations that the CLI command
   is responsible for. It also
@@ -71,7 +71,7 @@ of documentation and reference.
 ```toml
 [common]
 # absolute path to the DTaaS application directory
-server-dns = "localhost"
+server-dns = "foo.com"
 path = "/home/Desktop/DTaaS"
 ```
 

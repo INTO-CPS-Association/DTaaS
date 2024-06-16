@@ -81,25 +81,52 @@ MS, making it an OAuth2 Client application.
 It will now be able to follow
 the OAuth2 workflow to verify the identity of users.
 
-## OAuth 2.0 Workflow
+## OAuth 2.0 Workflows
 
-The OAuth2 workflow is initiated by the
-Client (Auth MS) whenever it
-requires knowing the identity of the user.
-Briefly, the flow starts when the
-Auth MS sends an authorization request to Gitlab.
-The Auth MS tries to
-obtain an access token, using which it can gather
-user information. Once it
-has user information, it can know the identity of
-the user and check whether
-the user has permission to access the requested resource.
+There are two major different OAuth2.0 flows:
 
-![alt text](oauth2-workflow.png)
+- OAuth2 Authorization Code Flow:
 
-The requests made by the Auth MS to
-the OAuth2 provider
-are abbreviated. A detailed explanation
-of the workflow for
-DTaaS specifically can be found in the
-[AuthMS implementation docs](AUTHMS.md)
+  This flow involves several steps and
+  the exchange of an authorization code
+  for an access tokens to ensure secure authorization.
+  This flow is used for the DTaaS AuthMS,
+  which is responsible for securing
+  all backend DTaaS services
+
+  The OAuth2 workflow is initiated by the
+  Client (Auth MS) whenever it
+  requires knowing the identity of the user.
+  Briefly, the flow starts when the
+  Auth MS sends an authorization request to Gitlab.
+  The Auth MS tries to
+  obtain an access token, using which it can gather
+  user information. Once it
+  has user information, it can know the identity of
+  the user and check whether
+  the user has permission to access the requested resource.
+
+  ![alt text](oauth2-workflow.png)
+
+  The requests made by the Auth MS to
+  the OAuth2 provider
+  are abbreviated. A detailed explanation
+  of the workflow for
+  DTaaS specifically can be found in the
+  [AuthMS implementation docs](AUTHMS.md)
+
+- OAuth2 PKCE (Proof Key for Code Exchange) Flow:
+
+  This is an extension to the OAuth2
+  Authorization Code Flow designed to
+  provide an additional layer of security,
+  particularly for public clients
+  that cannot securely store client secrets.
+  PKCE mitigates certain attack vectors,
+  like authorization code interception.
+
+  The DTaaS client website login works
+  based on the PKCE OAuth2.0 flow.
+  More information about the details of
+  this flow can be found
+  [here](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce)
