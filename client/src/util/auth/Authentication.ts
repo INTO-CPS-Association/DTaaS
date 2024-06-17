@@ -26,23 +26,30 @@ export async function signOut(auth: AuthContextProps) {
   if (!auth.user) {
     return;
   }
-  const LOGOUT_URL = getLogoutRedirectURI() ?? '';
+
   const idToken = auth.user.id_token;
 
   try {
     await auth.revokeTokens();
     await auth.removeUser();
     await auth.clearStaleState();
+
     sessionStorage.clear();
     document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    await auth.signoutRedirect({
-      post_logout_redirect_uri: LOGOUT_URL.toString(),
+
+    await fetch(`${window.env.REACT_APP_URL}_oauth/logout`);
+
+    await auth.signoutSilent({
       id_token_hint: idToken,
-    }).then(()=>{fetch(`${window.env.REACT_APP_URL}_oauth/logout`);});
+    });
+
+    window.location.reload();
   } catch (error) {
-    alert(error);
+    alert(`'Error occurred during logout: ${error}`);
   }
 }
+
+
 
 export function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
