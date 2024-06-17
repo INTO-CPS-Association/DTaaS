@@ -1,10 +1,5 @@
 # Library Microservice
 
-:fontawesome-solid-circle-info: **The library microservice provides**
-**an API interface to reusable assets library.**
-**This is only for expert users who need to integrate the DTaaS**
-**with their own IT systems. Regular users can safely skip this page.**
-
 The lib microservice is responsible for handling and serving
 the contents of library assets of the DTaaS platform.
 It provides API endpoints for clients to query, and fetch these assets.
@@ -24,8 +19,8 @@ two end points:
 
 **GraphQL API Endpoint:** `http://foo.com/lib`.
 
-**HTTP Endpoint:** `http://foo.com/lib`
-(need to be [enabled](../../../admin/servers/lib/npm.md)).
+**HTTP Endpoint:** `http://foo.com/lib/files`
+(need to be `-H http.json` option.).
 
 ### HTTP protocol
 

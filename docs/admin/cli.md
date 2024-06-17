@@ -68,6 +68,8 @@ usernames of the users to be added
 add = ["username1","username2", "username3"]
 ```
 
+Make sure you are in the _cli_ directory.
+
 Then simply:
 
 ```bash
@@ -110,17 +112,26 @@ instance, with authorization enabled.
 
 ### Delete users
 
-TO delete existing users, fill in the _users.delete_ list in
-_dtaas_.toml_ with the Gitlab instance
-usernames of the users to be deleted.
+- To delete existing users, fill in the _users.delete_ list in
+  _dtaas.toml_ with the Gitlab instance
+  usernames of the users to be deleted.
 
-Make sure you are in the _cli_ directory.
+```toml
+[users]
+# matching user info must present in this config file
+delete = ["username1","username2", "username3"]
+```
+
+- Make sure you are in the _cli_ directory.
 
 Then simply:
 
 ```bash
 dtaas admin user delete
 ```
+
+- Remember to remove the rules for deleted users
+  in _conf.server_.
 
 ### Additional Points to Remember
 
