@@ -26,18 +26,13 @@ export async function signOut(auth: AuthContextProps) {
     return;
   }
 
-  const idToken = auth.user.id_token;
-
   try {
-    await auth.revokeTokens();
-    await auth.removeUser();
-    await auth.clearStaleState();
-
     sessionStorage.clear();
     document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
     await fetch(`${window.env.REACT_APP_URL}_oauth/logout`);
 
+    const idToken = auth.user.id_token;
     await auth.signoutSilent({
       id_token_hint: idToken,
     });
@@ -47,8 +42,6 @@ export async function signOut(auth: AuthContextProps) {
     throw new Error(`Error occurred during logout: ${e}`);
   }
 }
-
-
 
 export function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
