@@ -6,7 +6,16 @@ The goal is to install and administer the DTaaS application for users.
 
 The DTaaS can be installed in different ways.
 Each version serves a different purpose.
-Follow the installation that fits your usecase.
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip "Easy Setup on Localhost"
+
+    The [localhost](localhost.md) installation is easy for
+    first time users. Please give it a try.
+<!-- markdownlint-enable MD046 -->
+
+Otherwise, use the installation setup that fits your needs.
 
 | Installation Setup | Purpose |
 |:-----|:-----|

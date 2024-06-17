@@ -220,12 +220,10 @@ in new browser are:
 
 ![Workbench Tools](workbench_tools.png)
 
-!!! Bug
-    The Terminal hyperlink does not always work reliably.
+!!! tip "Terminal"
+    The Terminal hyperlink does not exist on workbench page.
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
-    The Terminal hyperlink does not always work reliably. If you want
-    terminal, please use the tools dropdown in the Jupyter Notebook.
     ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
 
 ## Finally logout

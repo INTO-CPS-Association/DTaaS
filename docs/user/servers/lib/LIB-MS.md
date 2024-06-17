@@ -17,10 +17,9 @@ available in user workspace.
 The lib microservice application provides services at
 two end points:
 
-**GraphQL API Endpoint:** `http://foo.com/lib`.
+**GraphQL API Endpoint:** `http://foo.com/lib`
 
 **HTTP Endpoint:** `http://foo.com/lib/files`
-(need to be `-H http.json` option.).
 
 ### HTTP protocol
 
