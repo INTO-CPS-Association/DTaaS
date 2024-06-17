@@ -2,7 +2,6 @@ import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
-import { getLogoutRedirectURI } from '../envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -44,8 +43,8 @@ export async function signOut(auth: AuthContextProps) {
     });
 
     window.location.reload();
-  } catch (error) {
-    alert(`'Error occurred during logout: ${error}`);
+  } catch (e) {
+    throw new Error(`Error occurred during logout: ${e}`);
   }
 }
 
