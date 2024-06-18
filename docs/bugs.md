@@ -1,9 +1,13 @@
 # Few issues in the Software
 
+If you find a bug, please
+[open an issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new)
+
 ## Third-Party Software
 
-- We use third-party software which have certain
-  known issues. Some of the issues are listed below.
+The explanation given below corresponds to the bugs you may face
+from third party software included in DTaaS.
+Known issues are listed below.
 
 ### ML Workspace
 
