@@ -27,7 +27,7 @@
     "stop": "npx kill-port 4000",
     "syntax": "npx eslint . --fix",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
-    "test:e2e": "yarn build && yarn configapp:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
+    "test:e2e": "yarn build && yarn config:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
     "test:int": "jest -c ./jest.integration.config.json ../test/integration --coverage",
     "test:unit": "jest -c ./jest.config.json ../test/unitTests --coverage"
   },
@@ -72,7 +72,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.2.1",
     "styled-components": "^6.1.1",
-    "typescript": "^4.9.5"
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
@@ -91,7 +91,7 @@
     "playwright": "^1.32.1",
     "prettier": "^3.2.4",
     "shx": "^0.3.4",
-    "ts-jest": "^29.1.1"
+    "ts-jest": "^29.1.5"
   },
   "browserslist": {
     "production": [
