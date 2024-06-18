@@ -6,4 +6,4 @@ services:
     volumes:
       - ./files:/dtaas/libms/files
     ports:
-      - "4000:4000"
+      - "4001:4001"
