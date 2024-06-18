@@ -3,7 +3,7 @@
 The E2E tests require a functional gitlab oauth setup, traefik gateway and a
 live react client website. The E2E tests do not launch the react client website.
 So it is important to launch the website using `yarn start`. Keep this server
-running while performing the E2E tests with `yarn test -e` command.
+running while performing the E2E tests with `yarn test:e2e` command.
 
 The E2E tests use playwright test runner. You also need to have the software
 installed. If it is not installed, you can install with the following command.
@@ -174,7 +174,7 @@ gateway and the client website hosted behind traefik.
 Once you've properly set up your .env file, you can now run the end-to-end tests.
 
 ```bash
-yarn test -e
+yarn test:e2e
 ```
 
 This command launches the test runner and executes all end-to-end tests.
