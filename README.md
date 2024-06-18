@@ -5,13 +5,15 @@
 The Digital Twin as a Service (DTaaS) software platform is useful
 to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 
-<font color="orange">**Build**</font>: The DTs are built on the software platform
-using the reusable DT components available on the platform.
+:mechanical_arm: <font color="orange">**Build**</font>: DTs are built on DTaaS using
+reusable DT assets available on the platform.
 
-<font color="orange">**Use**</font>: Use the DTs on the software platform.
+:office_worker: :factory_worker: <font color="orange">**Use**</font>: Run your
+DTs on DTaaS.
 
-<font color="orange">**Share**</font>: Share ready to use DTs with other users.
-It is also possible to share the services offered by one DT with other users.
+:handshake: <font color="orange">**Share**</font>: Share ready-to-use DTs
+with other users. It is also possible to share the services
+offered by one DT with other users.
 
 ## :rocket: Install and Use
 
@@ -20,8 +22,19 @@ the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases)
 and its [documentation](https://into-cps-association.github.io/DTaaS/)
 to install and use the DTaaS software platform.
 
+### Independent Packages
+
+The DTaaS development team publishes reusable packages which are then
+put together to form the complete DTaaS application.
+
+These packages are published on
+[npmjs](https://www.npmjs.com/org/into-cps-association), and
+[docker hub](https://hub.docker.com/u/intocps) repositories.
+
 You are welcome to open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose)
 if there is a suggestion to improve the software.
+
+## :scientist: Research
 
 If you find this repo useful for your research, please consider citing our paper:
 
@@ -44,7 +57,8 @@ The [web client](client),
 [library](servers/lib) and
 [runner](servers/execution/runner)
 microservices are functional at present.
-Everything else is a work-in-progress.
+These are packages are available on
+[github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 Please see the
 [developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html)
