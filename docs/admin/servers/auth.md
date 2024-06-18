@@ -93,7 +93,7 @@ requires traefik forward-auth.
 
 The Traefik forward-auth microservices requires configuration rules to manage
 authorization for different URL paths.
-The _conf.*_ file can be used to configure the specific rules.
+The _conf.server_ file can be used to configure the specific rules.
 There are broadly three kinds of URLs:
 
 ### Public Path Without Authorization

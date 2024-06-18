@@ -18,27 +18,30 @@ nav:
   - Home: index.md
   - Admin:
       - Overview: admin/overview.md
-      - Authorization:
-        - Client: admin/client/auth.md
-        - Localhost: admin/localhost.md
-        - Production: admin/host.md
-        - Servers: admin/servers/auth.md
-      - Docker:
-        - Localhost: admin/localhost.md
-        - Production: admin/host.md
+      - Install:
+        - Steps: admin/steps.md
+        - Requirements: admin/requirements.md
+        - Authorization:
+          - Client: admin/client/auth.md
+          - Servers: admin/servers/auth.md
+        - Configuration:
+          - Client: admin/client/config.md
+          - Library: admin/servers/lib/config.md
+        - Docker:
+          - Localhost: admin/localhost.md
+          - Production: admin/host.md
+        - Vagrant:
+          - Base Box: admin/vagrant/base-box.md
+          - Single Machine: admin/vagrant/single-machine.md
+          - Two Machines: admin/vagrant/two-machines.md
+        - Services: admin/services.md
       - CLI: admin/cli.md
-      - Vagrant:
-        - Base Box: admin/vagrant/base-box.md
-        - Single Machine: admin/vagrant/single-machine.md
-        - Two Machines: admin/vagrant/two-machines.md
-      - Independent Packages: admin/packages.md
-      - Client Website:
-        - Docker: admin/client/docker.md
-        - Configuration: admin/client/config.md
-      - Library Microservice:
-        - NPM: admin/servers/lib/npm.md
-        - Docker: admin/servers/lib/docker.md
-      - Services: admin/services.md
+      - Independent Packages:
+        - Listing: admin/packages.md
+        - Library Microservice:
+          - NPM: admin/servers/lib/npm.md
+          - Docker: admin/servers/lib/docker.md
+        - Runner: user/servers/execution/runner/README.md
       - Guides:
         - Add user: admin/guides/add_user.md
         - Remove user: admin/guides/remove_user.md
