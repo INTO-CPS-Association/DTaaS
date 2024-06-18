@@ -65,6 +65,10 @@ authorization. Click on **Authorize** button.
 After successful authorization, you will be redirected to the **Library**
 page of the DTaaS website.
 
+There are two icons on the top-right of the webpage. The hyperlink on
+**question mark icon** redirects to help page while the hyperlink on
+**github icon** redirects to github code repository.
+
 ## Overview of menu items
 
 The menu is hidden by default. Only the icons of menu items are visible.
@@ -92,7 +96,7 @@ You can see the file manager and five tabs above the library manager. Each tab
 provides help text to guide users in the use of different directories
 in their workspace.
 
-??? Functions tip
+??? tip "Functions"
     The functions responsible for pre- and post-processing of: data inputs,
     data outputs, control outputs. The data science libraries and functions
     can be used to create useful function assets for the platform.
@@ -101,7 +105,7 @@ in their workspace.
     model calibration an achievable goal. Another use of functions is to process
     the sensor and actuator data of both Physical Twins and Digital Twins.
 
-??? Data tip
+??? tip "Data"
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
@@ -112,7 +116,7 @@ in their workspace.
     These control outputs usually go to Physical Twins, but they can also
     go to another Digital Twin.
 
-??? Models tip
+??? tip "Models"
     The model assets are used to describe different aspects of Physical Twins
     and their environment, at different levels of abstraction. Therefore,
     it is possible to have multiple models for the same Physical Twin.
@@ -124,7 +128,7 @@ in their workspace.
     can also have a functional model(s) describing the part manufacturing
     capabilities of the robot.
 
-??? Tools tip
+??? tip "Tools"
     The software tool assets are software used to create, evaluate and
     analyze models. These tools are executed on top of a computing
     platforms, i.e., an operating system, or virtual machines like
@@ -139,7 +143,7 @@ in their workspace.
     combination of models and tools put together to create a ready to
     use Digital Twins.
 
-??? Digital Twins tip
+??? tip "Digital Twins"
     These are ready to use digital twins created by one or more users.
     These digital twins can be reconfigured later for specific use cases.
 
@@ -147,7 +151,7 @@ In addition to the five directories, there is also **common** directory
 in which five sub-directories exist. These sub-directories are:
 data, functions, models, tools and digital twins.
 
-??? Common Assets tip
+??? tip "Common Assets"
     The common directory again has four sub-directories:
     - data
     - functions
