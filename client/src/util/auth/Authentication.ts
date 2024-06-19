@@ -2,6 +2,7 @@ import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
+import { getLogoutRedirectURI } from '../envUtil'
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -30,10 +31,11 @@ export async function signOut(auth: AuthContextProps) {
     sessionStorage.clear();
     document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
-    await fetch(`${window.env.REACT_APP_URL}_oauth/logout`);
+    const logoutRedirectURI = getLogoutRedirectURI();
+    await fetch(logoutRedirectURI);
 
     const idToken = auth.user.id_token;
-    await auth.signoutSilent({
+    await auth.signoutRedirect({
       id_token_hint: idToken,
     });
 
