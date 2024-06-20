@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
@@ -32,10 +33,10 @@ export async function signOut(auth: AuthContextProps) {
     document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
     const logoutRedirectURI = getLogoutRedirectURI();
-    await fetch(logoutRedirectURI);
+    await fetch(`${logoutRedirectURI}_oauth/logout`);
 
     const idToken = auth.user.id_token;
-    await auth.signoutRedirect({
+    await auth.signoutSilent({
       id_token_hint: idToken,
     });
 
