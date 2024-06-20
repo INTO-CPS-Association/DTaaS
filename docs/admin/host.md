@@ -202,6 +202,35 @@ If there are extra routes in `deploy/docker/conf.server` file but these are not
 in `deploy/docker/.env.server` file,
 such routes are not served by traefik; it will give **404 server response**.
 
+## Access Rights Over Files
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The default setting in docker compose file exposes
+    all user files at <http://foo.com/lib/files>.
+    All files of all the users are readable-writable by
+    all logged in users.
+    The `compose.server.yml` file needs to updated to
+    expose another directory like common assets directory.
+<!-- markdownlint-enable MD046 -->
+
+If you wish to reduce this scope to only **common assets**,
+please change,
+
+```yaml
+  libms:
+    image: intocps/libms:latest
+    restart: unless-stopped
+    volumes:
+      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
+      - ${DTAAS_DIR}/files/common:/dtaas/libms/files
+```
+
+The change in the last line. The `${DTAAS_DIR}/files`
+got replaced by `${DTAAS_DIR}/files/common`. With this change, only
+common files are readable-writable by all logged in users.
+
 ## Run
 
 The commands to start and stop the appliation are:

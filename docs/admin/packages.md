@@ -20,7 +20,7 @@ A brief explanation of the packages is given below.
 
 | Package Name | Description | Documentation for | Availability |
 |:----|:----|:----|:----|
-| dtaas-web | React web application | [container image](client/docker.md) | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
+| dtaas-web | React web application | Not useful as standalone package | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
 | libms |Library microservice | [npm package](servers/lib/npm.md) | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
 | | | [container image](servers/lib/docker.md) | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |
 | runner | REST API wrapper for multiple scripts/programs | [npm package](../user/servers/execution/runner/README.md) | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |

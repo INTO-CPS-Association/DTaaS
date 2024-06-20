@@ -18,6 +18,7 @@
     "build": "npx react-scripts build",
     "clean": "npx rimraf build/ node_modules/ coverage/ playwright-report/  *.svg",
     "config:dev": "npx shx cp config/dev.js public/env.js && npx shx cp config/dev.js build/env.js",
+    "config:local": "npx shx cp config/local.js public/env.js && npx shx cp config/local.js build/env.js",
     "config:prod": "npx shx cp config/prod.js public/env.js && npx shx cp config/prod.js build/env.js",
     "config:test": "npx shx cp config/test.js public/env.js && npx shx cp config/test.js build/env.js",
     "develop": "npx react-scripts start",
