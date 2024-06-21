@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
