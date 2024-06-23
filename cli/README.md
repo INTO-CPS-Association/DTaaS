@@ -58,6 +58,25 @@ server-dns = "localhost"
 path = "/home/Desktop/DTaaS"
 ```
 
+### Select Template
+
+The _cli_ uses YAML templates provided in this directory to create
+new user workspaces. The templates are:
+
+1. _user.local.yml_: localhost installation
+1. _User.server.yml_: multi-user web application application over HTTP
+1. _user.server.secure.yml_: multi-user web application application over HTTPS
+
+Please note that the _cli_ is not capable of detecting the difference between
+HTTP and HTTPS modes of web application. Thus if you are serving
+web application over HTTPS, please do one extra step.
+
+```bash
+cp user.server.secure.yml user.server.yml
+```
+
+This will change the user template from insecure to secure.
+
 ### Add users
 
 To add new users using the CLI, fill in the

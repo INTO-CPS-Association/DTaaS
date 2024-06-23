@@ -18,6 +18,7 @@ In the new application configuration, there are two OAuth2 applications.
 The installation requirements to run this docker version of the DTaaS are:
 
 - DNS name for the server
+- TLS / HTTPS certificates (only for HTTPS version of application)
 - docker with compose plugin
 - User accounts on a gitlab instance
 - OAuth2 application registrations
@@ -182,7 +183,24 @@ If there are extra routes in `deploy/docker/conf.server` file but these are not
 in `deploy/docker/.env.server` file,
 such routes are not served by traefik; it will give **404 server response**.
 
+### Add TLS Certificates
+
+The application can be served on HTTPS connection for which TLS certificates
+are needed. The certificates need to be issued for `foo.com` or `*.foo.com`.
+The names of the certificates must be `fullchain.pem` and `privkey.pem`. Copy
+these two certificate files into:
+
+- `certs/foo.com/fullchain.pem`
+- `certs/foo.com/privkey.pem`
+
+Traefik will run with self-issued certificates if the above two certificates
+are either not found or found invalid.
+
 ## Run
+
+### Over HTTP
+
+This docker compose file serves application over HTTP.
 
 The commands to start and stop the appliation are:
 
@@ -195,6 +213,23 @@ To restart only a specific container, for example `client``
 
 ```bash
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+```
+
+### Over HTTPS
+
+This docker compose file serves application over HTTP.
+
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d
+docker compose -f compose.server.secure.yml --env-file .env.server down
+```
+
+To restart only a specific container, for example `client``
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
 ```
 
 ## Use
