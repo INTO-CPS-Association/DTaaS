@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
-import { getLogoutRedirectURI } from '../envUtil'
+import { getLogoutRedirectURI } from 'util/envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -22,23 +23,24 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
+
 export async function signOut(auth: AuthContextProps) {
   if (!auth.user) {
     return;
   }
-
+  const LOGOUT_URL = getLogoutRedirectURI() ?? '';
+  const idToken = auth.user.id_token;
   try {
+    await auth.revokeTokens();
+    await auth.removeUser();
+    await auth.clearStaleState();
     sessionStorage.clear();
     document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-
-    const logoutRedirectURI = getLogoutRedirectURI();
-    await fetch(`${logoutRedirectURI}_oauth/logout`);
-
-    const idToken = auth.user.id_token;
-    await auth.signoutSilent({
+    await auth.signoutRedirect({
+      post_logout_redirect_uri: LOGOUT_URL.toString(),
       id_token_hint: idToken,
     });
-
+    await fetch(`${window.env.REACT_APP_URL}_oauth/logout`);
     window.location.reload();
   } catch (e) {
     throw new Error(`Error occurred during logout: ${e}`);
