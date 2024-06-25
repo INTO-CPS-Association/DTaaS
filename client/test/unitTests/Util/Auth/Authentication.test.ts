@@ -9,7 +9,10 @@ jest.mock('util/envUtil', () => ({
 
 describe('signOut', () => {
     const mockUser = { id_token: "token" };
-    const mockSignoutSilent = jest.fn();
+    const mockSignoutRedirect = jest.fn();
+    const mockRevokeTokens = jest.fn();
+    const mockClearStaleState = jest.fn();
+    const mockremoveUser = jest.fn();
     const mockClear = jest.fn();
 
     Object.defineProperty(global, 'fetch', {
@@ -31,10 +34,19 @@ describe('signOut', () => {
 
     beforeEach(() => {
         (useAuth as jest.Mock).mockReturnValue({
-            signoutSilent: mockSignoutSilent,
+            signoutRedirect: mockSignoutRedirect,
+            revokeTokens: mockRevokeTokens,
+            clearStaleState: mockClearStaleState,
+            removeUser: mockremoveUser,
             user: mockUser
         });
         (getLogoutRedirectURI as jest.Mock).mockReturnValue("https://example.com/");
+        Object.defineProperty(window, 'env', {
+            value: {
+                REACT_APP_URL: "https://example.com/",
+            },
+            writable: true
+        });
         Object.defineProperty(window, 'document', {
             value: {
                 cookie: "",
@@ -49,10 +61,6 @@ describe('signOut', () => {
             },
             writable: true
         });
-        Object.defineProperty(window, "location", {
-            value: { reload: jest.fn() },
-            writable: true,
-        })
     });
 
     afterEach(() => {
@@ -66,33 +74,29 @@ describe('signOut', () => {
         expect(window.document.cookie).toBe('_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;');
     });
 
-    it('does not signoutSilent if auth.user is null', async () => {
+    it('does not signoutRedirect if auth.user is null', async () => {
         const auth = useAuth();
         auth.user = null;
 
         const signOutResult = await signOut(auth);
 
         expect(signOutResult).toBeUndefined();
-        expect(mockSignoutSilent).not.toHaveBeenCalled();
+        expect(mockSignoutRedirect).not.toHaveBeenCalled();
     });
 
-    it('signsOutSilent if user is authorized', async () => {
+    it('signsOutRedirect, clearStaleState, removeTokens and removeUer if user is authorized', async () => {
         const auth = useAuth();
         await signOut(auth);
-        expect(mockSignoutSilent).toHaveBeenCalled();
+        expect(mockSignoutRedirect).toHaveBeenCalled();
+        expect(mockClearStaleState).toHaveBeenCalled();
+        expect(mockRevokeTokens).toHaveBeenCalled();
+        expect(mockremoveUser).toHaveBeenCalled();
     });
 
-    it('fetches the URI from getLogoutRedirectURI', async () => {
+    it('fetches the URI from window.env', async () => {
         const auth = useAuth();
         await signOut(auth);
         expect(global.fetch).toHaveBeenCalledWith("https://example.com/_oauth/logout");
-    });
-
-    it('reloads the page', async () => {
-        const auth = useAuth();
-        await signOut(auth);
-
-        expect(window.location.reload).toHaveBeenCalled();
     });
 
     it('throws an error if fetch rejects', async () => {
@@ -101,10 +105,10 @@ describe('signOut', () => {
         await expect(signOut(auth)).rejects.toThrow(Error("Error occurred during logout: foo"));
     });
 
-    it('throws an error if signOutSilent rejects', async () => {
+    it('throws an error if signoutRedirect rejects', async () => {
         const auth = useAuth();
-        auth.signoutSilent = jest.fn().mockRejectedValueOnce(new Error("signOutSilent rejected"));
-        await expect(signOut(auth)).rejects.toThrow(Error("Error occurred during logout: Error: signOutSilent rejected"));
+        auth.signoutRedirect = jest.fn().mockRejectedValueOnce(new Error("signoutRedirect rejected"));
+        await expect(signOut(auth)).rejects.toThrow(Error("Error occurred during logout: Error: signoutRedirect rejected"));
     });
 
     it('clears sessionStorage', async () => {
