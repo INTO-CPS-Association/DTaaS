@@ -15,8 +15,14 @@ describe('signOut', () => {
     const mockremoveUser = jest.fn();
     const mockClear = jest.fn();
 
+    Object.defineProperty(AbortSignal, 'timeout', {
+        value: jest.fn(),
+        writable: false
+    });
+
     Object.defineProperty(global, 'fetch', {
-        value: jest.fn(async (URL) => {
+        value: jest.fn(async (URL, signal) => {
+            signal();
             switch (URL) {
                 case "https://example.com/_oauth/logout":
                     return {
@@ -61,6 +67,11 @@ describe('signOut', () => {
             },
             writable: true
         });
+        Object.defineProperty(window, "location", {
+            value: { reload: jest.fn() },
+            writable: true,
+        });
+
     });
 
     afterEach(() => {
@@ -95,8 +106,9 @@ describe('signOut', () => {
 
     it('fetches the URI from window.env', async () => {
         const auth = useAuth();
+        const fetchBody = { signal: AbortSignal.timeout(30000) };
         await signOut(auth);
-        expect(global.fetch).toHaveBeenCalledWith("https://example.com/_oauth/logout");
+        expect(global.fetch).toHaveBeenCalledWith("https://example.com/_oauth/logout", fetchBody);
     });
 
     it('throws an error if fetch rejects', async () => {
@@ -109,6 +121,13 @@ describe('signOut', () => {
         const auth = useAuth();
         auth.signoutRedirect = jest.fn().mockRejectedValueOnce(new Error("signoutRedirect rejected"));
         await expect(signOut(auth)).rejects.toThrow(Error("Error occurred during logout: Error: signoutRedirect rejected"));
+    });
+
+    it('reloads the page', async () => {
+        const auth = useAuth();
+        await signOut(auth);
+
+        expect(window.location.reload).toHaveBeenCalled();
     });
 
     it('clears sessionStorage', async () => {
