@@ -41,7 +41,6 @@ export async function signOut(auth: AuthContextProps) {
       id_token_hint: idToken,
     });
     await fetch(`${window.env.REACT_APP_URL}_oauth/logout`);
-    window.location.reload();
   } catch (e) {
     throw new Error(`Error occurred during logout: ${e}`);
   }
