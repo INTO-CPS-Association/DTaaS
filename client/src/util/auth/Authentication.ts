@@ -2,7 +2,7 @@ import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
-import { getLogoutRedirectURI } from 'util/envUtil';
+import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -22,12 +22,12 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
-
 export async function signOut(auth: AuthContextProps) {
   if (!auth.user) {
     return;
   }
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
+  const APP_URL = cleanURL(useAppURL());
   const idToken = auth.user.id_token;
   try {
     await auth.revokeTokens();
@@ -39,8 +39,12 @@ export async function signOut(auth: AuthContextProps) {
       post_logout_redirect_uri: LOGOUT_URL.toString(),
       id_token_hint: idToken,
     });
-    await fetch(`${window.env.REACT_APP_URL}_oauth/logout`, { signal: AbortSignal.timeout(30000) });
-    window.location.reload();
+    await fetch(`${APP_URL}/_oauth/logout`, {
+      signal: AbortSignal.timeout(30000),
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   } catch (e) {
     throw new Error(`Error occurred during logout: ${e}`);
   }
