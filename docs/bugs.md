@@ -1,13 +1,17 @@
 # Few issues in the Software
 
+If you find a bug, please
+[open an issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new)
+
 ## Third-Party Software
 
-- We use third-party software which have certain
-  known issues. Some of the issues are listed below.
+The explanation given below corresponds to the bugs you may face
+from third party software included in DTaaS.
+Known issues are listed below.
 
 ### ML Workspace
 
-- the docker container slows down a bit after ten days.
+- the docker container might down a bit after two weeks.
   The only known solution is to restart the docker container.
   You don't need to restart the complete DTaaS platform, restart of
   the docker container of ml-workspace is sufficient.

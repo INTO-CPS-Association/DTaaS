@@ -16,41 +16,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Admin:
-      - Overview: admin/overview.md
-      - Authorization:
-        - Client: admin/client/auth.md
-        - Servers: admin/servers/auth.md
-      - Docker:
-        - Localhost: admin/localhost.md
-        - Production: admin/host.md
-      - CLI: admin/cli.md
-      - Vagrant:
-        - Base Box: admin/vagrant/base-box.md
-        - Single Machine: admin/vagrant/single-machine.md
-        - Two Machines: admin/vagrant/two-machines.md
-      - Separate Packages:
-        - Website: 
-          - config: admin/client/config.md
-          - docker: admin/client/docker.md
-        - Library microservice:
-          - npm: admin/servers/lib/npm.md
-          - docker: admin/servers/lib/docker.md
-      - Services: admin/services.md
-      - Guides:
-        - New user: admin/guides/add_user.md
-        - New Service: admin/guides/add_service.md
-        - Install Gitlab: admin/guides/gitlab.md
-        - Link services: admin/guides/link_service.md
-        - Common Assets: admin/guides/common_workspace_readonly.md
-        - HTTP Mode: admin/guides/hosting_site_without_https.md
-        - Basepath: admin/guides/update_basepath.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
       - Website: user/website/index.md
-      - Library: 
-          - Assets: user/servers/lib/assets.md
+      - Reusable Assets: 
+          - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
       - Digital Twins: 
           - Create: user/digital-twins/create.md
@@ -67,20 +38,60 @@ nav:
           - Flex Cell: user/examples/flex-cell/README.md
           - Incubator: user/examples/incubator/README.md
           - Firefighters: user/examples/o5g/README.md
+          - Mass Spring Damper with NuRV: user/examples/mass-spring-damper-monitor/README.md
+          - Incubator with NuRV: user/examples/incubator-NuRV-monitor-validation/README.md
           - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
+          - Water Tank Fault Injection with NuRV: user/examples/water_tank_FI_monitor/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
+  - Admin:
+      - Install:
+        - Installation Scenarios: admin/overview.md
+        - Installation Steps: admin/steps.md
+        - Requirements: admin/requirements.md
+        - Authorization:
+          - Client: admin/client/auth.md
+          - Servers: admin/servers/auth.md
+        - Configuration:
+          - Client: admin/client/config.md
+          - Library: admin/servers/lib/config.md
+        - Docker:
+          - Localhost: admin/localhost.md
+          - Production: admin/host.md
+        - Vagrant:
+          - Base Box: admin/vagrant/base-box.md
+          - Single Machine: admin/vagrant/single-machine.md
+          - Two Machines: admin/vagrant/two-machines.md
+        - Services: admin/services.md
+      - CLI: admin/cli.md
+      - Independent Packages:
+        - Listing: admin/packages.md
+        - Library Microservice:
+          - NPM: admin/servers/lib/npm.md
+          - Docker: admin/servers/lib/docker.md
+      - Guides:
+        - Add user: admin/guides/add_user.md
+        - Remove user: admin/guides/remove_user.md
+        - Add Service: admin/guides/add_service.md
+        - Install Gitlab: admin/guides/gitlab.md
+        - Link services: admin/guides/link_service.md
+        - Common Assets: admin/guides/common_workspace_readonly.md
+        - HTTP Mode: admin/guides/hosting_site_without_https.md
   - FAQ: FAQ.md
   - Developer: 
-      - Overview: developer/index.md 
+      - Developer Guide: developer/index.md 
       - System:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md
-      - Authorization: developer/oauth.md
+      - OAuth2 Authorization:
+        - Concepts: developer/oauth/OAUTH2.0.md
+        - System Design: developer/oauth/DESIGN.md
+        - Microservice: developer/oauth/AUTHMS.md
       - Components:
         - Client: developer/client/client.md
         - Library Microservice: developer/servers/lib/lib-ms.md
       - Testing: developer/testing/intro.md
-      - Publish NPM Packages: developer/npm-packages.md
+      - Docker: developer/docker/docker.md
+      - NPM Packages: developer/npm-packages.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 

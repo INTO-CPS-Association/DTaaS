@@ -17,19 +17,28 @@ In the new application configuration, there are two OAuth2 applications.
 
 The installation requirements to run this docker version of the DTaaS are:
 
-- DNS name for the server
-- docker with compose plugin
-- User accounts on a gitlab instance
-- OAuth2 application registrations
+### Docker with Compose Plugin
 
-### Create User Accounts
+It is mandatory to have [Docker](https://www.docker.com/) installed
+on your computer. We highly recommend using
+[Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
-Create user accounts in a gitlab instance for all the users.
+### Domain name
 
-The default docker compose file contains two - _user1_ and _user2_.
-These names need to be changed to suitable usernames.
+The DTaaS software is a web application and is preferably hosted
+on a server with a domain name like <http:>_foo.com_</http:>.
+It is also possible to use an IP address in place of domain name.
 
-It is possible to use <https://gitlab.com> as well for OAuth2 authorization purposes.
+### OAuth Provider
+
+**[Gitlab Instance](https://about.gitlab.com/install/)** -
+The DTaaS uses Gitlab OAuth2.0 authorization for user authorization.
+You can either have an on-premise instance of gitlab, or
+use [gitlab.com](https://gitlab.com) itself.
+
+### User Accounts
+
+Create user accounts in the linked gitlab instance for all the users.
 
 ### OAuth2 Application Registration
 
@@ -155,7 +164,7 @@ cp -R files/user1 files/username
 where _username_ is one of the selected usernames. This command
 needs to be repeated for all the selected users.
 
-### Configure Authorization Rules for Traefik Forward-Auth
+### Configure Authorization Rules for Backend Authorization
 
 The Traefik forward-auth microservices requires configuration rules to manage
 authorization for different URL paths.
@@ -193,6 +202,35 @@ If there are extra routes in `deploy/docker/conf.server` file but these are not
 in `deploy/docker/.env.server` file,
 such routes are not served by traefik; it will give **404 server response**.
 
+## Access Rights Over Files
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The default setting in docker compose file exposes
+    all user files at <http://foo.com/lib/files>.
+    All files of all the users are readable-writable by
+    all logged in users.
+    The `compose.server.yml` file needs to updated to
+    expose another directory like common assets directory.
+<!-- markdownlint-enable MD046 -->
+
+If you wish to reduce this scope to only **common assets**,
+please change,
+
+```yaml
+  libms:
+    image: intocps/libms:latest
+    restart: unless-stopped
+    volumes:
+      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
+      - ${DTAAS_DIR}/files/common:/dtaas/libms/files
+```
+
+The change in the last line. The `${DTAAS_DIR}/files`
+got replaced by `${DTAAS_DIR}/files/common`. With this change, only
+common files are readable-writable by all logged in users.
+
 ## Run
 
 The commands to start and stop the appliation are:
@@ -221,27 +259,9 @@ through the single page client now.
 You may have to click Sign in to Gitlab on the Client page
 and authorize access to the shown application.
 
-## Adding a new user
+### Adding a new user
 
-To add a new user to your DTaaS instance, follow these steps:
-
-- Use the [DTaaS CLI](cli.md) to bring up the ML workspaces for new users.
-  This brings up the containers, without the authorization enforced by Traefik forward-auth.
-- Add three lines to the `conf.server` file
-
-  ```txt
-  rule.onlyu3.action=auth
-  rule.onlyu3.rule=PathPrefix(`/user3`)
-  rule.onlyu3.whitelist = user3@emailservice.com
-  ```
-
-Run the appropritate command for a server/local installation:
-
-```bash
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
-```
-
-The new users are now added to the DTaaS instance, with authorization enabled.
+Please see the [add new user](guides/add_user.md) to add new users.
 
 ## References
 

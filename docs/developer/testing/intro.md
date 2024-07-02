@@ -121,9 +121,11 @@ in future to implement feature tests.
 
 ## References
 
-Justin Searls and Kevin Buchanan,
-[Contributing Tests wiki](https://github.com/testdouble/contributing-tests/wiki).
-This wiki has goog explanation of
-[TDD](https://github.com/testdouble/contributing-tests/wiki/Test-Driven-Development)
-and
-[test doubles](https://github.com/testdouble/contributing-tests/wiki/Test-Double).
+1. Arthur Hicken,
+   [Shift left approach to software testing](https://www.stickyminds.com/article/shift-left-approach-software-testing)
+1. Justin Searls and Kevin Buchanan,
+   [Contributing Tests wiki](https://github.com/testdouble/contributing-tests/wiki).
+1. This wiki has good explanation of
+   [TDD](https://github.com/testdouble/contributing-tests/wiki/Test-Driven-Development)
+   and
+   [test doubles](https://github.com/testdouble/contributing-tests/wiki/Test-Double).

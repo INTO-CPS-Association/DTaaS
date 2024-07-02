@@ -1,15 +1,27 @@
-FROM node:20.10.0-slim
+FROM node:20.10.0-slim as build
 
 #! docker should be run from the root directory of the project
 
 # Set the working directory inside the container
 WORKDIR /dtaas/libms
 
-# pull the libms package from npm registry
-RUN npm i -g @into-cps-association/libms@0.4.4
+# Copy the the application code to the working directory
+COPY ./servers/lib/ .
 
-COPY ./deploy/config/lib .
-COPY ./servers/lib/config/http.json .
+# Install dependencies
+RUN yarn install --immutable --immutable-cache --check-cache
+
+# Build the app
+RUN yarn build
+
+
+FROM node:20.10.0-slim
+COPY --from=build /dtaas/libms/dist /dtaas/libms/dist
+COPY --from=build /dtaas/libms/node_modules /dtaas/libms/node_modules
+COPY --from=build /dtaas/libms/package.json /dtaas/libms/package.json
+COPY --from=build /dtaas/libms/config /dtaas/libms/config
+
+WORKDIR /dtaas/libms
 
 # Define the command to run your app
-CMD ["libms", "-H", "http.json"]
+CMD ["yarn", "start", "--config", "config/.env.default", "-H", "config/http.json"]
