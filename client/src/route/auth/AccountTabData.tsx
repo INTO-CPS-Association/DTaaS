@@ -7,7 +7,7 @@ function ListGroups(groups: string[]): React.ReactNode[] {
     React.createElement('b', null, group),
   );
 
-  const userBelongsToOneGroup = (groups.length == 1);
+  const userBelongsToOneGroup = (groups.length === 1);
   if (userBelongsToOneGroup) {
     return boldGroups;
   }
