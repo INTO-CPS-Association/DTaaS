@@ -8,6 +8,14 @@ Cláudio Ângelo Gonçalves Gomes, Dmitri Tcherniak,
 Elif Ecem Bas, Giuseppe Abbiati, Hao Feng,
 Henrik Ejersbo, Tanusree Roy, Farshid Naseri
 
+## Example Contributors
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! failure
+    Cite all example providers and recent users
+<!-- markdownlint-enable MD046 -->
+
 ## Documentation
 
 1. Talasila, P., Gomes, C., Mikkelsen, P. H., Arboleda, S. G., Kamburjan,

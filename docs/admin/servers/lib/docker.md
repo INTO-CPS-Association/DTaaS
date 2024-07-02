@@ -1,113 +1,54 @@
 # Host Library Microservice
 
-The **lib microservice** is a simplified file manager providing graphQL API.
-It has three features:
+The **lib microservice** is a simplified file manager serving files
+over graphQL and HTTP API.
+
+It has two features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
-* Source files can either come from local file system or from
-  a gitlab instance.
 
-The library microservice is designed to manage and serve files,
-functions, and models to users, allowing them to access and interact
-with various resources.
-
-This document provides instructions for running a stand alone library microservice.
+This document provides instructions for running docker container
+to provide a stand alone library microservice.
 
 ## Setup the File System
 
-The users expect the following file system structure for their reusable assets.
+### Outside DTaaS
+
+The package can be used independently of DTaaS. If this is your use case,
+you do not need any specific file structure. A valid file directory named
+`files` is sufficient and it should be placed in the directory from
+which the `compose.lib.yml` will be run.
+
+### Inside DTaaS
+
+The users of DTaaS expect the following file system structure for
+their reusable assets.
 
 ![File System Layout](file-system-layout.png)
 
 There is a skeleton file structure in
 [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
-You can copy and create file system for your users.
-
-## :arrow_down: Install
-
-The package is available in Github
-[packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
-and on
-[npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
-
-Set the registry and install the package with the one of
-the two following commands
-
-```bash
-sudo npm install -g @into-cps-association/libms  # requires no login
-sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
-```
-
-The _github package registry_ asks for username and password. The username is
-your Github username and the password is your Github
-[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, your personal access token
-needs to have _read:packages_ scope.
-
-## :gear: Configure
-
-The microservices requires config specified in INI format.
-The template configuration file is:
-
-```ini
-PORT='4001'
-MODE='local'
-LOCAL_PATH='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
-```
-
-The `LOCAL_PATH` variable is the absolute filepath to the
-location of the local directory which will be served to users
-by the Library microservice.
-
-Replace the default values the appropriate values for your setup.
+You can copy and create file system for your users. Remember to name
+the directory containing the file structure as `files`
+and place it in the directory from which the `compose.lib.yml` will be run.
 
 ## :rocket: Use
 
-Display help.
+Use the [docker compose](compose.lib.yml) file to start the service.
 
 ```bash
-libms -h
+# To bring up the container
+docker compose -f compose.lib.yml up -d
+# To bring down the container
+docker compose -f compose.lib.yml down
 ```
 
-The config is saved `.env` file by convention. The **libms** looks for
-`.env` file in the working directory from which it is run.
-If you want to run **libms** without explicitly specifying the configuration
-file, run
+## Service Endpoints
 
-```bash
-libms
-```
+The GraphQL URL: `localhost:4001/lib`
 
-To run **libms** with a custom config file,
-
-```bash
-libms -c FILE-PATH
-libms --config FILE-PATH
-```
-
-If the environment file is named something other than `.env`,
-for example as `.env.development`, you can run
-
-```sh
-libms -c ".env.development"
-```
-
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
-
-```bash
-nohup libms [-c FILE-PATH] & disown
-```
-
-The lib microservice is now running and ready to serve files, functions, and models.
-
-## Service Endpoint
-
-The URL endpoint for this microservice is located at: `localhost:PORT/lib`
+The HTTP URL: `localhost:4001/lib/files`
 
 The service API documentation is available on
 [user page](../../../user/servers/lib/LIB-MS.md).

@@ -39,7 +39,6 @@ services:
       dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/servers/lib/config/.env.default:/dtaas/libms/.env
       - ${DTAAS_DIR}/files:/dtaas/libms/files
     labels:
       - "traefik.enable=true"

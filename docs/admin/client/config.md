@@ -1,20 +1,13 @@
 # Configure Client Website
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! failure
-    Consolidate all config description here, even the instructions
-    from README of client/ directory.
-<!-- markdownlint-enable MD046 -->
-
 This page describes various configuration options for react website.
 
   ```js
   if (typeof window !== 'undefined') {
     window.env = {
-      REACT_APP_ENVIRONMENT: "prod | dev",
+      REACT_APP_ENVIRONMENT: "prod | dev | local | test",
       REACT_APP_URL: "URL for the gateway",
-      REACT_APP_URL_BASENAME: "Base URL for the client website"(optional),
+      REACT_APP_URL_BASENAME: "Base URL for the client website"(optional, can be null),
       REACT_APP_URL_DTLINK: "Endpoint for the Digital Twin",
       REACT_APP_URL_LIBLINK: "Endpoint for the Library Assets",
       REACT_APP_WORKBENCHLINK_VNCDESKTOP: "Endpoint for the VNC Desktop link",
@@ -113,7 +106,7 @@ URLs in `env.js` change to:
 
 ```txt
 DTaaS application URL: https://foo.com/bar
-Gitlab instance URL: https://foo.gitlab.com
+Gitlab instance URL: https://gitlab.foo.com
 Callback URL: https://foo.com/bar/Library
 Logout URL: https://foo.com/bar
 ```

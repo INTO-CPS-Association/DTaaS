@@ -104,6 +104,8 @@ jobs:
 
       - name: Publish npm package
         run: |
+          # copy README.md to project root
+          cp servers/lib/README.md .
           cd servers/lib
           yarn install
           yarn build

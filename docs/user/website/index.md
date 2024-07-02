@@ -3,44 +3,71 @@
 This page contains a screenshot driven preview of the website serving
 the DTaaS software platform.
 
-## Login to enter the DTaaS software platform
+## Visit the DTaaS Application
 
-![Login](login.png)
+Start off by simply visiting the website
+of the DTaaS instance for which you are a user.
 
-The screen presents with HTTP authorization form. You can enter the user
-credentials. If the DTaaS is being served over HTTPS secure communication
-protocol, the username and password are secure.
+![Visit the URL](visit-dtaas-1.png)
 
-## Start the Authorization
+## Redirected to Authorization Provider
 
-You are now logged into the DTaaS server. The DTaaS uses third-party authorization
+You will be redirected to the Gitlab
+Authorization for DTaaS.
+
+![Gitlab Sign on](gitlab-auth-1.png)
+
+Enter your email/username and password.
+If the email ID registered with DTaaS, is
+the same as your Google Login email ID, you
+can also opt to sign in using Google.
+
+You will be redirected to the OAuth
+Application page.
+
+## Permit DTaaS Server to Use Gitlab
+
+![Server Auth Permission](gitlab-auth-2.png)
+
+Click on Authorize to allow the OAuth
+application to access the information
+connected to your Gitlab account. This
+is a necessary step.
+
+You are now logged into the DTaaS server.
+You will be redirected to the login page
+of the DTaaS website.
+
+The DTaaS website uses
+an additional layer of security -
+the third-party authorization
 protocol known as
-[OAuth](https://auth0.com/docs/get-started/authorization-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce).
+[OAuth](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce).
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
-service provider. The DTaaS uses Gitlab as OAuth provider.
+service provider. This also uses Gitlab as OAuth provider.
 
 ![Gitlab signin button](gitlab-sso-1.png)
 
 You can see the Gitlab signin button. A click on this button takes you to
-Gitlab instance providing authorization for DTaaS.
+Gitlab instance providing authorization for DTaaS. You will not need to sign in to
+Gitlab again, unless you have explicitly
+logged out
+of your Gitlab account.
 
-## Authorize at Gitlab
+## Permit DTaaS Website to Use Gitlab
 
-The username and password authorization takes place on the gitlab website.
-Enter your username and password in the login form.
-
-![Gitlab login form](gitlab-sso-2.png)
-
-## Permit DTaaS to Use Gitlab
-
-The DTaaS application needs your permission to use your Gitlab account for
+The DTaaS website needs your permission to use your Gitlab account for
 authorization. Click on **Authorize** button.
 
 ![Gitlab OAuth permission](gitlab-sso-3.png)
 
 After successful authorization, you will be redirected to the **Library**
 page of the DTaaS website.
+
+There are two icons on the top-right of the webpage. The hyperlink on
+**question mark icon** redirects to help page while the hyperlink on
+**github icon** redirects to github code repository.
 
 ## Overview of menu items
 
@@ -69,7 +96,7 @@ You can see the file manager and five tabs above the library manager. Each tab
 provides help text to guide users in the use of different directories
 in their workspace.
 
-??? Functions tip
+??? tip "Functions"
     The functions responsible for pre- and post-processing of: data inputs,
     data outputs, control outputs. The data science libraries and functions
     can be used to create useful function assets for the platform.
@@ -78,7 +105,7 @@ in their workspace.
     model calibration an achievable goal. Another use of functions is to process
     the sensor and actuator data of both Physical Twins and Digital Twins.
 
-??? Data tip
+??? tip "Data"
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
@@ -89,7 +116,7 @@ in their workspace.
     These control outputs usually go to Physical Twins, but they can also
     go to another Digital Twin.
 
-??? Models tip
+??? tip "Models"
     The model assets are used to describe different aspects of Physical Twins
     and their environment, at different levels of abstraction. Therefore,
     it is possible to have multiple models for the same Physical Twin.
@@ -101,7 +128,7 @@ in their workspace.
     can also have a functional model(s) describing the part manufacturing
     capabilities of the robot.
 
-??? Tools tip
+??? tip "Tools"
     The software tool assets are software used to create, evaluate and
     analyze models. These tools are executed on top of a computing
     platforms, i.e., an operating system, or virtual machines like
@@ -116,7 +143,7 @@ in their workspace.
     combination of models and tools put together to create a ready to
     use Digital Twins.
 
-??? Digital Twins tip
+??? tip "Digital Twins"
     These are ready to use digital twins created by one or more users.
     These digital twins can be reconfigured later for specific use cases.
 
@@ -124,7 +151,7 @@ In addition to the five directories, there is also **common** directory
 in which five sub-directories exist. These sub-directories are:
 data, functions, models, tools and digital twins.
 
-??? Common Assets tip
+??? tip "Common Assets"
     The common directory again has four sub-directories:
     - data
     - functions
@@ -197,12 +224,10 @@ in new browser are:
 
 ![Workbench Tools](workbench_tools.png)
 
-!!! Bug
-    The Terminal hyperlink does not always work reliably.
+!!! tip "Terminal"
+    The Terminal hyperlink does not exist on workbench page.
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
-    The Terminal hyperlink does not always work reliably. If you want
-    terminal, please use the tools dropdown in the Jupyter Notebook.
     ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
 
 ## Finally logout

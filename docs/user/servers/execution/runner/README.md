@@ -10,13 +10,6 @@ Multiple runners can be active simultaneously on one computer.
 The commands are sent via the REST API and are executed on the computer
 with active runner.
 
-:warning: Thanks for trying out this software.
-This software is in early stages of development and is not
-recommended for production use. Each released package will have
-a working API and matching documentation in this README.
-However, there will be breaking changes in the API across each release
-until the package reaches version 1.0.0.
-
 ## :arrow_down: Install
 
 ### NPM Registry

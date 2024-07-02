@@ -22,54 +22,66 @@
 
     1. DTaaS is a web based interface to allow you to invoke various tools
        related to work you want to perform with one or more DTs.
-    2. DTaaS as such doesn't help you create DTs; it loads and runs DTs
-       that you create using tools and services that are available via DTaaS.
-    3. DTaaS can help you create DTs only if your DT or DT asset authoring tools
-       can work in user workspace containing
-       Linux terminal / Desktop / Jupyter / VSCode services.
-    4. DTaaS as such won't help you to install DTs that you get from elsewhere.
-    5. DTs are just executables, as far as DTaaS is concerned.
+    1. DTaaS permits users to run DTs in their private workspaces.
+       These user workspaces are based on Ubuntu 20.04
+       Operating system.
+    1. DTaaS can help you create reusable DT assets only if DT
+       asset authoring tools
+       can work in Ubuntu 20.04 xfce desktop environment.
+    1. DTs are just executables, as far as DTaaS is concerned.
        Users are not constrained to work with DTs in a certain way.
        The DTaaS suggests creation of DTs from reusable assets and provides
        a suggestive structure for DTs. The [examples](./user/examples/index.md)
        provide more insight into DTaaS way of working with DTs.
        But this suggested workflow is not binding on the users.
-    6. DTaaS doesn't help you to autorun run DTs, other than by providing
-       user workspaces. These user workspaces are based on Ubuntu 20.04
-       Operating system.
-    7. The current user interface of DTaaS web application is heavily reliant
+    1. DTs can be run as services with REST API from within user workspace
+       which can help with service-level DT composition.
+
+??? Question "What can not be done inside DTaaS?"
+
+    1. DTaaS as such won't help you to install DTs that you get from elsewhere.
+    1. The current user interface of DTaaS web application is heavily reliant
        on the use of Jupyter lab and notebook.
        The **Digital Twins** page has Create / Execute / Analyze sections but
        all point to Jupyter lab. Web interface. The functionality of these pages
        is still under development.
+    1. DTaaS does not yet have DevOps like automation capabilities.
 
-??? Question "Are there any Key Performance / Capability Indicators for DTaaS?"
+??? Question "Is there any fundamental difference between commercial solutions like Ansys Twin Builder and DTaaS?"
 
-    | Key Performance Indicator | Value |
-    |:---|:---|
-    | Processor | Two AMD EPYC 7443 24-Core Processors |
-    | Maximum Storage Capacity | 4TB SSD, RAID 0 configuration |
-    | Storage Type | File System |
-    | Maximum file size | 10 GB |
-    | Data transfer speed | 100 Mbps |
-    | Data Security | Yes |
-    | Data Privacy | Yes |
-    | Redundancy | None |
-    | Availability | It is a matter of human resources. If you have human
-    resources to maintain DTaaS round the clock,
-    upwards 95% is easily possible. |
+    Commercial DT platforms like _Ansys Twin Builder_ provide tight integration
+    between models, simulation and sensors. This leads to fewer choices in
+    DT design and implementation. In addition, there is a limitation of vendor lockin.
+    On the other hand, DTaas lets users separate DT into reusable assets
+    and combine these assets in a flexible way.
 
 ??? Question "Do you provide licensed software like Matlab?"
 
-    The licensed software are not available on the software platform.
+    Proprietary and commercially licensed software is not
+    available by default on the software platform.
     But users have private workspaces which are based
     on Linux-based xfce Desktop environment.
-    Users can install software in their workspaces.
-    Please see a
+    Users can install proprietary and commercially licensed
+    software in their workspaces. Please see a
     [screencast](FAQ/matlab-simulink.mp4) of using Matlab Simulink
     within the DTaaS software.
     The licensed software installed by one user is not available
     to another user.
+
+## Digital Twin Assets
+
+??? Question "Can DTaaS be used to create new DT assets?"
+
+    The core feature of DTaaS software is to help users
+    create DTs from assets already available in the library.
+    ![Create Library Assets](./user/servers/lib/author.png)
+    However, it is possible for users to take advantage of services
+    available in their workspace to install asset authoring tools
+    in their own workspace.
+    These authoring tools can then be used to create and publish new assets.
+    User workspaces are private and are not shared with other users.
+    Thus any licensed software tools installed in their workspace is
+    only available to them.
 
 ## Digital Twin Models
 
@@ -94,10 +106,6 @@
     For example, if you need Matlab for your work, you need to bring
     he licensed Matlab software.
 
-??? Question "Commercial DT platforms in market provide modelling and simulation alongside integration and UI. DTaas is not able to do any modelling or simulation on its own like other commercial platforms. Is this a correct understanding?"
-
-    Yes, you are right
-
 ??? Question "Can DTaaS support only the information models (or behavioral models) or some other kind of models?"
 
     The DTaaS as such is agnostic to the kind of models you use. DTaaS can
@@ -119,6 +127,16 @@
 
 ## Communication Between Physical Twin and Digital Twin
 
+??? Question "How can DTaaS control the physical entity? Which technologies it uses for controlling the physical world?"
+
+    At a very abstract level, there is a communication from physical entity
+    to digital entity and back to physical entity. How this communication
+    should happen is decided by the person designing the digital entity.
+    The DTaaS can provide communication services that can help you do this
+    communication with relative ease.
+    You can use InfluxDB, RabbitMQ and Mosquitto services hosted on DTaaS for
+    two communication between digital and physical entities.
+
 ??? Question "How would you measure a physical entity like shape, size, weight, structure, chemical attributes etc. using DTaaS? Any specific technology used in this case?"
 
     The real measurements are done at physical twin which are then
@@ -130,7 +148,7 @@
     Having said that, DTaaS allows you to utilize other communication
     technologies and services hosted elsewhere on the Internet.
 
-??? Question "How a real-time data can be differed from static data and what is the procedure to identify dynamic data? Is there any UI or specific tool used here?"
+??? Question "How can real-time data differ from static data and what is the procedure to identify dynamic data? Is there any UI or specific tool used here?"
 
     DTaaS can not understand the static or dynamic nature of data.
     It can facilitate storing names, units and any other text description
@@ -149,17 +167,11 @@
     a Linux desktop / commandline, the tool can be supported within DTaaS.
     The tool (ex. Matlab) itself can take care of the metadata requirements.
 
-??? Question "How can DTaaS control the physical entity? Which technologies it uses for controlling the physical world?"
-
-    At a very abstract level, there is a communication from physical entity
-    to digital entity and back to physical entity. How this communication
-    should happen is decided by the person designing the digital entity.
-    The DTaaS can provide communication services that can help you do this
-    communication with relative ease.
-    You can use InfluxDB, RabbitMQ and Mosquitto services hosted on DTaaS for
-    two communication between digital and physical entities.
-
 ## Data Management
+
+??? Question "Can DTaaS collect data directly from sensors?"
+
+    Yes via platform services.
 
 ??? Question "Does DTaaS support data collection from different sources like hardware, software and network? Is there any user interface or any tracking instruments used for data collection?"
 
@@ -170,6 +182,10 @@
     broker services. There is a user interface for InfluxDB which can be
     used to analyze the data collected.
     Users can also manually upload their data files into DTaaS.
+
+??? Question "Is DTaaS able to transmit data to cloud in real time?"
+
+    Yes via platform services.
 
 ??? Question "Which transmission protocol does DTaaS allow?"
 
@@ -187,14 +203,6 @@
     Graphical, geometric and images. If you need specific licensed software
     for the visualization, you will have to bring the license for it.
     DTaaS does not support AR/VR.
-
-??? Question "Can DTaaS collect data directly from sensors?"
-
-    Yes
-
-??? Question "Is DTaaS able to transmit data to cloud in real time?"
-
-    Yes
 
 ## Platform Native Services on DTaaS Platform
 
@@ -239,21 +247,6 @@
     Azure services or third-party services to get the kind of capabilities
     that GE Predix natively provides in one interface.
     The takeaway is that we pick horses for the courses.
-
-## Create Assets
-
-??? Question "Can DTaaS be used to create new DT assets?"
-
-    The core feature of DTaaS software is to help users
-    create DTs from assets already available in the library.
-    ![Create Library Assets](./user/servers/lib/author.png)
-    However, it is possible for users to take advantage of services
-    available in their workspace to install asset authoring tools
-    in their own workspace.
-    These authoring tools can then be used to create and publish new assets.
-    User workspaces are private and are not shared with other users.
-    Thus any licensed software tools installed in their workspace is
-    only available to them.
 
 ## GDPR Concerns
 
