@@ -34,7 +34,7 @@ export function useURLforLIB(): string {
   return useUserLink(useAppURL(), window.env.REACT_APP_URL_LIBLINK);
 }
 
-function useAppURL(): string {
+export function useAppURL(): string {
   return `${cleanURL(window.env.REACT_APP_URL)}/${useURLbasename()}`;
 }
 
