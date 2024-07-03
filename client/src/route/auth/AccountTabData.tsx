@@ -42,8 +42,11 @@ function ProfileTab() {
   const name = (user?.profile.preferred_username as string | undefined) ?? '';
   const pfp = user?.profile.picture;
   const profileUrl = user?.profile.profile;
-  const groups = (user?.profile.groups as string[] | undefined) ?? [];
-  const groupParagraph = GroupParagraph(groups, name);
+
+  const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
+  const isGroupsAString = (typeof (groups) === 'string');
+  const groupsArray = isGroupsAString ? [groups] : groups;
+  const groupParagraph = GroupParagraph(groupsArray, name);
 
   return (
     <div>

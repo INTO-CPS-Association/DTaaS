@@ -5,6 +5,13 @@ import { useAuth } from 'react-oidc-context';
 
 jest.mock('react-oidc-context');
 
+type Profile = {
+  preferred_username: string | undefined,
+  picture: string | undefined,
+  profile: string | undefined,
+  groups: string[] | string | undefined
+};
+
 function testStaticElements() {
   render(
     <Account />
@@ -24,7 +31,7 @@ function testStaticElements() {
 }
 
 describe('AccountTabs', () => {
-  const mockProfile = {
+  const mockProfile: Profile = {
     preferred_username: "user1",
     picture: "pfp.jpg",
     profile: "test.com",
@@ -48,7 +55,7 @@ describe('AccountTabs', () => {
   });
 
   test('renders AccountTabs with correct profile information when user is in 1 group', () => {
-    mockProfile.groups = ["group-one"];
+    mockProfile.groups = "group-one";
     const mockuser = { profile: mockProfile };
     (useAuth as jest.Mock).mockReturnValue({
       user: mockuser,
