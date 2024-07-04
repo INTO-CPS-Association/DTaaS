@@ -66,7 +66,6 @@ function MenuToolbar({
   const auth = useAuth();
 
   const handleSignOut = async () => {
-
     if (auth) {
       await signOut(auth);
     }
