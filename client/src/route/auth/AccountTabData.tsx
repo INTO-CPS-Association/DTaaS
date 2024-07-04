@@ -7,19 +7,24 @@ function ListGroups(groups: string[]): React.ReactNode[] {
     React.createElement('b', null, group),
   );
 
-  const userBelongsToOneGroup = (groups.length === 1);
+  const userBelongsToOneGroup = groups.length === 1;
   if (userBelongsToOneGroup) {
     return boldGroups;
   }
 
   const groupListing: React.ReactNode[] = [];
-  boldGroups.slice(0, -1).map(groupElement => groupListing.push(groupElement, ', '))
-  groupListing.splice(groupListing.length - 1, 1, [' and ', boldGroups.slice(-1)]);
+  boldGroups
+    .slice(0, -1)
+    .map((groupElement) => groupListing.push(groupElement, ', '));
+  groupListing.splice(groupListing.length - 1, 1, [
+    ' and ',
+    boldGroups.slice(-1),
+  ]);
   return groupListing;
 }
 
 function GroupParagraph(groups: string[], name: React.ReactNode) {
-  const userBelongsToAnyGroups = (groups.length > 0);
+  const userBelongsToAnyGroups = groups.length > 0;
   if (!userBelongsToAnyGroups) {
     return (
       <p>
@@ -29,10 +34,11 @@ function GroupParagraph(groups: string[], name: React.ReactNode) {
   }
 
   const groupListing = ListGroups(groups);
-  const groupSuffix = (groups.length > 1) ? 's' : '';
+  const groupSuffix = groups.length > 1 ? 's' : '';
   return (
     <p>
-      <b>{name}</b> belongs to {React.Children.toArray(groupListing)} group{groupSuffix}.
+      <b>{name}</b> belongs to {React.Children.toArray(groupListing)} group
+      {groupSuffix}.
     </p>
   );
 }
@@ -44,7 +50,7 @@ function ProfileTab() {
   const profileUrl = user?.profile.profile;
 
   const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
-  const isGroupsAString = (typeof (groups) === 'string');
+  const isGroupsAString = typeof groups === 'string';
   const groupsArray = isGroupsAString ? [groups] : groups;
   const groupParagraph = GroupParagraph(groupsArray, name);
 
@@ -53,7 +59,7 @@ function ProfileTab() {
       <h2>Profile</h2>
       <img src={pfp} data-testid="profile-picture" />
       <p>
-        The username is <b>{name}</b>. See more details on {' '}
+        The username is <b>{name}</b>. See more details on{' '}
         <b>
           <a href={profileUrl}>SSO OAuth Provider.</a>
         </b>
