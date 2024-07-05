@@ -28,7 +28,7 @@
     "stop": "npx kill-port 4000",
     "syntax": "npx eslint . --fix",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
-    "test:e2e": "yarn build && yarn configapp:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
+    "test:e2e": "yarn build && yarn config:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
     "test:int": "jest -c ./jest.integration.config.json ../test/integration --coverage",
     "test:unit": "jest -c ./jest.config.json ../test/unitTests --coverage"
   },
