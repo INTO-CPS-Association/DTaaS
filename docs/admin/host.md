@@ -29,7 +29,7 @@ The DTaaS software is a web application and is preferably hosted
 on a server with a domain name like <http:>_foo.com_</http:>.
 It is also possible to use an IP address in place of domain name.
 
-### TLS / HTTPS Certificate
+### TLS / HTTPS Certificate (Optional)
 
 It is possible to add HTTPS option to the DTaaS software installation.
 Creation of the required TLS certificates is possible through
@@ -242,7 +242,7 @@ The change in the last line. The `${DTAAS_DIR}/files`
 got replaced by `${DTAAS_DIR}/files/common`. With this change, only
 common files are readable-writable by all logged in users.
 
-### Add TLS Certificates
+### Add TLS Certificates (Optional)
 
 The application can be served on HTTPS connection for which TLS certificates
 are needed. The certificates need to be issued for `foo.com` or `*.foo.com`.
