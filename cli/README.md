@@ -8,7 +8,7 @@ INTO-CPS-Association Digital Twins as a Service.
 Please visit and download the
 [DTaaS Software](https://github.com/INTO-CPS-Association/DTaaS).
 
-The DTaaS service with base users and essential
+The DTaaS application with base users and essential
 containers should be up and running before using the CLI.
 
 ## Installation
@@ -90,13 +90,21 @@ usernames of the users to be added
 add = ["username1","username2", "username3"]
 ```
 
+Make sure you are in the _cli_ directory.
+
 Then simply:
 
 ```bash
 dtaas admin user add
 ```
 
-#### Caveat
+The command checks for the existence of `files/<username>` directory.
+If it does not exist, a new directory with correct file structure is created.
+The directory, if it exists, must be owned by the user executing
+**dtaas** command on the host operating system. If the files do not
+have the expected ownership rights, the command fails.
+
+#### Caveats
 
 This brings up the containers, without the AuthMS authentication.
 
@@ -110,7 +118,7 @@ This brings up the containers, without the AuthMS authentication.
 - Go to the _docker_ directory
 
 ```bash
-cd <DTaaS>/docker
+cd <DTaaS>/deploy/docker
 ```
 
 - Add three lines to the `conf.server` file
@@ -121,7 +129,7 @@ rule.onlyu3.rule=PathPrefix(`/user3`)
 rule.onlyu3.whitelist = user3@emailservice.com
 ```
 
-Run the command for these changes to take effect:
+- Run the command for these changes to take effect:
 
 ```bash
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
@@ -132,17 +140,26 @@ instance, with authorization enabled.
 
 ### Delete users
 
-TO delete existing users, fill in the _users.delete_ list in
-_dtaas_.toml_ with the Gitlab instance
-usernames of the users to be deleted.
+- To delete existing users, fill in the _users.delete_ list in
+  _dtaas.toml_ with the Gitlab instance
+  usernames of the users to be deleted.
 
-Make sure you are in the _cli_ directory.
+```toml
+[users]
+# matching user info must present in this config file
+delete = ["username1","username2", "username3"]
+```
+
+- Make sure you are in the _cli_ directory.
 
 Then simply:
 
 ```bash
 dtaas admin user delete
 ```
+
+- Remember to remove the rules for deleted users
+  in _conf.server_.
 
 ### Additional Points to Remember
 
@@ -157,3 +174,7 @@ dtaas admin user delete
 - _user add_ and _user delete_ CLIs return an
   error if the _add_ and _delete_ lists in
   _dtaas.toml_ are empty, respectively.
+
+- '.' is a special character. Currently, usernames which have
+  '.'s in them cannot be added properly through the CLI.
+  This is an active issue that will be resolved in future releases.
