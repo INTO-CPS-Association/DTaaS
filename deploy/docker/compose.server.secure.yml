@@ -20,7 +20,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${DTAAS_DIR}/deploy/docker/dynamic:/etc/traefik/dynamic"
-      - "${DTAAS_DIR}/deploy/docker/certs/foo.com:/etc/traefik-certs/foo.com"
+      - "${DTAAS_DIR}/deploy/docker/certs:/etc/traefik-certs"
     networks:
       - frontend
       - users
