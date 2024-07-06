@@ -1,4 +1,4 @@
-# :runner: Runner
+# Runner
 
 A utility service to manage safe execution of remote scripts / commands.
 User launches this from commandline and let the utility

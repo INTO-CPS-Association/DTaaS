@@ -4,17 +4,41 @@
 
 ## Users
 
-Cláudio Ângelo Gonçalves Gomes, Dmitri Tcherniak,
-Elif Ecem Bas, Giuseppe Abbiati, Hao Feng,
-Henrik Ejersbo, Tanusree Roy, Farshid Naseri
+Cláudio Ângelo Gonçalves Gomes,
+Dmitri Tcherniak,
+Elif Ecem Bas,
+Farshid Naseri,
+Giuseppe Abbiati,
+Hannes Iven,
+Hao Feng,
+Henrik Ejersbo,
+Lars Vosteen,
+Lei Zhao,
+Mirgita Frasheri,
+Morten Haahr Kristensen,
+Neena Goveas,
+Tanusree Roy,
+Santiago Gil Arboleda,
+Swarup Mahato,
+Valdemar Tang
 
 ## Example Contributors
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! failure
-    Cite all example providers and recent users
-<!-- markdownlint-enable MD046 -->
+| Example Name | Contributors |
+|:---|:---|
+| Mass Spring Damper | Prasad Talasila |
+| Water Tank Fault Injection | Henrik Ejersbo and Mirgita Frasheri |
+| Water Tank Model Swap | Henrik Ejersbo and Mirgita Frasheri |
+| Desktop Robotti with RabbitMQ | Mirgita Frasheri |
+| Water Treatment Plant and OPC-UA | Lucia Royo and Alejandro Labarias |
+| Three Water Tanks with DT Manager Framework | Santiago Gil Arboleda |
+| Flex-Cell with Two Industrial Robots | Santiago Gil Arboleda |
+| Incubator | Morten Haahr Kristensen |
+| Firefighters in Emergency Environments | Lars Vosteen and Hannes Iven |
+| Mass Spring Damper with NuRV Runtime Monitor | Alberto Bonizzi  |
+| Incubator with NuRV Runtime Monitor | Alberto Bonizzi and Morten Haahr Kristensen |
+| Incubator with NuRV Runtime Monitor Service | Valdemar Tang |
+| Water Tank Fault Injection with NuRV Runtime Monitor | Alberto Bonizzi |
 
 ## Documentation
 

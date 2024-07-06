@@ -59,121 +59,118 @@ Replace `path` with the desired directory path.
 
 send requests to: <https://foo.com/lib>
 
-=== "GraphQL Query"
+#### GraphQL query for list of contents
 
-    ``` graphql-query
-    query {
-      listDirectory(path: "user1") {
-        repository {
-          tree {
-            blobs {
-              edges {
-                node {
-                  name
-                  type
-                }
-              }
+``` graphql
+query {
+  listDirectory(path: "user1") {
+    repository {
+      tree {
+        blobs {
+          edges {
+            node {
+              name
+              type
             }
-            trees {
-              edges {
-                node {
-                  name
-                  type
-                }
-              }
+          }
+        }
+        trees {
+          edges {
+            node {
+              name
+              type
             }
           }
         }
       }
     }
+  }
+}
+```
 
-    ```
+#### GraphQL response for list of contents
 
-=== "GraphQL Response"
-
-    ``` graphql-response
-    {
-      "data": {
-        "listDirectory": {
-          "repository": {
-            "tree": {
-              "blobs": {
-                "edges": []
+``` graphql
+{
+  "data": {
+    "listDirectory": {
+      "repository": {
+        "tree": {
+          "blobs": {
+            "edges": []
+          },
+          "trees": {
+            "edges": [
+              {
+                "node": {
+                  "name": "common",
+                  "type": "tree"
+                }
               },
-              "trees": {
-                "edges": [
-                  {
-                    "node": {
-                      "name": "common",
-                      "type": "tree"
-                    }
-                  },
-                  {
-                    "node": {
-                      "name": "data",
-                      "type": "tree"
-                    }
-                  },
-                  {
-                    "node": {
-                      "name": "digital twins",
-                      "type": "tree"
-                    }
-                  },
-                  {
-                    "node": {
-                      "name": "functions",
-                      "type": "tree"
-                    }
-                  },
-                  {
-                    "node": {
-                      "name": "models",
-                      "type": "tree"
-                    }
-                  },
-                  {
-                    "node": {
-                      "name": "tools",
-                      "type": "tree"
-                    }
-                  }
-                ]
+              {
+                "node": {
+                  "name": "data",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "digital twins",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "functions",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "models",
+                  "type": "tree"
+                }
+              },
+              {
+                "node": {
+                  "name": "tools",
+                  "type": "tree"
+                }
               }
-            }
+            ]
           }
         }
       }
     }
+  }
+}
+```
 
-    ```
+#### HTTP request for list of contents
 
-=== "HTTP Request"
+``` http
+POST /lib HTTP/1.1
+Host: foo.com
+Content-Type: application/json
+Content-Length: 388
 
-    ``` http-request
-    POST /lib HTTP/1.1
-    Host: foo.com
-    Content-Type: application/json
-    Content-Length: 388
+{
+  "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+}
+```
 
-    {
-      "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
-    }
+#### HTTP response for list of contents
 
-    ```
-
-=== "HTTP Response"
-
-    ``` http-response
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: *
-    Connection: close
-    Content-Length: 306
-    Content-Type: application/json; charset=utf-8
-    Date: Tue, 26 Sep 2023 20:26:49 GMT
-    X-Powered-By: Express
-    {"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
-    ```
+``` http
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Connection: close
+Content-Length: 306
+Content-Type: application/json; charset=utf-8
+Date: Tue, 26 Sep 2023 20:26:49 GMT
+X-Powered-By: Express
+{"data":{"listDirectory":{"repository":{"tree":{"blobs":{"edges":[]},"trees":{"edges":[{"node":{"name":"data","type":"tree"}},{"node":{"name":"digital twins","type":"tree"}},{"node":{"name":"functions","type":"tree"}},{"node":{"name":"models","type":"tree"}},{"node":{"name":"tools","type":"tree"}}]}}}}}}
+```
 
 ### Fetch a file from the available files
 
@@ -182,70 +179,70 @@ This query receives directory path and send the file contents to user in respons
 To check this query, create a file `files/user2/data/welcome.txt`
 with content of `hello world`.
 
-=== "GraphQL Request"
+#### GraphQL query for fetch a file
 
-    ```graphql-request
-    query {
-      readFile(path: "user2/data/sample.txt") {
-        repository {
-          blobs {
-            nodes {
-              name
-              rawBlob
-              rawTextBlob
-            }
-          }
+``` graphql
+query {
+  readFile(path: "user2/data/sample.txt") {
+    repository {
+      blobs {
+        nodes {
+          name
+          rawBlob
+          rawTextBlob
         }
       }
     }
-    ```
+  }
+}
+```
 
-=== "GraphQL Response"
+#### GraphQL response for fetch a file
 
-    ```graphql-response
-    {
-      "data": {
-        "readFile": {
-          "repository": {
-            "blobs": {
-              "nodes": [
-                {
-                  "name": "sample.txt",
-                  "rawBlob": "hello world",
-                  "rawTextBlob": "hello world"
-                }
-              ]
+``` graphql
+{
+  "data": {
+    "readFile": {
+      "repository": {
+        "blobs": {
+          "nodes": [
+            {
+              "name": "sample.txt",
+              "rawBlob": "hello world",
+              "rawTextBlob": "hello world"
             }
-          }
+          ]
         }
       }
     }
-    ```
+  }
+}
+```
 
-=== "HTTP Request"
+#### HTTP request for fetch a file
 
-    ```http-request
-    POST /lib HTTP/1.1
-    Host: foo.com
-    Content-Type: application/json
-    Content-Length: 217
-    {
-      "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
-    }
-    ```
+``` http
+POST /lib HTTP/1.1
+Host: foo.com
+Content-Type: application/json
+Content-Length: 217
+{
+  "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
+}
+```
 
-=== "HTTP Response"
+#### HTTP response for fetch a file
 
-    ```http-response
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: *
-    Connection: close
-    Content-Length: 134
-    Content-Type: application/json; charset=utf-8
-    Date: Wed, 27 Sep 2023 09:17:18 GMT
-    X-Powered-By: Express
-    {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
-    ```
+``` http
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Connection: close
+Content-Length: 134
+Content-Type: application/json; charset=utf-8
+Date: Wed, 27 Sep 2023 09:17:18 GMT
+X-Powered-By: Express
+{"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
+```
 
 The _path_ refers to the file path to look at:
 For example, _user1_ looks at files of

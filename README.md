@@ -57,7 +57,7 @@ The [web client](client),
 [library](servers/lib) and
 [runner](servers/execution/runner)
 microservices are functional at present.
-These are packages are available on
+These packages are available on
 [github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 Please see the
