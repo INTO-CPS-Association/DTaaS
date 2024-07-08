@@ -22,6 +22,8 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 }));
 
 describe('Library', () => {
+  const normalizer = getDefaultNormalizer({ trim: false, collapseWhitespace: false });
+
   beforeEach(() => {
     const userMock = {
       profile: {
@@ -36,6 +38,7 @@ describe('Library', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   })
 
@@ -60,15 +63,15 @@ describe('Library', () => {
     expect(digitalTwinsTab).toBeInTheDocument();
 
     let i = 0;
-    const functionsParagraph = screen.getByText(assetType[i++].body, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+    const functionsParagraph = screen.getByText(assetType[i++].body, { normalizer: normalizer });
     expect(functionsParagraph).toBeInTheDocument();
-    const modelsParagraph = screen.queryByText(assetType[i++].body, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+    const modelsParagraph = screen.queryByText(assetType[i++].body, { normalizer: normalizer });
     expect(modelsParagraph).not.toBeInTheDocument();
-    const toolsParagraph = screen.queryByText(assetType[i++].body, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+    const toolsParagraph = screen.queryByText(assetType[i++].body, { normalizer: normalizer });
     expect(toolsParagraph).not.toBeInTheDocument();
-    const dataParagraph = screen.queryByText(assetType[i++].body, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+    const dataParagraph = screen.queryByText(assetType[i++].body, { normalizer: normalizer });
     expect(dataParagraph).not.toBeInTheDocument();
-    const digitalTwinsParagraph = screen.queryByText(assetType[i++].body, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+    const digitalTwinsParagraph = screen.queryByText(assetType[i++].body, { normalizer: normalizer });
     expect(digitalTwinsParagraph).not.toBeInTheDocument();
 
     const scopeTablist = tablists[1];
@@ -81,10 +84,11 @@ describe('Library', () => {
     const commonTab = within(scopeTablist).getByRole('tab', { name: "Common", selected: false });
     expect(commonTab).toBeInTheDocument();
 
-    const privateParagraph = screen.getByText(scope[0].body,);
+    i = 0;
+    const privateParagraph = screen.getByText(scope[i++].body, { normalizer: normalizer });
     expect(privateParagraph).toBeInTheDocument();
 
-    const commonParagraph = screen.queryByText(scope[1].body,);
+    const commonParagraph = screen.queryByText(scope[i++].body, { normalizer: normalizer });
     expect(commonParagraph).not.toBeInTheDocument();
 
     const iframe = screen.getByTitle("Functions");
@@ -113,10 +117,33 @@ describe('Library', () => {
     expect(iframe).toHaveProperty('src', 'https://example.com/URL_LIBtree/models')
   });
 
-  it('updates text and iframe src according to which tabs are pressed', () => {
+  it('does not update text and iframe src when clicking default assetType tab', () => {
+    const tablists = screen.getAllByRole('tablist');
+    const assetTypeTablist = tablists[0];
+
+    const tabLabel = assetType[0].label;
+    const tabBody = assetType[0].body;
+
+    const tab = within(assetTypeTablist).getByRole('tab', { name: tabLabel, selected: true });
+    expect(tab).toBeInTheDocument();
+
+    const modelsParagraph = screen.queryByText(tabBody, { normalizer: normalizer });
+    expect(modelsParagraph).toBeInTheDocument();
+
+    fireEvent.click(tab);
+    const tabAfterClick = within(assetTypeTablist).getByRole('tab', { name: tabLabel, selected: true });
+    expect(tabAfterClick).toBeInTheDocument();
+
+    const tabParagraphAfterClick = screen.getByText(tabBody, { normalizer: normalizer });
+    expect(tabParagraphAfterClick).toBeInTheDocument();
+  });
+
+  it('updates text and iframe src according to which assetType tab is pressed', () => {
     const tablists = screen.getAllByRole('tablist');
     const assetTypeTablist = tablists[0];
     const assetTypesTabs = within(assetTypeTablist).getAllByRole('tab');
+
+    const spyOnClick = jest.spyOn(fireEvent, 'click');
     for (let i = 1; i < assetTypesTabs.length; i++) {
       const tabLabel = assetType[i].label;
       const tabBody = assetType[i].body;
@@ -124,19 +151,67 @@ describe('Library', () => {
       const tab = within(assetTypeTablist).getByRole('tab', { name: tabLabel, selected: false });
       expect(tab).toBeInTheDocument();
 
-      const modelsParagraph = screen.queryByText(tabBody, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+      const modelsParagraph = screen.queryByText(tabBody, { normalizer: normalizer });
       expect(modelsParagraph).not.toBeInTheDocument();
 
       fireEvent.click(tab);
       const tabAfterClick = within(assetTypeTablist).getByRole('tab', { name: tabLabel, selected: true });
       expect(tabAfterClick).toBeInTheDocument();
 
-      const tabParagraphAfterClick = screen.getByText(tabBody, { normalizer: getDefaultNormalizer({ trim: false, collapseWhitespace: false }) });
+      const tabParagraphAfterClick = screen.getByText(tabBody, { normalizer: normalizer });
       expect(tabParagraphAfterClick).toBeInTheDocument();
 
       const iframe = screen.getByTitle(tabLabel);
       expect(iframe).toBeInTheDocument();
       expect(iframe).toHaveProperty('src', `https://example.com/URL_LIBtree/${tabLabel.replace(" ", "_").toLowerCase()}`);
     };
+    expect(spyOnClick).toHaveBeenCalled();
+  });
+
+  it('does not update text and iframe src when clicking default scope tab', () => {
+    const tablists = screen.getAllByRole('tablist');
+    const scopeTablist = tablists[1];
+
+    const tabLabel = scope[0].label;
+    const tabBody = scope[0].body;
+
+    const tab = within(scopeTablist).getByRole('tab', { name: tabLabel, selected: true });
+    expect(tab).toBeInTheDocument();
+
+    const modelsParagraph = screen.queryByText(tabBody, { normalizer: normalizer });
+    expect(modelsParagraph).toBeInTheDocument();
+
+    fireEvent.click(tab);
+    const tabAfterClick = within(scopeTablist).getByRole('tab', { name: tabLabel, selected: true });
+    expect(tabAfterClick).toBeInTheDocument();
+
+    const tabParagraphAfterClick = screen.getByText(tabBody, { normalizer: normalizer });
+    expect(tabParagraphAfterClick).toBeInTheDocument();
+  });
+
+  it('updates text according to which scope tab is pressed', () => {
+    const tablists = screen.getAllByRole('tablist');
+    const scopeTablist = tablists[1];
+    const scopesTabs = within(scopeTablist).getAllByRole('tab');
+
+    const spyOnClick = jest.spyOn(fireEvent, 'click');
+    for (let i = 1; i < scopesTabs.length; i++) {
+      const tabLabel = scope[i].label;
+      const tabBody = scope[i].body;
+
+      const tab = within(scopeTablist).getByRole('tab', { name: tabLabel, selected: false });
+      expect(tab).toBeInTheDocument();
+
+      const modelsParagraph = screen.queryByText(tabBody, { normalizer: normalizer });
+      expect(modelsParagraph).not.toBeInTheDocument();
+
+      fireEvent.click(tab);
+      const tabAfterClick = within(scopeTablist).getByRole('tab', { name: tabLabel, selected: true });
+      expect(tabAfterClick).toBeInTheDocument();
+
+      const tabParagraphAfterClick = screen.getByText(tabBody, { normalizer: normalizer });
+      expect(tabParagraphAfterClick).toBeInTheDocument();
+    };
+    expect(spyOnClick).toHaveBeenCalled();
   });
 });
