@@ -123,8 +123,14 @@
 <path fill="none" stroke="green" d="M156.39,-648.76C121.69,-658.02 103.48,-662.11 87.51,-662.56"/>
 <polygon fill="green" stroke="green" points="87.27,-659.06 77.2,-662.35 87.13,-666.05 87.27,-659.06"/>
 </g>
-<!-- e2e/app.e2e.spec.ts -->
+<!-- cloudcmd/cloudcmd.spec.ts -->
 <g id="node8" class="node">
+<title>cloudcmd/cloudcmd.spec.ts</title>
+<path fill="none" stroke="green" d="M258.67,-207.96C258.67,-207.96 132.33,-207.96 132.33,-207.96 129.17,-207.96 126,-204.79 126,-201.62 126,-201.62 126,-195.29 126,-195.29 126,-192.12 129.17,-188.96 132.33,-188.96 132.33,-188.96 258.67,-188.96 258.67,-188.96 261.83,-188.96 265,-192.12 265,-195.29 265,-195.29 265,-201.62 265,-201.62 265,-204.79 261.83,-207.96 258.67,-207.96"/>
+<text text-anchor="middle" x="195.5" y="-195.96" font-family="Arial" font-size="10.00" fill="green">cloudcmd/cloudcmd.spec.ts</text>
+</g>
+<!-- e2e/app.e2e.spec.ts -->
+<g id="node9" class="node">
 <title>e2e/app.e2e.spec.ts</title>
 <path fill="none" stroke="black" d="M760.57,-77.73C760.57,-77.73 668.24,-77.73 668.24,-77.73 665.07,-77.73 661.9,-74.56 661.9,-71.39 661.9,-71.39 661.9,-65.06 661.9,-65.06 661.9,-61.89 665.07,-58.73 668.24,-58.73 668.24,-58.73 760.57,-58.73 760.57,-58.73 763.74,-58.73 766.9,-61.89 766.9,-65.06 766.9,-65.06 766.9,-71.39 766.9,-71.39 766.9,-74.56 763.74,-77.73 760.57,-77.73"/>
 <text text-anchor="middle" x="714.4" y="-65.73" font-family="Arial" font-size="10.00">e2e/app.e2e.spec.ts</text>
@@ -136,7 +142,7 @@
 <polygon fill="green" stroke="green" points="512.3,-9.39 502.91,-14.29 513.3,-16.32 512.3,-9.39"/>
 </g>
 <!-- testUtil.ts -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>testUtil.ts</title>
 <path fill="none" stroke="green" d="M669.26,-337.55C669.26,-337.55 622.93,-337.55 622.93,-337.55 619.76,-337.55 616.6,-334.38 616.6,-331.21 616.6,-331.21 616.6,-324.88 616.6,-324.88 616.6,-321.71 619.76,-318.55 622.93,-318.55 622.93,-318.55 669.26,-318.55 669.26,-318.55 672.43,-318.55 675.6,-321.71 675.6,-324.88 675.6,-324.88 675.6,-331.21 675.6,-331.21 675.6,-334.38 672.43,-337.55 669.26,-337.55"/>
 <text text-anchor="middle" x="646.1" y="-325.55" font-family="Arial" font-size="10.00" fill="green">testUtil.ts</text>
@@ -144,11 +150,11 @@
 <!-- e2e/app.e2e.spec.ts&#45;&gt;testUtil.ts -->
 <g id="edge14" class="edge">
 <title>e2e/app.e2e.spec.ts&#45;&gt;testUtil.ts</title>
-<path fill="none" stroke="green" d="M715.2,-77.81C722.09,-161.47 720.06,-169.9 654.93,-309.18"/>
-<polygon fill="green" stroke="green" points="651.61,-308 650.54,-318.54 657.95,-310.97 651.61,-308"/>
+<path fill="none" stroke="green" d="M715.18,-77.79C721.89,-161.22 719.86,-169.64 654.9,-309.15"/>
+<polygon fill="green" stroke="green" points="651.58,-307.99 650.53,-318.53 657.93,-310.94 651.58,-307.99"/>
 </g>
 <!-- integration/files.service.integration.spec.ts -->
-<g id="node10" class="node">
+<g id="node11" class="node">
 <title>integration/files.service.integration.spec.ts</title>
 <path fill="none" stroke="black" d="M588.17,-487.84C588.17,-487.84 400.84,-487.84 400.84,-487.84 397.67,-487.84 394.5,-484.67 394.5,-481.5 394.5,-481.5 394.5,-475.17 394.5,-475.17 394.5,-472 397.67,-468.84 400.84,-468.84 400.84,-468.84 588.17,-468.84 588.17,-468.84 591.34,-468.84 594.5,-472 594.5,-475.17 594.5,-475.17 594.5,-481.5 594.5,-481.5 594.5,-484.67 591.34,-487.84 588.17,-487.84"/>
 <text text-anchor="middle" x="494.5" y="-475.84" font-family="Arial" font-size="10.00">integration/files.service.integration.spec.ts</text>
@@ -156,29 +162,29 @@
 <!-- integration/files.service.integration.spec.ts&#45;&gt;../src/files/resolvers/files.resolver.ts -->
 <g id="edge15" class="edge">
 <title>integration/files.service.integration.spec.ts&#45;&gt;../src/files/resolvers/files.resolver.ts</title>
-<path fill="none" stroke="green" d="M394.28,-472.58C261.55,-464.38 234.36,-458.28 167.89,-428.4"/>
-<polygon fill="green" stroke="green" points="169.24,-425.16 158.68,-424.22 166.35,-431.54 169.24,-425.16"/>
+<path fill="none" stroke="green" d="M394.29,-471.52C261.85,-461.99 234.2,-456.02 168.97,-428.18"/>
+<polygon fill="green" stroke="green" points="170.07,-424.85 159.5,-424.11 167.3,-431.28 170.07,-424.85"/>
 </g>
 <!-- integration/files.service.integration.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts -->
 <g id="edge16" class="edge">
 <title>integration/files.service.integration.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts</title>
-<path fill="none" stroke="green" d="M481.16,-488.02C451.19,-509.72 432.29,-522.74 414.49,-529.78"/>
-<polygon fill="green" stroke="green" points="413.01,-526.59 404.65,-533.1 415.25,-533.22 413.01,-526.59"/>
+<path fill="none" stroke="green" d="M481.19,-488.02C451.3,-509.71 432.44,-522.72 414.66,-529.75"/>
+<polygon fill="green" stroke="green" points="413.18,-526.56 404.82,-533.07 415.42,-533.19 413.18,-526.56"/>
 </g>
 <!-- integration/files.service.integration.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts -->
 <g id="edge17" class="edge">
 <title>integration/files.service.integration.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts</title>
-<path fill="none" stroke="green" d="M492.33,-488.06C470.37,-586.35 466.45,-599.49 426.78,-634.95"/>
-<polygon fill="green" stroke="green" points="424.13,-632.62 418.94,-641.85 428.76,-637.87 424.13,-632.62"/>
+<path fill="none" stroke="green" d="M492.36,-488.04C470.62,-586.23 466.73,-599.36 426.87,-634.91"/>
+<polygon fill="green" stroke="green" points="424.19,-632.6 419,-641.83 428.82,-637.85 424.19,-632.6"/>
 </g>
 <!-- integration/files.service.integration.spec.ts&#45;&gt;testUtil.ts -->
 <g id="edge18" class="edge">
 <title>integration/files.service.integration.spec.ts&#45;&gt;testUtil.ts</title>
-<path fill="none" stroke="green" d="M508.45,-468.78C601.76,-404.8 612.58,-395.92 636.88,-346.98"/>
-<polygon fill="green" stroke="green" points="640.16,-348.23 641.42,-337.71 633.88,-345.15 640.16,-348.23"/>
+<path fill="none" stroke="green" d="M508.44,-468.7C601.68,-404.19 612.49,-395.28 636.85,-346.8"/>
+<polygon fill="green" stroke="green" points="640.1,-348.13 641.41,-337.62 633.83,-345.02 640.1,-348.13"/>
 </g>
 <!-- unit/files&#45;service.factory.unit.spec.ts -->
-<g id="node11" class="node">
+<g id="node12" class="node">
 <title>unit/files&#45;service.factory.unit.spec.ts</title>
 <path fill="none" stroke="black" d="M390.52,-848.77C390.52,-848.77 229.19,-848.77 229.19,-848.77 226.02,-848.77 222.86,-845.6 222.86,-842.44 222.86,-842.44 222.86,-836.1 222.86,-836.1 222.86,-832.94 226.02,-829.77 229.19,-829.77 229.19,-829.77 390.52,-829.77 390.52,-829.77 393.69,-829.77 396.86,-832.94 396.86,-836.1 396.86,-836.1 396.86,-842.44 396.86,-842.44 396.86,-845.6 393.69,-848.77 390.52,-848.77"/>
 <text text-anchor="middle" x="309.86" y="-836.77" font-family="Arial" font-size="10.00">unit/files&#45;service.factory.unit.spec.ts</text>
@@ -186,23 +192,23 @@
 <!-- unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts -->
 <g id="edge20" class="edge">
 <title>unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts</title>
-<path fill="none" stroke="green" d="M307.72,-829.52C289.52,-746.18 289.43,-736.65 303.58,-549.61"/>
-<polygon fill="green" stroke="green" points="307.08,-549.63 304.35,-539.39 300.1,-549.1 307.08,-549.63"/>
+<path fill="none" stroke="green" d="M307.7,-829.52C289.33,-746.12 289.24,-736.59 303.56,-549.6"/>
+<polygon fill="green" stroke="green" points="307.07,-549.63 304.34,-539.39 300.09,-549.1 307.07,-549.63"/>
 </g>
 <!-- unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts -->
 <g id="edge21" class="edge">
 <title>unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts</title>
-<path fill="none" stroke="green" d="M318.27,-829.6C353.22,-789.21 358.01,-779.51 400.36,-670.69"/>
-<polygon fill="green" stroke="green" points="403.66,-671.87 404.03,-661.28 397.14,-669.33 403.66,-671.87"/>
+<path fill="none" stroke="green" d="M318.26,-829.6C353.18,-789.21 357.98,-779.51 400.36,-670.69"/>
+<polygon fill="green" stroke="green" points="403.66,-671.87 404.02,-661.28 397.13,-669.33 403.66,-671.87"/>
 </g>
 <!-- unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/interfaces/files.service.interface.ts -->
 <g id="edge19" class="edge">
 <title>unit/files&#45;service.factory.unit.spec.ts&#45;&gt;../src/files/interfaces/files.service.interface.ts</title>
-<path fill="none" stroke="green" d="M296.93,-829.71C235.03,-783.71 229.91,-774.31 196.98,-658.49"/>
-<polygon fill="green" stroke="green" points="200.34,-657.5 194.24,-648.84 193.6,-659.41 200.34,-657.5"/>
+<path fill="none" stroke="green" d="M296.91,-829.7C234.88,-783.65 229.77,-774.25 196.96,-658.48"/>
+<polygon fill="green" stroke="green" points="200.32,-657.5 194.23,-648.83 193.58,-659.41 200.32,-657.5"/>
 </g>
 <!-- unit/files.resolver.unit.spec.ts -->
-<g id="node12" class="node">
+<g id="node13" class="node">
 <title>unit/files.resolver.unit.spec.ts</title>
 <path fill="none" stroke="black" d="M350.83,-337.7C350.83,-337.7 218.49,-337.7 218.49,-337.7 215.33,-337.7 212.16,-334.54 212.16,-331.37 212.16,-331.37 212.16,-325.04 212.16,-325.04 212.16,-321.87 215.33,-318.7 218.49,-318.7 218.49,-318.7 350.83,-318.7 350.83,-318.7 353.99,-318.7 357.16,-321.87 357.16,-325.04 357.16,-325.04 357.16,-331.37 357.16,-331.37 357.16,-334.54 353.99,-337.7 350.83,-337.7"/>
 <text text-anchor="middle" x="284.66" y="-325.7" font-family="Arial" font-size="10.00">unit/files.resolver.unit.spec.ts</text>
@@ -210,29 +216,29 @@
 <!-- unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/resolvers/files.resolver.ts -->
 <g id="edge23" class="edge">
 <title>unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/resolvers/files.resolver.ts</title>
-<path fill="none" stroke="green" d="M253.99,-337.75C189.05,-358.22 176.87,-364.92 151.68,-396.51"/>
-<polygon fill="green" stroke="green" points="148.74,-394.57 145.33,-404.6 154.25,-398.89 148.74,-394.57"/>
+<path fill="none" stroke="green" d="M253.54,-337.76C188.83,-357.92 176.84,-364.62 151.38,-396.78"/>
+<polygon fill="green" stroke="green" points="148.34,-394.99 144.96,-405.03 153.87,-399.29 148.34,-394.99"/>
 </g>
 <!-- unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts -->
 <g id="edge24" class="edge">
 <title>unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/services/files&#45;service.factory.ts</title>
-<path fill="none" stroke="green" d="M281.74,-337.97C256.25,-423.39 255.93,-432 295.7,-511.29"/>
-<polygon fill="green" stroke="green" points="292.58,-512.89 300.21,-520.25 298.84,-509.74 292.58,-512.89"/>
+<path fill="none" stroke="green" d="M281.74,-337.85C256.25,-422.19 255.93,-430.77 295.7,-511.06"/>
+<polygon fill="green" stroke="green" points="292.62,-512.73 300.21,-520.12 298.89,-509.61 292.62,-512.73"/>
 </g>
 <!-- unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/interfaces/files.service.interface.ts -->
 <g id="edge22" class="edge">
 <title>unit/files.resolver.unit.spec.ts&#45;&gt;../src/files/interfaces/files.service.interface.ts</title>
-<path fill="none" stroke="green" d="M278.79,-337.94C182.6,-497.45 177.74,-508.08 189.41,-619.53"/>
-<polygon fill="green" stroke="green" points="185.94,-619.97 190.47,-629.54 192.9,-619.23 185.94,-619.97"/>
+<path fill="none" stroke="green" d="M278.77,-337.88C182.24,-496.45 177.37,-507.04 189.36,-619.38"/>
+<polygon fill="green" stroke="green" points="185.89,-619.9 190.45,-629.46 192.85,-619.15 185.89,-619.9"/>
 </g>
 <!-- unit/files.resolver.unit.spec.ts&#45;&gt;testUtil.ts -->
 <g id="edge25" class="edge">
 <title>unit/files.resolver.unit.spec.ts&#45;&gt;testUtil.ts</title>
-<path fill="none" stroke="green" d="M322.24,-318.65C492.81,-275.49 514.73,-274.15 613.53,-314.52"/>
-<polygon fill="green" stroke="green" points="612.44,-317.85 623.02,-318.42 615.1,-311.38 612.44,-317.85"/>
+<path fill="none" stroke="green" d="M321.53,-318.7C492.35,-274.84 513.94,-273.52 613.92,-314.61"/>
+<polygon fill="green" stroke="green" points="612.62,-317.86 623.2,-318.45 615.3,-311.39 612.62,-317.86"/>
 </g>
 <!-- unit/local&#45;files.service.unit.spec.ts -->
-<g id="node13" class="node">
+<g id="node14" class="node">
 <title>unit/local&#45;files.service.unit.spec.ts</title>
 <path fill="none" stroke="black" d="M770.18,-621.23C770.18,-621.23 617.85,-621.23 617.85,-621.23 614.68,-621.23 611.52,-618.07 611.52,-614.9 611.52,-614.9 611.52,-608.57 611.52,-608.57 611.52,-605.4 614.68,-602.23 617.85,-602.23 617.85,-602.23 770.18,-602.23 770.18,-602.23 773.35,-602.23 776.52,-605.4 776.52,-608.57 776.52,-608.57 776.52,-614.9 776.52,-614.9 776.52,-618.07 773.35,-621.23 770.18,-621.23"/>
 <text text-anchor="middle" x="694.02" y="-609.23" font-family="Arial" font-size="10.00">unit/local&#45;files.service.unit.spec.ts</text>
@@ -240,14 +246,14 @@
 <!-- unit/local&#45;files.service.unit.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts -->
 <g id="edge26" class="edge">
 <title>unit/local&#45;files.service.unit.spec.ts&#45;&gt;../src/files/services/local&#45;files.service.ts</title>
-<path fill="none" stroke="green" d="M678.22,-621.31C603.58,-666.38 583.86,-673.95 487.54,-662.28"/>
-<polygon fill="green" stroke="green" points="487.69,-658.77 477.33,-661.01 486.83,-665.72 487.69,-658.77"/>
+<path fill="none" stroke="green" d="M678.26,-621.27C604.02,-666.06 584.25,-673.67 488.35,-662.25"/>
+<polygon fill="green" stroke="green" points="488.54,-658.74 478.19,-661 487.69,-665.69 488.54,-658.74"/>
 </g>
 <!-- unit/local&#45;files.service.unit.spec.ts&#45;&gt;testUtil.ts -->
 <g id="edge27" class="edge">
 <title>unit/local&#45;files.service.unit.spec.ts&#45;&gt;testUtil.ts</title>
-<path fill="none" stroke="green" d="M696.37,-602.2C725.56,-483.78 725.1,-475.25 656.16,-346.76"/>
-<polygon fill="green" stroke="green" points="659.11,-344.87 651.3,-337.71 652.95,-348.18 659.11,-344.87"/>
+<path fill="none" stroke="green" d="M696.38,-602.16C725.64,-483.22 725.18,-474.68 656.17,-346.69"/>
+<polygon fill="green" stroke="green" points="659.13,-344.81 651.3,-337.68 652.97,-348.14 659.13,-344.81"/>
 </g>
 </g>
 </svg>

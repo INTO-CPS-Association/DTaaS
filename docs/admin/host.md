@@ -29,6 +29,12 @@ The DTaaS software is a web application and is preferably hosted
 on a server with a domain name like <http:>_foo.com_</http:>.
 It is also possible to use an IP address in place of domain name.
 
+### TLS / HTTPS Certificate (Optional)
+
+It is possible to add HTTPS option to the DTaaS software installation.
+Creation of the required TLS certificates is possible through
+[certbot](https://certbot.eff.org/).
+
 ### OAuth Provider
 
 **[Gitlab Instance](https://about.gitlab.com/install/)** -
@@ -38,7 +44,10 @@ use [gitlab.com](https://gitlab.com) itself.
 
 ### User Accounts
 
-Create user accounts in the linked gitlab instance for all the users.
+Create user accounts in a linked gitlab instance for all the users.
+
+The default docker compose file contains two - _user1_ and _user2_.
+These names need to be changed to suitable usernames.
 
 ### OAuth2 Application Registration
 
@@ -55,6 +64,8 @@ using OAuth2 protocol.
   The details of this authorization setup are in
   [server docs](servers/auth.md).
 
+It is possible to use <https://gitlab.com> or a local installation
+of Gitlab can be used for this purpose.
 Based on your selection of gitlab instance, it is necessary
 to register these two OAuth2 applications and link them
 to your intended DTaaS installation.
@@ -185,7 +196,7 @@ Please change the usernames and email addresses to the matching
 user accounts on the OAuth provider
 (either <https://gitlab.foo.com> or <https://gitlab.com>).
 
-### Caveat
+#### Caveat
 
 The usernames in the `deploy/docker/.env.server` file need to match those in
 the `deploy/docker/conf.server` file.
@@ -211,8 +222,8 @@ such routes are not served by traefik; it will give **404 server response**.
     all user files at <http://foo.com/lib/files>.
     All files of all the users are readable-writable by
     all logged in users.
-    The `compose.server.yml` file needs to updated to
-    expose another directory like common assets directory.
+    The `compose.server.yml` / `compose.server.secure.yml` file needs to be
+    updated to expose another directory like common assets directory.
 <!-- markdownlint-enable MD046 -->
 
 If you wish to reduce this scope to only **common assets**,
@@ -231,7 +242,38 @@ The change in the last line. The `${DTAAS_DIR}/files`
 got replaced by `${DTAAS_DIR}/files/common`. With this change, only
 common files are readable-writable by all logged in users.
 
+### Add TLS Certificates (Optional)
+
+The application can be served on HTTPS connection for which TLS certificates
+are needed. The certificates need to be issued for `foo.com` or `*.foo.com`.
+The names of the certificates must be `fullchain.pem` and `privkey.pem`. Copy
+these two certificate files into:
+
+- `certs/foo.com/fullchain.pem`
+- `certs/foo.com/privkey.pem`
+
+Traefik will run with self-issued certificates if the above two certificates
+are either not found or found invalid.
+
+Remember to update `dynamic/tls.yml` with correct path matching your DNS name.
+For example, if your DNS name is `www.foo.com`, then copy the
+TLS certificates of `www.foo.com` to `certs/` directory and update
+`dynamic/tls.yml` as follows.
+
+```yml
+tls:
+  certificates:
+    - certFile: /etc/traefik-certs/www.foo.com/fullchain.pem
+      keyFile: /etc/traefik-certs/www.foo.com/privkey.pem
+      stores:
+        - default
+```
+
 ## Run
+
+### Over HTTP
+
+This docker compose file serves application over HTTP.
 
 The commands to start and stop the appliation are:
 
@@ -246,10 +288,27 @@ To restart only a specific container, for example `client``
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
 ```
 
+### Over HTTPS
+
+This docker compose file serves application over HTTP.
+
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d
+docker compose -f compose.server.secure.yml --env-file .env.server down
+```
+
+To restart only a specific container, for example `client``
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+```
+
 ## Use
 
 The application will be accessible at:
-<http://foo.com> from web browser.
+<http(s)://foo.com> from web browser.
 Sign in using your account linked to
 either _gitlab.com_ or your local gitlab instance.
 

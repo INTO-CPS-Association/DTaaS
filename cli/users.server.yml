@@ -1,7 +1,8 @@
 image: mltooling/ml-workspace-minimal:0.13.2
+restart: unless-stopped
 volumes:
-  - ${DTAAS_DIR}/files/common:/workspace/common
-  - ${DTAAS_DIR}/files/${username}:/workspace
+  - "${DTAAS_DIR}/files/common:/workspace/common"
+  - "${DTAAS_DIR}/files/${username}:/workspace"
 environment:
   - AUTHENTICATE_VIA_JUPYTER=
   - WORKSPACE_BASE_URL=${username}
