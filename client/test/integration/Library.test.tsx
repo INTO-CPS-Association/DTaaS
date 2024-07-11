@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {
   getDefaultNormalizer,
+  fireEvent,
   render,
   screen,
   within,
   cleanup,
 } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
-import userEvent from '@testing-library/user-event';
 import Library from '../../src/route/library/Library';
 import { assetType, scope } from '../../src/route/library/LibraryTabData';
 
@@ -40,6 +40,13 @@ describe('Library', () => {
   });
 
   it('renders the Library and Layout correctly', () => {
+    const toolbar = screen.getByTestId('toolbar');
+    expect(toolbar).toBeInTheDocument();
+    const footer = screen.getByTestId('footer');
+    expect(footer).toBeInTheDocument();
+    const menu = screen.getByTestId('menu');
+    expect(menu).toBeInTheDocument();
+
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
 
@@ -78,13 +85,12 @@ describe('Library', () => {
     );
   });
 
-  it('shows the paragraph correlating to the tab that is selected', async () => {
-    const user = userEvent.setup();
+  it('shows the paragraph correlating to the tab that is selected', () => {
     const tablists = screen.getAllByRole('tablist');
     const tablistsData = [assetType, scope];
-    for (let i = 0; i < tablists.length; i++) {
+    for (let i = 0; i < tablists.length; i += 1) {
       const tablistData = tablistsData[i];
-      for (let j = 0; j < tablistsData[i].length; j++) {
+      for (let j = 0; j < tablistsData[i].length; j += 1) {
         const tabData = tablistData[j];
         const isFirstTab = j === 0;
         const tab = screen.getByRole('tab', {
@@ -93,7 +99,7 @@ describe('Library', () => {
         });
         expect(tab).toBeInTheDocument();
 
-        await user.click(tab);
+        fireEvent.click(tab);
 
         const tabParagraph = screen.getByText(tabData.body, {
           normalizer,
@@ -104,8 +110,7 @@ describe('Library', () => {
     }
   });
 
-  it('selects the first scope tab when you select an assetType tab', async () => {
-    const user = userEvent.setup();
+  it('selects the first scope tab when you select an assetType tab', () => {
     // i is 1 as the first tab is already selected so clicking on it will not have an effect on the subtabs
     for (let i = 1; i < assetType.length; i += 1) {
       const commonTab = screen.getByRole('tab', {
@@ -114,7 +119,7 @@ describe('Library', () => {
       });
       expect(commonTab).toBeInTheDocument();
 
-      await user.click(commonTab);
+      fireEvent.click(commonTab);
 
       expect(commonTab).toHaveAttribute('aria-selected', 'true');
 
@@ -125,7 +130,7 @@ describe('Library', () => {
 
       expect(assetTypeTab).toBeInTheDocument();
 
-      await user.click(assetTypeTab);
+      fireEvent.click(assetTypeTab);
 
       expect(assetTypeTab).toHaveAttribute('aria-selected', 'true');
 
@@ -140,24 +145,23 @@ describe('Library', () => {
     }
   });
 
-  it('does not change the selected assetType tab when you select a scope tab', async () => {
-    const user = userEvent.setup();
-    for (let i = 0; i < assetType.length; i++) {
+  it('does not change the selected assetType tab when you select a scope tab', () => {
+    for (let i = 0; i < assetType.length; i += 1) {
       const assetTypeData = assetType[i];
       const isFirstAssetTypeTab = i === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
-      await user.click(assetTypeTab);
-      for (let j = 0; j < scope.length; j++) {
+      fireEvent.click(assetTypeTab);
+      for (let j = 0; j < scope.length; j += 1) {
         const scopeData = scope[j];
         const isFirstScopeTab = j === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
         });
-        await user.click(scopeTab);
+        fireEvent.click(scopeTab);
 
         const scopeTabAfterClicks = screen.getByRole('tab', {
           name: scopeData.label,
@@ -173,24 +177,23 @@ describe('Library', () => {
     }
   });
 
-  it('changes iframe src according to the combination of the selected tabs', async () => {
-    const user = userEvent.setup();
-    for (let i = 0; i < assetType.length; i++) {
+  it('changes iframe src according to the combination of the selected tabs', () => {
+    for (let i = 0; i < assetType.length; i += 1) {
       const assetTypeData = assetType[i];
       const isFirstAssetTypeTab = i === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
-      await user.click(assetTypeTab);
-      for (let j = 0; j < scope.length; j++) {
+      fireEvent.click(assetTypeTab);
+      for (let j = 0; j < scope.length; j += 1) {
         const scopeData = scope[j];
         const isFirstScopeTab = j === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
         });
-        await user.click(scopeTab);
+        fireEvent.click(scopeTab);
         const iframe = screen.getByTitle(assetTypeData.label);
         const scopeSegment = `${isFirstScopeTab ? '' : 'common/'}`;
         const assetTypeSegment = `${assetTypeData.label.replace(' ', '_').toLowerCase()}`;
