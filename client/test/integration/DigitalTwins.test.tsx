@@ -37,7 +37,7 @@ describe('Digital Twins', () => {
     const mainTabs = within(mainTablist).getAllByRole('tab');
     expect(mainTabs).toHaveLength(3);
 
-    mainTabs.map((tab, i) => {
+    mainTabs.forEach((tab, i) => {
       expect(tab).toHaveTextContent(tabs[i].label);
     });
 
