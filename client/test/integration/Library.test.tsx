@@ -10,6 +10,7 @@ import {
 import { useAuth } from 'react-oidc-context';
 import Library from '../../src/route/library/Library';
 import { assetType, scope } from '../../src/route/library/LibraryTabData';
+import { itHasAllLayoutTestIds } from './integrationTestUtils';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
@@ -31,21 +32,11 @@ describe('Library', () => {
 
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({ user: {} });
-    render(<Library></Library>);
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    render(<Library />);
   });
 
   it('renders the Library and Layout correctly', () => {
-    const toolbar = screen.getByTestId('toolbar');
-    expect(toolbar).toBeInTheDocument();
-    const footer = screen.getByTestId('footer');
-    expect(footer).toBeInTheDocument();
-    const menu = screen.getByTestId('menu');
-    expect(menu).toBeInTheDocument();
+    itHasAllLayoutTestIds();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -86,9 +77,8 @@ describe('Library', () => {
   });
 
   it('shows the paragraph correlating to the tab that is selected', () => {
-    const tablists = screen.getAllByRole('tablist');
     const tablistsData = [assetType, scope];
-    for (let i = 0; i < tablists.length; i += 1) {
+    for (let i = 0; i < tablistsData.length; i += 1) {
       const tablistData = tablistsData[i];
       for (let j = 0; j < tablistsData[i].length; j += 1) {
         const tabData = tablistData[j];
