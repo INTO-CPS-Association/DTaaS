@@ -23,7 +23,7 @@ describe('Menu', () => {
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({ user: {} });
     (useSelector as jest.Mock).mockImplementation(
-      (selector: (state: RootState) => any) =>
+      (selector: (state: RootState) => object) =>
         selector({
           menu: { isOpen: false },
           auth: { userName: '' },
