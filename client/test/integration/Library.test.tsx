@@ -10,20 +10,34 @@ import {
 import { useAuth } from 'react-oidc-context';
 import Library from '../../src/route/library/Library';
 import { assetType, scope } from '../../src/route/library/LibraryTabData';
-import { itHasAllLayoutTestIds } from './integrationTestUtils';
+import { testFooter, testToolbar } from './integrationTestUtils';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
+}));
+
+jest.mock('page/Footer', () => ({
+  ...jest.requireActual('page/Footer'),
+}));
+
+jest.mock('@mui/material/Toolbar', () => ({
+  ...jest.requireActual('@mui/material/Toolbar'),
 }));
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('react-redux', () => ({
+  useDispatch: jest.fn(),
+  useSelector: jest.fn(),
+}));
+
 jest.mock('../../src/util/auth/Authentication', () => ({
   getAndSetUsername: jest.fn(),
 }));
 
+// May want to refactor menu mock to its own file
 describe('Library', () => {
   const normalizer = getDefaultNormalizer({
     trim: false,
@@ -36,7 +50,11 @@ describe('Library', () => {
   });
 
   it('renders the Library and Layout correctly', () => {
-    itHasAllLayoutTestIds();
+    cleanup();
+    const { container } = render(<Library />);
+
+    testToolbar(container);
+    testFooter();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
