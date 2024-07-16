@@ -5,26 +5,71 @@ import {
   render,
   screen,
   within,
+  cleanup,
 } from '@testing-library/react';
-import DigitalTwins from '../../src/route/digitaltwins/DigitalTwins';
-import tabs from '../../src/route/digitaltwins/DigitalTwinTabData';
-import { itHasAllLayoutTestIds } from './integrationTestUtils';
+import tabs from 'route/digitaltwins/DigitalTwinTabData';
+import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
+import DigitalTwins from 'route/digitaltwins/DigitalTwins';
+import { MemoryRouter } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/store';
+
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
 }));
 
+jest.mock('page/Footer', () => ({
+  ...jest.requireActual('page/Footer'),
+}));
+
+jest.mock('@mui/material/Toolbar', () => ({
+  ...jest.requireActual('@mui/material/Toolbar'),
+}));
+
+jest.mock('page/Menu', () => ({
+  ...jest.requireActual('page/Menu'),
+}));
+
+jest.mock('react-oidc-context', () => ({
+  useAuth: jest.fn(),
+}));
+
+jest.mock('../../src/util/auth/Authentication', () => ({
+  getAndSetUsername: jest.fn(),
+}));
+
 describe('Digital Twins', () => {
+  const uiToRender = (
+    <MemoryRouter>
+      <DigitalTwins />
+    </MemoryRouter>
+  );
+
   const normalizer = getDefaultNormalizer({
     trim: false,
     collapseWhitespace: false,
   });
 
   beforeEach(() => {
-    render(<DigitalTwins />);
+    (useAuth as jest.Mock).mockReturnValue({ user: {} });
+    (useSelector as jest.Mock).mockImplementation(
+      (selector: (state: RootState) => object) =>
+        selector({
+          menu: { isOpen: false },
+          auth: { userName: '' },
+        }),
+    );
+    render(uiToRender);
   });
 
   it('renders the Digital Twins page and Layout correctly', () => {
-    itHasAllLayoutTestIds();
+    cleanup();
+    const { container } = render(uiToRender);
+
+    testMenu();
+    testToolbar(container);
+    testFooter();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);

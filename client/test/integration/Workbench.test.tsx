@@ -1,19 +1,61 @@
 import * as React from 'react';
-import { render, screen, within } from '@testing-library/react';
-import WorkBench from 'route/workbench/Workbench';
-import { itHasAllLayoutTestIds } from './integrationTestUtils';
+import { cleanup, render, screen, within } from '@testing-library/react';
+import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
+import { MemoryRouter } from 'react-router-dom';
+import Workbench from 'route/workbench/Workbench';
+import { useAuth } from 'react-oidc-context';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/store';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
 }));
 
-describe('Library', () => {
+jest.mock('page/Footer', () => ({
+  ...jest.requireActual('page/Footer'),
+}));
+
+jest.mock('@mui/material/Toolbar', () => ({
+  ...jest.requireActual('@mui/material/Toolbar'),
+}));
+
+jest.mock('page/Menu', () => ({
+  ...jest.requireActual('page/Menu'),
+}));
+
+jest.mock('react-oidc-context', () => ({
+  useAuth: jest.fn(),
+}));
+
+jest.mock('../../src/util/auth/Authentication', () => ({
+  getAndSetUsername: jest.fn(),
+}));
+
+describe('Workbench', () => {
+  const uiToRender = (
+    <MemoryRouter>
+      <Workbench />
+    </MemoryRouter>
+  );
   beforeEach(() => {
-    render(<WorkBench />);
+    (useAuth as jest.Mock).mockReturnValue({ user: {} });
+    (useSelector as jest.Mock).mockImplementation(
+      (selector: (state: RootState) => object) =>
+        selector({
+          menu: { isOpen: false },
+          auth: { userName: '' },
+        }),
+    );
+    render(uiToRender);
   });
 
   it('renders the Workbench and Layout correctly', () => {
-    itHasAllLayoutTestIds();
+    cleanup();
+    const { container } = render(uiToRender);
+
+    testMenu();
+    testToolbar(container);
+    testFooter();
 
     const mainHeading = screen.getByRole('heading', { level: 4 });
     expect(mainHeading).toBeInTheDocument();

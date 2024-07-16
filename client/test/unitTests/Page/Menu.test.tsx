@@ -30,17 +30,20 @@ describe('Menu', () => {
         }),
     );
     (useDispatch as jest.Mock).mockReturnValue(jest.fn());
-  });
-
-  it('renders the Menu correctly', () => {
     render(
       <MemoryRouter>
         <Menu />
       </MemoryRouter>,
     );
-    screen.debug();
+  });
+
+  it('renders the Menu correctly', () => {
     expect(screen.getByTestId(/toolbar/)).toBeInTheDocument();
-    expect(screen.getByTestId(/ChevronLeftIcon/)).toBeInTheDocument();
+
+    const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
+    expect(chevronLeftIcon).toBeInTheDocument();
+    const chevronLeftButton = chevronLeftIcon.closest('button');
+    expect(chevronLeftButton).toBeInTheDocument();
 
     expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
     expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();

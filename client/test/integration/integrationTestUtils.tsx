@@ -15,6 +15,24 @@ export function closestDiv(element: HTMLElement) {
   return div!;
 }
 
+export function testMenu() {
+  const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
+  expect(chevronLeftIcon).toBeInTheDocument();
+  const chevronLeftButton = chevronLeftIcon.closest('button');
+  expect(chevronLeftButton).toBeInTheDocument();
+
+  expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
+  expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
+
+  expect(
+    screen.getByRole('link', { name: /Digital Twins/ }),
+  ).toBeInTheDocument();
+  expect(screen.getByTestId(/PeopleIcon/)).toBeInTheDocument();
+
+  expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
+  expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
+}
+
 export function testToolbar(container: HTMLElement) {
   const toolbar = container.getElementsByClassName(
     'MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular',
