@@ -8,12 +8,12 @@ import {
   cleanup,
 } from '@testing-library/react';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
+import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 import { MemoryRouter } from 'react-router-dom';
 import Workbench from 'route/workbench/Workbench';
 import { useAuth } from 'react-oidc-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
+import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),

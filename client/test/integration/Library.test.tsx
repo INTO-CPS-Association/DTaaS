@@ -8,12 +8,12 @@ import {
   cleanup,
 } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
-import Library from '../../src/route/library/Library';
-import { assetType, scope } from '../../src/route/library/LibraryTabData';
-import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { MemoryRouter } from 'react-router-dom';
+import Library from '../../src/route/library/Library';
+import { assetType, scope } from '../../src/route/library/LibraryTabData';
+import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
