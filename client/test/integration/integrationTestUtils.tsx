@@ -1,12 +1,27 @@
-import { screen, within } from '@testing-library/react';
+import {
+  fireEvent,
+  getDefaultNormalizer,
+  render,
+  screen,
+  within,
+} from '@testing-library/react';
+import * as React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { ITabs } from 'route/IData';
 
-export function itHasAllLayoutTestIds() {
-  const toolbar = screen.getByTestId('toolbar');
-  expect(toolbar).toBeInTheDocument();
-  const footer = screen.getByTestId('footer');
-  expect(footer).toBeInTheDocument();
-  const menu = screen.getByTestId('menu');
-  expect(menu).toBeInTheDocument();
+export function testLayout() {
+  testToolbar();
+  testMenu();
+  testFooter();
+}
+
+export const normalizer = getDefaultNormalizer({
+  trim: false,
+  collapseWhitespace: false,
+});
+
+export function renderWithMemoryRouter(ui: React.JSX.Element) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
 export function closestDiv(element: HTMLElement) {
@@ -33,11 +48,31 @@ export function testMenu() {
   expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
 }
 
-export function testToolbar(container: HTMLElement) {
-  const toolbar = container.getElementsByClassName(
-    'MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular',
-  )[0];
-  expect(toolbar).toBeInTheDocument();
+export function testToolbar() {
+  const toolbarHeading = screen.getByText(/The Digital Twin as a Service/);
+  expect(toolbarHeading).toBeInTheDocument();
+
+  const openSettingsButton = screen.getByLabelText(/Open settings/);
+  expect(openSettingsButton).toBeInTheDocument();
+  expect(within(openSettingsButton).getByText('A')).toBeInTheDocument();
+
+  const buttonsDiv = closestDiv(openSettingsButton);
+
+  const githubButtonDiv = within(buttonsDiv).getByLabelText(
+    'https://github.com/INTO-CPS-Association/DTaaS',
+  );
+  expect(githubButtonDiv).toBeInTheDocument();
+  const githubButton = within(githubButtonDiv).getByRole('link');
+  expect(githubButton).toBeInTheDocument();
+  expect(within(githubButton).getByTestId(/GitHubIcon/)).toBeInTheDocument();
+
+  const helpButtonDiv = within(buttonsDiv).getByLabelText(
+    'https://into-cps-association.github.io/DTaaS',
+  );
+  expect(helpButtonDiv).toBeInTheDocument();
+  const helpButton = within(helpButtonDiv).getByRole('link');
+  expect(helpButton).toBeInTheDocument();
+  expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
 }
 
 export function testFooter() {
@@ -65,4 +100,26 @@ export function testFooter() {
     'https://github.com/mui/material-ui/tree/v5.11.9/docs/data/material/getting-started/templates/dashboard',
   );
   expect(secondFooterLink).toHaveClass(footerLinkClasses);
+}
+
+export function itShowsTheParagraphOfToTheSelectedTab(tablistsData: ITabs[][]) {
+  it('shows the paragraph correlating to the tab that is selected', () => {
+    tablistsData.forEach((tablistData) => {
+      tablistData.forEach((tabData, tabIndex) => {
+        const isFirstTab = tabIndex === 0;
+        const tab = screen.getByRole('tab', {
+          name: tabData.label,
+          selected: isFirstTab,
+        });
+        expect(tab).toBeInTheDocument();
+
+        fireEvent.click(tab);
+
+        const tabParagraph = screen.getByText(tabData.body, {
+          normalizer,
+        });
+        expect(tabParagraph).toBeInTheDocument();
+      });
+    });
+  });
 }

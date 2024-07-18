@@ -1,19 +1,21 @@
 import * as React from 'react';
-import {
-  getDefaultNormalizer,
-  fireEvent,
-  render,
-  screen,
-  within,
-  cleanup,
-} from '@testing-library/react';
+import { fireEvent, screen, within, cleanup } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { MemoryRouter } from 'react-router-dom';
 import Library from '../../src/route/library/Library';
 import { assetType, scope } from '../../src/route/library/LibraryTabData';
-import { testFooter, testMenu, testToolbar } from './integrationTestUtils';
+import {
+  normalizer,
+  renderWithMemoryRouter,
+  testLayout,
+  closestDiv,
+  itShowsTheParagraphOfToTheSelectedTab,
+} from './integrationTestUtils';
+
+jest.mock('components/LinkButtons', () => ({
+  ...jest.requireActual('components/LinkButtons'),
+}));
 
 jest.mock('page/Layout', () => ({
   ...jest.requireActual('page/Layout'),
@@ -40,16 +42,6 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 }));
 
 describe('Library', () => {
-  const uiToRender = (
-    <MemoryRouter>
-      <Library />
-    </MemoryRouter>
-  );
-  const normalizer = getDefaultNormalizer({
-    trim: false,
-    collapseWhitespace: false,
-  });
-
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({ user: {} });
     (useSelector as jest.Mock).mockImplementation(
@@ -59,37 +51,28 @@ describe('Library', () => {
           auth: { userName: '' },
         }),
     );
-    render(uiToRender);
+    renderWithMemoryRouter(<Library />);
   });
 
   it('renders the Library and Layout correctly', () => {
-    cleanup();
-    const { container } = render(uiToRender);
-
-    testMenu();
-    testToolbar(container);
-    testFooter();
+    testLayout();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
 
     // The div of the assetType (Functions, Models, etc.) tabs
-    const mainTabsDiv = tablists[0].closest('div');
-    expect(mainTabsDiv).toBeInTheDocument();
-
-    const mainTablist = within(mainTabsDiv!).getAllByRole('tablist')[0];
+    const mainTabsDiv = closestDiv(tablists[0]);
+    const mainTablist = within(mainTabsDiv).getAllByRole('tablist')[0];
     const mainTabs = within(mainTablist).getAllByRole('tab');
     expect(mainTabs).toHaveLength(5);
 
     const mainParagraph = screen.getByText(assetType[0].body, { normalizer });
     expect(mainParagraph).toBeInTheDocument();
 
-    const mainParagraphDiv = mainParagraph.closest('div');
-    expect(mainParagraphDiv).toBeInTheDocument();
+    const mainParagraphDiv = closestDiv(mainParagraph);
 
     // The div of the scope (Private and Common) tabs within the chosen assetType tab
-    const subTabsDiv = mainParagraphDiv!.parentElement!.closest('div')!;
-    expect(subTabsDiv).toBeInTheDocument();
+    const subTabsDiv = closestDiv(mainParagraphDiv.parentElement!);
 
     const subTabslist = within(subTabsDiv).getByRole('tablist');
     expect(subTabslist).toBeInTheDocument();
@@ -108,33 +91,11 @@ describe('Library', () => {
     );
   });
 
-  it('shows the paragraph correlating to the tab that is selected', () => {
-    const tablistsData = [assetType, scope];
-    for (let i = 0; i < tablistsData.length; i += 1) {
-      const tablistData = tablistsData[i];
-      for (let j = 0; j < tablistsData[i].length; j += 1) {
-        const tabData = tablistData[j];
-        const isFirstTab = j === 0;
-        const tab = screen.getByRole('tab', {
-          name: tabData.label,
-          selected: isFirstTab,
-        });
-        expect(tab).toBeInTheDocument();
-
-        fireEvent.click(tab);
-
-        const tabParagraph = screen.getByText(tabData.body, {
-          normalizer,
-        });
-
-        expect(tabParagraph).toBeInTheDocument();
-      }
-    }
-  });
+  itShowsTheParagraphOfToTheSelectedTab([assetType, scope]);
 
   it('selects the first scope tab when you select an assetType tab', () => {
-    // i is 1 as the first tab is already selected so clicking on it will not have an effect on the subtabs
-    for (let i = 1; i < assetType.length; i += 1) {
+    // Starting from 1 as the first tab is already selected so we won't need to click it
+    assetType.slice(1, -1).forEach((assetTypeData) => {
       const commonTab = screen.getByRole('tab', {
         name: 'Common',
         selected: false,
@@ -146,7 +107,7 @@ describe('Library', () => {
       expect(commonTab).toHaveAttribute('aria-selected', 'true');
 
       const assetTypeTab = screen.getByRole('tab', {
-        name: assetType[i].label,
+        name: assetTypeData.label,
         selected: false,
       });
 
@@ -163,22 +124,20 @@ describe('Library', () => {
       expect(newCommonTab).toBeInTheDocument();
 
       cleanup();
-      render(uiToRender);
-    }
+      renderWithMemoryRouter(<Library />);
+    });
   });
 
   it('does not change the selected assetType tab when you select a scope tab', () => {
-    for (let i = 0; i < assetType.length; i += 1) {
-      const assetTypeData = assetType[i];
-      const isFirstAssetTypeTab = i === 0;
+    assetType.forEach((assetTypeData, assetTypeIndex) => {
+      const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
       fireEvent.click(assetTypeTab);
-      for (let j = 0; j < scope.length; j += 1) {
-        const scopeData = scope[j];
-        const isFirstScopeTab = j === 0;
+      scope.forEach((scopeData, scopeIndex) => {
+        const isFirstScopeTab = scopeIndex === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
@@ -195,22 +154,20 @@ describe('Library', () => {
         });
         expect(scopeTabAfterClicks).toBeInTheDocument();
         expect(assetTypeTabAfterClicks).toBeInTheDocument();
-      }
-    }
+      });
+    });
   });
 
   it('changes iframe src according to the combination of the selected tabs', () => {
-    for (let i = 0; i < assetType.length; i += 1) {
-      const assetTypeData = assetType[i];
-      const isFirstAssetTypeTab = i === 0;
+    assetType.forEach((assetTypeData, assetTypeIndex) => {
+      const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
       fireEvent.click(assetTypeTab);
-      for (let j = 0; j < scope.length; j += 1) {
-        const scopeData = scope[j];
-        const isFirstScopeTab = j === 0;
+      scope.forEach((scopeData, scopeIndex) => {
+        const isFirstScopeTab = scopeIndex === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
@@ -224,7 +181,7 @@ describe('Library', () => {
           'src',
           `https://example.com/URL_LIBtree/${scopeSegment}${assetTypeSegment}`,
         );
-      }
-    }
+      });
+    });
   });
 });
