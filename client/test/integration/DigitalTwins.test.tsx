@@ -2,14 +2,11 @@ import * as React from 'react';
 import { fireEvent, screen, within } from '@testing-library/react';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
-import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/store';
 import {
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
   normalizer,
-  renderWithMemoryRouter,
+  setupIntegrationTest,
   testLayout,
 } from './integrationTestUtils';
 
@@ -43,15 +40,7 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 
 describe('Digital Twins', () => {
   beforeEach(() => {
-    (useAuth as jest.Mock).mockReturnValue({ user: {} });
-    (useSelector as jest.Mock).mockImplementation(
-      (selector: (state: RootState) => object) =>
-        selector({
-          menu: { isOpen: false },
-          auth: { userName: '' },
-        }),
-    );
-    renderWithMemoryRouter(<DigitalTwins />);
+    setupIntegrationTest(<DigitalTwins />);
   });
 
   it('renders the Digital Twins page and Layout correctly', () => {

@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { cleanup, screen, within } from '@testing-library/react';
 import Workbench from 'route/workbench/Workbench';
-import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/store';
 import {
   closestDiv,
   renderWithMemoryRouter,
+  setupIntegrationTest,
   testFooter,
   testMenu,
 } from './integrationTestUtils';
@@ -37,15 +35,7 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 
 describe('Workbench', () => {
   beforeEach(() => {
-    (useAuth as jest.Mock).mockReturnValue({ user: {} });
-    (useSelector as jest.Mock).mockImplementation(
-      (selector: (state: RootState) => object) =>
-        selector({
-          menu: { isOpen: false },
-          auth: { userName: '' },
-        }),
-    );
-    renderWithMemoryRouter(<Workbench />);
+    setupIntegrationTest(<Workbench />);
   });
 
   it('renders the Workbench and Layout correctly', () => {

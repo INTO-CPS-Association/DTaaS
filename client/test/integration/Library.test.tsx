@@ -1,8 +1,5 @@
 import * as React from 'react';
 import { fireEvent, screen, within, cleanup } from '@testing-library/react';
-import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/store';
 import Library from '../../src/route/library/Library';
 import { assetType, scope } from '../../src/route/library/LibraryTabData';
 import {
@@ -11,6 +8,7 @@ import {
   testLayout,
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
+  setupIntegrationTest,
 } from './integrationTestUtils';
 
 jest.mock('components/LinkButtons', () => ({
@@ -43,15 +41,7 @@ jest.mock('../../src/util/auth/Authentication', () => ({
 
 describe('Library', () => {
   beforeEach(() => {
-    (useAuth as jest.Mock).mockReturnValue({ user: {} });
-    (useSelector as jest.Mock).mockImplementation(
-      (selector: (state: RootState) => object) =>
-        selector({
-          menu: { isOpen: false },
-          auth: { userName: '' },
-        }),
-    );
-    renderWithMemoryRouter(<Library />);
+    setupIntegrationTest(<Library />);
   });
 
   it('renders the Library and Layout correctly', () => {

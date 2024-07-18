@@ -6,8 +6,11 @@ import {
   within,
 } from '@testing-library/react';
 import * as React from 'react';
+import { useAuth } from 'react-oidc-context';
+import { useSelector } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
+import { RootState } from 'store/store';
 
 export function testLayout() {
   testToolbar();
@@ -22,6 +25,18 @@ export const normalizer = getDefaultNormalizer({
 
 export function renderWithMemoryRouter(ui: React.JSX.Element) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
+export function setupIntegrationTest(ui: React.JSX.Element) {
+  (useAuth as jest.Mock).mockReturnValue({ user: {} });
+  (useSelector as jest.Mock).mockImplementation(
+    (selector: (state: RootState) => object) =>
+      selector({
+        menu: { isOpen: false },
+        auth: { userName: '' },
+      }),
+  );
+  renderWithMemoryRouter(ui);
 }
 
 export function closestDiv(element: HTMLElement) {
