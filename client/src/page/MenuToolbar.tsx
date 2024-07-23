@@ -64,6 +64,7 @@ function MenuToolbar({
   anchorElUser,
 }: MenuToolbarProps) {
   const auth = useAuth();
+  const root = document.getElementById('root');
 
   const handleSignOut = async () => {
     if (auth) {
@@ -91,7 +92,7 @@ function MenuToolbar({
 
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
           <LinkButtons buttons={toolbarLinkValues} size={2.5} />
-          <Tooltip title="Open settings">
+          <Tooltip title="Open settings" PopperProps={{ container: root }}>
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>
@@ -102,6 +103,7 @@ function MenuToolbar({
             anchorEl={anchorElUser}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             keepMounted
+            container={root}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}

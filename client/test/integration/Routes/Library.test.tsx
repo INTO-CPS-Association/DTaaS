@@ -62,7 +62,11 @@ describe('Library', () => {
   /* eslint-disable no-await-in-loop */
   it('selects the first scope tab when you select an assetType tab', async () => {
     // Starting from 1 as the first tab is already selected so we won't need to click it
-    for (let assetTypeIndex = 1; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+    for (
+      let assetTypeIndex = 1;
+      assetTypeIndex < assetType.length;
+      assetTypeIndex += 1
+    ) {
       const assetTypeData = assetType[assetTypeIndex];
       const commonTab = screen.getByRole('tab', {
         name: 'Common',
@@ -96,7 +100,11 @@ describe('Library', () => {
   });
 
   it('does not change the selected assetType tab when you select a scope tab', async () => {
-    for (let assetTypeIndex = 0; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+    for (
+      let assetTypeIndex = 0;
+      assetTypeIndex < assetType.length;
+      assetTypeIndex += 1
+    ) {
       const assetTypeData = assetType[assetTypeIndex];
       const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {
@@ -127,7 +135,11 @@ describe('Library', () => {
   });
 
   it('changes iframe src according to the combination of the selected tabs', async () => {
-    for (let assetTypeIndex = 0; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+    for (
+      let assetTypeIndex = 0;
+      assetTypeIndex < assetType.length;
+      assetTypeIndex += 1
+    ) {
       const assetTypeData = assetType[assetTypeIndex];
       const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {

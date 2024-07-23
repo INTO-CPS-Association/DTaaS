@@ -72,6 +72,8 @@ export async function testMenuToolbar() {
   expect(openSettingsButton).toBeInTheDocument();
   expect(within(openSettingsButton).getByText('A')).toBeInTheDocument();
 
+  expect(screen.getAllByRole('menuitem')).toBeInTheDocument();
+
   const buttonsDiv = closestDiv(openSettingsButton);
 
   const githubButtonDiv = within(buttonsDiv).getByLabelText(
@@ -90,7 +92,10 @@ export async function testMenuToolbar() {
   expect(helpButton).toBeInTheDocument();
   expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
 
-  // Opening and closing the drawer
+  await itOpensAndClosesTheDrawer();
+}
+
+async function itOpensAndClosesTheDrawer() {
   const libraryButton = screen.getByRole('link', { name: /Library/ });
   const drawerInnerDiv = closestDiv(libraryButton);
   expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
@@ -140,8 +145,14 @@ export function testFooter() {
 }
 
 /* eslint-disable no-await-in-loop */
-export async function itShowsTheParagraphOfToTheSelectedTab(tablistsData: ITabs[][]) {
-  for (let tablistsIndex = 0; tablistsIndex < tablistsData.length; tablistsIndex += 1) {
+export async function itShowsTheParagraphOfToTheSelectedTab(
+  tablistsData: ITabs[][],
+) {
+  for (
+    let tablistsIndex = 0;
+    tablistsIndex < tablistsData.length;
+    tablistsIndex += 1
+  ) {
     const tablistData = tablistsData[tablistsIndex];
     for (let tabIndex = 0; tabIndex < tablistData.length; tabIndex += 1) {
       const tabData = tablistData[tabIndex];

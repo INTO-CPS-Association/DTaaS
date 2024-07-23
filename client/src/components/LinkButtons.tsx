@@ -52,6 +52,7 @@ interface LinkButtonProps {
  * <LinkButtons buttons={linkValues} size={6} />
  */ const LinkButtons = ({ buttons, size, marginRight }: LinkButtonProps) => {
   const iconButtons = getIconButtons(buttons);
+  const root = document.getElementById('root');
   return (
     <ButtonRow>
       {iconButtons.map((button, index) => (
@@ -59,7 +60,11 @@ interface LinkButtonProps {
           key={index}
           style={{ marginRight: marginRight ? `${marginRight}px` : '0px' }}
         >
-          <Tooltip key={index} title={button.link}>
+          <Tooltip
+            key={index}
+            title={button.link}
+            PopperProps={{ container: root }}
+          >
             <IconLabel>
               <IconButton
                 onClick={() => {
