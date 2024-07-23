@@ -8,43 +8,18 @@ import {
   normalizer,
   setupIntegrationTest,
   testLayout,
-} from './integrationTestUtils';
+} from '../integrationTestUtils';
 
-jest.mock('components/LinkButtons', () => ({
-  ...jest.requireActual('components/LinkButtons'),
-}));
-
-jest.mock('page/Layout', () => ({
-  ...jest.requireActual('page/Layout'),
-}));
-
-jest.mock('page/Footer', () => ({
-  ...jest.requireActual('page/Footer'),
-}));
-
-jest.mock('@mui/material/Toolbar', () => ({
-  ...jest.requireActual('@mui/material/Toolbar'),
-}));
-
-jest.mock('page/Menu', () => ({
-  ...jest.requireActual('page/Menu'),
-}));
-
-jest.mock('react-oidc-context', () => ({
-  useAuth: jest.fn(),
-}));
-
-jest.mock('../../src/util/auth/Authentication', () => ({
-  getAndSetUsername: jest.fn(),
-}));
+const setup = () => setupIntegrationTest(<DigitalTwins />);
 
 describe('Digital Twins', () => {
   beforeEach(() => {
-    setupIntegrationTest(<DigitalTwins />);
+    setup();
   });
 
   it('renders the Digital Twins page and Layout correctly', () => {
-    testLayout();
+    const { container } = setup();
+    testLayout(container);
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);

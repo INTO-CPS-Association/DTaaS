@@ -22,8 +22,3 @@ jest.mock('util/envUtil', () => ({
     { key: '3', link: 'link3' },
   ],
 }));
-
-jest.mock('react-redux', () => ({
-  useSelector: jest.fn(),
-  useDispatch: () => jest.fn(),
-}));

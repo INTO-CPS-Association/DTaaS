@@ -1,51 +1,24 @@
 import * as React from 'react';
-import { fireEvent, screen, within, cleanup } from '@testing-library/react';
-import Library from '../../src/route/library/Library';
-import { assetType, scope } from '../../src/route/library/LibraryTabData';
+import { fireEvent, screen, within } from '@testing-library/react';
+import Library from '../../../src/route/library/Library';
+import { assetType, scope } from '../../../src/route/library/LibraryTabData';
 import {
   normalizer,
-  renderWithMemoryRouter,
   testLayout,
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
   setupIntegrationTest,
-} from './integrationTestUtils';
+} from '../integrationTestUtils';
 
-jest.mock('components/LinkButtons', () => ({
-  ...jest.requireActual('components/LinkButtons'),
-}));
-
-jest.mock('page/Layout', () => ({
-  ...jest.requireActual('page/Layout'),
-}));
-
-jest.mock('page/Footer', () => ({
-  ...jest.requireActual('page/Footer'),
-}));
-
-jest.mock('@mui/material/Toolbar', () => ({
-  ...jest.requireActual('@mui/material/Toolbar'),
-}));
-
-jest.mock('page/Menu', () => ({
-  ...jest.requireActual('page/Menu'),
-}));
-
-jest.mock('react-oidc-context', () => ({
-  useAuth: jest.fn(),
-}));
-
-jest.mock('../../src/util/auth/Authentication', () => ({
-  getAndSetUsername: jest.fn(),
-}));
-
+const setup = () => setupIntegrationTest(<Library />);
 describe('Library', () => {
   beforeEach(() => {
-    setupIntegrationTest(<Library />);
+    setup();
   });
 
   it('renders the Library and Layout correctly', () => {
-    testLayout();
+    const { container } = setup();
+    testLayout(container);
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -113,8 +86,7 @@ describe('Library', () => {
       });
       expect(newCommonTab).toBeInTheDocument();
 
-      cleanup();
-      renderWithMemoryRouter(<Library />);
+      setup();
     });
   });
 

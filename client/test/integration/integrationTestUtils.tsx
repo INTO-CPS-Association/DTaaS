@@ -1,4 +1,5 @@
 import {
+  cleanup,
   fireEvent,
   getDefaultNormalizer,
   render,
@@ -7,14 +8,15 @@ import {
 } from '@testing-library/react';
 import * as React from 'react';
 import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
-import { RootState } from 'store/store';
+import store from 'store/store';
 
-export function testLayout() {
-  testToolbar();
+export function testLayout(container: HTMLElement) {
+  testToolbar(container);
   testMenu();
+  testMenuToolbar();
   testFooter();
 }
 
@@ -23,20 +25,18 @@ export const normalizer = getDefaultNormalizer({
   collapseWhitespace: false,
 });
 
-export function renderWithMemoryRouter(ui: React.JSX.Element) {
-  return render(<MemoryRouter>{ui}</MemoryRouter>);
+function renderWithMemoryRouter(ui: React.JSX.Element) {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </Provider>,
+  );
 }
 
 export function setupIntegrationTest(ui: React.JSX.Element) {
-  (useAuth as jest.Mock).mockReturnValue({ user: {} });
-  (useSelector as jest.Mock).mockImplementation(
-    (selector: (state: RootState) => object) =>
-      selector({
-        menu: { isOpen: false },
-        auth: { userName: '' },
-      }),
-  );
-  renderWithMemoryRouter(ui);
+  cleanup();
+  (useAuth as jest.Mock).mockReturnValue({ userName: 'Default user' });
+  return renderWithMemoryRouter(ui);
 }
 
 export function closestDiv(element: HTMLElement) {
@@ -46,24 +46,25 @@ export function closestDiv(element: HTMLElement) {
 }
 
 export function testMenu() {
-  const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
-  expect(chevronLeftIcon).toBeInTheDocument();
-  const chevronLeftButton = chevronLeftIcon.closest('button');
-  expect(chevronLeftButton).toBeInTheDocument();
-
+  expect(screen.getByTestId(/ChevronLeftIcon/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
   expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
-
   expect(
     screen.getByRole('link', { name: /Digital Twins/ }),
   ).toBeInTheDocument();
   expect(screen.getByTestId(/PeopleIcon/)).toBeInTheDocument();
-
   expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
   expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
 }
 
-export function testToolbar() {
+export function testToolbar(container: HTMLElement) {
+  const toolbar = container.getElementsByClassName(
+    'MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular',
+  )[0];
+  expect(toolbar).toBeInTheDocument();
+}
+
+export function testMenuToolbar() {
   const toolbarHeading = screen.getByText(/The Digital Twin as a Service/);
   expect(toolbarHeading).toBeInTheDocument();
 

@@ -1,39 +1,35 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
-import Menu from 'page/Menu';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
+import { fireEvent, render, screen } from '@testing-library/react';
+import MiniDrawer from 'page/Menu';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { closeMenu, openMenu } from 'store/menu.slice';
 import { useAuth } from 'react-oidc-context';
+import store from 'store/store';
+import { closestDiv } from '../../integration/integrationTestUtils';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+}));
+
+jest.mock('react-oidc-context', () => ({
+  ...jest.requireActual('react-oidc-context'),
+  useAuth: jest.fn(),
+}));
 
 jest.mock('page/Menu', () => ({
   ...jest.requireActual('page/Menu'),
 }));
 
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-}));
-
-jest.mock('react-oidc-context', () => ({
-  useAuth: jest.fn(),
-}));
-
 describe('Menu', () => {
+  (useAuth as jest.Mock).mockReturnValue({ userName: 'Default user' });
   beforeEach(() => {
-    (useAuth as jest.Mock).mockReturnValue({ user: {} });
-    (useSelector as jest.Mock).mockImplementation(
-      (selector: (state: RootState) => object) =>
-        selector({
-          menu: { isOpen: false },
-          auth: { userName: '' },
-        }),
-    );
-    (useDispatch as jest.Mock).mockReturnValue(jest.fn());
     render(
-      <MemoryRouter>
-        <Menu />
-      </MemoryRouter>,
+      <Provider store={store}>
+        <MemoryRouter>
+          <MiniDrawer />
+        </MemoryRouter>
+      </Provider>,
     );
   });
 
@@ -45,7 +41,11 @@ describe('Menu', () => {
     const chevronLeftButton = chevronLeftIcon.closest('button');
     expect(chevronLeftButton).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
+    fireEvent.click(chevronLeftButton!);
+
+    const libraryButton = screen.getByRole('link', { name: /Library/ });
+    expect(libraryButton).toBeInTheDocument();
+
     expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
 
     expect(
@@ -55,5 +55,23 @@ describe('Menu', () => {
 
     expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
     expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
+  });
+
+  it('changes the width of the drawer when the isOpen state changes', () => {
+    const libraryButton = screen.getByRole('link', { name: /Library/ });
+    const buttonsDiv = closestDiv(libraryButton);
+    expect(buttonsDiv).toHaveStyle('width:calc(56px + 1px);');
+
+    React.act(() => {
+      store.dispatch(openMenu());
+    });
+
+    expect(buttonsDiv).toHaveStyle('width:240px');
+
+    React.act(() => {
+      store.dispatch(closeMenu());
+    });
+
+    expect(buttonsDiv).toHaveStyle('width:calc(56px + 1px);');
   });
 });

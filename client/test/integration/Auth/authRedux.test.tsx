@@ -2,22 +2,19 @@ import * as React from 'react';
 import { createStore } from 'redux';
 import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
-import PrivateRoute from '../../src/route/auth/PrivateRoute';
-import Library from '../../src/route/library/Library';
-import authReducer from '../../src/store/auth.slice';
-import { renderWithRouter } from '../unitTests/testUtils';
-
-jest.mock('react-oidc-context', () => ({
-  useAuth: jest.fn(),
-}));
+import PrivateRoute from 'route/auth/PrivateRoute';
+import Library from 'route/library/Library';
+import authReducer from 'store/auth.slice';
+import { renderWithRouter } from '../../unitTests/testUtils';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: jest.fn(),
 }));
 
-jest.mock('../../src/util/auth/Authentication', () => ({
-  getAndSetUsername: jest.fn(),
+jest.mock('page/Menu', () => ({
+  __esModule: true,
+  default: () => <div data-testid="menu" />,
 }));
 
 const store = createStore(authReducer);
