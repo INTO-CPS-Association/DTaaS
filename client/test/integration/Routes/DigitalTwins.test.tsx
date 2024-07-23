@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { fireEvent, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
+import userEvent from '@testing-library/user-event';
 import {
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
@@ -17,9 +18,9 @@ describe('Digital Twins', () => {
     setup();
   });
 
-  it('renders the Digital Twins page and Layout correctly', () => {
+  it('renders the Digital Twins page and Layout correctly', async () => {
     const { container } = setup();
-    testLayout(container);
+    await testLayout(container);
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -45,19 +46,24 @@ describe('Digital Twins', () => {
     expect(iframe).toHaveProperty('src', 'https://example.com/URL_DT');
   });
 
-  itShowsTheParagraphOfToTheSelectedTab([tabs]);
+  it('shows the paragraph of to the selected tab', async () => {
+    await itShowsTheParagraphOfToTheSelectedTab([tabs]);
+  });
 
-  it('changes iframe src according to the selected tab', () => {
-    tabs.forEach((tabsData, tabsIndex) => {
+  /* eslint-disable no-await-in-loop */
+  it('changes iframe src according to the selected tab', async () => {
+    for (let tabsIndex = 0; tabsIndex < tabs.length; tabsIndex += 1) {
+      const tabsData = tabs[tabsIndex];
       const isFirstTab = tabsIndex === 0;
       const tab = screen.getByRole('tab', {
         name: tabsData.label,
         selected: isFirstTab,
       });
-      fireEvent.click(tab);
+      await userEvent.click(tab);
       const iframe = screen.getByTitle(`JupyterLight-Demo-${tabsData.label}`);
       expect(iframe).toBeInTheDocument();
       expect(iframe).toHaveProperty('src', `https://example.com/URL_DT`);
-    });
+    }
   });
+  /* eslint-enable no-await-in-loop */
 });

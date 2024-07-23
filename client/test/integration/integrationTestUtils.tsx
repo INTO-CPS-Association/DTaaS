@@ -1,11 +1,11 @@
 import {
   cleanup,
-  fireEvent,
   getDefaultNormalizer,
   render,
   screen,
   within,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as React from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Provider } from 'react-redux';
@@ -13,11 +13,11 @@ import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
 import store from 'store/store';
 
-export function testLayout(container: HTMLElement) {
-  testToolbar(container);
+export async function testLayout(container: HTMLElement) {
   testMenu();
-  testMenuToolbar();
+  testToolbar(container);
   testFooter();
+  await testMenuToolbar();
 }
 
 export const normalizer = getDefaultNormalizer({
@@ -64,7 +64,7 @@ export function testToolbar(container: HTMLElement) {
   expect(toolbar).toBeInTheDocument();
 }
 
-export function testMenuToolbar() {
+export async function testMenuToolbar() {
   const toolbarHeading = screen.getByText(/The Digital Twin as a Service/);
   expect(toolbarHeading).toBeInTheDocument();
 
@@ -89,6 +89,27 @@ export function testMenuToolbar() {
   const helpButton = within(helpButtonDiv).getByRole('link');
   expect(helpButton).toBeInTheDocument();
   expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
+
+  // Opening and closing the drawer
+  const libraryButton = screen.getByRole('link', { name: /Library/ });
+  const drawerInnerDiv = closestDiv(libraryButton);
+  expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
+
+  const menuButton = screen.getByTestId(/MenuIcon/i);
+  const header = menuButton.closest('header');
+  expect(header).toBeInTheDocument();
+
+  await userEvent.click(menuButton);
+
+  expect(drawerInnerDiv).toHaveStyle('width:240px');
+
+  const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
+  const chevronLeftButton = chevronLeftIcon.closest('button');
+  expect(chevronLeftButton).toBeInTheDocument();
+
+  await userEvent.click(chevronLeftButton!);
+
+  expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
 }
 
 export function testFooter() {
@@ -118,24 +139,26 @@ export function testFooter() {
   expect(secondFooterLink).toHaveClass(footerLinkClasses);
 }
 
-export function itShowsTheParagraphOfToTheSelectedTab(tablistsData: ITabs[][]) {
-  it('shows the paragraph correlating to the tab that is selected', () => {
-    tablistsData.forEach((tablistData) => {
-      tablistData.forEach((tabData, tabIndex) => {
-        const isFirstTab = tabIndex === 0;
-        const tab = screen.getByRole('tab', {
-          name: tabData.label,
-          selected: isFirstTab,
-        });
-        expect(tab).toBeInTheDocument();
-
-        fireEvent.click(tab);
-
-        const tabParagraph = screen.getByText(tabData.body, {
-          normalizer,
-        });
-        expect(tabParagraph).toBeInTheDocument();
+/* eslint-disable no-await-in-loop */
+export async function itShowsTheParagraphOfToTheSelectedTab(tablistsData: ITabs[][]) {
+  for (let tablistsIndex = 0; tablistsIndex < tablistsData.length; tablistsIndex += 1) {
+    const tablistData = tablistsData[tablistsIndex];
+    for (let tabIndex = 0; tabIndex < tablistData.length; tabIndex += 1) {
+      const tabData = tablistData[tabIndex];
+      const isFirstTab = tabIndex === 0;
+      const tab = screen.getByRole('tab', {
+        name: tabData.label,
+        selected: isFirstTab,
       });
-    });
-  });
+      expect(tab).toBeInTheDocument();
+
+      await userEvent.click(tab);
+
+      const tabParagraph = screen.getByText(tabData.body, {
+        normalizer,
+      });
+      expect(tabParagraph).toBeInTheDocument();
+    }
+  }
+  /* eslint-enable no-await-in-loop */
 }

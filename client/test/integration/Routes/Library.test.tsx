@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { fireEvent, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Library from '../../../src/route/library/Library';
 import { assetType, scope } from '../../../src/route/library/LibraryTabData';
 import {
@@ -16,9 +17,9 @@ describe('Library', () => {
     setup();
   });
 
-  it('renders the Library and Layout correctly', () => {
+  it('renders the Library and Layout correctly', async () => {
     const { container } = setup();
-    testLayout(container);
+    await testLayout(container);
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -54,18 +55,22 @@ describe('Library', () => {
     );
   });
 
-  itShowsTheParagraphOfToTheSelectedTab([assetType, scope]);
+  it('shows the paragraph of to the selected tab', async () => {
+    await itShowsTheParagraphOfToTheSelectedTab([assetType, scope]);
+  });
 
-  it('selects the first scope tab when you select an assetType tab', () => {
+  /* eslint-disable no-await-in-loop */
+  it('selects the first scope tab when you select an assetType tab', async () => {
     // Starting from 1 as the first tab is already selected so we won't need to click it
-    assetType.slice(1, -1).forEach((assetTypeData) => {
+    for (let assetTypeIndex = 1; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+      const assetTypeData = assetType[assetTypeIndex];
       const commonTab = screen.getByRole('tab', {
         name: 'Common',
         selected: false,
       });
       expect(commonTab).toBeInTheDocument();
 
-      fireEvent.click(commonTab);
+      await userEvent.click(commonTab);
 
       expect(commonTab).toHaveAttribute('aria-selected', 'true');
 
@@ -76,7 +81,7 @@ describe('Library', () => {
 
       expect(assetTypeTab).toBeInTheDocument();
 
-      fireEvent.click(assetTypeTab);
+      await userEvent.click(assetTypeTab);
 
       expect(assetTypeTab).toHaveAttribute('aria-selected', 'true');
 
@@ -87,25 +92,26 @@ describe('Library', () => {
       expect(newCommonTab).toBeInTheDocument();
 
       setup();
-    });
+    }
   });
 
-  it('does not change the selected assetType tab when you select a scope tab', () => {
-    assetType.forEach((assetTypeData, assetTypeIndex) => {
+  it('does not change the selected assetType tab when you select a scope tab', async () => {
+    for (let assetTypeIndex = 0; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+      const assetTypeData = assetType[assetTypeIndex];
       const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
-      fireEvent.click(assetTypeTab);
-      scope.forEach((scopeData, scopeIndex) => {
+      await userEvent.click(assetTypeTab);
+      for (let scopeIndex = 0; scopeIndex < scope.length; scopeIndex += 1) {
+        const scopeData = scope[scopeIndex];
         const isFirstScopeTab = scopeIndex === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
         });
-        fireEvent.click(scopeTab);
-
+        await userEvent.click(scopeTab);
         const scopeTabAfterClicks = screen.getByRole('tab', {
           name: scopeData.label,
           selected: true,
@@ -116,25 +122,27 @@ describe('Library', () => {
         });
         expect(scopeTabAfterClicks).toBeInTheDocument();
         expect(assetTypeTabAfterClicks).toBeInTheDocument();
-      });
-    });
+      }
+    }
   });
 
-  it('changes iframe src according to the combination of the selected tabs', () => {
-    assetType.forEach((assetTypeData, assetTypeIndex) => {
+  it('changes iframe src according to the combination of the selected tabs', async () => {
+    for (let assetTypeIndex = 0; assetTypeIndex < assetType.length; assetTypeIndex += 1) {
+      const assetTypeData = assetType[assetTypeIndex];
       const isFirstAssetTypeTab = assetTypeIndex === 0;
       const assetTypeTab = screen.getByRole('tab', {
         name: assetTypeData.label,
         selected: isFirstAssetTypeTab,
       });
-      fireEvent.click(assetTypeTab);
-      scope.forEach((scopeData, scopeIndex) => {
+      await userEvent.click(assetTypeTab);
+      for (let scopeIndex = 0; scopeIndex < scope.length; scopeIndex += 1) {
+        const scopeData = scope[scopeIndex];
         const isFirstScopeTab = scopeIndex === 0;
         const scopeTab = screen.getByRole('tab', {
           name: scopeData.label,
           selected: isFirstScopeTab,
         });
-        fireEvent.click(scopeTab);
+        await userEvent.click(scopeTab);
         const iframe = screen.getByTitle(assetTypeData.label);
         const scopeSegment = `${isFirstScopeTab ? '' : 'common/'}`;
         const assetTypeSegment = `${assetTypeData.label.replace(' ', '_').toLowerCase()}`;
@@ -143,7 +151,8 @@ describe('Library', () => {
           'src',
           `https://example.com/URL_LIBtree/${scopeSegment}${assetTypeSegment}`,
         );
-      });
-    });
+      }
+    }
   });
+  /* eslint-enable no-await-in-loop */
 });
