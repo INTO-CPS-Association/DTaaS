@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, act } from '@testing-library/react';
 import MiniDrawer from 'page/Menu';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -62,13 +62,13 @@ describe('Menu', () => {
     const buttonsDiv = closestDiv(libraryButton);
     expect(buttonsDiv).toHaveStyle('width:calc(56px + 1px);');
 
-    React.act(() => {
+    act(() => {
       store.dispatch(openMenu());
     });
 
     expect(buttonsDiv).toHaveStyle('width:240px');
 
-    React.act(() => {
+    act(() => {
       store.dispatch(closeMenu());
     });
 
