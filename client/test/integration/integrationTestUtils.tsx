@@ -3,6 +3,7 @@ import {
   getDefaultNormalizer,
   render,
   screen,
+  waitFor,
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -91,6 +92,55 @@ export async function testMenuToolbar() {
   expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
 
   await itOpensAndClosesTheDrawer();
+  await itOpensAndClosesTheDropdownMenu();
+  await itShowsTheTooltipWhenHoveringIcon('Open settings', openSettingsButton);
+  await itShowsTheTooltipWhenHoveringIcon(
+    'https://into-cps-association.github.io/DTaaS',
+    helpButtonDiv,
+  );
+  await itShowsTheTooltipWhenHoveringIcon(
+    'https://github.com/INTO-CPS-Association/DTaaS',
+    githubButton,
+  );
+}
+
+async function itOpensAndClosesTheDropdownMenu() {
+  expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  const settingsButton = screen.getByLabelText('Open settings');
+
+  // Focus the menu
+  await userEvent.click(settingsButton);
+  await waitFor(() => {
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  // Unfocus the menu
+  await userEvent.tab();
+  await waitFor(() => {
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+}
+
+async function itShowsTheTooltipWhenHoveringIcon(
+  toolTipText: string,
+  button: HTMLElement,
+) {
+  expect(
+    screen.queryByRole('tooltip', { name: toolTipText }),
+  ).not.toBeInTheDocument();
+  await userEvent.hover(button);
+  await waitFor(() => {
+    expect(
+      screen.getByRole('tooltip', { name: toolTipText }),
+    ).toBeInTheDocument();
+  });
+
+  await userEvent.unhover(button);
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('tooltip', { name: 'Open settings' }),
+    ).not.toBeInTheDocument();
+  });
 }
 
 async function itOpensAndClosesTheDrawer() {
@@ -169,5 +219,5 @@ export async function itShowsTheParagraphOfToTheSelectedTab(
       expect(tabParagraph).toBeInTheDocument();
     }
   }
-  /* eslint-enable no-await-in-loop */
 }
+/* eslint-enable no-await-in-loop */
