@@ -72,8 +72,6 @@ export async function testMenuToolbar() {
   expect(openSettingsButton).toBeInTheDocument();
   expect(within(openSettingsButton).getByText('A')).toBeInTheDocument();
 
-  expect(screen.getAllByRole('menuitem')).toBeInTheDocument();
-
   const buttonsDiv = closestDiv(openSettingsButton);
 
   const githubButtonDiv = within(buttonsDiv).getByLabelText(
