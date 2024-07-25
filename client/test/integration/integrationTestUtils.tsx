@@ -26,14 +26,6 @@ export const normalizer = getDefaultNormalizer({
   collapseWhitespace: false,
 });
 
-function renderWithMemoryRouter(ui: React.JSX.Element) {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>{ui}</MemoryRouter>
-    </Provider>,
-  );
-}
-
 export function setupIntegrationTest(ui: React.JSX.Element) {
   cleanup();
   store.dispatch({
@@ -41,7 +33,11 @@ export function setupIntegrationTest(ui: React.JSX.Element) {
     payload: userMock.profile.profile.split('/')[1],
   });
   (useAuth as jest.Mock).mockReturnValue(userMock);
-  return renderWithMemoryRouter(ui);
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </Provider>,
+  );
 }
 
 export function closestDiv(element: HTMLElement) {
@@ -65,41 +61,35 @@ export async function testDrawer() {
 }
 
 export async function testToolbar() {
-  const toolbarHeading = screen.getByText(/The Digital Twin as a Service/);
-  expect(toolbarHeading).toBeInTheDocument();
-
-  const openSettingsButton = screen.getByLabelText(/Open settings/);
-  expect(openSettingsButton).toBeInTheDocument();
-  expect(within(openSettingsButton).getByText('A')).toBeInTheDocument();
-
-  const buttonsDiv = closestDiv(openSettingsButton);
-
-  const githubButtonDiv = within(buttonsDiv).getByLabelText(
+  expect(screen.getByText(/The Digital Twin as a Service/)).toBeInTheDocument();
+  await testToolbarButton('Open settings', 'A', undefined);
+  await testToolbarButton(
     'https://github.com/INTO-CPS-Association/DTaaS',
+    undefined,
+    'GitHubIcon',
   );
-  expect(githubButtonDiv).toBeInTheDocument();
-  const githubButton = within(githubButtonDiv).getByRole('link');
-  expect(githubButton).toBeInTheDocument();
-  expect(within(githubButton).getByTestId(/GitHubIcon/)).toBeInTheDocument();
-
-  const helpButtonDiv = within(buttonsDiv).getByLabelText(
+  await testToolbarButton(
     'https://into-cps-association.github.io/DTaaS',
+    undefined,
+    'HelpOutlineIcon',
   );
-  expect(helpButtonDiv).toBeInTheDocument();
-  const helpButton = within(helpButtonDiv).getByRole('link');
-  expect(helpButton).toBeInTheDocument();
-  expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
-
   await itOpensAndClosesTheDropdownMenu();
-  await itShowsTheTooltipWhenHoveringIcon('Open settings', openSettingsButton);
-  await itShowsTheTooltipWhenHoveringIcon(
-    'https://into-cps-association.github.io/DTaaS',
-    helpButtonDiv,
-  );
-  await itShowsTheTooltipWhenHoveringIcon(
-    'https://github.com/INTO-CPS-Association/DTaaS',
-    githubButton,
-  );
+}
+
+async function testToolbarButton(
+  labelText: string,
+  name?: string,
+  iconTestId?: string,
+) {
+  const button = screen.getByLabelText(labelText);
+  expect(button).toBeInTheDocument();
+  if (iconTestId) {
+    expect(within(button).getByTestId(iconTestId)).toBeInTheDocument();
+  }
+  if (name) {
+    expect(within(button).getByText('A')).toBeInTheDocument();
+  }
+  await itShowsTheTooltipWhenHoveringButton(labelText);
 }
 
 async function itOpensAndClosesTheDropdownMenu() {
@@ -131,10 +121,8 @@ async function itOpensAndClosesTheDropdownMenu() {
   });
 }
 
-export async function itShowsTheTooltipWhenHoveringIcon(
-  toolTipText: string,
-  button: HTMLElement,
-) {
+export async function itShowsTheTooltipWhenHoveringButton(toolTipText: string) {
+  const button = screen.getByLabelText(toolTipText);
   expect(
     screen.queryByRole('tooltip', { name: toolTipText }),
   ).not.toBeInTheDocument();
@@ -154,27 +142,32 @@ export async function itShowsTheTooltipWhenHoveringIcon(
 }
 
 async function itOpensAndClosesTheDrawer() {
-  const libraryButton = screen.getByRole('link', { name: /Library/ });
-  const drawerInnerDiv = closestDiv(libraryButton);
+  // Drawer is collapsed
+  const drawerInnerDiv = closestDiv(
+    screen.getByRole('link', { name: /Library/ }),
+  );
   expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
-
+  // Open-drawer-button is visible
   const menuButton = screen.getByLabelText(/Open drawer/i);
   expect(menuButton).toBeVisible();
-  const header = menuButton.closest('header');
-  expect(header).toBeInTheDocument();
 
+  // Open the drawer
   await userEvent.click(menuButton);
 
-  expect(menuButton).not.toBeVisible();
+  // Drawer is expanded, Open-drawer-button is hidden
   expect(drawerInnerDiv).toHaveStyle('width:240px');
+  expect(menuButton).not.toBeVisible();
 
-  const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
-  const chevronLeftButton = chevronLeftIcon.closest('button');
+  // Close the drawer
+  const chevronLeftButton = screen
+    .getByTestId(/ChevronLeftIcon/)
+    .closest('button');
   expect(chevronLeftButton).toBeInTheDocument();
-
   await userEvent.click(chevronLeftButton!);
 
+  // Drawer is collapsed, Open-drawer-button is visible again
   expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
+  expect(menuButton).toBeVisible();
 }
 
 export function testFooter() {

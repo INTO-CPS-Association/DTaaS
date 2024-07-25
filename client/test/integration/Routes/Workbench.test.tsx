@@ -2,7 +2,7 @@ import * as React from 'react';
 import { screen, within } from '@testing-library/react';
 import Workbench from 'route/workbench/Workbench';
 import {
-  itShowsTheTooltipWhenHoveringIcon,
+  itShowsTheTooltipWhenHoveringButton,
   setupIntegrationTest,
   testLayout,
 } from '../integrationTestUtils';
@@ -28,7 +28,7 @@ async function testTool(toolTipText: string, name: string) {
   expect(toolHeading).toHaveTextContent(name);
   const toolButton = within(toolDiv).getByTitle(`${name}-btn`);
   expect(toolButton).toBeInTheDocument();
-  await itShowsTheTooltipWhenHoveringIcon(toolTipText, toolButton);
+  await itShowsTheTooltipWhenHoveringButton(toolTipText);
 }
 
 describe('Workbench', () => {
