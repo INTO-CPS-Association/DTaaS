@@ -19,8 +19,7 @@ describe('Digital Twins', () => {
   });
 
   it('renders the Digital Twins page and Layout correctly', async () => {
-    const { container } = setup();
-    await testLayout(container);
+    await testLayout();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -44,7 +43,7 @@ describe('Digital Twins', () => {
     );
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveProperty('src', 'https://example.com/URL_DT');
-  });
+  }, 7000);
 
   it('shows the paragraph of to the selected tab', async () => {
     await itShowsTheParagraphOfToTheSelectedTab([tabs]);

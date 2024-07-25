@@ -7,6 +7,7 @@ import { closeMenu, openMenu } from 'store/menu.slice';
 import { useAuth } from 'react-oidc-context';
 import store from 'store/store';
 import { closestDiv } from '../../integration/integrationTestUtils';
+import { userMock } from '../__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -22,8 +23,8 @@ jest.mock('page/Menu', () => ({
 }));
 
 describe('Menu', () => {
-  (useAuth as jest.Mock).mockReturnValue({ userName: 'Default user' });
   beforeEach(() => {
+    (useAuth as jest.Mock).mockReturnValue(userMock);
     render(
       <Provider store={store}>
         <MemoryRouter>

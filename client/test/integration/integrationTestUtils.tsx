@@ -13,12 +13,12 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
 import store from 'store/store';
+import { userMock } from '../unitTests/__mocks__/global_mocks';
 
-export async function testLayout(container: HTMLElement) {
-  testMenu();
-  testToolbar(container);
+export async function testLayout() {
   testFooter();
-  await testMenuToolbar();
+  await testDrawer();
+  await testToolbar();
 }
 
 export const normalizer = getDefaultNormalizer({
@@ -36,7 +36,11 @@ function renderWithMemoryRouter(ui: React.JSX.Element) {
 
 export function setupIntegrationTest(ui: React.JSX.Element) {
   cleanup();
-  (useAuth as jest.Mock).mockReturnValue({ userName: 'Default user' });
+  store.dispatch({
+    type: 'auth/setUserName',
+    payload: userMock.profile.profile.split('/')[1],
+  });
+  (useAuth as jest.Mock).mockReturnValue(userMock);
   return renderWithMemoryRouter(ui);
 }
 
@@ -46,7 +50,7 @@ export function closestDiv(element: HTMLElement) {
   return div!;
 }
 
-export function testMenu() {
+export async function testDrawer() {
   expect(screen.getByTestId(/ChevronLeftIcon/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
   expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
@@ -56,16 +60,11 @@ export function testMenu() {
   expect(screen.getByTestId(/PeopleIcon/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
   expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
+
+  await itOpensAndClosesTheDrawer();
 }
 
-export function testToolbar(container: HTMLElement) {
-  const toolbar = container.getElementsByClassName(
-    'MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular',
-  )[0];
-  expect(toolbar).toBeInTheDocument();
-}
-
-export async function testMenuToolbar() {
+export async function testToolbar() {
   const toolbarHeading = screen.getByText(/The Digital Twin as a Service/);
   expect(toolbarHeading).toBeInTheDocument();
 
@@ -91,7 +90,6 @@ export async function testMenuToolbar() {
   expect(helpButton).toBeInTheDocument();
   expect(within(helpButton).getByTestId(/HelpOutlineIcon/)).toBeInTheDocument();
 
-  await itOpensAndClosesTheDrawer();
   await itOpensAndClosesTheDropdownMenu();
   await itShowsTheTooltipWhenHoveringIcon('Open settings', openSettingsButton);
   await itShowsTheTooltipWhenHoveringIcon(
@@ -112,16 +110,28 @@ async function itOpensAndClosesTheDropdownMenu() {
   await userEvent.click(settingsButton);
   await waitFor(() => {
     expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: /Account/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: /Logout/ }),
+    ).toBeInTheDocument();
   });
 
   // Unfocus the menu
   await userEvent.tab();
   await waitFor(() => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: /Account/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: /Logout/ }),
+    ).not.toBeInTheDocument();
   });
 }
 
-async function itShowsTheTooltipWhenHoveringIcon(
+export async function itShowsTheTooltipWhenHoveringIcon(
   toolTipText: string,
   button: HTMLElement,
 ) {
@@ -138,7 +148,7 @@ async function itShowsTheTooltipWhenHoveringIcon(
   await userEvent.unhover(button);
   await waitFor(() => {
     expect(
-      screen.queryByRole('tooltip', { name: 'Open settings' }),
+      screen.queryByRole('tooltip', { name: toolTipText }),
     ).not.toBeInTheDocument();
   });
 }
@@ -148,12 +158,14 @@ async function itOpensAndClosesTheDrawer() {
   const drawerInnerDiv = closestDiv(libraryButton);
   expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
 
-  const menuButton = screen.getByTestId(/MenuIcon/i);
+  const menuButton = screen.getByLabelText(/Open drawer/i);
+  expect(menuButton).toBeVisible();
   const header = menuButton.closest('header');
   expect(header).toBeInTheDocument();
 
   await userEvent.click(menuButton);
 
+  expect(menuButton).not.toBeVisible();
   expect(drawerInnerDiv).toHaveStyle('width:240px');
 
   const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);

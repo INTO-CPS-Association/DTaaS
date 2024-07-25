@@ -6,6 +6,12 @@ export const mockAuthority = 'https://example.com/AUTHORITY';
 export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
 export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
 export const mockGitLabScopes = 'example scopes';
+export const userMock = {
+  profile: {
+    profile: 'example/username',
+  },
+  access_token: 'example_token',
+};
 
 jest.mock('util/envUtil', () => ({
   useURLforDT: () => mockURLforDT,

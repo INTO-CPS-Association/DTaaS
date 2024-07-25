@@ -6,6 +6,11 @@ import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
 import { renderWithRouter } from '../../unitTests/testUtils';
+import { userMock } from '../../unitTests/__mocks__/global_mocks';
+
+jest.mock('util/auth/Authentication', () => ({
+  getAndSetUsername: jest.fn(),
+}));
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -24,13 +29,6 @@ type AuthState = {
 };
 
 const setupTest = (authState: AuthState) => {
-  const userMock = {
-    profile: {
-      profile: 'example/username',
-    },
-    access_token: 'example_token',
-  };
-
   (useAuth as jest.Mock).mockReturnValue({ ...authState, user: userMock });
 
   if (authState.isAuthenticated) {

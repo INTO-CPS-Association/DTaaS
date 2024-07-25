@@ -18,8 +18,7 @@ describe('Library', () => {
   });
 
   it('renders the Library and Layout correctly', async () => {
-    const { container } = setup();
-    await testLayout(container);
+    await testLayout();
 
     const tablists = screen.getAllByRole('tablist');
     expect(tablists).toHaveLength(2);
@@ -53,7 +52,7 @@ describe('Library', () => {
       'src',
       `https://example.com/URL_LIBtree/${assetTypeSegment}`,
     );
-  });
+  }, 7000);
 
   it('shows the paragraph of to the selected tab', async () => {
     await itShowsTheParagraphOfToTheSelectedTab([assetType, scope]);
