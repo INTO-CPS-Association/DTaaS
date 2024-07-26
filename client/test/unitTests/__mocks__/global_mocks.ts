@@ -6,11 +6,23 @@ export const mockAuthority = 'https://example.com/AUTHORITY';
 export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
 export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
 export const mockGitLabScopes = 'example scopes';
-export const userMock = {
+export type mockUserType = {
+  access_token: string;
   profile: {
+    groups: string[] | string | undefined;
+    picture: string | undefined;
+    preferred_username: string | undefined;
+    profile: string | undefined;
+  };
+};
+export const mockUser: mockUserType = {
+  access_token: 'example_token',
+  profile: {
+    groups: 'group-one',
+    picture: 'pfp.jpg',
+    preferred_username: 'username',
     profile: 'example/username',
   },
-  access_token: 'example_token',
 };
 
 jest.mock('util/envUtil', () => ({

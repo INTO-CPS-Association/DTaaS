@@ -13,7 +13,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
 import store from 'store/store';
-import { userMock } from '../unitTests/__mocks__/global_mocks';
+import { mockUser, mockUserType } from '../unitTests/__mocks__/global_mocks';
 
 export async function testLayout() {
   testFooter();
@@ -26,13 +26,18 @@ export const normalizer = getDefaultNormalizer({
   collapseWhitespace: false,
 });
 
-export function setupIntegrationTest(ui: React.JSX.Element) {
+export function setupIntegrationTest(
+  ui: React.JSX.Element,
+  user?: mockUserType,
+) {
   cleanup();
   store.dispatch({
     type: 'auth/setUserName',
-    payload: userMock.profile.profile.split('/')[1],
+    payload: mockUser.profile.profile!.split('/')[1],
   });
-  (useAuth as jest.Mock).mockReturnValue(userMock);
+  (useAuth as jest.Mock).mockReturnValue({
+    user,
+  });
   return render(
     <Provider store={store}>
       <MemoryRouter>{ui}</MemoryRouter>

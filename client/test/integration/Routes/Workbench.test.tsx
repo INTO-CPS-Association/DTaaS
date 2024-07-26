@@ -28,10 +28,14 @@ async function testTool(toolTipText: string, name: string) {
   expect(toolHeading).toHaveTextContent(name);
   const toolButton = within(toolDiv).getByTitle(`${name}-btn`);
   expect(toolButton).toBeInTheDocument();
-  await itShowsTheTooltipWhenHoveringButton(toolTipText);
 }
 
 describe('Workbench', () => {
+  const desktopLabel =
+    'http://example.com/basename/username/tools/vnc/?password=vncpassword';
+  const VSCodeLabel = 'http://example.com/basename/username/tools/vscode';
+  const jupyterLabLabel = 'http://example.com/basename/username/lab';
+  const jupyterNotebookLabel = 'http://example.com/basename/username/';
   beforeEach(() => {
     setup();
   });
@@ -43,17 +47,16 @@ describe('Workbench', () => {
     expect(mainHeading).toBeInTheDocument();
     expect(mainHeading).toHaveTextContent(/Workbench Tools/);
 
-    const desktopLabel =
-      'http://example.com/basename/username/tools/vnc/?password=vncpassword';
     await testTool(desktopLabel, 'Desktop');
-
-    const VSCodeLabel = 'http://example.com/basename/username/tools/vscode';
     await testTool(VSCodeLabel, 'VSCode');
-
-    const jupyterLabLabel = 'http://example.com/basename/username/lab';
     await testTool(jupyterLabLabel, 'JupyterLab');
-
-    const jupyterNotebookLabel = 'http://example.com/basename/username/';
     await testTool(jupyterNotebookLabel, 'Jupyter Notebook');
   }, 7000);
+
+  it('shows the tooltip when hovering over the tools', async () => {
+    await itShowsTheTooltipWhenHoveringButton(desktopLabel);
+    await itShowsTheTooltipWhenHoveringButton(VSCodeLabel);
+    await itShowsTheTooltipWhenHoveringButton(jupyterLabLabel);
+    await itShowsTheTooltipWhenHoveringButton(jupyterNotebookLabel);
+  });
 });

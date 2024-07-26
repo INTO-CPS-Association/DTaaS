@@ -6,7 +6,7 @@ import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
 import { renderWithRouter } from '../../unitTests/testUtils';
-import { userMock } from '../../unitTests/__mocks__/global_mocks';
+import { mockUser } from '../../unitTests/__mocks__/global_mocks';
 
 jest.mock('util/auth/Authentication', () => ({
   getAndSetUsername: jest.fn(),
@@ -29,12 +29,12 @@ type AuthState = {
 };
 
 const setupTest = (authState: AuthState) => {
-  (useAuth as jest.Mock).mockReturnValue({ ...authState, user: userMock });
+  (useAuth as jest.Mock).mockReturnValue({ ...authState, user: mockUser });
 
   if (authState.isAuthenticated) {
     store.dispatch({
       type: 'auth/setUserName',
-      payload: userMock.profile.profile.split('/')[1],
+      payload: mockUser.profile.profile!.split('/')[1],
     });
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
