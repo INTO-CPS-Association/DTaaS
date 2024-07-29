@@ -1,6 +1,4 @@
-import * as React from 'react';
 import { screen, within } from '@testing-library/react';
-import Workbench from 'route/workbench/Workbench';
 import {
   itShowsTheTooltipWhenHoveringButton,
   setupIntegrationTest,
@@ -18,7 +16,7 @@ window.env = {
 };
 
 jest.deepUnmock('util/envUtil');
-const setup = () => setupIntegrationTest(<Workbench />);
+const setup = () => setupIntegrationTest('/workbench');
 
 async function testTool(toolTipText: string, name: string) {
   const toolDiv = screen.getByLabelText(toolTipText);

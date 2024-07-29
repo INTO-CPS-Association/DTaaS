@@ -1,7 +1,6 @@
 import {
   cleanup,
   getDefaultNormalizer,
-  render,
   screen,
   waitFor,
   within,
@@ -9,11 +8,10 @@ import {
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
 import { useAuth } from 'react-oidc-context';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import { ITabs } from 'route/IData';
 import store from 'store/store';
 import { mockUser, mockUserType } from '../unitTests/__mocks__/global_mocks';
+import { renderWithRouter } from '../unitTests/testUtils';
 
 export async function testLayout() {
   testFooter();
@@ -27,22 +25,20 @@ export const normalizer = getDefaultNormalizer({
 });
 
 export function setupIntegrationTest(
-  ui: React.JSX.Element,
+  route?: string,
   user?: mockUserType,
+  ui?: React.JSX.Element,
 ) {
   cleanup();
+  (useAuth as jest.Mock).mockReturnValue({
+    ...{ isAuthenticated: true },
+    user: user ?? mockUser,
+  });
   store.dispatch({
     type: 'auth/setUserName',
     payload: mockUser.profile.profile!.split('/')[1],
   });
-  (useAuth as jest.Mock).mockReturnValue({
-    user,
-  });
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>{ui}</MemoryRouter>
-    </Provider>,
-  );
+  return renderWithRouter(ui ?? <></>, { route: route ?? '/private', store });
 }
 
 export function closestDiv(element: HTMLElement) {

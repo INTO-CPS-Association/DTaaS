@@ -1,5 +1,3 @@
-import * as React from 'react';
-import Account from 'route/auth/Account';
 import { screen } from '@testing-library/react';
 import {
   testAccountSettings,
@@ -8,7 +6,7 @@ import {
 import { mockUser, mockUserType } from '../../unitTests/__mocks__/global_mocks';
 import { setupIntegrationTest, testLayout } from '../integrationTestUtils';
 
-const setup = (user: mockUserType) => setupIntegrationTest(<Account />, user);
+const setup = (user: mockUserType) => setupIntegrationTest('/account', user);
 
 describe('Account', () => {
   it('renders the Account page and Layout correctly', async () => {

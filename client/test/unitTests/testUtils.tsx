@@ -12,6 +12,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import userEvent from '@testing-library/user-event';
+import routes from 'routes';
 import { mockUserType } from './__mocks__/global_mocks';
 
 type RouterOptions = {
@@ -27,10 +28,10 @@ export const renderWithRouter = (
 
   return store
     ? render(
-        <Provider store={store}>
-          <RouterComponent ui={ui} route={route} />
-        </Provider>,
-      )
+      <Provider store={store}>
+        <RouterComponent ui={ui} route={route} />
+      </Provider>,
+    )
     : render(<RouterComponent ui={ui} route={route} />);
 };
 
@@ -44,6 +45,14 @@ const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
     <Routes>
       <Route path="/private" element={ui} />
       <Route path="/" element={<div>Signin</div>} />
+      {routes.map((routeElement) => (
+        <Route
+          path={routeElement.path}
+          element={routeElement.element}
+          key={`route-${routeElement.path.slice(1, -1)}`}
+        />
+      ))}
+      ;
     </Routes>
   </MemoryRouter>
 );

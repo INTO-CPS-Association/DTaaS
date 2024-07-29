@@ -1,7 +1,5 @@
-import * as React from 'react';
 import { screen, within } from '@testing-library/react';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import userEvent from '@testing-library/user-event';
 import {
   closestDiv,
@@ -11,7 +9,7 @@ import {
   testLayout,
 } from '../integrationTestUtils';
 
-const setup = () => setupIntegrationTest(<DigitalTwins />);
+const setup = () => setupIntegrationTest('/digitaltwins');
 
 describe('Digital Twins', () => {
   beforeEach(() => {

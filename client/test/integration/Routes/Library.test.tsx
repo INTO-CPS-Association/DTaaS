@@ -1,7 +1,5 @@
-import * as React from 'react';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Library from '../../../src/route/library/Library';
 import { assetType, scope } from '../../../src/route/library/LibraryTabData';
 import {
   normalizer,
@@ -11,7 +9,7 @@ import {
   setupIntegrationTest,
 } from '../integrationTestUtils';
 
-const setup = () => setupIntegrationTest(<Library />);
+const setup = () => setupIntegrationTest('/library');
 describe('Library', () => {
   beforeEach(() => {
     setup();
