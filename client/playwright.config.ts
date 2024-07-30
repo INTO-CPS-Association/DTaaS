@@ -13,16 +13,22 @@ dotenv.config({ path: './test/.env' });
 const BASE_URI = process.env.REACT_APP_URL.toString() ?? '';
 
 export default defineConfig({
+  webServer: {
+    command: 'yarn start',
+    port: 4000,
+  },
   timeout: 45000,
   globalTimeout: 600000,
   testDir: './test/e2e',
   testMatch: /.*\.test\.ts/,
-  reporter: [
-    ['html', { outputFile: 'playwright-report/index.html' }],
-    ['list'],
-    ['junit', { outputFile: 'playwright-report/results.xml' }],
-    ['json', { outputFile: 'playwright-report/results.json' }],
-  ],
+  reporter: process.env.CI
+    ? 'github'
+    : [
+        ['html', { outputFile: 'playwright-report/index.html' }],
+        ['list'],
+        ['junit', { outputFile: 'playwright-report/results.xml' }],
+        ['json', { outputFile: 'playwright-report/results.json' }],
+      ],
   use: {
     baseURL: BASE_URI,
   },
