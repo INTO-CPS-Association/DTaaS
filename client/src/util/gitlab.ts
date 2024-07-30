@@ -1,40 +1,46 @@
-import { Gitlab } from '@gitbeaker/rest';
+import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+
+interface GitlabAPI {
+    Projects: {
+        search: (name: string) => Promise<ProjectSchema[]>;
+    };
+    PipelineTriggerTokens: {
+        all: (projectId: number) => Promise<PipelineTriggerTokenSchema[]>;
+        trigger: (projectId: number, ref: string, token: string, variables: { variables: Record<string, string> }) => Promise<void>;
+    };
+}
+
+interface LogEntry {
+    status: string;
+    parameters?: Map<string, any>;
+    error?: any;
+}
 
 class DigitalTwin {
-    DTName: string;
-    api: any;
-    logs: { status: string; parameters?: Map<string, any>; error?: any }[];
+    private DTName: string;
+    private api: GitlabAPI;
+    private logs: LogEntry[];
 
-    constructor(DTName: string) {
+    constructor(DTName: string, api: GitlabAPI) {
         this.DTName = DTName;
-
-        this.api = new Gitlab({
-            oauthToken: sessionStorage.access_token,
-        });
+        this.api = api;
         this.logs = [];
     }
 
     async getProjectId(): Promise<number | null> {
         try {
-            const project = await this.api.Projects.search(this.DTName);
-    
-            return project ? project.id : null;
+            const projects: ProjectSchema[] = await this.api.Projects.search(this.DTName);
+            return projects.length > 0 ? projects[0].id : null;
         } catch (error) {
             console.error('Error fetching project ID:', error);
             return null;
         }
     }
-    
 
     async getTriggerToken(projectId: number): Promise<string | null> {
         try {
-            const triggers = await this.api.PipelineTriggerTokens.all(projectId);
-            if (triggers && triggers.length > 0) {
-                return triggers[0].token; 
-            } else {
-                console.error('No pipeline triggers found');
-                return null;
-            }
+            const triggers: PipelineTriggerTokenSchema[] = await this.api.PipelineTriggerTokens.all(projectId);
+            return triggers.length > 0 ? triggers[0].token : null;
         } catch (error) {
             console.error('Error fetching pipeline trigger token:', error);
             return null;
@@ -59,14 +65,14 @@ class DigitalTwin {
         try {
             await this.api.PipelineTriggerTokens.trigger(
                 projectId,
-                'main',
+                'main', 
                 triggerToken,
                 { variables }
             );
             this.logs.push({ status: 'success', parameters });
             return true;
         } catch (error) {
-            console.error(error);
+            console.error('Error triggering pipeline:', error);
             this.logs.push({ status: 'error', error, parameters });
             return false;
         }
@@ -76,7 +82,7 @@ class DigitalTwin {
         return this.logs.map(log => log.status);
     }
 
-    executionLogs(): { status: string; parameters?: Map<string, any>; error?: any }[] {
+    executionLogs(): LogEntry[] {
         return this.logs;
     }
 }
