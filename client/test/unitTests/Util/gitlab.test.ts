@@ -111,10 +111,11 @@ describe('DigitalTwin', () => {
         expect(dt.executionStatus()).toContain('success');
     });
 
-    it('should handle pipeline execution failure', async () => {
+    it('should handle non-Error thrown during pipeline execution', async () => {
         mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
-        mockApi.PipelineTriggerTokens.trigger.mockRejectedValue(new Error('Trigger failed'));
+
+        mockApi.PipelineTriggerTokens.trigger.mockRejectedValue('String error message');
 
         const parameters = new Map<string, string>([['DTName', 'digital_twin_name'], ['RunnerTag', 'runner_tag']]);
         const success = await dt.execute(parameters);
@@ -127,8 +128,33 @@ describe('DigitalTwin', () => {
             { variables: { DTName: 'digital_twin_name', RunnerTag: 'runner_tag' } }
         );
         expect(dt.executionStatus()).toContain('error');
-        expect(dt.executionLogs()[0].error).toBeInstanceOf(Error);
-        expect(dt.executionLogs()[0].error.message).toBe('Trigger failed');
+        const logs = dt.executionLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].error).toBeInstanceOf(Error);
+        expect(logs[0].error?.message).toBe('String error message');
+    });
+
+    it('should handle Error thrown during pipeline execution', async () => {
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
+        
+        mockApi.PipelineTriggerTokens.trigger.mockRejectedValue(new Error('Error instance message'));
+
+        const parameters = new Map<string, string>([['DTName', 'digital_twin_name'], ['RunnerTag', 'runner_tag']]);
+        const success = await dt.execute(parameters);
+
+        expect(success).toBe(false);
+        expect(mockApi.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
+            1,
+            'main',
+            'test-token',
+            { variables: { DTName: 'digital_twin_name', RunnerTag: 'runner_tag' } }
+        );
+        expect(dt.executionStatus()).toContain('error');
+        const logs = dt.executionLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].error).toBeInstanceOf(Error);
+        expect(logs[0].error?.message).toBe('Error instance message');
     });
 
     it('should return execution logs', async () => {

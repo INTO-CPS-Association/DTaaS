@@ -12,8 +12,8 @@ interface GitlabAPI {
 
 interface LogEntry {
     status: string;
-    parameters?: Map<string, any>;
-    error?: any;
+    parameters?: Map<string, string>;
+    error?: Error;
 }
 
 class DigitalTwin {
@@ -32,7 +32,6 @@ class DigitalTwin {
             const projects: ProjectSchema[] = await this.api.Projects.search(this.DTName);
             return projects.length > 0 ? projects[0].id : null;
         } catch (error) {
-            console.error('Error fetching project ID:', error);
             return null;
         }
     }
@@ -42,21 +41,18 @@ class DigitalTwin {
             const triggers: PipelineTriggerTokenSchema[] = await this.api.PipelineTriggerTokens.all(projectId);
             return triggers.length > 0 ? triggers[0].token : null;
         } catch (error) {
-            console.error('Error fetching pipeline trigger token:', error);
             return null;
         }
     }
 
-    async execute(parameters: Map<string, any>): Promise<boolean> {
+    async execute(parameters: Map<string, string>): Promise<boolean> {
         const projectId = await this.getProjectId();
         if (projectId === null) {
-            console.error('Project ID could not be determined');
             return false;
         }
 
         const triggerToken = await this.getTriggerToken(projectId);
         if (triggerToken === null) {
-            console.error('Pipeline trigger token could not be determined');
             return false;
         }
 
@@ -72,8 +68,7 @@ class DigitalTwin {
             this.logs.push({ status: 'success', parameters });
             return true;
         } catch (error) {
-            console.error('Error triggering pipeline:', error);
-            this.logs.push({ status: 'error', error, parameters });
+            this.logs.push({ status: 'error', error: error instanceof Error ? error : new Error(String(error)), parameters });
             return false;
         }
     }
