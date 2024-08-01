@@ -1,6 +1,6 @@
-import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+import { Gitlab } from '@gitbeaker/rest';
 
-interface GitlabAPI {
+/*interface GitlabAPI {
     Projects: {
         search: (name: string) => Promise<ProjectSchema[]>;
     };
@@ -9,27 +9,33 @@ interface GitlabAPI {
         trigger: (projectId: number, ref: string, token: string, variables: { variables: Record<string, string> }) => Promise<void>;
     };
 }
+*/
 
 interface LogEntry {
     status: string;
-    parameters?: Map<string, string>;
+    DTName: string;
+    runnerTag: string;
     error?: Error;
 }
 
 class DigitalTwin {
     private DTName: string;
-    private api: GitlabAPI;
+    private username: string;
+    private api: InstanceType<typeof Gitlab>;
     private logs: LogEntry[];
 
-    constructor(DTName: string, api: GitlabAPI) {
+    constructor(DTName: string) {
         this.DTName = DTName;
-        this.api = api;
+        this.username = sessionStorage.getItem('username') || '';
+        this.api = new Gitlab({
+            oauthToken: sessionStorage.getItem('access_token') || '',
+        });
         this.logs = [];
     }
 
     async getProjectId(): Promise<number | null> {
         try {
-            const projects: ProjectSchema[] = await this.api.Projects.search(this.DTName);
+            const projects = await this.api.Projects.search(this.username);
             return projects.length > 0 ? projects[0].id : null;
         } catch (error) {
             return null;
@@ -38,14 +44,17 @@ class DigitalTwin {
 
     async getTriggerToken(projectId: number): Promise<string | null> {
         try {
-            const triggers: PipelineTriggerTokenSchema[] = await this.api.PipelineTriggerTokens.all(projectId);
-            return triggers.length > 0 ? triggers[0].token : null;
+            const triggers = await this.api.PipelineTriggerTokens.all(projectId);
+            if (triggers.length === 1) {
+                return triggers[0].token;
+            }
+            return null;
         } catch (error) {
             return null;
         }
     }
 
-    async execute(parameters: Map<string, string>): Promise<boolean> {
+    async execute(runnerTag: string): Promise<boolean> {
         const projectId = await this.getProjectId();
         if (projectId === null) {
             return false;
@@ -56,7 +65,10 @@ class DigitalTwin {
             return false;
         }
 
-        const variables = Object.fromEntries(parameters);
+        const variables = {
+            DTName: this.DTName,
+            RunnerTag: runnerTag,
+        }
 
         try {
             await this.api.PipelineTriggerTokens.trigger(
@@ -65,10 +77,10 @@ class DigitalTwin {
                 triggerToken,
                 { variables }
             );
-            this.logs.push({ status: 'success', parameters });
+            this.logs.push({ status: 'success', DTName: this.DTName, runnerTag: runnerTag });
             return true;
         } catch (error) {
-            this.logs.push({ status: 'error', error: error instanceof Error ? error : new Error(String(error)), parameters });
+            this.logs.push({ status: 'error', error: error instanceof Error ? error : new Error(String(error)), DTName: this.DTName, runnerTag: runnerTag });
             return false;
         }
     }

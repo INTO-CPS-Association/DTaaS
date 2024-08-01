@@ -165,3 +165,4 @@ runner.yml
 
 # command scripts for runner
 servers/execution/runner/lifecycle*
+client/test/integration/gitlab.test.ts

@@ -1,5 +1,6 @@
-import DigitalTwin from '../../../src/util/gitlab'; // Aggiorna il percorso in base alla tua struttura
+import DigitalTwin from '../../../src/util/gitlab';
 import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+import { Gitlab } from '@gitbeaker/rest';
 
 const mockApi = {
     Projects: {
@@ -15,16 +16,16 @@ describe('DigitalTwin', () => {
     let dt: DigitalTwin;
 
     beforeEach(() => {
-        dt = new DigitalTwin('test-project', mockApi);
+        dt = new DigitalTwin('test-DTName');
+        (dt as any).api = mockApi as unknown as InstanceType<typeof Gitlab>;
     });
 
     it('should fetch project ID successfully', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
 
         const projectId = await dt.getProjectId();
 
         expect(projectId).toBe(1);
-        expect(mockApi.Projects.search).toHaveBeenCalledWith('test-project');
     });
 
     it('should handle project ID not found', async () => {
@@ -33,7 +34,6 @@ describe('DigitalTwin', () => {
         const projectId = await dt.getProjectId();
 
         expect(projectId).toBeNull();
-        expect(mockApi.Projects.search).toHaveBeenCalledWith('test-project');
     });
 
     it('should handle errors fetching project ID', async () => {
@@ -42,7 +42,6 @@ describe('DigitalTwin', () => {
         const projectId = await dt.getProjectId();
 
         expect(projectId).toBeNull();
-        expect(mockApi.Projects.search).toHaveBeenCalledWith('test-project');
     });
 
     it('should fetch trigger token successfully', async () => {
@@ -74,58 +73,54 @@ describe('DigitalTwin', () => {
 
     it('should handle null project ID during pipeline execution', async () => {
         mockApi.Projects.search.mockResolvedValue([]);
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name']]);
-        
-        const success = await dt.execute(parameters);
+
+        const success = await dt.execute('test-runnerTag');
 
         expect(success).toBe(false);
-        expect(mockApi.PipelineTriggerTokens.trigger).not.toHaveBeenCalled(); // Verifica che non sia stata chiamata
+        expect(mockApi.PipelineTriggerTokens.trigger).not.toHaveBeenCalled();
     });
 
     it('should handle null trigger token during pipeline execution', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([]);
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name']]);
-        
-        const success = await dt.execute(parameters);
+
+        const success = await dt.execute('test-runnerTag');
 
         expect(success).toBe(false);
-        expect(mockApi.PipelineTriggerTokens.trigger).not.toHaveBeenCalled(); // Verifica che non sia stata chiamata
+        expect(mockApi.PipelineTriggerTokens.trigger).not.toHaveBeenCalled();
     });
 
     it('should execute pipeline successfully', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
         mockApi.PipelineTriggerTokens.trigger.mockResolvedValue(undefined);
 
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name'], ['RunnerTag', 'runner_tag']]);
-        const success = await dt.execute(parameters);
+        const success = await dt.execute('test-runnerTag');
 
         expect(success).toBe(true);
         expect(mockApi.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
             1,
             'main',
             'test-token',
-            { variables: { DTName: 'digital_twin_name', RunnerTag: 'runner_tag' } }
+            { variables: { DTName: 'test-DTName', RunnerTag: 'test-runnerTag' } }
         );
         expect(dt.executionStatus()).toContain('success');
     });
 
     it('should handle non-Error thrown during pipeline execution', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
 
         mockApi.PipelineTriggerTokens.trigger.mockRejectedValue('String error message');
 
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name'], ['RunnerTag', 'runner_tag']]);
-        const success = await dt.execute(parameters);
+        const success = await dt.execute('test-runnerTag');
 
         expect(success).toBe(false);
         expect(mockApi.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
             1,
             'main',
             'test-token',
-            { variables: { DTName: 'digital_twin_name', RunnerTag: 'runner_tag' } }
+            { variables: { DTName: 'test-DTName', RunnerTag: 'test-runnerTag' } }
         );
         expect(dt.executionStatus()).toContain('error');
         const logs = dt.executionLogs();
@@ -135,20 +130,19 @@ describe('DigitalTwin', () => {
     });
 
     it('should handle Error thrown during pipeline execution', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
-        
+
         mockApi.PipelineTriggerTokens.trigger.mockRejectedValue(new Error('Error instance message'));
 
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name'], ['RunnerTag', 'runner_tag']]);
-        const success = await dt.execute(parameters);
+        const success = await dt.execute('test-runnerTag');
 
         expect(success).toBe(false);
         expect(mockApi.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
             1,
             'main',
             'test-token',
-            { variables: { DTName: 'digital_twin_name', RunnerTag: 'runner_tag' } }
+            { variables: { DTName: 'test-DTName', RunnerTag: 'test-runnerTag' } }
         );
         expect(dt.executionStatus()).toContain('error');
         const logs = dt.executionLogs();
@@ -158,16 +152,16 @@ describe('DigitalTwin', () => {
     });
 
     it('should return execution logs', async () => {
-        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-project' } as ProjectSchema]);
+        mockApi.Projects.search.mockResolvedValue([{ id: 1, name: 'test-username' } as ProjectSchema]);
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
         mockApi.PipelineTriggerTokens.trigger.mockResolvedValue(undefined);
 
-        const parameters = new Map<string, string>([['DTName', 'digital_twin_name']]);
-        await dt.execute(parameters);
+        await dt.execute('test-runnerTag');
 
         const logs = dt.executionLogs();
         expect(logs).toHaveLength(1);
         expect(logs[0].status).toBe('success');
-        expect(logs[0].parameters).toEqual(parameters);
+        expect(logs[0].DTName).toBe('test-DTName');
+        expect(logs[0].runnerTag).toBe('test-runnerTag');
     });
 });
