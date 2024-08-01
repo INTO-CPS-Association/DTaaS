@@ -1,6 +1,6 @@
-import DigitalTwin from '../../../src/util/gitlab';
-import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+import { DigitalTwin, DigitalTwinSubfolders } from '../../../src/util/gitlab';
 import { Gitlab } from '@gitbeaker/rest';
+import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
 
 const mockApi = {
     Projects: {
@@ -9,6 +9,9 @@ const mockApi = {
     PipelineTriggerTokens: {
         all: jest.fn(),
         trigger: jest.fn()
+    },
+    Repositories: {
+        allRepositoryTrees: jest.fn()
     }
 };
 
@@ -163,5 +166,43 @@ describe('DigitalTwin', () => {
         expect(logs[0].status).toBe('success');
         expect(logs[0].DTName).toBe('test-DTName');
         expect(logs[0].runnerTag).toBe('test-runnerTag');
+    });
+});
+
+describe('DigitalTwinSubfolders', () => {
+    let subfolders: DigitalTwinSubfolders;
+
+    const mockApi = {
+        Repositories: {
+            allRepositoryTrees: jest.fn()
+        }
+    };
+
+    beforeEach(() => {
+        subfolders = new DigitalTwinSubfolders();
+        (subfolders as any).api = mockApi as unknown as InstanceType<typeof Gitlab>;
+    });
+
+    it('should fetch all files and subfolders successfully', async () => {
+        const mockFiles = [
+            { name: 'file1.txt', path: 'digital_twins/file1.txt', type: 'blob' },
+            { name: 'subfolder', path: 'digital_twins/subfolder', type: 'tree' },
+            { name: 'file2.txt', path: 'digital_twins/subfolder/file2.txt', type: 'blob' }
+        ];
+        mockApi.Repositories.allRepositoryTrees.mockResolvedValue(mockFiles);
+
+        const folderEntries = await subfolders.getDTSubfolders(1);
+
+        expect(folderEntries).toEqual([
+            { name: 'subfolder', path: 'digital_twins/subfolder' }
+        ]);
+    });
+
+    it('should handle errors fetching files and subfolders', async () => {
+        mockApi.Repositories.allRepositoryTrees.mockRejectedValue(new Error('API error'));
+
+        const folderEntries = await subfolders.getDTSubfolders(1);
+
+        expect(folderEntries).toEqual([]);
     });
 });
