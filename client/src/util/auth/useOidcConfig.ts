@@ -5,7 +5,7 @@ import {
   getLogoutRedirectURI,
   getGitLabScopes,
   getRedirectURI,
-} from '../envUtil';
+} from '../envUtils';
 
 export interface OidcConfig {
   authority: string;

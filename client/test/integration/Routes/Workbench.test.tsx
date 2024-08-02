@@ -2,8 +2,8 @@ import { screen, within } from '@testing-library/react';
 import {
   itShowsTheTooltipWhenHoveringButton,
   setupIntegrationTest,
-  testLayout,
-} from '../integrationTestUtils';
+} from '../integration.testUtils';
+import { testLayout } from './routes.testUtils';
 
 window.env = {
   ...window.env,
@@ -15,8 +15,7 @@ window.env = {
   REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
 };
 
-jest.deepUnmock('util/envUtil');
-const setup = () => setupIntegrationTest('/workbench');
+jest.deepUnmock('util/envUtils');
 
 async function testTool(toolTipText: string, name: string) {
   const toolDiv = screen.getByLabelText(toolTipText);
@@ -28,14 +27,16 @@ async function testTool(toolTipText: string, name: string) {
   expect(toolButton).toBeInTheDocument();
 }
 
+const setup = () => setupIntegrationTest('/workbench');
+
 describe('Workbench', () => {
   const desktopLabel =
     'http://example.com/basename/username/tools/vnc/?password=vncpassword';
   const VSCodeLabel = 'http://example.com/basename/username/tools/vscode';
   const jupyterLabLabel = 'http://example.com/basename/username/lab';
   const jupyterNotebookLabel = 'http://example.com/basename/username/';
-  beforeEach(() => {
-    setup();
+  beforeEach(async () => {
+    await setup();
   });
 
   it('renders the Workbench and Layout correctly', async () => {

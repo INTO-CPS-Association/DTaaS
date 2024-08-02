@@ -6,14 +6,14 @@ import {
   itShowsTheParagraphOfToTheSelectedTab,
   normalizer,
   setupIntegrationTest,
-  testLayout,
-} from '../integrationTestUtils';
+} from '../integration.testUtils';
+import { testLayout } from './routes.testUtils';
 
 const setup = () => setupIntegrationTest('/digitaltwins');
 
 describe('Digital Twins', () => {
-  beforeEach(() => {
-    setup();
+  beforeEach(async () => {
+    await setup();
   });
 
   it('renders the Digital Twins page and Layout correctly', async () => {

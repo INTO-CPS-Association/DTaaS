@@ -5,8 +5,8 @@ import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
-import { renderWithRouter } from '../../unitTests/testUtils';
-import { mockUser } from '../../unitTests/__mocks__/global_mocks';
+import { renderWithRouter } from '../../unit/unit.testUtils';
+import { mockUser } from '../../__mocks__/global_mocks';
 
 jest.mock('util/auth/Authentication', () => ({
   getAndSetUsername: jest.fn(),
@@ -68,7 +68,7 @@ describe('Redux and Authentication integration test', () => {
       isAuthenticated: false,
     });
 
-    expect(screen.getByText('Signin')).toBeInTheDocument();
+    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
     expect(authReducer(undefined, { type: 'unknown' })).toEqual(
       initialState.auth,
     );
@@ -94,7 +94,7 @@ describe('Redux and Authentication integration test', () => {
     setupTest({
       isAuthenticated: false,
     });
-    expect(screen.getByText('Signin')).toBeInTheDocument();
+    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
     expect(store.getState().userName).toBe(undefined);
   });
 });

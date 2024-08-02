@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { fireEvent, render, screen, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import MiniDrawer from 'page/Menu';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { closeMenu, openMenu } from 'store/menu.slice';
 import { useAuth } from 'react-oidc-context';
 import store from 'store/store';
-import { closestDiv } from '../../integration/integrationTestUtils';
-import { mockUser } from '../__mocks__/global_mocks';
+import userEvent from '@testing-library/user-event';
+import { closestDiv } from '../../integration/integration.testUtils';
+import { mockUser } from '../../__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -34,7 +35,7 @@ describe('Menu', () => {
     );
   });
 
-  it('renders the Menu correctly', () => {
+  it('renders the Menu correctly', async () => {
     expect(screen.getByTestId(/toolbar/)).toBeInTheDocument();
 
     const chevronLeftIcon = screen.getByTestId(/ChevronLeftIcon/);
@@ -42,7 +43,7 @@ describe('Menu', () => {
     const chevronLeftButton = chevronLeftIcon.closest('button');
     expect(chevronLeftButton).toBeInTheDocument();
 
-    fireEvent.click(chevronLeftButton!);
+    await userEvent.click(chevronLeftButton!);
 
     const libraryButton = screen.getByRole('link', { name: /Library/ });
     expect(libraryButton).toBeInTheDocument();

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import AppProvider from 'AppProvider';
-import { useURLbasename } from 'util/envUtil';
+import { useURLbasename } from 'util/envUtils';
 import routes from 'routes';
 
 const router = createBrowserRouter(routes, {

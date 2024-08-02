@@ -2,7 +2,7 @@ import * as React from 'react';
 import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from '../../../src/route/auth/PrivateRoute';
-import { renderWithRouter } from '../testUtils';
+import { renderWithRouter } from '../unit.testUtils';
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),

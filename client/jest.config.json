@@ -47,8 +47,5 @@
   "testRegex": "/test/.*\\.test.tsx?$",
   "modulePaths": [
     "<rootDir>/src/"
-  ],
-  "setupFilesAfterEnv": [
-    "<rootDir>/test/unitTests/jest.setup.ts"
   ]
 }

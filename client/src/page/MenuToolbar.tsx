@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
 import LinkButtons from 'components/LinkButtons';
-import toolbarLinkValues from 'util/toolbarUtil';
+import toolbarLinkValues from 'util/toolbarUtils';
 import { signOut } from '../util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {

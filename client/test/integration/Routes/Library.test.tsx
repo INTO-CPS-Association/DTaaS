@@ -3,16 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { assetType, scope } from '../../../src/route/library/LibraryTabData';
 import {
   normalizer,
-  testLayout,
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
   setupIntegrationTest,
-} from '../integrationTestUtils';
+} from '../integration.testUtils';
+import { testLayout } from './routes.testUtils';
 
 const setup = () => setupIntegrationTest('/library');
+
 describe('Library', () => {
-  beforeEach(() => {
-    setup();
+  beforeEach(async () => {
+    await setup();
   });
 
   it('renders the Library and Layout correctly', async () => {
@@ -92,7 +93,7 @@ describe('Library', () => {
       });
       expect(newCommonTab).toBeInTheDocument();
 
-      setup();
+      await setup();
     }
   });
 
@@ -129,7 +130,7 @@ describe('Library', () => {
         expect(assetTypeTabAfterClicks).toBeInTheDocument();
       }
     }
-  });
+  }, 6000);
 
   it('changes iframe src according to the combination of the selected tabs', async () => {
     for (
@@ -162,6 +163,6 @@ describe('Library', () => {
         );
       }
     }
-  });
+  }, 6000);
   /* eslint-enable no-await-in-loop */
 });

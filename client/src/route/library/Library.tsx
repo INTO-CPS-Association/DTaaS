@@ -2,7 +2,7 @@ import * as React from 'react';
 import Layout from 'page/Layout';
 import TabComponent, { constructURL } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
-import { useURLforLIB } from 'util/envUtil';
+import { useURLforLIB } from 'util/envUtils';
 import { Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
 import { getAndSetUsername } from '../../util/auth/Authentication';

@@ -13,7 +13,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import userEvent from '@testing-library/user-event';
 import routes from 'routes';
-import { mockUserType } from './__mocks__/global_mocks';
+import { mockUserType } from '../__mocks__/global_mocks';
 
 type RouterOptions = {
   route?: string;
@@ -28,10 +28,10 @@ export const renderWithRouter = (
 
   return store
     ? render(
-      <Provider store={store}>
-        <RouterComponent ui={ui} route={route} />
-      </Provider>,
-    )
+        <Provider store={store}>
+          <RouterComponent ui={ui} route={route} />
+        </Provider>,
+      )
     : render(<RouterComponent ui={ui} route={route} />);
 };
 
@@ -44,7 +44,6 @@ const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
   <MemoryRouter initialEntries={[route]}>
     <Routes>
       <Route path="/private" element={ui} />
-      <Route path="/" element={<div>Signin</div>} />
       {routes.map((routeElement) => (
         <Route
           path={routeElement.path}
@@ -56,6 +55,7 @@ const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
     </Routes>
   </MemoryRouter>
 );
+
 export function generateTestDivs(testIds: string[]) {
   return testIds.map((id, i) => (
     <div key={i} data-testid={id}>

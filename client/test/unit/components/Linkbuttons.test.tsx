@@ -1,7 +1,7 @@
 import * as React from 'react';
 import LinkButtons, { LinkIcons } from 'components/LinkButtons';
 import { render, screen } from '@testing-library/react';
-import { KeyLinkPair } from 'util/envUtil';
+import { KeyLinkPair } from 'util/envUtils';
 import userEvent from '@testing-library/user-event';
 
 jest.deepUnmock('components/LinkButtons');

@@ -2,8 +2,11 @@ import * as React from 'react';
 import Account from 'route/auth/Account';
 import { render, screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
-import { mockUser } from '../__mocks__/global_mocks';
-import { testAccountSettings, testStaticAccountProfile } from '../testUtils';
+import { mockUser } from '../../__mocks__/global_mocks';
+import {
+  testAccountSettings,
+  testStaticAccountProfile,
+} from '../unit.testUtils';
 
 jest.mock('react-oidc-context');
 

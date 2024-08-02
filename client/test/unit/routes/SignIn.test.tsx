@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import SignIn from 'route/auth/Signin';
 import { useAuth } from 'react-oidc-context';
 
+jest.unmock('route/auth/Signin');
 jest.mock('react-oidc-context');
 
 describe('SignIn', () => {

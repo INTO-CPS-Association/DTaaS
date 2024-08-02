@@ -20,3 +20,8 @@ jest.mock('page/Menu', () => ({
   __esModule: true,
   default: () => <div data-testid="menu" />,
 }));
+
+jest.mock('route/auth/Signin', () => ({
+  __esModule: true,
+  default: () => <div>Signin</div>,
+}));

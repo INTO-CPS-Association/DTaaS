@@ -5,7 +5,7 @@ import {
   InitRouteTests,
   itDisplaysContentOfTabs,
   itHasCorrectTabNameinDTIframe,
-} from '../testUtils';
+} from '../unit.testUtils';
 
 describe('Digital Twins', () => {
   const tabLabels: string[] = [];
