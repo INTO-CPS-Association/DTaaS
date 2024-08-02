@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {
   closestDiv,
   itShowsTheTooltipWhenHoveringButton,
-} from '../integration.testUtils';
+} from 'test/integration/integration.testUtil';
 
 export async function testLayout() {
   testFooter();

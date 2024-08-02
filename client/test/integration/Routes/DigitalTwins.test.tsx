@@ -6,8 +6,8 @@ import {
   itShowsTheParagraphOfToTheSelectedTab,
   normalizer,
   setupIntegrationTest,
-} from '../integration.testUtils';
-import { testLayout } from './routes.testUtils';
+} from 'test/integration/integration.testUtil';
+import { testLayout } from './routes.testUtil';
 
 const setup = () => setupIntegrationTest('/digitaltwins');
 

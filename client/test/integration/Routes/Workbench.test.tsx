@@ -2,8 +2,8 @@ import { screen, within } from '@testing-library/react';
 import {
   itShowsTheTooltipWhenHoveringButton,
   setupIntegrationTest,
-} from '../integration.testUtils';
-import { testLayout } from './routes.testUtils';
+} from 'test/integration/integration.testUtil';
+import { testLayout } from './routes.testUtil';
 
 window.env = {
   ...window.env,
@@ -15,7 +15,7 @@ window.env = {
   REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
 };
 
-jest.deepUnmock('util/envUtils');
+jest.deepUnmock('util/envUtil');
 
 async function testTool(toolTipText: string, name: string) {
   const toolDiv = screen.getByLabelText(toolTipText);

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { generateTestDivs } from '../unit.testUtils';
+import { generateTestDivs } from 'test/unit/unit.testUtil';
 
 export const TestComponentIdList = ['component1', 'component2', 'component3'];
 

@@ -1,9 +1,9 @@
 import { signOut } from 'util/auth/Authentication';
 import { useAuth } from 'react-oidc-context';
-import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtils';
+import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
 
 jest.mock('react-oidc-context');
-jest.mock('util/envUtils', () => ({
+jest.mock('util/envUtil', () => ({
   getLogoutRedirectURI: jest.fn(),
   useAppURL: jest.fn(),
   cleanURL: jest.fn(),

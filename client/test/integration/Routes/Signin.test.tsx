@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
-import { setupIntegrationTest } from '../integration.testUtils';
-import { testPublicLayout } from './routes.testUtils';
+import { setupIntegrationTest } from 'test/integration/integration.testUtil';
+import { testPublicLayout } from './routes.testUtil';
 
 const setup = () => setupIntegrationTest('/');
 

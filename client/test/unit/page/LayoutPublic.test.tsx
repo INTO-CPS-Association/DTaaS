@@ -5,7 +5,7 @@ import {
   itHasMultipleChildren,
   itHasSingleChild,
   renderLayoutWithRouter,
-} from './page.testUtils';
+} from './page.testUtil';
 
 const PublicTestComponentId = 'public-component';
 

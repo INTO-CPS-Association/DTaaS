@@ -13,7 +13,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import userEvent from '@testing-library/user-event';
 import routes from 'routes';
-import { mockUserType } from '../__mocks__/global_mocks';
+import { mockUserType } from 'test/__mocks__/global_mocks';
 
 type RouterOptions = {
   route?: string;

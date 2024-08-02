@@ -2,14 +2,14 @@ import { screen } from '@testing-library/react';
 import {
   testAccountSettings,
   testStaticAccountProfile,
-} from '../../unit/unit.testUtils';
+} from 'test/unit/unit.testUtil';
 import {
   mockAuthState,
   mockUser,
   mockUserType,
-} from '../../__mocks__/global_mocks';
-import { setupIntegrationTest } from '../integration.testUtils';
-import { testLayout } from './routes.testUtils';
+} from 'test/__mocks__/global_mocks';
+import { setupIntegrationTest } from 'test/integration/integration.testUtil';
+import { testLayout } from './routes.testUtil';
 
 const setup = async (user: mockUserType) =>
   setupIntegrationTest('/account', { ...mockAuthState, user });

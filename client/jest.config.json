@@ -47,5 +47,8 @@
   "testRegex": "/test/.*\\.test.tsx?$",
   "modulePaths": [
     "<rootDir>/src/"
-  ]
+  ],
+  "moduleNameMapper": {
+    "^test/(.*)$": "<rootDir>/test/$1"
+  }
 }

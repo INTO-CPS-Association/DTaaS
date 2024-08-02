@@ -1,13 +1,13 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { assetType, scope } from '../../../src/route/library/LibraryTabData';
+import { assetType, scope } from 'route/library/LibraryTabData';
 import {
   normalizer,
   closestDiv,
   itShowsTheParagraphOfToTheSelectedTab,
   setupIntegrationTest,
-} from '../integration.testUtils';
-import { testLayout } from './routes.testUtils';
+} from 'test/integration/integration.testUtil';
+import { testLayout } from './routes.testUtil';
 
 const setup = () => setupIntegrationTest('/library');
 

@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Container } from '@mui/material';
 import LinkButtons from 'components/LinkButtons';
-import toolbarLinkValues from 'util/toolbarUtils';
+import toolbarLinkValues from 'util/toolbarUtil';
 
 const DTappBar = () => (
   <AppBar position="absolute">

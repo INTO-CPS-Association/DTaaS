@@ -4,10 +4,10 @@ import {
   getWorkbenchLinkValues,
   cleanURL,
   useURLbasename,
-} from 'util/envUtils';
+} from 'util/envUtil';
 import { useSelector } from 'react-redux';
 
-jest.unmock('util/envUtils');
+jest.unmock('util/envUtil');
 
 describe('envUtil', () => {
   const testDT = 'testDT';

@@ -14,7 +14,7 @@ import store from 'store/store';
 import AppProvider from 'AppProvider';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import routes from 'routes';
-import { mockAuthState, mockAuthStateType } from '../__mocks__/global_mocks';
+import { mockAuthState, mockAuthStateType } from 'test/__mocks__/global_mocks';
 
 export const normalizer = getDefaultNormalizer({
   trim: false,

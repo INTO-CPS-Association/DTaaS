@@ -2,7 +2,7 @@ import { User } from 'oidc-client-ts';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
-import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtils';
+import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;

@@ -7,8 +7,8 @@ import { closeMenu, openMenu } from 'store/menu.slice';
 import { useAuth } from 'react-oidc-context';
 import store from 'store/store';
 import userEvent from '@testing-library/user-event';
-import { closestDiv } from '../../integration/integration.testUtils';
-import { mockUser } from '../../__mocks__/global_mocks';
+import { mockUser } from 'test/__mocks__/global_mocks';
+import { closestDiv } from 'test/integration/integration.testUtil';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

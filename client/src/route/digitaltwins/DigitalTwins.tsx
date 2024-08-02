@@ -3,7 +3,7 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { useURLforDT } from 'util/envUtils';
+import { useURLforDT } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import tabs from './DigitalTwinTabData';
 

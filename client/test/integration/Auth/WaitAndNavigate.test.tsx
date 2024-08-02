@@ -1,6 +1,6 @@
 import { act, screen } from '@testing-library/react';
-import { mockAuthState } from '../../__mocks__/global_mocks';
-import { setupIntegrationTest } from '../integration.testUtils';
+import { mockAuthState } from 'test/__mocks__/global_mocks';
+import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 
 jest.useFakeTimers();
 

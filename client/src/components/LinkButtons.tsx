@@ -2,7 +2,7 @@ import * as React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import styled from '@emotion/styled';
-import { KeyLinkPair } from 'util/envUtils';
+import { KeyLinkPair } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import LinkIcons from './LinkIconsLib';
 

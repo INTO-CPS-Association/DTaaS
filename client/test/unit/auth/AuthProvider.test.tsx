@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import AuthProvider from '../../../src/route/auth/AuthProvider';
-import { useOidcConfig } from '../../../src/util/auth/useOidcConfig';
+import AuthProvider from 'route/auth/AuthProvider';
+import { useOidcConfig } from 'util/auth/useOidcConfig';
 
 jest.mock('react-oidc-context', () => {
   const actualModule = jest.requireActual('react-oidc-context');
@@ -13,7 +13,7 @@ jest.mock('react-oidc-context', () => {
   };
 });
 
-jest.mock('../../../src/util/auth/useOidcConfig', () => ({
+jest.mock('util/auth/useOidcConfig', () => ({
   useOidcConfig: jest.fn(),
 }));
 

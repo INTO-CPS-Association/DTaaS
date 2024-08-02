@@ -1,4 +1,4 @@
-import { KeyLinkPair } from './envUtils';
+import { KeyLinkPair } from './envUtil';
 
 const toolbarLinkValues: KeyLinkPair[] = [
   {
