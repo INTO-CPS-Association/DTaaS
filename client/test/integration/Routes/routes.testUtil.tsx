@@ -43,15 +43,6 @@ export async function testToolbar() {
   );
 }
 
-export async function logOutTest() {
-  const settingsButton = screen.getByLabelText('Open settings', {
-    selector: 'button',
-  });
-  await userEvent.click(settingsButton);
-  const signOutButton = screen.getByRole('menuitem', { name: /Logout/ });
-  await userEvent.click(signOutButton);
-}
-
 async function testToolbarButton(labelText: string, iconTestId: string) {
   const button = screen.getByLabelText(labelText);
   expect(button).toBeInTheDocument();
@@ -71,8 +62,17 @@ async function testSettingsButton() {
   // Has visible tooltip
   await itShowsTheTooltipWhenHoveringButton(labelText);
 
+  // Can open and close
+  await itOpensAndClosesTheSettingsMenu();
+}
+
+async function itOpensAndClosesTheSettingsMenu() {
   // Opens and shows contents
-  await userEvent.click(settingsButton);
+  await userEvent.click(
+    screen.getByLabelText('Open settings', {
+      selector: 'button',
+    }),
+  );
   await waitFor(() => {
     expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(
