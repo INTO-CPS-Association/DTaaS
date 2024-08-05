@@ -8,8 +8,6 @@ on:
     paths:
       - 'client/**'
   workflow_dispatch:
-    paths:
-      - 'client/**'
 
 jobs:
   client:
@@ -36,13 +34,14 @@ jobs:
           cd client/	
           yarn install	
           yarn build
-      - name: Run client unit and integration tests
+      - name: Run client unit, integration and e2e tests
         run: |
           cd client/	
           yarn install	
           yarn config:test
           yarn test:int
           yarn test:unit
+          yarn test:e2e
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
