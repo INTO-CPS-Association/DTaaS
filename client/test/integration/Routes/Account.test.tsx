@@ -20,7 +20,7 @@ describe('Account', () => {
     await testLayout();
     testStaticAccountProfile(mockUser);
     await testAccountSettings(mockUser);
-  }, 15000);
+  });
 
   it('renders the Account page with different amounts of groups', async () => {
     await setup({ ...mockUser, profile: { ...mockUser.profile, groups: [] } });

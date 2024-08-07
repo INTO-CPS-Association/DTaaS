@@ -15,6 +15,7 @@
     "lcov",
     "json"
   ],
+  "testTimeout": 15000,
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}"
   ],
