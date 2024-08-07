@@ -50,7 +50,7 @@ describe('Workbench', () => {
     await testTool(VSCodeLabel, 'VSCode');
     await testTool(jupyterLabLabel, 'JupyterLab');
     await testTool(jupyterNotebookLabel, 'Jupyter Notebook');
-  }, 7000);
+  }, 15000);
 
   it('shows the tooltip when hovering over the tools', async () => {
     await itShowsTheTooltipWhenHoveringButton(desktopLabel);

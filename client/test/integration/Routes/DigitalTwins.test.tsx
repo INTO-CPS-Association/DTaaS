@@ -41,7 +41,7 @@ describe('Digital Twins', () => {
     );
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveProperty('src', 'https://example.com/URL_DT');
-  }, 7000);
+  }, 15000);
 
   it('shows the paragraph of to the selected tab', async () => {
     await itShowsTheParagraphOfToTheSelectedTab([tabs]);

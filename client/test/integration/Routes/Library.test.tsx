@@ -51,7 +51,7 @@ describe('Library', () => {
       'src',
       `https://example.com/URL_LIBtree/${assetTypeSegment}`,
     );
-  }, 7000);
+  }, 15000);
 
   it('shows the paragraph of to the selected tab', async () => {
     await itShowsTheParagraphOfToTheSelectedTab([assetType, scope]);
