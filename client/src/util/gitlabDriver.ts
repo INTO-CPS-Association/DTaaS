@@ -1,5 +1,5 @@
-import GitlabInstance from './gitlab';
-import DigitalTwin from './gitlabDigitalTwin';
+import GitlabInstance from './gitlab.js';
+import DigitalTwin from './gitlabDigitalTwin.js';
 
 class GitlabDriver {
     public static async run(): Promise<void> {
