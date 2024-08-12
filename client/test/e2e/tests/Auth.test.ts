@@ -8,6 +8,12 @@ test.describe('Tests on Authentication Flow', () => {
     await page.goto('./');
   });
 
+  test('Passing test', async ({ page }) => {
+    const loginElement = await page
+      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
+    await expect(loginElement).toBeVisible();
+  });
+
   test('Homepage has correct title and signin link', async ({ page }) => {
     await page
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })

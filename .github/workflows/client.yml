@@ -49,6 +49,12 @@ jobs:
           files: client/coverage/clover.xml
           flags: client-unit-integration-tests
 
+      - name: Upload e2e test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: client/coverage/e2e/codecov.json
+          flags: client-e2e-tests
+
   get_version:
     name: Get version
     runs-on: ubuntu-latest

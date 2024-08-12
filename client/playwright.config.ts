@@ -21,7 +21,26 @@ export default defineConfig({
   globalTimeout: 600000,
   testDir: './test/e2e/tests',
   testMatch: /.*\.test\.ts/,
-  reporter: [], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
+  reporter: [
+    [
+      "html",
+      {
+        "outputFile": "playwright-report/index.html"
+      }
+    ],
+    ["list"],
+    [
+      "junit",
+      {
+        "outputFile": "playwright-report/results.xml"
+      }
+    ],
+    [
+      "json",
+      {
+        "outputFile": "playwright-report/results.json"
+      }
+    ]], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
   use: {
     baseURL: BASE_URI,
     trace: 'on-first-retry'
