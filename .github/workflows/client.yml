@@ -37,7 +37,8 @@ jobs:
       - name: Run client unit, integration and e2e tests
         run: |
           cd client/	
-          yarn install	
+          yarn install
+          yarn playwright install
           yarn test:int
           yarn test:unit
           yarn test:e2e
