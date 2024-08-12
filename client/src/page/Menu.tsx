@@ -7,7 +7,7 @@ import { RootState } from 'store/store';
 import MenuToolbar from './MenuToolbar';
 import DrawerComponent from './DrawerComponent';
 
-const drawerWidth = 240;
+const drawerwidth = 240;
 
 const hooks = () => {
   const theme = useTheme();
@@ -29,7 +29,7 @@ function MiniDrawer() {
     <Box sx={{ display: 'flex' }}>
       <MenuToolbar
         open={menuState.isOpen}
-        drawerWidth={drawerWidth}
+        drawerwidth={drawerwidth}
         handleCloseUserMenu={handleCloseUserMenu}
         handleDrawerOpen={handleDrawerOpen}
         handleOpenUserMenu={handleOpenUserMenu}

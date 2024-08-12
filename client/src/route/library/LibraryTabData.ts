@@ -35,6 +35,6 @@ export const scope: ITabs[] = [
   },
   {
     label: 'Common',
-    body: `These reusable assets are only visible to all users. Other users can use these assets in their digital twins.`,
+    body: `These reusable assets are visible to all users. Other users can use these assets in their digital twins.`,
   },
 ];
