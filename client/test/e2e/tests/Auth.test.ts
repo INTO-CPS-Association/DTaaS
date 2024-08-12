@@ -1,6 +1,6 @@
 // src: https://playwright.dev/docs/writing-tests
 import { expect } from '@playwright/test';
-import { test } from '../setup/fixtures';
+import test from '../setup/fixtures';
 import links from './Links'; // Extension is required with Playwright import
 
 test.describe('Tests on Authentication Flow', () => {
@@ -9,8 +9,9 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Passing test', async ({ page }) => {
-    const loginElement = await page
-      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
+    const loginElement = await page.getByRole('button', {
+      name: 'GitLab logo Sign In with GitLab',
+    });
     await expect(loginElement).toBeVisible();
   });
 

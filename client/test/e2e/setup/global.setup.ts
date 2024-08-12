@@ -1,8 +1,7 @@
 import MCR from 'monocart-coverage-reports';
 import coverageOptions from './mcr.config';
-import { type FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup() {
   const mcr = MCR(coverageOptions);
   await mcr.cleanCache();
 }

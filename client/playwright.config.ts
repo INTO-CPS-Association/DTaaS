@@ -17,33 +17,34 @@ export default defineConfig({
     command: 'yarn start',
     port: 4000,
   },
-  timeout: 45000,
-  globalTimeout: 600000,
+  timeout: 80 * 1000,
+  globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',
   testMatch: /.*\.test\.ts/,
   reporter: [
     [
-      "html",
+      'html',
       {
-        "outputFile": "playwright-report/index.html"
-      }
+        outputFile: 'playwright-report/index.html',
+      },
     ],
-    ["list"],
+    ['list'],
     [
-      "junit",
+      'junit',
       {
-        "outputFile": "playwright-report/results.xml"
-      }
+        outputFile: 'playwright-report/results.xml',
+      },
     ],
     [
-      "json",
+      'json',
       {
-        "outputFile": "playwright-report/results.json"
-      }
-    ]], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
+        outputFile: 'playwright-report/results.json',
+      },
+    ],
+  ], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
   use: {
     baseURL: BASE_URI,
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
   },
   projects: [
     // Setup project

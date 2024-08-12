@@ -4,43 +4,44 @@ import coverageOptions from './mcr.config';
 
 // fixtures
 const test = testBase.extend<{
-  autoTestFixture: string
+  autoTestFixture: string;
 }>({
-  autoTestFixture: [async ({ page }, use) => {
+  autoTestFixture: [
+    async ({ page }, use) => {
+      const isChromium = test.info().project.name === 'chromium';
 
-    const isChromium = test.info().project.name === 'chromium';
+      // console.log('autoTestFixture setup...');
+      // coverage API is chromium only
+      if (isChromium) {
+        await Promise.all([
+          page.coverage.startJSCoverage({
+            resetOnNavigation: false,
+          }),
+          page.coverage.startCSSCoverage({
+            resetOnNavigation: false,
+          }),
+        ]);
+      }
 
-    // console.log('autoTestFixture setup...');
-    // coverage API is chromium only
-    if (isChromium) {
-      await Promise.all([
-        page.coverage.startJSCoverage({
-          resetOnNavigation: false
-        }),
-        page.coverage.startCSSCoverage({
-          resetOnNavigation: false
-        })
-      ]);
-    }
+      await use('autoTestFixture');
 
-    await use('autoTestFixture');
-
-    // console.log('autoTestFixture teardown...');
-    if (isChromium) {
-      const [jsCoverage, cssCoverage] = await Promise.all([
-        page.coverage.stopJSCoverage(),
-        page.coverage.stopCSSCoverage()
-      ]);
-      const coverageList = [...jsCoverage, ...cssCoverage];
-      // console.log(coverageList.map((item) => item.url));
-      const mcr = MCR(coverageOptions);
-      await mcr.add(coverageList);
-    }
-
-  }, {
-    scope: 'test',
-    auto: true
-  }]
+      // console.log('autoTestFixture teardown...');
+      if (isChromium) {
+        const [jsCoverage, cssCoverage] = await Promise.all([
+          page.coverage.stopJSCoverage(),
+          page.coverage.stopCSSCoverage(),
+        ]);
+        const coverageList = [...jsCoverage, ...cssCoverage];
+        // console.log(coverageList.map((item) => item.url));
+        const mcr = MCR(coverageOptions);
+        await mcr.add(coverageList);
+      }
+    },
+    {
+      scope: 'test',
+      auto: true,
+    },
+  ],
 });
 
-export { test };
+export default test;

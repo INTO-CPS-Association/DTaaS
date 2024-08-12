@@ -1,7 +1,7 @@
 // src: https://playwright.dev/docs/writing-tests
 
 import { expect } from '@playwright/test';
-import { test } from '../setup/fixtures';
+import test from '../setup/fixtures';
 import links from './Links'; // Extension is required with Playwright import
 
 test.describe('Menu Links from first page (Layout)', () => {
