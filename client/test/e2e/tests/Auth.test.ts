@@ -1,6 +1,6 @@
 // src: https://playwright.dev/docs/writing-tests
-
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../setup/fixtures';
 import links from './Links'; // Extension is required with Playwright import
 
 test.describe('Tests on Authentication Flow', () => {

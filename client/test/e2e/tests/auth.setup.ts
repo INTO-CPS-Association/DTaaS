@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { test as setup, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test as setup } from '../setup/fixtures';
+
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: './test/.env' });
@@ -18,17 +20,6 @@ setup('authenticate', async ({ page }) => {
     await page.waitForSelector('label[for="user_login"]', { timeout: 10000 }); // wait up to 10 seconds
   } catch (error) {
     // The login page did not appear within 10 seconds, so just ignore and continue.
-  }
-  // Accept the cookies if popup appears
-  try {
-    // Wait for 'Accept All Cookies' button to appear for up to 4 seconds.
-    await page.waitForSelector('button:has-text("Accept All Cookies")', {
-      timeout: 4000,
-    });
-    // If the button appears, click it.
-    await page.getByRole('button', { name: 'Accept All Cookies' }).click();
-  } catch (error) {
-    // 'Accept All Cookies' button did not appear within 4 seconds, so just ignore and continue.
   }
   await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.
   await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.

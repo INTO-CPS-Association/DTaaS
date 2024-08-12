@@ -10,7 +10,7 @@ dotenv.config({ path: './test/.env' });
 // import path from 'path';
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
-const BASE_URI = process.env.REACT_APP_URL.toString() ?? '';
+const BASE_URI = process.env.REACT_APP_URL ?? '';
 
 export default defineConfig({
   webServer: {
@@ -19,18 +19,12 @@ export default defineConfig({
   },
   timeout: 45000,
   globalTimeout: 600000,
-  testDir: './test/e2e',
+  testDir: './test/e2e/tests',
   testMatch: /.*\.test\.ts/,
-  reporter: process.env.CI
-    ? 'github'
-    : [
-        ['html', { outputFile: 'playwright-report/index.html' }],
-        ['list'],
-        ['junit', { outputFile: 'playwright-report/results.xml' }],
-        ['json', { outputFile: 'playwright-report/results.json' }],
-      ],
+  reporter: [], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
   use: {
     baseURL: BASE_URI,
+    trace: 'on-first-retry'
   },
   projects: [
     // Setup project
@@ -57,4 +51,6 @@ export default defineConfig({
       dependencies: ['setup'],
     },
   ],
+  globalSetup: 'test/e2e/setup/global.setup.ts',
+  globalTeardown: 'test/e2e/setup/global-teardown.ts',
 });
