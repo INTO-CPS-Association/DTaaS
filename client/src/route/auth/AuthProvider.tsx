@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AuthProvider as OIDCAuthProvider } from 'react-oidc-context';
-import { useOidcConfig } from '../../util/auth/useOidcConfig';
+import { useOidcConfig } from 'util/auth/useOidcConfig';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -8,11 +8,9 @@ interface AuthProviderProps {
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const oidcConfig = useOidcConfig();
-
   if (!oidcConfig) {
     return <div>Authentication service unavailable...try again later</div>;
   }
-
   return <OIDCAuthProvider {...oidcConfig}>{children}</OIDCAuthProvider>;
 };
 

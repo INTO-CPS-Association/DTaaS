@@ -2,13 +2,14 @@ import * as React from 'react';
 import { createStore } from 'redux';
 import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
-import PrivateRoute from '../../src/route/auth/PrivateRoute';
-import Library from '../../src/route/library/Library';
-import authReducer from '../../src/store/auth.slice';
-import { renderWithRouter } from '../unitTests/testUtils';
+import PrivateRoute from 'route/auth/PrivateRoute';
+import Library from 'route/library/Library';
+import authReducer from 'store/auth.slice';
+import { mockUser } from 'test/__mocks__/global_mocks';
+import { renderWithRouter } from 'test/unit/unit.testUtil';
 
-jest.mock('react-oidc-context', () => ({
-  useAuth: jest.fn(),
+jest.mock('util/auth/Authentication', () => ({
+  getAndSetUsername: jest.fn(),
 }));
 
 jest.mock('react-redux', () => ({
@@ -16,8 +17,9 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
 
-jest.mock('../../src/util/auth/Authentication', () => ({
-  getAndSetUsername: jest.fn(),
+jest.mock('page/Menu', () => ({
+  __esModule: true,
+  default: () => <div data-testid="menu" />,
 }));
 
 const store = createStore(authReducer);
@@ -27,19 +29,12 @@ type AuthState = {
 };
 
 const setupTest = (authState: AuthState) => {
-  const userMock = {
-    profile: {
-      profile: 'example/username',
-    },
-    access_token: 'example_token',
-  };
-
-  (useAuth as jest.Mock).mockReturnValue({ ...authState, user: userMock });
+  (useAuth as jest.Mock).mockReturnValue({ ...authState, user: mockUser });
 
   if (authState.isAuthenticated) {
     store.dispatch({
       type: 'auth/setUserName',
-      payload: userMock.profile.profile.split('/')[1],
+      payload: mockUser.profile.profile!.split('/')[1],
     });
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
@@ -73,7 +68,7 @@ describe('Redux and Authentication integration test', () => {
       isAuthenticated: false,
     });
 
-    expect(screen.getByText('Signin')).toBeInTheDocument();
+    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
     expect(authReducer(undefined, { type: 'unknown' })).toEqual(
       initialState.auth,
     );
@@ -99,7 +94,7 @@ describe('Redux and Authentication integration test', () => {
     setupTest({
       isAuthenticated: false,
     });
-    expect(screen.getByText('Signin')).toBeInTheDocument();
+    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
     expect(store.getState().userName).toBe(undefined);
   });
 });

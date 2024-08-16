@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Library from 'route/library/Library';
 import { assetType } from 'route/library/LibraryTabData';
-import { mockURLforLIB } from '../__mocks__/global_mocks';
+import AuthProvider from 'route/auth/AuthProvider';
+import { mockURLforLIB } from 'test/__mocks__/global_mocks';
 import {
   InitRouteTests,
   itDisplaysContentOfTabs,
   itHasCorrectURLOfTabsWithIframe,
   TabLabelURLPair,
-} from '../testUtils';
-import AuthProvider from '../../../src/route/auth/AuthProvider';
+} from 'test/unit/unit.testUtil';
 
 const urlsByTabs: TabLabelURLPair[] = assetType.map((tab) => ({
   label: tab.label,

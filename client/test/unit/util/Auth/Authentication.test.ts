@@ -139,7 +139,7 @@ describe('signOut', () => {
   it('reloads the page', async () => {
     const auth = useAuth();
     await signOut(auth);
-    await waitMiliseconds(3000);
+    jest.advanceTimersByTime(3000);
     expect(window.location.reload).toHaveBeenCalled();
   });
 
@@ -150,7 +150,3 @@ describe('signOut', () => {
     expect(mockClear).toHaveBeenCalled();
   });
 });
-
-async function waitMiliseconds(ms: number) {
-  jest.advanceTimersByTime(ms);
-}
