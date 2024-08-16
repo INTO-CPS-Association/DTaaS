@@ -1,7 +1,6 @@
-import DigitalTwin from '../../../src/util/gitlabDigitalTwin';
-import GitlabInstance from '../../../src/util/gitlab';
-import { Gitlab } from '@gitbeaker/rest';
-import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+import { Gitlab , ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
+import DigitalTwin from 'util/gitlabDigitalTwin';
+import GitlabInstance from 'util/gitlab';
 
 const mockApi = {
     Groups: {

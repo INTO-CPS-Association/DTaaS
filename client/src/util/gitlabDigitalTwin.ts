@@ -2,7 +2,9 @@ import GitlabInstance from './gitlab';
 
 class DigitalTwin {
     public DTName: string;
+
     public gitlabInstance: GitlabInstance;
+
     private lastExecutionStatus: string | null = null;
 
     constructor(DTName: string, gitlabInstance: GitlabInstance) {
@@ -35,11 +37,11 @@ class DigitalTwin {
                 triggerToken,
                 { variables }
             );
-            this.gitlabInstance.logs.push({ status: 'success', DTName: this.DTName, runnerTag: runnerTag });
+            this.gitlabInstance.logs.push({ status: 'success', DTName: this.DTName, runnerTag });
             this.lastExecutionStatus = 'success';
             return true;
         } catch (error) {
-            this.gitlabInstance.logs.push({ status: 'error', error: error instanceof Error ? error : new Error(String(error)), DTName: this.DTName, runnerTag: runnerTag });
+            this.gitlabInstance.logs.push({ status: 'error', error: error instanceof Error ? error : new Error(String(error)), DTName: this.DTName, runnerTag });
             this.lastExecutionStatus = 'error'; 
             return false;
         }

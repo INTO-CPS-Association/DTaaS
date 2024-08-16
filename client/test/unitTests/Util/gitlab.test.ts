@@ -1,6 +1,5 @@
-import { Gitlab } from '@gitbeaker/rest';
-import { ProjectSchema, PipelineTriggerTokenSchema, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
-import GitlabInstance from '../../../src/util/gitlab';
+import { Gitlab , ProjectSchema, PipelineTriggerTokenSchema, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
+import GitlabInstance from 'util/gitlab';
 
 const mockApi = {
     Groups: {

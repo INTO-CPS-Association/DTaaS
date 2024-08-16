@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import GitlabInstance from './gitlab.js';
 import DigitalTwin from './gitlabDigitalTwin.js';
 
