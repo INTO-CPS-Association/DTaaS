@@ -14,8 +14,11 @@
 
     class GitlabInstance {
         public username: string;
+
         public api: InstanceType<typeof Gitlab>;
+
         public logs: LogEntry[];
+
         public subfolders: FolderEntry[] = [];
 
         constructor() {
