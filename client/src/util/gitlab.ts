@@ -1,5 +1,8 @@
     import { Gitlab } from '@gitbeaker/rest';
 
+    const GROUP_NAME = 'DTaaS';
+    const DT_DIRECTORY = 'digital_twins';
+
     interface LogEntry {
         status: string;
         DTName: string;
@@ -19,7 +22,7 @@
 
         public logs: LogEntry[];
 
-        public subfolders: FolderEntry[] = [];
+        public subfolders: FolderEntry[];
 
         constructor() {
             this.username = 'user1';
@@ -28,54 +31,52 @@
                 token: 'glpat-CJknCUBMj8hSC3oibyxS'
             });
             this.logs = [];
+            this.subfolders = [];
         }
 
         async getProjectId(): Promise<number | null> {
-            const groupPath = 'DTaaS';
-            try {
-                const group = await this.api.Groups.show(groupPath);
+            let projectId: number | null = null;
+        
+                const group = await this.api.Groups.show(GROUP_NAME);
                 const projects = await this.api.Groups.allProjects(group.id);
                 const project = projects.find(proj => proj.name === this.username);
+        
                 if (project) {
-                    return project.id;
+                    projectId = project.id;
                 }
-                return null;
-            } catch (error) {
-                return null;
-            }
-        }  
+        
+            return projectId;
+        }
+         
 
         async getTriggerToken(projectId: number): Promise<string | null> {
-            try {
-                const triggers = await this.api.PipelineTriggerTokens.all(projectId);
-                if (triggers) {
-                    return triggers[0].token;
-                } 
-                return null;
-            } catch (error) {
-                return null;
+            let token: string | null = null;
+        
+            const triggers = await this.api.PipelineTriggerTokens.all(projectId);
+            if (triggers && triggers.length > 0) {
+                token = triggers[0].token;
             }
+            return token;
         }
+        
 
         async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
-            const folderPath = 'digital_twins';
-            try {
-                const files = await this.api.Repositories.allRepositoryTrees(projectId, {
-                    path: folderPath,
-                    recursive: false,
-                });
+            let subfolders: FolderEntry[] = [];
+    
+            const files = await this.api.Repositories.allRepositoryTrees(projectId, {
+                path: DT_DIRECTORY,
+                recursive: false,
+            });
 
-                this.subfolders = files
-                    .filter(file => file.type === 'tree' && file.path !== folderPath)
-                    .map(file => ({
-                        name: file.name,
-                        path: file.path
-                    }));
-
-                return this.subfolders;
-            } catch (error) {
-                return [];
-            }
+            subfolders = files
+                .filter(file => file.type === 'tree' && file.path !== DT_DIRECTORY)
+                .map(file => ({
+                    name: file.name,
+                    path: file.path
+                }));
+    
+            this.subfolders = subfolders;
+            return subfolders;
         }
 
         executionLogs(): LogEntry[] {

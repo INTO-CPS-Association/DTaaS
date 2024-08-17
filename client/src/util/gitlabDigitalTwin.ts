@@ -5,7 +5,7 @@ class DigitalTwin {
 
     public gitlabInstance: GitlabInstance;
 
-    private lastExecutionStatus: string | null = null;
+    public lastExecutionStatus: string | null = null;
 
     constructor(DTName: string, gitlabInstance: GitlabInstance) {
         this.DTName = DTName;
