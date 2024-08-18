@@ -1,4 +1,4 @@
-import GitlabInstance from './gitlab';
+import { GitlabInstance } from './gitlab';
 import DigitalTwin from './gitlabDigitalTwin';
 
 class GitlabDriver {
