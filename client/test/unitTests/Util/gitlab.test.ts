@@ -1,6 +1,5 @@
-import { Gitlab } from '@gitbeaker/rest';
-import { ProjectSchema, PipelineTriggerTokenSchema, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
-import GitlabInstance from '../../../src/util/gitlab';
+import { Gitlab , ProjectSchema, PipelineTriggerTokenSchema, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
+import GitlabInstance from 'util/gitlab';
 
 const mockApi = {
     Groups: {
@@ -22,7 +21,7 @@ describe('GitlabInstance', () => {
     beforeEach(() => {
         gitlab = new GitlabInstance();
         gitlab.api = mockApi as unknown as InstanceType<typeof Gitlab>;
-    });
+    }); 
 
     it('should fetch project ID successfully', async () => {
         mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' } as GroupSchema);
@@ -38,14 +37,6 @@ describe('GitlabInstance', () => {
     it('should handle project ID not found', async () => {
         mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' } as GroupSchema);
         mockApi.Groups.allProjects.mockResolvedValue([]);
-
-        const projectId = await gitlab.getProjectId();
-
-        expect(projectId).toBeNull();
-    });
-
-    it('should handle errors fetching project ID', async () => {
-        mockApi.Groups.show.mockRejectedValue(new Error('API error'));
 
         const projectId = await gitlab.getProjectId();
 
@@ -78,15 +69,6 @@ describe('GitlabInstance', () => {
         expect(token).toBeNull();
     });    
 
-    it('should handle errors fetching trigger token', async () => {
-        mockApi.PipelineTriggerTokens.all.mockRejectedValue(new Error('API error'));
-
-        const token = await gitlab.getTriggerToken(1);
-
-        expect(token).toBeNull();
-        expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
-    });
-
     it('should fetch DT subfolders successfully', async () => {
         mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
             { name: 'subfolder1', path: 'digital_twins/subfolder1', type: 'tree' } as RepositoryTreeSchema,
@@ -105,14 +87,6 @@ describe('GitlabInstance', () => {
             path: 'digital_twins',
             recursive: false
         });
-    });
-
-    it('should handle errors fetching DT subfolders', async () => {
-        mockApi.Repositories.allRepositoryTrees.mockRejectedValue(new Error('API error'));
-
-        const subfolders = await gitlab.getDTSubfolders(1);
-
-        expect(subfolders).toEqual([]);
     });
 
     it('should return execution logs', () => {

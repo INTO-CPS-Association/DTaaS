@@ -178,3 +178,16 @@ port and basename options in the docker-based development environment.
 Each new release of client web application is published as a docker
 container image. Please see [publishing](../docker/README.md) page
 for more information publishing docker images.
+
+## Gitlab Integration
+
+The client codebase has been using Gitlab for OAuth2 only. There is
+an ongoing effort to integrate Gitlab CI/CD capabilities to automate
+the execution of Digital Twins. This code is in alpha stage and is
+available in `src/util/gitlab*.ts`.
+This code can be developed and tested using the following yarn commands.
+
+```bash
+yarn gitlab:compile
+yarn gitlab:run
+```

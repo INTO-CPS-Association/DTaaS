@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -16,21 +16,23 @@
   "type": "module",
   "scripts": {
     "build": "npx react-scripts build",
-    "clean": "npx rimraf build/ node_modules/ coverage/ playwright-report/  *.svg",
+    "clean": "npx rimraf build/ dist/ node_modules/ coverage/ playwright-report/  *.svg",
     "config:dev": "npx shx cp config/dev.js public/env.js && npx shx cp config/dev.js build/env.js",
     "config:local": "npx shx cp config/local.js public/env.js && npx shx cp config/local.js build/env.js",
     "config:prod": "npx shx cp config/prod.js public/env.js && npx shx cp config/prod.js build/env.js",
     "config:test": "npx shx cp config/test.js public/env.js && npx shx cp config/test.js build/env.js",
     "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
+    "gitlab:compile": "npx tsc --project tsconfig.gitlab.json",
+    "gitlab:run": "node dist/gitlabDriver.js",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
     "start": "serve -s build -l 4000",
     "stop": "npx kill-port 4000",
     "syntax": "npx eslint . --fix",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
     "test:e2e": "yarn build && yarn config:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
-    "test:int": "jest -c ./jest.integration.config.json ../test/integration --coverage",
-    "test:unit": "jest -c ./jest.config.json ../test/unitTests --coverage"
+    "test:int": "jest -c ./jest.config.json ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
+    "test:unit": "jest -c ./jest.config.json ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -86,7 +88,7 @@
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.10",
-    "@types/react": "^18.2.38",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.17",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",

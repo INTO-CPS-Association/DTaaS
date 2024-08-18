@@ -1,6 +1,9 @@
 import { Gitlab } from '@gitbeaker/rest';
 import { getAuthority } from './envUtil';
 
+    const GROUP_NAME = 'DTaaS';
+    const DT_DIRECTORY = 'digital_twins';
+
 interface LogEntry {
     status: string;
     DTName: string;
@@ -13,14 +16,14 @@ interface FolderEntry {
     path: string;
 }
 
-class GitlabInstance {
-    public username: string | null;
+    class GitlabInstance {
+        public username: string;
 
-    public api: InstanceType<typeof Gitlab>;
+        public api: InstanceType<typeof Gitlab>;
 
-    public logs: LogEntry[];
+        public logs: LogEntry[];
 
-    public subfolders: FolderEntry[] = [];
+        public subfolders: FolderEntry[];
 
     constructor() {
         this.username = sessionStorage.getItem('username');
@@ -29,55 +32,57 @@ class GitlabInstance {
             oauthToken: sessionStorage.getItem('access_token') || 'null',
         });
         this.logs = [];
+        this.subfolders = [];
     }
 
-    async getProjectId(): Promise<number | null> {
-        const groupPath = 'DTaaS';
-        try {
-            const group = await this.api.Groups.show(groupPath);
-            const projects = await this.api.Groups.allProjects(group.id);
-            const project = projects.find(proj => proj.name === this.username);
-            if (project) {
-                return project.id;
-            }
-            return null;
-        } catch (error) {
-            return null;
+        async getProjectId(): Promise<number | null> {
+            let projectId: number | null = null;
+        
+                const group = await this.api.Groups.show(GROUP_NAME);
+                const projects = await this.api.Groups.allProjects(group.id);
+                const project = projects.find(proj => proj.name === this.username);
+        
+                if (project) {
+                    projectId = project.id;
+                }
+        
+            return projectId;
         }
-    }
+         
 
-    async getTriggerToken(projectId: number): Promise<string | null> {
-        try {
+        async getTriggerToken(projectId: number): Promise<string | null> {
+            let token: string | null = null;
+        
             const triggers = await this.api.PipelineTriggerTokens.all(projectId);
-            if (triggers) {
-                return triggers[0].token;
-            } 
-            return null;
-        } catch (error) {
-            return null;
+            if (triggers && triggers.length > 0) {
+                token = triggers[0].token;
+            }
+            return token;
         }
-    }
+        
 
-    async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
-        const folderPath = 'digital_twins';
-        try {
+        async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
+            let subfolders: FolderEntry[] = [];
+    
             const files = await this.api.Repositories.allRepositoryTrees(projectId, {
-                path: folderPath,
+                path: DT_DIRECTORY,
                 recursive: false,
             });
 
-            this.subfolders = files
-                .filter(file => file.type === 'tree' && file.path !== folderPath)
+            subfolders = files
+                .filter(file => file.type === 'tree' && file.path !== DT_DIRECTORY)
                 .map(file => ({
                     name: file.name,
                     path: file.path
                 }));
-
-            return this.subfolders;
-        } catch (error) {
-            return [];
+    
+            this.subfolders = subfolders;
+            return subfolders;
         }
-    }
+
+        executionLogs(): LogEntry[] {
+            return this.logs;
+        }
 
     async getRunnerTags(projectId: number): Promise<string[]> {
         try {
@@ -109,9 +114,6 @@ class GitlabInstance {
         }
     }   
      
-    executionLogs(): LogEntry[] {
-        return this.logs;
-    }
 
     // Metodo per ottenere tutti i job di una pipeline specifica
   async getPipelineJobs(projectId: number, pipelineId: number) {

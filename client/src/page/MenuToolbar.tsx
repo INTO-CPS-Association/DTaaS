@@ -13,11 +13,11 @@ import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
 import LinkButtons from 'components/LinkButtons';
 import toolbarLinkValues from 'util/toolbarUtil';
-import { signOut } from '../util/auth/Authentication';
+import { signOut } from 'util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
-  drawerWidth: number;
+  drawerwidth: number;
 }
 
 const transition = ({
@@ -36,12 +36,12 @@ const transition = ({
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open, drawerWidth }) => ({
+})<AppBarProps>(({ theme, open, drawerwidth }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: transition({ theme, open }),
   ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerwidth,
+    width: `calc(100% - ${drawerwidth}px)`,
     transition: transition({ theme, open }),
   }),
 }));
@@ -51,28 +51,28 @@ interface MenuToolbarProps {
   handleDrawerOpen: () => void;
   handleOpenUserMenu: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleCloseUserMenu: () => void;
-  drawerWidth: number;
+  drawerwidth: number;
   anchorElUser: HTMLElement | null;
 }
 
 function MenuToolbar({
   open,
-  drawerWidth,
+  drawerwidth,
   handleCloseUserMenu,
   handleOpenUserMenu,
   handleDrawerOpen,
   anchorElUser,
 }: MenuToolbarProps) {
   const auth = useAuth();
+  const root = document.getElementById('root');
 
   const handleSignOut = async () => {
     if (auth) {
       await signOut(auth);
     }
   };
-
   return (
-    <AppBar position="fixed" open={open} drawerWidth={drawerWidth}>
+    <AppBar position="fixed" open={open} drawerwidth={drawerwidth}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <IconButton
           color="inherit"
@@ -92,7 +92,7 @@ function MenuToolbar({
 
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
           <LinkButtons buttons={toolbarLinkValues} size={2.5} />
-          <Tooltip title="Open settings">
+          <Tooltip title="Open settings" PopperProps={{ container: root }}>
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>
@@ -103,6 +103,7 @@ function MenuToolbar({
             anchorEl={anchorElUser}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             keepMounted
+            container={root}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
