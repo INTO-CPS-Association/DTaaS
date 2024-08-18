@@ -3,17 +3,17 @@
     const GROUP_NAME = 'DTaaS';
     const DT_DIRECTORY = 'digital_twins';
 
-    interface LogEntry {
-        status: string;
-        DTName: string;
-        runnerTag: string;
-        error?: Error;
-    }
+interface LogEntry {
+    status: string;
+    DTName: string;
+    runnerTag: string;
+    error?: Error;
+}
 
-    interface FolderEntry {
-        name: string;
-        path: string;
-    }
+interface FolderEntry {
+    name: string;
+    path: string;
+}
 
     class GitlabInstance {
         public username: string | null;

@@ -1,7 +1,9 @@
-import GitlabInstance from './gitlab';
+import { GitlabInstance } from './gitlab';
 
 class DigitalTwin {
     public DTName: string;
+
+    public description: string | null = null;
 
     public gitlabInstance: GitlabInstance;
 
@@ -10,6 +12,24 @@ class DigitalTwin {
     constructor(DTName: string, gitlabInstance: GitlabInstance) {
         this.DTName = DTName;
         this.gitlabInstance = gitlabInstance;
+    }
+
+    public async initDescription(): Promise<void> {
+        const projectId = await this.gitlabInstance.getProjectId();
+        if (projectId === null) {
+            return;
+        }
+
+        try {
+            const readmePath = `digital_twins/${this.DTName}/description.md`;
+            const fileData = await this.gitlabInstance.api.RepositoryFiles.show(projectId, readmePath, 'main');
+            
+            // Decodifica il contenuto in base64 a UTF-8 (per ambiente browser)
+            this.description = atob(fileData.content);
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.log('Error fetching README.md:', error);
+        }
     }
 
     async execute(runnerTag: string): Promise<boolean> {
