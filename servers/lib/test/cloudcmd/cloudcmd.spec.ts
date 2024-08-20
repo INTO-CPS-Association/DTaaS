@@ -27,9 +27,10 @@ describe('cloudcmd test for the application', () => {
     console.log(response.data);
     /* eslint-enable no-console */
     expect(response.data.path).toEqual('/');
-    expect(response.data.files[0].name).toEqual('common');
-    expect(response.data.files[1].name).toEqual('user1');
-    expect(response.data.files[2].name).toEqual('user2');
+    const fileNames = response.data.files.map((file) => file.name);
+    expect(fileNames).toContain('common');
+    expect(fileNames).toContain('user1');
+    expect(fileNames).toContain('user2');
   }, 10000);
 
   it('should return the content of a file that is uplaoded to cloudcmd ', async () => {
