@@ -27,9 +27,9 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      # - name: Install pm2
-      #   run: |
-      #     npm install -g pm2
+      - name: Install pm2
+        run: |
+          npm install -g pm2
 
       - name: Run the linting checks
         run: |
