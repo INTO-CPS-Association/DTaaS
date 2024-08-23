@@ -56,7 +56,8 @@ GRAPHQL_PLAYGROUND='false' or 'true'
 
 The `LOCAL_PATH` variable is the absolute filepath to the
 location of the local directory which will be served to users
-by the Library microservice.
+by the Library microservice. Please note, that if run on Windows
+the path needs to be relative, due to how CloudCMD works as of now.
 
 Replace the default values the appropriate values for your setup.
 Please save this config in a file.

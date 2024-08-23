@@ -26,7 +26,9 @@ yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
 **NOTE:** The integration, end-to-end and http tests require a valid
-`.env` file. Here is a sample file.
+`.env` file. Here is a sample file. Please note, if running on Windows
+the LOCAL_PATH has to be relative in order for it to work. This is due to how
+CloudCMD works.
 
 ```ini
 PORT='4001'
