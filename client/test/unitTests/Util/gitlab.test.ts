@@ -1,31 +1,42 @@
-import { Gitlab , ProjectSchema, PipelineTriggerTokenSchema, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
+import { Gitlab } from '@gitbeaker/rest';
 import GitlabInstance from 'util/gitlab';
 
-const mockApi = {
-    Groups: {
-        show: jest.fn(),
-        allProjects: jest.fn()
-    },
-    PipelineTriggerTokens: {
-        all: jest.fn(),
-        trigger: jest.fn()
-    },
-    Repositories: {
-        allRepositoryTrees: jest.fn()
-    }
-};
+jest.mock('@gitbeaker/rest');
 
 describe('GitlabInstance', () => {
     let gitlab: GitlabInstance;
+    const mockApi = {
+        Groups: {
+            show: jest.fn(),
+            allProjects: jest.fn()
+        },
+        PipelineTriggerTokens: {
+            all: jest.fn(),
+            trigger: jest.fn()
+        },
+        Repositories: {
+            allRepositoryTrees: jest.fn()
+        }
+    };
 
     beforeEach(() => {
-        gitlab = new GitlabInstance();
+        window.sessionStorage.clear();
+        jest.clearAllMocks();
+
+        gitlab = new GitlabInstance('user1', 'https://gitlab.example.com', 'test_token');
         gitlab.api = mockApi as unknown as InstanceType<typeof Gitlab>;
-    }); 
+    });
+
+    it('should initialize the Gitlab API with the correct parameters', () => {
+        expect(Gitlab).toHaveBeenCalledWith({
+            host: 'https://gitlab.example.com',
+            oauthToken: 'test_token',
+        });
+    });
 
     it('should fetch project ID successfully', async () => {
-        mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' } as GroupSchema);
-        mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' } as ProjectSchema]);
+        mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' });
+        mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }]);
 
         const projectId = await gitlab.getProjectId();
 
@@ -35,7 +46,7 @@ describe('GitlabInstance', () => {
     });
 
     it('should handle project ID not found', async () => {
-        mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' } as GroupSchema);
+        mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' });
         mockApi.Groups.allProjects.mockResolvedValue([]);
 
         const projectId = await gitlab.getProjectId();
@@ -44,7 +55,7 @@ describe('GitlabInstance', () => {
     });
 
     it('should fetch trigger token successfully', async () => {
-        mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
+        mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' }]);
 
         const token = await gitlab.getTriggerToken(1);
 
@@ -67,13 +78,13 @@ describe('GitlabInstance', () => {
         const token = await gitlab.getTriggerToken(1);
 
         expect(token).toBeNull();
-    });    
+    });
 
     it('should fetch DT subfolders successfully', async () => {
         mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
-            { name: 'subfolder1', path: 'digital_twins/subfolder1', type: 'tree' } as RepositoryTreeSchema,
-            { name: 'subfolder2', path: 'digital_twins/subfolder2', type: 'tree' } as RepositoryTreeSchema,
-            { name: 'file1', path: 'digital_twins/file1', type: 'blob' } as RepositoryTreeSchema
+            { name: 'subfolder1', path: 'digital_twins/subfolder1', type: 'tree' },
+            { name: 'subfolder2', path: 'digital_twins/subfolder2', type: 'tree' },
+            { name: 'file1', path: 'digital_twins/file1', type: 'blob' }
         ]);
 
         const subfolders = await gitlab.getDTSubfolders(1);

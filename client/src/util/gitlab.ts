@@ -16,7 +16,7 @@
     }
 
     class GitlabInstance {
-        public username: string;
+        public username: string | null;
 
         public api: InstanceType<typeof Gitlab>;
 
@@ -24,12 +24,12 @@
 
         public subfolders: FolderEntry[];
 
-        constructor() {
-            this.username = 'user1';
+        constructor(username: string, host: string, oauthToken: string) {
+            this.username = username
             this.api = new Gitlab({
-                host: 'https://gitlab.com',
-                token: 'glpat-CJknCUBMj8hSC3oibyxS'
-            });
+            host: host,
+            oauthToken: oauthToken,
+        });
             this.logs = [];
             this.subfolders = [];
         }

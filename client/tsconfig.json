@@ -28,7 +28,8 @@
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
     ],
-    "strictNullChecks": true //enable strict null checks
+    "strictNullChecks": true, //enable strict null checks
+    "resolveJsonModule": true //allow to import JSON files directly
   },
   "exclude": [
     "**/node_modules/*",

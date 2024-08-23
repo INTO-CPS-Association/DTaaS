@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import GitlabInstance from './gitlab.js';
 import DigitalTwin from './gitlabDigitalTwin.js';
+import * as config from '../../config/gitlab.json' assert { type: 'json'};
 
 class GitlabDriver {
     public static async run(): Promise<void> {
-        const gitlabInstance = new GitlabInstance();
+        const gitlabInstance = new GitlabInstance(config.username, config.host, config.oauth_token);
         console.log('GitLab username:', gitlabInstance.username);
         console.log('GitLab logs:', gitlabInstance.logs);
         console.log('GitLab subfolders:', gitlabInstance.subfolders);
