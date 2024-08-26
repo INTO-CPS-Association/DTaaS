@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { expect } from '@playwright/test';
 import * as dotenv from 'dotenv';
-import setup from '../setup/fixtures';
+import setup from 'test/e2e/setup/fixtures';
 
 dotenv.config({ path: './test/.env' });
 

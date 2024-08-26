@@ -10,7 +10,7 @@ dotenv.config({ path: './test/.env' });
 // import path from 'path';
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
-const BASE_URI = process.env.REACT_APP_URL ?? '';
+const BASE_URI = process.env.REACT_APP_URL ?? 'http://localhost:4000/';
 
 export default defineConfig({
   webServer: {
