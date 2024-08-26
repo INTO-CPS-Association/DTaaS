@@ -56,10 +56,6 @@ jobs:
         run: |
           yarn test:e2e
 
-      - name: List contents of playwright-report and trace directories
-        run: |
-          ls -R playwright-report || true
-          
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
