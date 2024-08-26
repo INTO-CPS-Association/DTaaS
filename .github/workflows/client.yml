@@ -13,6 +13,9 @@ jobs:
   client:
     name: Test react website
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client/
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,23 +29,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd client/
           yarn install
           yarn playwright install --with-deps
 
       - name: Run the linting checks
         run: |
-          cd client/
           yarn syntax
 
       - name: Build the React SPA website
         run: |
-          cd client/
           yarn build
 
       - name: Run client unit and integration tests
         run: |
-          cd client/
           yarn test:int
           yarn test:unit
 
@@ -55,7 +54,6 @@ jobs:
       - name: Run e2e tests
         continue-on-error: true
         run: |
-          cd client/
           yarn test:e2e
 
       - uses: actions/upload-artifact@v4
