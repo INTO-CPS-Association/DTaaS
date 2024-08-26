@@ -32,14 +32,17 @@ jobs:
 
       - name: Run the linting checks
         run: |
+          cd client/
           yarn syntax
 
       - name: Build the React SPA website
         run: |
+          cd client/
           yarn build
 
       - name: Run client unit and integration tests
         run: |
+          cd client/
           yarn test:int
           yarn test:unit
 
@@ -52,6 +55,7 @@ jobs:
       - name: Run e2e tests
         continue-on-error: true
         run: |
+          cd client/
           yarn test:e2e
 
       - uses: actions/upload-artifact@v4
