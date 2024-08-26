@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import GitlabInstance from './gitlab.js';
 import DigitalTwin from './gitlabDigitalTwin.js';
-import * as config from '../../config/gitlab.json' assert { type: 'json'};
+import config from './gitlab.json' assert { type: 'json' };
 
 class GitlabDriver {
     public static async run(): Promise<void> {
