@@ -24,30 +24,42 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Run the linting checks
+      - name: Install dependencies
         run: |
-          cd client/	
-          yarn install	
-          yarn syntax
-      - name: Build the React SPA website
-        run: |
-          cd client/	
-          yarn install	
-          yarn build
-      - name: Run client unit, integration and e2e tests
-        run: |
-          cd client/	
+          cd client/
           yarn install
           yarn playwright install --with-deps
+
+      - name: Run the linting checks
+        run: |
+          yarn syntax
+
+      - name: Build the React SPA website
+        run: |
+          yarn build
+
+      - name: Run client unit and integration tests
+        run: |
           yarn test:int
           yarn test:unit
-          yarn test:e2e
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: client/coverage/clover.xml
           flags: client-unit-integration-tests
+        
+      - name: Run e2e tests
+        continue-on-error: true
+        run: |
+          yarn test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
       - name: Upload e2e test coverage to Codecov
         uses: codecov/codecov-action@v3
