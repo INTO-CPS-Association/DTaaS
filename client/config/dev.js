@@ -9,6 +9,7 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
