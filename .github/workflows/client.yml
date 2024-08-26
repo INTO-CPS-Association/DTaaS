@@ -49,18 +49,22 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: client/coverage/clover.xml
-          flags: client-unit-integration-tests
+          flags: client-unit-integration-tests 
         
       - name: Run e2e tests
         continue-on-error: true
         run: |
           yarn test:e2e
 
+      - name: List contents of playwright-report and trace directories
+        run: |
+          ls -R playwright-report || true
+          
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: playwright-report/trace/
+          path: client/playwright-report/**
           retention-days: 30
 
       - name: Upload e2e test coverage to Codecov
