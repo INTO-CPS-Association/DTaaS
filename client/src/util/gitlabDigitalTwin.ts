@@ -2,35 +2,38 @@ import { GitlabInstance } from './gitlab';
 
 const RUNNER_TAG = 'linux';
 
+const RUNNER_TAG = 'linux';
+
 class DigitalTwin {
     public DTName: string;
 
-    public description: string | null = null;
+    public description: string = '';
 
     public gitlabInstance: GitlabInstance;
+    
+    public pipelineId: number | null = null;
     
     private lastExecutionStatus: string | null = null;
 
     constructor(DTName: string, gitlabInstance: GitlabInstance) {
         this.DTName = DTName;
         this.gitlabInstance = gitlabInstance;
+    } 
+
+    async init() {
+        if (this.gitlabInstance.projectId) {
+            const readmePath = `digital_twins/${this.DTName}/description.md`;
+            const fileData = await this.gitlabInstance.api.RepositoryFiles.show(this.gitlabInstance.projectId, readmePath, 'main');
+            this.description = atob(fileData.content);
+        } else {
+            this.description = 'Error fetching description.';
+        }
     }
 
-    public async initDescription(): Promise<void> {
-        const projectId = await this.gitlabInstance.getProjectId();
-        if (projectId === null) {
-            return;
-        }
-
-        try {
-            const readmePath = `digital_twins/${this.DTName}/description.md`;
-            const fileData = await this.gitlabInstance.api.RepositoryFiles.show(projectId, readmePath, 'main');
-            
-            // Decodifica il contenuto in base64 a UTF-8 (per ambiente browser)
-            this.description = atob(fileData.content);
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.log('Error fetching README.md:', error);
+    async execute(): Promise<number | null> {
+        if (!this.gitlabInstance.projectId || !this.gitlabInstance.triggerToken) {
+            this.lastExecutionStatus = 'error';
+            return null;
         }
     }
 
