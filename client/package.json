@@ -28,7 +28,7 @@
     "stop": "npx kill-port 4000",
     "syntax": "npx eslint . --fix",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
-    "test:e2e": "playwright test -c ./playwright.config.ts",
+    "test:e2e": "yarn config:test && playwright test -c ./playwright.config.ts",
     "test:int": "jest -c ./jest.config.json ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
   },
