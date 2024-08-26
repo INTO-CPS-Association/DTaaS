@@ -92,7 +92,7 @@ running the following commands.
 
 ### Adjust Configuration (Optional)
 
-The microservices require configuration and the docker version 
+The microservices require configuration and the docker version
 of the microservices uses the configuration
 file available in `config/.env.default`.
 If you would like to adjust the configuration, please change this file.

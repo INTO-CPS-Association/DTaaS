@@ -44,7 +44,8 @@ needs to have _read:packages_ scope.
 
 ### Adjust Configuration (Optional)
 
-The microservices require configuration, see the [Configure](#gear-configure) section for more info.
+The microservices require configuration,
+see the [Configure](#gear-configure) section for more info.
 
 The docker version of the microservices uses the configuration
 file available in `config/.env.default`.
