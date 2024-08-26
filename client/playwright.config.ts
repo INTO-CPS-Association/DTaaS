@@ -44,7 +44,7 @@ export default defineConfig({
   ], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
   use: {
     baseURL: BASE_URI,
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
   projects: [
     // Setup project
