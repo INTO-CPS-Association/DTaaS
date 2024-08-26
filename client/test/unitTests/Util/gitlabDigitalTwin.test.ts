@@ -1,6 +1,6 @@
 import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
 import DigitalTwin from 'util/gitlabDigitalTwin';
-import GitlabInstance from 'util/gitlab';
+import { GitlabInstance } from 'util/gitlab';
 
 type LogEntry = { status: string; DTName: string; runnerTag: string };  
 
@@ -39,7 +39,7 @@ describe('DigitalTwin', () => {
         mockApi.Groups.allProjects.mockResolvedValue([]);
         (mockGitlabInstance.getProjectId as jest.Mock).mockResolvedValue(null);
         
-        const success = await dt.execute('test-runnerTag');
+        const success = await dt.execute();
         
         expect(success).toBe(false);
         expect(dt.executionStatus()).toBe('error');
@@ -52,7 +52,7 @@ describe('DigitalTwin', () => {
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([]);
         (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(null);
 
-        const success = await dt.execute('test-runnerTag');
+        const success = await dt.execute();
 
         expect(success).toBe(false);
         expect(dt.executionStatus()).toBe('error');
@@ -67,7 +67,7 @@ describe('DigitalTwin', () => {
         (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue('test-token');
         (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(undefined);
 
-        const success = await dt.execute('test-runnerTag');
+        const success = await dt.execute();
 
         expect(success).toBe(true);
         expect(dt.executionStatus()).toBe('success');
@@ -87,7 +87,7 @@ describe('DigitalTwin', () => {
         (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue('test-token');
         (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue('String error message');
 
-        const success = await dt.execute('test-runnerTag');
+        const success = await dt.execute();
 
         expect(success).toBe(false);
         expect(dt.executionStatus()).toBe('error');
@@ -106,7 +106,7 @@ describe('DigitalTwin', () => {
     
         mockApi.PipelineTriggerTokens.trigger.mockRejectedValue(new Error('Error instance message'));
     
-        const success = await dt.execute('test-runnerTag');
+        const success = await dt.execute();
     
         expect(success).toBe(false);
     
@@ -119,7 +119,7 @@ describe('DigitalTwin', () => {
         mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' } as PipelineTriggerTokenSchema]);
         mockApi.PipelineTriggerTokens.trigger.mockResolvedValue(undefined);
 
-        await dt.execute('test-runnerTag');
+        await dt.execute();
 
         (mockGitlabInstance.executionLogs as jest.Mock).mockReturnValue([
             { status: 'success', DTName: 'test-DTName', runnerTag: 'test-runnerTag' }
