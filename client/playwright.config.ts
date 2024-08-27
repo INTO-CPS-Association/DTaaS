@@ -49,15 +49,9 @@ export default defineConfig({
   projects: [
     // Setup project
     {
-      name: 'dummy-test',
-      testMatch: /Pass.dummy.ts/,
-      use: { browserName: 'chromium' },
-    },
-    {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
       use: { browserName: 'firefox' },
-      dependencies: ['dummy-test'],
     },
     {
       name: 'chromium',
