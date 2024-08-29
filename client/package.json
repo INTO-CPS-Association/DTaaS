@@ -47,7 +47,7 @@
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@gitbeaker/rest": "^40.1.2",
-    "@mui/icons-material": "^5.14.8",
+    "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.14.8",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/styled-components": "^5.1.32",
