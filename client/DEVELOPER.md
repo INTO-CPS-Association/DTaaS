@@ -185,9 +185,19 @@ The client codebase has been using Gitlab for OAuth2 only. There is
 an ongoing effort to integrate Gitlab CI/CD capabilities to automate
 the execution of Digital Twins. This code is in alpha stage and is
 available in `src/util/gitlab*.ts`.
-This code can be developed and tested using the following yarn commands.
+
+The gitlab code requires
+[gitlab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+for a gitlab account.
+The token information needs to be updated in `config/gitlab.json`.
+
+Once the token configuration is in place, the gitlab code can be developed
+and tested using the following yarn commands.
 
 ```bash
 yarn gitlab:compile
 yarn gitlab:run
 ```
+
+These two commands run `src/util/gitlabDriver.ts` code to check the correct
+functioning of the gitlab code placed in `src/util` directory.

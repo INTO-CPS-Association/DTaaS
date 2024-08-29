@@ -23,7 +23,7 @@
     "config:test": "npx shx cp config/test.js public/env.js && npx shx cp config/test.js build/env.js",
     "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
-    "gitlab:compile": "npx tsc --project tsconfig.gitlab.json",
+    "gitlab:compile": "npx shx cp config/gitlab.json src/util/gitlab.json && npx tsc --project tsconfig.gitlab.json && npx rimraf src/util/gitlab.json",
     "gitlab:run": "node dist/gitlabDriver.js",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
     "start": "serve -s build -l 4000",
