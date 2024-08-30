@@ -16,8 +16,8 @@ interface FolderEntry {
     path: string;
 }
 
-class GitlabInstance {
-    public username: string | null;
+    class GitlabInstance {
+        public username: string | null;
 
     public api: InstanceType<typeof Gitlab>;
 
@@ -29,26 +29,25 @@ class GitlabInstance {
 
     public triggerToken: string | null = null;
 
-    constructor() {
-        this.username = sessionStorage.getItem('username');
-        this.api = new Gitlab({
-            host: getAuthority(),
-            oauthToken: sessionStorage.getItem('access_token') || 'null',
+        constructor(username: string, host: string, oauthToken: string) {
+            this.username = username
+            this.api = new Gitlab({
+            host: host,
+            oauthToken: oauthToken,
         });
-        this.logs = [];
-        this.subfolders = [];
-    }
-
-    async init() {
-        const projectId = await this.getProjectId();
-        this.projectId = projectId;
-
-        if (this.projectId !== null) {
-            const token = await this.getTriggerToken(this.projectId);
-            this.triggerToken = token;
+            this.logs = [];
+            this.subfolders = [];
         }
-    }
-
+        
+        async init() {
+            const projectId = await this.getProjectId();
+            this.projectId = projectId;
+    
+            if (this.projectId !== null) {
+                const token = await this.getTriggerToken(this.projectId);
+                this.triggerToken = token;
+            }
+        }
     async getProjectId(): Promise<number | null> {
         let projectId: number | null = null;
 
