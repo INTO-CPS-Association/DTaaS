@@ -1,4 +1,4 @@
-    import { Gitlab } from '@gitbeaker/rest';
+import { Gitlab } from '@gitbeaker/rest';
 
 const GROUP_NAME = 'DTaaS';
 const DT_DIRECTORY = 'digital_twins';
@@ -15,8 +15,8 @@ interface FolderEntry {
     path: string;
 }
 
-    class GitlabInstance {
-        public username: string | null;
+class GitlabInstance {
+    public username: string | null;
 
     public api: InstanceType<typeof Gitlab>;
 
@@ -24,15 +24,25 @@ interface FolderEntry {
 
     public subfolders: FolderEntry[];
 
-        constructor(username: string, host: string, oauthToken: string) {
-            this.username = username
-            this.api = new Gitlab({
-            host: host,
-            oauthToken: oauthToken,
-        });
-            this.logs = [];
-            this.subfolders = [];
+    constructor(username: string, host: string, oauthToken: string) {
+        this.username = username
+        this.api = new Gitlab({
+        host,
+        oauthToken,
+    });
+        this.logs = [];
+        this.subfolders = [];
+    }
+    
+    async init() {
+        const projectId = await this.getProjectId();
+        this.projectId = projectId;
+
+        if (this.projectId !== null) {
+            const token = await this.getTriggerToken(this.projectId);
+            this.triggerToken = token;
         }
+    }
 
     async getProjectId(): Promise<number | null> {
         let projectId: number | null = null;
@@ -49,7 +59,7 @@ interface FolderEntry {
 
     async getTriggerToken(projectId: number): Promise<string | null> {
         let token: string | null = null;
-    
+
         const triggers = await this.api.PipelineTriggerTokens.all(projectId);
 
         if (triggers && triggers.length > 0) {
@@ -57,7 +67,6 @@ interface FolderEntry {
         }
         return token;
     }
-    
 
     async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
         let subfolders: FolderEntry[] = [];
@@ -78,9 +87,24 @@ interface FolderEntry {
         return subfolders;
     }
 
-        executionLogs(): LogEntry[] {
-            return this.logs;
-        }
+    executionLogs(): LogEntry[] {
+        return this.logs;
     }
 
-    export default GitlabInstance;
+    async getPipelineJobs(projectId: number, pipelineId: number) {
+        const jobs = await this.api.Jobs.all(projectId, { pipelineId });
+        return jobs;
+        }      
+
+    async getJobTrace(projectId: number, jobId: number) {
+        const log = await this.api.Jobs.showLog(projectId, jobId);
+        return log;
+    }
+
+    async getPipelineStatus(projectId: number, pipelineId: number) {
+        const pipeline = await this.api.Pipelines.show(projectId, pipelineId);
+        return pipeline.status; 
+    }   
+}
+
+export { GitlabInstance, FolderEntry };

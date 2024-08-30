@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CardActions, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, AlertColor, CircularProgress } from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
 import DigitalTwin from 'util/gitlabDigitalTwin';
+import { getAuthority } from 'util/envUtil';
 import stripAnsi from 'strip-ansi';
 import ansiRegex from 'ansi-regex';
 import DigitalTwinCard from './DigitalTwinCard';
@@ -14,7 +15,7 @@ const formatName = (name: string) =>
     .replace(/^./, (char) => char.toUpperCase());
 
 const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
-  const [gitlabInstance, setGitlabInstance] = useState<GitlabInstance | null>(null);
+  const [gitlabInstance] = useState<GitlabInstance>(new GitlabInstance(sessionStorage.getItem('username') || '', getAuthority(), sessionStorage.getItem('access_token') || ''));
   const [digitalTwin, setDigitalTwin] = useState<DigitalTwin | null>(null);   
   const [description, setDescription] = useState<string>('');
   const [executionStatus, setExecutionStatus] = useState<string | null>(null);
@@ -29,10 +30,8 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
   const [executionCount, setExecutionCount] = useState(0);
 
   const initialize = async () => {
-    const instance = new GitlabInstance();
-    await instance.init()
-    setGitlabInstance(instance);
-    const dt = new DigitalTwin(props.name, instance);
+    await gitlabInstance.init()
+    const dt = new DigitalTwin(props.name, gitlabInstance);
     await dt.init();
     setDigitalTwin(dt);
     console.log('Digital twin:', dt);

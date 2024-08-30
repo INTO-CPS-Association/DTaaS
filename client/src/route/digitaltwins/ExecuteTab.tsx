@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Box } from '@mui/material';
-import ExecuteDigitalTwin from 'components/ExecuteDigitalTwin';
+import ExecuteDigitalTwin from 'route/digitaltwins/ExecuteDigitalTwin';
 import { GitlabInstance, FolderEntry } from 'util/gitlab';
 
 const ExecuteTab: React.FC<{ subfolders: FolderEntry[], gitlabInstance: GitlabInstance }> = props => (
