@@ -50,6 +50,6 @@ function DTContent() {
       <TabComponent assetType={DTTab} scope={[]} />
     </Layout>
   );
-}
+};
 
 export default DTContent;
