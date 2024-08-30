@@ -1,5 +1,4 @@
 import { Gitlab } from '@gitbeaker/rest';
-import { getAuthority } from './envUtil';
 
 const GROUP_NAME = 'DTaaS';
 const DT_DIRECTORY = 'digital_twins';
@@ -16,8 +15,8 @@ interface FolderEntry {
     path: string;
 }
 
-    class GitlabInstance {
-        public username: string | null;
+class GitlabInstance {
+    public username: string | null;
 
     public api: InstanceType<typeof Gitlab>;
 
@@ -29,25 +28,26 @@ interface FolderEntry {
 
     public triggerToken: string | null = null;
 
-        constructor(username: string, host: string, oauthToken: string) {
-            this.username = username
-            this.api = new Gitlab({
-            host: host,
-            oauthToken: oauthToken,
-        });
-            this.logs = [];
-            this.subfolders = [];
-        }
-        
-        async init() {
-            const projectId = await this.getProjectId();
-            this.projectId = projectId;
+    constructor(username: string, host: string, oauthToken: string) {
+        this.username = username
+        this.api = new Gitlab({
+        host,
+        oauthToken,
+    });
+        this.logs = [];
+        this.subfolders = [];
+    }
     
-            if (this.projectId !== null) {
-                const token = await this.getTriggerToken(this.projectId);
-                this.triggerToken = token;
-            }
+    async init() {
+        const projectId = await this.getProjectId();
+        this.projectId = projectId;
+
+        if (this.projectId !== null) {
+            const token = await this.getTriggerToken(this.projectId);
+            this.triggerToken = token;
         }
+    }
+
     async getProjectId(): Promise<number | null> {
         let projectId: number | null = null;
 
@@ -63,7 +63,7 @@ interface FolderEntry {
 
     async getTriggerToken(projectId: number): Promise<string | null> {
         let token: string | null = null;
-    
+
         const triggers = await this.api.PipelineTriggerTokens.all(projectId);
 
         if (triggers && triggers.length > 0) {
@@ -71,7 +71,6 @@ interface FolderEntry {
         }
         return token;
     }
-    
 
     async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
         let subfolders: FolderEntry[] = [];
@@ -95,11 +94,11 @@ interface FolderEntry {
     executionLogs(): LogEntry[] {
         return this.logs;
     }
-    
+
     async getPipelineJobs(projectId: number, pipelineId: number) {
         const jobs = await this.api.Jobs.all(projectId, { pipelineId });
         return jobs;
-      }      
+        }      
 
     async getJobTrace(projectId: number, jobId: number) {
         const log = await this.api.Jobs.showLog(projectId, jobId);
