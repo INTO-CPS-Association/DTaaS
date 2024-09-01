@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
@@ -8,41 +8,50 @@ import { getAuthority } from 'util/envUtil';
 import tabs from './DigitalTwinTabData';
 import ExecuteTab from './ExecuteTab';
 
-const DTContent: React.FC = () => {
-  const [subfolders, setSubfolders] = useState<FolderEntry[]>([]);
-  const [gitlabInstance, setGitlabInstance] = useState<GitlabInstance | null>(null);
+class DTContent extends Component<Record<string, never>, { subfolders: FolderEntry[], gitlabInstance: GitlabInstance | null }> {
+  constructor(props: Record<string, never>
+  ) {
+    super(props);
+    this.state = {
+      subfolders: [],
+      gitlabInstance: null,
+    };
+  }
 
-  const fetchSubfolders = async () => {
+  async fetchSubfolders() {
     const instance = new GitlabInstance(sessionStorage.getItem('username') || '', getAuthority(), sessionStorage.getItem('access_token') || '');
-    setGitlabInstance(instance);
+    this.setState({ gitlabInstance: instance });
     const projectId = await instance.getProjectId();
     if (projectId) {
       const subfoldersData = await instance.getDTSubfolders(projectId);
-      setSubfolders(subfoldersData);
+      this.setState({ subfolders: subfoldersData });
     }
-  };
+  }
 
-  useEffect(() => {
-    fetchSubfolders();
-  }, []);
+  componentDidMount() {
+    this.fetchSubfolders();
+  }
 
-  const DTTab: TabData[] = tabs
-    .filter((tab) => tab.label === 'Execute')
-    .map((tab) => ({
-      label: tab.label,
-      body: (
-        <>
-          <Typography variant="body1">{tab.body}</Typography>
-          {gitlabInstance && <ExecuteTab subfolders={subfolders} gitlabInstance={gitlabInstance} />}
-        </>
-      ),
-    }));
+  render() {
+    const { subfolders, gitlabInstance } = this.state;
+    const DTTab: TabData[] = tabs
+      .filter((tab) => tab.label === 'Execute')
+      .map((tab) => ({
+        label: tab.label,
+        body: (
+          <>
+            <Typography variant="body1">{tab.body}</Typography>
+            {gitlabInstance && <ExecuteTab subfolders={subfolders} gitlabInstance={gitlabInstance} />}
+          </>
+        ),
+      }));
 
-  return (
-    <Layout>
-      <TabComponent assetType={DTTab} scope={[]} />
-    </Layout>
-  );
-};
+    return (
+      <Layout>
+        <TabComponent assetType={DTTab} scope={[]} />
+      </Layout>
+    );
+  }
+}
 
 export default DTContent;
