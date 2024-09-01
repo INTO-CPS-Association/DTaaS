@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
@@ -45,12 +45,11 @@ function DTContent() {
       ),
     }));
 
-    return (
-      <Layout>
-        <TabComponent assetType={DTTab} scope={[]} />
-      </Layout>
-    );
-  }
+  return (
+    <Layout>
+      <TabComponent assetType={DTTab} scope={[]} />
+    </Layout>
+  );
 }
 
 export default DTContent;
