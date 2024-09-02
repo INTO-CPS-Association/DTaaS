@@ -10,10 +10,20 @@ import GitlabService from './GitlabService';
 
 function DTContent() {
   const [subfolders, setSubfolders] = useState<FolderEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const gitlabService = new GitlabService();
 
   useEffect(() => {
-    gitlabService.getSubfolders().then((subfoldersData) => {setSubfolders(subfoldersData)});    ;
+    const fetchSubfolders = async () => {
+      const result = await gitlabService.getSubfolders();
+      if (typeof result === 'string') {
+        setError(result);
+      } else {
+        setSubfolders(result);
+      }
+    };
+
+    fetchSubfolders();
   }, []);
 
   const DTTab: TabData[] = tabs
@@ -23,7 +33,7 @@ function DTContent() {
     body: (
       <>
         <Typography variant="body1">{tab.body}</Typography>
-        {gitlabService.getInstance() && <ExecuteTab subfolders={subfolders} gitlabInstance={gitlabService.getInstance()} />}
+        {gitlabService.getInstance() && <ExecuteTab subfolders={subfolders} gitlabInstance={gitlabService.getInstance()} error={error} />}
       </>
     ),
   }));

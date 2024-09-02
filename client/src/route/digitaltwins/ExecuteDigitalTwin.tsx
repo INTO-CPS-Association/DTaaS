@@ -4,9 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { CardActions, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, AlertColor, CircularProgress } from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
 import DigitalTwin from 'util/gitlabDigitalTwin';
-import { getAuthority } from 'util/envUtil';
 import stripAnsi from 'strip-ansi';
-import ansiRegex from 'ansi-regex';
+import { getAuthority } from 'util/envUtil';
 import DigitalTwinCard from './DigitalTwinCard';
 
 const formatName = (name: string) =>
@@ -30,7 +29,7 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
   const [executionCount, setExecutionCount] = useState(0);
 
   const initialize = async () => {
-    await gitlabInstance.init()
+    await gitlabInstance.init();
     const dt = new DigitalTwin(props.name, gitlabInstance);
     await dt.init();
     setDigitalTwin(dt);
@@ -80,7 +79,7 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
         let log = gitlabInstance? await gitlabInstance.getJobTrace(projectId, job.id) : '';
         console.log('Log in fetchJobLogs:', log);
         if (typeof log === 'string') {
-          log = stripAnsi(log).replace(ansiRegex(), '').split('\n').map(line =>
+          log = stripAnsi(log).split('\n').map(line =>
             line.replace(/section_start:\d+:[^A-Z]*/, '').replace(/section_end:\d+:[^A-Z]*/, '')
           ).join('\n');
         }
