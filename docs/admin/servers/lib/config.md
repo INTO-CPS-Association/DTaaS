@@ -16,9 +16,6 @@ The `LOCAL_PATH` variable is the absolute filepath to the
 location of the local directory which will be served to users
 by the Library microservice.
 
-**NOTE**: If running on Windows, the `LOCAL_PATH` has to be relative and not absolute,
-due to how CloudCMD works.
-
 Replace the default values the appropriate values for your setup.
 
 The config is saved `.env` file by convention. The **libms** looks for
