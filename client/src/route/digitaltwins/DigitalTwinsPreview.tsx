@@ -1,3 +1,5 @@
+    /* eslint-disable no-console */
+
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
