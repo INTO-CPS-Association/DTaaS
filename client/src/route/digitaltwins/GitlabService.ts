@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { GitlabInstance, FolderEntry } from 'util/gitlab';
+import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
+import { Asset } from '../../components/asset/Asset'
 
 class GitlabService {
     private gitlabInstance: GitlabInstance;
@@ -14,14 +15,14 @@ class GitlabService {
       );
     }
 
-    async getSubfolders(): Promise<FolderEntry[] | string> {
+    async getSubfolders(): Promise<Asset[] | string> {
       try {
         if (!this.gitlabInstance) {
           throw new Error('GitlabInstance is not initialized');
         }
-        const projectId = await this.gitlabInstance.getProjectId();
-        if (projectId) {
-          return this.gitlabInstance.getDTSubfolders(projectId);
+        await this.gitlabInstance.init();
+        if (this.gitlabInstance.projectId) {
+          return this.gitlabInstance.getDTSubfolders(this.gitlabInstance.projectId);
         }
         return [];
       } catch (error) {

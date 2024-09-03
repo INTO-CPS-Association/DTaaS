@@ -1,4 +1,5 @@
 import { Gitlab } from '@gitbeaker/rest';
+import { Asset } from '../components/asset/Asset';
 
 const GROUP_NAME = 'DTaaS';
 const DT_DIRECTORY = 'digital_twins';
@@ -13,6 +14,7 @@ interface LogEntry {
 interface FolderEntry {
     name: string;
     path: string;
+    description: string;
 }
 
 class GitlabInstance {
@@ -22,7 +24,7 @@ class GitlabInstance {
 
     public logs: LogEntry[];
 
-    public subfolders: FolderEntry[];
+    public subfolders: Asset[];
 
     constructor(username: string, host: string, oauthToken: string) {
         this.username = username
@@ -68,20 +70,27 @@ class GitlabInstance {
         return token;
     }
 
-    async getDTSubfolders(projectId: number): Promise<FolderEntry[]> {
-        let subfolders: FolderEntry[] = [];
+    async getDTDescription(DTName: string, ) {
+        const readmePath = `digital_twins/${DTName}/description.md`;
+        const fileData = await this.api.RepositoryFiles.show(this.projectId!, readmePath, 'main');
+        return atob(fileData.content);
+    }
 
+    async getDTSubfolders(projectId: number): Promise<Asset[]> {
         const files = await this.api.Repositories.allRepositoryTrees(projectId, {
             path: DT_DIRECTORY,
             recursive: false,
         });
 
-        subfolders = files
-            .filter(file => file.type === 'tree' && file.path !== DT_DIRECTORY)
-            .map(file => ({
-                name: file.name,
-                path: file.path
-            }));
+        const subfolders: Asset[] = await Promise.all(
+            files
+                .filter(file => file.type === 'tree' && file.path !== DT_DIRECTORY)
+                .map(async file => ({
+                    name: file.name,
+                    path: file.path, // Ensure the path property is included
+                    description: await this.getDTDescription(file.name), // Await the description
+                }))
+        );
 
         this.subfolders = subfolders;
         return subfolders;
