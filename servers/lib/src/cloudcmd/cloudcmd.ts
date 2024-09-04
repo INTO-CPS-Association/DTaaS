@@ -3,9 +3,7 @@ import { Server } from 'socket.io';
 import * as cloudcmd from 'cloudcmd';
 import { join, relative } from 'path';
 
-const isWindowsAbsolutePath = (filesPath: string) => {
-  return filesPath.includes(':');
-};
+const isWindowsAbsolutePath = (filesPath: string) => filesPath.includes(':');
 
 const runCloudCMD = (
   app: INestApplication,
