@@ -1,7 +1,8 @@
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { AlertColor, Button, CircularProgress } from '@mui/material';
-import DigitalTwin from 'util/gitlabDigitalTwin';
 import { handleButtonClick } from 'route/digitaltwins/ExecutionFunctions';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/store';
 
 
 export interface JobLog {
@@ -10,7 +11,7 @@ export interface JobLog {
 }
 
 interface StartStopButtonProps {
-  digitalTwin: DigitalTwin;
+  assetName: string;
   setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
   setSnackbarMessage: Dispatch<SetStateAction<string>>;
   setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
@@ -21,7 +22,7 @@ interface StartStopButtonProps {
 }
 
 function StartStopButton({
-  digitalTwin,
+  assetName,
   setSnackbarOpen,
   setSnackbarMessage,
   setSnackbarSeverity,
@@ -34,6 +35,10 @@ function StartStopButton({
   const [pipelineLoading, setPipelineLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Start');
 
+  const digitalTwin = useSelector(
+    (state: RootState) => state.digitalTwin[assetName]
+  );
+
   useEffect(() => {
     if (executionStatus) {
       setSnackbarMessage(
@@ -42,7 +47,7 @@ function StartStopButton({
       setSnackbarSeverity(executionStatus === 'success' ? 'success' : 'error');
       setSnackbarOpen(true);
     }
-  }, [executionStatus, executionCount, digitalTwin.DTName]);
+  }, [executionStatus, executionCount]);
 
   return (
     <>
