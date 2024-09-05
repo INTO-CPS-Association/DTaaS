@@ -196,4 +196,8 @@ yarn gitlab:run
 
 ## Digital Twins page preview
 
-In the Workbench section, there is a link to preview the **Digital Twins** page. The GitLab account used as OAuth provider must have a *DTaaS* group, a project under your username, and a *digital_twins* folder which contains the Digital Twins. From this interface, you can start or stop execution of Digital Twins, and once the execution is complete, view the complete logs.
+In the Workbench section, there is a link to preview the **Digital Twins** 
+page. The GitLab account used as OAuth provider must have a *DTaaS* group, 
+a project under your username, and a *digital_twins* folder which contains 
+the Digital Twins. From this interface, you can start or stop execution of 
+Digital Twins, and once the execution is complete, view the complete logs.
