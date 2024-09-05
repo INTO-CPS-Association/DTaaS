@@ -13,7 +13,7 @@ const digitalTwinSlice = createSlice({
   reducers: {
     setDigitalTwin: (
       state,
-      action: PayloadAction<{ assetName: string; digitalTwin: DigitalTwin }>
+      action: PayloadAction<{ assetName: string; digitalTwin: DigitalTwin }>,
     ) => {
       state[action.payload.assetName] = action.payload.digitalTwin;
     },

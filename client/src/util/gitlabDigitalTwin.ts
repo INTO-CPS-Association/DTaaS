@@ -33,39 +33,55 @@ class DigitalTwin {
   }
 
   async execute(): Promise<number | null> {
-    if (!this.gitlabInstance.projectId || !this.gitlabInstance.triggerToken) {
-      this.lastExecutionStatus = 'error';
+    if (!this.isValidInstance()) {
+      this.logError('Missing projectId or triggerToken');
       return null;
     }
 
-    const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
-
     try {
-      const response =
-        await this.gitlabInstance.api.PipelineTriggerTokens.trigger(
-          this.gitlabInstance.projectId,
-          'main',
-          this.gitlabInstance.triggerToken,
-          { variables },
-        );
-      this.gitlabInstance.logs.push({
-        status: 'success',
-        DTName: this.DTName,
-        runnerTag: RUNNER_TAG,
-      });
-      this.lastExecutionStatus = 'success';
+      const response = await this.triggerPipeline();
+      this.logSuccess();
       this.pipelineId = response.id;
       return this.pipelineId;
     } catch (error) {
-      this.gitlabInstance.logs.push({
-        status: 'error',
-        error: new Error(String(error)),
-        DTName: this.DTName,
-        runnerTag: RUNNER_TAG,
-      });
-      this.lastExecutionStatus = 'error';
+      this.logError(String(error));
       return null;
     }
+  }
+
+  private isValidInstance(): boolean {
+    return !!(
+      this.gitlabInstance.projectId && this.gitlabInstance.triggerToken
+    );
+  }
+
+  private async triggerPipeline() {
+    const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
+    return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
+      this.gitlabInstance.projectId!,
+      'main',
+      this.gitlabInstance.triggerToken!,
+      { variables },
+    );
+  }
+
+  private logSuccess(): void {
+    this.gitlabInstance.logs.push({
+      status: 'success',
+      DTName: this.DTName,
+      runnerTag: RUNNER_TAG,
+    });
+    this.lastExecutionStatus = 'success';
+  }
+
+  private logError(error: string): void {
+    this.gitlabInstance.logs.push({
+      status: 'error',
+      error: new Error(error),
+      DTName: this.DTName,
+      runnerTag: RUNNER_TAG,
+    });
+    this.lastExecutionStatus = 'error';
   }
 
   async stop(projectId: number, pipelineId: number): Promise<void> {

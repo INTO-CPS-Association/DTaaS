@@ -4,7 +4,6 @@ import { handleButtonClick } from 'route/digitaltwins/ExecutionFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 
-
 export interface JobLog {
   jobName: string;
   log: string;
@@ -36,7 +35,7 @@ function StartStopButton({
   const [buttonText, setButtonText] = useState('Start');
 
   const digitalTwin = useSelector(
-    (state: RootState) => state.digitalTwin[assetName]
+    (state: RootState) => state.digitalTwin[assetName],
   );
 
   useEffect(() => {

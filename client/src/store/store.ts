@@ -9,7 +9,7 @@ const rootReducer = combineReducers({
   menu: menuSlice,
   auth: authSlice,
   cart: cartReducer,
-  digitalTwin: digitalTwinSlice
+  digitalTwin: digitalTwinSlice,
 });
 
 const store = configureStore({

@@ -15,29 +15,37 @@ const outerGridContainerProps = {
   },
 };
 
-
 /**
  * Displays a board with navigational properties to locate and select assets for DT configuration.
  * @param props Takes relative path to Assets. E.g `Functions` for function assets.
  * @returns
  */
-function AssetBoard(props: { subfolders: Asset[], gitlabInstance: GitlabInstance, error: string | null }) {
+function AssetBoard(props: {
+  subfolders: Asset[];
+  gitlabInstance: GitlabInstance;
+  error: string | null;
+}) {
+  if (props.error) {
+    return <em style={{ textAlign: 'center' }}>{props.error}</em>;
+  }
 
-if (props.error) {
   return (
-    <em style={{ textAlign: 'center' }}>{props.error}</em>
+    <Grid {...outerGridContainerProps}>
+      {props.subfolders.map((asset) => (
+        <Grid
+          key={asset.path}
+          item
+          xs={12}
+          sm={6}
+          md={4}
+          lg={3}
+          sx={{ minWidth: 250 }}
+        >
+          <AssetCardExecute asset={asset} />
+        </Grid>
+      ))}
+    </Grid>
   );
-}
-
-return (
-  <Grid {...outerGridContainerProps}>
-    {props.subfolders.map((asset) => (
-      <Grid key={asset.path} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
-        <AssetCardExecute asset={asset} />
-      </Grid>
-    ))}
-  </Grid>
-  )
 }
 
 export default AssetBoard;

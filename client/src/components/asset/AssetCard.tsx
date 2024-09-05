@@ -148,7 +148,12 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
       sessionStorage.getItem('access_token') || '',
     );
     gitlabInstance.init();
-    dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin: new DigitalTwin(asset.name, gitlabInstance) }));
+    dispatch(
+      setDigitalTwin({
+        assetName: asset.name,
+        digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
+      }),
+    );
   }, []);
 
   return (
