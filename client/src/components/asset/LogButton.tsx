@@ -1,18 +1,24 @@
 import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
-// import { Asset } from './Asset';
 
-// import useCart from '../../store/CartAccess';
+interface LogButtonProps {
+  pipelineCompleted: boolean;
+  setShowLog: Dispatch<React.SetStateAction<boolean>>;
+}
 
+const handleToggleLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+  setShowLog((prev) => !prev);
+};
 
-function LogButton() {
-  // const { state, actions } = useCart();
+function LogButton({ pipelineCompleted, setShowLog }: LogButtonProps) {
   return (
     <Button
       variant="contained"
-      // disabled={isDisabled}
       size="small"
       color="primary"
+      onClick={() => handleToggleLog(setShowLog)}
+      disabled={!pipelineCompleted}
     >
       Log
     </Button>

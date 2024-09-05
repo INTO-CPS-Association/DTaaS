@@ -1,10 +1,8 @@
-    /* eslint-disable no-console */
-
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
 import { Asset } from './Asset';
-import AssetCard from './AssetCard';
+import AssetCardExecute from './AssetCard';
 
 const outerGridContainerProps = {
   container: true,
@@ -17,28 +15,29 @@ const outerGridContainerProps = {
   },
 };
 
+
 /**
  * Displays a board with navigational properties to locate and select assets for DT configuration.
  * @param props Takes relative path to Assets. E.g `Functions` for function assets.
  * @returns
  */
 function AssetBoard(props: { subfolders: Asset[], gitlabInstance: GitlabInstance, error: string | null }) {
-    console.log(props.subfolders);
-  if (props.error) {
-    return (
-      <em style={{ textAlign: 'center' }}>{props.error}</em>
-    );
-  }
 
+if (props.error) {
   return (
-    <Grid {...outerGridContainerProps}>
-      {props.subfolders.map((asset) => (
-        <Grid key={asset.path} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
-          <AssetCard asset={asset} tab="Execute" />
-        </Grid>
-      ))}
-    </Grid>
+    <em style={{ textAlign: 'center' }}>{props.error}</em>
   );
+}
+
+return (
+  <Grid {...outerGridContainerProps}>
+    {props.subfolders.map((asset, index) => (
+      <Grid key={asset.path} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
+        <AssetCardExecute asset={asset} />
+      </Grid>
+    ))}
+  </Grid>
+  )
 }
 
 export default AssetBoard;

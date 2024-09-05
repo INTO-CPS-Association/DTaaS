@@ -1,5 +1,3 @@
-    /* eslint-disable no-console */
-
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
@@ -30,16 +28,22 @@ function DTContent() {
   }, []);
 
   const DTTab: TabData[] = tabs
-  .filter((tab) => tab.label === 'Execute')
-  .map((tab) => ({
-    label: tab.label,
-    body: (
-      <>
-        <Typography variant="body1">{tab.body}</Typography>
-        {gitlabService.getInstance() && <AssetBoard subfolders={subfolders} gitlabInstance={gitlabService.getInstance()} error={error} />}
-      </>
-    ),
-  }));
+    .filter((tab) => tab.label === 'Execute')
+    .map((tab) => ({
+      label: tab.label,
+      body: (
+        <>
+          <Typography variant="body1">{tab.body}</Typography>
+          {gitlabService.getInstance() && (
+            <AssetBoard
+              subfolders={subfolders}
+              gitlabInstance={gitlabService.getInstance()}
+              error={error}
+            />
+          )}
+        </>
+      ),
+    }));
 
   return (
     <Layout>
