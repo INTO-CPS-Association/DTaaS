@@ -1,7 +1,17 @@
-/* eslint-disable no-console */
-
 import React, { useState, useEffect } from 'react';
-import { CardActions, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, AlertColor, CircularProgress } from '@mui/material';
+import {
+  CardActions,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  Alert,
+  AlertColor,
+  CircularProgress,
+} from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 import stripAnsi from 'strip-ansi';
@@ -9,22 +19,29 @@ import { getAuthority } from 'util/envUtil';
 import DigitalTwinCard from './DigitalTwinCard';
 
 const formatName = (name: string) =>
-  name
-    .replace(/-/g, ' ')
-    .replace(/^./, (char) => char.toUpperCase());
+  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
 
 const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
-  const [gitlabInstance] = useState<GitlabInstance>(new GitlabInstance(sessionStorage.getItem('username') || '', getAuthority(), sessionStorage.getItem('access_token') || ''));
-  const [digitalTwin, setDigitalTwin] = useState<DigitalTwin | null>(null);   
+  const [gitlabInstance] = useState<GitlabInstance>(
+    new GitlabInstance(
+      sessionStorage.getItem('username') || '',
+      getAuthority(),
+      sessionStorage.getItem('access_token') || '',
+    ),
+  );
+  const [digitalTwin, setDigitalTwin] = useState<DigitalTwin | null>(null);
   const [description, setDescription] = useState<string>('');
   const [executionStatus, setExecutionStatus] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
-  const [jobLogs, setJobLogs] = useState<{ jobName: string; log: string }[]>([]);
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertColor>('success');
+  const [jobLogs, setJobLogs] = useState<{ jobName: string; log: string }[]>(
+    [],
+  );
   const [showLog, setShowLog] = useState(false);
   const [pipelineCompleted, setPipelineCompleted] = useState(false);
-  const [pipelineLoading, setPipelineLoading]  = useState(false);
+  const [pipelineLoading, setPipelineLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Start');
   const [executionCount, setExecutionCount] = useState(0);
 
@@ -37,20 +54,27 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
     setDescription(dt.description);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     initialize();
   }, []);
 
   useEffect(() => {
     if (executionStatus) {
-      setSnackbarMessage(`Execution ${executionStatus} for ${formatName(props.name)} (Run #${executionCount})`);
+      setSnackbarMessage(
+        `Execution ${executionStatus} for ${formatName(props.name)} (Run #${executionCount})`,
+      );
       setSnackbarSeverity(executionStatus === 'success' ? 'success' : 'error');
       setSnackbarOpen(true);
     }
   }, [executionStatus, executionCount, props.name]);
 
-  const checkSecondPipelineStatus = async (projectId: number, pipelineId: number) => {
-    const pipelineStatus = gitlabInstance ? await gitlabInstance.getPipelineStatus(projectId, pipelineId) : null;
+  const checkSecondPipelineStatus = async (
+    projectId: number,
+    pipelineId: number,
+  ) => {
+    const pipelineStatus = gitlabInstance
+      ? await gitlabInstance.getPipelineStatus(projectId, pipelineId)
+      : null;
     if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
       const pipelineIdJobs = pipelineId;
       setJobLogs(await fetchJobLogs(projectId, pipelineIdJobs));
@@ -62,28 +86,42 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
     }
   };
 
-  const checkFirstPipelineStatus = async (projectId: number, pipelineId: number) => {
-    const pipelineStatus = gitlabInstance ? await gitlabInstance.getPipelineStatus(projectId, pipelineId) : null;
+  const checkFirstPipelineStatus = async (
+    projectId: number,
+    pipelineId: number,
+  ) => {
+    const pipelineStatus = gitlabInstance
+      ? await gitlabInstance.getPipelineStatus(projectId, pipelineId)
+      : null;
     if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
-      checkSecondPipelineStatus(projectId, pipelineId+1);
+      checkSecondPipelineStatus(projectId, pipelineId + 1);
     } else {
       setTimeout(() => checkFirstPipelineStatus(projectId, pipelineId), 5000);
     }
   };
 
   const fetchJobLogs = async (projectId: number, pipelineId: number) => {
-    const jobs = gitlabInstance ? await gitlabInstance.getPipelineJobs(projectId, pipelineId) : [];
+    const jobs = gitlabInstance
+      ? await gitlabInstance.getPipelineJobs(projectId, pipelineId)
+      : [];
     console.log('gitlabinstance job', gitlabInstance);
     console.log(jobs);
     const logPromises = jobs.map(async (job) => {
-        let log = gitlabInstance? await gitlabInstance.getJobTrace(projectId, job.id) : '';
-        console.log('Log in fetchJobLogs:', log);
-        if (typeof log === 'string') {
-          log = stripAnsi(log).split('\n').map(line =>
-            line.replace(/section_start:\d+:[^A-Z]*/, '').replace(/section_end:\d+:[^A-Z]*/, '')
-          ).join('\n');
-        }
-        return { jobName: job.name, log };
+      let log = gitlabInstance
+        ? await gitlabInstance.getJobTrace(projectId, job.id)
+        : '';
+      console.log('Log in fetchJobLogs:', log);
+      if (typeof log === 'string') {
+        log = stripAnsi(log)
+          .split('\n')
+          .map((line) =>
+            line
+              .replace(/section_start:\d+:[^A-Z]*/, '')
+              .replace(/section_end:\d+:[^A-Z]*/, ''),
+          )
+          .join('\n');
+      }
+      return { jobName: job.name, log };
     });
     return (await Promise.all(logPromises)).reverse();
   };
@@ -97,9 +135,14 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
         setPipelineLoading(true);
         const pipelineId = await digitalTwin.execute();
         setExecutionStatus(digitalTwin.executionStatus());
-        setExecutionCount(prevCount => prevCount + 1);
+        setExecutionCount((prevCount) => prevCount + 1);
 
-        if (gitlabInstance && gitlabInstance.projectId && digitalTwin?.pipelineId && pipelineId) {
+        if (
+          gitlabInstance &&
+          gitlabInstance.projectId &&
+          digitalTwin?.pipelineId &&
+          pipelineId
+        ) {
           checkFirstPipelineStatus(gitlabInstance.projectId, pipelineId);
         }
       } else {
@@ -111,13 +154,24 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
   const handleStop = async () => {
     if (digitalTwin) {
       try {
-        if (gitlabInstance && gitlabInstance.projectId && digitalTwin.pipelineId) {
-          await digitalTwin.stop(gitlabInstance.projectId, digitalTwin.pipelineId);
+        if (
+          gitlabInstance &&
+          gitlabInstance.projectId &&
+          digitalTwin.pipelineId
+        ) {
+          await digitalTwin.stop(
+            gitlabInstance.projectId,
+            digitalTwin.pipelineId,
+          );
         }
-        setSnackbarMessage(`${formatName(props.name)} (Run #${executionCount}) execution stopped successfully`);
+        setSnackbarMessage(
+          `${formatName(props.name)} (Run #${executionCount}) execution stopped successfully`,
+        );
         setSnackbarSeverity('success');
       } catch (error) {
-        setSnackbarMessage(`Failed to stop ${formatName(props.name)} (Run #${executionCount}) execution`);
+        setSnackbarMessage(
+          `Failed to stop ${formatName(props.name)} (Run #${executionCount}) execution`,
+        );
         setSnackbarSeverity('error');
       } finally {
         setSnackbarOpen(true);
@@ -150,27 +204,42 @@ const ExecuteDigitalTwin: React.FC<{ name: string }> = (props) => {
 
   return (
     <>
-    {description? (
-      <DigitalTwinCard name={formatName(props.name)} description={description}
-      buttons={
-        <CardActions style={{ padding: '16px', marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            size="small"
-            color="primary"
-            onClick={handleButtonClick}
-            style={{ flexShrink: 0 }}
-          >
-            {buttonText}
-          </Button>
-          <Button size="small" color="primary" onClick={handleToggleLog} disabled={!pipelineCompleted}>
-            Log
-          </Button>
-          {pipelineLoading ? <CircularProgress size={24}/> : null}
-        </CardActions>}
-      />
-    ) : (
-      <Typography>Loading...</Typography>
-    )}
+      {description ? (
+        <DigitalTwinCard
+          name={formatName(props.name)}
+          description={description}
+          buttons={
+            <CardActions
+              style={{
+                padding: '16px',
+                marginTop: 'auto',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <Button
+                size="small"
+                color="primary"
+                onClick={handleButtonClick}
+                style={{ flexShrink: 0 }}
+              >
+                {buttonText}
+              </Button>
+              <Button
+                size="small"
+                color="primary"
+                onClick={handleToggleLog}
+                disabled={!pipelineCompleted}
+              >
+                Log
+              </Button>
+              {pipelineLoading ? <CircularProgress size={24} /> : null}
+            </CardActions>
+          }
+        />
+      ) : (
+        <Typography>Loading...</Typography>
+      )}
 
       <Dialog open={showLog} onClose={handleCloseLog} maxWidth="md">
         <DialogTitle>{`${formatName(props.name)} - log (run #${executionCount})`}</DialogTitle>

@@ -62,7 +62,10 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
       const value = window.env[key];
       if (value !== undefined) {
         const keyWithoutPrefix = key.slice(prefix.length);
-        const linkValue = keyWithoutPrefix === 'DT_PREVIEW' ? value : useUserLink(useAppURL(), value);
+        const linkValue =
+          keyWithoutPrefix === 'DT_PREVIEW'
+            ? value
+            : useUserLink(useAppURL(), value);
         workbenchLinkValues.push({
           key: keyWithoutPrefix,
           link: linkValue,

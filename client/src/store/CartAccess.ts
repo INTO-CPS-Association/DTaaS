@@ -3,7 +3,6 @@ import { Asset } from 'components/asset/Asset';
 import * as cart from './cart.slice';
 import { RootState } from './store';
 
-
 function useCart() {
   const dispatch = useDispatch();
   const state = useSelector((store: RootState) => store.cart);

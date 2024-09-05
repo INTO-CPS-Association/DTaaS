@@ -1,5 +1,5 @@
 export interface Asset {
-    name: string;
-    description?: string;
-    path: string;
-  }
+  name: string;
+  description?: string;
+  path: string;
+}

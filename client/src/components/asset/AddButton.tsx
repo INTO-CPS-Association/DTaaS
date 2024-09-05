@@ -9,7 +9,9 @@ function AddButton(asset: Asset) {
     <Button
       variant="contained"
       fullWidth
-      disabled={!!state.assets.find((a: { path: string; }) => a.path === asset.path)}
+      disabled={
+        !!state.assets.find((a: { path: string }) => a.path === asset.path)
+      }
       size="small"
       color="primary"
       onClick={() => {
