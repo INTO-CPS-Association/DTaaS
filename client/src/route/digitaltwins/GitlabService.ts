@@ -26,14 +26,6 @@ class GitlabService {
       }
       return [];
     } catch (error) {
-      if (error instanceof Error && error.message.includes('NetworkError')) {
-        console.log(
-          'Error: There is no ‘DTaaS’ group associated with your account.',
-          error,
-        );
-        return 'There is no ‘DTaaS’ group associated with your GitLab account.';
-      }
-      console.error('An error occurred:', error);
       return 'An error occurred';
     }
   }
