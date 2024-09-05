@@ -8,7 +8,6 @@ import DigitalTwinsPreview from './route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
-
 export const routes = [
   {
     path: '/',
