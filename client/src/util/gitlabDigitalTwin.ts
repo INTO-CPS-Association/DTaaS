@@ -2,40 +2,21 @@ import { GitlabInstance } from './gitlab';
 
 const RUNNER_TAG = 'linux';
 
-const RUNNER_TAG = 'linux';
-
 class DigitalTwin {
-    public DTName: string;
+  public DTName: string;
 
-    public description: string = '';
+  public description: string = '';
 
-    public gitlabInstance: GitlabInstance;
-    
-    public pipelineId: number | null = null;
-    
-    private lastExecutionStatus: string | null = null;
+  public gitlabInstance: GitlabInstance;
 
-    constructor(DTName: string, gitlabInstance: GitlabInstance) {
-        this.DTName = DTName;
-        this.gitlabInstance = gitlabInstance;
-    } 
+  public pipelineId: number | null = null;
 
-    async init() {
-        if (this.gitlabInstance.projectId) {
-            const readmePath = `digital_twins/${this.DTName}/description.md`;
-            const fileData = await this.gitlabInstance.api.RepositoryFiles.show(this.gitlabInstance.projectId, readmePath, 'main');
-            this.description = atob(fileData.content);
-        } else {
-            this.description = 'Error fetching description.';
-        }
-    }
+  public lastExecutionStatus: string | null = null;
 
-    async execute(): Promise<number | null> {
-        if (!this.gitlabInstance.projectId || !this.gitlabInstance.triggerToken) {
-            this.lastExecutionStatus = 'error';
-            return null;
-        }
-    }
+  constructor(DTName: string, gitlabInstance: GitlabInstance) {
+    this.DTName = DTName;
+    this.gitlabInstance = gitlabInstance;
+  }
 
   async init() {
     if (this.gitlabInstance.projectId) {
