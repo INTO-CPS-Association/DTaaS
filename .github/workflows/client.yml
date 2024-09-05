@@ -27,8 +27,9 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Install dependencies
+      - name: Install dependencies and setup env
         run: |
+          yarn config:test
           yarn install
           yarn playwright install --with-deps
 

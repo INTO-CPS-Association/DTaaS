@@ -1,24 +1,28 @@
 # End-to-End (E2E) Tests
 
-The E2E tests require a functional gitlab oauth setup, traefik gateway and a
-live react client website. The E2E tests do not launch the react client website.
-So it is important to launch the website using `yarn start`. Keep this server
-running while performing the E2E tests with `yarn test:e2e` command.
+The E2E tests require playwright test runner, an on-premise GitLab OAuth setup and
+configured `config/test.js` and `test/.env` files. When everything is set up, you
+can run the tests by running `yarn test:e2e`.
+
+By default, Playwright launches the react client website as specified in `config/test.js`
+and terminates it afterwards. Running `yarn test:e2e:int` allows you to skip this so
+you can host the website yourself.
+
+## Playwright
 
 The E2E tests use playwright test runner. You also need to have the software
-installed. If it is not installed, you can install with the following command.
+installed. If it is not installed, you can install it with the following command.
 
 ```bash
-sudo npx playwright install-deps
+yarn playwright install --with-deps
 ```
 
 ## OAuth Setup
 
-You can follow the instructions in
-[authorization page](../../docs/admin/client/auth.md) to setup oauth for the
+You can follow the instructions in [authorization page](../../docs/admin/client/auth.md) to setup OAuth for the
 react client website. Remember to add the `http://localhost:4000` as callback URL
-in the oauth application. The gitlab will still be running on a remote machine.
-It is not possible to run both the gitlab and react client website on localhost.
+in the OAuth application. The GitLab will still be running on a remote machine.
+It is not possible to run both the GitLab and react client website on localhost.
 
 ## config/test.js file
 
@@ -35,8 +39,7 @@ the details of your testing environment. For instance, you need to adjust:
 * `REACT_APP_LOGOUT_REDIRECT_URI`
 
 to reflect your test setup. More information on about the environment settings is
-available in [authorization](../../docs/admin/client/auth.md) and
-[client deployment](../../docs/admin/client/CLIENT.md) pages.
+available in [authorization](../../docs/admin/client/auth.md) and [client deployment](../../docs/admin/client/CLIENT.md) pages.
 
 Here's an example of relevant values for variables. This example is suitable for
 testing on developer computer.
@@ -47,6 +50,8 @@ REACT_APP_AUTH_AUTHORITY="http://gitlab.foo.com"
 REACT_APP_REDIRECT_URI="http://localhost:4000/Library"
 REACT_APP_LOGOUT_REDIRECT_URI="http://localhost:4000"
 ```
+
+Finally, run `yarn config:test` to copy the config file into the `build` and `public` folders.
 
 ## env file
 
@@ -77,7 +82,8 @@ REACT_APP_URL='http://localhost:4000'
 
 ## Testing on localhost
 
-There are two possible testing setups you can create.
+If you want to handle starting the react client server yourself, there are two
+possible testing setups you can create.
 
 1. Host website on the developer computer and test from developer computer
 1. Host website on the integration server and test from the integration server
@@ -127,7 +133,7 @@ credentials on `gitlab.foo.com`.
 ## Testing on the integration server
 
 In this test setup, the DTaaS application is running at `https://foo.com` and
-the gitlab instance is running at `https://gitlab.foo.com`. The E2E test shall
+the GitLab instance is running at `https://gitlab.foo.com`. The E2E test shall
 be run from the developer computer. The codebase commit should be the same on
 both the developer computer and integration server.
 
@@ -150,7 +156,7 @@ window.env = {
   REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
   REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
   REACT_APP_LOGOUT_REDIRECT_UR: 'https://foo.com/',
-  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  REACT_APP_GitLab_SCOPES: 'openid profile read_user read_repository api',
 };
 ```
 
@@ -171,12 +177,19 @@ gateway and the client website hosted behind traefik.
 
 ## Running the Tests
 
-Once you've properly set up your .env file, you can now run the end-to-end tests.
+Once you've properly set up your .env file, you can run the end-to-end tests as follows:
 
 ```bash
 yarn test:e2e
 ```
+Or with manual website launch:
+```bash
+yarn test:e2e:int
+```
 
-This command launches the test runner and executes all end-to-end tests.
+These commands launch the test runner and execute all end-to-end tests. The first
+command also runs the `yarn start` command to start the client website
+and terminates it after testing.
+
 Make sure you have an active internet connection while running these tests,
 as they simulate real user interactions with your GitLab account.

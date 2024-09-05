@@ -2,19 +2,9 @@ import { CoverageReportOptions } from 'monocart-coverage-reports';
 
 // https://github.com/cenfun/monocart-coverage-reports
 const coverageOptions: CoverageReportOptions = {
-  name: 'Playwright Monocart Coverage Report',
+  name: 'Playwright Monocart Coverage Reports',
 
-  reports: ['codecov', 'v8'],
-
-  // entryFilter: {
-  //     '**/node_modules/**': false,
-  //     '**/*.js': true
-  // },
-
-  // sourceFilter: {
-  //     '**/node_modules/**': false,
-  //     '**/*.js': true
-  // },
+  reports: ['codecov', 'v8', 'console-summary'],
 
   outputDir: './coverage/e2e',
 };
