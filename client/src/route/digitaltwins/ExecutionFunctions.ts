@@ -155,13 +155,11 @@ export const checkSecondPipelineStatus = async (
       gitlabInstance.projectId!,
       pipelineId,
     );
-    console.log(jobs);
     const logPromises = jobs.map(async (job) => {
       let log = await gitlabInstance.getJobTrace(
         gitlabInstance.projectId!,
         job.id,
       );
-      console.log('Log in fetchJobLogs:', log);
       if (typeof log === 'string') {
         log = stripAnsi(log)
           .split('\n')

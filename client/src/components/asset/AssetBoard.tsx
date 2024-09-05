@@ -31,7 +31,7 @@ if (props.error) {
 
 return (
   <Grid {...outerGridContainerProps}>
-    {props.subfolders.map((asset, index) => (
+    {props.subfolders.map((asset) => (
       <Grid key={asset.path} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
         <AssetCardExecute asset={asset} />
       </Grid>
