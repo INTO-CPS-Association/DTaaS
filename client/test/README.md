@@ -9,9 +9,10 @@ say `https://foo.com` using `yarn test:e2e:ext`. Remember to set the
 environment variable in `config/test.js` to the URL of the hosted DTaaS
 application. An example is shown below:
 
-```if (typeof window !== 'undefined') {
+```js
+if (typeof window !== 'undefined') {
   window.env = {
-    REACT_APP_ENVIRONMENT: 'prod',
+    REACT_APP_ENVIRONMENT: 'test',
     REACT_APP_URL: 'https://foo.com/',
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',
