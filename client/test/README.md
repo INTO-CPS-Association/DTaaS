@@ -4,9 +4,31 @@ The E2E tests require playwright test runner, an on-premise GitLab OAuth setup a
 configured `config/test.js` and `test/.env` files. When everything is set up, you
 can run the tests by running `yarn test:e2e`.
 
-By default, Playwright launches the react client website as specified in `config/test.js`
-and terminates it afterwards. Running `yarn test:e2e:int` allows you to skip this so
-you can host the website yourself.
+It is also possible to test the hosted DTaaS applications hosted at a URL,
+say `https://foo.com` using `yarn test:e2e:ext`. Remember to set the
+environment variable in `config/test.js` to the URL of the hosted DTaaS
+application. An example is shown below:
+
+```if (typeof window !== 'undefined') {
+  window.env = {
+    REACT_APP_ENVIRONMENT: 'prod',
+    REACT_APP_URL: 'https://foo.com/',
+    REACT_APP_URL_BASENAME: '',
+    REACT_APP_URL_DTLINK: '/lab',
+    REACT_APP_URL_LIBLINK: '',
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+
+    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+    REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
+    REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
+    REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  };
+};
+```
 
 ## Playwright
 
@@ -19,7 +41,9 @@ yarn playwright install --with-deps
 
 ## OAuth Setup
 
-You can follow the instructions in [authorization page](../../docs/admin/client/auth.md) to setup OAuth for the
+You can follow the instructions in
+[authorization page](../../docs/admin/client/auth.md)
+to setup OAuth for the
 react client website. Remember to add the `http://localhost:4000` as callback URL
 in the OAuth application. The GitLab will still be running on a remote machine.
 It is not possible to run both the GitLab and react client website on localhost.
@@ -39,7 +63,8 @@ the details of your testing environment. For instance, you need to adjust:
 * `REACT_APP_LOGOUT_REDIRECT_URI`
 
 to reflect your test setup. More information on about the environment settings is
-available in [authorization](../../docs/admin/client/auth.md) and [client deployment](../../docs/admin/client/CLIENT.md) pages.
+available in [authorization](../../docs/admin/client/auth.md) and
+[client deployment](../../docs/admin/client/CLIENT.md) pages.
 
 Here's an example of relevant values for variables. This example is suitable for
 testing on developer computer.
@@ -51,7 +76,8 @@ REACT_APP_REDIRECT_URI="http://localhost:4000/Library"
 REACT_APP_LOGOUT_REDIRECT_URI="http://localhost:4000"
 ```
 
-Finally, run `yarn config:test` to copy the config file into the `build` and `public` folders.
+Finally, run `yarn config:test` to copy the config file into the `build`
+and `public` folders.
 
 ## env file
 
@@ -182,9 +208,11 @@ Once you've properly set up your .env file, you can run the end-to-end tests as 
 ```bash
 yarn test:e2e
 ```
+
 Or with manual website launch:
+
 ```bash
-yarn test:e2e:int
+yarn test:e2e:ext
 ```
 
 These commands launch the test runner and execute all end-to-end tests. The first
