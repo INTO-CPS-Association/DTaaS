@@ -21,13 +21,12 @@ class GitlabDriver {
     console.log('Subfolders:', subfolders);
 
     const dtName = subfolders[0].name;
-    const runnerTag = 'dtaas';
 
     const triggerToken = await gitlabInstance.getTriggerToken(projectId);
     console.log('Trigger token:', triggerToken);
 
     const digitalTwin = new DigitalTwin(dtName, gitlabInstance);
-    const result = await digitalTwin.execute(runnerTag);
+    const result = await digitalTwin.execute();
 
     console.log('Execution Result:', result);
 

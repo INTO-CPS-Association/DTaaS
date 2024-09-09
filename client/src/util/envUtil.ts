@@ -62,14 +62,22 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
       const value = window.env[key];
       if (value !== undefined) {
         const keyWithoutPrefix = key.slice(prefix.length);
+        const linkValue =
+          keyWithoutPrefix === 'DT_PREVIEW'
+            ? value
+            : useUserLink(useAppURL(), value);
         workbenchLinkValues.push({
           key: keyWithoutPrefix,
-          link: useUserLink(useAppURL(), value),
+          link: linkValue,
         });
       }
     });
 
   return workbenchLinkValues;
+}
+
+export function getDTPagePreviewLink(): string {
+  return useUserLink(useAppURL(), 'preview/digitaltwins');
 }
 
 export function getClientID(): string {

@@ -9,7 +9,6 @@
     "types": ["react", "node"], //use react and node types
     "module": "esnext", //use esnext modules
     "moduleResolution": "node", //use node module resolution strategy node
-    "resolveJsonModule": true,
     "experimentalDecorators": true, //allow experimental decorators for es7
     "declaration": false, //don't generate declaration '.d.ts' files
     "removeComments": true, //remove comments from build
@@ -26,7 +25,6 @@
   },
   "exclude": ["**/node_modules/*", "babel.config.cjs", "dist", "test"],
   "include": [
-    "./src/util/gitlab.json",
     "./src/util/gitlab*.ts",
     "./test/unitTests/Util/gitlab*.test.ts"
   ],

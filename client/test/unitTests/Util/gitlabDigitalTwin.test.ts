@@ -1,6 +1,6 @@
 import { ProjectSchema, PipelineTriggerTokenSchema } from '@gitbeaker/rest';
 import DigitalTwin from 'util/gitlabDigitalTwin';
-import GitlabInstance from 'util/gitlab';
+import { GitlabInstance } from 'util/gitlab';
 
 type LogEntry = { status: string; DTName: string; runnerTag: string };
 
@@ -39,7 +39,7 @@ describe('DigitalTwin', () => {
     mockApi.Groups.allProjects.mockResolvedValue([]);
     (mockGitlabInstance.getProjectId as jest.Mock).mockResolvedValue(null);
 
-    const success = await dt.execute('test-runnerTag');
+    const success = await dt.execute();
 
     expect(success).toBe(false);
     expect(dt.executionStatus()).toBe('error');
@@ -54,7 +54,7 @@ describe('DigitalTwin', () => {
     mockApi.PipelineTriggerTokens.all.mockResolvedValue([]);
     (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(null);
 
-    const success = await dt.execute('test-runnerTag');
+    const success = await dt.execute();
 
     expect(success).toBe(false);
     expect(dt.executionStatus()).toBe('error');
@@ -77,7 +77,7 @@ describe('DigitalTwin', () => {
       undefined,
     );
 
-    const success = await dt.execute('test-runnerTag');
+    const success = await dt.execute();
 
     expect(success).toBe(true);
     expect(dt.executionStatus()).toBe('success');
@@ -105,7 +105,7 @@ describe('DigitalTwin', () => {
       'String error message',
     );
 
-    const success = await dt.execute('test-runnerTag');
+    const success = await dt.execute();
 
     expect(success).toBe(false);
     expect(dt.executionStatus()).toBe('error');
@@ -130,7 +130,7 @@ describe('DigitalTwin', () => {
       new Error('Error instance message'),
     );
 
-    const success = await dt.execute('test-runnerTag');
+    const success = await dt.execute();
 
     expect(success).toBe(false);
 
@@ -147,7 +147,7 @@ describe('DigitalTwin', () => {
     ]);
     mockApi.PipelineTriggerTokens.trigger.mockResolvedValue(undefined);
 
-    await dt.execute('test-runnerTag');
+    await dt.execute();
 
     (mockGitlabInstance.executionLogs as jest.Mock).mockReturnValue([
       { status: 'success', DTName: 'test-DTName', runnerTag: 'test-runnerTag' },
