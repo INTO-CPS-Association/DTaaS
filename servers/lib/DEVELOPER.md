@@ -43,6 +43,25 @@ The URL endpoint for this microservice is located at: `localhost:PORT/lib`
 
 The [API](./API.md) page shows sample queries and responses.
 
+## Manual testing
+
+As of now, some features require manual testing or attention.
+
+### CloudCMD
+
+Due to how CloudCMD works,
+it is required to manually test with `LOCAL_PATH` as an absolute path
+e.g. `C:\DTaaS\files` and as a relative path e.g. `..\..\files`.
+Use the paths relavant to your OS.
+
+### PM2
+
+the pm2 might not close spawned processes correctly, 
+therefore please use the following command to kill a process.
+`pm2 del <id>`.
+
+**NOTE:** to see the processes spawned by pm2 use `pm2 list`
+
 ## :package: :ship: Packages
 
 ### Docker images
