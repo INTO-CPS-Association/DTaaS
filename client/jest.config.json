@@ -24,8 +24,7 @@
     "build",
     "src/index.tsx",
     "src/AppProvider.tsx",
-    "src/store/store.ts",
-    "src/util/gitlabDriver.ts"
+    "src/store/store.ts"
   ],
   "modulePathIgnorePatterns": [
     "test/e2e",

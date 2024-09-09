@@ -6,6 +6,7 @@ import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import TabIcon from '@mui/icons-material/Tab';
 
 type LinkIconsType = {
   [key: string]: { icon: React.ReactElement; name: string | undefined };
@@ -27,6 +28,10 @@ const LinkIcons: LinkIconsType = {
   JUPYTERNOTEBOOK: {
     icon: <NoteAltOutlinedIcon />,
     name: 'Jupyter Notebook',
+  },
+  DT_PREVIEW: {
+    icon: <TabIcon />,
+    name: 'Digital Twins page preview',
   },
   GITHUB: {
     icon: <GitHubIcon />,
