@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import GitlabInstance from './gitlab.js';
+import { GitlabInstance } from './gitlab.js';
 import DigitalTwin from './gitlabDigitalTwin.js';
 import config from './gitlab.json' assert { type: 'json' };
 

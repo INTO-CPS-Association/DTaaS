@@ -12,7 +12,8 @@ const createDTTab = (
   subfolders: Asset[],
   error: string | null,
   gitlabInstance: GitlabService,
-): TabData[] => tabs
+): TabData[] =>
+  tabs
     .filter((tab) => tab.label === 'Execute')
     .map((tab) => ({
       label: tab.label,
