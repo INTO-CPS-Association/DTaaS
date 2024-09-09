@@ -56,7 +56,7 @@ Use the paths relavant to your OS.
 
 ### PM2
 
-the pm2 might not close spawned processes correctly, 
+the pm2 might not close spawned processes correctly,
 therefore please use the following command to kill a process.
 `pm2 del <id>`.
 
