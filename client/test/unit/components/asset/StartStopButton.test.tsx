@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import StartStopButton from 'components/asset/StartStopButton';
-import { handleButtonClick } from 'route/digitaltwins/ExecutionFunctions';
+import { handleButtonClick } from 'route/digitaltwins/pipelineHandler';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import '@testing-library/jest-dom';
@@ -128,12 +128,12 @@ describe('StartStopButton', () => {
         digitalTwin,
         setSnackbarMessage,
         setSnackbarSeverity,
-        setSnackbarOpen
+        setSnackbarOpen,
       ) => {
         setSnackbarMessage('Execution started successfully');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-      }
+      },
     );
 
     render(

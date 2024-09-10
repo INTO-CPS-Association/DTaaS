@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, Dispatch, SetStateAction } from 'react';
 import { AlertColor, Button, CircularProgress } from '@mui/material';
-import { handleButtonClick } from 'route/digitaltwins/ExecutionFunctions';
+import { handleButtonClick } from 'route/digitaltwins/pipelineHandler';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 
