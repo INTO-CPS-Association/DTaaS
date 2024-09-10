@@ -6,6 +6,10 @@ const tabs: ITabs[] = [
     body: `Create digital twins from tools provided within user workspaces. Each digital twin will have one directory. It is suggested that user provide one bash shell script to run their digital twin. Users can create the required scripts and other files from tools provided in Workbench page.`,
   },
   {
+    label: 'Manage',
+    body: `Read the complete description of digital twins. If necessary, users can delete a digital twin, removing it from the workspace with all its associated data. Users can also reconfigure the digital twin, through a link that redirects to the Create tab.`,
+  },
+  {
     label: 'Execute',
     body: 'This page demonstrates integration of DTaaS with gitlab CI/CD workflows. The feature is experimental and requires certain gitlab setup in order for it to work.',
   },

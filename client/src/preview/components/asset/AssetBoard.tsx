@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Grid } from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
 import { Asset } from 'preview/components/asset/Asset';
-import { AssetCardExecute } from 'preview/components/asset/AssetCard';
+import { AssetCardManage, AssetCardExecute } from 'preview/components/asset/AssetCard';
 
 const outerGridContainerProps = {
   container: true,
@@ -21,6 +21,7 @@ const outerGridContainerProps = {
  * @returns
  */
 function AssetBoard(props: {
+  tab: string;
   subfolders: Asset[];
   gitlabInstance: GitlabInstance;
   error: string | null;
@@ -41,7 +42,11 @@ function AssetBoard(props: {
           lg={3}
           sx={{ minWidth: 250 }}
         >
-          <AssetCardExecute asset={asset} />
+          {props.tab === 'Execute' ? (
+            <AssetCardExecute asset={asset} />
+          ) : (
+            <AssetCardManage asset={asset} />
+          )}
         </Grid>
       ))}
     </Grid>
