@@ -18,7 +18,7 @@ jest.mock('util/envUtil', () => ({
   getAuthority: jest.fn(() => 'https://example.com'),
 }));
 
-jest.mock('')
+jest.mock('');
 
 const assetsMock: Asset[] = [
   { name: 'Asset1', path: 'path1', description: 'Description1' },
@@ -31,14 +31,23 @@ jest.mock('util/gitlab', () => ({
   })),
 }));
 
-const mockGitlabInstance = new GitlabInstance('username', 'authority', 'access_token');
+const mockGitlabInstance = new GitlabInstance(
+  'username',
+  'authority',
+  'access_token',
+);
 
 describe('AssetBoard', () => {
   it('renders AssetCard components for each asset', () => {
     render(
-    <Provider store={store}>
-    <AssetBoard subfolders={assetsMock} gitlabInstance={mockGitlabInstance} error={null} />);
-    </Provider>
+      <Provider store={store}>
+        <AssetBoard
+          subfolders={assetsMock}
+          gitlabInstance={mockGitlabInstance}
+          error={null}
+        />
+        );
+      </Provider>,
     );
     const cards = screen.getAllByText(/Description/);
     expect(cards).toHaveLength(assetsMock.length);
@@ -46,12 +55,24 @@ describe('AssetBoard', () => {
 
   it('displays an error message when error prop is provided', () => {
     const errorMessage = 'Something went wrong!';
-    render(<AssetBoard subfolders={[]} gitlabInstance={mockGitlabInstance} error={errorMessage} />);
+    render(
+      <AssetBoard
+        subfolders={[]}
+        gitlabInstance={mockGitlabInstance}
+        error={errorMessage}
+      />,
+    );
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
   it('renders correctly with no assets', () => {
-    render(<AssetBoard subfolders={[]} gitlabInstance={mockGitlabInstance} error={null} />);
+    render(
+      <AssetBoard
+        subfolders={[]}
+        gitlabInstance={mockGitlabInstance}
+        error={null}
+      />,
+    );
     const cards = screen.queryAllByText(/Description/);
     expect(cards).toHaveLength(0);
   });

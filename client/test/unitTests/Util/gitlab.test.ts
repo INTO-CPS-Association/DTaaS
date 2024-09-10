@@ -42,7 +42,9 @@ describe('GitlabInstance', () => {
   it('should initialize with a project ID and trigger token', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: 'DTaaS' });
     mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }]);
-    mockApi.PipelineTriggerTokens.all.mockResolvedValue([{ token: 'test-token' }]);
+    mockApi.PipelineTriggerTokens.all.mockResolvedValue([
+      { token: 'test-token' },
+    ]);
 
     await gitlab.init();
 
@@ -84,9 +86,13 @@ describe('GitlabInstance', () => {
     const dtName = 'test-dt';
     const readmePath = `digital_twins/${dtName}/description.md`;
 
-    mockApi.RepositoryFiles.show.mockRejectedValue(new Error('Failed to fetch'));
+    mockApi.RepositoryFiles.show.mockRejectedValue(
+      new Error('Failed to fetch'),
+    );
 
-    await expect(gitlab.getDTDescription(dtName)).rejects.toThrow('Failed to fetch');
+    await expect(gitlab.getDTDescription(dtName)).rejects.toThrow(
+      'Failed to fetch',
+    );
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
       gitlab.projectId!,
       readmePath,
@@ -102,8 +108,11 @@ describe('GitlabInstance', () => {
       { name: 'file1', path: 'digital_twins/file1', type: 'blob' },
     ];
 
-    gitlab.getDTDescription = jest.fn()
-      .mockImplementation((name: string) => Promise.resolve(`Description for ${name}`));
+    gitlab.getDTDescription = jest
+      .fn()
+      .mockImplementation((name: string) =>
+        Promise.resolve(`Description for ${name}`),
+      );
 
     mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
 
@@ -111,13 +120,24 @@ describe('GitlabInstance', () => {
 
     expect(subfolders).toHaveLength(2);
     expect(subfolders).toEqual([
-      { name: 'subfolder1', path: 'digital_twins/subfolder1', description: 'Description for subfolder1' },
-      { name: 'subfolder2', path: 'digital_twins/subfolder2', description: 'Description for subfolder2' },
+      {
+        name: 'subfolder1',
+        path: 'digital_twins/subfolder1',
+        description: 'Description for subfolder1',
+      },
+      {
+        name: 'subfolder2',
+        path: 'digital_twins/subfolder2',
+        description: 'Description for subfolder2',
+      },
     ]);
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(projectId, {
-      path: 'digital_twins',
-      recursive: false,
-    });
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
+      projectId,
+      {
+        path: 'digital_twins',
+        recursive: false,
+      },
+    );
   });
 
   it('should return execution logs', () => {
@@ -141,7 +161,10 @@ describe('GitlabInstance', () => {
   it('should fetch pipeline jobs successfully', async () => {
     const projectId = 1;
     const pipelineId = 2;
-    const jobs = [{ id: 1, name: 'job1' }, { id: 2, name: 'job2' }];
+    const jobs = [
+      { id: 1, name: 'job1' },
+      { id: 2, name: 'job2' },
+    ];
 
     mockApi.Jobs.all.mockResolvedValue(jobs);
 

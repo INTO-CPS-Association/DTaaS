@@ -10,15 +10,13 @@ describe('LogButton', () => {
   });
 
   it('calls setShowLog with the correct value when clicked', () => {
-    render(
-      <LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />
-    );
+    render(<LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />);
 
     fireEvent.click(screen.getByText('Log'));
 
     expect(mockSetShowLog).toHaveBeenCalledTimes(1);
     expect(mockSetShowLog).toHaveBeenCalledWith(expect.any(Function));
-    
+
     const toggleFunction = mockSetShowLog.mock.calls[0][0];
     expect(toggleFunction(true)).toBe(false);
   });

@@ -63,7 +63,7 @@ class DigitalTwin {
     }
   }
 
-  private isValidInstance(): boolean {
+  isValidInstance(): boolean {
     return !!(
       this.gitlabInstance.projectId && this.gitlabInstance.triggerToken
     );
@@ -79,7 +79,7 @@ class DigitalTwin {
     );
   }
 
-  private logSuccess(): void {
+  logSuccess(): void {
     this.gitlabInstance.logs.push({
       status: 'success',
       DTName: this.DTName,

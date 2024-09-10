@@ -33,7 +33,11 @@ function StartStopButton({
   return (
     <>
       {digitalTwin?.pipelineLoading ? (
-        <CircularProgress size={22} style={{ marginRight: '8px' }} data-testid="circular-progress"/>
+        <CircularProgress
+          size={22}
+          style={{ marginRight: '8px' }}
+          data-testid="circular-progress"
+        />
       ) : null}{' '}
       <Button
         variant="contained"

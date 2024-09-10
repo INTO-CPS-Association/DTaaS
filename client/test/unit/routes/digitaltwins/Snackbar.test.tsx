@@ -12,7 +12,7 @@ describe('CustomSnackbar', () => {
           snackbarMessage="Test Message"
           snackbarSeverity="success"
           setSnackbarOpen={jest.fn()}
-        />
+        />,
       );
     });
 
@@ -27,10 +27,10 @@ describe('CustomSnackbar', () => {
         snackbarMessage="Test Message"
         snackbarSeverity="success"
         setSnackbarOpen={jest.fn()}
-      />
+      />,
     );
 
-    expect(container.querySelector('div')).toBeNull(); 
+    expect(container.querySelector('div')).toBeNull();
   });
 
   it('calls handleCloseSnackbar when the snackbar is closed through the alert button', () => {
@@ -42,7 +42,7 @@ describe('CustomSnackbar', () => {
           snackbarMessage="Test Message"
           snackbarSeverity="error"
           setSnackbarOpen={setSnackbarOpen}
-        />
+        />,
       );
     });
 
@@ -60,7 +60,7 @@ describe('CustomSnackbar', () => {
           snackbarMessage="Test Message"
           snackbarSeverity="warning"
           setSnackbarOpen={setSnackbarOpen}
-        />
+        />,
       );
     });
 

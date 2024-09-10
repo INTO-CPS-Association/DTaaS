@@ -11,6 +11,13 @@ import {
 } from 'store/digitalTwin.slice';
 import { useDispatch } from 'react-redux';
 
+interface PipelineStatusParams {
+  setButtonText: Dispatch<SetStateAction<string>>;
+  digitalTwin: DigitalTwin;
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>;
+  dispatch: ReturnType<typeof useDispatch>;
+}
+
 export const handleButtonClick = (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
@@ -44,6 +51,45 @@ export const handleButtonClick = (
   }
 };
 
+const startPipeline = async (
+  digitalTwin: DigitalTwin,
+  setSnackbarMessage: Dispatch<SetStateAction<string>>,
+  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
+  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  await digitalTwin.execute();
+  dispatch(incrementExecutionCount({ assetName: digitalTwin.DTName }));
+  const executionStatusMessage =
+    digitalTwin.lastExecutionStatus === 'success'
+      ? `Execution started successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount}). Wait until completion for the logs...`
+      : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`;
+  setSnackbarMessage(executionStatusMessage);
+  setSnackbarSeverity(
+    digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+  );
+  setSnackbarOpen(true);
+};
+
+const updatePipelineState = (
+  digitalTwin: DigitalTwin,
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  dispatch(
+    setPipelineCompleted({
+      assetName: digitalTwin.DTName,
+      pipelineCompleted: false,
+    }),
+  );
+  dispatch(
+    setPipelineLoading({
+      assetName: digitalTwin.DTName,
+      pipelineLoading: true,
+    }),
+  );
+};
+
 export const handleStart = async (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
@@ -57,127 +103,134 @@ export const handleStart = async (
   if (buttonText === 'Start') {
     setButtonText('Stop');
     setLogButtonDisabled(true);
-    dispatch(
-      setPipelineCompleted({
-        assetName: digitalTwin.DTName,
-        pipelineCompleted: false,
-      }),
+    updatePipelineState(digitalTwin, dispatch);
+    await startPipeline(
+      digitalTwin,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+      setLogButtonDisabled,
+      dispatch,
     );
-    dispatch(
-      setPipelineLoading({
-        assetName: digitalTwin.DTName,
-        pipelineLoading: true,
-      }),
-    );
-    await digitalTwin.execute();
-    dispatch(incrementExecutionCount({ assetName: digitalTwin.DTName }));
-    const executionStatusMessage =
-      digitalTwin.lastExecutionStatus === 'success'
-        ? `Execution started successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount}). Wait until completion for the logs...`
-        : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`;
-    setSnackbarMessage(executionStatusMessage);
-    setSnackbarSeverity(
-      digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
-    );
-    setSnackbarOpen(true);
-    checkFirstPipelineStatus(
+    const params: PipelineStatusParams = {
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
-    );
+    };
+    checkFirstPipelineStatus(params);
   } else {
     setButtonText('Start');
   }
 };
 
-export const checkFirstPipelineStatus = async (
-  setButtonText: Dispatch<SetStateAction<string>>,
-  digitalTwin: DigitalTwin,
-  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  dispatch: ReturnType<typeof useDispatch>,
-) => {
+export const checkFirstPipelineStatus = async ({
+  setButtonText,
+  digitalTwin,
+  setLogButtonDisabled,
+  dispatch,
+}: PipelineStatusParams) => {
   const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
     digitalTwin.gitlabInstance.projectId!,
     digitalTwin.pipelineId!,
   );
-
+  const params: PipelineStatusParams = {
+    setButtonText,
+    digitalTwin,
+    setLogButtonDisabled,
+    dispatch,
+  };
   if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
-    await checkSecondPipelineStatus(
-      setButtonText,
-      digitalTwin,
-      setLogButtonDisabled,
-      dispatch,
-    );
+    await checkSecondPipelineStatus(params);
   } else {
-    retryPipelineCheck(
-      setButtonText,
-      digitalTwin,
-      setLogButtonDisabled,
-      dispatch,
-    );
+    retryPipelineCheck(params);
   }
 };
 
-const retryPipelineCheck = (
-  setButtonText: Dispatch<SetStateAction<string>>,
-  digitalTwin: DigitalTwin,
-  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  dispatch: ReturnType<typeof useDispatch>,
-) => {
-  setTimeout(
-    () =>
-      checkFirstPipelineStatus(
-        setButtonText,
-        digitalTwin,
-        setLogButtonDisabled,
-        dispatch,
-      ),
-    5000,
-  );
+const retryPipelineCheck = ({
+  setButtonText,
+  digitalTwin,
+  setLogButtonDisabled,
+  dispatch,
+}: PipelineStatusParams) => {
+  const params: PipelineStatusParams = {
+    setButtonText,
+    digitalTwin,
+    setLogButtonDisabled,
+    dispatch,
+  };
+  setTimeout(() => checkFirstPipelineStatus(params), 5000);
 };
 
-export const checkSecondPipelineStatus = async (
+const updatePipelineStateOnCompletion = (
+  digitalTwin: DigitalTwin,
+  jobLogs: any[],
+  setButtonText: Dispatch<SetStateAction<string>>,
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  dispatch(setJobLogs({ assetName: digitalTwin.DTName, jobLogs }));
+  dispatch(
+    setPipelineCompleted({
+      assetName: digitalTwin.DTName,
+      pipelineCompleted: true,
+    }),
+  );
+  dispatch(
+    setPipelineLoading({
+      assetName: digitalTwin.DTName,
+      pipelineLoading: false,
+    }),
+  );
+  setButtonText('Start');
+  setLogButtonDisabled(false);
+};
+
+const retrySecondPipelineCheck = (
   setButtonText: Dispatch<SetStateAction<string>>,
   digitalTwin: DigitalTwin,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
+  const params: PipelineStatusParams = {
+    setButtonText,
+    digitalTwin,
+    setLogButtonDisabled,
+    dispatch,
+  };
+  setTimeout(() => checkSecondPipelineStatus(params), 5000);
+};
+
+export const checkSecondPipelineStatus = async ({
+  setButtonText,
+  digitalTwin,
+  setLogButtonDisabled,
+  dispatch,
+}: PipelineStatusParams) => {
   const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
     digitalTwin.gitlabInstance.projectId!,
     digitalTwin.pipelineId! + 1,
   );
+
   if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
     const pipelineIdJobs = digitalTwin.pipelineId! + 1;
     const jobLogs = await fetchJobLogs(
       digitalTwin.gitlabInstance,
       pipelineIdJobs,
     );
-    dispatch(setJobLogs({ assetName: digitalTwin.DTName, jobLogs }));
-    dispatch(
-      setPipelineCompleted({
-        assetName: digitalTwin.DTName,
-        pipelineCompleted: true,
-      }),
+    updatePipelineStateOnCompletion(
+      digitalTwin,
+      jobLogs,
+      setButtonText,
+      setLogButtonDisabled,
+      dispatch,
     );
-    dispatch(
-      setPipelineLoading({
-        assetName: digitalTwin.DTName,
-        pipelineLoading: false,
-      }),
-    );
-    setButtonText('Start');
-    setLogButtonDisabled(false);
   } else {
-    setTimeout(
-      () =>
-        checkSecondPipelineStatus(
-          setButtonText,
-          digitalTwin,
-          setLogButtonDisabled,
-          dispatch,
-        ),
-      5000,
+    retrySecondPipelineCheck(
+      setButtonText,
+      digitalTwin,
+      setLogButtonDisabled,
+      dispatch,
     );
   }
 };
@@ -210,6 +263,38 @@ export const fetchJobLogs = async (
   return (await Promise.all(logPromises)).reverse();
 };
 
+const updatePipelineStateOnStop = (
+  digitalTwin: DigitalTwin,
+  setButtonText: Dispatch<SetStateAction<string>>,
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  setButtonText('Start');
+  dispatch(
+    setPipelineCompleted({
+      assetName: digitalTwin.DTName,
+      pipelineCompleted: true,
+    }),
+  );
+  dispatch(
+    setPipelineLoading({
+      assetName: digitalTwin.DTName,
+      pipelineLoading: false,
+    }),
+  );
+};
+
+const setSnackbar = (
+  message: string,
+  severity: AlertColor,
+  setSnackbarMessage: Dispatch<SetStateAction<string>>,
+  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
+  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
+) => {
+  setSnackbarMessage(message);
+  setSnackbarSeverity(severity);
+  setSnackbarOpen(true);
+};
+
 export const handleStop = async (
   digitalTwin: DigitalTwin,
   setSnackbarMessage: Dispatch<SetStateAction<string>>,
@@ -220,30 +305,23 @@ export const handleStop = async (
 ) => {
   try {
     await stopPipelines(digitalTwin);
-    setSnackbarMessage(
+    setSnackbar(
       `Execution stopped successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`,
+      'success',
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
     );
-    setSnackbarSeverity('success');
   } catch (error) {
-    setSnackbarMessage(
+    setSnackbar(
       `Execution stop failed for ${digitalTwin.DTName} (Run #${digitalTwin.executionCount})`,
+      'error',
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
     );
-    setSnackbarSeverity('error');
   } finally {
-    setSnackbarOpen(true);
-    setButtonText('Start');
-    dispatch(
-      setPipelineCompleted({
-        assetName: digitalTwin.DTName,
-        pipelineCompleted: true,
-      }),
-    );
-    dispatch(
-      setPipelineLoading({
-        assetName: digitalTwin.DTName,
-        pipelineLoading: false,
-      }),
-    );
+    updatePipelineStateOnStop(digitalTwin, setButtonText, dispatch);
   }
 };
 

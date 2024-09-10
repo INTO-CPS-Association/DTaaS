@@ -106,13 +106,17 @@ export function itDisplaysContentOfTabs(
   });
 }
 
-export function itDisplaysContentOfExecuteTab(tabs: { label: string; body: string }[]) {
+export function itDisplaysContentOfExecuteTab(
+  tabs: { label: string; body: string }[],
+) {
   const executeTab = tabs.find((tab) => tab.label === 'Execute');
 
   if (!executeTab) return;
 
   it('should render the label of the Execute tab', () => {
-    expect(screen.getByRole('tab', { name: executeTab.label })).toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: executeTab.label }),
+    ).toBeInTheDocument();
   });
 
   it('should render the content of the clicked Execute tab', () => {
@@ -211,7 +215,6 @@ export function itHasCorrectExecuteTabNameInDTIframe(tablabels: string[]) {
     expect(tabElement).toBeTruthy();
   });
 }
-
 
 export function testStaticAccountProfile(mockUser: mockUserType) {
   const profilePicture = screen.getByTestId('profile-picture');

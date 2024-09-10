@@ -29,8 +29,7 @@ jest.mock('util/envUtil', () => ({
   getAuthority: jest.fn(() => 'https://example.com'),
 }));
 
-jest.mock('')
-
+jest.mock('');
 
 describe('AssetCard', () => {
   const assetMock = {
@@ -42,8 +41,9 @@ describe('AssetCard', () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
-        <AssetCardExecute asset={assetMock} />);
-      </Provider>  
+        <AssetCardExecute asset={assetMock} />
+        );
+      </Provider>,
     );
   });
 

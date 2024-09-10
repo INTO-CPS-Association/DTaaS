@@ -199,10 +199,10 @@ api, read_api, read_user, create_runner, k8s_proxy, read_repository, write_repos
 
 The token information needs to be updated in `config/gitlab.json`.
 
-In addition to the personal access token, you also need to create a 
+In addition to the personal access token, you also need to create a
 [pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html).
-This token is required to trigger pipelines by using the API. 
-You can create this token in your GitLab project's CI/CD settings under 
+This token is required to trigger pipelines by using the API.
+You can create this token in your GitLab project's CI/CD settings under
 the *Pipeline trigger tokens* section.
 
 Once the token configuration is in place, the gitlab code can be developed

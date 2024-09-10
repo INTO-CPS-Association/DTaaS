@@ -18,7 +18,7 @@ const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
   projectId: 1,
   triggerToken: 'test-token',
-  logs: [] as any[],
+  logs: [] as { jobName: string; log: string }[],
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
 } as unknown as GitlabInstance;
@@ -43,16 +43,20 @@ describe('DigitalTwin', () => {
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
       1,
       'digital_twins/test-DTName/README.md',
-      'main'
+      'main',
     );
   });
 
   it('should return error message if no README.md file exists', async () => {
-    (mockApi.RepositoryFiles.show as jest.Mock).mockRejectedValue(new Error('File not found'));
+    (mockApi.RepositoryFiles.show as jest.Mock).mockRejectedValue(
+      new Error('File not found'),
+    );
 
     const description = await dt.getFullDescription();
 
-    expect(description).toBe('There is no README.md file in the test-DTName GitLab folder');
+    expect(description).toBe(
+      'There is no README.md file in the test-DTName GitLab folder',
+    );
   });
 
   it('should return error message when projectId is missing', async () => {
@@ -63,9 +67,13 @@ describe('DigitalTwin', () => {
 
   it('should execute pipeline and return the pipeline ID', async () => {
     const mockResponse = { id: 123 };
-    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(mockResponse);
+    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
+      mockResponse,
+    );
     (mockGitlabInstance.getProjectId as jest.Mock).mockResolvedValue(1);
-    (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue('test-token');
+    (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(
+      'test-token',
+    );
 
     const pipelineId = await dt.execute();
 
@@ -75,28 +83,27 @@ describe('DigitalTwin', () => {
       1,
       'main',
       'test-token',
-      { variables: { DTName: 'test-DTName', RunnerTag: 'linux' } }
+      { variables: { DTName: 'test-DTName', RunnerTag: 'linux' } },
     );
   });
 
   it('should log error and return null when projectId or triggerToken is missing', async () => {
     dt.gitlabInstance.projectId = null;
     dt.gitlabInstance.triggerToken = null;
-  
-    jest.spyOn(dt as any, 'isValidInstance').mockReturnValue(false);
-  
+
+    jest.spyOn(dt, 'isValidInstance').mockReturnValue(false);
+
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockReset();
-  
+
     const pipelineId = await dt.execute();
-  
+
     expect(pipelineId).toBeNull();
     expect(dt.lastExecutionStatus).toBe('error');
     expect(mockApi.PipelineTriggerTokens.trigger).not.toHaveBeenCalled();
   });
-  
 
   it('should log success and update status', () => {
-    dt['logSuccess']();
+    dt.logSuccess();
 
     expect(dt.gitlabInstance.logs).toContainEqual({
       status: 'success',
@@ -107,9 +114,11 @@ describe('DigitalTwin', () => {
   });
 
   it('should log error when triggering pipeline fails', async () => {
-    jest.spyOn(dt as any, 'isValidInstance').mockReturnValue(true);
+    jest.spyOn(dt, 'isValidInstance').mockReturnValue(true);
     const errorMessage = 'Trigger failed';
-    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue(errorMessage);
+    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue(
+      errorMessage,
+    );
 
     const pipelineId = await dt.execute();
 
@@ -118,7 +127,9 @@ describe('DigitalTwin', () => {
   });
 
   it('should handle non-Error thrown during pipeline execution', async () => {
-    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue('String error message');
+    (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue(
+      'String error message',
+    );
 
     const pipelineId = await dt.execute();
 
@@ -137,7 +148,9 @@ describe('DigitalTwin', () => {
   });
 
   it('should handle stop error', async () => {
-    (mockApi.Pipelines.cancel as jest.Mock).mockRejectedValue(new Error('Stop failed'));
+    (mockApi.Pipelines.cancel as jest.Mock).mockRejectedValue(
+      new Error('Stop failed'),
+    );
 
     await dt.stop(1, 456);
 
@@ -154,12 +167,14 @@ describe('DigitalTwin', () => {
       1,
       'digital_twins/test-DTName',
       'main',
-      'Removing test-DTName digital twin'
+      'Removing test-DTName digital twin',
     );
   });
 
   it('should return error message when deletion fails', async () => {
-    (mockApi.RepositoryFiles.remove as jest.Mock).mockRejectedValue(new Error('Delete failed'));
+    (mockApi.RepositoryFiles.remove as jest.Mock).mockRejectedValue(
+      new Error('Delete failed'),
+    );
 
     const result = await dt.delete();
 
@@ -171,13 +186,13 @@ describe('DigitalTwin', () => {
 
     const result = await dt.delete();
 
-    expect(result).toBe('Error deleting test-DTName digital twin: no project id');
+    expect(result).toBe(
+      'Error deleting test-DTName digital twin: no project id',
+    );
   });
 
   it('should format the name correctly', () => {
-    const testCases = [
-      { input: 'digital-twin', expected: 'Digital twin' },
-    ];
+    const testCases = [{ input: 'digital-twin', expected: 'Digital twin' }];
 
     testCases.forEach(({ input, expected }) => {
       expect(formatName(input)).toBe(expected);
