@@ -1,8 +1,9 @@
-import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import * as React from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { AlertColor, Button, CircularProgress } from '@mui/material';
 import { handleButtonClick } from 'route/digitaltwins/ExecutionFunctions';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 
 export interface JobLog {
   jobName: string;
@@ -14,10 +15,7 @@ interface StartStopButtonProps {
   setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
   setSnackbarMessage: Dispatch<SetStateAction<string>>;
   setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
-  executionCount: number;
-  setExecutionCount: Dispatch<SetStateAction<number>>;
-  setJobLogs: Dispatch<SetStateAction<JobLog[]>>;
-  setPipelineCompleted: Dispatch<SetStateAction<boolean>>;
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>;
 }
 
 function StartStopButton({
@@ -25,32 +23,16 @@ function StartStopButton({
   setSnackbarOpen,
   setSnackbarMessage,
   setSnackbarSeverity,
-  executionCount,
-  setExecutionCount,
-  setJobLogs,
-  setPipelineCompleted,
+  setLogButtonDisabled,
 }: StartStopButtonProps) {
-  const [executionStatus, setExecutionStatus] = useState<string | null>(null);
-  const [pipelineLoading, setPipelineLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Start');
 
-  const digitalTwin = useSelector(
-    (state: RootState) => state.digitalTwin[assetName],
-  );
-
-  useEffect(() => {
-    if (executionStatus) {
-      setSnackbarMessage(
-        `Execution ${executionStatus} for ${digitalTwin.DTName} (Run #${executionCount})`,
-      );
-      setSnackbarSeverity(executionStatus === 'success' ? 'success' : 'error');
-      setSnackbarOpen(true);
-    }
-  }, [executionStatus, executionCount]);
+  const dispatch = useDispatch();
+  const digitalTwin = useSelector(selectDigitalTwinByName(assetName));
 
   return (
     <>
-      {pipelineLoading ? (
+      {digitalTwin?.pipelineLoading ? (
         <CircularProgress size={22} style={{ marginRight: '8px' }} />
       ) : null}{' '}
       <Button
@@ -61,16 +43,12 @@ function StartStopButton({
           handleButtonClick(
             buttonText,
             setButtonText,
-            setJobLogs,
-            setPipelineCompleted,
-            setPipelineLoading,
-            setExecutionStatus,
-            setExecutionCount,
             digitalTwin,
             setSnackbarMessage,
             setSnackbarSeverity,
             setSnackbarOpen,
-            executionCount,
+            setLogButtonDisabled,
+            dispatch,
           )
         }
       >

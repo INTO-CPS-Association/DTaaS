@@ -30,8 +30,7 @@ class GitlabDriver {
 
     console.log('Execution Result:', result);
 
-    const lastExecutionStatus = digitalTwin.executionStatus();
-    console.log('Execution Status:', lastExecutionStatus);
+    console.log('Last execution Status:', digitalTwin.lastExecutionStatus);
 
     const logs = gitlabInstance.executionLogs();
     console.log('Execution Logs:', logs);

@@ -2,6 +2,9 @@ import { GitlabInstance } from './gitlab';
 
 const RUNNER_TAG = 'linux';
 
+export const formatName = (name: string) =>
+  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
+
 class DigitalTwin {
   public DTName: string;
 
@@ -13,23 +16,34 @@ class DigitalTwin {
 
   public lastExecutionStatus: string | null = null;
 
+  public executionCount: number = 0;
+
+  public jobLogs: { jobName: string; log: string }[] = [];
+
+  public pipelineLoading: boolean = false;
+
+  public pipelineCompleted: boolean = false;
+
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
     this.gitlabInstance = gitlabInstance;
   }
 
-  async init() {
+  async getFullDescription() {
     if (this.gitlabInstance.projectId) {
-      const readmePath = `digital_twins/${this.DTName}/description.md`;
-      const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
-        this.gitlabInstance.projectId,
-        readmePath,
-        'main',
-      );
-      this.description = atob(fileData.content);
-    } else {
-      this.description = 'Error fetching description.';
+      const readmePath = `digital_twins/${this.DTName}/README.md`;
+      try {
+        const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
+          this.gitlabInstance.projectId,
+          readmePath,
+          'main',
+        );
+        return atob(fileData.content);
+      } catch (error) {
+        return `There is no README.md file in the ${this.DTName} GitLab folder`;
+      }
     }
+    return 'Error fetching description.';
   }
 
   async execute(): Promise<number | null> {
@@ -104,8 +118,22 @@ class DigitalTwin {
     }
   }
 
-  executionStatus(): string | null {
-    return this.lastExecutionStatus;
+  async delete() {
+    if (this.gitlabInstance.projectId) {
+      const digitalTwinPath = `digital_twins/${this.DTName}`;
+      try {
+        await this.gitlabInstance.api.RepositoryFiles.remove(
+          this.gitlabInstance.projectId,
+          digitalTwinPath,
+          'main',
+          `Removing ${this.DTName} digital twin`,
+        );
+        return `${this.DTName} deleted successfully`;
+      } catch (error) {
+        return `Error deleting ${this.DTName} digital twin`;
+      }
+    }
+    return `Error deleting ${this.DTName} digital twin: no project id`;
   }
 }
 

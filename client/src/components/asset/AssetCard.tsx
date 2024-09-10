@@ -5,12 +5,15 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { AlertColor, CardActions, Grid } from '@mui/material';
 import styled from '@emotion/styled';
-import DigitalTwin from 'util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
 import CustomSnackbar from 'route/digitaltwins/Snackbar';
-import { useDispatch } from 'react-redux';
-import { setDigitalTwin } from 'store/digitalTwin.slice';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setDigitalTwin,
+  selectDigitalTwinByName,
+} from 'store/digitalTwin.slice';
 import LogDialog from 'route/digitaltwins/LogDialog';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
@@ -30,9 +33,6 @@ interface CardButtonsContainerExecuteProps {
   setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
   setSnackbarMessage: Dispatch<SetStateAction<string>>;
   setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
-  executionCount: number;
-  setExecutionCount: Dispatch<SetStateAction<number>>;
-  setJobLogs: Dispatch<SetStateAction<{ jobName: string; log: string }[]>>;
   setShowLog: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -50,9 +50,6 @@ const Description = styled(Typography)`
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
 `;
-
-const formatName = (name: string) =>
-  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
 
 function CardActionAreaContainer(asset: Asset) {
   return (
@@ -82,13 +79,9 @@ function CardButtonsContainerExecute({
   setSnackbarOpen,
   setSnackbarMessage,
   setSnackbarSeverity,
-  executionCount,
-  setExecutionCount,
-  setJobLogs,
   setShowLog,
 }: CardButtonsContainerExecuteProps) {
-  const [pipelineCompleted, setPipelineCompleted] = useState(false);
-
+  const [logButtonDisabled, setLogButtonDisabled] = useState(true);
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
       <StartStopButton
@@ -96,14 +89,11 @@ function CardButtonsContainerExecute({
         setSnackbarOpen={setSnackbarOpen}
         setSnackbarMessage={setSnackbarMessage}
         setSnackbarSeverity={setSnackbarSeverity}
-        executionCount={executionCount}
-        setExecutionCount={setExecutionCount}
-        setJobLogs={setJobLogs}
-        setPipelineCompleted={setPipelineCompleted}
+        setLogButtonDisabled={setLogButtonDisabled}
       />
       <LogButton
-        pipelineCompleted={pipelineCompleted}
         setShowLog={setShowLog}
+        logButtonDisabled={logButtonDisabled}
       />
     </CardActions>
   );
@@ -134,10 +124,6 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertColor>('success');
   const [showLog, setShowLog] = useState(false);
-  const [executionCount, setExecutionCount] = useState(0);
-  const [jobLogs, setJobLogs] = useState<{ jobName: string; log: string }[]>(
-    [],
-  );
 
   const dispatch = useDispatch();
 
@@ -154,39 +140,38 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
         digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
       }),
     );
-  }, []);
+  }, [asset.name, dispatch]);
+
+  const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
 
   return (
-    <>
-      <AssetCard
-        asset={asset}
-        buttons={
-          <CardButtonsContainerExecute
-            assetName={asset.name}
-            setSnackbarOpen={setSnackbarOpen}
-            setSnackbarMessage={setSnackbarMessage}
-            setSnackbarSeverity={setSnackbarSeverity}
-            executionCount={executionCount}
-            setExecutionCount={setExecutionCount}
-            setJobLogs={setJobLogs}
-            setShowLog={setShowLog}
-          />
-        }
-      />
-      <CustomSnackbar
-        snackbarOpen={snackbarOpen}
-        snackbarMessage={snackbarMessage}
-        snackbarSeverity={snackbarSeverity}
-        setSnackbarOpen={setSnackbarOpen}
-      />
-      <LogDialog
-        showLog={showLog}
-        setShowLog={setShowLog}
-        name={asset.name}
-        executionCount={executionCount}
-        jobLogs={jobLogs}
-      />
-    </>
+    digitalTwin && (
+      <>
+        <AssetCard
+          asset={asset}
+          buttons={
+            <CardButtonsContainerExecute
+              assetName={asset.name}
+              setSnackbarOpen={setSnackbarOpen}
+              setSnackbarMessage={setSnackbarMessage}
+              setSnackbarSeverity={setSnackbarSeverity}
+              setShowLog={setShowLog}
+            />
+          }
+        />
+        <CustomSnackbar
+          snackbarOpen={snackbarOpen}
+          snackbarMessage={snackbarMessage}
+          snackbarSeverity={snackbarSeverity}
+          setSnackbarOpen={setSnackbarOpen}
+        />
+        <LogDialog
+          showLog={showLog}
+          setShowLog={setShowLog}
+          name={asset.name}
+        />
+      </>
+    )
   );
 }
 
