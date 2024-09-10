@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import { Asset } from 'components/asset/Asset';
 import AssetBoard from 'components/asset/AssetBoard';
+import { GitlabInstance } from 'util/gitlab';
+import { getAuthority } from 'util/envUtil';
 import tabs from './DigitalTwinTabData';
-import GitlabService from './GitlabService';
 
 const createDTTab = (
   subfolders: Asset[],
   error: string | null,
-  gitlabInstance: GitlabService,
+  gitlabInstance: GitlabInstance,
 ): TabData[] =>
   tabs
     .filter((tab) => tab.label === 'Execute')
@@ -22,39 +24,50 @@ const createDTTab = (
           <Typography variant="body1">{tab.body}</Typography>
           <AssetBoard
             subfolders={subfolders}
-            gitlabInstance={gitlabInstance.getInstance()}
+            gitlabInstance={gitlabInstance}
             error={error}
           />
         </>
       ),
     }));
 
-const fetchSubfolders = async (
-  gitlabService: GitlabService,
+export const fetchSubfolders = async (
+  gitlabInstance: GitlabInstance,
   setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>>,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
-  const result = await gitlabService.getSubfolders();
-  if (typeof result === 'string') {
-    setError(result);
-  } else {
-    setSubfolders(result);
+  try {
+    await gitlabInstance.init();
+    if (gitlabInstance.projectId) {
+      const subfolders = await gitlabInstance.getDTSubfolders(
+        gitlabInstance.projectId,
+      );
+      setSubfolders(subfolders);
+    } else {
+      setSubfolders([]);
+    }
+  } catch (error) {
+    setError('An error occurred');
   }
 };
 
 function DTContent() {
   const [subfolders, setSubfolders] = useState<Asset[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const gitlabService = new GitlabService();
+  const gitlabInstance = new GitlabInstance(
+    sessionStorage.getItem('username') || '',
+    getAuthority(),
+    sessionStorage.getItem('access_token') || '',
+  );
 
   useEffect(() => {
-    fetchSubfolders(gitlabService, setSubfolders, setError);
-  }, [gitlabService]);
+    fetchSubfolders(gitlabInstance, setSubfolders, setError);
+  }, []);
 
   return (
     <Layout>
       <TabComponent
-        assetType={createDTTab(subfolders, error, gitlabService)}
+        assetType={createDTTab(subfolders, error, gitlabInstance)}
         scope={[]}
       />
     </Layout>
