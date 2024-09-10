@@ -15,17 +15,24 @@ import {
   selectDigitalTwinByName,
 } from 'store/digitalTwin.slice';
 import LogDialog from 'route/digitaltwins/LogDialog';
+import DetailsDialog from 'route/digitaltwins/DetailsDialog';
+import DeleteDialog from 'route/digitaltwins/DeleteDialog';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
+import DeleteButton from './DeleteButton';
+import DetailsButton from './DetailsButton';
+import ReconfigureButton from './ReconfigureButton';
 
 interface AssetCardProps {
   asset: Asset;
   buttons?: React.ReactNode;
 }
 
-interface AssetCardExecuteProps {
-  asset: Asset;
+interface CardButtonsContainerManageProps {
+  name: string;
+  setShowDetailsLog: Dispatch<SetStateAction<boolean>>;
+  setShowDeleteLog: Dispatch<SetStateAction<boolean>>;
 }
 
 interface CardButtonsContainerExecuteProps {
@@ -74,6 +81,21 @@ function CardActionAreaContainer(asset: Asset) {
   );
 }
 
+function CardButtonsContainerManage({
+  name,
+  setShowDetailsLog,
+  setShowDeleteLog,
+}: CardButtonsContainerManageProps){
+
+  return (
+    <CardActions style={{ justifyContent: 'flex-end' }}>
+      <DetailsButton name={name} setShowLog={setShowDetailsLog}/>
+      <ReconfigureButton />
+      <DeleteButton setShowLog={setShowDeleteLog}/>
+    </CardActions>
+  );
+}
+
 function CardButtonsContainerExecute({
   assetName,
   setSnackbarOpen,
@@ -118,7 +140,42 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
   );
 }
 
-function AssetCardExecute({ asset }: AssetCardExecuteProps) {
+function AssetCardManage({ asset }: AssetCardProps) {
+  const [showDetailsLog, setShowDetailsLog] = useState(false);
+  const [showDeleteLog, setShowDeleteLog] = useState(false);
+  const dispatch = useDispatch();
+  const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
+
+  useEffect(() => {
+    const gitlabInstance = new GitlabInstance(
+      sessionStorage.getItem('username') || '',
+      getAuthority(),
+      sessionStorage.getItem('access_token') || '',
+    );
+    gitlabInstance.init();
+    dispatch(
+      setDigitalTwin({
+        assetName: asset.name,
+        digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
+      }),
+    );
+  }, []);
+
+  return (
+    digitalTwin && <>
+      <AssetCard
+        asset={asset}
+        buttons={
+          <CardButtonsContainerManage name={asset.name} setShowDetailsLog={setShowDetailsLog} setShowDeleteLog={setShowDeleteLog}/>
+        }
+      />
+      <DetailsDialog showLog={showDetailsLog} setShowLog={setShowDetailsLog} name={asset.name}/>
+      <DeleteDialog showLog={showDeleteLog} setShowLog={setShowDeleteLog} name={asset.name}/>
+    </>
+  );
+}
+
+function AssetCardExecute({ asset }: AssetCardProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] =
@@ -175,4 +232,4 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
   );
 }
 
-export default AssetCardExecute;
+export { AssetCardManage, AssetCardExecute };

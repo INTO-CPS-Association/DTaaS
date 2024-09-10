@@ -10,6 +10,8 @@ class DigitalTwin {
 
   public description: string = '';
 
+  public fullDescription: string = '';
+
   public gitlabInstance: GitlabInstance;
 
   public pipelineId: number | null = null;
@@ -38,12 +40,12 @@ class DigitalTwin {
           readmePath,
           'main',
         );
-        return atob(fileData.content);
+        this.fullDescription = atob(fileData.content);
       } catch (error) {
-        return `There is no README.md file in the ${this.DTName} GitLab folder`;
+        this.fullDescription=`There is no README.md file in the ${this.DTName} GitLab folder`;
       }
     }
-    return 'Error fetching description.';
+    this.fullDescription='Error fetching description.';
   }
 
   async execute(): Promise<number | null> {

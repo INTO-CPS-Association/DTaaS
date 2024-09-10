@@ -16,13 +16,14 @@ const createDTTab = (
   gitlabInstance: GitlabInstance,
 ): TabData[] =>
   tabs
-    .filter((tab) => tab.label === 'Execute')
+    .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
     .map((tab) => ({
       label: tab.label,
       body: (
         <>
           <Typography variant="body1">{tab.body}</Typography>
           <AssetBoard
+            tab={tab.label}
             subfolders={subfolders}
             gitlabInstance={gitlabInstance}
             error={error}
