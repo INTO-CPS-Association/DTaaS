@@ -3,11 +3,7 @@ import { Button } from '@mui/material';
 
 function ReconfigureButton() {
   return (
-    <Button
-      variant="contained"
-      size="small"
-      color="primary"
-    >
+    <Button variant="contained" size="small" color="primary">
       Reconfigure
     </Button>
   );

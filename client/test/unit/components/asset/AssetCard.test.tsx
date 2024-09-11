@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
-import AssetCardExecute from 'components/asset/AssetCard';
+import { AssetCardManage, AssetCardExecute } from 'components/asset/AssetCard';
 import { Provider } from 'react-redux';
 import store from 'store/store';
+import { enableFetchMocks } from 'jest-fetch-mock';
 import '@testing-library/jest-dom';
+
+enableFetchMocks();
 
 if (!AbortSignal.timeout) {
   AbortSignal.timeout = (ms) => {
@@ -38,16 +41,25 @@ describe('AssetCard', () => {
     description: 'testDescription',
   };
 
-  beforeEach(() => {
+  test('renders Asset Card Manage correctly', () => {
+    render(
+      <Provider store={store}>
+        <AssetCardManage asset={assetMock} />
+        );
+      </Provider>,
+    );
+
+    expect(screen.getByText(assetMock.name)).toBeInTheDocument();
+  });
+
+  test('renders Asset Card Execute correctly', () => {
     render(
       <Provider store={store}>
         <AssetCardExecute asset={assetMock} />
         );
       </Provider>,
     );
-  });
 
-  it('renders asset name correctly', () => {
     expect(screen.getByText(assetMock.name)).toBeInTheDocument();
   });
 });

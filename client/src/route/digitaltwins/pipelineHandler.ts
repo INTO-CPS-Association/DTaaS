@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
-import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/snackbar.slice'; // Importa l'azione di Redux
 import {
   startPipeline,
   updatePipelineState,
@@ -13,9 +13,6 @@ export const handleButtonClick = (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
@@ -23,31 +20,18 @@ export const handleButtonClick = (
     handleStart(
       buttonText,
       setButtonText,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
     );
   } else {
-    handleStop(
-      digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-      setButtonText,
-      dispatch,
-    );
+    handleStop(digitalTwin, setButtonText, dispatch);
   }
 };
 
 export const handleStart = async (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   digitalTwin: DigitalTwin,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
@@ -56,14 +40,7 @@ export const handleStart = async (
     setButtonText('Stop');
     setLogButtonDisabled(true);
     updatePipelineState(digitalTwin, dispatch);
-    await startPipeline(
-      digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-      setLogButtonDisabled,
-      dispatch,
-    );
+    await startPipeline(digitalTwin, setLogButtonDisabled, dispatch);
     const params = {
       setButtonText,
       digitalTwin,
@@ -78,28 +55,23 @@ export const handleStart = async (
 
 export const handleStop = async (
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   setButtonText: Dispatch<SetStateAction<string>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   try {
     await stopPipelines(digitalTwin);
-    setSnackbar(
-      `Execution stopped successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`,
-      'success',
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
+    dispatch(
+      showSnackbar({
+        message: `Execution stopped successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`,
+        severity: 'success',
+      }),
     );
   } catch (error) {
-    setSnackbar(
-      `Execution stop failed for ${digitalTwin.DTName} (Run #${digitalTwin.executionCount})`,
-      'error',
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
+    dispatch(
+      showSnackbar({
+        message: `Execution stop failed for ${digitalTwin.DTName} (Run #${digitalTwin.executionCount})`,
+        severity: 'error',
+      }),
     );
   } finally {
     updatePipelineStateOnStop(digitalTwin, setButtonText, dispatch);
@@ -117,16 +89,4 @@ const stopPipelines = async (digitalTwin: DigitalTwin) => {
       digitalTwin.pipelineId + 1,
     );
   }
-};
-
-const setSnackbar = (
-  message: string,
-  severity: AlertColor,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
-) => {
-  setSnackbarMessage(message);
-  setSnackbarSeverity(severity);
-  setSnackbarOpen(true);
 };

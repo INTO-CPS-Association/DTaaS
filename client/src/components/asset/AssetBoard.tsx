@@ -1,7 +1,9 @@
-import * as React from 'react';
+import React from 'react';
 import { Grid } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 import { GitlabInstance } from 'util/gitlab';
-import { Asset } from './Asset';
+import { RootState } from 'store/store';
+import { deleteAsset } from 'store/assets.slice';
 import { AssetCardManage, AssetCardExecute } from './AssetCard';
 
 const outerGridContainerProps = {
@@ -15,24 +17,25 @@ const outerGridContainerProps = {
   },
 };
 
-/**
- * Displays a board with navigational properties to locate and select assets for DT configuration.
- * @param props Takes relative path to Assets. E.g `Functions` for function assets.
- * @returns
- */
 function AssetBoard(props: {
   tab: string;
-  subfolders: Asset[];
   gitlabInstance: GitlabInstance;
   error: string | null;
 }) {
+  const assets = useSelector((state: RootState) => state.assets.items);
+  const dispatch = useDispatch();
+
+  const handleDelete = (deletedAssetPath: string) => {
+    dispatch(deleteAsset(deletedAssetPath));
+  };
+
   if (props.error) {
     return <em style={{ textAlign: 'center' }}>{props.error}</em>;
   }
 
   return (
     <Grid {...outerGridContainerProps}>
-      {props.subfolders.map((asset) => (
+      {assets.map((asset) => (
         <Grid
           key={asset.path}
           item
@@ -45,7 +48,10 @@ function AssetBoard(props: {
           {props.tab === 'Execute' ? (
             <AssetCardExecute asset={asset} />
           ) : (
-            <AssetCardManage asset={asset} />
+            <AssetCardManage
+              asset={asset}
+              onDelete={() => handleDelete(asset.path)}
+            />
           )}
         </Grid>
       ))}

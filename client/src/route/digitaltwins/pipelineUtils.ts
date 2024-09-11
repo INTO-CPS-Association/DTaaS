@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from 'react';
-import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import stripAnsi from 'strip-ansi';
@@ -10,26 +9,30 @@ import {
   setPipelineLoading,
 } from 'store/digitalTwin.slice';
 import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/snackbar.slice';
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   await digitalTwin.execute();
   dispatch(incrementExecutionCount({ assetName: digitalTwin.DTName }));
+
   const executionStatusMessage =
     digitalTwin.lastExecutionStatus === 'success'
       ? `Execution started successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount}). Wait until completion for the logs...`
       : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`;
-  setSnackbarMessage(executionStatusMessage);
-  setSnackbarSeverity(
-    digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+
+  dispatch(
+    showSnackbar({
+      message: executionStatusMessage,
+      severity:
+        digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+    }),
   );
-  setSnackbarOpen(true);
+
+  setLogButtonDisabled(true);
 };
 
 export const updatePipelineState = (
