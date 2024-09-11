@@ -49,7 +49,8 @@ jobs:
           yarn build
           yarn start -H ./config/http.json &
           sleep 5
-          curl -f -LI http://host.docker.internal/lib/files || echo "Failed to start the server"          
+          curl -f -LI http://localhost:4001/lib/files || echo "Failed to start the server"          
+          curl -f -LI http://127.0.0.1:4001/lib/files || echo "Failed to start the server"          
 
       - name: Build the lib microservice
         run: |
