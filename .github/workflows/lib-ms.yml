@@ -8,8 +8,6 @@ on:
     paths:
       - 'servers/lib/**'
   workflow_dispatch:
-    paths:
-      - 'servers/lib/**'
 
 jobs:
   test-lib-ms:
