@@ -1,0 +1,11 @@
+version: '3'
+services:
+  libms:
+    build:
+      context: ../../
+      dockerfile: ./docker/libms.dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./files:/dtaas/libms/files
+    ports:
+      - "4001:4001"
