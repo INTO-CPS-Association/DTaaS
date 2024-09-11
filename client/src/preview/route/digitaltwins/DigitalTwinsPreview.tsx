@@ -12,7 +12,6 @@ import tabs from '../../../route/digitaltwins/DigitalTwinTabData';
 
 const createDTTab = (
   error: string | null,
-  gitlabInstance: GitlabInstance,
 ): TabData[] =>
   tabs
     .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
@@ -23,7 +22,6 @@ const createDTTab = (
           <Typography variant="body1">{tab.body}</Typography>
           <AssetBoard
             tab={tab.label}
-            gitlabInstance={gitlabInstance}
             error={error}
           />
         </>
@@ -65,7 +63,7 @@ function DTContent() {
 
   return (
     <Layout>
-      <TabComponent assetType={createDTTab(error, gitlabInstance)} scope={[]} />
+      <TabComponent assetType={createDTTab(error)} scope={[]} />
     </Layout>
   );
 }
