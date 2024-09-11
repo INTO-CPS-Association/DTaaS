@@ -20,7 +20,6 @@ const digitalTwinMock = {
 };
 
 describe('DetailsButton', () => {
-  const setFullDescriptionMock = jest.fn();
   const setShowLogMock = jest.fn();
 
   beforeEach(() => {
@@ -31,7 +30,7 @@ describe('DetailsButton', () => {
     jest.clearAllMocks();
   });
 
-  test('renders the Details button correctly', () => {
+  it('renders the Details button correctly', () => {
     render(
       <Provider store={store}>
         <DetailsButton name="testName" setShowLog={setShowLogMock} />
@@ -42,7 +41,7 @@ describe('DetailsButton', () => {
     expect(button).toBeInTheDocument();
   });
 
-  test('calls handleToggleLog when button is clicked', async () => {
+  it('calls setShowLog with true after clicking the button and getting the description', async () => {
     render(
       <Provider store={store}>
         <DetailsButton name="testName" setShowLog={setShowLogMock} />
@@ -50,14 +49,11 @@ describe('DetailsButton', () => {
     );
 
     const button = screen.getByRole('button', { name: /Details/i });
+
     fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(digitalTwinMock.getFullDescription).toHaveBeenCalled();
-      expect(setFullDescriptionMock).toHaveBeenCalledWith(
-        'Full Description Mock',
-      );
-      expect(setShowLogMock).toHaveBeenCalledWith(true);
-    });
+    await waitFor(() => expect(digitalTwinMock.getFullDescription).toHaveBeenCalled());
+
+    expect(setShowLogMock).toHaveBeenCalledWith(true);
   });
 });

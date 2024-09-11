@@ -1,32 +1,30 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import DetailsDialog from 'route/digitaltwins/DetailsDialog';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
+import { GitlabInstance } from 'util/gitlab';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+}));
 
 jest.mock('store/digitalTwin.slice', () => ({
   selectDigitalTwinByName: jest.fn(),
 }));
-
-const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
 
 describe('DetailsDialog', () => {
   let store: any;
   let setShowLogMock: jest.Mock;
 
   beforeEach(() => {
-    store = mockStore({
-      digitalTwin: {},
-    });
     setShowLogMock = jest.fn();
   });
 
   it('should render the dialog and display the digital twin name', () => {
-    const digitalTwin = new DigitalTwin('testDT', {});
+    const gitlabInstance = new GitlabInstance('user1', 'authority', 'token1');
+    const digitalTwin = new DigitalTwin('testDT', gitlabInstance);
     (selectDigitalTwinByName as jest.Mock).mockReturnValue(digitalTwin);
 
     render(
