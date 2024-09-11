@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import AssetBoard from 'components/asset/AssetBoard';
-import { GitlabInstance } from 'util/gitlab';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
@@ -30,11 +29,6 @@ jest.mock('util/gitlab', () => ({
   })),
 }));
 
-const mockGitlabInstance = new GitlabInstance(
-  'username',
-  'authority',
-  'access_token',
-);
 
 jest.mock('components/asset/AssetCard', () => ({
   AssetCardExecute: jest.fn(({ asset }) => (
@@ -65,7 +59,6 @@ describe('AssetBoard', () => {
       <Provider store={mockStore}>
         <AssetBoard
           tab="Execute"
-          gitlabInstance={mockGitlabInstance}
           error={null}
         />
       </Provider>,
@@ -80,7 +73,6 @@ describe('AssetBoard', () => {
       <Provider store={mockStore}>
         <AssetBoard
           tab="Manage"
-          gitlabInstance={mockGitlabInstance}
           error={null}
         />
       </Provider>,
@@ -96,7 +88,6 @@ describe('AssetBoard', () => {
       <Provider store={mockStore}>
         <AssetBoard
           tab="Manage"
-          gitlabInstance={mockGitlabInstance}
           error={errorMessage}
         />
       </Provider>,
@@ -121,7 +112,6 @@ describe('AssetBoard', () => {
       <Provider store={emptyStore}>
         <AssetBoard
           tab="Manage"
-          gitlabInstance={mockGitlabInstance}
           error={null}
         />
       </Provider>,
@@ -139,7 +129,6 @@ describe('AssetBoard', () => {
       <Provider store={mockStore}>
         <AssetBoard
           tab="Manage"
-          gitlabInstance={mockGitlabInstance}
           error={null}
         />
       </Provider>,

@@ -18,6 +18,18 @@ describe('DetailsDialog', () => {
   let store: any;
   let setShowLogMock: jest.Mock;
 
+  const renderComponent = (props: { showLog: boolean; name: string }) => {
+    return render(
+      <Provider store={store}>
+        <DetailsDialog
+          showLog={props.showLog}
+          setShowLog={setShowLogMock}
+          name={props.name}
+        />
+      </Provider>
+    );
+  };
+
   beforeEach(() => {
     setShowLogMock = jest.fn();
   });
@@ -27,15 +39,7 @@ describe('DetailsDialog', () => {
     const digitalTwin = new DigitalTwin('testDT', gitlabInstance);
     (selectDigitalTwinByName as jest.Mock).mockReturnValue(digitalTwin);
 
-    render(
-      <Provider store={store}>
-        <DetailsDialog
-          showLog={true}
-          setShowLog={setShowLogMock}
-          name="testDT"
-        />
-      </Provider>,
-    );
+    renderComponent({ showLog: true, name: 'testDT' });
 
     expect(
       screen.getByText(/Would you like to delete testDT digital twin?/i),
@@ -43,15 +47,7 @@ describe('DetailsDialog', () => {
   });
 
   it('should close the dialog when the cancel button is clicked', () => {
-    render(
-      <Provider store={store}>
-        <DetailsDialog
-          showLog={true}
-          setShowLog={setShowLogMock}
-          name="testDT"
-        />
-      </Provider>,
-    );
+    renderComponent({ showLog: true, name: 'testDT' });
 
     fireEvent.click(screen.getByText(/Cancel/i));
     expect(setShowLogMock).toHaveBeenCalledWith(false);
@@ -62,15 +58,7 @@ describe('DetailsDialog', () => {
     const digitalTwin = { delete: deleteMock } as unknown as DigitalTwin;
     (selectDigitalTwinByName as jest.Mock).mockReturnValue(digitalTwin);
 
-    render(
-      <Provider store={store}>
-        <DetailsDialog
-          showLog={true}
-          setShowLog={setShowLogMock}
-          name="testDT"
-        />
-      </Provider>,
-    );
+    renderComponent({ showLog: true, name: 'testDT' });
 
     fireEvent.click(screen.getByText(/Yes/i));
     expect(deleteMock).toHaveBeenCalled();
