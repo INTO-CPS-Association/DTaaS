@@ -25,9 +25,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Install pm2
+      - name: Install pm2 and jest
         run: |
           npm install -g pm2
+          npm install -g jest
 
       - name: Run the linting checks
         run: |
