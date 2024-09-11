@@ -35,6 +35,23 @@ jobs:
           yarn install
           yarn syntax
 
+      # FOR TESTING
+      - name: Build the lib microservice
+        env:
+          PORT: 4001
+          LOCAL_PATH: ${{ github.workspace }}/files
+          MODE: local
+          LOG_LEVEL: debug
+          APOLLO_PATH: /lib
+        run: |
+          cd servers/lib	
+          yarn install	
+          yarn build
+          yarn start -H ./config/http.json &
+          sleep 5
+          curl -f -LI http://localhost:4001/lib/files || exit "error localhost"
+          curl -f -LI http://host.docker.internal:4001/lib/files || echo "error host.docker.internal"          
+
       - name: Build the lib microservice
         run: |
           cd servers/lib	
