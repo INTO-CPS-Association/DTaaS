@@ -17,11 +17,11 @@ services:
     shm_size: '256m'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitlab.entryPoints=web-secure"
+      - "traefik.http.routers.gitlab.entryPoints=web-secure" # If URL_SCHEME='http', set this to 'web'
       - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/gitlab`)"
       - "traefik.http.routers.gitlab.service=gitlab"
       - "traefik.http.services.gitlab.loadbalancer.server.port=80"
-      - "traefik.http.routers.gitlab.tls=true" # Disable this if you set URL_SCHEME to 'http'
+      - "traefik.http.routers.gitlab.tls=true" # If URL_SCHEME='http', remove this line
     networks:
       - dtaas-frontend
 
