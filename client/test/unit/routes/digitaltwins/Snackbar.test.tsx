@@ -5,13 +5,11 @@ import CustomSnackbar from 'route/digitaltwins/Snackbar';
 import { Provider } from 'react-redux';
 import { hideSnackbar } from 'store/snackbar.slice';
 
-const mockStore = (initialState: any) => {
-  return {
-    getState: () => initialState,
-    dispatch: jest.fn(),
-    subscribe: jest.fn(),
-  };
-};
+const mockStore = (initialState: any) => ({
+  getState: () => initialState,
+  dispatch: jest.fn(),
+  subscribe: jest.fn(),
+});
 
 describe('CustomSnackbar', () => {
   it('renders the snackbar with the correct message and severity', () => {
@@ -26,7 +24,7 @@ describe('CustomSnackbar', () => {
     render(
       <Provider store={store as any}>
         <CustomSnackbar />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Test Message')).toBeInTheDocument();
@@ -45,7 +43,7 @@ describe('CustomSnackbar', () => {
     render(
       <Provider store={store as any}>
         <CustomSnackbar />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.queryByText('Test Message')).toBeNull();
@@ -66,7 +64,7 @@ describe('CustomSnackbar', () => {
     render(
       <Provider store={store as any}>
         <CustomSnackbar />
-      </Provider>
+      </Provider>,
     );
 
     fireEvent.click(screen.getByRole('button'));
@@ -90,7 +88,7 @@ describe('CustomSnackbar', () => {
     render(
       <Provider store={store as any}>
         <CustomSnackbar />
-      </Provider>
+      </Provider>,
     );
 
     act(() => {

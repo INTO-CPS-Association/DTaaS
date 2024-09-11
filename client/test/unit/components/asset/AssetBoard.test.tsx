@@ -5,10 +5,9 @@ import { GitlabInstance } from 'util/gitlab';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import assetsReducer from 'store/assets.slice';
+import assetsReducer, { deleteAsset } from 'store/assets.slice';
 import { Asset } from 'components/asset/Asset';
 import { RootState } from 'store/store';
-import { deleteAsset } from 'store/assets.slice';
 import * as ReactRedux from 'react-redux';
 
 jest.mock('react-redux', () => ({

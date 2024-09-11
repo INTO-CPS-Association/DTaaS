@@ -3,7 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import { AssetCardManage, AssetCardExecute, CardButtonsContainerManage, CardButtonsContainerExecute } from 'components/asset/AssetCard';
+import {
+  AssetCardManage,
+  AssetCardExecute,
+  CardButtonsContainerManage,
+  CardButtonsContainerExecute,
+} from 'components/asset/AssetCard';
 import assetsReducer from 'store/assets.slice';
 import { Asset } from 'components/asset/Asset';
 import { RootState } from 'store/store';
@@ -11,24 +16,71 @@ import { setDigitalTwin } from 'store/digitalTwin.slice';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 
 jest.mock('route/digitaltwins/Snackbar', () => () => <div>Snackbar</div>);
-jest.mock('route/digitaltwins/DetailsDialog', () => ({ showLog, setShowLog, name }: { showLog: boolean; setShowLog: (show: boolean) => void; name: string }) => (
-  <div>
-    DetailsDialog for {name}
-    {showLog && <button onClick={() => setShowLog(false)}>Close</button>}
-  </div>
-));
-jest.mock('route/digitaltwins/DeleteDialog', () => ({ showLog, setShowLog, name, onDelete }: { showLog: boolean; setShowLog: (show: boolean) => void; name: string; onDelete: () => void }) => (
-  <div>
-    DeleteDialog for {name}
-    {showLog && <button onClick={() => { setShowLog(false); onDelete(); }}>Delete</button>}
-  </div>
-));
-jest.mock('route/digitaltwins/LogDialog', () => ({ showLog, setShowLog, name }: { showLog: boolean; setShowLog: (show: boolean) => void; name: string }) => (
-  <div>
-    LogDialog for {name}
-    {showLog && <button onClick={() => setShowLog(false)}>Close</button>}
-  </div>
-));
+jest.mock(
+  'route/digitaltwins/DetailsDialog',
+  () =>
+    ({
+      showLog,
+      setShowLog,
+      name,
+    }: {
+      showLog: boolean;
+      setShowLog: (show: boolean) => void;
+      name: string;
+    }) => (
+      <div>
+        DetailsDialog for {name}
+        {showLog && <button onClick={() => setShowLog(false)}>Close</button>}
+      </div>
+    ),
+);
+jest.mock(
+  'route/digitaltwins/DeleteDialog',
+  () =>
+    ({
+      showLog,
+      setShowLog,
+      name,
+      onDelete,
+    }: {
+      showLog: boolean;
+      setShowLog: (show: boolean) => void;
+      name: string;
+      onDelete: () => void;
+    }) => (
+      <div>
+        DeleteDialog for {name}
+        {showLog && (
+          <button
+            onClick={() => {
+              setShowLog(false);
+              onDelete();
+            }}
+          >
+            Delete
+          </button>
+        )}
+      </div>
+    ),
+);
+jest.mock(
+  'route/digitaltwins/LogDialog',
+  () =>
+    ({
+      showLog,
+      setShowLog,
+      name,
+    }: {
+      showLog: boolean;
+      setShowLog: (show: boolean) => void;
+      name: string;
+    }) => (
+      <div>
+        LogDialog for {name}
+        {showLog && <button onClick={() => setShowLog(false)}>Close</button>}
+      </div>
+    ),
+);
 
 const assetsMock: Asset[] = [
   { name: 'Asset1', path: 'path1', description: 'Description1' },
@@ -55,7 +107,10 @@ const mockStore = createStore(
     digitalTwin: (state: DigitalTwinState = {}, action: DigitalTwinActions) => {
       switch (action.type) {
         case setDigitalTwin.type:
-          return { ...state, [action.payload.assetName]: action.payload.digitalTwin };
+          return {
+            ...state,
+            [action.payload.assetName]: action.payload.digitalTwin,
+          };
         default:
           return state;
       }
@@ -70,10 +125,7 @@ describe('AssetCard Components', () => {
   it('renders AssetCard with asset and buttons', () => {
     render(
       <Provider store={mockStore}>
-        <AssetCardManage
-          asset={assetsMock[0]}
-          onDelete={() => {}}
-        />
+        <AssetCardManage asset={assetsMock[0]} onDelete={() => {}} />
       </Provider>,
     );
 
@@ -89,7 +141,7 @@ describe('AssetCard Components', () => {
         name="Asset1"
         setShowDetailsLog={setShowDetailsLog}
         setShowDeleteLog={setShowDeleteLog}
-      />
+      />,
     );
 
     expect(screen.getByText('DetailsButton')).toBeInTheDocument();
@@ -106,7 +158,7 @@ describe('AssetCard Components', () => {
         name="Asset1"
         setShowDetailsLog={setShowDetailsLog}
         setShowDeleteLog={setShowDeleteLog}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText('DetailsButton'));
@@ -123,7 +175,7 @@ describe('AssetCard Components', () => {
       <CardButtonsContainerExecute
         assetName="Asset1"
         setShowLog={setShowLog}
-      />
+      />,
     );
 
     expect(screen.getByText('StartStopButton')).toBeInTheDocument();
@@ -137,7 +189,7 @@ describe('AssetCard Components', () => {
       <CardButtonsContainerExecute
         assetName="Asset1"
         setShowLog={setShowLog}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText('StartStopButton'));
@@ -151,11 +203,8 @@ describe('AssetCard Components', () => {
 
     render(
       <Provider store={mockStore}>
-        <AssetCardManage
-          asset={assetsMock[0]}
-          onDelete={handleDelete}
-        />
-      </Provider>
+        <AssetCardManage asset={assetsMock[0]} onDelete={handleDelete} />
+      </Provider>,
     );
 
     expect(screen.getByText('Snackbar')).toBeInTheDocument();
@@ -171,7 +220,7 @@ describe('AssetCard Components', () => {
     render(
       <Provider store={mockStore}>
         <AssetCardExecute asset={assetsMock[0]} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Snackbar')).toBeInTheDocument();
