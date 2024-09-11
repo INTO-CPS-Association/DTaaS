@@ -13,13 +13,8 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import { GitlabInstance } from 'util/gitlab';
-import { renderHook, act } from '@testing-library/react';
-import { Asset } from 'components/asset/Asset';
-
-jest.mock('react-oidc-context', () => ({
-  ...jest.requireActual('react-oidc-context'),
-  useAuth: jest.fn(),
-}));
+import { setAssets } from 'store/assets.slice';
+import { useDispatch } from 'react-redux';
 
 jest.mock('util/gitlab', () => ({
   GitlabInstance: jest.fn().mockImplementation(() => ({
@@ -31,6 +26,11 @@ jest.mock('util/gitlab', () => ({
 
 jest.mock('util/envUtil', () => ({
   getAuthority: jest.fn(() => 'https://example.com'),
+}));
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: jest.fn(),
 }));
 
 describe('Digital Twins Preview', () => {
@@ -49,26 +49,26 @@ describe('Digital Twins Preview', () => {
 
   itHasCorrectExecuteTabNameInDTIframe(tabLabels);
 
-  it('should call getDTSubfolders and update subfolders state', async () => {
+  it('should call getDTSubfolders and dispatch setAssets', async () => {
     const mockGitlabInstance = new GitlabInstance(
       'username',
       'https://example.com',
       'access_token',
     );
-    const { result } = renderHook(() => React.useState<Asset[]>([]));
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      result.current[1];
+    const mockDispatch = jest.fn();
+    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
 
-    await act(async () => {
-      await fetchSubfolders(mockGitlabInstance, setSubfolders, jest.fn());
-    });
+    jest.spyOn(mockGitlabInstance, 'init').mockResolvedValue(undefined);
+    jest.spyOn(mockGitlabInstance, 'getDTSubfolders').mockResolvedValue([]);
+
+    await fetchSubfolders(mockGitlabInstance, mockDispatch, jest.fn());
 
     expect(mockGitlabInstance.init).toHaveBeenCalled();
     expect(mockGitlabInstance.getDTSubfolders).toHaveBeenCalledWith(
-      'mockedProjectId',
+      'mockedProjectId'
     );
-    expect(result.current[0]).toEqual([]);
+    expect(mockDispatch).toHaveBeenCalledWith(setAssets([]));
   });
 
   it('should handle empty projectId correctly', async () => {
@@ -77,23 +77,20 @@ describe('Digital Twins Preview', () => {
       'https://example.com',
       'access_token',
     );
+
     jest.spyOn(mockGitlabInstance, 'init').mockResolvedValue(undefined);
     jest.spyOn(mockGitlabInstance, 'getDTSubfolders').mockResolvedValue([]);
 
     mockGitlabInstance.projectId = null;
 
-    const { result } = renderHook(() => React.useState<Asset[]>([]));
+    const mockDispatch = jest.fn();
+    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      result.current[1];
-
-    await act(async () => {
-      await fetchSubfolders(mockGitlabInstance, setSubfolders, jest.fn());
-    });
+    await fetchSubfolders(mockGitlabInstance, mockDispatch, jest.fn());
 
     expect(mockGitlabInstance.init).toHaveBeenCalled();
     expect(mockGitlabInstance.getDTSubfolders).not.toHaveBeenCalled();
-    expect(result.current[0]).toEqual([]);
+    expect(mockDispatch).toHaveBeenCalledWith(setAssets([]));
   });
 
   it('should handle errors correctly', async () => {
@@ -102,29 +99,19 @@ describe('Digital Twins Preview', () => {
       'https://example.com',
       'access_token',
     );
-    jest
-      .spyOn(mockGitlabInstance, 'init')
-      .mockRejectedValue(new Error('Initialization failed'));
 
-    const { result: subfoldersResult } = renderHook(() =>
-      React.useState<Asset[]>([]),
-    );
-    const { result: errorResult } = renderHook(() =>
-      React.useState<string | null>(null),
-    );
+    jest.spyOn(mockGitlabInstance, 'init').mockRejectedValue(new Error('Initialization failed'));
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      subfoldersResult.current[1];
-    const setError: React.Dispatch<React.SetStateAction<string | null>> =
-      errorResult.current[1];
+    const mockDispatch = jest.fn();
+    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
 
-    await act(async () => {
-      await fetchSubfolders(mockGitlabInstance, setSubfolders, setError);
-    });
+    const setError = jest.fn();
+
+    await fetchSubfolders(mockGitlabInstance, mockDispatch, setError);
 
     expect(mockGitlabInstance.init).toHaveBeenCalled();
     expect(mockGitlabInstance.getDTSubfolders).not.toHaveBeenCalled();
-    expect(subfoldersResult.current[0]).toEqual([]);
-    expect(errorResult.current[0]).toBe('An error occurred');
+    expect(mockDispatch).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenCalledWith('An error occurred');
   });
 });

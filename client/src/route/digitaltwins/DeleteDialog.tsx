@@ -1,3 +1,5 @@
+import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -5,7 +7,6 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import React, { Dispatch, SetStateAction } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';

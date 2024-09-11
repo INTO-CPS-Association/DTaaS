@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import AssetBoard from 'components/asset/AssetBoard';
-import { Asset } from 'components/asset/Asset';
 import { GitlabInstance } from 'util/gitlab';
 import '@testing-library/jest-dom';
-import store from 'store/store';
 import { Provider } from 'react-redux';
+import { createStore, combineReducers } from 'redux';
+import assetsReducer from 'store/assets.slice';
+import { Asset } from 'components/asset/Asset';
+import { RootState } from 'store/store';
+import { deleteAsset } from 'store/assets.slice';
+import * as ReactRedux from 'react-redux';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -37,16 +41,31 @@ jest.mock('components/asset/AssetCard', () => ({
   AssetCardExecute: jest.fn(({ asset }) => (
     <div>{`Execute ${asset.name}`}</div>
   )),
-  AssetCardManage: jest.fn(({ asset }) => <div>{`Manage ${asset.name}`}</div>),
+  AssetCardManage: jest.fn(({ asset, onDelete }) => (
+    <div>
+      {`Manage ${asset.name}`}
+      <button onClick={() => onDelete()}>Delete</button>
+    </div>
+  )),
 }));
+
+const mockStore = createStore(
+  combineReducers({
+    assets: assetsReducer,
+  }),
+  {
+    assets: {
+      items: assetsMock,
+    },
+  } as RootState,
+);
 
 describe('AssetBoard', () => {
   it('renders AssetCardExecute components when tab is "Execute"', () => {
     render(
-      <Provider store={store}>
+      <Provider store={mockStore}>
         <AssetBoard
           tab="Execute"
-          subfolders={assetsMock}
           gitlabInstance={mockGitlabInstance}
           error={null}
         />
@@ -59,10 +78,9 @@ describe('AssetBoard', () => {
 
   it('renders AssetCardManage components when tab is not "Execute"', () => {
     render(
-      <Provider store={store}>
+      <Provider store={mockStore}>
         <AssetBoard
           tab="Manage"
-          subfolders={assetsMock}
           gitlabInstance={mockGitlabInstance}
           error={null}
         />
@@ -76,10 +94,9 @@ describe('AssetBoard', () => {
   it('displays an error message when error prop is provided', () => {
     const errorMessage = 'Something went wrong!';
     render(
-      <Provider store={store}>
+      <Provider store={mockStore}>
         <AssetBoard
           tab="Manage"
-          subfolders={[]}
           gitlabInstance={mockGitlabInstance}
           error={errorMessage}
         />
@@ -90,11 +107,21 @@ describe('AssetBoard', () => {
   });
 
   it('renders correctly with no assets', () => {
+    const emptyStore = createStore(
+      combineReducers({
+        assets: assetsReducer,
+      }),
+      {
+        assets: {
+          items: [],
+        },
+      } as unknown as RootState,
+    );
+
     render(
-      <Provider store={store}>
+      <Provider store={emptyStore}>
         <AssetBoard
           tab="Manage"
-          subfolders={[]}
           gitlabInstance={mockGitlabInstance}
           error={null}
         />
@@ -103,5 +130,25 @@ describe('AssetBoard', () => {
 
     const manageCards = screen.queryAllByText(/Manage/);
     expect(manageCards).toHaveLength(0);
+  });
+
+  it('dispatches deleteAsset action when delete button is clicked', () => {
+    const mockDispatch = jest.fn();
+    jest.spyOn(ReactRedux, 'useDispatch').mockReturnValue(mockDispatch);
+
+    render(
+      <Provider store={mockStore}>
+        <AssetBoard
+          tab="Manage"
+          gitlabInstance={mockGitlabInstance}
+          error={null}
+        />
+      </Provider>,
+    );
+
+    const deleteButtons = screen.getAllByText('Delete');
+    fireEvent.click(deleteButtons[0]);
+
+    expect(mockDispatch).toHaveBeenCalledWith(deleteAsset('path1'));
   });
 });

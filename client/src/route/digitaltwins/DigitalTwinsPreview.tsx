@@ -41,7 +41,7 @@ export const fetchSubfolders = async (
       const subfolders = await gitlabInstance.getDTSubfolders(
         gitlabInstance.projectId,
       );
-      dispatch(setAssets(subfolders)); // Dispatcha gli asset nel Redux store
+      dispatch(setAssets(subfolders));
     } else {
       dispatch(setAssets([]));
     }
