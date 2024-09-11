@@ -12,17 +12,11 @@ export interface JobLog {
 
 interface StartStopButtonProps {
   assetName: string;
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
-  setSnackbarMessage: Dispatch<SetStateAction<string>>;
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>;
 }
 
 function StartStopButton({
   assetName,
-  setSnackbarOpen,
-  setSnackbarMessage,
-  setSnackbarSeverity,
   setLogButtonDisabled,
 }: StartStopButtonProps) {
   const [buttonText, setButtonText] = useState('Start');
@@ -48,9 +42,6 @@ function StartStopButton({
             buttonText,
             setButtonText,
             digitalTwin,
-            setSnackbarMessage,
-            setSnackbarSeverity,
-            setSnackbarOpen,
             setLogButtonDisabled,
             dispatch,
           )

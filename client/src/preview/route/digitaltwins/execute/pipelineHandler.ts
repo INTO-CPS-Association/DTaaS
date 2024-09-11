@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
-import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/snackbar.slice'; // Importa l'azione di Redux
 import {
   startPipeline,
   updatePipelineState,
@@ -13,9 +13,6 @@ export const handleButtonClick = (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
@@ -23,31 +20,18 @@ export const handleButtonClick = (
     handleStart(
       buttonText,
       setButtonText,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
     );
   } else {
-    handleStop(
-      digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-      setButtonText,
-      dispatch,
-    );
+    handleStop(digitalTwin, setButtonText, dispatch);
   }
 };
 
 export const handleStart = async (
   buttonText: string,
   setButtonText: Dispatch<SetStateAction<string>>,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   digitalTwin: DigitalTwin,
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
@@ -79,9 +63,6 @@ export const handleStart = async (
 
 export const handleStop = async (
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
   setButtonText: Dispatch<SetStateAction<string>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {

@@ -29,6 +29,12 @@ interface AssetCardProps {
   buttons?: React.ReactNode;
 }
 
+interface AssetCardManageProps {
+  asset: Asset;
+  buttons?: React.ReactNode;
+  onDelete: () => void;
+}
+
 interface CardButtonsContainerManageProps {
   name: string;
   setShowDetailsLog: Dispatch<SetStateAction<boolean>>;
@@ -37,9 +43,6 @@ interface CardButtonsContainerManageProps {
 
 interface CardButtonsContainerExecuteProps {
   assetName: string;
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
-  setSnackbarMessage: Dispatch<SetStateAction<string>>;
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
   setShowLog: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -85,22 +88,18 @@ function CardButtonsContainerManage({
   name,
   setShowDetailsLog,
   setShowDeleteLog,
-}: CardButtonsContainerManageProps){
-
+}: CardButtonsContainerManageProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton name={name} setShowLog={setShowDetailsLog}/>
+      <DetailsButton name={name} setShowLog={setShowDetailsLog} />
       <ReconfigureButton />
-      <DeleteButton setShowLog={setShowDeleteLog}/>
+      <DeleteButton setShowLog={setShowDeleteLog} />
     </CardActions>
   );
 }
 
 function CardButtonsContainerExecute({
   assetName,
-  setSnackbarOpen,
-  setSnackbarMessage,
-  setSnackbarSeverity,
   setShowLog,
 }: CardButtonsContainerExecuteProps) {
   const [logButtonDisabled, setLogButtonDisabled] = useState(true);
@@ -108,9 +107,6 @@ function CardButtonsContainerExecute({
     <CardActions style={{ justifyContent: 'flex-end' }}>
       <StartStopButton
         assetName={assetName}
-        setSnackbarOpen={setSnackbarOpen}
-        setSnackbarMessage={setSnackbarMessage}
-        setSnackbarSeverity={setSnackbarSeverity}
         setLogButtonDisabled={setLogButtonDisabled}
       />
       <LogButton
@@ -140,7 +136,7 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
   );
 }
 
-function AssetCardManage({ asset }: AssetCardProps) {
+function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
   const [showDetailsLog, setShowDetailsLog] = useState(false);
   const [showDeleteLog, setShowDeleteLog] = useState(false);
   const dispatch = useDispatch();
@@ -166,24 +162,37 @@ function AssetCardManage({ asset }: AssetCardProps) {
   }, [asset.name, dispatch]);
 
   return (
-    digitalTwin && <>
-      <AssetCard
-        asset={asset}
-        buttons={
-          <CardButtonsContainerManage name={asset.name} setShowDetailsLog={setShowDetailsLog} setShowDeleteLog={setShowDeleteLog}/>
-        }
-      />
-      <DetailsDialog showLog={showDetailsLog} setShowLog={setShowDetailsLog} name={asset.name}/>
-      <DeleteDialog showLog={showDeleteLog} setShowLog={setShowDeleteLog} name={asset.name}/>
-    </>
+    digitalTwin && (
+      <>
+        <AssetCard
+          asset={asset}
+          buttons={
+            <CardButtonsContainerManage
+              name={asset.name}
+              setShowDetailsLog={setShowDetailsLog}
+              setShowDeleteLog={setShowDeleteLog}
+            />
+          }
+        />
+        <CustomSnackbar />
+        <DetailsDialog
+          showLog={showDetailsLog}
+          setShowLog={setShowDetailsLog}
+          name={asset.name}
+        />
+        <DeleteDialog
+          showLog={showDeleteLog}
+          setShowLog={setShowDeleteLog}
+          name={asset.name}
+          onDelete={onDelete}
+        />
+      </>
+    )
   );
 }
 
 function AssetCardExecute({ asset }: AssetCardProps) {
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] =
-    useState<AlertColor>('success');
+  useState<AlertColor>('success');
   const [showLog, setShowLog] = useState(false);
 
   const dispatch = useDispatch();
@@ -217,19 +226,11 @@ function AssetCardExecute({ asset }: AssetCardProps) {
           buttons={
             <CardButtonsContainerExecute
               assetName={asset.name}
-              setSnackbarOpen={setSnackbarOpen}
-              setSnackbarMessage={setSnackbarMessage}
-              setSnackbarSeverity={setSnackbarSeverity}
               setShowLog={setShowLog}
             />
           }
         />
-        <CustomSnackbar
-          snackbarOpen={snackbarOpen}
-          snackbarMessage={snackbarMessage}
-          snackbarSeverity={snackbarSeverity}
-          setSnackbarOpen={setSnackbarOpen}
-        />
+        <CustomSnackbar />
         <LogDialog
           showLog={showLog}
           setShowLog={setShowLog}

@@ -3,11 +3,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import menuSlice from './menu.slice';
 import authSlice from './auth.slice';
 import digitalTwinSlice from './digitalTwin.slice';
+import snackbarSlice from './snackbar.slice';
+import assetsSlice from './assets.slice';
 
 const rootReducer = combineReducers({
   menu: menuSlice,
   auth: authSlice,
   digitalTwin: digitalTwinSlice,
+  snackbar: snackbarSlice,
+  assets: assetsSlice,
 });
 
 const store = configureStore({

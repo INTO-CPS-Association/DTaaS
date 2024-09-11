@@ -1,39 +1,28 @@
 import * as React from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { RootState } from 'store/store';
+import { hideSnackbar } from 'store/snackbar.slice';
 
-interface CustomSnackbarProps {
-  snackbarOpen: boolean;
-  snackbarMessage: string;
-  snackbarSeverity: 'success' | 'error' | 'warning' | 'info';
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
-}
+const CustomSnackbar: React.FC = () => {
+  const dispatch = useDispatch();
 
-const handleCloseSnackbar = (
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
-) => {
-  setSnackbarOpen(false);
+  const { open, message, severity } = useSelector(
+    (state: RootState) => state.snackbar,
+  );
+
+  const handleClose = () => {
+    dispatch(hideSnackbar());
+  };
+
+  return (
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Alert onClose={handleClose} severity={severity}>
+        {message}
+      </Alert>
+    </Snackbar>
+  );
 };
-
-const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
-  snackbarOpen,
-  snackbarMessage,
-  snackbarSeverity,
-  setSnackbarOpen,
-}) => (
-  <Snackbar
-    open={snackbarOpen}
-    autoHideDuration={6000}
-    onClose={() => handleCloseSnackbar(setSnackbarOpen)}
-  >
-    <Alert
-      onClose={() => handleCloseSnackbar(setSnackbarOpen)}
-      severity={snackbarSeverity}
-    >
-      {snackbarMessage}
-    </Alert>
-  </Snackbar>
-);
 
 export default CustomSnackbar;

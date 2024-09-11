@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from 'react';
-import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import {
@@ -8,6 +7,7 @@ import {
   setPipelineLoading,
 } from 'store/digitalTwin.slice';
 import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/snackbar.slice';
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
@@ -24,7 +24,8 @@ export const startPipeline = async (
   setSnackbarSeverity(
     digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
   );
-  setSnackbarOpen(true);
+
+  setLogButtonDisabled(true);
 };
 
 export const updatePipelineState = (

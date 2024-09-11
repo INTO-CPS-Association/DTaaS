@@ -6,17 +6,20 @@ import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 
 interface DialogButtonProps {
-    name: string;
-    setShowLog: Dispatch<React.SetStateAction<boolean>>;
-  }
-  
-  const handleToggleLog = async (digitalTwin: DigitalTwin, setShowLog: Dispatch<SetStateAction<boolean>>) => {
-    await digitalTwin.getFullDescription();
-    setShowLog(true);
-  };
+  name: string;
+  setShowLog: Dispatch<React.SetStateAction<boolean>>;
+}
+
+const handleToggleLog = async (
+  digitalTwin: DigitalTwin,
+  setShowLog: Dispatch<SetStateAction<boolean>>,
+) => {
+  await digitalTwin.getFullDescription();
+  setShowLog(true);
+};
 
 function DetailsButton({ name, setShowLog }: DialogButtonProps) {
-const digitalTwin = useSelector(selectDigitalTwinByName(name));
+  const digitalTwin = useSelector(selectDigitalTwinByName(name));
   return (
     <Button
       variant="contained"
