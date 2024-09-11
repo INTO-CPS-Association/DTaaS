@@ -52,7 +52,9 @@ describe('DetailsButton', () => {
 
     fireEvent.click(button);
 
-    await waitFor(() => expect(digitalTwinMock.getFullDescription).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(digitalTwinMock.getFullDescription).toHaveBeenCalled(),
+    );
 
     expect(setShowLogMock).toHaveBeenCalledWith(true);
   });

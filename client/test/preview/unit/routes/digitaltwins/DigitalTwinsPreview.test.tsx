@@ -2,12 +2,11 @@ import * as React from 'react';
 import DigitalTwinsPreview, { fetchSubfolders } from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import tabs from 'preview/route/digitaltwins/DigitalTwinTabDataPreview';
 import store from 'store/store';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import { GitlabInstance } from 'util/gitlab';
 import { setAssets } from 'store/assets.slice';
-import { useDispatch } from 'react-redux';
 
 jest.mock('util/gitlab', () => ({
   GitlabInstance: jest.fn().mockImplementation(() => ({
@@ -81,7 +80,7 @@ describe('Digital Twins Preview', () => {
 
     expect(mockGitlabInstance.init).toHaveBeenCalled();
     expect(mockGitlabInstance.getDTSubfolders).toHaveBeenCalledWith(
-      'mockedProjectId'
+      'mockedProjectId',
     );
     expect(mockDispatch).toHaveBeenCalledWith(setAssets([]));
   });
@@ -115,7 +114,9 @@ describe('Digital Twins Preview', () => {
       'access_token',
     );
 
-    jest.spyOn(mockGitlabInstance, 'init').mockRejectedValue(new Error('Initialization failed'));
+    jest
+      .spyOn(mockGitlabInstance, 'init')
+      .mockRejectedValue(new Error('Initialization failed'));
 
     const mockDispatch = jest.fn();
     (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
