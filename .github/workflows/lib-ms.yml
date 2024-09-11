@@ -51,7 +51,7 @@ jobs:
           yarn start -H ./config/http.json &
           sleep 5
           curl -f -LI http://localhost:4002/lib/files || echo "Failed to start the server"          
-          yarn test:github
+          jest test/cloudcmd --coverage --coverageThreshold=\"{}\"
 
       - name: Build the lib microservice
         run: |
