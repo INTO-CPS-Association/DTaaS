@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from 'react';
 import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
-import stripAnsi from 'strip-ansi';
 import {
   incrementExecutionCount,
   setJobLogs,
@@ -103,12 +102,15 @@ export const fetchJobLogs = async (
     pipelineId,
   );
   const logPromises = jobs.map(async (job) => {
-    let log = await gitlabInstance.getJobTrace(
+    const log = await gitlabInstance.getJobTrace(
       gitlabInstance.projectId!,
       job.id,
     );
     if (typeof log === 'string') {
-      log = stripAnsi(log)
+      // TODO: Fix ansi character stripping
+      // eslint-disable-next-line no-control-regex
+      log.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    '',)
         .split('\n')
         .map((line: string) =>
           line
