@@ -36,23 +36,6 @@ jobs:
           yarn install
           yarn syntax
 
-      # FOR TESTING
-      - name: Build and run test for the lib microservice
-        env:
-          PORT: 4002
-          LOCAL_PATH: ${{ github.workspace }}/files
-          MODE: local
-          LOG_LEVEL: debug
-          APOLLO_PATH: /lib
-        run: |
-          cd servers/lib	
-          yarn install	
-          yarn build
-          yarn start -H ./config/http.json &
-          sleep 5
-          curl -f -LI http://localhost:4002/lib/files || echo "Failed to start the server"          
-          jest test/cloudcmd --coverage --coverageThreshold=\"{}\"
-
       - name: Build the lib microservice
         run: |
           cd servers/lib	
@@ -84,6 +67,23 @@ jobs:
           yarn install
           yarn build
           yarn test:http-github
+
+       # FOR TESTING
+      - name: Build and run test for the lib microservice
+        env:
+          PORT: 4002
+          LOCAL_PATH: ${{ github.workspace }}/files
+          MODE: local
+          LOG_LEVEL: debug
+          APOLLO_PATH: /lib
+        run: |
+          cd servers/lib	
+          yarn install	
+          yarn build
+          yarn start -H ./config/http.json &
+          sleep 5
+          curl -f -LI http://localhost:4002/lib/files || echo "Failed to start the server"          
+          jest test/cloudcmd --coverage --coverageThreshold=\"{}\"
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
