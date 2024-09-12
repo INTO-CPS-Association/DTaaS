@@ -37,7 +37,7 @@ jobs:
           yarn syntax
 
       # FOR TESTING
-      - name: Build the lib microservice
+      - name: Build and run test for the lib microservice
         env:
           PORT: 4002
           LOCAL_PATH: ${{ github.workspace }}/files
@@ -60,30 +60,30 @@ jobs:
           yarn build
 
       - name: Run all tests
-        run: |
-          cd servers/lib
-          yarn install
-          yarn build
-          yarn test:all
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
+        run: |
+          cd servers/lib
+          yarn install
+          yarn build
+          yarn test:all
 
       - name: Run http mode tests
+        env:
+          PORT: 4003
+          LOCAL_PATH: ${{ github.workspace }}/files
+          MODE: local
+          LOG_LEVEL: debug
+          APOLLO_PATH: /lib
         run: |
           cd servers/lib
           yarn install
           yarn build
           yarn test:http-github
-        env:
-          PORT: 4002
-          LOCAL_PATH: ${{ github.workspace }}/files
-          MODE: local
-          LOG_LEVEL: debug
-          APOLLO_PATH: /lib
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
