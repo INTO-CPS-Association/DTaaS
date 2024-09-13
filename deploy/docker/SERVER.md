@@ -90,34 +90,11 @@ Three following configuration files need to be updated.
 
 ### Docker Compose
 
-The docker compose configuration is in `deploy/docker/.env.server`.
-it is a sample file.
-It contains environment variables
-that are used by the docker compose files.
+The docker compose configuration is in `deploy/docker/.env.server` it is a sample file.
+It contains environment variables that are used by the docker compose files.
 It can be updated to suit your local installation scenario.
-It contains the following environment variables.
 
-Edit all the fields according to your specific case.
-
-  | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
-  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
-  | CLIENT_ID | 'xx' | The ID of your server OAuth application |
-  | CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
-  | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
-  | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
-  | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | CLIENT_CONFIG | '/Users/username/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
-
-:clipboard: Important points to note:
-
-1. The path examples given here are for Linux OS.
-   These paths can be Windows OS compatible paths as well.
-1. The Server DNS can also be an IP address.
-   However, for proper working it is neccessary to use the
-   same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
+Description of file configuration can be found here. [.env file description](./COMPOSE.md)
 
 ### Website Client
 
