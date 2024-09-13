@@ -94,7 +94,7 @@ The docker compose configuration is in `deploy/docker/.env.server` it is a sampl
 It contains environment variables that are used by the docker compose files.
 It can be updated to suit your local installation scenario.
 
-Description of file configuration can be found here. [.env file description](./COMPOSE.md)
+Description of file configuration can be found here. [.env file description](./ENV.md)
 
 ### Website Client
 

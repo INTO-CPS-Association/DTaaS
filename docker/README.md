@@ -61,7 +61,7 @@ documentation for further help with creating these two OAuth applications.
 The configuration files to be updated are:
 
 1. docker/.env
-   please see [docker README](../deploy/docker/COMPOSE.md) for help
+   please see [docker README](../deploy/docker/ENV.md) for help
    with updating this config file)
 1. docker/conf.dev
    please see [server docs](../docs/admin/servers/auth.md) for help
