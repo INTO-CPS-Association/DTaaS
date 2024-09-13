@@ -16,8 +16,6 @@ class DigitalTwin {
 
   public lastExecutionStatus: string | null = null;
 
-  public executionCount: number = 0;
-
   public jobLogs: { jobName: string; log: string }[] = [];
 
   public pipelineLoading: boolean = false;

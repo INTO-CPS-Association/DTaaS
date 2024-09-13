@@ -64,8 +64,7 @@ $sudo gitlab-runner run
 
 It can also be used to reactivate offline runners during subsequent sessions.
 
-
-## Pipeline trigger token
+## Pipeline Trigger Token
 You also need to create a
 [pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html).
 This token is required to trigger pipelines by using the API.

@@ -3,7 +3,6 @@ import { AlertColor } from '@mui/material';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import {
-  incrementExecutionCount,
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
@@ -15,15 +14,12 @@ export const startPipeline = async (
   setSnackbarMessage: Dispatch<SetStateAction<string>>,
   setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
   setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
-  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
-  dispatch: ReturnType<typeof useDispatch>,
 ) => {
   await digitalTwin.execute();
-  dispatch(incrementExecutionCount({ assetName: digitalTwin.DTName }));
   const executionStatusMessage =
     digitalTwin.lastExecutionStatus === 'success'
-      ? `Execution started successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount}). Wait until completion for the logs...`
-      : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`;
+      ? `Execution started successfully for ${formatName(digitalTwin.DTName)}. Wait until completion for the logs...`
+      : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)}`;
   setSnackbarMessage(executionStatusMessage);
   setSnackbarSeverity(
     digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
@@ -107,10 +103,13 @@ export const fetchJobLogs = async (
       job.id,
     );
     if (typeof log === 'string') {
-      // TODO: Fix ansi character stripping
-      // eslint-disable-next-line no-control-regex
-      log.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-    '',)
+      log
+        .replace(
+          // TODO: Fix ansi character stripping
+          // eslint-disable-next-line no-control-regex
+          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+          '',
+        )
         .split('\n')
         .map((line: string) =>
           line

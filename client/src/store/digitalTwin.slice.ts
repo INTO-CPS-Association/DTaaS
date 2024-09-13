@@ -19,15 +19,6 @@ const digitalTwinSlice = createSlice({
     ) => {
       state[action.payload.assetName] = action.payload.digitalTwin;
     },
-    incrementExecutionCount: (
-      state,
-      action: PayloadAction<{ assetName: string }>,
-    ) => {
-      const digitalTwin = state[action.payload.assetName];
-      if (digitalTwin) {
-        digitalTwin.executionCount += 1;
-      }
-    },
     setJobLogs: (
       state,
       action: PayloadAction<{ assetName: string; jobLogs: JobLog[] }>,
@@ -63,7 +54,6 @@ export const selectDigitalTwinByName = (name: string) => (state: RootState) =>
 
 export const {
   setDigitalTwin,
-  incrementExecutionCount,
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,

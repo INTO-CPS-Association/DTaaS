@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin from 'util/gitlabDigitalTwin';
+import { AlertColor } from '@mui/material';
+import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { fetchJobLogs, updatePipelineStateOnCompletion } from './pipelineUtils';
+import { setSnackbar } from './pipelineHandler';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -10,35 +12,116 @@ interface PipelineStatusParams {
   dispatch: ReturnType<typeof useDispatch>;
 }
 
-export const checkFirstPipelineStatus = async ({
+const MAX_EXECUTION_TIME = 10 * 60 * 1000;
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+const hasTimedOut = (startTime: number) =>
+  Date.now() - startTime > MAX_EXECUTION_TIME;
+
+const handleTimeout = (
+  DTName: string,
+  setButtonText: Dispatch<SetStateAction<string>>,
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
+  setSnackbarMessage: Dispatch<SetStateAction<string>>,
+  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
+  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
+) => {
+  setSnackbar(
+    `Execution timed out for ${formatName(DTName)}`,
+    'error',
+    setSnackbarMessage,
+    setSnackbarSeverity,
+    setSnackbarOpen,
+  );
+  setButtonText('Start');
+  setLogButtonDisabled(false);
+};
+
+const checkFirstPipelineStatus = async ({
   setButtonText,
   digitalTwin,
   setLogButtonDisabled,
   dispatch,
-}: PipelineStatusParams) => {
+  startTime,
+  setSnackbarMessage,
+  setSnackbarSeverity,
+  setSnackbarOpen,
+}: PipelineStatusParams & {
+  startTime: number;
+  setSnackbarMessage: Dispatch<SetStateAction<string>>;
+  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
+  setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
     digitalTwin.gitlabInstance.projectId!,
     digitalTwin.pipelineId!,
   );
-  const params = {
-    setButtonText,
-    digitalTwin,
-    setLogButtonDisabled,
-    dispatch,
-  };
-  if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
-    await checkSecondPipelineStatus(params);
+
+  if (pipelineStatus === 'success') {
+    await checkSecondPipelineStatus({
+      setButtonText,
+      digitalTwin,
+      setLogButtonDisabled,
+      dispatch,
+      startTime,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+    });
+  } else if (pipelineStatus === 'failed') {
+    const jobLogs = await fetchJobLogs(
+      digitalTwin.gitlabInstance,
+      digitalTwin.pipelineId!,
+    );
+    updatePipelineStateOnCompletion(
+      digitalTwin,
+      jobLogs,
+      setButtonText,
+      setLogButtonDisabled,
+      dispatch,
+    );
+  } else if (hasTimedOut(startTime)) {
+    handleTimeout(
+      digitalTwin.DTName,
+      setButtonText,
+      setLogButtonDisabled,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+    );
   } else {
-    checkFirstPipelineStatus(params);
+    await delay(5000);
+    checkFirstPipelineStatus({
+      setButtonText,
+      digitalTwin,
+      setLogButtonDisabled,
+      dispatch,
+      startTime,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+    });
   }
 };
 
-export const checkSecondPipelineStatus = async ({
+const checkSecondPipelineStatus = async ({
   setButtonText,
   digitalTwin,
   setLogButtonDisabled,
   dispatch,
-}: PipelineStatusParams) => {
+  startTime,
+  setSnackbarMessage,
+  setSnackbarSeverity,
+  setSnackbarOpen,
+}: PipelineStatusParams & {
+  startTime: number;
+  setSnackbarMessage: Dispatch<SetStateAction<string>>;
+  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
+  setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
     digitalTwin.gitlabInstance.projectId!,
     digitalTwin.pipelineId! + 1,
@@ -57,13 +140,49 @@ export const checkSecondPipelineStatus = async ({
       setLogButtonDisabled,
       dispatch,
     );
+
+    if (pipelineStatus === 'failed') {
+      setSnackbar(
+        `Execution failed for ${formatName(digitalTwin.DTName)}`,
+        'error',
+        setSnackbarMessage,
+        setSnackbarSeverity,
+        setSnackbarOpen,
+      );
+    }
+  } else if (hasTimedOut(startTime)) {
+    handleTimeout(
+      digitalTwin.DTName,
+      setButtonText,
+      setLogButtonDisabled,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+    );
   } else {
-    const params = {
+    await delay(5000);
+    checkSecondPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
-    };
-    checkSecondPipelineStatus(params);
+      startTime,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
+    });
   }
 };
+
+const startPipelineStatusCheck = (
+  params: PipelineStatusParams & {
+    setSnackbarMessage: Dispatch<SetStateAction<string>>;
+    setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
+    setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
+  },
+) => {
+  const startTime = Date.now();
+  checkFirstPipelineStatus({ ...params, startTime });
+};
+
+export default startPipelineStatusCheck;

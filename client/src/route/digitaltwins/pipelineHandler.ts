@@ -7,7 +7,7 @@ import {
   updatePipelineState,
   updatePipelineStateOnStop,
 } from './pipelineUtils';
-import { checkFirstPipelineStatus } from './pipelineChecks';
+import startPipelineStatusCheck from './pipelineChecks';
 
 export const handleButtonClick = (
   buttonText: string,
@@ -61,16 +61,17 @@ export const handleStart = async (
       setSnackbarMessage,
       setSnackbarSeverity,
       setSnackbarOpen,
-      setLogButtonDisabled,
-      dispatch,
     );
     const params = {
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
+      setSnackbarMessage,
+      setSnackbarSeverity,
+      setSnackbarOpen,
     };
-    checkFirstPipelineStatus(params);
+    startPipelineStatusCheck(params);
   } else {
     setButtonText('Start');
   }
@@ -87,7 +88,7 @@ export const handleStop = async (
   try {
     await stopPipelines(digitalTwin);
     setSnackbar(
-      `Execution stopped successfully for ${formatName(digitalTwin.DTName)} (Run #${digitalTwin.executionCount})`,
+      `Execution stopped successfully for ${formatName(digitalTwin.DTName)}`,
       'success',
       setSnackbarMessage,
       setSnackbarSeverity,
@@ -95,7 +96,7 @@ export const handleStop = async (
     );
   } catch (error) {
     setSnackbar(
-      `Execution stop failed for ${digitalTwin.DTName} (Run #${digitalTwin.executionCount})`,
+      `Execution stop failed for ${digitalTwin.DTName})`,
       'error',
       setSnackbarMessage,
       setSnackbarSeverity,
@@ -119,7 +120,7 @@ const stopPipelines = async (digitalTwin: DigitalTwin) => {
   }
 };
 
-const setSnackbar = (
+export const setSnackbar = (
   message: string,
   severity: AlertColor,
   setSnackbarMessage: Dispatch<SetStateAction<string>>,

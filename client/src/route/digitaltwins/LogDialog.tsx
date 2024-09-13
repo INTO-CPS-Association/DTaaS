@@ -31,7 +31,7 @@ function LogDialog({ showLog, setShowLog, name }: LogDialogProps) {
       onClose={() => handleCloseLog(setShowLog)}
       maxWidth="md"
     >
-      <DialogTitle>{`${formatName(name)} - log (run #${digitalTwin.executionCount})`}</DialogTitle>
+      <DialogTitle>{`${formatName(name)} log`}</DialogTitle>
       <DialogContent dividers>
         {digitalTwin.jobLogs.length > 0 ? (
           digitalTwin.jobLogs.map((jobLog, index) => (

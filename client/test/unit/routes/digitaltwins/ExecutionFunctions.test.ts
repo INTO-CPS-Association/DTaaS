@@ -27,7 +27,6 @@ describe('ExecutionFunctions', () => {
   let mockSetPipelineCompleted: jest.Mock;
   let mockSetPipelineLoading: jest.Mock;
   let mockSetExecutionStatus: jest.Mock;
-  let mockSetExecutionCount: jest.Mock;
   let mockSetSnackbarMessage: jest.Mock;
   let mockSetSnackbarSeverity: jest.Mock;
   let mockSetSnackbarOpen: jest.Mock;
@@ -40,7 +39,6 @@ describe('ExecutionFunctions', () => {
     mockSetPipelineCompleted = jest.fn();
     mockSetPipelineLoading = jest.fn();
     mockSetExecutionStatus = jest.fn();
-    mockSetExecutionCount = jest.fn();
     mockSetSnackbarMessage = jest.fn();
     mockSetSnackbarSeverity = jest.fn();
     mockSetSnackbarOpen = jest.fn();
@@ -56,7 +54,6 @@ describe('ExecutionFunctions', () => {
       mockSetPipelineCompleted,
       mockSetPipelineLoading,
       mockSetExecutionStatus,
-      mockSetExecutionCount,
       digitalTwin,
       mockSetSnackbarMessage,
       mockSetSnackbarSeverity,
@@ -78,7 +75,6 @@ describe('ExecutionFunctions', () => {
       mockSetPipelineCompleted,
       mockSetPipelineLoading,
       mockSetExecutionStatus,
-      mockSetExecutionCount,
       digitalTwin,
       mockSetSnackbarMessage,
       mockSetSnackbarSeverity,

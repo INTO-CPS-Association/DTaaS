@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import '@testing-library/jest-dom';
 
-jest.mock('route/digitaltwins/ExecutionFunctions', () => ({
+jest.mock('route/digitaltwins/pipelineHandler', () => ({
   handleButtonClick: jest.fn(),
 }));
 
@@ -54,7 +54,7 @@ describe('StartStopButton', () => {
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
-  test('renders circular progress when pipelineLoading is true', async () => {
+  test('renders circular progress when pipelineLoading is true', () => {
     (useSelector as jest.Mock).mockImplementationOnce((selector) =>
       selector({
         digitalTwin: {
@@ -74,7 +74,6 @@ describe('StartStopButton', () => {
     );
 
     expect(screen.getByTestId('circular-progress')).toBeInTheDocument();
-
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
@@ -90,7 +89,6 @@ describe('StartStopButton', () => {
     );
 
     expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
-
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
