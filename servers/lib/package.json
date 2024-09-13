@@ -25,7 +25,7 @@
     "test:e2e": "npx cross-env LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
     "test:http": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test",
     "test:http-nocov": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd  --coverage=false && pm2 delete libms-test",
-    "test:http-github": "yarn build && yarn start:pm2 && sleep 10s && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms",
+    "test:http-github": "jest test/cloudcmd --coverage --coverageThreshold=\"{}\"",
     "test:int": "npx cross-env LOCAL_PATH=test/data jest ../test/integration --coverage",
     "test:nocov": "yarn test:http-nocov && npx cross-env LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage=false",
     "test:unit": "npx cross-env LOCAL_PATH=test/data jest ../test/unit --coverage"
