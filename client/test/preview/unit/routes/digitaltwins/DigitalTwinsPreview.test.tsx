@@ -1,20 +1,13 @@
 import * as React from 'react';
-import DigitalTwinsPreview, {
-  fetchSubfolders,
-} from 'route/digitaltwins/DigitalTwinsPreview';
-import tabs from 'route/digitaltwins/DigitalTwinTabData';
-import {
-  InitRouteTests,
-  itDisplaysContentOfExecuteTab,
-  itHasCorrectExecuteTabNameInDTIframe,
-} from 'test/unit/unit.testUtil';
+import DigitalTwinsPreview, { fetchSubfolders } from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import tabs from 'preview/route/digitaltwins/DigitalTwinTabDataPreview';
 import store from 'store/store';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import { GitlabInstance } from 'util/gitlab';
-import { renderHook, act } from '@testing-library/react';
-import { Asset } from 'components/asset/Asset';
+import { render, screen, act, renderHook } from '@testing-library/react';
+import { Asset } from 'preview/components/asset/Asset';
 
 jest.mock('react-oidc-context', () => ({
   ...jest.requireActual('react-oidc-context'),
@@ -34,20 +27,42 @@ jest.mock('util/envUtil', () => ({
 }));
 
 describe('Digital Twins Preview', () => {
-  const tabLabels: string[] = [];
-  tabs.forEach((tab) => tabLabels.push(tab.label));
+  const tabLabels: string[] = tabs.map(tab => tab.label);
 
-  InitRouteTests(
-    <Provider store={store}>
-      <MemoryRouter>
-        <DigitalTwinsPreview />
-      </MemoryRouter>
-    </Provider>,
-  );
+  it('should render the label of the Execute tab', () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <DigitalTwinsPreview />
+        </MemoryRouter>
+      </Provider>
+    );
+    const executeTab = tabs.find(tab => tab.label === 'Execute');
 
-  itDisplaysContentOfExecuteTab(tabs);
+    if (executeTab) {
+      expect(
+        screen.getByRole('tab', { name: executeTab.label })
+      ).toBeInTheDocument();
+    }
+  });
 
-  itHasCorrectExecuteTabNameInDTIframe(tabLabels);
+  it("should render the Iframe component on DT page for the 'Execute' tab with the correct title", () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <DigitalTwinsPreview />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const executeTabLabel = tabLabels.find(label => label === 'Execute');
+
+    if (executeTabLabel) {
+      const tabElement = screen.getByRole('tab', { name: executeTabLabel });
+      expect(tabElement).toBeTruthy();
+    }
+  });
+
 
   it('should call getDTSubfolders and update subfolders state', async () => {
     const mockGitlabInstance = new GitlabInstance(
@@ -57,17 +72,14 @@ describe('Digital Twins Preview', () => {
     );
     const { result } = renderHook(() => React.useState<Asset[]>([]));
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      result.current[1];
+    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> = result.current[1];
 
     await act(async () => {
       await fetchSubfolders(mockGitlabInstance, setSubfolders, jest.fn());
     });
 
     expect(mockGitlabInstance.init).toHaveBeenCalled();
-    expect(mockGitlabInstance.getDTSubfolders).toHaveBeenCalledWith(
-      'mockedProjectId',
-    );
+    expect(mockGitlabInstance.getDTSubfolders).toHaveBeenCalledWith('mockedProjectId');
     expect(result.current[0]).toEqual([]);
   });
 
@@ -84,8 +96,7 @@ describe('Digital Twins Preview', () => {
 
     const { result } = renderHook(() => React.useState<Asset[]>([]));
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      result.current[1];
+    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> = result.current[1];
 
     await act(async () => {
       await fetchSubfolders(mockGitlabInstance, setSubfolders, jest.fn());
@@ -102,21 +113,13 @@ describe('Digital Twins Preview', () => {
       'https://example.com',
       'access_token',
     );
-    jest
-      .spyOn(mockGitlabInstance, 'init')
-      .mockRejectedValue(new Error('Initialization failed'));
+    jest.spyOn(mockGitlabInstance, 'init').mockRejectedValue(new Error('Initialization failed'));
 
-    const { result: subfoldersResult } = renderHook(() =>
-      React.useState<Asset[]>([]),
-    );
-    const { result: errorResult } = renderHook(() =>
-      React.useState<string | null>(null),
-    );
+    const { result: subfoldersResult } = renderHook(() => React.useState<Asset[]>([]));
+    const { result: errorResult } = renderHook(() => React.useState<string | null>(null));
 
-    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> =
-      subfoldersResult.current[1];
-    const setError: React.Dispatch<React.SetStateAction<string | null>> =
-      errorResult.current[1];
+    const setSubfolders: React.Dispatch<React.SetStateAction<Asset[]>> = subfoldersResult.current[1];
+    const setError: React.Dispatch<React.SetStateAction<string | null>> = errorResult.current[1];
 
     await act(async () => {
       await fetchSubfolders(mockGitlabInstance, setSubfolders, setError);

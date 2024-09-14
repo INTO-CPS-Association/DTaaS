@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import { GitlabInstance } from 'util/gitlab';
-import { Asset } from './Asset';
-import AssetCardExecute from './AssetCard';
+import { Asset } from 'preview/components/asset/Asset';
+import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 
 const outerGridContainerProps = {
   container: true,

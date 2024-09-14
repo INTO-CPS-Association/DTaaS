@@ -7,7 +7,7 @@ import {
   updatePipelineState,
   updatePipelineStateOnStop,
 } from './pipelineUtils';
-import startPipelineStatusCheck from './pipelineChecks';
+import { startPipelineStatusCheck } from './pipelineChecks';
 
 export const handleButtonClick = (
   buttonText: string,
@@ -107,7 +107,7 @@ export const handleStop = async (
   }
 };
 
-const stopPipelines = async (digitalTwin: DigitalTwin) => {
+export const stopPipelines = async (digitalTwin: DigitalTwin) => {
   if (digitalTwin.gitlabInstance.projectId && digitalTwin.pipelineId) {
     await digitalTwin.stop(
       digitalTwin.gitlabInstance.projectId,

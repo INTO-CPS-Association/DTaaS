@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
-import AssetBoard from 'components/asset/AssetBoard';
-import { Asset } from 'components/asset/Asset';
+import { render, screen, act } from '@testing-library/react';
+import AssetBoard from 'preview/components/asset/AssetBoard';
+import { Asset } from 'preview/components/asset/Asset';
 import { GitlabInstance } from 'util/gitlab';
 import '@testing-library/jest-dom';
 import store from 'store/store';
 import { Provider } from 'react-redux';
-
-jest.unmock('components/asset/AssetBoard');
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -21,8 +19,8 @@ jest.mock('util/envUtil', () => ({
 jest.mock('');
 
 const assetsMock: Asset[] = [
-  { name: 'Asset1', path: 'path1', description: 'Description1' },
-  { name: 'Asset2', path: 'path2', description: 'Description2' },
+  { name: 'Test Asset', path: 'path1', description: 'Description1' },
+  { name: 'Test Asset', path: 'path2', description: 'Description2' },
 ];
 
 jest.mock('util/gitlab', () => ({
@@ -38,17 +36,19 @@ const mockGitlabInstance = new GitlabInstance(
 );
 
 describe('AssetBoard', () => {
-  it('renders AssetCard components for each asset', () => {
-    render(
+  it('renders AssetCard components for each asset', async() => {
+  
+    await act( async () =>
+      render(
       <Provider store={store}>
         <AssetBoard
           subfolders={assetsMock}
           gitlabInstance={mockGitlabInstance}
           error={null}
         />
-        );
       </Provider>,
-    );
+    ));
+
     const cards = screen.getAllByText(/Description/);
     expect(cards).toHaveLength(assetsMock.length);
   });

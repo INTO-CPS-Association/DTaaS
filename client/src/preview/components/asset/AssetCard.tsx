@@ -8,13 +8,13 @@ import styled from '@emotion/styled';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
-import CustomSnackbar from 'route/digitaltwins/Snackbar';
+import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDigitalTwin,
   selectDigitalTwinByName,
 } from 'store/digitalTwin.slice';
-import LogDialog from 'route/digitaltwins/LogDialog';
+import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
@@ -128,18 +128,22 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const initialize = async () => {
     const gitlabInstance = new GitlabInstance(
       sessionStorage.getItem('username') || '',
       getAuthority(),
       sessionStorage.getItem('access_token') || '',
     );
-    gitlabInstance.init();
-    dispatch(
-      setDigitalTwin({
-        assetName: asset.name,
-        digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
-      }),
-    );
+    await gitlabInstance.init();
+      dispatch(
+        setDigitalTwin({
+          assetName: asset.name,
+          digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
+        }),
+      );
+  }
+
+  initialize();
   }, [asset.name, dispatch]);
 
   const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
@@ -175,4 +179,4 @@ function AssetCardExecute({ asset }: AssetCardExecuteProps) {
   );
 }
 
-export default AssetCardExecute;
+export { AssetCard, AssetCardExecute, CardButtonsContainerExecute };

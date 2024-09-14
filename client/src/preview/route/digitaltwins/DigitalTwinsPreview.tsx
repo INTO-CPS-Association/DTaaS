@@ -4,11 +4,11 @@ import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { Asset } from 'components/asset/Asset';
-import AssetBoard from 'components/asset/AssetBoard';
+import { Asset } from 'preview/components/asset/Asset';
+import AssetBoard from 'preview/components/asset/AssetBoard';
 import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
-import tabs from './DigitalTwinTabData';
+import tabs from '../../../route/digitaltwins/DigitalTwinTabData';
 
 const createDTTab = (
   subfolders: Asset[],

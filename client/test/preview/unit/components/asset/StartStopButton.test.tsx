@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import StartStopButton from 'components/asset/StartStopButton';
-import { handleButtonClick } from 'route/digitaltwins/pipelineHandler';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import StartStopButton from 'preview/components/asset/StartStopButton';
+import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import '@testing-library/jest-dom';
 
-jest.mock('route/digitaltwins/pipelineHandler', () => ({
+jest.mock('preview/route/digitaltwins/execute/pipelineHandler', () => ({
   handleButtonClick: jest.fn(),
 }));
 
@@ -40,8 +40,9 @@ describe('StartStopButton', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with start button text initially', () => {
-    render(
+  test('renders with start button text initially', async () => {
+    await act( async () =>
+      render(
       <StartStopButton
         assetName="testAsset"
         setSnackbarOpen={mockSetSnackbarOpen}
@@ -49,12 +50,12 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ))
 
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
-  test('renders circular progress when pipelineLoading is true', () => {
+  test('renders circular progress when pipelineLoading is true', async () => {
     (useSelector as jest.Mock).mockImplementationOnce((selector) =>
       selector({
         digitalTwin: {
@@ -62,7 +63,7 @@ describe('StartStopButton', () => {
         },
       } as unknown as RootState),
     );
-
+    await act( async () =>
     render(
       <StartStopButton
         assetName="testAsset"
@@ -71,14 +72,15 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ));
 
     expect(screen.getByTestId('circular-progress')).toBeInTheDocument();
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
-  test('does not render circular progress when pipelineLoading is false', () => {
-    render(
+  test('does not render circular progress when pipelineLoading is false', async () => {
+    await act( async () =>
+      render(
       <StartStopButton
         assetName="testAsset"
         setSnackbarOpen={mockSetSnackbarOpen}
@@ -86,14 +88,15 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ));
 
     expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
-  test('calls handleButtonClick with correct arguments when button is clicked', () => {
-    render(
+  test('calls handleButtonClick with correct arguments when button is clicked', async () => {
+    await act( async () =>
+      render(
       <StartStopButton
         assetName="testAsset"
         setSnackbarOpen={mockSetSnackbarOpen}
@@ -101,7 +104,7 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ));
 
     fireEvent.click(screen.getByText('Start'));
 
@@ -134,7 +137,8 @@ describe('StartStopButton', () => {
       },
     );
 
-    render(
+    await act( async () =>
+      render(
       <StartStopButton
         assetName="testAsset"
         setSnackbarOpen={mockSetSnackbarOpen}
@@ -142,7 +146,7 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ));
 
     fireEvent.click(screen.getByText('Start'));
 
@@ -171,7 +175,8 @@ describe('StartStopButton', () => {
       },
     );
 
-    render(
+    await act( async () =>
+      render(
       <StartStopButton
         assetName="testAsset"
         setSnackbarOpen={mockSetSnackbarOpen}
@@ -179,7 +184,7 @@ describe('StartStopButton', () => {
         setSnackbarSeverity={mockSetSnackbarSeverity}
         setLogButtonDisabled={mockSetLogButtonDisabled}
       />,
-    );
+    ));
 
     fireEvent.click(screen.getByText('Start'));
 

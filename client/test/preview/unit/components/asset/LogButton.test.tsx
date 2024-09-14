@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import LogButton from 'components/asset/LogButton';
+import LogButton from 'preview/components/asset/LogButton';
 
 const mockSetShowLog = jest.fn();
 

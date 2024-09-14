@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import CustomSnackbar from 'route/digitaltwins/Snackbar'; // Adjust the import path accordingly
+import CustomSnackbar from 'preview/route/digitaltwins/Snackbar'; // Adjust the import path accordingly
 
 describe('CustomSnackbar', () => {
   it('renders the snackbar with the correct message and severity', () => {
