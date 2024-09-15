@@ -4,15 +4,13 @@ import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
-import { Asset } from 'preview/components/asset/Asset';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
-import tabs from '../../../route/digitaltwins/DigitalTwinTabData';
+import { setAssets } from 'store/assets.slice';
+import tabs from './DigitalTwinTabDataPreview';
 
-const createDTTab = (
-  error: string | null,
-): TabData[] =>
+const createDTTab = (error: string | null): TabData[] =>
   tabs
     .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
     .map((tab) => ({
@@ -20,10 +18,7 @@ const createDTTab = (
       body: (
         <>
           <Typography variant="body1">{tab.body}</Typography>
-          <AssetBoard
-            tab={tab.label}
-            error={error}
-          />
+          <AssetBoard tab={tab.label} error={error} />
         </>
       ),
     }));
@@ -69,3 +64,4 @@ function DTContent() {
 }
 
 export default DTContent;
+

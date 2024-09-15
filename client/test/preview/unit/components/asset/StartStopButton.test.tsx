@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import StartStopButton from 'preview/components/asset/StartStopButton';
 import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { useSelector, useDispatch } from 'react-redux';
@@ -41,16 +47,17 @@ describe('StartStopButton', () => {
   });
 
   test('renders with start button text initially', async () => {
-    await act( async () =>
+    await act(async () =>
       render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ))
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
@@ -63,48 +70,51 @@ describe('StartStopButton', () => {
         },
       } as unknown as RootState),
     );
-    await act( async () =>
-    render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ));
+    await act(async () =>
+      render(
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     expect(screen.getByTestId('circular-progress')).toBeInTheDocument();
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
   test('does not render circular progress when pipelineLoading is false', async () => {
-    await act( async () =>
+    await act(async () =>
       render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ));
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
     expect(screen.getByText('Start')).toBeInTheDocument();
   });
 
   test('calls handleButtonClick with correct arguments when button is clicked', async () => {
-    await act( async () =>
+    await act(async () =>
       render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ));
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     fireEvent.click(screen.getByText('Start'));
 
@@ -137,16 +147,17 @@ describe('StartStopButton', () => {
       },
     );
 
-    await act( async () =>
+    await act(async () =>
       render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ));
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     fireEvent.click(screen.getByText('Start'));
 
@@ -175,16 +186,17 @@ describe('StartStopButton', () => {
       },
     );
 
-    await act( async () =>
+    await act(async () =>
       render(
-      <StartStopButton
-        assetName="testAsset"
-        setSnackbarOpen={mockSetSnackbarOpen}
-        setSnackbarMessage={mockSetSnackbarMessage}
-        setSnackbarSeverity={mockSetSnackbarSeverity}
-        setLogButtonDisabled={mockSetLogButtonDisabled}
-      />,
-    ));
+        <StartStopButton
+          assetName="testAsset"
+          setSnackbarOpen={mockSetSnackbarOpen}
+          setSnackbarMessage={mockSetSnackbarMessage}
+          setSnackbarSeverity={mockSetSnackbarSeverity}
+          setLogButtonDisabled={mockSetLogButtonDisabled}
+        />,
+      ),
+    );
 
     fireEvent.click(screen.getByText('Start'));
 

@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { AssetCard, AssetCardExecute, CardButtonsContainerExecute } from 'preview/components/asset/AssetCard';
+import {
+  AssetCard,
+  AssetCardExecute,
+  CardButtonsContainerExecute,
+} from 'preview/components/asset/AssetCard';
 import { setDigitalTwin } from 'store/digitalTwin.slice';
 import { GitlabInstance } from 'util/gitlab';
 import DigitalTwin from 'util/gitlabDigitalTwin';
@@ -31,7 +35,7 @@ describe('AssetCard', () => {
     render(
       <Provider store={store}>
         <AssetCard asset={asset} />
-      </Provider>
+      </Provider>,
     );
     expect(screen.getByText('Test Asset')).toBeInTheDocument();
     expect(screen.getByText('Test Description')).toBeInTheDocument();
@@ -47,14 +51,14 @@ describe('CardButtonsContainerExecute', () => {
 
     render(
       <Provider store={store}>
-      <CardButtonsContainerExecute
-        assetName="Test Asset"
-        setSnackbarOpen={setSnackbarOpen}
-        setSnackbarMessage={setSnackbarMessage}
-        setSnackbarSeverity={setSnackbarSeverity}
-        setShowLog={setShowLog}
-      />
-      </Provider>
+        <CardButtonsContainerExecute
+          assetName="Test Asset"
+          setSnackbarOpen={setSnackbarOpen}
+          setSnackbarMessage={setSnackbarMessage}
+          setSnackbarSeverity={setSnackbarSeverity}
+          setShowLog={setShowLog}
+        />
+      </Provider>,
     );
 
     // Verifica che i pulsanti siano renderizzati
@@ -62,7 +66,6 @@ describe('CardButtonsContainerExecute', () => {
     expect(screen.getByText('Log')).toBeInTheDocument();
   });
 });
-
 
 describe('AssetCardExecute', () => {
   const asset: Asset = {
@@ -75,14 +78,22 @@ describe('AssetCardExecute', () => {
     (GitlabInstance as jest.Mock).mockImplementation(() => ({
       init: jest.fn(),
     }));
-    store.dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin: new DigitalTwin(asset.name, new GitlabInstance('user1', 'authority', 'token1')) }));
+    store.dispatch(
+      setDigitalTwin({
+        assetName: asset.name,
+        digitalTwin: new DigitalTwin(
+          asset.name,
+          new GitlabInstance('user1', 'authority', 'token1'),
+        ),
+      }),
+    );
   });
 
   it('should render AssetCardExecute and handle interactions', async () => {
     render(
       <Provider store={store}>
         <AssetCardExecute asset={asset} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Test Asset')).toBeInTheDocument();

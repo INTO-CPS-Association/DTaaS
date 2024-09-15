@@ -48,12 +48,12 @@ describe('startPipeline', () => {
       digitalTwin,
       setSnackbarMessage,
       setSnackbarSeverity,
-      setSnackbarOpen
+      setSnackbarOpen,
     );
 
     expect(digitalTwin.execute).toHaveBeenCalled();
     expect(setSnackbarMessage).toHaveBeenCalledWith(
-      `Execution started successfully for TestDT. Wait until completion for the logs...`
+      `Execution started successfully for TestDT. Wait until completion for the logs...`,
     );
     expect(setSnackbarSeverity).toHaveBeenCalledWith('success');
     expect(setSnackbarOpen).toHaveBeenCalledWith(true);
@@ -65,11 +65,11 @@ describe('startPipeline', () => {
       digitalTwin,
       setSnackbarMessage,
       setSnackbarSeverity,
-      setSnackbarOpen
+      setSnackbarOpen,
     );
 
     expect(setSnackbarMessage).toHaveBeenCalledWith(
-      `Execution error for TestDT`
+      `Execution error for TestDT`,
     );
     expect(setSnackbarSeverity).toHaveBeenCalledWith('error');
     expect(setSnackbarOpen).toHaveBeenCalledWith(true);
@@ -89,10 +89,10 @@ describe('updatePipelineState', () => {
     updatePipelineState(digitalTwin, dispatch);
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: false })
+      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: false }),
     );
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: true })
+      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: true }),
     );
   });
 });
@@ -118,17 +118,17 @@ describe('updatePipelineStateOnCompletion', () => {
       jobLogs,
       setButtonText,
       setLogButtonDisabled,
-      dispatch
+      dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      setJobLogs({ assetName: 'TestDT', jobLogs })
+      setJobLogs({ assetName: 'TestDT', jobLogs }),
     );
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true })
+      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true }),
     );
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false })
+      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false }),
     );
     expect(setButtonText).toHaveBeenCalledWith('Start');
     expect(setLogButtonDisabled).toHaveBeenCalledWith(false);
@@ -151,10 +151,10 @@ describe('updatePipelineStateOnStop', () => {
 
     expect(setButtonText).toHaveBeenCalledWith('Start');
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true })
+      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true }),
     );
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false })
+      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false }),
     );
   });
 });

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 import { useDispatch } from 'react-redux';
-import { showSnackbar } from 'store/snackbar.slice'; // Importa l'azione di Redux
+import { showSnackbar } from 'store/snackbar.slice';
 import {
   startPipeline,
   updatePipelineState,
@@ -42,18 +42,14 @@ export const handleStart = async (
     updatePipelineState(digitalTwin, dispatch);
     await startPipeline(
       digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
+      dispatch,
+      setLogButtonDisabled,
     );
     const params = {
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
       dispatch,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
     };
     startPipelineStatusCheck(params);
   } else {
@@ -68,20 +64,20 @@ export const handleStop = async (
 ) => {
   try {
     await stopPipelines(digitalTwin);
-    setSnackbar(
-      `Execution stopped successfully for ${formatName(digitalTwin.DTName)}`,
-      'success',
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-    );
+    dispatch(
+      showSnackbar({
+        message: `Execution stopped successfully for ${formatName(
+          digitalTwin.DTName,
+        )}`,
+        severity: 'success',
+      }),
+      )
   } catch (error) {
-    setSnackbar(
-      `Execution stop failed for ${digitalTwin.DTName})`,
-      'error',
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
+    dispatch(
+      showSnackbar({
+        message: `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
+        severity: 'error',
+      }),
     );
   } finally {
     updatePipelineStateOnStop(digitalTwin, setButtonText, dispatch);
@@ -99,16 +95,4 @@ export const stopPipelines = async (digitalTwin: DigitalTwin) => {
       digitalTwin.pipelineId + 1,
     );
   }
-};
-
-export const setSnackbar = (
-  message: string,
-  severity: AlertColor,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
-) => {
-  setSnackbarMessage(message);
-  setSnackbarSeverity(severity);
-  setSnackbarOpen(true);
 };

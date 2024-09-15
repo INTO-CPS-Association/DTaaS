@@ -22,7 +22,11 @@ interface AssetBoardProps {
   error: string | null;
 }
 
-const AssetGridItem: React.FC<{ asset: Asset; tab: string; onDelete: (path: string) => void }> = ({ asset, tab, onDelete }) => (
+const AssetGridItem: React.FC<{
+  asset: Asset;
+  tab: string;
+  onDelete: (path: string) => void;
+}> = ({ asset, tab, onDelete }) => (
   <Grid
     key={asset.path}
     item
@@ -35,10 +39,7 @@ const AssetGridItem: React.FC<{ asset: Asset; tab: string; onDelete: (path: stri
     {tab === 'Execute' ? (
       <AssetCardExecute asset={asset} />
     ) : (
-      <AssetCardManage
-        asset={asset}
-        onDelete={() => onDelete(asset.path)}
-      />
+      <AssetCardManage asset={asset} onDelete={() => onDelete(asset.path)} />
     )}
   </Grid>
 );
@@ -67,6 +68,6 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
       ))}
     </Grid>
   );
-}
+};
 
 export default AssetBoard;

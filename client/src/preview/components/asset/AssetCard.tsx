@@ -144,21 +144,21 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
 
   useEffect(() => {
     const initialize = async () => {
-    const gitlabInstance = new GitlabInstance(
-      sessionStorage.getItem('username') || '',
-      getAuthority(),
-      sessionStorage.getItem('access_token') || '',
-    );
-    await gitlabInstance.init();
+      const gitlabInstance = new GitlabInstance(
+        sessionStorage.getItem('username') || '',
+        getAuthority(),
+        sessionStorage.getItem('access_token') || '',
+      );
+      await gitlabInstance.init();
       dispatch(
         setDigitalTwin({
           assetName: asset.name,
           digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
         }),
       );
-  }
+    };
 
-  initialize();
+    initialize();
   }, [asset.name, dispatch]);
 
   return (
@@ -199,21 +199,21 @@ function AssetCardExecute({ asset }: AssetCardProps) {
 
   useEffect(() => {
     const initialize = async () => {
-    const gitlabInstance = new GitlabInstance(
-      sessionStorage.getItem('username') || '',
-      getAuthority(),
-      sessionStorage.getItem('access_token') || '',
-    );
-    await gitlabInstance.init();
+      const gitlabInstance = new GitlabInstance(
+        sessionStorage.getItem('username') || '',
+        getAuthority(),
+        sessionStorage.getItem('access_token') || '',
+      );
+      await gitlabInstance.init();
       dispatch(
         setDigitalTwin({
           assetName: asset.name,
           digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
         }),
       );
-  }
+    };
 
-  initialize();
+    initialize();
   }, [asset.name, dispatch]);
 
   const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));

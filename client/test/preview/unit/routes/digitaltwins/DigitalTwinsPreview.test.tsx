@@ -1,5 +1,7 @@
 import * as React from 'react';
-import DigitalTwinsPreview, { fetchSubfolders } from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview, {
+  fetchSubfolders,
+} from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import tabs from 'preview/route/digitaltwins/DigitalTwinTabDataPreview';
 import store from 'store/store';
 import { Provider, useDispatch } from 'react-redux';
@@ -26,7 +28,7 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('Digital Twins Preview', () => {
-  const tabLabels: string[] = tabs.map(tab => tab.label);
+  const tabLabels: string[] = tabs.map((tab) => tab.label);
 
   it('should render the label of the Execute tab', () => {
     render(
@@ -34,13 +36,13 @@ describe('Digital Twins Preview', () => {
         <MemoryRouter>
           <DigitalTwinsPreview />
         </MemoryRouter>
-      </Provider>
+      </Provider>,
     );
-    const executeTab = tabs.find(tab => tab.label === 'Execute');
+    const executeTab = tabs.find((tab) => tab.label === 'Execute');
 
     if (executeTab) {
       expect(
-        screen.getByRole('tab', { name: executeTab.label })
+        screen.getByRole('tab', { name: executeTab.label }),
       ).toBeInTheDocument();
     }
   });
@@ -51,17 +53,16 @@ describe('Digital Twins Preview', () => {
         <MemoryRouter>
           <DigitalTwinsPreview />
         </MemoryRouter>
-      </Provider>
+      </Provider>,
     );
 
-    const executeTabLabel = tabLabels.find(label => label === 'Execute');
+    const executeTabLabel = tabLabels.find((label) => label === 'Execute');
 
     if (executeTabLabel) {
       const tabElement = screen.getByRole('tab', { name: executeTabLabel });
       expect(tabElement).toBeTruthy();
     }
   });
-
 
   it('should call getDTSubfolders and dispatch setAssets', async () => {
     const mockGitlabInstance = new GitlabInstance(

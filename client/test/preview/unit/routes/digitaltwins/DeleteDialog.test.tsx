@@ -5,6 +5,7 @@ import DetailsDialog from 'route/digitaltwins/DetailsDialog';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 import { GitlabInstance } from 'util/gitlab';
+import store from 'store/store';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -15,20 +16,17 @@ jest.mock('store/digitalTwin.slice', () => ({
 }));
 
 describe('DetailsDialog', () => {
-  let store: any;
   let setShowLogMock: jest.Mock;
 
-  const renderComponent = (props: { showLog: boolean; name: string }) => {
-    return render(
+  const renderComponent = (props: { showLog: boolean; name: string }) => render(
       <Provider store={store}>
         <DetailsDialog
           showLog={props.showLog}
           setShowLog={setShowLogMock}
           name={props.name}
         />
-      </Provider>
+      </Provider>,
     );
-  };
 
   beforeEach(() => {
     setShowLogMock = jest.fn();

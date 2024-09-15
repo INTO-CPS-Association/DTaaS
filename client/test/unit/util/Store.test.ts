@@ -1,6 +1,11 @@
 import menuReducer, { openMenu, closeMenu } from 'store/menu.slice';
 import authReducer, { setUserName } from 'store/auth.slice';
-import digitalTwinReducer, { setDigitalTwin, setJobLogs, setPipelineCompleted, setPipelineLoading } from 'store/digitalTwin.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+  setJobLogs,
+  setPipelineCompleted,
+  setPipelineLoading,
+} from 'store/digitalTwin.slice';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 import { GitlabInstance } from 'util/gitlab';
 import { JobLog } from 'preview/components/asset/StartStopButton';
@@ -76,32 +81,56 @@ describe('reducers', () => {
     });
 
     it('should handle setDigitalTwin', () => {
-      const digitalTwin = new DigitalTwin('asset1', new GitlabInstance('user1', 'authority', 'token1'));
-      const newState = digitalTwinReducer(initialState.digitalTwin, setDigitalTwin({ assetName: 'asset1', digitalTwin }));
-      expect(newState['asset1']).toEqual(digitalTwin);
+      const digitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1'),
+      );
+      const newState = digitalTwinReducer(
+        initialState.digitalTwin,
+        setDigitalTwin({ assetName: 'asset1', digitalTwin }),
+      );
+      expect(newState.asset1).toEqual(digitalTwin);
     });
-    
+
     it('should handle setJobLogs', () => {
-      const jobLogs: JobLog[] = [{ jobName: 'job1', log: 'log'}];
-      const digitalTwin = new DigitalTwin('asset1', new GitlabInstance('user1', 'authority', 'token1'));
+      const jobLogs: JobLog[] = [{ jobName: 'job1', log: 'log' }];
+      const digitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1'),
+      );
       digitalTwin.jobLogs = jobLogs;
-      initialState.digitalTwin['asset1'] = digitalTwin;
-      const newState = digitalTwinReducer(initialState.digitalTwin, setJobLogs({ assetName: 'asset1', jobLogs }));
-      expect(newState['asset1'].jobLogs).toEqual(jobLogs);
+      initialState.digitalTwin.asset1 = digitalTwin;
+      const newState = digitalTwinReducer(
+        initialState.digitalTwin,
+        setJobLogs({ assetName: 'asset1', jobLogs }),
+      );
+      expect(newState.asset1.jobLogs).toEqual(jobLogs);
     });
 
     it('should handle setPipelineCompleted', () => {
-      const digitalTwin = new DigitalTwin('asset1', new GitlabInstance('user1', 'authority', 'token1'));
-      initialState.digitalTwin['asset1'] = digitalTwin;
-      const newState = digitalTwinReducer(initialState.digitalTwin, setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true }));
-      expect(newState['asset1'].pipelineCompleted).toBe(true);
+      const digitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1'),
+      );
+      initialState.digitalTwin.asset1 = digitalTwin;
+      const newState = digitalTwinReducer(
+        initialState.digitalTwin,
+        setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true }),
+      );
+      expect(newState.asset1.pipelineCompleted).toBe(true);
     });
 
     it('should handle setPipelineLoading', () => {
-      const digitalTwin = new DigitalTwin('asset1', new GitlabInstance('user1', 'authority', 'token1'));
-      initialState.digitalTwin['asset1'] = digitalTwin;
-      const newState = digitalTwinReducer(initialState.digitalTwin, setPipelineLoading({ assetName: 'asset1', pipelineLoading: true }));
-      expect(newState['asset1'].pipelineLoading).toBe(true);
+      const digitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1'),
+      );
+      initialState.digitalTwin.asset1 = digitalTwin;
+      const newState = digitalTwinReducer(
+        initialState.digitalTwin,
+        setPipelineLoading({ assetName: 'asset1', pipelineLoading: true }),
+      );
+      expect(newState.asset1.pipelineLoading).toBe(true);
     });
   });
 });

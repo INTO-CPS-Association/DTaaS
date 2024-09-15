@@ -11,20 +11,21 @@ import { showSnackbar } from 'store/snackbar.slice';
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
-  setSnackbarMessage: Dispatch<SetStateAction<string>>,
-  setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>,
-  setSnackbarOpen: Dispatch<SetStateAction<boolean>>,
+  dispatch: ReturnType<typeof useDispatch>,
+  setLogButtonDisabled: Dispatch<SetStateAction<boolean>>,
 ) => {
   await digitalTwin.execute();
   const executionStatusMessage =
     digitalTwin.lastExecutionStatus === 'success'
       ? `Execution started successfully for ${formatName(digitalTwin.DTName)}. Wait until completion for the logs...`
       : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)}`;
-  setSnackbarMessage(executionStatusMessage);
-  setSnackbarSeverity(
-    digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+  dispatch(
+    showSnackbar({
+      message: executionStatusMessage,
+      severity:
+        digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+    }),
   );
-
   setLogButtonDisabled(true);
 };
 

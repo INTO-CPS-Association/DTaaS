@@ -1,7 +1,14 @@
 import { Dispatch } from 'react';
-import { startPipelineStatusCheck, handleTimeout, checkFirstPipelineStatus } from 'preview/route/digitaltwins/execute/pipelineChecks';
+import {
+  startPipelineStatusCheck,
+  handleTimeout,
+  checkFirstPipelineStatus,
+} from 'preview/route/digitaltwins/execute/pipelineChecks';
 import DigitalTwin from 'util/gitlabDigitalTwin';
-import { fetchJobLogs, updatePipelineStateOnCompletion } from 'preview/route/digitaltwins/execute/pipelineUtils';
+import {
+  fetchJobLogs,
+  updatePipelineStateOnCompletion,
+} from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { setSnackbar } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { useDispatch } from 'react-redux';
 import { AlertColor } from '@mui/material';
@@ -15,7 +22,7 @@ jest.mock('preview/route/digitaltwins/execute/pipelineHandler', () => ({
   setSnackbar: jest.fn(),
 }));
 
-//const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('Pipeline Status Tests', () => {
   let setButtonText: Dispatch<React.SetStateAction<string>>;
@@ -44,8 +51,8 @@ describe('Pipeline Status Tests', () => {
       pipelineId: 100,
     } as unknown as DigitalTwin;
 
-    //jest.useFakeTimers();
-    //Date.now = jest.fn(() => 1487076708000)
+    // jest.useFakeTimers();
+    // Date.now = jest.fn(() => 1487076708000)
   });
 
   afterEach(() => {
@@ -57,7 +64,7 @@ describe('Pipeline Status Tests', () => {
       const originalDateNow = Date.now;
       const mockDateNow = jest.fn(() => 1622547600000); // Example timestamp
       global.Date.now = mockDateNow;
-    
+
       await startPipelineStatusCheck({
         setButtonText,
         digitalTwin,
@@ -67,9 +74,9 @@ describe('Pipeline Status Tests', () => {
         setSnackbarSeverity,
         setSnackbarOpen,
       });
-    
+
       expect(mockDateNow).toHaveBeenCalled();
-    
+
       global.Date.now = originalDateNow; // Restore the original Date.now function
     });
   });
@@ -99,9 +106,14 @@ describe('Pipeline Status Tests', () => {
 
   describe('checkFirstPipelineStatus', () => {
     it('should call checkSecondPipelineStatus if pipeline is successful', async () => {
-      (digitalTwin.gitlabInstance.getPipelineStatus as jest.Mock).mockResolvedValue('success');
+      (
+        digitalTwin.gitlabInstance.getPipelineStatus as jest.Mock
+      ).mockResolvedValue('success');
 
-      const spy = jest.spyOn(require('preview/route/digitaltwins/execute/pipelineChecks.ts'), 'checkSecondPipelineStatus');
+      const spy = jest.spyOn(
+        require('preview/route/digitaltwins/execute/pipelineChecks.ts'),
+        'checkSecondPipelineStatus',
+      );
       await checkFirstPipelineStatus({
         setButtonText,
         digitalTwin,
@@ -113,12 +125,20 @@ describe('Pipeline Status Tests', () => {
         setSnackbarOpen,
       });
 
-      expect(digitalTwin.gitlabInstance.getPipelineStatus).toHaveBeenCalledWith('123', 100);
+      expect(digitalTwin.gitlabInstance.getPipelineStatus).toHaveBeenCalledWith(
+        '123',
+        100,
+      );
       expect(spy).toHaveBeenCalled();
     });
 
     it('should handle timeout correctly if execution exceeds max time', async () => {
-      jest.spyOn(require('preview/route/digitaltwins/execute/pipelineChecks.ts'), 'handleTimeout').mockImplementation(() => {});
+      jest
+        .spyOn(
+          require('preview/route/digitaltwins/execute/pipelineChecks.ts'),
+          'handleTimeout',
+        )
+        .mockImplementation(() => {});
 
       await checkFirstPipelineStatus({
         setButtonText,
@@ -130,7 +150,7 @@ describe('Pipeline Status Tests', () => {
         setSnackbarSeverity,
         setSnackbarOpen,
       });
-    
+
       // Use more flexible matching if the exact match is not crucial
       expect(handleTimeout).toHaveBeenCalledWith(
         expect.any(String), // or "Test Twin" if the value is known and fixed
@@ -143,7 +163,9 @@ describe('Pipeline Status Tests', () => {
     });
 
     it('should handle failed pipelines correctly', async () => {
-      (digitalTwin.gitlabInstance.getPipelineStatus as jest.Mock).mockResolvedValue('failed');
+      (
+        digitalTwin.gitlabInstance.getPipelineStatus as jest.Mock
+      ).mockResolvedValue('failed');
       (fetchJobLogs as jest.Mock).mockResolvedValue('mock logs');
 
       await checkFirstPipelineStatus({
@@ -157,19 +179,29 @@ describe('Pipeline Status Tests', () => {
         setSnackbarOpen,
       });
 
-      expect(fetchJobLogs).toHaveBeenCalledWith(digitalTwin.gitlabInstance, 100);
+      expect(fetchJobLogs).toHaveBeenCalledWith(
+        digitalTwin.gitlabInstance,
+        100,
+      );
       expect(updatePipelineStateOnCompletion).toHaveBeenCalled();
     });
-    
+
     it('handleTimeout should set correct states and call setSnackbar', () => {
       const mockSetButtonText = jest.fn();
       const mockSetLogButtonDisabled = jest.fn();
       const mockSetSnackbarMessage = jest.fn();
       const mockSetSnackbarSeverity = jest.fn();
       const mockSetSnackbarOpen = jest.fn();
-    
-      handleTimeout('DTName', mockSetButtonText, mockSetLogButtonDisabled, mockSetSnackbarMessage, mockSetSnackbarSeverity, mockSetSnackbarOpen);
-    
+
+      handleTimeout(
+        'DTName',
+        mockSetButtonText,
+        mockSetLogButtonDisabled,
+        mockSetSnackbarMessage,
+        mockSetSnackbarSeverity,
+        mockSetSnackbarOpen,
+      );
+
       // Verify that handleTimeout triggers the expected state changes or function calls
       expect(mockSetButtonText).toHaveBeenCalledWith('Start');
       expect(mockSetLogButtonDisabled).toHaveBeenCalledWith(false);
