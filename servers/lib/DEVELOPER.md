@@ -50,7 +50,7 @@ As of now, some features require manual testing or attention.
 ### CloudCMD (a npm package dependency)
 
 Due to how CloudCMD works,
-it is required to manually test with `LOCAL_PATH` both as an 
+it is required to manually test with `LOCAL_PATH` both as an
 absolute path and local path.
 
 | OS      | Absolute Path                 | Relative Path |
@@ -116,7 +116,16 @@ running the following commands.
 The microservices require configuration and the docker version
 of the microservices uses the configuration
 file available in `config/.env.default`.
-If you would like to adjust the configuration, please change this file.
+
+Please add a `.env` file with the environment variables for
+the docker compose file to use.
+e.g.
+
+```
+PORT='4001'
+MODE='local'
+LOCAL_PATH='..\..\files'
+```
 
 ### Use
 
@@ -134,8 +143,8 @@ The `config/.env.default` file is used as the microservice configuration.
 If the configuration values are changed, please restart the container.
 
 ```bash
-docker compose -f compose.lib.yml down
-docker compose -f compose.lib.yml up -d
+docker compose -f compose.lib.dev.yml down
+docker compose -f compose.lib.dev.yml up -d
 ```
 
 ### Publish
