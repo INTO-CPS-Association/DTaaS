@@ -47,12 +47,15 @@ The [API](./API.md) page shows sample queries and responses.
 
 As of now, some features require manual testing or attention.
 
-### CloudCMD
+### CloudCMD (a npm package dependency)
 
 Due to how CloudCMD works,
-it is required to manually test with `LOCAL_PATH` as an absolute path
-e.g. `C:\DTaaS\files` and as a relative path e.g. `..\..\files`.
-Use the paths relavant to your OS.
+it is required to manually test with `LOCAL_PATH` both as an absolute path and local path.
+
+| OS      | Absolute Path                 | Relative Path |
+| ------- | ----------------------------- | ------------- |
+| Windows | C:\DTaaS\files                | ..\\..\files  |
+| Linux   | /Users/<Username>/DTaaS/files | ../../files   |
 
 ### PM2
 
@@ -121,7 +124,7 @@ The commands to start and stop the appliation are:
 **NOTE**: the docker compose file is located in the `servers/lib` directory.
 
 ```bash
-docker compose -f compose.lib.yml up -d
+docker compose -f compose.lib.dev.yml up -d
 ```
 
 This command brings up the lib docker container and makes
