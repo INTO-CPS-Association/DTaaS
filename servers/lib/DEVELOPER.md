@@ -50,7 +50,8 @@ As of now, some features require manual testing or attention.
 ### CloudCMD (a npm package dependency)
 
 Due to how CloudCMD works,
-it is required to manually test with `LOCAL_PATH` both as an absolute path and local path.
+it is required to manually test with `LOCAL_PATH` both as an 
+absolute path and local path.
 
 | OS      | Absolute Path                 | Relative Path |
 | ------- | ----------------------------- | ------------- |
