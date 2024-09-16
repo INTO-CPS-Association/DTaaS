@@ -121,7 +121,7 @@ Please add a `.env` file with the environment variables for
 the docker compose file to use.
 e.g.
 
-```
+```sh
 PORT='4001'
 MODE='local'
 LOCAL_PATH='..\..\files'
