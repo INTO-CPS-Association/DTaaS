@@ -18,7 +18,8 @@ jest.mock('store/digitalTwin.slice', () => ({
 describe('DetailsDialog', () => {
   let setShowLogMock: jest.Mock;
 
-  const renderComponent = (props: { showLog: boolean; name: string }) => render(
+  const renderComponent = (props: { showLog: boolean; name: string }) =>
+    render(
       <Provider store={store}>
         <DetailsDialog
           showLog={props.showLog}

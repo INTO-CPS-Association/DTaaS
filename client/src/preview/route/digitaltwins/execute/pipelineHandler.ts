@@ -40,11 +40,7 @@ export const handleStart = async (
     setButtonText('Stop');
     setLogButtonDisabled(true);
     updatePipelineState(digitalTwin, dispatch);
-    await startPipeline(
-      digitalTwin,
-      dispatch,
-      setLogButtonDisabled,
-    );
+    await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
     const params = {
       setButtonText,
       digitalTwin,
@@ -71,7 +67,7 @@ export const handleStop = async (
         )}`,
         severity: 'success',
       }),
-      )
+    );
   } catch (error) {
     dispatch(
       showSnackbar({

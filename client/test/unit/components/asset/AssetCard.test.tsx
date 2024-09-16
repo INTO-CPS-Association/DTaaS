@@ -133,14 +133,14 @@ describe('AssetCard Components', () => {
   });
 
   it('renders CardButtonsContainerManage with buttons', () => {
-    const setShowDetailsLog = jest.fn();
-    const setShowDeleteLog = jest.fn();
+    const setShowDetails = jest.fn();
+    const setShowDelete = jest.fn();
 
     render(
       <CardButtonsContainerManage
         name="Asset1"
-        setShowDetailsLog={setShowDetailsLog}
-        setShowDeleteLog={setShowDeleteLog}
+        setShowDetails={setShowDetails}
+        setShowDeleteLog={setShowDelete}
       />,
     );
 
@@ -150,22 +150,22 @@ describe('AssetCard Components', () => {
   });
 
   it('handles button clicks in CardButtonsContainerManage', () => {
-    const setShowDetailsLog = jest.fn();
-    const setShowDeleteLog = jest.fn();
+    const setShowDetails = jest.fn();
+    const setShowDelete = jest.fn();
 
     render(
       <CardButtonsContainerManage
         name="Asset1"
-        setShowDetailsLog={setShowDetailsLog}
-        setShowDeleteLog={setShowDeleteLog}
+        setShowDetails={setShowDetails}
+        setShowDelete={setShowDelete}
       />,
     );
 
     fireEvent.click(screen.getByText('DetailsButton'));
-    expect(setShowDetailsLog).toHaveBeenCalled();
+    expect(setShowDetails).toHaveBeenCalled();
 
     fireEvent.click(screen.getByText('DeleteButton'));
-    expect(setShowDeleteLog).toHaveBeenCalled();
+    expect(setShowDelete).toHaveBeenCalled();
   });
 
   it('renders CardButtonsContainerExecute with buttons', () => {

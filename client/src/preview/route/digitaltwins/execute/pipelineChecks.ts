@@ -39,13 +39,10 @@ export const handleTimeout = (
   setLogButtonDisabled(false);
 };
 
-export const startPipelineStatusCheck = (
-  params: PipelineStatusParams,
-) => {
+export const startPipelineStatusCheck = (params: PipelineStatusParams) => {
   const startTime = Date.now();
   checkFirstPipelineStatus({ ...params, startTime });
 };
-
 
 export const checkFirstPipelineStatus = async ({
   setButtonText,

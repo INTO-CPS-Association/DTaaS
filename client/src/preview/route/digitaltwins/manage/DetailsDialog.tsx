@@ -35,8 +35,10 @@ function DetailsDialog({ showLog, setShowLog, name }: DetailsDialogProps) {
     >
       <DialogContent dividers>
         <Typography variant="body2">
-        <div
-            dangerouslySetInnerHTML={{ __html: md.render(digitalTwin.fullDescription) }}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: md.render(digitalTwin.fullDescription),
+            }}
           />
         </Typography>
       </DialogContent>

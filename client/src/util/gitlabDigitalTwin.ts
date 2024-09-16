@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { GitlabInstance } from './gitlab';
 
 const RUNNER_TAG = 'linux';
@@ -18,11 +20,15 @@ class DigitalTwin {
 
   public lastExecutionStatus: string | null = null;
 
+  public executionCount: number = 0;
+
   public jobLogs: { jobName: string; log: string }[] = [];
 
   public pipelineLoading: boolean = false;
 
   public pipelineCompleted: boolean = false;
+
+  public descriptionFiles: string[] = [];
 
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
@@ -135,6 +141,38 @@ class DigitalTwin {
       }
     }
     return `Error deleting ${this.DTName} digital twin: no project id`;
+  }
+
+  async getDescriptionFiles() {
+    console.log('GitlabInstance dentro la funzione', this.gitlabInstance);
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: 'digital_twins/mass-spring-damper',
+            recursive: false, // Non fare una ricerca ricorsiva
+          },
+        );
+
+      // Filtra i file che non finiscono con .json
+      const filteredFiles = response
+        .filter(
+          (item: { type: string; name: string }) =>
+            item.type === 'blob' && !item.name.endsWith('.json'),
+        )
+        .map((file: { name: string }) => file.name);
+
+      // Ordina i file mettendo il file del DT per primo
+      const sortedFiles = [
+        formatName(this.DTName),
+        ...filteredFiles.filter((name) => name !== this.DTName),
+      ];
+
+      this.descriptionFiles = sortedFiles;
+    } catch (error) {
+      this.descriptionFiles = [];
+    }
   }
 }
 

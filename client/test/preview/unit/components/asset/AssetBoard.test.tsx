@@ -41,20 +41,19 @@ jest.mock('components/asset/AssetCard', () => ({
 }));
 
 describe('AssetBoard', () => {
-  it('renders AssetCard components for each asset', async() => {
-  
-    await act( async () =>
+  it('renders AssetCard components for each asset', async () => {
+    await act(async () =>
       render(
-      <Provider store={store}>
-        <AssetBoard
-          tab="Execute"
-          subfolders={assetsMock}
-          gitlabInstance={mockGitlabInstance}
-          error={null}
-        />
-      </Provider>,
-    )
-  );
+        <Provider store={store}>
+          <AssetBoard
+            tab="Execute"
+            subfolders={assetsMock}
+            gitlabInstance={mockGitlabInstance}
+            error={null}
+          />
+        </Provider>,
+      ),
+    );
 
     const executeCards = screen.getAllByText(/Execute/);
     expect(executeCards).toHaveLength(assetsMock.length);

@@ -17,6 +17,7 @@ import {
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
+import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
@@ -37,8 +38,9 @@ interface AssetCardManageProps {
 
 interface CardButtonsContainerManageProps {
   name: string;
-  setShowDetailsLog: Dispatch<SetStateAction<boolean>>;
-  setShowDeleteLog: Dispatch<SetStateAction<boolean>>;
+  setShowDetails: Dispatch<SetStateAction<boolean>>;
+  setShowReconfigure: Dispatch<SetStateAction<boolean>>;
+  setShowDelete: Dispatch<SetStateAction<boolean>>;
 }
 
 interface CardButtonsContainerExecuteProps {
@@ -86,14 +88,15 @@ function CardActionAreaContainer(asset: Asset) {
 
 function CardButtonsContainerManage({
   name,
-  setShowDetailsLog,
-  setShowDeleteLog,
+  setShowDetails,
+  setShowReconfigure,
+  setShowDelete,
 }: CardButtonsContainerManageProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton name={name} setShowLog={setShowDetailsLog} />
-      <ReconfigureButton />
-      <DeleteButton setShowLog={setShowDeleteLog} />
+      <DetailsButton name={name} setShowLog={setShowDetails} />
+      <ReconfigureButton setShowReconfigure={setShowReconfigure} />
+      <DeleteButton setShowLog={setShowDelete} />
     </CardActions>
   );
 }
@@ -137,8 +140,9 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
 }
 
 function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
-  const [showDetailsLog, setShowDetailsLog] = useState(false);
-  const [showDeleteLog, setShowDeleteLog] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showReconfigure, setShowReconfigure] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const dispatch = useDispatch();
   const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
 
@@ -169,20 +173,26 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
           buttons={
             <CardButtonsContainerManage
               name={asset.name}
-              setShowDetailsLog={setShowDetailsLog}
-              setShowDeleteLog={setShowDeleteLog}
+              setShowDetails={setShowDetails}
+              setShowReconfigure={setShowReconfigure}
+              setShowDelete={setShowDelete}
             />
           }
         />
         <CustomSnackbar />
         <DetailsDialog
-          showLog={showDetailsLog}
-          setShowLog={setShowDetailsLog}
+          showLog={showDetails}
+          setShowLog={setShowDetails}
+          name={asset.name}
+        />
+        <ReconfigureDialog
+          showLog={showReconfigure}
+          setShowLog={setShowReconfigure}
           name={asset.name}
         />
         <DeleteDialog
-          showLog={showDeleteLog}
-          setShowLog={setShowDeleteLog}
+          showLog={showDelete}
+          setShowLog={setShowDelete}
           name={asset.name}
           onDelete={onDelete}
         />
