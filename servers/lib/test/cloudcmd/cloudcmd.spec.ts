@@ -23,9 +23,6 @@ describe('cloudcmd test for the application', () => {
         responseType: 'json',
       },
     );
-    /* eslint-disable no-console */
-    console.log(response.data);
-    /* eslint-enable no-console */
     expect(response.data.path).toEqual('/');
     const fileNames = response.data.files.map((file) => file.name);
     expect(fileNames).toContain('common');
