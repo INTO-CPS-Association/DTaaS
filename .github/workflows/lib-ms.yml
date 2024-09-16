@@ -13,6 +13,9 @@ jobs:
   test-lib-ms:
     name: Test library microservice
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: servers/lib
 
     steps:
       - name: Checkout
@@ -32,13 +35,11 @@ jobs:
 
       - name: Run the linting checks
         run: |
-          cd servers/lib
           yarn install
           yarn syntax
 
       - name: Build the lib microservice
         run: |
-          cd servers/lib	
           yarn install	
           yarn build
 
@@ -50,7 +51,6 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
         run: |
-          cd servers/lib
           yarn install
           yarn build
           yarn test:all
@@ -63,7 +63,6 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
         run: |
-          cd servers/lib
           yarn install
           yarn build
           yarn start:pm2
@@ -85,12 +84,10 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
         run: |
-          cd servers/lib
           yarn test:http-github
 
       - name: Stop http mode
         run: |
-          cd servers/lib
           yarn stop:pm2
 
       - name: Upload test coverage to Codecov
