@@ -1,7 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Server } from 'socket.io';
 import * as cloudcmd from 'cloudcmd';
-import { join } from 'path';
+import { join, relative } from 'path';
+
+const isWindowsAbsolutePath = (filesPath: string) => filesPath.includes(':');
 
 const runCloudCMD = (
   app: INestApplication,
@@ -13,7 +15,13 @@ const runCloudCMD = (
     configPath: join(process.cwd(), optionsPath),
   });
 
-  configManager('root', filesPath);
+  if (isWindowsAbsolutePath(filesPath)) {
+    const workDir = process.cwd();
+    const relativePath = relative(workDir, filesPath);
+    configManager('root', relativePath);
+  } else {
+    configManager('root', filesPath);
+  }
 
   const server = app.getHttpServer();
 
