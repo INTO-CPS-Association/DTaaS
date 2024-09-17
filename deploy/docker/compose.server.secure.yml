@@ -96,6 +96,7 @@ services:
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/deploy/docker/conf.server:/conf"
+      - "${DTAAS_DIR}/deploy/docker/resolv.conf:/etc/resolv.conf"
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=generic-oauth
