@@ -5,8 +5,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
-// Check if playwright was called with 'int' flag.
-const useIntServer = process.env.int === 'true';
+// Check if playwright was called with 'ext' flag.
+const useExtServer = process.env.ext === 'true';
 
 dotenv.config({ path: './test/.env' });
 // import fs from 'fs';
@@ -16,7 +16,7 @@ dotenv.config({ path: './test/.env' });
 const BASE_URI = process.env.REACT_APP_URL ?? 'http://localhost:4000/';
 
 export default defineConfig({
-  webServer: useIntServer ? undefined : {
+  webServer: useExtServer ? undefined : {
     command: 'yarn start'
   },
   timeout: 60 * 1000,

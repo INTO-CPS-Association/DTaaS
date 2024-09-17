@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "0.3.6",
+  "version": "0.4.1",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -28,7 +28,7 @@
     "stop": "npx kill-port 4000",
     "syntax": "npx eslint . --fix",
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
-    "test:e2e:ext": "cross-env int=true yarn test:e2e",
+    "test:e2e:ext": "cross-env ext=true yarn test:e2e",
     "test:e2e": "playwright test -c ./playwright.config.ts",
     "test:int": "jest -c ./jest.config.json ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
