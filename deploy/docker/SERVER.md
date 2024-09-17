@@ -90,11 +90,12 @@ Three following configuration files need to be updated.
 
 ### Docker Compose
 
-The docker compose configuration is in `deploy/docker/.env.server` it is a sample file.
+The docker compose configuration is in `deploy/docker/.env.server`,
+this is a sample file.
 It contains environment variables that are used by the docker compose files.
 It can be updated to suit your local installation scenario.
 
-Description of file configuration can be found here. [.env file description](./ENV.md)
+Description of file configuration can be found here. [.env file description](./DOCKER-ENV.md)
 
 ### Website Client
 
