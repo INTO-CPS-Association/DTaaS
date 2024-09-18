@@ -45,7 +45,7 @@ export default class LocalFilesService implements IFilesService {
 
       return LocalFilesService.formatResponse(name, content);
     } catch (error) {
-      throw new InternalServerErrorException('Error reading file');
+      throw new InternalServerErrorException('Error reading file', error);
     }
   }
 

@@ -12,7 +12,8 @@
     "node_modules",
     "./dist",
     "../src/app.module.ts",
-    "../src/main.ts"
+    "../src/main.ts",
+    "../src/bootstrap.ts"
   ],
   "modulePathIgnorePatterns": ["config"],
   "coverageDirectory": "<rootDir>/coverage/",
