@@ -61,14 +61,16 @@ documentation for further help with creating these two OAuth applications.
 The configuration files to be updated are:
 
 1. docker/.env
-   please see [docker README](../deploy/docker/SERVER.md) for help
+   please see [docker README](../deploy/docker/DOCKER-ENV.md) for help
    with updating this config file)
 1. docker/conf.dev
    please see [server docs](../docs/admin/servers/auth.md) for help
    with updating this config file)
-1. client/config/local.js
+1. client/config/dev.js
    please see [client config](../docs/admin/client/config.md) for help
    with updating this config file)
+
+*note*: username(s) in `.env`, must be equal traefic used in `conf.dev` for `onlyu*`.
 
 ## Development Environment
 
