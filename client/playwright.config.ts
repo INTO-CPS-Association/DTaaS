@@ -16,9 +16,11 @@ dotenv.config({ path: './test/.env' });
 const BASE_URI = process.env.REACT_APP_URL ?? 'http://localhost:4000/';
 
 export default defineConfig({
-  webServer: useExtServer ? undefined : {
-    command: 'yarn start'
-  },
+  webServer: useExtServer
+    ? undefined
+    : {
+        command: 'yarn start',
+      },
   timeout: 60 * 1000,
   globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',

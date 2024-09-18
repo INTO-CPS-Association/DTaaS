@@ -10,8 +10,12 @@ const coverageOptions: CoverageReportOptions = {
   sourceFilter: (sourceName: string) => {
     const isFromNodeModules = sourceName.search(/node_modules\//) !== -1; // regexp match "node_modules/"
     const isTypeScript = sourceName.search(/\.tsx?$/) !== -1;
-    if (isFromNodeModules) { return false; }
-    if (!isTypeScript) { return false; }
+    if (isFromNodeModules) {
+      return false;
+    }
+    if (!isTypeScript) {
+      return false;
+    }
     return true;
   },
 
@@ -20,9 +24,15 @@ const coverageOptions: CoverageReportOptions = {
     const isFromGitlab = entry.url.search(/gitlab\//) !== -1; // regexp match "gitlab/"
     const isCSS = entry.url.search(/\.css$/) !== -1;
     const isEnv = entry.url.search(/env\.js$/) !== -1;
-    if (isFromGitlab) { return false; }
-    if (isCSS) { return false; }
-    if (isEnv) { return false; }
+    if (isFromGitlab) {
+      return false;
+    }
+    if (isCSS) {
+      return false;
+    }
+    if (isEnv) {
+      return false;
+    }
     return true;
   },
   outputDir: './coverage/e2e',
