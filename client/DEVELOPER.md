@@ -178,3 +178,55 @@ port and basename options in the docker-based development environment.
 Each new release of client web application is published as a docker
 container image. Please see [publishing](../docker/README.md) page
 for more information publishing docker images.
+
+## Gitlab Integration
+
+The client codebase has been using Gitlab for OAuth2 only. There is
+an ongoing effort to integrate Gitlab CI/CD capabilities to automate
+the execution of Digital Twins. This code is in alpha stage and is
+available in `src/util/gitlab*.ts`.
+
+The gitlab code requires
+[gitlab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+for a gitlab account. Remember to select all scopes for access token.
+Specifically, select the following scopes.
+
+```txt
+api, read_api, read_user, create_runner, k8s_proxy, read_repository, write_repository, ai_features
+```
+
+The token information needs to be updated in `config/gitlab.json`.
+
+Once the token configuration is in place, the gitlab code can be developed
+and tested using the following yarn commands.
+
+```bash
+yarn gitlab:compile
+yarn gitlab:run
+```
+
+These two commands run `src/util/gitlabDriver.ts` code to check the correct
+functioning of the gitlab code placed in `src/util` directory.
+
+A piece of code in `src/util/gitlabDriver.ts` checks for correct execution
+of a DT in gitlab runner. The token owner must have a hosted runner
+in order for this piece of code to be executed successfully.
+Otherwise, the following error appears.
+
+```log
+....
+Execution Result: false
+Execution Status: error
+Execution Logs: [
+  {
+    status: 'error',
+    error: Error: GitbeakerRequestError: Not Found
+        at DigitalTwin.<anonymous> (file:///C:/Users/au598657/git/DTaaS/client/dist/gitlabDigitalTwin.js:32:73)
+        at Generator.throw (<anonymous>)
+        at rejected (file:///C:/Users/au598657/git/DTaaS/client/dist/gitlabDigitalTwin.js:5:65)
+        at process.processTicksAndRejections (node:internal/process/task_queues:95:5),
+    DTName: 'hello-world',
+    runnerTag: 'dtaas'
+  }
+]
+```

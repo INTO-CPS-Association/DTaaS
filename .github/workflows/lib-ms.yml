@@ -8,13 +8,14 @@ on:
     paths:
       - 'servers/lib/**'
   workflow_dispatch:
-    paths:
-      - 'servers/lib/**'
 
 jobs:
   test-lib-ms:
     name: Test library microservice
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: servers/lib
 
     steps:
       - name: Checkout
@@ -27,47 +28,67 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      # - name: Install pm2
-      #   run: |
-      #     npm install -g pm2
+      - name: Install pm2 and jest
+        run: |
+          npm install -g pm2
+          npm install -g jest
 
       - name: Run the linting checks
         run: |
-          cd servers/lib
           yarn install
           yarn syntax
 
       - name: Build the lib microservice
         run: |
-          cd servers/lib	
           yarn install	
           yarn build
 
       - name: Run all tests
-        run: |
-          cd servers/lib
-          yarn install
-          yarn build
-          yarn test:all
         env:
           PORT: 4001
           LOCAL_PATH: ${{ github.workspace }}/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
+        run: |
+          yarn install
+          yarn build
+          yarn test:all
 
-      # - name: Run http mode tests
-      #   run: |
-      #     cd servers/lib
-      #     yarn install
-      #     yarn build
-      #     yarn test:http-github
-      #   env:
-      #     PORT: 4002
-      #     LOCAL_PATH: ${{ github.workspace }}/files
-      #     MODE: local
-      #     LOG_LEVEL: debug
-      #     APOLLO_PATH: /lib
+      - name: Start http mode
+        env:
+          PORT: 4003
+          LOCAL_PATH: ${{ github.workspace }}/files
+          MODE: local
+          LOG_LEVEL: debug
+          APOLLO_PATH: /lib
+        run: |
+          yarn install
+          yarn build
+          yarn start:pm2
+      
+      - name: Check server is running
+        env:
+          PORT: 4003
+        uses: nick-fields/retry@v3
+        with:
+          timeout_seconds: 10
+          max_attempts: 4
+          command: "curl -f -LI http://localhost:${{ env.PORT }}/lib/files"
+          
+      - name: Run http test
+        env:
+          PORT: 4003
+          LOCAL_PATH: ${{ github.workspace }}/files
+          MODE: local
+          LOG_LEVEL: debug
+          APOLLO_PATH: /lib
+        run: |
+          yarn test:http-github
+
+      - name: Stop http mode
+        run: |
+          yarn stop:pm2
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3

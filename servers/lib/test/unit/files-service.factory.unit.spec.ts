@@ -32,6 +32,6 @@ describe('FilesServiceFactory', () => {
 
   it('should throw an error when MODE is invalid', () => {
     jest.spyOn(configService, 'get').mockReturnValue('invalid');
-    expect(() => serviceFactory.create()).toThrowError(`Invalid MODE: invalid`);
+    expect(() => serviceFactory.create()).toThrow(`Invalid MODE: invalid`);
   });
 });
