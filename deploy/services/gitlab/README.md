@@ -79,7 +79,7 @@ account will be available in: _/etc/gitlab/initial_root_password_. Be sure to
 save this password somewhere, as **this file will be deleted after 24 hours**
 from the first time you start the local instance.
 
-# Use
+## Use
 
 After running the container, your local GitLab instance will be available at
 `https://foo.com/gitlab`.
