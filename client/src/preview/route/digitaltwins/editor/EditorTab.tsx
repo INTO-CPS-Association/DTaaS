@@ -1,19 +1,45 @@
-import React from 'react';
-// import Editor from '@monaco-editor/react'; // Uncomment this when the library is working
+import * as React from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import Editor from '@monaco-editor/react';
+import { useDispatch } from 'react-redux';
+import { addOrUpdateFile } from 'store/file.slice';
 
-function EditorTab() {
+interface EditorTabProps {
+  fileName: string;
+  fileContent: string;
+  setFileContent: Dispatch<SetStateAction<string>>;
+}
+
+function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
+  const [editorValue, setEditorValue] = useState(fileContent);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setEditorValue(fileContent);
+  }, [fileContent]);
+
+  const handleEditorChange = (value: string | undefined) => {
+    const updatedValue = value || '';
+    setEditorValue(updatedValue);
+    setFileContent(updatedValue);
+
+    dispatch(
+      addOrUpdateFile({
+        name: fileName,
+        content: updatedValue,
+        isModified: true,
+      }),
+    );
+  };
+
   return (
     <div>
-      <p>Editor monaco</p>
-      {/* 
-      Uncomment this section when the Monaco editor is working
       <Editor
         height="400px"
         defaultLanguage="markdown"
         value={editorValue}
-        onChange={handleEditorChange}
+        onChange={(value) => handleEditorChange(value)}
       />
-      */}
     </div>
   );
 }

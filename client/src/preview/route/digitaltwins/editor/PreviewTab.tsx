@@ -1,34 +1,24 @@
 import * as React from 'react';
-import { useState, SetStateAction, useEffect } from 'react';
+import { Remarkable } from 'remarkable';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 
-function PreviewTab() {
-  const [inputValue, setInputValue] = useState<string>('');
+interface PreviewProps {
+  fileContent: string;
+  fileType: string;
+}
 
-  useEffect(() => {
-    setInputValue('call here function to get the data');
-  }, []);
+function PreviewTab({ fileContent, fileType }: PreviewProps) {
+  const md = new Remarkable();
 
-  const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
-    setInputValue(e.target.value);
-  };
+  if (fileType === 'md') {
+    const renderedMarkdown = md.render(fileContent);
 
-  return (
-    <div
-      style={{
-        padding: '20px',
-        backgroundColor: '#f5f5f5',
-        height: '100%',
-        overflow: 'auto',
-      }}
-    >
-      <input
-        type="text"
-        value={inputValue}
-        onChange={handleChange}
-        style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
-      />
-    </div>
-  );
+    return <div dangerouslySetInnerHTML={{ __html: renderedMarkdown }} />;
+  }
+  if (fileType === 'json') {
+    return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
+  }
+  return <SyntaxHighlighter language="yaml">{fileContent}</SyntaxHighlighter>;
 }
 
 export default PreviewTab;

@@ -5,6 +5,7 @@ import authSlice from './auth.slice';
 import digitalTwinSlice from './digitalTwin.slice';
 import snackbarSlice from './snackbar.slice';
 import assetsSlice from './assets.slice';
+import fileSlice from './file.slice';
 
 const rootReducer = combineReducers({
   menu: menuSlice,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   digitalTwin: digitalTwinSlice,
   snackbar: snackbarSlice,
   assets: assetsSlice,
+  files: fileSlice,
 });
 
 const store = configureStore({

@@ -14,6 +14,7 @@ import {
   setDigitalTwin,
   selectDigitalTwinByName,
 } from 'store/digitalTwin.slice';
+import { RootState } from 'store/store';
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
@@ -64,6 +65,11 @@ const Description = styled(Typography)`
 `;
 
 function CardActionAreaContainer(asset: Asset) {
+  const digitalTwin = useSelector(
+    (state: RootState) => state.digitalTwin[asset.name],
+  );
+  const description = digitalTwin?.description || asset.description;
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -78,7 +84,7 @@ function CardActionAreaContainer(asset: Asset) {
           }}
         >
           <Description variant="body2" color="text.secondary">
-            {asset.description}
+            {description}
           </Description>
         </CardContent>
       </Grid>

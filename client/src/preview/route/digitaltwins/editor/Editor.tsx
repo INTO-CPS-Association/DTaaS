@@ -1,28 +1,35 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { Box, Grid, Tabs, Tab } from '@mui/material';
-// import Editor from '@monaco-editor/react'; // Monaco Editor
-import 'react-resizable/css/styles.css'; // Import resizable styles
+import 'react-resizable/css/styles.css';
 import EditorTab from './EditorTab';
 import PreviewTab from './PreviewTab';
 import Sidebar from './Sidebar';
 
-function Editor() {
-  // const [editorValue, setEditorValue] = useState('# Write some markdown here...');
-  const [activeTab, setActiveTab] = useState(0); // Tab state for editor and preview
+interface EditorProps {
+  DTName: string;
+}
 
-  // Function to handle tab change
+function Editor({ DTName }: EditorProps) {
+  const [activeTab, setActiveTab] = useState(0);
+  const [fileName, setFileName] = useState('');
+  const [fileContent, setFileContent] = useState('');
+  const [fileType, setFileType] = useState('');
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100%' }}>
-      {/* Resizable Left Side Panel */}
-      <Sidebar />
+    <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
+      <Sidebar
+        name={DTName}
+        setFileName={setFileName}
+        setFileContent={setFileContent}
+        setFileType={setFileType}
+      />
 
-      {/* Right Side Content */}
       <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
-        {/* Tabs for Editor and Preview */}
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -32,7 +39,6 @@ function Editor() {
           <Tab label="Preview" />
         </Tabs>
 
-        {/* Tab Panels */}
         <Box
           sx={{
             flexGrow: 1,
@@ -41,8 +47,16 @@ function Editor() {
             marginTop: 2,
           }}
         >
-          {activeTab === 0 && <EditorTab />}
-          {activeTab === 1 && <PreviewTab />}
+          {activeTab === 0 && (
+            <EditorTab
+              fileName={fileName}
+              fileContent={fileContent}
+              setFileContent={setFileContent}
+            />
+          )}
+          {activeTab === 1 && (
+            <PreviewTab fileContent={fileContent} fileType={fileType} />
+          )}
         </Box>
       </Grid>
     </Box>
