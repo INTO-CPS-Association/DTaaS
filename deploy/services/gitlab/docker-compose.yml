@@ -2,13 +2,13 @@
 version: '3.6'
 services:
   gitlab:
-    image: ${GITLAB_IMAGE}
+    image: 'gitlab/gitlab-ce:16.4.1-ce.0'
     container_name: gitlab
     restart: always
     hostname: ${SERVER_DNS}
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url '${URL_SCHEME}://${SERVER_DNS}/gitlab'
+        external_url 'https://${SERVER_DNS}/gitlab'
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
         nginx['listen_port'] = 80
         nginx['enable'] = true
@@ -22,11 +22,11 @@ services:
     shm_size: '256m'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitlab.entryPoints=${ROUTER_ENTRYPOINTS}"
+      - "traefik.http.routers.gitlab.entryPoints=web-secure"
       - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/gitlab`)"
       - "traefik.http.routers.gitlab.service=gitlab"
       - "traefik.http.services.gitlab.loadbalancer.server.port=80"
-      - "traefik.http.routers.gitlab.tls=${ENABLE_TLS}"
+      - "traefik.http.routers.gitlab.tls=true"
     networks:
       - dtaas-frontend
 
