@@ -29,19 +29,19 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Install dependencies and setup env
+      - name: Install dependencies
         run: |
           yarn install
-          yarn config:test
           yarn playwright install --with-deps
 
       - name: Run the linting checks
         run: |
           yarn syntax
 
-      - name: Build the React SPA website
+      - name: Build the React SPA website and setup env
         run: |
           yarn build
+          yarn config:test
 
       - name: Run client unit and integration tests
         run: |
