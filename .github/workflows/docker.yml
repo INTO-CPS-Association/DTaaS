@@ -6,14 +6,14 @@ on:
       registry:
         required: false
         type: string
-        default: 'ghcr.io'
+        default: "ghcr.io"
       image-name:
         required: true
         type: string
       version:
         required: true
         type: string
-        default: 'latest'
+        default: "latest"
       dockerfile:
         required: true
         type: string
@@ -23,8 +23,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-        contents: read
-        packages: write
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout Repository
@@ -37,7 +37,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if version exists
+        id: check_version
+        run: |
+          if docker manifest inspect ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+            echo "Version ${{ inputs.version }} already exists."
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "Version ${{ inputs.version }} does not exist."
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+
       - name: Build and push Docker image
+        if: env.exists == 'false'
         uses: docker/build-push-action@v5
         with:
           context: .
