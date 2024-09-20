@@ -6,7 +6,7 @@ needed to set up the docker container containing the local GitLab instance.
 
 1. `./data`, `./config`, `./logs` are the directories that will contain data for
    the GitLab instance
-1. `docker-compose.yml` and `.env` are the Docker compose and environment files
+1. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
    to manage the containerized instance
 
 ## Configure and Install
@@ -34,8 +34,9 @@ locally, your GitLab instance should be available at `https://localhost/gitlab`.
 The commands to start and stop the instance are:
 
 ```bash
-docker compose up -d
-docker compose down
+# (cd deploy/services/gitlab)
+docker compose -f compose.gitlab.yml up -d
+docker compose -f compose.gitlab.yml down
 ```
 
 Each time you start the container, it may take a few minutes. You can monitor
