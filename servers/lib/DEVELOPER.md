@@ -54,10 +54,10 @@ it is required to manually run `yarn test:http` with `LOCAL_PATH` both as an
 absolute path and local path. For example, the manual tests
 need to be done with the following `LOCAL_PATH` values.
 
-| OS      | Absolute Path                 | Relative Path |
-| ------- | ----------------------------- | ------------- |
-| Windows | C:\DTaaS\files                | ..\..\files  |
-| Linux   | /Users/<Username>/DTaaS/files | ../../files   |
+| OS      | Absolute Path                   | Relative Path |
+| ------- | ------------------------------- | ------------- |
+| Windows | C:\DTaaS\files                  | ..\..\files   |
+| Linux   | /Users/\<Username\>/DTaaS/files | ../../files   |
 
 ### PM2
 
