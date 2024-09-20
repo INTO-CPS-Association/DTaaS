@@ -1,5 +1,4 @@
 # Reference: https://docs.gitlab.com/ee/install/docker/installation.html
-version: '3.6'
 services:
   gitlab:
     image: 'gitlab/gitlab-ce:16.4.1-ce.0'
