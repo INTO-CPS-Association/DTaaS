@@ -32,7 +32,9 @@ if (typeof window !== 'undefined') {
 ```
 
 The `yarn install` and `yarn config:test` need to be run before `yarn test:e2e:ext`
-can be run successfully.
+can be run successfully. Also note that if you are deploying the server with
+Traeffik, the tests will fail due to the additionally required Gitlab
+authorization.
 
 ## Playwright
 
