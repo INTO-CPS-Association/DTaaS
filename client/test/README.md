@@ -5,9 +5,34 @@ configured `config/test.js` and `test/.env` files. When everything is set up, yo
 can run the tests by running `yarn test:e2e`.
 
 It is also possible to test the hosted DTaaS applications hosted at a URL,
-say `https://foo.com` using `yarn test:e2e:ext`. Remember to set the
-environment variable in `test/.env` to the URL of the hosted DTaaS
-application. Examples are shown in the [env file](#env-file) section below.
+say `https://foo.com` using `yarn test:e2e:ext`. Remember to set the environment
+variable in `test/.env` to the URL of the hosted DTaaS application. An example
+is shown below:
+
+```js
+if (typeof window !== 'undefined') {
+  window.env = {
+    REACT_APP_ENVIRONMENT: 'test',
+    REACT_APP_URL: 'https://foo.com/',
+    REACT_APP_URL_BASENAME: '',
+    REACT_APP_URL_DTLINK: '/lab',
+    REACT_APP_URL_LIBLINK: '',
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+
+    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+    REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
+    REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
+    REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  };
+};
+```
+
+The `yarn install` and `yarn config:test` need to be run before `yarn test:e2e:ext` can be
+run successfully. 
 
 ## Playwright
 
@@ -73,7 +98,7 @@ REACT_APP_URL='https://foo.com'
 
 Replace _your_username_ and _your_password_ with the actual username and password
 of your GitLab account or the testing account that you intend to use. Finally
-replace _foo.com_ with the URL of your application.
+replace _foo.com_ with the URL of your application, as you did in `env.js`.
 
 Here's an example for test setup on the developer machine and on the
 integration server:
