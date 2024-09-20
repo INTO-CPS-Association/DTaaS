@@ -121,7 +121,7 @@ build/
 # Test reports
 coverage/
 playwright-report/
-playwright/
+client/playwright/
 test_results/
 
 # Mac temp files

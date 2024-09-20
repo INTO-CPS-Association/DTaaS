@@ -39,9 +39,6 @@ yarn test:e2e   #run end-to-end tests
 yarn test:all   #run all tests
 ```
 
-:bug: The end-to-end tests are extremely brittle.
-They are not being used at present.
-
 ## Authorization
 
 The react client website uses OAuth authorization.
