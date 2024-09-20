@@ -31,8 +31,8 @@ if (typeof window !== 'undefined') {
 };
 ```
 
-The `yarn install` and `yarn config:test` need to be run before `yarn test:e2e:ext` can be
-run successfully. 
+The `yarn install` and `yarn config:test` need to be run before `yarn test:e2e:ext`
+can be run successfully.
 
 ## Playwright
 
