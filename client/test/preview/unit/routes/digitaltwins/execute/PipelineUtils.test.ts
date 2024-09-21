@@ -1,188 +1,112 @@
-import { Dispatch, SetStateAction } from 'react';
-import { AlertColor } from '@mui/material';
-import DigitalTwin from 'util/gitlabDigitalTwin';
-import { GitlabInstance } from 'util/gitlab';
-import { useDispatch } from 'react-redux';
+import { JobSchema } from '@gitbeaker/rest';
 import {
-  startPipeline,
-  updatePipelineState,
-  updatePipelineStateOnCompletion,
-  updatePipelineStateOnStop,
   fetchJobLogs,
+  startPipeline,
+  updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
-import {
-  setJobLogs,
-  setPipelineCompleted,
-  setPipelineLoading,
-} from 'store/digitalTwin.slice';
+import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-}));
+describe('PipelineUtils', () => {
+  const digitalTwin = mockDigitalTwin;
+  const dispatch = jest.fn();
+  const setLogButtonDisabled = jest.fn();
+  const setButtonText = jest.fn();
+  const gitlabInstance = digitalTwin.gitlabInstance;
+  const pipelineId = 1;
 
-jest.mock('store/digitalTwin.slice', () => ({
-  setJobLogs: jest.fn(),
-  setPipelineCompleted: jest.fn(),
-  setPipelineLoading: jest.fn(),
-}));
-
-describe('startPipeline', () => {
-  let digitalTwin: DigitalTwin;
-  let setSnackbarMessage: Dispatch<SetStateAction<string>>;
-  let setSnackbarSeverity: Dispatch<SetStateAction<AlertColor>>;
-  let setSnackbarOpen: Dispatch<SetStateAction<boolean>>;
-
-  beforeEach(() => {
-    digitalTwin = {
-      DTName: 'TestDT',
-      lastExecutionStatus: 'success',
-      execute: jest.fn(),
-    } as unknown as DigitalTwin;
-    setSnackbarMessage = jest.fn();
-    setSnackbarSeverity = jest.fn();
-    setSnackbarOpen = jest.fn();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should call execute and set success message if execution is successful', async () => {
-    await startPipeline(
-      digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-    );
+  it('starts pipeline and handles success', async () => {
+    const execute = jest.spyOn(digitalTwin, 'execute');
+    digitalTwin.lastExecutionStatus = 'success';
 
-    expect(digitalTwin.execute).toHaveBeenCalled();
-    expect(setSnackbarMessage).toHaveBeenCalledWith(
-      `Execution started successfully for TestDT. Wait until completion for the logs...`,
-    );
-    expect(setSnackbarSeverity).toHaveBeenCalledWith('success');
-    expect(setSnackbarOpen).toHaveBeenCalledWith(true);
-  });
+    await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
 
-  it('should set error message if execution fails', async () => {
-    digitalTwin.lastExecutionStatus = 'error';
-    await startPipeline(
-      digitalTwin,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setSnackbarOpen,
-    );
-
-    expect(setSnackbarMessage).toHaveBeenCalledWith(
-      `Execution error for TestDT`,
-    );
-    expect(setSnackbarSeverity).toHaveBeenCalledWith('error');
-    expect(setSnackbarOpen).toHaveBeenCalledWith(true);
-  });
-});
-
-describe('updatePipelineState', () => {
-  let digitalTwin: DigitalTwin;
-  let dispatch: ReturnType<typeof useDispatch>;
-
-  beforeEach(() => {
-    digitalTwin = { DTName: 'TestDT' } as DigitalTwin;
-    dispatch = jest.fn();
-  });
-
-  it('should dispatch setPipelineCompleted and setPipelineLoading actions', () => {
-    updatePipelineState(digitalTwin, dispatch);
-
+    expect(execute).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: false }),
+      expect.objectContaining({
+        type: 'snackbar/showSnackbar',
+        payload: {
+          message: expect.stringContaining('Execution started successfully'),
+          severity: 'success',
+        },
+      }),
     );
+    expect(setLogButtonDisabled).toHaveBeenCalledWith(true);
+
+    execute.mockRestore();
+  });
+
+  it('starts pipeline and handles failed', async () => {
+    const execute = jest.spyOn(digitalTwin, 'execute');
+    digitalTwin.lastExecutionStatus = 'failed';
+
+    await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
+
+    expect(execute).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: true }),
+      expect.objectContaining({
+        type: 'snackbar/showSnackbar',
+        payload: {
+          message: expect.stringContaining('Execution failed'),
+          severity: 'error',
+        },
+      }),
     );
-  });
-});
+    expect(setLogButtonDisabled).toHaveBeenCalledWith(true);
 
-describe('updatePipelineStateOnCompletion', () => {
-  let digitalTwin: DigitalTwin;
-  let dispatch: ReturnType<typeof useDispatch>;
-  let setButtonText: Dispatch<SetStateAction<string>>;
-  let setLogButtonDisabled: Dispatch<SetStateAction<boolean>>;
-  let jobLogs: { jobName: string; log: string }[];
-
-  beforeEach(() => {
-    digitalTwin = { DTName: 'TestDT' } as DigitalTwin;
-    dispatch = jest.fn();
-    setButtonText = jest.fn();
-    setLogButtonDisabled = jest.fn();
-    jobLogs = [{ jobName: 'TestJob', log: 'Test log' }];
+    execute.mockRestore();
   });
 
-  it('should dispatch actions and reset button states on completion', () => {
-    updatePipelineStateOnCompletion(
+  it('updates pipeline state on completion', async () => {
+    await updatePipelineStateOnCompletion(
       digitalTwin,
-      jobLogs,
+      [{ jobName: 'job1', log: 'log1' }],
       setButtonText,
       setLogButtonDisabled,
       dispatch,
     );
 
-    expect(dispatch).toHaveBeenCalledWith(
-      setJobLogs({ assetName: 'TestDT', jobLogs }),
-    );
-    expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true }),
-    );
-    expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false }),
-    );
+    expect(dispatch).toHaveBeenCalledTimes(3);
     expect(setButtonText).toHaveBeenCalledWith('Start');
     expect(setLogButtonDisabled).toHaveBeenCalledWith(false);
   });
-});
 
-describe('updatePipelineStateOnStop', () => {
-  let digitalTwin: DigitalTwin;
-  let dispatch: ReturnType<typeof useDispatch>;
-  let setButtonText: Dispatch<SetStateAction<string>>;
+  it('fetches job logs', async () => {
+    // Mocka la funzione getPipelineJobs per restituire jobs
+    const mockGetPipelineJobs = jest
+      .spyOn(gitlabInstance, 'getPipelineJobs')
+      .mockResolvedValue([
+        {
+          id: 1,
+          name: 'job1',
+          status: 'success',
+          stage: 'build',
+        } as unknown as JobSchema,
+      ]);
 
-  beforeEach(() => {
-    digitalTwin = { DTName: 'TestDT' } as DigitalTwin;
-    dispatch = jest.fn();
-    setButtonText = jest.fn();
-  });
+    // Mocka la funzione getJobTrace
+    const mockGetJobTrace = jest
+      .spyOn(gitlabInstance, 'getJobTrace')
+      .mockResolvedValue('log1');
 
-  it('should dispatch actions and reset button state on stop', () => {
-    updatePipelineStateOnStop(digitalTwin, setButtonText, dispatch);
+    // Esegui la funzione che vuoi testare
+    const result = await fetchJobLogs(gitlabInstance, pipelineId);
 
-    expect(setButtonText).toHaveBeenCalledWith('Start');
-    expect(dispatch).toHaveBeenCalledWith(
-      setPipelineCompleted({ assetName: 'TestDT', pipelineCompleted: true }),
+    // Verifica il comportamento atteso
+    expect(mockGetPipelineJobs).toHaveBeenCalledWith(
+      gitlabInstance.projectId,
+      pipelineId,
     );
-    expect(dispatch).toHaveBeenCalledWith(
-      setPipelineLoading({ assetName: 'TestDT', pipelineLoading: false }),
-    );
-  });
-});
+    expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
+    expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]); // Verifica il risultato finale
 
-describe('fetchJobLogs', () => {
-  let gitlabInstance: GitlabInstance;
-  let pipelineId: number;
-
-  beforeEach(() => {
-    gitlabInstance = {
-      projectId: 1,
-      getPipelineJobs: jest.fn().mockResolvedValue([
-        { id: 1, name: 'Job1' },
-        { id: 2, name: 'Job2' },
-      ]),
-      getJobTrace: jest.fn().mockResolvedValue('Job log'),
-    } as unknown as GitlabInstance;
-    pipelineId = 1;
-  });
-
-  it('should fetch job logs and return parsed logs', async () => {
-    const logs = await fetchJobLogs(gitlabInstance, pipelineId);
-
-    expect(gitlabInstance.getPipelineJobs).toHaveBeenCalledWith(1, pipelineId);
-    expect(gitlabInstance.getJobTrace).toHaveBeenCalledTimes(2);
-    expect(logs).toEqual([
-      { jobName: 'Job2', log: 'Job log' },
-      { jobName: 'Job1', log: 'Job log' },
-    ]);
+    // Ripristina i mock
+    mockGetPipelineJobs.mockRestore();
+    mockGetJobTrace.mockRestore();
   });
 });

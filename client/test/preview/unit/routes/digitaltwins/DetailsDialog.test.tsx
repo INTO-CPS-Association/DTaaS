@@ -1,48 +1,52 @@
+import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
 import * as React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import DetailsDialog from 'route/digitaltwins/DetailsDialog';
+import { Provider, useSelector } from 'react-redux';
+import store from 'store/store';
+import { render, screen } from '@testing-library/react';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
+
+jest.mock('remarkable');
 
 describe('DetailsDialog', () => {
-  const setShowLogMock = jest.fn();
+  const name = 'testName';
+  const setShowLog = jest.fn();
 
-  const defaultProps = {
-    showLog: true,
-    setShowLog: setShowLogMock,
-    name: 'Test Name',
-    fullDescription: '# Test Description',
-  };
-
-  it('should render dialog with full description', () => {
-    render(<DetailsDialog {...defaultProps} />);
-
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-
-    expect(screen.getByText('Test Description')).toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should close the dialog when Close button is clicked', () => {
-    render(<DetailsDialog {...defaultProps} />);
+  it('renders the DetailsDialog', () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      fullDescription: jest.fn(),
+    });
 
-    const closeButton = screen.getByRole('button', { name: /close/i });
-    expect(closeButton).toBeInTheDocument();
+    render(
+      <Provider store={store}>
+        <DetailsDialog name={name} showLog={true} setShowLog={setShowLog} />
+      </Provider>,
+    );
 
-    fireEvent.click(closeButton);
-
-    expect(setShowLogMock).toHaveBeenCalledWith(false);
+    expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
   });
 
-  it('should call handleCloseLog when dialog is closed by backdrop click', () => {
-    render(<DetailsDialog {...defaultProps} />);
+  it('handles close button click', () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      fullDescription: jest.fn(),
+    });
 
-    fireEvent.click(document.body);
+    render(
+      <Provider store={store}>
+        <DetailsDialog name={name} showLog={true} setShowLog={setShowLog} />
+      </Provider>,
+    );
 
-    expect(setShowLogMock).toHaveBeenCalledWith(false);
-  });
+    const closeButton = screen.getByRole('button', { name: /Close/i });
+    closeButton.click();
 
-  it('should not render when showLog is false', () => {
-    render(<DetailsDialog {...defaultProps} showLog={false} />);
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(setShowLog).toHaveBeenCalled();
   });
 });

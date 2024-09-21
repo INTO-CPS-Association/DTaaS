@@ -76,7 +76,7 @@ class DigitalTwin {
     );
   }
 
-  private async triggerPipeline() {
+  async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
     return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
       this.gitlabInstance.projectId!,
@@ -95,7 +95,7 @@ class DigitalTwin {
     this.lastExecutionStatus = 'success';
   }
 
-  private logError(error: string): void {
+  logError(error: string): void {
     this.gitlabInstance.logs.push({
       status: 'error',
       error: new Error(error),

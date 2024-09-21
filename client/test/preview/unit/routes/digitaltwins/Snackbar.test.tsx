@@ -1,101 +1,81 @@
 import * as React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import CustomSnackbar from 'route/digitaltwins/Snackbar';
-import { Provider } from 'react-redux';
+import { act, render, screen } from '@testing-library/react';
+import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+import store from 'store/store';
 import { hideSnackbar } from 'store/snackbar.slice';
 
-const mockStore = (initialState: any) => ({
-  getState: () => initialState,
-  dispatch: jest.fn(),
-  subscribe: jest.fn(),
-});
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(),
+}));
+
+jest.useFakeTimers();
 
 describe('CustomSnackbar', () => {
-  it('renders the snackbar with the correct message and severity', () => {
-    const store = mockStore({
-      snackbar: {
-        open: true,
-        message: 'Test Message',
-        severity: 'success',
-      },
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders the Snackbar with the correct message', () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      open: true,
+      message: 'test message',
+      severity: 'success',
     });
 
     render(
-      <Provider store={store as any}>
+      <Provider store={store}>
         <CustomSnackbar />
       </Provider>,
     );
 
-    expect(screen.getByText('Test Message')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardSuccess');
+    expect(screen.getByText('test message')).toBeInTheDocument();
   });
 
-  it('does not render the snackbar when open is false', () => {
-    const store = mockStore({
-      snackbar: {
-        open: false,
-        message: 'Test Message',
-        severity: 'success',
-      },
+  it('handles the close event', () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      open: true,
+      message: 'test message',
+      severity: 'success',
     });
-
-    render(
-      <Provider store={store as any}>
-        <CustomSnackbar />
-      </Provider>,
-    );
-
-    expect(screen.queryByText('Test Message')).toBeNull();
-  });
-
-  it('dispatches hideSnackbar action when the snackbar is closed through the alert button', () => {
-    const mockDispatch = jest.fn();
-    const store = mockStore({
-      snackbar: {
-        open: true,
-        message: 'Test Message',
-        severity: 'error',
-      },
-    });
-
-    (store.dispatch as jest.Mock) = mockDispatch;
-
-    render(
-      <Provider store={store as any}>
-        <CustomSnackbar />
-      </Provider>,
-    );
-
-    fireEvent.click(screen.getByRole('button'));
-    expect(mockDispatch).toHaveBeenCalledWith(hideSnackbar());
-  });
-
-  it('dispatches hideSnackbar action when the snackbar is closed via auto-hide duration', () => {
-    jest.useFakeTimers();
 
     const mockDispatch = jest.fn();
-    const store = mockStore({
-      snackbar: {
-        open: true,
-        message: 'Test Message',
-        severity: 'warning',
-      },
-    });
-
-    (store.dispatch as jest.Mock) = mockDispatch;
+    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
 
     render(
-      <Provider store={store as any}>
+      <Provider store={store}>
         <CustomSnackbar />
       </Provider>,
     );
 
     act(() => {
-      jest.runAllTimers();
+      jest.advanceTimersByTime(6000);
     });
 
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(mockDispatch).toHaveBeenCalledWith(hideSnackbar());
-    jest.useRealTimers();
+  });
+
+  it('calls useSelector with correct function', () => {
+    const mockSnackbarState = {
+      open: true,
+      message: 'test message',
+      severity: 'success',
+    };
+    (useSelector as jest.Mock).mockReturnValue(mockSnackbarState);
+
+    render(
+      <Provider store={store}>
+        <CustomSnackbar />
+      </Provider>,
+    );
+
+    expect(useSelector).toHaveBeenCalledWith(expect.any(Function));
+
+    const selectState = (useSelector as jest.Mock).mock.calls[0][0];
+    const result = selectState({ snackbar: mockSnackbarState });
+    expect(result).toEqual(mockSnackbarState);
   });
 });

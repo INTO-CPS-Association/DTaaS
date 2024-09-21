@@ -49,11 +49,7 @@ function DeleteDialog({
   const dispatch = useDispatch();
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
   return (
-    <Dialog
-      open={showLog}
-      onClose={() => handleCloseLog(setShowLog)}
-      maxWidth="md"
-    >
+    <Dialog open={showLog} maxWidth="md">
       <DialogContent>
         <Typography variant="body2">
           This step is irreversible. Would you like to delete{' '}

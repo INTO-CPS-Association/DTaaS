@@ -10,7 +10,7 @@ interface DialogButtonProps {
   setShowLog: Dispatch<React.SetStateAction<boolean>>;
 }
 
-const handleToggleLog = async (
+export const handleToggleLog = async (
   digitalTwin: DigitalTwin,
   setShowLog: Dispatch<SetStateAction<boolean>>,
 ) => {

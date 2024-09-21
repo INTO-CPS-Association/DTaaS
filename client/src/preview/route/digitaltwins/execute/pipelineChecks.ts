@@ -15,12 +15,12 @@ interface PipelineStatusParams {
 }
 
 const MAX_EXECUTION_TIME = 10 * 60 * 1000;
-const delay = (ms: number) =>
+export const delay = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 
-const hasTimedOut = (startTime: number) =>
+export const hasTimedOut = (startTime: number) =>
   Date.now() - startTime > MAX_EXECUTION_TIME;
 
 export const handleTimeout = (

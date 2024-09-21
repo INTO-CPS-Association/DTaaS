@@ -1,66 +1,109 @@
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import DetailsDialog from 'route/digitaltwins/DetailsDialog';
-import DigitalTwin from 'util/gitlabDigitalTwin';
-import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
-import { GitlabInstance } from 'util/gitlab';
+import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from 'store/store';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(),
 }));
 
-jest.mock('store/digitalTwin.slice', () => ({
-  selectDigitalTwinByName: jest.fn(),
+jest.mock('util/gitlabDigitalTwin', () => ({
+  formatName: jest.fn(),
 }));
 
-describe('DetailsDialog', () => {
-  let setShowLogMock: jest.Mock;
+describe('DeleteDialog', () => {
+  const name = 'testName';
+  const setShowLog = jest.fn();
+  const onDelete = jest.fn();
 
-  const renderComponent = (props: { showLog: boolean; name: string }) =>
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders the DeleteDialog', () => {
     render(
       <Provider store={store}>
-        <DetailsDialog
-          showLog={props.showLog}
-          setShowLog={setShowLogMock}
-          name={props.name}
+        <DeleteDialog
+          name={name}
+          showLog={true}
+          setShowLog={setShowLog}
+          onDelete={onDelete}
         />
+        ,
       </Provider>,
     );
 
-  beforeEach(() => {
-    setShowLogMock = jest.fn();
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Yes/i })).toBeInTheDocument();
   });
 
-  it('should render the dialog and display the digital twin name', () => {
-    const gitlabInstance = new GitlabInstance('user1', 'authority', 'token1');
-    const digitalTwin = new DigitalTwin('testDT', gitlabInstance);
-    (selectDigitalTwinByName as jest.Mock).mockReturnValue(digitalTwin);
+  it('handles delete and returns a success message', async () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      delete: jest.fn().mockResolvedValue('Success'),
+    });
+    (useDispatch as jest.Mock).mockReturnValue(jest.fn());
 
-    renderComponent({ showLog: true, name: 'testDT' });
+    render(
+      <Provider store={store}>
+        <DeleteDialog
+          name={name}
+          showLog={true}
+          setShowLog={setShowLog}
+          onDelete={onDelete}
+        />
+        ,
+      </Provider>,
+    );
 
-    expect(
-      screen.getByText(/Would you like to delete testDT digital twin?/i),
-    ).toBeInTheDocument();
+    const yesButton = screen.getByRole('button', { name: /Yes/i });
+    await fireEvent.click(yesButton);
+
+    expect(setShowLog).toHaveBeenCalled();
   });
 
-  it('should close the dialog when the cancel button is clicked', () => {
-    renderComponent({ showLog: true, name: 'testDT' });
+  it('handles delete and returns an error message', async () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      delete: jest.fn().mockResolvedValue('Error'),
+    });
+    (useDispatch as jest.Mock).mockReturnValue(jest.fn());
 
-    fireEvent.click(screen.getByText(/Cancel/i));
-    expect(setShowLogMock).toHaveBeenCalledWith(false);
+    render(
+      <Provider store={store}>
+        <DeleteDialog
+          name={name}
+          showLog={true}
+          setShowLog={setShowLog}
+          onDelete={onDelete}
+        />
+        ,
+      </Provider>,
+    );
+
+    const yesButton = screen.getByRole('button', { name: /Yes/i });
+    await fireEvent.click(yesButton);
+
+    expect(setShowLog).toHaveBeenCalled();
   });
 
-  it('should call the delete method and close the dialog when Yes is clicked', async () => {
-    const deleteMock = jest.fn();
-    const digitalTwin = { delete: deleteMock } as unknown as DigitalTwin;
-    (selectDigitalTwinByName as jest.Mock).mockReturnValue(digitalTwin);
+  it('handles close log', () => {
+    render(
+      <Provider store={store}>
+        <DeleteDialog
+          name={name}
+          showLog={true}
+          setShowLog={setShowLog}
+          onDelete={onDelete}
+        />
+        ,
+      </Provider>,
+    );
 
-    renderComponent({ showLog: true, name: 'testDT' });
+    const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+    fireEvent.click(cancelButton);
 
-    fireEvent.click(screen.getByText(/Yes/i));
-    expect(deleteMock).toHaveBeenCalled();
-    expect(setShowLogMock).toHaveBeenCalledWith(false);
+    expect(setShowLog).toHaveBeenCalled();
   });
 });

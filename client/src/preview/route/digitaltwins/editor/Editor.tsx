@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Box, Grid, Tabs, Tab } from '@mui/material';
-import 'react-resizable/css/styles.css';
+// import { Resizable } from 'react-resizable';
 import EditorTab from './EditorTab';
 import PreviewTab from './PreviewTab';
 import Sidebar from './Sidebar';

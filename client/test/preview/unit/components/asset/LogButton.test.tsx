@@ -1,37 +1,52 @@
-import * as React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import LogButton from 'preview/components/asset/LogButton';
+import * as React from 'react';
+import { Provider } from 'react-redux';
+import store from 'store/store';
 
-const mockSetShowLog = jest.fn();
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+}));
 
 describe('LogButton', () => {
+  const setShowLog = jest.fn();
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('calls setShowLog with the correct value when clicked', () => {
-    render(<LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />);
-
-    fireEvent.click(screen.getByText('Log'));
-
-    expect(mockSetShowLog).toHaveBeenCalledTimes(1);
-    expect(mockSetShowLog).toHaveBeenCalledWith(expect.any(Function));
-
-    const toggleFunction = mockSetShowLog.mock.calls[0][0];
-    expect(toggleFunction(true)).toBe(false);
+  it('renders the Log button', () => {
+    render(
+      <Provider store={store}>
+        <LogButton setShowLog={setShowLog} logButtonDisabled={false} />
+      </Provider>,
+    );
+    expect(screen.getByRole('button', { name: /Log/i })).toBeInTheDocument();
   });
 
-  it('disables button when logButtonDisabled is true', () => {
-    render(<LogButton setShowLog={mockSetShowLog} logButtonDisabled={true} />);
+  it('handles button click when enabled', () => {
+    render(
+      <Provider store={store}>
+        <LogButton setShowLog={setShowLog} logButtonDisabled={false} />
+      </Provider>,
+    );
 
-    const button = screen.getByText('Log') as HTMLButtonElement;
-    expect(button.disabled).toBe(true);
+    const logButton = screen.getByRole('button', { name: /Log/i });
+    fireEvent.click(logButton);
+
+    expect(setShowLog).toHaveBeenCalled();
   });
 
-  it('enables button when logButtonDisabled is false', () => {
-    render(<LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />);
+  it('does not handle button click when disabled', () => {
+    render(
+      <Provider store={store}>
+        <LogButton setShowLog={setShowLog} logButtonDisabled={true} />
+      </Provider>,
+    );
 
-    const button = screen.getByText('Log') as HTMLButtonElement;
-    expect(button.disabled).toBe(false);
+    const logButton = screen.getByRole('button', { name: /Log/i });
+    fireEvent.click(logButton);
+
+    expect(setShowLog).not.toHaveBeenCalled();
   });
 });

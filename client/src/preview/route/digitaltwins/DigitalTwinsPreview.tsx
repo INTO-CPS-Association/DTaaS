@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
@@ -10,7 +11,7 @@ import { getAuthority } from 'util/envUtil';
 import { setAssets } from 'store/assets.slice';
 import tabs from './DigitalTwinTabDataPreview';
 
-const createDTTab = (error: string | null): TabData[] =>
+export const createDTTab = (error: string | null): TabData[] =>
   tabs
     .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
     .map((tab) => ({
@@ -43,7 +44,7 @@ export const fetchSubfolders = async (
   }
 };
 
-function DTContent() {
+export const DTContent = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const gitlabInstance = new GitlabInstance(
@@ -63,4 +64,6 @@ function DTContent() {
   );
 }
 
-export default DTContent;
+export default function DigitalTwinsPreview() {
+  return <DTContent />;
+}

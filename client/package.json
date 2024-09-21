@@ -33,7 +33,8 @@
     "test:e2e": "yarn build && yarn config:test && npx kill-port 4000 && yarn start >/dev/null & playwright test && npx kill-port 4000",
     "test:int": "jest -c ./jest.config.json ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
-    "test:preview": "jest -c ./jest.config.json ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
+    "test:preview:int": "jest -c ./jest.config.json ../test/preview/integration --setupFilesAfterEnv ./test/preview/integration/jest.setup.ts",
+    "test:preview:unit": "jest -c ./jest.config.json ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -95,7 +96,7 @@
     "@babel/plugin-transform-react-jsx": "^7.23.4",
     "@playwright/test": "^1.32.1",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.10",

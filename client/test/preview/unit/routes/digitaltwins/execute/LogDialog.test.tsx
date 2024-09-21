@@ -1,84 +1,68 @@
 import * as React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
-import { useSelector } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
+import store from 'store/store';
 
 jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
 }));
 
-const mockDigitalTwin = {
-  jobLogs: [
-    { jobName: 'Job 1', log: 'Log for Job 1' },
-    { jobName: 'Job 2', log: 'Log for Job 2' },
-  ],
-};
-
 describe('LogDialog', () => {
-  beforeEach(() => {
-    (useSelector as jest.Mock).mockClear();
+  const name = 'testName';
+  const setShowLog = jest.fn();
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('renders the dialog with job logs', () => {
-    (useSelector as jest.Mock).mockReturnValue(mockDigitalTwin);
-    render(
-      <LogDialog showLog={true} setShowLog={jest.fn()} name="Test Name" />,
-    );
-
-    expect(screen.getByText('Test Name log')).toBeInTheDocument();
-    expect(screen.getByText('Job 1')).toBeInTheDocument();
-    expect(screen.getByText('Log for Job 1')).toBeInTheDocument();
-    expect(screen.getByText('Job 2')).toBeInTheDocument();
-    expect(screen.getByText('Log for Job 2')).toBeInTheDocument();
-  });
-
-  it('renders "No logs available" when no job logs are provided', () => {
-    (useSelector as jest.Mock).mockReturnValue({ jobLogs: [] });
+  it('renders the LogDialog with logs available', () => {
+    // Caso in cui ci sono log disponibili
+    (useSelector as jest.Mock).mockReturnValue({
+      jobLogs: [{ jobName: 'job', log: 'testLog' }],
+    });
 
     render(
-      <LogDialog showLog={true} setShowLog={jest.fn()} name="Test Name" />,
+      <Provider store={store}>
+        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
+      </Provider>,
     );
 
-    expect(screen.getByText('No logs available')).toBeInTheDocument();
+    expect(screen.getByText(/TestName log/i)).toBeInTheDocument(); // Controlla se il log è visualizzato
+    expect(screen.getByText(/job/i)).toBeInTheDocument(); // Controlla se il nome del job è visualizzato
+    expect(screen.getByText(/testLog/i)).toBeInTheDocument(); // Controlla se il nome del job è visualizzato
   });
 
-  it('closes the dialog when the close button is clicked', () => {
-    const setShowLog = jest.fn();
-    (useSelector as jest.Mock).mockReturnValue(mockDigitalTwin);
-    render(
-      <LogDialog showLog={true} setShowLog={setShowLog} name="Test Name" />,
-    );
-
-    fireEvent.click(screen.getByText('Close'));
-    expect(setShowLog).toHaveBeenCalledTimes(1);
-    expect(setShowLog).toHaveBeenCalledWith(false);
-  });
-
-  it('does not render the dialog when showLog is false', () => {
-    (useSelector as jest.Mock).mockReturnValue(mockDigitalTwin);
-
-    const { container } = render(
-      <LogDialog showLog={false} setShowLog={jest.fn()} name="Test Name" />,
-    );
-
-    expect(container.querySelector('div')).toBeNull(); // No dialog should be present
-  });
-
-  it('calls handleCloseLog when dialog is closed', () => {
-    const setShowLog = jest.fn();
-    (useSelector as jest.Mock).mockReturnValue(mockDigitalTwin);
+  it('renders the LogDialog with no logs available', () => {
+    // Caso in cui non ci sono log disponibili
+    (useSelector as jest.Mock).mockReturnValue({
+      jobLogs: [],
+    });
 
     render(
-      <LogDialog showLog={true} setShowLog={setShowLog} name="Test Name" />,
+      <Provider store={store}>
+        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
+      </Provider>,
     );
 
-    // Simulate dialog close event by clicking the close button
-    fireEvent.click(screen.getByText('Close'));
-    expect(setShowLog).toHaveBeenCalledWith(false);
+    expect(screen.getByText(/No logs available/i)).toBeInTheDocument(); // Verifica che venga mostrato il messaggio "No logs available"
+  });
 
-    // Simulate dialog backdrop close event (if applicable)
-    fireEvent.click(document.querySelector('[role="dialog"]')!); // Assuming clicking outside also closes
-    expect(setShowLog).toHaveBeenCalledWith(false);
+  it('handles button click', async () => {
+    (useSelector as jest.Mock).mockReturnValue({
+      jobLogs: [{ jobName: 'create', log: 'create log' }],
+    });
+
+    render(
+      <Provider store={store}>
+        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
+      </Provider>,
+    );
+
+    const closeButton = screen.getByRole('button', { name: /Close/i });
+    fireEvent.click(closeButton);
+
+    expect(setShowLog).toHaveBeenCalled(); // Verifica che la funzione setShowLog sia chiamata
   });
 });

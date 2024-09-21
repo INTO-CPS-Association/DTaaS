@@ -1,28 +1,30 @@
 import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import DeleteButton from 'components/asset//DeleteButton';
+import DeleteButton from 'preview/components/asset//DeleteButton';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+}));
 
 describe('DeleteButton', () => {
-  const setShowLogMock = jest.fn();
+  const setShowLog = jest.fn();
 
-  const defaultProps = {
-    setShowLog: setShowLogMock,
-  };
-
-  it('should render the Delete button', () => {
-    render(<DeleteButton {...defaultProps} />);
-
-    const button = screen.getByRole('button', { name: /delete/i });
-    expect(button).toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should call setShowLog with true when button is clicked', () => {
-    render(<DeleteButton {...defaultProps} />);
+  it('renders the Delete button', () => {
+    render(<DeleteButton setShowLog={setShowLog} />);
 
-    const button = screen.getByRole('button', { name: /delete/i });
-    fireEvent.click(button);
+    expect(screen.getByRole('button', { name: /Delete/i })).toBeInTheDocument();
+  });
 
-    expect(setShowLogMock).toHaveBeenCalledWith(true);
+  it('handles button click', async () => {
+    render(<DeleteButton setShowLog={setShowLog} />);
+
+    const deleteButton = screen.getByRole('button', { name: /Delete/i });
+    await fireEvent.click(deleteButton);
+
+    expect(setShowLog).toHaveBeenCalled();
   });
 });

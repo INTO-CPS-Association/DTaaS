@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-} from '@mui/material';
+import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { Remarkable } from 'remarkable';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
@@ -27,20 +21,15 @@ function DetailsDialog({ showLog, setShowLog, name }: DetailsDialogProps) {
     html: true,
     typographer: true,
   });
+
   return (
-    <Dialog
-      open={showLog}
-      onClose={() => handleCloseLog(setShowLog)}
-      maxWidth="md"
-    >
+    <Dialog open={showLog} maxWidth="md">
       <DialogContent dividers>
-        <Typography variant="body2">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: md.render(digitalTwin.fullDescription),
-            }}
-          />
-        </Typography>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: md.render(digitalTwin.fullDescription),
+          }}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={() => handleCloseLog(setShowLog)} color="primary">

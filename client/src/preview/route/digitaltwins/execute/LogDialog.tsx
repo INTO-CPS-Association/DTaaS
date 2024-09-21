@@ -26,11 +26,7 @@ function LogDialog({ showLog, setShowLog, name }: LogDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
 
   return (
-    <Dialog
-      open={showLog}
-      onClose={() => handleCloseLog(setShowLog)}
-      maxWidth="md"
-    >
+    <Dialog open={showLog} maxWidth="md">
       <DialogTitle>{`${formatName(name)} log`}</DialogTitle>
       <DialogContent dividers>
         {digitalTwin.jobLogs.length > 0 ? (
