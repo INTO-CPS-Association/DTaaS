@@ -99,7 +99,8 @@ lifecycle/create
 
 ### Execute
 
-Executes the Incubator digital twin with a mock physical twin. Pushes the results in the terminal, _incubator/log.log_, and in InfluxDB.
+Executes the Incubator digital twin with a mock physical twin.
+Pushes the results in the terminal, _incubator/log.log_, and in InfluxDB.
 
 ```bash
 lifecycle/execute

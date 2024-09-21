@@ -112,7 +112,7 @@ lifecycle/{script}
 
 The _execute_ script will then start outputting system states and
 the monitor verdict approx every 3 seconds. The output is printed
-as follows 
+as follows.
 
 "__State: {anomaly state} & {energy_saving state}__"
 
