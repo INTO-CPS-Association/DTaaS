@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "build": "npx shx cp config/gitlab.json src/util/gitlab.json && npx react-scripts build && npx rimraf src/util/gitlab.json",
-    "clean": "npx rimraf build/ dist/ node_modules/ coverage/ playwright-report/  *.svg src/util/gitlab.json",
+    "clean": "npx rimraf build/ dist/ node_modules/ coverage/ playwright-report/ test-results/  *.svg src/util/gitlab.json",
     "config:dev": "npx shx cp config/dev.js public/env.js && npx shx cp config/dev.js build/env.js",
     "config:local": "npx shx cp config/local.js public/env.js && npx shx cp config/local.js build/env.js",
     "config:prod": "npx shx cp config/prod.js public/env.js && npx shx cp config/prod.js build/env.js",

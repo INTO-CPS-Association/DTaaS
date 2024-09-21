@@ -269,7 +269,7 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d --force
 ## Use
 
 The application will be accessible at:
-<http(s)://foo.com> from web browser.
+`http(s)://foo.com` from web browser.
 Sign in using your account linked to
 either _gitlab.com_ or your local gitlab instance.
 

@@ -59,11 +59,59 @@ This example uses a plethora of Python scripts to run the digital twin.
 By default it is configured to run with a mock physical twin.
 Furthermore, it depends on a RabbitMQ and an InfluxDB instances.
 
-There are two configuration files. One is is DT has a single configuration files.
-First is `incubator/log.log`; it controls the verbosity of terminal log level
-during DT execution.
-Second is `simulation.conf` which provides the control and
-connection parameters to the DT.
+There is one configuration file: `simulation.conf`.
+The RabbitMQ and InfluxDB configuration parameters need to be updated.
+
+## Lifecycle Phases
+
+The lifecycles that are covered include:
+
+| Lifecycle Phase    | Completed Tasks |
+| --------- | ------- |
+| Create    | Potentially updates the system and installs Python dependencies |
+| Execute   | Executes the Incubator digital twin and produces output in the terminal and in _incubator/log.log_. |
+| Clean     | Removes the log file. |
+
+## Run the example
+
+To run the example, change your present directory.
+
+```bash
+cd /workspace/examples/digital_twins/incubator
+```
+
+If required, change the execute permission of lifecycle scripts
+you need to execute, for example:
+
+```bash
+chmod +x lifecycle/create
+```
+
+Now, run the following scripts:
+
+### Create
+
+Potentially updates the system and installs Python dependencies.
+
+```bash
+lifecycle/create
+```
+
+### Execute
+
+Executes the Incubator digital twin with a mock physical twin. Pushes the results in the terminal, _incubator/log.log_, and in InfluxDB.
+
+```bash
+lifecycle/execute
+```
+
+### Clean
+
+Removes the output log file.
+
+```bash
+lifecycle/clean
+```
 
 ## Examining the results
 
