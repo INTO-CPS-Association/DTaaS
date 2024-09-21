@@ -57,7 +57,7 @@ need to be done with the following `LOCAL_PATH` values.
 | OS      | Absolute Path                 | Relative Path |
 | ------- | ----------------------------- | ------------- |
 | Windows | C:\DTaaS\files                | ..\..\files  |
-| Linux   | /Users/<Username>/DTaaS/files | ../../files   |
+| Linux   | /Users/\<Username\>/DTaaS/files | ../../files   |
 
 ### PM2
 

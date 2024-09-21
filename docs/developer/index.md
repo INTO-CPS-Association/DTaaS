@@ -1,4 +1,4 @@
-# Developers Guide
+# Developer Guide
 
 This guide is for DTaaS platform developers.
 It helps development team members get familiar with

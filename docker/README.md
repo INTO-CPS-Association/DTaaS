@@ -66,7 +66,7 @@ The configuration files to be updated are:
 1. docker/conf.dev
    please see [server docs](../docs/admin/servers/auth.md) for help
    with updating this config file)
-1. client/config/dev.js
+1. client/config/local.js
    please see [client config](../docs/admin/client/config.md) for help
    with updating this config file)
 

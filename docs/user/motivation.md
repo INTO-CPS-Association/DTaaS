@@ -1,4 +1,19 @@
-# Motivation
+# DTaaS for Users
+
+## User Guide
+
+This guide is for users of the DTaaS platform.
+Please make sure that you have access to a live installation of
+the DTaaS platform. The easiest is
+[localhost](../admin/localhost.md) installation scenario.
+
+Please see user-specific
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20240917-Users.pdf)
+and
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20240917-Users-Recorded-web.mp4)
+to get the conceptual framework behind composable digital twins in the DTaaS platform.
+
+## Motivation
 
 How can DT software platforms enable users collaborate to:
 
