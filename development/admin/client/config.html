@@ -964,11 +964,32 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user/examples/water_tank_FI_monitor/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Tank Fault Injection with NuRV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user/examples/incubator-NuRV-monitor-validation/index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Incubator with NuRV
+    Incubator Co-Sim with NuRV
   </span>
   
 
@@ -1006,11 +1027,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user/examples/water_tank_FI_monitor/index.html" class="md-nav__link">
+      <a href="../../user/examples/incubator-NuRV-fmu-monitor-service/index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Water Tank Fault Injection with NuRV
+    Incubator with NuRV FMU Service
   </span>
   
 
@@ -2753,7 +2774,7 @@
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nb">window</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;undefined&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="w">  </span><span class="nb">window</span><span class="p">.</span><span class="nx">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="nx">REACT_APP_ENVIRONMENT</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/&#39;</span><span class="p">,</span>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">    </span><span class="nx">REACT_APP_URL</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;http://localhost:4000/&#39;</span><span class="p">,</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">    </span><span class="nx">REACT_APP_URL_BASENAME</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">    </span><span class="nx">REACT_APP_URL_DTLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;/lab&#39;</span><span class="p">,</span>
 </span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="w">    </span><span class="nx">REACT_APP_URL_LIBLINK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -2763,8 +2784,8 @@
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="w">    </span><span class="nx">REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="w">    </span><span class="nx">REACT_APP_CLIENT_ID</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c&#39;</span><span class="p">,</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="w">    </span><span class="nx">REACT_APP_AUTH_AUTHORITY</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://gitlab.foo.com/&#39;</span><span class="p">,</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar/Library&#39;</span><span class="p">,</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://foo.com/bar&#39;</span><span class="p">,</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="nx">REACT_APP_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;http://localhost:4000/bar/Library&#39;</span><span class="p">,</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="nx">REACT_APP_LOGOUT_REDIRECT_URI</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;http://localhost:4000/bar&#39;</span><span class="p">,</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="nx">REACT_APP_GITLAB_SCOPES</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;openid profile read_user read_repository api&#39;</span><span class="p">,</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="w">  </span><span class="p">};</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="p">};</span>

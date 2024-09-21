@@ -979,6 +979,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lifecycle-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lifecycle Phases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run the example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run the example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Execute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clean
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examining-the-results" class="md-nav__link">
     <span class="md-ellipsis">
       Examining the results
@@ -1054,11 +1105,32 @@
   
   
     <li class="md-nav__item">
+      <a href="../water_tank_FI_monitor/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Tank Fault Injection with NuRV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../incubator-NuRV-monitor-validation/index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Incubator with NuRV
+    Incubator Co-Sim with NuRV
   </span>
   
 
@@ -1096,11 +1168,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../water_tank_FI_monitor/index.html" class="md-nav__link">
+      <a href="../incubator-NuRV-fmu-monitor-service/index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Water Tank Fault Injection with NuRV
+    Incubator with NuRV FMU Service
   </span>
   
 
@@ -2678,6 +2750,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lifecycle-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lifecycle Phases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run the example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run the example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Execute
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clean
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examining-the-results" class="md-nav__link">
     <span class="md-ellipsis">
       Examining the results
@@ -2760,25 +2883,68 @@ used as is or integrated with other digital twins.</p>
 <p>This example uses a plethora of Python scripts to run the digital twin.
 By default it is configured to run with a mock physical twin.
 Furthermore, it depends on a RabbitMQ and an InfluxDB instances.</p>
-<p>There are two configuration files. One is is DT has a single configuration files.
-First is <code>incubator/log.log</code>; it controls the verbosity of terminal log level
-during DT execution.
-Second is <code>simulation.conf</code> which provides the control and
-connection parameters to the DT.</p>
+<p>There is one configuration file: <code>simulation.conf</code>.
+The RabbitMQ and InfluxDB configuration parameters need to be updated.</p>
+<h2 id="lifecycle-phases">Lifecycle Phases</h2>
+<p>The lifecycles that are covered include:</p>
+<table>
+<thead>
+<tr>
+<th>Lifecycle Phase</th>
+<th>Completed Tasks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create</td>
+<td>Potentially updates the system and installs Python dependencies</td>
+</tr>
+<tr>
+<td>Execute</td>
+<td>Executes the Incubator digital twin and produces output in the terminal and in <em>incubator/log.log</em>.</td>
+</tr>
+<tr>
+<td>Clean</td>
+<td>Removes the log file.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="run-the-example">Run the example</h2>
+<p>To run the example, change your present directory.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>/workspace/examples/digital_twins/incubator
+</span></code></pre></div></td></tr></table></div>
+<p>If required, change the execute permission of lifecycle scripts
+you need to execute, for example:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>lifecycle/create
+</span></code></pre></div></td></tr></table></div>
+<p>Now, run the following scripts:</p>
+<h3 id="create">Create</h3>
+<p>Potentially updates the system and installs Python dependencies.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>lifecycle/create
+</span></code></pre></div></td></tr></table></div>
+<h3 id="execute">Execute</h3>
+<p>Executes the Incubator digital twin with a mock physical twin.
+Pushes the results in the terminal, <em>incubator/log.log</em>, and in InfluxDB.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a>lifecycle/execute
+</span></code></pre></div></td></tr></table></div>
+<h3 id="clean">Clean</h3>
+<p>Removes the output log file.</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>lifecycle/clean
+</span></code></pre></div></td></tr></table></div>
 <h2 id="examining-the-results">Examining the results</h2>
 <p>After starting all services successfully, the controller service will
 start producing output that looks like the following:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span>
-<span class="normal"><a href="#__codelineno-0-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>time           execution_interval  elapsed  heater_on  fan_on   room   box_air_temperature  state
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>19/11 16:17:59  3.00                0.01     True       False   10.70  19.68                Heating
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>19/11 16:18:02  3.00                0.03     True       True    10.70  19.57                Heating
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>19/11 16:18:05  3.00                0.01     True       True    10.70  19.57                Heating
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>19/11 16:18:08  3.00                0.01     True       True    10.69  19.47                Heating
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>19/11 16:18:11  3.00                0.01     True       True    10.69  19.41                Heating
+<div class="language-text highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span>
+<span class="normal"><a href="#__codelineno-5-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a>time           execution_interval  elapsed  heater_on  fan_on   room   box_air_temperature  state
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a>19/11 16:17:59  3.00                0.01     True       False   10.70  19.68                Heating
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a>19/11 16:18:02  3.00                0.03     True       True    10.70  19.57                Heating
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a>19/11 16:18:05  3.00                0.01     True       True    10.70  19.57                Heating
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a>19/11 16:18:08  3.00                0.01     True       True    10.69  19.47                Heating
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a>19/11 16:18:11  3.00                0.01     True       True    10.69  19.41                Heating
 </span></code></pre></div></td></tr></table></div>
 <p>An InfluxDB dashboard can be setup based on
 <code>incubator/digital_twin/data_access/influxdbserver/dashboards/incubator_data.json</code>.
