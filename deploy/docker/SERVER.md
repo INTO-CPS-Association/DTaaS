@@ -20,14 +20,8 @@ The installation requirements to run this docker version of the DTaaS are:
 ### Domain name
 
 The DTaaS software is a web application and is preferably hosted
-on a server with a domain name like <http:>_foo.com_</http:>.
+on a server with a domain name like _foo.com_.
 It is also possible to use an IP address in place of domain name.
-
-### TLS / HTTPS Certificate
-
-It is possible to add HTTPS option to the DTaaS software installation.
-Creation of the required TLS certificates is possible through
-[certbot](https://certbot.eff.org/).
 
 ### OAuth Provider
 
@@ -40,7 +34,8 @@ use [gitlab.com](https://gitlab.com) itself.
 
 Create user accounts in a linked gitlab instance for all the users.
 
-The default docker compose file contains two - _user1_ and _user2_.
+The default docker compose configuration file contains
+two users - _user1_ and _user2_.
 These names need to be changed to suitable usernames.
 
 ### OAuth2 Application Registration
@@ -90,9 +85,10 @@ Three following configuration files need to be updated.
 
 ### Docker Compose
 
-The docker compose configuration is in `deploy/docker/.env.server`,
-this is a sample file.
-It contains environment variables that are used by the docker compose files.
+The docker compose configuration is in `deploy/docker/.env.server`.
+It is a sample file.
+It contains environment variables
+that are used by the docker compose files.
 It can be updated to suit your local installation scenario.
 
 Description of file configuration can be found here. [.env file description](./DOCKER-ENV.md)
@@ -176,16 +172,13 @@ such routes are not served by traefik; it will give **404 server response**.
 
 ## Access Rights Over Files
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! warning
-    The default setting in docker compose file exposes
-    all user files at <http://foo.com/lib/files>.
-    All files of all the users are readable-writable by
-    all logged in users.
-    The `compose.server.yml` / `compose.server.secure.yml` file needs to be
-    updated to expose another directory like common assets directory.
-<!-- markdownlint-enable MD046 -->
+:warning:
+The default setting in docker compose file exposes
+all user files at <http://foo.com/lib/files>.
+All files of all the users are readable-writable by
+all logged in users.
+The `compose.server.yml/compose.server.secure.yml` file needs to be
+updated to expose another directory like common assets directory.
 
 If you wish to reduce this scope to only **common assets**,
 please change,
@@ -203,12 +196,42 @@ The change in the last line. The `${DTAAS_DIR}/files`
 got replaced by `${DTAAS_DIR}/files/common`. With this change, only
 common files are readable-writable by all logged in users.
 
-### Add TLS Certificates
+## Serve over HTTP
 
-The application can be served on HTTPS connection for which TLS certificates
-are needed. The certificates need to be issued for `foo.com` or `*.foo.com`.
-The names of the certificates must be `fullchain.pem` and `privkey.pem`. Copy
-these two certificate files into:
+This docker compose file serves the DTaaS application over HTTP.
+
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.server.yml --env-file .env.server up -d
+docker compose -f compose.server.yml --env-file .env.server down
+```
+
+To restart only a specific container, for example `client``
+
+```bash
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+```
+
+## Serve Over HTTPS
+
+The extra-steps related TLS certificate are needed only if
+DTaaS application is provided over HTTPS connection.
+
+### Obtain TLS / HTTPS Certificate
+
+Obtain the required TLS certificate either through
+[certbot](https://certbot.eff.org/) or directly from
+online certificate providers.
+
+The certificates need to be issued for `foo.com` or `*.foo.com`.
+The names of the certificates must be `fullchain.pem` and `privkey.pem`.
+The `fullchain.pem` corresponds to public certificate and
+the `privkey.pem` corresponds to private key.
+
+### Add TLS Certificates to Traefik
+
+Copy the two certificate files into:
 
 - `certs/foo.com/fullchain.pem`
 - `certs/foo.com/privkey.pem`
@@ -230,28 +253,7 @@ tls:
         - default
 ```
 
-## Run
-
-### Over HTTP
-
-This docker compose file serves application over HTTP.
-
-The commands to start and stop the appliation are:
-
-```bash
-docker compose -f compose.server.yml --env-file .env.server up -d
-docker compose -f compose.server.yml --env-file .env.server down
-```
-
-To restart only a specific container, for example `client``
-
-```bash
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
-```
-
-### Over HTTPS
-
-This docker compose file serves application over HTTP.
+### Run
 
 The commands to start and stop the appliation are:
 

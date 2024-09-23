@@ -165,3 +165,6 @@ runner.yml
 
 # command scripts for runner
 servers/execution/runner/lifecycle*
+
+# certs
+*.pem
