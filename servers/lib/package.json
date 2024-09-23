@@ -37,7 +37,7 @@
     "@nestjs/apollo": "^12.0.11",
     "@nestjs/common": "^10.3.7",
     "@nestjs/config": "^3.2.0",
-    "@nestjs/core": "^10.3.3",
+    "@nestjs/core": "^10.4.3",
     "@nestjs/graphql": "^12.0.11",
     "@nestjs/platform-express": "^10.3.7",
     "axios": "^1.5.1",
