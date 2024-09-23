@@ -33,7 +33,7 @@
   "bin": "./dist/src/main.js",
   "dependencies": {
     "@apollo/client": "^3.11.8",
-    "@apollo/server": "^4.10.0",
+    "@apollo/server": "^4.11.0",
     "@nestjs/apollo": "^12.0.11",
     "@nestjs/common": "^10.3.7",
     "@nestjs/config": "^3.2.0",
