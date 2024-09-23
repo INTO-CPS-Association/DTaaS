@@ -19,7 +19,7 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "${DTAAS_DIR}/deploy/docker/dynamic/tls.yml:/etc/traefik/dynamic/tls.yml"
+      - "${DTAAS_DIR}/deploy/docker/dynamic/tls.local.yml:/etc/traefik/dynamic/tls.yml"
       - "${DTAAS_DIR}/deploy/docker/certs:/etc/traefik-certs"
     networks:
       - frontend
@@ -32,25 +32,10 @@ services:
       - "${CLIENT_CONFIG}:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.client.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/`)"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
       - "traefik.http.routers.client.tls=true"
       - "traefik.http.routers.client.middlewares=traefik-forward-auth"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
-    networks:
-      - frontend
-
-  libms:
-    image: intocps/libms:latest
-    restart: unless-stopped
-    volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
-      - ${DTAAS_DIR}/files:/dtaas/libms/files
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.libms.loadbalancer.server.port=4001"
-      - "traefik.http.routers.libms.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/lib`)"
-      - "traefik.http.routers.libms.tls=true"
-      - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
     networks:
       - frontend
 
@@ -66,37 +51,17 @@ services:
     shm_size: 512m
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.u1.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username1}`)"
+      - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`)"
       - "traefik.http.routers.u1.tls=true"
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
       - users
   
-  user2:
-    image: mltooling/ml-workspace-minimal:0.13.2
-    restart: unless-stopped
-    volumes:
-      - "${DTAAS_DIR}/files/common:/workspace/common"
-      - "${DTAAS_DIR}/files/${username2}:/workspace"
-    environment:
-      - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=${username2}
-    shm_size: 512m
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.u2.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username2}`)"
-      - "traefik.http.routers.u2.tls=true"
-      - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
-    networks:
-      - users
-
-
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/deploy/docker/conf.server:/conf"
-      - "${DTAAS_DIR}/deploy/docker/resolv.conf:/etc/resolv.conf"
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=generic-oauth
@@ -111,7 +76,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.redirect.entryPoints=web-secure"
-      - "traefik.http.routers.redirect.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/_oauth`)"
+      - "traefik.http.routers.redirect.rule=PathPrefix(`/_oauth`)"
       - "traefik.http.routers.redirect.middlewares=traefik-forward-auth"
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
