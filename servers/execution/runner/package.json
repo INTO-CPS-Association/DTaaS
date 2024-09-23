@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@nestjs/cli": "^10.3.2",
+    "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/testing": "^10.3.7",
     "@swc/cli": "^0.3.12",
