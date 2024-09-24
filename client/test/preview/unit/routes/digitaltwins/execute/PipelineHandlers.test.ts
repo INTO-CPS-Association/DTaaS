@@ -1,8 +1,6 @@
-import {
-  handleButtonClick,
-  handleStart,
-  handleStop,
-} from 'preview/route/digitaltwins/execute/pipelineHandler';
+import * as PipelineHandlers from 'preview/route/digitaltwins/execute/pipelineHandler';
+import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
+import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChecks';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 describe('PipelineHandler', () => {
@@ -16,11 +14,8 @@ describe('PipelineHandler', () => {
   });
 
   it('handles button click when button text is Start', async () => {
-    const handleStart = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineHandler'),
-      'handleStart',
-    );
-    await handleButtonClick(
+    const handleStart = jest.spyOn(PipelineHandlers, 'handleStart');
+    await PipelineHandlers.handleButtonClick(
       'Start',
       setButtonText,
       digitalTwin,
@@ -34,11 +29,8 @@ describe('PipelineHandler', () => {
   });
 
   it('handles button click when button text is Stop', async () => {
-    const handleStop = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineHandler'),
-      'handleStop',
-    );
-    await handleButtonClick(
+    const handleStop = jest.spyOn(PipelineHandlers, 'handleStop');
+    await PipelineHandlers.handleButtonClick(
       'Stop',
       setButtonText,
       digitalTwin,
@@ -53,23 +45,16 @@ describe('PipelineHandler', () => {
 
   it('handles start when button text is Start', async () => {
     const updatePipelineState = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineUtils'),
+      PipelineUtils,
       'updatePipelineState',
     );
-    const startPipeline = jest
-      .spyOn(
-        require('preview/route/digitaltwins/execute/pipelineUtils'),
-        'startPipeline',
-      )
-      .mockResolvedValue('success'); // Mock resolvedValue
-    const startPipelineStatusCheck = jest
-      .spyOn(
-        require('preview/route/digitaltwins/execute/pipelineChecks'),
-        'startPipelineStatusCheck',
-      )
-      .mockResolvedValue('success');
+    const startPipeline = jest.spyOn(PipelineUtils, 'startPipeline');
+    const startPipelineStatusCheck = jest.spyOn(
+      PipelineChecks,
+      'startPipelineStatusCheck',
+    );
 
-    await handleStart(
+    await PipelineHandlers.handleStart(
       'Start',
       setButtonText,
       digitalTwin,
@@ -91,7 +76,7 @@ describe('PipelineHandler', () => {
   });
 
   it('handles start when button text is Stop', async () => {
-    await handleStart(
+    await PipelineHandlers.handleStart(
       'Stop',
       setButtonText,
       digitalTwin,
@@ -104,17 +89,14 @@ describe('PipelineHandler', () => {
 
   it('handles stop and catches error', async () => {
     const updatePipelineStateOnStop = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineUtils'),
+      PipelineUtils,
       'updatePipelineStateOnStop',
     );
 
     const stopPipelines = jest
-      .spyOn(
-        require('preview/route/digitaltwins/execute/pipelineHandler'),
-        'stopPipelines',
-      )
+      .spyOn(PipelineHandlers, 'stopPipelines')
       .mockRejectedValueOnce(new Error('error'));
-    await handleStop(digitalTwin, setButtonText, dispatch);
+    await PipelineHandlers.handleStop(digitalTwin, setButtonText, dispatch);
 
     expect(dispatch).toHaveBeenCalled();
     expect(updatePipelineStateOnStop).toHaveBeenCalled();

@@ -14,3 +14,8 @@ jest.mock('components/tab/TabComponent', () => ({
   __esModule: true,
   default: () => <div data-testid="tab-component" />,
 }));
+
+jest.mock('@mui/material/Backdrop', () => ({
+  __esModule: true,
+  default: () => <div data-testid="backdrop" />,
+}));

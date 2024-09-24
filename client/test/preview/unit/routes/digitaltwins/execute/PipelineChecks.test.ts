@@ -1,10 +1,5 @@
-import {
-  checkFirstPipelineStatus,
-  checkSecondPipelineStatus,
-  handlePipelineCompletion,
-  handleTimeout,
-  startPipelineStatusCheck,
-} from 'preview/route/digitaltwins/execute/pipelineChecks';
+import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChecks';
+import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('util/gitlabDigitalTwin', () => ({
@@ -40,35 +35,39 @@ describe('PipelineChecks', () => {
   });
 
   it('handles timeout', () => {
-    handleTimeout(DTName, setButtonText, setLogButtonDisabled, dispatch);
+    PipelineChecks.handleTimeout(
+      DTName,
+      setButtonText,
+      setLogButtonDisabled,
+      dispatch,
+    );
 
     expect(setButtonText).toHaveBeenCalled();
     expect(setLogButtonDisabled).toHaveBeenCalledWith(false);
   });
 
   it('starts pipeline status check', async () => {
-    const checkFirstPipelineStatus = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineChecks'),
-      'checkFirstPipelineStatus',
-    );
+    const checkFirstPipelineStatusSpy = jest
+      .spyOn(PipelineChecks, 'checkFirstPipelineStatus')
+      .mockImplementation(() => Promise.resolve());
 
     jest.spyOn(global.Date, 'now').mockReturnValue(startTime);
 
-    await startPipelineStatusCheck(params);
+    await PipelineChecks.startPipelineStatusCheck(params);
 
-    expect(checkFirstPipelineStatus).toHaveBeenCalled();
+    expect(checkFirstPipelineStatusSpy).toHaveBeenCalled();
   });
 
   it('checks first pipeline status and returns success', async () => {
     const checkSecondPipelineStatus = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineChecks'),
+      PipelineChecks,
       'checkSecondPipelineStatus',
     );
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('success');
-    await checkFirstPipelineStatus({
+    await PipelineChecks.checkFirstPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -81,14 +80,14 @@ describe('PipelineChecks', () => {
 
   it('checks first pipeline status and returns failed', async () => {
     const updatePipelineStateOnCompletion = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineUtils'),
+      PipelineUtils,
       'updatePipelineStateOnCompletion',
     );
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('failed');
-    await checkFirstPipelineStatus({
+    await PipelineChecks.checkFirstPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -100,21 +99,13 @@ describe('PipelineChecks', () => {
   });
 
   it('checks first pipeline status and returns timeout', async () => {
-    const handleTimeout = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineChecks'),
-      'handleTimeout',
-    );
+    const handleTimeout = jest.spyOn(PipelineChecks, 'handleTimeout');
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
-    jest
-      .spyOn(
-        require('preview/route/digitaltwins/execute/pipelineChecks'),
-        'hasTimedOut',
-      )
-      .mockReturnValue(true);
-    await checkFirstPipelineStatus({
+    jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
+    await PipelineChecks.checkFirstPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -151,15 +142,12 @@ describe('PipelineChecks', () => {
 */
 
   it('handles pipeline completion with failed status', async () => {
-    const fetchJobLogs = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineUtils'),
-      'fetchJobLogs',
-    );
+    const fetchJobLogs = jest.spyOn(PipelineUtils, 'fetchJobLogs');
     const updatePipelineStateOnCompletion = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineUtils'),
+      PipelineUtils,
       'updatePipelineStateOnCompletion',
     );
-    await handlePipelineCompletion(
+    await PipelineChecks.handlePipelineCompletion(
       pipelineId,
       digitalTwin,
       setButtonText,
@@ -174,29 +162,21 @@ describe('PipelineChecks', () => {
   });
 
   it('checks second pipeline status and returns timeout', async () => {
-    const params = {
+    const completeParams = {
       setButtonText: jest.fn(),
-      digitalTwin: digitalTwin,
+      digitalTwin,
       setLogButtonDisabled: jest.fn(),
       dispatch: jest.fn(),
       startTime: Date.now(), // Un timestamp come esempio
     };
-    const handleTimeout = jest.spyOn(
-      require('preview/route/digitaltwins/execute/pipelineChecks'),
-      'handleTimeout',
-    );
+    const handleTimeout = jest.spyOn(PipelineChecks, 'handleTimeout');
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
-    jest
-      .spyOn(
-        require('preview/route/digitaltwins/execute/pipelineChecks'),
-        'hasTimedOut',
-      )
-      .mockReturnValue(true);
+    jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
 
-    await checkSecondPipelineStatus(params);
+    await PipelineChecks.checkSecondPipelineStatus(completeParams);
 
     expect(handleTimeout).toHaveBeenCalled();
   });

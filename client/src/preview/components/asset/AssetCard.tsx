@@ -1,19 +1,14 @@
 import * as React from 'react';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { AlertColor, CardActions, Grid } from '@mui/material';
 import styled from '@emotion/styled';
-import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
-import { GitlabInstance } from 'util/gitlab';
-import { getAuthority } from 'util/envUtil';
+import { formatName } from 'util/gitlabDigitalTwin';
 import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setDigitalTwin,
-  selectDigitalTwinByName,
-} from 'store/digitalTwin.slice';
+import { useSelector } from 'react-redux';
+import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
 import { RootState } from 'store/store';
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
@@ -146,30 +141,10 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
 }
 
 function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetailsLog, setShowDetailsLog] = useState(false);
+  const [showDeleteLog, setShowDeleteLog] = useState(false);
   const [showReconfigure, setShowReconfigure] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const dispatch = useDispatch();
   const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
-
-  useEffect(() => {
-    const initialize = async () => {
-      const gitlabInstance = new GitlabInstance(
-        sessionStorage.getItem('username') || '',
-        getAuthority(),
-        sessionStorage.getItem('access_token') || '',
-      );
-      await gitlabInstance.init();
-      dispatch(
-        setDigitalTwin({
-          assetName: asset.name,
-          digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
-        }),
-      );
-    };
-
-    initialize();
-  }, [asset.name, dispatch]);
 
   return (
     digitalTwin && (
@@ -179,16 +154,16 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
           buttons={
             <CardButtonsContainerManage
               name={asset.name}
-              setShowDetails={setShowDetails}
+              setShowDelete={setShowDeleteLog}
+              setShowDetails={setShowDetailsLog}
               setShowReconfigure={setShowReconfigure}
-              setShowDelete={setShowDelete}
             />
           }
         />
         <CustomSnackbar />
         <DetailsDialog
-          showLog={showDetails}
-          setShowLog={setShowDetails}
+          showLog={showDetailsLog}
+          setShowLog={setShowDetailsLog}
           name={asset.name}
         />
         <ReconfigureDialog
@@ -197,8 +172,8 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
           name={asset.name}
         />
         <DeleteDialog
-          showLog={showDelete}
-          setShowLog={setShowDelete}
+          showLog={showDeleteLog}
+          setShowLog={setShowDeleteLog}
           name={asset.name}
           onDelete={onDelete}
         />
@@ -210,28 +185,6 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
 function AssetCardExecute({ asset }: AssetCardProps) {
   useState<AlertColor>('success');
   const [showLog, setShowLog] = useState(false);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const initialize = async () => {
-      const gitlabInstance = new GitlabInstance(
-        sessionStorage.getItem('username') || '',
-        getAuthority(),
-        sessionStorage.getItem('access_token') || '',
-      );
-      await gitlabInstance.init();
-      dispatch(
-        setDigitalTwin({
-          assetName: asset.name,
-          digitalTwin: new DigitalTwin(asset.name, gitlabInstance),
-        }),
-      );
-    };
-
-    initialize();
-  }, [asset.name, dispatch]);
-
   const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
 
   return (

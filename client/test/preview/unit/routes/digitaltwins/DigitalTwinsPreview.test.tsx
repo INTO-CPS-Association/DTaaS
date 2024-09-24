@@ -1,5 +1,7 @@
 import * as React from 'react';
-import DigitalTwinsPreview, { fetchSubfolders } from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview, {
+  fetchSubfolders,
+} from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -26,7 +28,7 @@ describe('Digital Twins', () => {
         </Provider>,
       );
     });
-    
+
     const tabComponent = screen.getByTestId('tab-component');
     expect(tabComponent).toBeInTheDocument();
   });
@@ -70,7 +72,9 @@ describe('Digital Twins', () => {
 
     const init = jest.spyOn(mockGitlabInstance, 'init');
     gitlabInstance.projectId = 1;
-    const getDTSubfolders = jest.spyOn(mockGitlabInstance, 'getDTSubfolders').mockRejectedValue(new Error('error'));
+    const getDTSubfolders = jest
+      .spyOn(mockGitlabInstance, 'getDTSubfolders')
+      .mockRejectedValue(new Error('error'));
 
     await fetchSubfolders(gitlabInstance, dispatch, setError);
 

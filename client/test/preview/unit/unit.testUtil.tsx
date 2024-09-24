@@ -1,6 +1,6 @@
 import { act, render } from '@testing-library/react';
 
-export function InitRouteTests(component: React.ReactElement) {
+function InitRouteTests(component: React.ReactElement) {
   beforeEach(async () => {
     await act(async () => {
       render(component);
@@ -11,3 +11,5 @@ export function InitRouteTests(component: React.ReactElement) {
     expect(true);
   });
 }
+
+export default InitRouteTests;

@@ -9,6 +9,9 @@ import AssetBoard from 'preview/components/asset/AssetBoard';
 import { GitlabInstance } from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
 import { setAssets } from 'store/assets.slice';
+import { Asset } from 'preview/components/asset/Asset';
+import DigitalTwin from 'util/gitlabDigitalTwin';
+import { setDigitalTwin } from 'store/digitalTwin.slice';
 import tabs from './DigitalTwinTabDataPreview';
 
 export const createDTTab = (error: string | null): TabData[] =>
@@ -36,12 +39,30 @@ export const fetchSubfolders = async (
         gitlabInstance.projectId,
       );
       dispatch(setAssets(subfolders));
-    } else {
-      dispatch(setAssets([]));
+      return subfolders;
     }
+    dispatch(setAssets([]));
+    return [];
   } catch (error) {
     setError('An error occurred');
+    return [];
   }
+};
+
+const createDigitalTwinsForAssets = (
+  assets: Asset[],
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  assets.forEach(async (asset) => {
+    const gitlabInstance = new GitlabInstance(
+      sessionStorage.getItem('username') || '',
+      getAuthority(),
+      sessionStorage.getItem('access_token') || '',
+    );
+    await gitlabInstance.init();
+    const digitalTwin = new DigitalTwin(asset.name, gitlabInstance);
+    dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin }));
+  });
 };
 
 export const DTContent = () => {
@@ -54,7 +75,11 @@ export const DTContent = () => {
   );
 
   useEffect(() => {
-    fetchSubfolders(gitlabInstance, dispatch, setError);
+    fetchSubfolders(gitlabInstance, dispatch, setError).then((assets) => {
+      if (assets) {
+        createDigitalTwinsForAssets(assets, dispatch);
+      }
+    });
   }, [dispatch]);
 
   return (
@@ -62,7 +87,7 @@ export const DTContent = () => {
       <TabComponent assetType={createDTTab(error)} scope={[]} />
     </Layout>
   );
-}
+};
 
 export default function DigitalTwinsPreview() {
   return <DTContent />;

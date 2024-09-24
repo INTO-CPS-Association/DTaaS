@@ -3,9 +3,9 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AppProvider } from 'AppProvider';
 import routes from 'routes';
 import * as React from 'react';
-import { mockAuthState, mockAuthStateType } from '../__mocks__/global_mocks';
 import { useAuth } from 'react-oidc-context';
 import store from 'store/store';
+import { mockAuthState, mockAuthStateType } from '../__mocks__/global_mocks';
 
 const renderWithAppProvider = (route: string) => {
   window.history.pushState({}, 'Test page', route);
@@ -29,7 +29,7 @@ const renderWithAppProvider = (route: string) => {
   );
 };
 
-export async function setupIntegrationTest(
+async function setupIntegrationTest(
   route: string,
   authState?: mockAuthStateType,
 ) {
@@ -51,3 +51,5 @@ export async function setupIntegrationTest(
   const container = await act(async () => renderWithAppProvider(route));
   return container;
 }
+
+export default setupIntegrationTest;

@@ -11,7 +11,7 @@ describe('PipelineUtils', () => {
   const dispatch = jest.fn();
   const setLogButtonDisabled = jest.fn();
   const setButtonText = jest.fn();
-  const gitlabInstance = digitalTwin.gitlabInstance;
+  const { gitlabInstance } = digitalTwin;
   const pipelineId = 1;
 
   afterEach(() => {
