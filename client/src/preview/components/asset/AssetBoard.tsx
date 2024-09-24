@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { deleteAsset } from 'store/assets.slice';
-import { AssetCardManage, AssetCardExecute } from './AssetCard';
+import { AssetCardExecute } from './AssetCard';
 import { Asset } from './Asset';
 
 const outerGridContainerProps = {
@@ -26,7 +26,7 @@ const AssetGridItem: React.FC<{
   asset: Asset;
   tab: string;
   onDelete: (path: string) => void;
-}> = ({ asset, tab, onDelete }) => (
+}> = ({ asset }) => (
   <Grid
     key={asset.path}
     item
@@ -36,11 +36,7 @@ const AssetGridItem: React.FC<{
     lg={3}
     sx={{ minWidth: 250 }}
   >
-    {tab === 'Execute' ? (
       <AssetCardExecute asset={asset} />
-    ) : (
-      <AssetCardManage asset={asset} onDelete={() => onDelete(asset.path)} />
-    )}
   </Grid>
 );
 
