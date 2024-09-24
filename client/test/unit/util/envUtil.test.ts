@@ -42,7 +42,7 @@ describe('envUtil', () => {
   };
 
   beforeEach(() => {
-    (useSelector as jest.Mock).mockReturnValue({ userName: testUsername });
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({ userName: testUsername });
   });
 
   test('GetURL should return the correct enviroment variables', () => {
