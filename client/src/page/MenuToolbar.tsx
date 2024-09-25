@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import { useAuth } from 'react-oidc-context';
 import LinkButtons from 'components/LinkButtons';
 import toolbarLinkValues from 'util/toolbarUtil';
-import { signOut } from 'util/auth/Authentication';
+import { SignOut } from 'util/auth/Authentication';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -68,7 +68,7 @@ function MenuToolbar({
 
   const handleSignOut = async () => {
     if (auth) {
-      await signOut(auth);
+      await SignOut(auth);
     }
   };
   return (

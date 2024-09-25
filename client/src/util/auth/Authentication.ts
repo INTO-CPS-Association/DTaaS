@@ -12,7 +12,7 @@ export interface CustomAuthContext {
   user?: User | null | undefined;
 }
 
-export function getAndSetUsername(auth: CustomAuthContext) {
+export function GetAndSetUsername(auth: CustomAuthContext) {
   const dispatch = useDispatch();
   if (auth.user !== null && auth.user !== undefined) {
     const profileUrl = auth.user.profile.profile ?? '';
@@ -22,12 +22,12 @@ export function getAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
-export async function signOut(auth: AuthContextProps) {
+export async function SignOut(auth: AuthContextProps) {
+  const APP_URL = cleanURL(useAppURL());
   if (!auth.user) {
     return;
   }
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
-  const APP_URL = cleanURL(useAppURL());
   const idToken = auth.user.id_token;
   try {
     await auth.revokeTokens();

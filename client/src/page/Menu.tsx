@@ -9,7 +9,7 @@ import DrawerComponent from './DrawerComponent';
 
 const drawerwidth = 240;
 
-const hooks = () => {
+const Hooks = () => {
   const theme = useTheme();
   const menuState = useSelector((state: RootState) => state.menu);
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const hooks = () => {
 };
 
 function MiniDrawer() {
-  const { theme, menuState, dispatch, anchorElUser, setAnchorElUser } = hooks();
+  const { theme, menuState, dispatch, anchorElUser, setAnchorElUser } = Hooks();
   const handleCloseUserMenu = () => setAnchorElUser(null);
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLButtonElement>) =>
     setAnchorElUser(event.currentTarget);
