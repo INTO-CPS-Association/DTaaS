@@ -19,7 +19,7 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "${DTAAS_DIR}/deploy/docker/dynamic:/etc/traefik/dynamic"
+      - "${DTAAS_DIR}/deploy/docker/dynamic/tls.yml:/etc/traefik/dynamic/tls.yml"
       - "${DTAAS_DIR}/deploy/docker/certs:/etc/traefik-certs"
     networks:
       - frontend
