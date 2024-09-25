@@ -1,4 +1,3 @@
-version: '3'
 services:
   traefik:
     image: traefik:v2.10
@@ -34,7 +33,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
       - "traefik.http.routers.client.tls=true"
-      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
     networks:
       - frontend
@@ -53,36 +51,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`)"
       - "traefik.http.routers.u1.tls=true"
-      - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
-      - users
-  
-  traefik-forward-auth:
-    image: thomseddon/traefik-forward-auth:latest
-    restart: unless-stopped
-    volumes:
-      - "${DTAAS_DIR}/deploy/docker/conf.server:/conf"
-    environment:
-      - LOG_LEVEL=trace
-      - DEFAULT_PROVIDER=generic-oauth
-      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=${OAUTH_URL}/api/v4/user
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${CLIENT_ID}
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${CLIENT_SECRET}
-      - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
-      - SECRET= "${OAUTH_SECRET}"
-      - CONFIG=/conf
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.redirect.entryPoints=web-secure"
-      - "traefik.http.routers.redirect.rule=PathPrefix(`/_oauth`)"
-      - "traefik.http.routers.redirect.middlewares=traefik-forward-auth"
-      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
-      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
-      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
-    networks:
-      - frontend
       - users
 
 networks:
