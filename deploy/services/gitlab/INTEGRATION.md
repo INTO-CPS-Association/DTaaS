@@ -8,11 +8,10 @@ integrating its OAuth Authorization feature with the rest of web application.
 > which incorrectly causes authorization redirects to use the `HTTPS` URL
 > scheme. This is a
 > [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
-> and forces us to use `HTTPS` for the DTaaS server. However, Traefik Forward
-> Auth cannot work with self-signed or invalid certificates, which means you
-> will be unable to use the GitLab instance locally at
-> `https://localhost/gitlab` (as this would require a self-signed certificate).
-> Hence, you will need a dedicated server with a TLS certificate.
+> and forces us to use `HTTPS` for the DTaaS server. This means your server
+> should be set up to use either `https://localhost` or `https://foo.com`. This
+> guide will henceforth use `foo.com` to represent either localhost or a custom
+> domain.
 
 After following this guide, the GitLab instance will be available at the URL:
 `https://foo.com/gitlab`. Traefik Forward Auth will use the endpoints of this
@@ -22,10 +21,8 @@ URL for authorization.
 
 ### 1. Setting up the DTaaS server
 
-Normally, to set up the web application, you would need to follow either
-installation scenario in the guide - _deploy/README.md_. However, since `HTTPS`
-is mandatory and localhost is not supported as of yet, you may follow this
-guide - _deploy/docker/SERVER.md_.
+Follow the guide to set up the DTaaS web application on either localhost or a
+custom domain - _deploy/README.md_.
 
 > [!NOTE]
 > The section "Add TLS Certificates (Optional)" should be treated as
@@ -35,11 +32,11 @@ guide - _deploy/docker/SERVER.md_.
 > [!NOTE]
 > You may ignore steps related to configuring OAuth application tokens
 > at `https://gitlab.com`. We will be using this initial installation to host
-> the local GitLab instance, on which we will create the OAuth application
-> tokens.
+> the local GitLab instance, on which we will later create the OAuth
+> application tokens.
 
 After this step, you will have a functioning DTaaS server and client available
-at your URL.
+at `https://foo.com`.
 
 ### 2. Setting up the GitLab Instance
 
@@ -47,7 +44,7 @@ Follow the guide to set up a GitLab instance -
 _deploy/services/gitlab/README.md_.
 
 After this step, and once you have run `gitlab-ctl reconfigure`, you will have a
-functioning GitLab instance at `https://foo.com/localhost`, and the login
+functioning GitLab instance at `https://foo.com/gitlab`, and the login
 credentials of the root user.
 
 ### 3. Creating OAuth Tokens in GitLab
@@ -77,10 +74,11 @@ Restart the DTaaS server to use these token details in production.
 
 If you have set up everything correctly:
 
-1. You will have a functioning path-prefixed GitLab instance available to use in
-   a similar manner to [https://gitlab.com](https://gitlab.com).
+1. You will have a functioning path-prefixed GitLab instance available at
+   `https://foo.com/gitlab` that you may use in a similar manner to
+   [https://gitlab.com](https://gitlab.com).
 1. Data, configuration settings and logs pertaining to the GitLab installation
    will be available on the DTaaS server within the directory:
    _deploy/services/gitlab_.
 1. Traefik Forward Auth will use the path-prefixed GitLab instance for
-   authorization.
+   authorization on the multi-user installation scenario i.e. `foo.com` (but not on `localhost`).
