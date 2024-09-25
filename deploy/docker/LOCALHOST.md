@@ -1,7 +1,8 @@
 # Install DTaaS on localhost
 
 The installation instructions provided in this README are
-ideal for running the DTaaS on both localhost.
+ideal for running the **DTaaS on both localhost served over HTTP connection**.
+
 This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
