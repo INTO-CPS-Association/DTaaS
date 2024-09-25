@@ -94,7 +94,7 @@ describe('useSignOut', () => {
 
     auth.user = null;
 
-    const signOutResult = await signOut(auth);
+    const signOutResult = await SignOut(auth);
 
     expect(signOutResult).toBeUndefined();
     expect(mockSignoutRedirect).not.toHaveBeenCalled();
@@ -116,7 +116,7 @@ describe('useSignOut', () => {
     const auth = useAuth();
     const signOut = useSignOut();
     const fetchBody = { signal: AbortSignal.timeout(30000) };
-    await signOut(auth);
+    await SignOut(auth);
     expect(global.fetch).toHaveBeenCalledWith(
       'https://foo.com/_oauth/logout',
       fetchBody,
@@ -127,7 +127,7 @@ describe('useSignOut', () => {
     const auth = useAuth();
     const signOut = useSignOut();
     global.fetch = jest.fn().mockRejectedValueOnce('foo');
-    await expect(signOut(auth)).rejects.toThrow(
+    await expect(SignOut(auth)).rejects.toThrow(
       Error('Error occurred during logout: foo'),
     );
   });
@@ -138,7 +138,7 @@ describe('useSignOut', () => {
     auth.signoutRedirect = jest
       .fn()
       .mockRejectedValueOnce(new Error('signoutRedirect rejected'));
-    await expect(signOut(auth)).rejects.toThrow(
+    await expect(SignOut(auth)).rejects.toThrow(
       Error('Error occurred during logout: Error: signoutRedirect rejected'),
     );
   });
