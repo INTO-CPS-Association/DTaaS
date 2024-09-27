@@ -1,12 +1,10 @@
 import * as React from 'react';
-import DigitalTwinsPreview, {
-  fetchSubfolders,
-} from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview, * as functions from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin, mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -17,7 +15,20 @@ jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('util/gitlab', () => {
+  return {
+    default: jest.fn().mockImplementation(() => mockGitlabInstance), // Mock del costruttore
+  };
+});
+jest.mock('util/gitlabDigitalTwin', () => ({
+  DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
+}));
+
 describe('Digital Twins', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('displays content of tabs', async () => {
     await act(async () => {
       render(
@@ -42,7 +53,7 @@ describe('Digital Twins', () => {
     gitlabInstance.projectId = 1;
     const getDTSubfolders = jest.spyOn(mockGitlabInstance, 'getDTSubfolders');
 
-    await fetchSubfolders(gitlabInstance, dispatch, setError);
+    await functions.fetchSubfolders(gitlabInstance, dispatch, setError);
 
     expect(init).toHaveBeenCalled();
     expect(getDTSubfolders).toHaveBeenCalledWith(1);
@@ -58,7 +69,7 @@ describe('Digital Twins', () => {
     gitlabInstance.projectId = null;
     const getDTSubfolders = jest.spyOn(mockGitlabInstance, 'getDTSubfolders');
 
-    await fetchSubfolders(gitlabInstance, dispatch, setError);
+    await functions.fetchSubfolders(gitlabInstance, dispatch, setError);
 
     expect(init).toHaveBeenCalled();
     expect(getDTSubfolders).not.toHaveBeenCalled();
@@ -76,11 +87,12 @@ describe('Digital Twins', () => {
       .spyOn(mockGitlabInstance, 'getDTSubfolders')
       .mockRejectedValue(new Error('error'));
 
-    await fetchSubfolders(gitlabInstance, dispatch, setError);
+    await functions.fetchSubfolders(gitlabInstance, dispatch, setError);
 
     expect(init).toHaveBeenCalled();
     expect(getDTSubfolders).toHaveBeenCalledWith(1);
     expect(dispatch).not.toHaveBeenCalled();
     expect(setError).toHaveBeenCalledWith('An error occurred');
   });
+  
 });

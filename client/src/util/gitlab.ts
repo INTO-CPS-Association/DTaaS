@@ -11,12 +11,6 @@ interface LogEntry {
   error?: Error;
 }
 
-interface FolderEntry {
-  name: string;
-  path: string;
-  description: string;
-}
-
 class GitlabInstance {
   public username: string | null;
 
@@ -124,4 +118,4 @@ class GitlabInstance {
   }
 }
 
-export { GitlabInstance, FolderEntry };
+export default GitlabInstance;

@@ -25,7 +25,7 @@ interface AssetBoardProps {
 const AssetGridItem: React.FC<{
   asset: Asset;
   tab: string;
-  onDelete: (path: string) => void;
+  onDelete: (path: string, dispatch: ReturnType<typeof useDispatch>) => void;
 }> = ({ asset }) => (
   <Grid
     key={asset.path}
@@ -40,13 +40,15 @@ const AssetGridItem: React.FC<{
   </Grid>
 );
 
+export const handleDelete = function (deletedAssetPath: string, dispatch: ReturnType<typeof useDispatch>) {
+  return function () {
+    dispatch(deleteAsset(deletedAssetPath));
+  };
+};
+
 const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
   const assets = useSelector((state: RootState) => state.assets.items);
   const dispatch = useDispatch();
-
-  const handleDelete = (deletedAssetPath: string) => {
-    dispatch(deleteAsset(deletedAssetPath));
-  };
 
   if (error) {
     return <em style={{ textAlign: 'center' }}>{error}</em>;
@@ -54,12 +56,12 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
 
   return (
     <Grid {...outerGridContainerProps}>
-      {assets.map((asset) => (
+      {assets.map((asset: Asset) => (
         <AssetGridItem
           key={asset.path}
           asset={asset}
           tab={tab}
-          onDelete={handleDelete}
+          onDelete={handleDelete(asset.path, dispatch)}
         />
       ))}
     </Grid>

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
-import { GitlabInstance } from 'util/gitlab';
+import GitlabInstance from 'util/gitlab';
 import {
   setJobLogs,
   setPipelineCompleted,

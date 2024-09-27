@@ -19,3 +19,4 @@ jest.mock('@mui/material/Backdrop', () => ({
   __esModule: true,
   default: () => <div data-testid="backdrop" />,
 }));
+

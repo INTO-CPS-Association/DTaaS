@@ -35,6 +35,8 @@ describe('LogButton', () => {
     fireEvent.click(logButton);
 
     expect(setShowLog).toHaveBeenCalled();
+    expect(setShowLog).toHaveBeenCalledTimes(1);
+    expect(logButton).toBeEnabled();
   });
 
   it('does not handle button click when disabled', () => {
@@ -48,5 +50,26 @@ describe('LogButton', () => {
     fireEvent.click(logButton);
 
     expect(setShowLog).not.toHaveBeenCalled();
+  });
+
+  it('toggles setShowLog value correctly', () => {
+    let toggleValue = false;
+    const mockSetShowLog = jest.fn((callback) => {
+      toggleValue = callback(toggleValue);
+    });
+
+    render(
+      <Provider store={store}>
+        <LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />
+      </Provider>,
+    );
+
+    const logButton = screen.getByRole('button', { name: /Log/i });
+
+    fireEvent.click(logButton);
+    expect(toggleValue).toBe(true);
+
+    fireEvent.click(logButton);
+    expect(toggleValue).toBe(false);
   });
 });

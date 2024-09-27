@@ -7,7 +7,7 @@ import digitalTwinReducer, {
   setPipelineLoading,
 } from 'store/digitalTwin.slice';
 import DigitalTwin from 'util/gitlabDigitalTwin';
-import { GitlabInstance } from 'util/gitlab';
+import GitlabInstance from 'util/gitlab';
 import { JobLog } from 'preview/components/asset/StartStopButton';
 
 describe('reducers', () => {

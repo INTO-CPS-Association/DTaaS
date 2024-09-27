@@ -1,4 +1,4 @@
-import { GitlabInstance } from './gitlab';
+import GitlabInstance from './gitlab';
 
 const RUNNER_TAG = 'linux';
 
@@ -8,7 +8,7 @@ export const formatName = (name: string) =>
 class DigitalTwin {
   public DTName: string;
 
-  public description: string = '';
+  public description: string | undefined = '';
 
   public fullDescription: string = '';
 

@@ -44,7 +44,6 @@ function CardActionAreaContainer(asset: Asset) {
   const digitalTwin = useSelector(
     (state: RootState) => state.digitalTwin[asset.name],
   );
-  const description = digitalTwin?.description || asset.description;
 
   return (
     <Grid container>
@@ -60,7 +59,7 @@ function CardActionAreaContainer(asset: Asset) {
           }}
         >
           <Description variant="body2" color="text.secondary">
-            {description}
+            {digitalTwin.description}
           </Description>
         </CardContent>
       </Grid>

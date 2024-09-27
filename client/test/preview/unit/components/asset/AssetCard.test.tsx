@@ -1,18 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
-import { Provider } from 'react-redux';
+import { Provider , useSelector } from 'react-redux';
 import store from 'store/store';
-import { useSelector } from 'react-redux';
 import { formatName } from 'util/gitlabDigitalTwin';
 
-// Mocking react-redux to retain actual functionality
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn(), // Mock useSelector
+  useSelector: jest.fn(),
 }));
 
-// Mocking CustomSnackbar and LogDialog
 jest.mock('preview/route/digitaltwins/Snackbar', () => ({
   __esModule: true,
   default: () => <div data-testid="custom-snackbar" />,
@@ -24,18 +21,17 @@ jest.mock('preview/route/digitaltwins/execute/LogDialog', () => ({
 }));
 
 describe('AssetCardExecute', () => {
-  const asset = { name: 'asset', description: 'description', path: 'path' };
-  
-  // Set the mock return value for useSelector
-  beforeEach(() => {
-    (useSelector as jest.Mock).mockReturnValue({ description: asset.description });
-  });
+  const asset = { name: 'asset', description: 'Asset description', path: 'path' };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders AssetCardExecute', () => {
+  it('renders AssetCardExecute with digital twin description', () => {
+    (useSelector as jest.Mock).mockImplementation((selector) =>
+      selector({ digitalTwin: { [asset.name]: { description: 'Digital Twin description' } } }),
+    );
+
     render(
       <Provider store={store}>
         <AssetCardExecute asset={asset} />
@@ -43,8 +39,9 @@ describe('AssetCardExecute', () => {
     );
 
     expect(screen.getByText(formatName(asset.name))).toBeInTheDocument();
-    expect(screen.getByText('description')).toBeInTheDocument();
+    expect(screen.getByText('Digital Twin description')).toBeInTheDocument();
     expect(screen.getByTestId('custom-snackbar')).toBeInTheDocument();
     expect(screen.getByTestId('log-dialog')).toBeInTheDocument();
   });
+  
 });

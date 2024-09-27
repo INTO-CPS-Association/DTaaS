@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -6,7 +8,7 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { GitlabInstance } from 'util/gitlab';
+import GitlabInstance from 'util/gitlab';
 import { getAuthority } from 'util/envUtil';
 import { setAssets } from 'store/assets.slice';
 import { Asset } from 'preview/components/asset/Asset';
@@ -49,7 +51,7 @@ export const fetchSubfolders = async (
   }
 };
 
-const createDigitalTwinsForAssets = (
+export const createDigitalTwinsForAssets = async (
   assets: Asset[],
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
@@ -61,6 +63,7 @@ const createDigitalTwinsForAssets = (
     );
     await gitlabInstance.init();
     const digitalTwin = new DigitalTwin(asset.name, gitlabInstance);
+    digitalTwin.description = asset.description;
     dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin }));
   });
 };

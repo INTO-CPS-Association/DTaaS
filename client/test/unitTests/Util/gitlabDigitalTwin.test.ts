@@ -1,4 +1,4 @@
-import { GitlabInstance } from 'util/gitlab';
+import GitlabInstance from 'util/gitlab';
 import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
 
 const mockApi = {

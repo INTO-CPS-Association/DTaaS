@@ -1,5 +1,5 @@
 import { Gitlab } from '@gitbeaker/core';
-import { GitlabInstance } from 'util/gitlab';
+import GitlabInstance from 'util/gitlab';
 import DigitalTwin from 'util/gitlabDigitalTwin';
 
 export const mockAppURL = 'https://example.com/';
@@ -57,13 +57,13 @@ export const mockGitlabInstance: GitlabInstance = {
   api: new Gitlab({
     host: 'mockedHost',
     token: 'mockedToken',
-    requesterFn: jest.fn(), // Provide an initializer for the 'requesterFn' property
+    requesterFn: jest.fn(),
   }),
   logs: [],
   subfolders: [],
   projectId: 1,
   triggerToken: 'mock trigger token',
-  init: jest.fn(),
+  init: jest.fn().mockResolvedValue(undefined),
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
   getDTDescription: jest.fn(),

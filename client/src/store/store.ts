@@ -10,9 +10,9 @@ import fileSlice from './file.slice';
 const rootReducer = combineReducers({
   menu: menuSlice,
   auth: authSlice,
+  assets: assetsSlice,
   digitalTwin: digitalTwinSlice,
   snackbar: snackbarSlice,
-  assets: assetsSlice,
   files: fileSlice,
 });
 
