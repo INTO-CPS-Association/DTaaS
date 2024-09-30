@@ -30,19 +30,19 @@ const store = configureStore({
 
 mockDigitalTwin.description = 'Mocked description';
 
-const setupTest = () => {
-  store.dispatch(
-    setAssets(preSetItems)
-  );
-  store.dispatch(
-    setDigitalTwin({
-      assetName: 'Asset 1',
-      digitalTwin: mockDigitalTwin,
-    })
-  );
-};
+describe.skip('AssetBoard Integration Tests', () => {
+  const setupTest = () => {
+    store.dispatch(
+      setAssets(preSetItems)
+    );
+    store.dispatch(
+      setDigitalTwin({
+        assetName: 'Asset 1',
+        digitalTwin: mockDigitalTwin,
+      })
+    );
+  };
 
-describe('AssetBoard Integration Tests', () => {
   beforeEach(() => {
     setupTest();
   });

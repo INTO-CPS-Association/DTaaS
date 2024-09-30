@@ -13,40 +13,38 @@ describe('LogDialog', () => {
   const name = 'testName';
   const setShowLog = jest.fn();
 
+  const renderLogDialog = () => {
+    return render(
+      <Provider store={store}>
+        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
+      </Provider>,
+    );
+  }
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the LogDialog with logs available', () => {
-    // Caso in cui ci sono log disponibili
     (useSelector as jest.Mock).mockReturnValue({
       jobLogs: [{ jobName: 'job', log: 'testLog' }],
     });
 
-    render(
-      <Provider store={store}>
-        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
-      </Provider>,
-    );
+    renderLogDialog();
 
-    expect(screen.getByText(/TestName log/i)).toBeInTheDocument(); // Controlla se il log è visualizzato
-    expect(screen.getByText(/job/i)).toBeInTheDocument(); // Controlla se il nome del job è visualizzato
-    expect(screen.getByText(/testLog/i)).toBeInTheDocument(); // Controlla se il nome del job è visualizzato
+    expect(screen.getByText(/TestName log/i)).toBeInTheDocument();
+    expect(screen.getByText(/job/i)).toBeInTheDocument();
+    expect(screen.getByText(/testLog/i)).toBeInTheDocument();
   });
 
   it('renders the LogDialog with no logs available', () => {
-    // Caso in cui non ci sono log disponibili
     (useSelector as jest.Mock).mockReturnValue({
       jobLogs: [],
     });
 
-    render(
-      <Provider store={store}>
-        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
-      </Provider>,
-    );
+    renderLogDialog();
 
-    expect(screen.getByText(/No logs available/i)).toBeInTheDocument(); // Verifica che venga mostrato il messaggio "No logs available"
+    expect(screen.getByText(/No logs available/i)).toBeInTheDocument();
   });
 
   it('handles button click', async () => {
@@ -54,15 +52,11 @@ describe('LogDialog', () => {
       jobLogs: [{ jobName: 'create', log: 'create log' }],
     });
 
-    render(
-      <Provider store={store}>
-        <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
-      </Provider>,
-    );
+    renderLogDialog();
 
     const closeButton = screen.getByRole('button', { name: /Close/i });
     fireEvent.click(closeButton);
 
-    expect(setShowLog).toHaveBeenCalled(); // Verifica che la funzione setShowLog sia chiamata
+    expect(setShowLog).toHaveBeenCalled();
   });
 });

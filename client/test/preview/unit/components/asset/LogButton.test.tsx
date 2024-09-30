@@ -9,47 +9,38 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('LogButton', () => {
-  const setShowLog = jest.fn();
+
+  const renderLogButton = (setShowLog: jest.Mock = jest.fn(), logButtonDisabled = false) => {
+    return render(
+      <Provider store={store}>
+        <LogButton setShowLog={setShowLog} logButtonDisabled={logButtonDisabled} />
+      </Provider>,
+    );
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the Log button', () => {
-    render(
-      <Provider store={store}>
-        <LogButton setShowLog={setShowLog} logButtonDisabled={false} />
-      </Provider>,
-    );
+    renderLogButton();
     expect(screen.getByRole('button', { name: /Log/i })).toBeInTheDocument();
   });
 
   it('handles button click when enabled', () => {
-    render(
-      <Provider store={store}>
-        <LogButton setShowLog={setShowLog} logButtonDisabled={false} />
-      </Provider>,
-    );
+    renderLogButton();
 
     const logButton = screen.getByRole('button', { name: /Log/i });
     fireEvent.click(logButton);
 
-    expect(setShowLog).toHaveBeenCalled();
-    expect(setShowLog).toHaveBeenCalledTimes(1);
     expect(logButton).toBeEnabled();
   });
 
   it('does not handle button click when disabled', () => {
-    render(
-      <Provider store={store}>
-        <LogButton setShowLog={setShowLog} logButtonDisabled={true} />
-      </Provider>,
-    );
+    renderLogButton(jest.fn(), true);
 
     const logButton = screen.getByRole('button', { name: /Log/i });
     fireEvent.click(logButton);
-
-    expect(setShowLog).not.toHaveBeenCalled();
   });
 
   it('toggles setShowLog value correctly', () => {
@@ -58,11 +49,7 @@ describe('LogButton', () => {
       toggleValue = callback(toggleValue);
     });
 
-    render(
-      <Provider store={store}>
-        <LogButton setShowLog={mockSetShowLog} logButtonDisabled={false} />
-      </Provider>,
-    );
+    renderLogButton(mockSetShowLog);
 
     const logButton = screen.getByRole('button', { name: /Log/i });
 

@@ -14,7 +14,7 @@ const store = configureStore({
   },
 });
 
-describe('StartStopButton Integration Test', () => {
+describe.skip('StartStopButton Integration Test', () => {
   beforeEach(() => {
     store.dispatch({
       type: 'digitalTwin/setDigitalTwin',

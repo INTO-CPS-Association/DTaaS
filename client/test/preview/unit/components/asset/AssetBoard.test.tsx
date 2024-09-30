@@ -22,6 +22,14 @@ jest.mock('store/assets.slice', () => ({
 describe('AssetBoard', () => {
     const mockDispatch = jest.fn();
 
+    const renderAssetBoard = (error: null | string) => {
+        return render(
+            <Provider store={store}>
+                <AssetBoard tab="testTab" error={error} />
+            </Provider>,
+        );
+    }
+
     beforeEach(() => {
         (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
 
@@ -40,31 +48,19 @@ describe('AssetBoard', () => {
 
     it('renders AssetBoard with assets', () => {
 
-        render(
-            <Provider store={store}>
-                <AssetBoard tab="testTab" error={null} />
-            </Provider>,
-        );
+        renderAssetBoard(null);
 
         expect(screen.getByText('Asset Card')).toBeInTheDocument();
     });
 
     it('renders error message when error is present', () => {
-        render(
-            <Provider store={store}>
-                <AssetBoard tab="testTab" error="An error occurred" />
-            </Provider>,
-        );
+        renderAssetBoard('An error occurred');
 
         expect(screen.getByText('An error occurred')).toBeInTheDocument();
     });
 
     it('deletes asset when onDelete is called', () => {
-        render(
-            <Provider store={store}>
-                <AssetBoard tab="testTab" error={null} />
-            </Provider>,
-        );
+        renderAssetBoard(null);
 
         handleDelete('path1', mockDispatch)();
 
