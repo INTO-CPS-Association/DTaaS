@@ -13,13 +13,12 @@ describe('LogDialog', () => {
   const name = 'testName';
   const setShowLog = jest.fn();
 
-  const renderLogDialog = () => {
-    return render(
+  const renderLogDialog = () =>
+    render(
       <Provider store={store}>
         <LogDialog name={name} showLog={true} setShowLog={setShowLog} />,
       </Provider>,
     );
-  }
 
   afterEach(() => {
     jest.clearAllMocks();

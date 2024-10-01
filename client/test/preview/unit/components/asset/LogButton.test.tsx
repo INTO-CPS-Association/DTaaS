@@ -9,14 +9,18 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('LogButton', () => {
-
-  const renderLogButton = (setShowLog: jest.Mock = jest.fn(), logButtonDisabled = false) => {
-    return render(
+  const renderLogButton = (
+    setShowLog: jest.Mock = jest.fn(),
+    logButtonDisabled = false,
+  ) =>
+    render(
       <Provider store={store}>
-        <LogButton setShowLog={setShowLog} logButtonDisabled={logButtonDisabled} />
+        <LogButton
+          setShowLog={setShowLog}
+          logButtonDisabled={logButtonDisabled}
+        />
       </Provider>,
     );
-  };
 
   afterEach(() => {
     jest.clearAllMocks();

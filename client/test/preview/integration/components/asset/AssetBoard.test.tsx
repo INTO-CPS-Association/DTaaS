@@ -2,7 +2,11 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import AssetBoard, { handleDelete } from 'preview/components/asset/AssetBoard';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import {
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'store/assets.slice';
 import digitalTwinReducer, { setDigitalTwin } from 'store/digitalTwin.slice';
 import snackbarSlice from 'store/snackbar.slice';
@@ -26,20 +30,21 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   }),
+  middleware: getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 
 mockDigitalTwin.description = 'Mocked description';
 
-describe.skip('AssetBoard Integration Tests', () => {
+describe('AssetBoard Integration Tests', () => {
   const setupTest = () => {
-    store.dispatch(
-      setAssets(preSetItems)
-    );
+    store.dispatch(setAssets(preSetItems));
     store.dispatch(
       setDigitalTwin({
         assetName: 'Asset 1',
         digitalTwin: mockDigitalTwin,
-      })
+      }),
     );
   };
 
@@ -55,7 +60,7 @@ describe.skip('AssetBoard Integration Tests', () => {
     render(
       <Provider store={store}>
         <AssetBoard tab="testTab" error={null} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Asset 1')).toBeInTheDocument();
@@ -66,7 +71,7 @@ describe.skip('AssetBoard Integration Tests', () => {
     render(
       <Provider store={store}>
         <AssetBoard tab="testTab" error="An error occurred" />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('An error occurred')).toBeInTheDocument();
@@ -75,13 +80,13 @@ describe.skip('AssetBoard Integration Tests', () => {
   it('deletes asset when onDelete is called', () => {
     const useDispatch = jest.fn();
     render(
-        <Provider store={store}>
-            <AssetBoard tab="testTab" error={null} />
-        </Provider>,
+      <Provider store={store}>
+        <AssetBoard tab="testTab" error={null} />
+      </Provider>,
     );
 
     handleDelete('path1', useDispatch)();
 
     expect(useDispatch).toHaveBeenCalledTimes(1);
-});
+  });
 });

@@ -36,11 +36,14 @@ const AssetGridItem: React.FC<{
     lg={3}
     sx={{ minWidth: 250 }}
   >
-      <AssetCardExecute asset={asset} />
+    <AssetCardExecute asset={asset} />
   </Grid>
 );
 
-export const handleDelete = function (deletedAssetPath: string, dispatch: ReturnType<typeof useDispatch>) {
+export const handleDelete = function (
+  deletedAssetPath: string,
+  dispatch: ReturnType<typeof useDispatch>,
+) {
   return function () {
     dispatch(deleteAsset(deletedAssetPath));
   };

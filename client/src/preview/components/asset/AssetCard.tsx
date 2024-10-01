@@ -133,7 +133,4 @@ function AssetCardExecute({ asset }: AssetCardProps) {
   );
 }
 
-export {
-  AssetCardExecute,
-  CardButtonsContainerExecute,
-};
+export { AssetCardExecute, CardButtonsContainerExecute };

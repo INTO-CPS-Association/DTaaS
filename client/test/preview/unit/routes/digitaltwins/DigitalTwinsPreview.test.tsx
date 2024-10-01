@@ -4,7 +4,10 @@ import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { mockDigitalTwin, mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockGitlabInstance,
+} from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -15,11 +18,9 @@ jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('util/gitlab', () => {
-  return {
-    default: jest.fn().mockImplementation(() => mockGitlabInstance), // Mock del costruttore
-  };
-});
+jest.mock('util/gitlab', () => ({
+  default: jest.fn().mockImplementation(() => mockGitlabInstance), // Mock del costruttore
+}));
 jest.mock('util/gitlabDigitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
 }));
@@ -94,5 +95,4 @@ describe('Digital Twins', () => {
     expect(dispatch).not.toHaveBeenCalled();
     expect(setError).toHaveBeenCalledWith('An error occurred');
   });
-  
 });

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
-import { Provider , useSelector } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import store from 'store/store';
 import { formatName } from 'util/gitlabDigitalTwin';
 
@@ -21,7 +21,11 @@ jest.mock('preview/route/digitaltwins/execute/LogDialog', () => ({
 }));
 
 describe('AssetCardExecute', () => {
-  const asset = { name: 'asset', description: 'Asset description', path: 'path' };
+  const asset = {
+    name: 'asset',
+    description: 'Asset description',
+    path: 'path',
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -29,7 +33,11 @@ describe('AssetCardExecute', () => {
 
   it('renders AssetCardExecute with digital twin description', () => {
     (useSelector as jest.Mock).mockImplementation((selector) =>
-      selector({ digitalTwin: { [asset.name]: { description: 'Digital Twin description' } } }),
+      selector({
+        digitalTwin: {
+          [asset.name]: { description: 'Digital Twin description' },
+        },
+      }),
     );
 
     render(
@@ -43,5 +51,4 @@ describe('AssetCardExecute', () => {
     expect(screen.getByTestId('custom-snackbar')).toBeInTheDocument();
     expect(screen.getByTestId('log-dialog')).toBeInTheDocument();
   });
-  
 });

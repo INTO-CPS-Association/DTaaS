@@ -1,4 +1,4 @@
-import { Gitlab } from '@gitbeaker/rest';
+import { Camelize, Gitlab, JobSchema } from '@gitbeaker/rest';
 import { Asset } from '../preview/components/asset/Asset';
 
 const GROUP_NAME = 'DTaaS';
@@ -68,7 +68,7 @@ class GitlabInstance {
     return token;
   }
 
-  async getDTDescription(DTName: string) {
+  async getDTDescription(DTName: string): Promise<string> {
     const readmePath = `digital_twins/${DTName}/description.md`;
     const fileData = await this.api.RepositoryFiles.show(
       this.projectId!,
@@ -89,8 +89,8 @@ class GitlabInstance {
         .filter((file) => file.type === 'tree' && file.path !== DT_DIRECTORY)
         .map(async (file) => ({
           name: file.name,
-          path: file.path, // Ensure the path property is included
-          description: await this.getDTDescription(file.name), // Await the description
+          path: file.path,
+          description: await this.getDTDescription(file.name),
         })),
     );
 
@@ -102,17 +102,23 @@ class GitlabInstance {
     return this.logs;
   }
 
-  async getPipelineJobs(projectId: number, pipelineId: number) {
+  async getPipelineJobs(
+    projectId: number,
+    pipelineId: number,
+  ): Promise<(JobSchema | Camelize<JobSchema>)[]> {
     const jobs = await this.api.Jobs.all(projectId, { pipelineId });
     return jobs;
   }
 
-  async getJobTrace(projectId: number, jobId: number) {
+  async getJobTrace(projectId: number, jobId: number): Promise<string> {
     const log = await this.api.Jobs.showLog(projectId, jobId);
     return log;
   }
 
-  async getPipelineStatus(projectId: number, pipelineId: number) {
+  async getPipelineStatus(
+    projectId: number,
+    pipelineId: number,
+  ): Promise<string> {
     const pipeline = await this.api.Pipelines.show(projectId, pipelineId);
     return pipeline.status;
   }
