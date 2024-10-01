@@ -57,7 +57,7 @@ function ProfileTab() {
   return (
     <div>
       <h2>Profile</h2>
-      <img src={pfp} alt='Avatar' data-testid="profile-picture" />
+      <img src={pfp} alt="Avatar" data-testid="profile-picture" />
       <p>
         The username is <b>{name}</b>. See more details on{' '}
         <b>
