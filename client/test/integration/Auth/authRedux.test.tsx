@@ -9,7 +9,7 @@ import { mockUser } from 'test/__mocks__/global_mocks';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
 
 jest.mock('util/auth/Authentication', () => ({
-  GetAndSetUsername: jest.fn(),
+  getAndSetUsername: jest.fn(),
 }));
 
 jest.mock('react-redux', () => ({

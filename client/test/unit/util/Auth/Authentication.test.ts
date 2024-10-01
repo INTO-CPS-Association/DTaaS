@@ -1,4 +1,4 @@
-import { SignOut } from 'util/auth/Authentication';
+import { signOut } from 'util/auth/Authentication';
 import { useAuth } from 'react-oidc-context';
 import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
 
@@ -80,7 +80,7 @@ describe('signOut', () => {
 
   it('expires _xsrf cookie', async () => {
     const auth = useAuth();
-    await SignOut(auth);
+    await signOut(auth);
 
     expect(window.document.cookie).toBe(
       '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;',
@@ -91,7 +91,7 @@ describe('signOut', () => {
     const auth = useAuth();
     auth.user = null;
 
-    const signOutResult = await SignOut(auth);
+    const signOutResult = await signOut(auth);
 
     expect(signOutResult).toBeUndefined();
     expect(mockSignoutRedirect).not.toHaveBeenCalled();
@@ -99,7 +99,7 @@ describe('signOut', () => {
 
   it('signsOutRedirect, clearStaleState, removeTokens and removeUer if user is authorized', async () => {
     const auth = useAuth();
-    await SignOut(auth);
+    await signOut(auth);
     expect(useAppURL).toHaveBeenCalled();
     expect(cleanURL).toHaveBeenCalled();
     expect(mockSignoutRedirect).toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe('signOut', () => {
   it('fetches the URI from window.env', async () => {
     const auth = useAuth();
     const fetchBody = { signal: AbortSignal.timeout(30000) };
-    await SignOut(auth);
+    await signOut(auth);
     expect(global.fetch).toHaveBeenCalledWith(
       'https://foo.com/_oauth/logout',
       fetchBody,
@@ -121,7 +121,7 @@ describe('signOut', () => {
   it('throws an error if fetch rejects', async () => {
     const auth = useAuth();
     global.fetch = jest.fn().mockRejectedValueOnce('foo');
-    await expect(SignOut(auth)).rejects.toThrow(
+    await expect(signOut(auth)).rejects.toThrow(
       Error('Error occurred during logout: foo'),
     );
   });
@@ -131,21 +131,21 @@ describe('signOut', () => {
     auth.signoutRedirect = jest
       .fn()
       .mockRejectedValueOnce(new Error('signoutRedirect rejected'));
-    await expect(SignOut(auth)).rejects.toThrow(
+    await expect(signOut(auth)).rejects.toThrow(
       Error('Error occurred during logout: Error: signoutRedirect rejected'),
     );
   });
 
   it('reloads the page', async () => {
     const auth = useAuth();
-    await SignOut(auth);
+    await signOut(auth);
     jest.advanceTimersByTime(3000);
     expect(window.location.reload).toHaveBeenCalled();
   });
 
   it('clears sessionStorage', async () => {
     const auth = useAuth();
-    await SignOut(auth);
+    await signOut(auth);
 
     expect(mockClear).toHaveBeenCalled();
   });
