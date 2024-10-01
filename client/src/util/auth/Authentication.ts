@@ -12,7 +12,7 @@ export interface CustomAuthContext {
   user?: User | null | undefined;
 }
 
-export function GetAndSetUsername(auth: CustomAuthContext) {
+export function getAndSetUsername(auth: CustomAuthContext) {
   const dispatch = useDispatch();
   if (auth.user !== null && auth.user !== undefined) {
     const profileUrl = auth.user.profile.profile ?? '';
@@ -22,7 +22,7 @@ export function GetAndSetUsername(auth: CustomAuthContext) {
   }
 }
 
-export async function SignOut(auth: AuthContextProps) {
+export async function signOut(auth: AuthContextProps) {
   const APP_URL = cleanURL(useAppURL());
   if (!auth.user) {
     return;
