@@ -1,6 +1,7 @@
+import { describe, it, expect } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import fetch from 'cross-fetch';
 import {
   ApolloClient,

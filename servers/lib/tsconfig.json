@@ -8,6 +8,9 @@
     "experimentalDecorators": true, //allow experimental decorators for es7
     "forceConsistentCasingInFileNames": false,
     "incremental": true,
+    "lib": [
+      "ES2022"
+    ],
     "module": "ES2022", //use node module system
     "moduleResolution": "node", //use node module resolution strategy node
     "noImplicitReturns": true, //raise error on implicit returns

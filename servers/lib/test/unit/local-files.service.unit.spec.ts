@@ -1,3 +1,4 @@
+import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
@@ -11,6 +12,7 @@ import {
   MockConfigService,
   testFileName,
 } from '../testUtil';
+import { Dirent } from 'fs';
 
 jest.mock('fs', () => ({
   promises: {
@@ -56,7 +58,7 @@ describe('LocalFilesService', () => {
 
     jest
       .spyOn(fs.promises, 'readdir')
-      .mockResolvedValue(testFileArray as unknown as Promise<[]>);
+      .mockResolvedValue(testFileArray as unknown as Dirent[]);
 
     jest.spyOn(fs.promises, 'lstat').mockImplementation((pathToDirectory) => {
       if (typeof pathToDirectory === 'string') {

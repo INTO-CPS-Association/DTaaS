@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import bootstrap from './bootstrap';
+import bootstrap from './bootstrap.js';
 
 type ProgramOptions = {
   config?: string;

@@ -1,3 +1,4 @@
+import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import FilesResolver from '../../src/files/resolvers/files.resolver';
 import {
@@ -8,6 +9,7 @@ import {
 } from '../testUtil';
 import { IFilesService } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
+import { Project } from 'src/types';
 
 describe('Unit tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -15,8 +17,8 @@ describe('Unit tests for FilesResolver', () => {
 
   beforeEach(async () => {
     const mockFilesService: IFilesService = {
-      listDirectory: jest.fn().mockImplementation(() => testDirectory),
-      readFile: jest.fn().mockImplementation(() => testFileContent),
+      listDirectory: jest.fn<() => Promise<Project>>().mockResolvedValue(testDirectory),
+      readFile: jest.fn<() => Promise<Project>>().mockImplementation(() => Promise.resolve(testFileContent)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
