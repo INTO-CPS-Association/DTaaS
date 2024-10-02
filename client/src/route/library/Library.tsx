@@ -5,7 +5,7 @@ import Iframe from 'components/Iframe';
 import { useURLforLIB } from 'util/envUtil';
 import { Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
-import { getAndSetUsername } from 'util/auth/Authentication';
+import { useGetAndSetUsername } from 'util/auth/Authentication';
 import { assetType, scope } from './LibraryTabData';
 
 export function createTabs() {
@@ -38,6 +38,7 @@ export function createCombinedTabs() {
 
 function LibraryContent() {
   const auth = useAuth();
+  const getAndSetUsername = useGetAndSetUsername();
   getAndSetUsername(auth);
 
   const tabsData = createTabs();
