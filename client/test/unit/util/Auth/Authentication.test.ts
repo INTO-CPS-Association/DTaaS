@@ -31,7 +31,7 @@ describe('useSignOut', () => {
           return {
             ok: true,
             status: 401,
-            json: async () => { },
+            json: async () => {},
           };
         default: {
           throw new Error(`Unhandled request: ${URL}`);

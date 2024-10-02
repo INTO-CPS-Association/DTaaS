@@ -22,8 +22,8 @@ export function useGetAndSetUsername() {
     const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
     sessionStorage.setItem('username', username ?? '');
     dispatch(setUserName(username));
-  }
-  return getAndSetUsername
+  };
+  return getAndSetUsername;
 }
 
 export function useSignOut() {
@@ -42,7 +42,8 @@ export function useSignOut() {
       await auth.removeUser();
       await auth.clearStaleState();
       sessionStorage.clear();
-      document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie =
+        '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       await auth.signoutRedirect({
         post_logout_redirect_uri: LOGOUT_URL.toString(),
         id_token_hint: idToken,
@@ -56,7 +57,7 @@ export function useSignOut() {
     } catch (e) {
       throw new Error(`Error occurred during logout: ${e}`);
     }
-  }
+  };
   return signOut;
 }
 
