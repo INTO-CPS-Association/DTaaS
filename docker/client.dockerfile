@@ -4,6 +4,8 @@ FROM node:20.10.0-slim as build
 # Set the working directory inside the container
 WORKDIR /dtaas/client
 
+LABEL org.opencontainers.image.source=https://github.com/aryanpingle/LeetPy
+
 # Copy package.json and package-lock.json to the working directory
 COPY ./client/package.json ./
 
