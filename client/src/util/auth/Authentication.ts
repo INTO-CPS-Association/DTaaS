@@ -12,42 +12,52 @@ export interface CustomAuthContext {
   user?: User | null | undefined;
 }
 
-export function getAndSetUsername(auth: CustomAuthContext) {
+export function useGetAndSetUsername() {
   const dispatch = useDispatch();
-  if (auth.user !== null && auth.user !== undefined) {
-    const profileUrl = auth.user.profile.profile ?? '';
+  const getAndSetUsername = (auth: CustomAuthContext) => {
+    if (!auth.user) {
+      return;
+    }
+    const profileUrl = auth.user!.profile.profile ?? '';
     const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
     sessionStorage.setItem('username', username ?? '');
     dispatch(setUserName(username));
   }
+  return getAndSetUsername
 }
 
-export async function signOut(auth: AuthContextProps) {
-  const APP_URL = cleanURL(useAppURL());
-  if (!auth.user) {
-    return;
-  }
+export function useSignOut() {
+  const APP_URL = useAppURL();
+  const CLEAN_APP_URL = cleanURL(APP_URL);
   const LOGOUT_URL = getLogoutRedirectURI() ?? '';
-  const idToken = auth.user.id_token;
-  try {
-    await auth.revokeTokens();
-    await auth.removeUser();
-    await auth.clearStaleState();
-    sessionStorage.clear();
-    document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    await auth.signoutRedirect({
-      post_logout_redirect_uri: LOGOUT_URL.toString(),
-      id_token_hint: idToken,
-    });
-    await fetch(`${APP_URL}/_oauth/logout`, {
-      signal: AbortSignal.timeout(30000),
-    });
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
-  } catch (e) {
-    throw new Error(`Error occurred during logout: ${e}`);
+  const signOut = async (auth: AuthContextProps) => {
+    if (!auth.user) {
+      return;
+    }
+
+    const idToken = auth.user!.id_token;
+
+    try {
+      await auth.revokeTokens();
+      await auth.removeUser();
+      await auth.clearStaleState();
+      sessionStorage.clear();
+      document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      await auth.signoutRedirect({
+        post_logout_redirect_uri: LOGOUT_URL.toString(),
+        id_token_hint: idToken,
+      });
+      await fetch(`${CLEAN_APP_URL}/_oauth/logout`, {
+        signal: AbortSignal.timeout(30000),
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (e) {
+      throw new Error(`Error occurred during logout: ${e}`);
+    }
   }
+  return signOut;
 }
 
 export function wait(milliseconds: number): Promise<void> {
