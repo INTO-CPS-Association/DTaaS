@@ -19,7 +19,7 @@ jest.mock('react-oidc-context', () => ({
 }));
 
 jest.mock('util/gitlab', () => ({
-  default: jest.fn().mockImplementation(() => mockGitlabInstance), // Mock del costruttore
+  default: jest.fn().mockImplementation(() => mockGitlabInstance),
 }));
 jest.mock('util/gitlabDigitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),

@@ -40,14 +40,11 @@ const AssetGridItem: React.FC<{
   </Grid>
 );
 
-export const handleDelete = function (
-  deletedAssetPath: string,
-  dispatch: ReturnType<typeof useDispatch>,
-) {
-  return function () {
+export const handleDelete =
+  (deletedAssetPath: string, dispatch: ReturnType<typeof useDispatch>) =>
+  () => {
     dispatch(deleteAsset(deletedAssetPath));
   };
-};
 
 const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
   const assets = useSelector((state: RootState) => state.assets.items);

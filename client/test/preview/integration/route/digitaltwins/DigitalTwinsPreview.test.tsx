@@ -14,7 +14,7 @@ jest.mock('react-oidc-context', () => ({
   ...jest.requireActual('react-oidc-context'),
   useAuth: jest.fn(),
 }));
- 
+
 describe('Digital Twins', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -31,7 +31,9 @@ describe('Digital Twins', () => {
       );
     });
 
-    expect(screen.getByText('The Digital Twin as a Service')).toBeInTheDocument();
+    expect(
+      screen.getByText('The Digital Twin as a Service'),
+    ).toBeInTheDocument();
   });
 
   it('fetches subfolders with project id', async () => {
@@ -84,5 +86,4 @@ describe('Digital Twins', () => {
     expect(dispatch).not.toHaveBeenCalled();
     expect(setError).toHaveBeenCalledWith('An error occurred');
   });
-  
 });

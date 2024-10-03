@@ -1,7 +1,7 @@
 import { AlertColor } from '@mui/material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface SnackbarState {
+export interface SnackbarState {
   open: boolean;
   message: string;
   severity: AlertColor;

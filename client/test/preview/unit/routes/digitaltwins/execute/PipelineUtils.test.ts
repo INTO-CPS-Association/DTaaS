@@ -77,7 +77,6 @@ describe('PipelineUtils', () => {
   });
 
   it('fetches job logs', async () => {
-    // Mocka la funzione getPipelineJobs per restituire jobs
     const mockGetPipelineJobs = jest
       .spyOn(gitlabInstance, 'getPipelineJobs')
       .mockResolvedValue([
@@ -89,23 +88,19 @@ describe('PipelineUtils', () => {
         } as unknown as JobSchema,
       ]);
 
-    // Mocka la funzione getJobTrace
     const mockGetJobTrace = jest
       .spyOn(gitlabInstance, 'getJobTrace')
       .mockResolvedValue('log1');
 
-    // Esegui la funzione che vuoi testare
     const result = await fetchJobLogs(gitlabInstance, pipelineId);
 
-    // Verifica il comportamento atteso
     expect(mockGetPipelineJobs).toHaveBeenCalledWith(
       gitlabInstance.projectId,
       pipelineId,
     );
     expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
-    expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]); // Verifica il risultato finale
+    expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
 
-    // Ripristina i mock
     mockGetPipelineJobs.mockRestore();
     mockGetJobTrace.mockRestore();
   });

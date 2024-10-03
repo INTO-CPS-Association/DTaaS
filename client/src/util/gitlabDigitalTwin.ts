@@ -18,8 +18,6 @@ class DigitalTwin {
 
   public lastExecutionStatus: string | null = null;
 
-  public executionCount: number = 0;
-
   public jobLogs: { jobName: string; log: string }[] = [];
 
   public pipelineLoading: boolean = false;
@@ -35,7 +33,7 @@ class DigitalTwin {
     this.gitlabInstance = gitlabInstance;
   }
 
-  async getFullDescription() {
+  async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       const readmePath = `digital_twins/${this.DTName}/README.md`;
       try {
@@ -53,36 +51,9 @@ class DigitalTwin {
     }
   }
 
-  async execute(): Promise<number | null> {
-    if (!this.isValidInstance()) {
-      this.logError('Missing projectId or triggerToken');
-      return null;
-    }
-
-    try {
-      const response = await this.triggerPipeline();
-      this.logSuccess();
-      this.pipelineId = response.id;
-      return this.pipelineId;
-    } catch (error) {
-      this.logError(String(error));
-      return null;
-    }
-  }
-
   isValidInstance(): boolean {
     return !!(
       this.gitlabInstance.projectId && this.gitlabInstance.triggerToken
-    );
-  }
-
-  async triggerPipeline() {
-    const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
-    return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
-      this.gitlabInstance.projectId!,
-      'main',
-      this.gitlabInstance.triggerToken!,
-      { variables },
     );
   }
 
@@ -105,6 +76,33 @@ class DigitalTwin {
     this.lastExecutionStatus = 'error';
   }
 
+  async triggerPipeline() {
+    const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
+    return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
+      this.gitlabInstance.projectId!,
+      'main',
+      this.gitlabInstance.triggerToken!,
+      { variables },
+    );
+  }
+
+  async execute(): Promise<number | null> {
+    if (!this.isValidInstance()) {
+      this.logError('Missing projectId or triggerToken');
+      return null;
+    }
+
+    try {
+      const response = await this.triggerPipeline();
+      this.logSuccess();
+      this.pipelineId = response.id;
+      return this.pipelineId;
+    } catch (error) {
+      this.logError(String(error));
+      return null;
+    }
+  }
+
   async stop(projectId: number, pipelineId: number): Promise<void> {
     try {
       await this.gitlabInstance.api.Pipelines.cancel(projectId, pipelineId);
@@ -125,7 +123,7 @@ class DigitalTwin {
     }
   }
 
-  async delete() {
+  async delete(): Promise<string> {
     if (this.gitlabInstance.projectId) {
       const digitalTwinPath = `digital_twins/${this.DTName}`;
       try {
@@ -143,7 +141,7 @@ class DigitalTwin {
     return `Error deleting ${this.DTName} digital twin: no project id`;
   }
 
-  async getDescriptionFiles() {
+  async getDescriptionFiles(): Promise<void> {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
@@ -170,7 +168,7 @@ class DigitalTwin {
     }
   }
 
-  async getConfigFiles() {
+  async getConfigFiles(): Promise<void> {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
@@ -194,7 +192,7 @@ class DigitalTwin {
     }
   }
 
-  async getFileContent(fileName: string) {
+  async getFileContent(fileName: string): Promise<string> {
     const isFileWithoutExtension = !fileName.includes('.');
 
     const filePath = isFileWithoutExtension
@@ -210,7 +208,10 @@ class DigitalTwin {
     return fileContent;
   }
 
-  async updateFileContent(fileName: string, fileContent: string) {
+  async updateFileContent(
+    fileName: string,
+    fileContent: string,
+  ): Promise<void> {
     const hasExtension = fileName.includes('.');
 
     const filePath = hasExtension

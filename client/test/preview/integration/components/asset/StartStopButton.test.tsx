@@ -1,48 +1,101 @@
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import {
+  fireEvent,
+  render,
+  screen,
+  act,
+  waitFor,
+} from '@testing-library/react';
 import StartStopButton from 'preview/components/asset/StartStopButton';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import digitalTwinReducer from 'store/digitalTwin.slice';
-import snackbarReducer from 'store/snackbar.slice';
 import * as React from 'react';
+import { Provider } from 'react-redux';
+import {
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from '@reduxjs/toolkit';
+import digitalTwinReducer, {
+  setDigitalTwin,
+  setPipelineLoading,
+} from 'store/digitalTwin.slice';
+import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
+import '@testing-library/jest-dom';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
-const store = configureStore({
-  reducer: {
-    digitalTwin: digitalTwinReducer,
-    snackbar: snackbarReducer,
-  },
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
-});
+jest.mock('preview/route/digitaltwins/execute/pipelineHandler', () => ({
+  handleButtonClick: jest.fn(),
+}));
 
-describe('StartStopButton Integration Test', () => {
-  beforeEach(() => {
-    store.dispatch({
-      type: 'digitalTwin/setDigitalTwin',
-      payload: {
-        assetName: 'testAsset',
-        digitalTwin: mockDigitalTwin,
-      },
-    });
+jest.mock('@mui/material/CircularProgress', () => ({
+  __esModule: true,
+  default: () => <div data-testid="circular-progress" />,
+}));
+
+const createStore = () =>
+  configureStore({
+    reducer: combineReducers({
+      digitalTwin: digitalTwinReducer,
+    }),
+    middleware: getDefaultMiddleware({
+      serializableCheck: false,
+    }),
   });
 
-  it('changes button text on click and handles pipeline logic', async () => {
+describe('StartStopButton Integration Test', () => {
+  let store: ReturnType<typeof createStore>;
+  const assetName = 'mockedDTName';
+  const setLogButtonDisabled = jest.fn();
+
+  beforeEach(() => {
+    store = createStore();
     render(
       <Provider store={store}>
         <StartStopButton
-          assetName="testAsset"
-          setLogButtonDisabled={jest.fn()}
+          assetName={assetName}
+          setLogButtonDisabled={setLogButtonDisabled}
         />
       </Provider>,
     );
+  });
 
-    const button = screen.getByText('Start');
-    expect(button).toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    fireEvent.click(button);
+  it('renders only the Start button', () => {
+    expect(screen.getByRole('button', { name: /Start/i })).toBeInTheDocument();
+    expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
+  });
 
-    await waitFor(() => expect(screen.getByText('Stop')).toBeInTheDocument());
+  it('handles button click', async () => {
+    const startButton = screen.getByRole('button', { name: /Start/i });
+
+    await act(async () => {
+      fireEvent.click(startButton);
+    });
+
+    expect(handleButtonClick).toHaveBeenCalled();
+    expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
+  });
+
+  it('renders the circular progress when pipelineLoading is true', async () => {
+    await act(async () => {
+      store.dispatch(
+        setDigitalTwin({
+          assetName: 'mockedDTName',
+          digitalTwin: mockDigitalTwin,
+        }),
+      );
+      store.dispatch(setPipelineLoading({ assetName, pipelineLoading: true }));
+    });
+
+    const startButton = screen.getByRole('button', { name: /Start/i });
+
+    await act(async () => {
+      fireEvent.click(startButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('circular-progress')).toBeInTheDocument();
+    });
   });
 });

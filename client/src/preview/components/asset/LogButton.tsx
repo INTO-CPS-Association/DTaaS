@@ -7,7 +7,9 @@ interface LogButtonProps {
   logButtonDisabled: boolean;
 }
 
-const handleToggleLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+export const handleToggleLog = (
+  setShowLog: Dispatch<SetStateAction<boolean>>,
+) => {
   setShowLog((prev) => !prev);
 };
 
