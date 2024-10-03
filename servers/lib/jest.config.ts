@@ -4,7 +4,7 @@ const jestConfig: JestConfigWithTsJest = {
   testEnvironment: 'node',
   transform: {
     ...createDefaultEsmPreset().transform,
-    '(src|test)/^.+\\.(t|j)sx?$': [
+    '\\.[jt]sx?$": "ts-jest': [
       'ts-jest',
       {
         useESM: true,
@@ -17,8 +17,9 @@ const jestConfig: JestConfigWithTsJest = {
   coveragePathIgnorePatterns: [
     'node_modules',
     './dist',
-    '../src/app.module.ts',
-    '../src/main.ts',
+    './src/app.module.ts',
+    './src/main.ts',
+    './src/bootstrap.ts',
   ],
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['js', 'json', 'ts'],
@@ -39,8 +40,7 @@ const jestConfig: JestConfigWithTsJest = {
   rootDir: './',
   roots: ['<rootDir>', 'src/', 'test/'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^(\\.\\/.+)\\.js$': '$1',
+    '^(\\.\\.?\\/.+)\\.jsx?$': '$1',
   },
 };
 

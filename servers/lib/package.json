@@ -11,6 +11,7 @@
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
   "type": "module",
+  "main": "dist/src/main.js",
   "scripts": {
     "build": "tsc",
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",

@@ -11,6 +11,9 @@
     "lib": [
       "ES2022"
     ],
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "module": "ES2022", //use node module system
     "moduleResolution": "node", //use node module resolution strategy node
     "noImplicitReturns": true, //raise error on implicit returns
@@ -28,6 +31,7 @@
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
     ],
+    "allowJs": true,
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["**/node_modules/*", "./dist"]
