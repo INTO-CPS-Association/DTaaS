@@ -15,19 +15,21 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
+const renderStartStopButton = (assetName: string, setLogButtonDisabled: jest.Mock) => render(
+    <Provider store={store}>
+      <StartStopButton
+        assetName={assetName}
+        setLogButtonDisabled={setLogButtonDisabled}
+      />
+    </Provider>,
+  );
+
 describe('StartStopButton', () => {
   const assetName = 'testAssetName';
   const setLogButtonDisabled = jest.fn();
 
   beforeEach(() => {
-    render(
-      <Provider store={store}>
-        <StartStopButton
-          assetName={assetName}
-          setLogButtonDisabled={setLogButtonDisabled}
-        />
-      </Provider>,
-    );
+    renderStartStopButton(assetName, setLogButtonDisabled);
   });
 
   afterEach(() => {
@@ -39,7 +41,7 @@ describe('StartStopButton', () => {
     expect(screen.queryByTestId('circular-progress')).not.toBeInTheDocument();
   });
 
-  it('handler button click', () => {
+  it('handles button click', () => {
     const startButton = screen.getByRole('button', {
       name: /Start/i,
     });
@@ -54,14 +56,7 @@ describe('StartStopButton', () => {
       pipelineLoading: true,
     });
 
-    render(
-      <Provider store={store}>
-        <StartStopButton
-          assetName={assetName}
-          setLogButtonDisabled={setLogButtonDisabled}
-        />
-      </Provider>,
-    );
+    renderStartStopButton(assetName, setLogButtonDisabled);
 
     expect(screen.queryByTestId('circular-progress')).toBeInTheDocument();
   });
