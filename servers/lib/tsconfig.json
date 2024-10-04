@@ -31,7 +31,6 @@
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
     ],
-    "allowJs": true,
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["**/node_modules/*", "./dist"]
