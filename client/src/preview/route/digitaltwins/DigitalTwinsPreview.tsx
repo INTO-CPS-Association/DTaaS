@@ -6,12 +6,12 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import GitlabInstance from 'util/gitlab';
+import GitlabInstance from 'preview/util/gitlab';
 import { getAuthority } from 'util/envUtil';
-import { setAssets } from 'store/assets.slice';
+import { setAssets } from 'preview/store/assets.slice';
 import { Asset } from 'preview/components/asset/Asset';
-import DigitalTwin from 'util/gitlabDigitalTwin';
-import { setDigitalTwin } from 'store/digitalTwin.slice';
+import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import tabs from './DigitalTwinTabDataPreview';
 
 export const createDTTab = (error: string | null): TabData[] =>

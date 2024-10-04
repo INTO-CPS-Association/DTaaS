@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
-import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
 import { useDispatch } from 'react-redux';
-import { showSnackbar } from 'store/snackbar.slice';
+import { showSnackbar } from 'preview/store/snackbar.slice';
 import {
   startPipeline,
   updatePipelineState,

@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import DigitalTwin from 'util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import { JobLog } from 'preview/components/asset/StartStopButton';
-import { RootState } from './store';
+import { RootState } from 'store/store';
 
 interface DigitalTwinState {
   [key: string]: DigitalTwin;
@@ -46,15 +46,6 @@ const digitalTwinSlice = createSlice({
         digitalTwin.pipelineLoading = action.payload.pipelineLoading;
       }
     },
-    updateDescription: (
-      state,
-      action: PayloadAction<{ assetName: string; description: string }>,
-    ) => {
-      const digitalTwin = state[action.payload.assetName];
-      if (digitalTwin) {
-        digitalTwin.description = action.payload.description;
-      }
-    },
   },
 });
 
@@ -66,6 +57,5 @@ export const {
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
-  updateDescription,
 } = digitalTwinSlice.actions;
 export default digitalTwinSlice.reducer;

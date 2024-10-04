@@ -1,5 +1,5 @@
 import { Gitlab } from '@gitbeaker/rest';
-import GitlabInstance from 'util/gitlab';
+import GitlabInstance from 'preview/util/gitlab';
 
 jest.mock('@gitbeaker/rest');
 

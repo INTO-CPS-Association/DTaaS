@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Asset } from '../preview/components/asset/Asset';
+import { Asset } from '../components/asset/Asset';
 
 interface AssetsState {
   items: Asset[];
@@ -16,14 +16,9 @@ const assetsSlice = createSlice({
     setAssets: (state, action: PayloadAction<Asset[]>) => {
       state.items = action.payload;
     },
-    deleteAsset: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(
-        (asset) => asset.path !== action.payload,
-      );
-    },
   },
 });
 
-export const { setAssets, deleteAsset } = assetsSlice.actions;
+export const { setAssets } = assetsSlice.actions;
 
 export default assetsSlice.reducer;

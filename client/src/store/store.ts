@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
+import digitalTwinSlice from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
+import assetsSlice from 'preview/store/assets.slice';
 import menuSlice from './menu.slice';
 import authSlice from './auth.slice';
-import digitalTwinSlice from './digitalTwin.slice';
-import snackbarSlice from './snackbar.slice';
-import assetsSlice from './assets.slice';
-import fileSlice from './file.slice';
 
 const rootReducer = combineReducers({
   menu: menuSlice,
@@ -13,7 +12,6 @@ const rootReducer = combineReducers({
   assets: assetsSlice,
   digitalTwin: digitalTwinSlice,
   snackbar: snackbarSlice,
-  files: fileSlice,
 });
 
 const store = configureStore({
@@ -22,7 +20,6 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['digitalTwin/setDigitalTwin'],
-        ignoredPaths: ['digitalTwin.Test Asset', 'payload.digitalTwin'],
       },
     }),
 });

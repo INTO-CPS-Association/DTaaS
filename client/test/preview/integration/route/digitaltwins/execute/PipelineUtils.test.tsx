@@ -1,8 +1,10 @@
 import { JobSchema } from '@gitbeaker/rest';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
-import digitalTwinReducer, { setDigitalTwin } from 'store/digitalTwin.slice';
-import snackbarSlice from 'store/snackbar.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 const store = configureStore({

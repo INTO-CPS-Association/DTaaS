@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -75,7 +75,6 @@
     "react-redux": "^8.1.3",
     "react-router-dom": "^6.20.0",
     "react-scripts": "^5.0.1",
-    "react-syntax-highlighter": "^15.5.0",
     "react-tabs": "^6.0.2",
     "redux": "^4.2.1",
     "resize-observer-polyfill": "^1.5.1",

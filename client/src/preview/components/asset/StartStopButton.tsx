@@ -3,7 +3,7 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { Button, CircularProgress } from '@mui/material';
 import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
+import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 
 export interface JobLog {
   jobName: string;

@@ -16,7 +16,7 @@ import {
 import digitalTwinReducer, {
   setDigitalTwin,
   setPipelineLoading,
-} from 'store/digitalTwin.slice';
+} from 'preview/store/digitalTwin.slice';
 import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import '@testing-library/jest-dom';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';

@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import AssetBoard, { handleDelete } from 'preview/components/asset/AssetBoard';
+import AssetBoard from 'preview/components/asset/AssetBoard';
 import {
   combineReducers,
   configureStore,
   getDefaultMiddleware,
 } from '@reduxjs/toolkit';
-import assetsReducer, { setAssets } from 'store/assets.slice';
-import digitalTwinReducer, { setDigitalTwin } from 'store/digitalTwin.slice';
-import snackbarSlice from 'store/snackbar.slice';
+import assetsReducer, { setAssets } from 'preview/store/assets.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
 import { Asset } from 'preview/components/asset/Asset';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
@@ -75,18 +77,5 @@ describe('AssetBoard Integration Tests', () => {
     );
 
     expect(screen.getByText('An error occurred')).toBeInTheDocument();
-  });
-
-  it('deletes asset when onDelete is called', () => {
-    const useDispatch = jest.fn();
-    render(
-      <Provider store={store}>
-        <AssetBoard tab="testTab" error={null} />
-      </Provider>,
-    );
-
-    handleDelete('path1', useDispatch)();
-
-    expect(useDispatch).toHaveBeenCalledTimes(1);
   });
 });

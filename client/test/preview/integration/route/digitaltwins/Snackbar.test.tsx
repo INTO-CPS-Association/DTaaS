@@ -7,7 +7,7 @@ import {
   combineReducers,
   getDefaultMiddleware,
 } from '@reduxjs/toolkit';
-import snackbarReducer, { showSnackbar } from 'store/snackbar.slice';
+import snackbarReducer, { showSnackbar } from 'preview/store/snackbar.slice';
 
 jest.useFakeTimers();
 

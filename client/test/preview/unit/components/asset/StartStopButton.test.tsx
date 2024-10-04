@@ -15,7 +15,11 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-const renderStartStopButton = (assetName: string, setLogButtonDisabled: jest.Mock) => render(
+const renderStartStopButton = (
+  assetName: string,
+  setLogButtonDisabled: jest.Mock,
+) =>
+  render(
     <Provider store={store}>
       <StartStopButton
         assetName={assetName}

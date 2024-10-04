@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
 import {
   fetchJobLogs,
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
-import { showSnackbar } from 'store/snackbar.slice';
+import { showSnackbar } from 'preview/store/snackbar.slice';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -41,10 +41,10 @@ export const handleTimeout = (
 
 export const startPipelineStatusCheck = (params: PipelineStatusParams) => {
   const startTime = Date.now();
-  checkFirstPipelineStatus({ ...params, startTime });
+  checkParentPipelineStatus({ ...params, startTime });
 };
 
-export const checkFirstPipelineStatus = async ({
+export const checkParentPipelineStatus = async ({
   setButtonText,
   digitalTwin,
   setLogButtonDisabled,
@@ -59,7 +59,7 @@ export const checkFirstPipelineStatus = async ({
   );
 
   if (pipelineStatus === 'success') {
-    await checkSecondPipelineStatus({
+    await checkChildPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -87,7 +87,7 @@ export const checkFirstPipelineStatus = async ({
     );
   } else {
     await delay(5000);
-    checkFirstPipelineStatus({
+    checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -123,7 +123,7 @@ export const handlePipelineCompletion = async (
   }
 };
 
-export const checkSecondPipelineStatus = async ({
+export const checkChildPipelineStatus = async ({
   setButtonText,
   digitalTwin,
   setLogButtonDisabled,
@@ -156,7 +156,7 @@ export const checkSecondPipelineStatus = async ({
     );
   } else {
     await delay(5000);
-    await checkSecondPipelineStatus({
+    await checkChildPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,

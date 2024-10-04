@@ -9,8 +9,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
-import { formatName } from 'util/gitlabDigitalTwin';
+import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
+import { formatName } from 'preview/util/gitlabDigitalTwin';
 
 interface LogDialogProps {
   showLog: boolean;
@@ -30,14 +30,16 @@ function LogDialog({ showLog, setShowLog, name }: LogDialogProps) {
       <DialogTitle>{`${formatName(name)} log`}</DialogTitle>
       <DialogContent dividers>
         {digitalTwin.jobLogs.length > 0 ? (
-          digitalTwin.jobLogs.map((jobLog, index) => (
-            <div key={index} style={{ marginBottom: '16px' }}>
-              <Typography variant="h6">{jobLog.jobName}</Typography>
-              <Typography variant="body2" style={{ whiteSpace: 'pre-wrap' }}>
-                {jobLog.log}
-              </Typography>
-            </div>
-          ))
+          digitalTwin.jobLogs.map(
+            (jobLog: { jobName: string; log: string }, index: number) => (
+              <div key={index} style={{ marginBottom: '16px' }}>
+                <Typography variant="h6">{jobLog.jobName}</Typography>
+                <Typography variant="body2" style={{ whiteSpace: 'pre-wrap' }}>
+                  {jobLog.log}
+                </Typography>
+              </div>
+            ),
+          )
         ) : (
           <Typography variant="body2">No logs available</Typography>
         )}

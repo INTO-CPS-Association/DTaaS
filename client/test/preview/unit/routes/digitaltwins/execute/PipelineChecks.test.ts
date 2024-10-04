@@ -2,7 +2,7 @@ import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChec
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
-jest.mock('util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/gitlabDigitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
   formatName: jest.fn(),
 }));
@@ -47,27 +47,27 @@ describe('PipelineChecks', () => {
   });
 
   it('starts pipeline status check', async () => {
-    const checkFirstPipelineStatusSpy = jest
-      .spyOn(PipelineChecks, 'checkFirstPipelineStatus')
+    const checkParentPipelineStatus = jest
+      .spyOn(PipelineChecks, 'checkParentPipelineStatus')
       .mockImplementation(() => Promise.resolve());
 
     jest.spyOn(global.Date, 'now').mockReturnValue(startTime);
 
     await PipelineChecks.startPipelineStatusCheck(params);
 
-    expect(checkFirstPipelineStatusSpy).toHaveBeenCalled();
+    expect(checkParentPipelineStatus).toHaveBeenCalled();
   });
 
-  it('checks first pipeline status and returns success', async () => {
-    const checkSecondPipelineStatus = jest.spyOn(
+  it('checks parent pipeline status and returns success', async () => {
+    const checkChildPipelineStatus = jest.spyOn(
       PipelineChecks,
-      'checkSecondPipelineStatus',
+      'checkChildPipelineStatus',
     );
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('success');
-    await PipelineChecks.checkFirstPipelineStatus({
+    await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -75,10 +75,10 @@ describe('PipelineChecks', () => {
       startTime,
     });
 
-    expect(checkSecondPipelineStatus).toHaveBeenCalled();
+    expect(checkChildPipelineStatus).toHaveBeenCalled();
   });
 
-  it('checks first pipeline status and returns failed', async () => {
+  it('checks parent pipeline status and returns failed', async () => {
     const updatePipelineStateOnCompletion = jest.spyOn(
       PipelineUtils,
       'updatePipelineStateOnCompletion',
@@ -87,7 +87,7 @@ describe('PipelineChecks', () => {
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('failed');
-    await PipelineChecks.checkFirstPipelineStatus({
+    await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -98,14 +98,14 @@ describe('PipelineChecks', () => {
     expect(updatePipelineStateOnCompletion).toHaveBeenCalled();
   });
 
-  it('checks first pipeline status and returns timeout', async () => {
+  it('checks parent pipeline status and returns timeout', async () => {
     const handleTimeout = jest.spyOn(PipelineChecks, 'handleTimeout');
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
     jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
-    await PipelineChecks.checkFirstPipelineStatus({
+    await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -118,7 +118,7 @@ describe('PipelineChecks', () => {
     expect(handleTimeout).toHaveBeenCalled();
   });
 
-  it('checks first pipeline status and returns running', async () => {
+  it('checks parent pipeline status and returns running', async () => {
     const delay = jest.spyOn(PipelineChecks, 'delay');
     delay.mockImplementation(() => Promise.resolve());
 
@@ -130,7 +130,7 @@ describe('PipelineChecks', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
-    await PipelineChecks.checkFirstPipelineStatus({
+    await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
@@ -161,7 +161,7 @@ describe('PipelineChecks', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('checks second pipeline status and returns timeout', async () => {
+  it('checks child pipeline status and returns timeout', async () => {
     const completeParams = {
       setButtonText: jest.fn(),
       digitalTwin,
@@ -176,12 +176,12 @@ describe('PipelineChecks', () => {
       .mockResolvedValue('running');
     jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
 
-    await PipelineChecks.checkSecondPipelineStatus(completeParams);
+    await PipelineChecks.checkChildPipelineStatus(completeParams);
 
     expect(handleTimeout).toHaveBeenCalled();
   });
 
-  it('checks second pipeline status and returns running', async () => {
+  it('checks child pipeline status and returns running', async () => {
     const delay = jest.spyOn(PipelineChecks, 'delay');
     delay.mockImplementation(() => Promise.resolve());
 
@@ -193,7 +193,7 @@ describe('PipelineChecks', () => {
       .mockResolvedValueOnce('running')
       .mockResolvedValue('success');
 
-    await PipelineChecks.checkSecondPipelineStatus({
+    await PipelineChecks.checkChildPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,

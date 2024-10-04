@@ -18,10 +18,10 @@ jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('util/gitlab', () => ({
+jest.mock('preview/util/gitlab', () => ({
   default: jest.fn().mockImplementation(() => mockGitlabInstance),
 }));
-jest.mock('util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/gitlabDigitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
 }));
 

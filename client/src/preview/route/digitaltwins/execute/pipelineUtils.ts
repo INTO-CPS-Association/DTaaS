@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction } from 'react';
-import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
-import GitlabInstance from 'util/gitlab';
+import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
+import GitlabInstance from 'preview/util/gitlab';
 import {
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
-} from 'store/digitalTwin.slice';
+} from 'preview/store/digitalTwin.slice';
 import { useDispatch } from 'react-redux';
-import { showSnackbar } from 'store/snackbar.slice';
+import { showSnackbar } from 'preview/store/snackbar.slice';
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,

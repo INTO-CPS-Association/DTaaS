@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import AssetBoard, { handleDelete } from 'preview/components/asset/AssetBoard';
+import AssetBoard from 'preview/components/asset/AssetBoard';
 import store from 'store/store';
 
 jest.mock('react-redux', () => ({
@@ -11,12 +11,11 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('preview/components/asset/AssetCard', () => ({
-  AssetCardExecute: () => <div>Asset Card</div>,
+  default: () => <div>Asset Card</div>,
 }));
 
-jest.mock('store/assets.slice', () => ({
-  ...jest.requireActual('store/assets.slice'),
-  deleteAsset: jest.fn(),
+jest.mock('preview/store/assets.slice', () => ({
+  ...jest.requireActual('preview/store/assets.slice'),
 }));
 
 describe('AssetBoard', () => {
@@ -57,13 +56,5 @@ describe('AssetBoard', () => {
     renderAssetBoard('An error occurred');
 
     expect(screen.getByText('An error occurred')).toBeInTheDocument();
-  });
-
-  it('deletes asset when onDelete is called', () => {
-    renderAssetBoard(null);
-
-    handleDelete('path1', mockDispatch)();
-
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
   });
 });

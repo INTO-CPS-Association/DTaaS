@@ -5,10 +5,10 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { AlertColor, CardActions, Grid } from '@mui/material';
 import styled from '@emotion/styled';
-import { formatName } from 'util/gitlabDigitalTwin';
+import { formatName } from 'preview/util/gitlabDigitalTwin';
 import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
 import { useSelector } from 'react-redux';
-import { selectDigitalTwinByName } from 'store/digitalTwin.slice';
+import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 import { RootState } from 'store/store';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import StartStopButton from './StartStopButton';
@@ -133,4 +133,4 @@ function AssetCardExecute({ asset }: AssetCardProps) {
   );
 }
 
-export { AssetCardExecute, CardButtonsContainerExecute };
+export default AssetCardExecute;

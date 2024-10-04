@@ -1,6 +1,6 @@
 import { Gitlab } from '@gitbeaker/core';
-import GitlabInstance from 'util/gitlab';
-import DigitalTwin from 'util/gitlabDigitalTwin';
+import GitlabInstance from 'preview/util/gitlab';
+import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
@@ -94,11 +94,6 @@ export const mockDigitalTwin: DigitalTwin = {
   logSuccess: jest.fn(),
   logError: jest.fn(),
   stop: jest.fn(),
-  delete: jest.fn(),
-  getDescriptionFiles: jest.fn(),
-  getConfigFiles: jest.fn(),
-  getFileContent: jest.fn(),
-  updateFileContent: jest.fn(),
 };
 
 jest.mock('util/envUtil', () => ({

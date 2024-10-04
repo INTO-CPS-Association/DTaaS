@@ -1,5 +1,5 @@
-import GitlabInstance from 'util/gitlab';
-import DigitalTwin, { formatName } from 'util/gitlabDigitalTwin';
+import GitlabInstance from 'preview/util/gitlab';
+import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
 
 const mockApi = {
   RepositoryFiles: {
@@ -155,40 +155,6 @@ describe('DigitalTwin', () => {
     await dt.stop(1, 456);
 
     expect(dt.lastExecutionStatus).toBe('error');
-  });
-
-  it('should delete the digital twin and return success message', async () => {
-    (mockApi.RepositoryFiles.remove as jest.Mock).mockResolvedValue({});
-
-    const result = await dt.delete();
-
-    expect(result).toBe('test-DTName deleted successfully');
-    expect(mockApi.RepositoryFiles.remove).toHaveBeenCalledWith(
-      1,
-      'digital_twins/test-DTName',
-      'main',
-      'Removing test-DTName digital twin',
-    );
-  });
-
-  it('should return error message when deletion fails', async () => {
-    (mockApi.RepositoryFiles.remove as jest.Mock).mockRejectedValue(
-      new Error('Delete failed'),
-    );
-
-    const result = await dt.delete();
-
-    expect(result).toBe('Error deleting test-DTName digital twin');
-  });
-
-  it('should return error message when projectId is missing during deletion', async () => {
-    dt.gitlabInstance.projectId = null;
-
-    const result = await dt.delete();
-
-    expect(result).toBe(
-      'Error deleting test-DTName digital twin: no project id',
-    );
   });
 
   it('should format the name correctly', () => {
