@@ -124,6 +124,7 @@ a development workflow is in place. Each developer should follow these steps:
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
+1. Active the Python Virtual Enviornment by calling (`./dtaas-venv/bin/activate`)
 1. Work in your fork and open a PR from your working
    branch to your `feature/distributed-demo` branch.
    The PR will run all the github actions, code climate and codecov checks.
