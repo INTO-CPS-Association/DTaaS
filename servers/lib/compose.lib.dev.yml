@@ -1,0 +1,9 @@
+services:
+  libms:
+    build:
+      context: ../../
+      dockerfile: ./docker/libms.dockerfile
+    volumes:
+      - ${LOCAL_PATH}:/dtaas/libms/files
+    ports:
+      - ${PORT}:4001

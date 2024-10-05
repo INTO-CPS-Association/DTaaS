@@ -39,9 +39,10 @@ nav:
           - Incubator: user/examples/incubator/README.md
           - Firefighters: user/examples/o5g/README.md
           - Mass Spring Damper with NuRV: user/examples/mass-spring-damper-monitor/README.md
-          - Incubator with NuRV: user/examples/incubator-NuRV-monitor-validation/README.md
-          - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
           - Water Tank Fault Injection with NuRV: user/examples/water_tank_FI_monitor/README.md
+          - Incubator Co-Sim with NuRV: user/examples/incubator-NuRV-monitor-validation/README.md
+          - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
+          - Incubator with NuRV FMU Service: user/examples/incubator-NuRV-fmu-monitor-service/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - Admin:
       - Install:

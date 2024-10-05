@@ -9,6 +9,7 @@ The installation scripts in this directory install:
 * **Grafana** visualization and dashboard service
 * **RabbitMQ** AMQP broker and its' management interface
 * Eclipse Mosquitto **MQTT** broker
+* **MongoDB** database server
 
 ## Configure and Install
 
@@ -35,7 +36,7 @@ at the following ports / URLs.
 | RabbitMQ Broker | services.foo.com:5672 |
 | RabbitMQ Broker Management Website | services.foo.com:15672 |
 | MQTT Broker | services.foo.com:1883 |
-||
+| MongoDB database | services.foo.com:27017 |
 
 The firewall and network access settings of corporate / cloud network need to be
 configured to allow external access to the services. Otherwise the users of DTaaS

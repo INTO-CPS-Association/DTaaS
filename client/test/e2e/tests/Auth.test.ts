@@ -1,7 +1,7 @@
 // src: https://playwright.dev/docs/writing-tests
-
-import { test, expect } from '@playwright/test';
-import links from './Links.ts'; // Extension is required with Playwright import
+import { expect } from '@playwright/test';
+import test from 'test/e2e/setup/fixtures';
+import links from './Links'; // Extension is required with Playwright import
 
 test.describe('Tests on Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,6 +12,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
       .click();
+    await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
@@ -22,6 +23,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page
       .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
       .click();
+    await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();

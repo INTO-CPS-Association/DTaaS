@@ -53,6 +53,8 @@ you need two URLs: a _callback URL_ and a _logout URL_.
 
 **4. Create OAuth Application:**
 
+Oauth application setup on GitLab can be located on Edit Profile -> Application <https://gitlab.foo.com/-/profile/applications>.
+
 During the creation of the OAuth application on GitLab, you need to specify
 the scope. Choose **_read_user_** scope.
 

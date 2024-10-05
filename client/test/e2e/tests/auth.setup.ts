@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { test as setup, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import setup from 'test/e2e/setup/fixtures';
 
 dotenv.config({ path: './test/.env' });
 
@@ -19,25 +20,12 @@ setup('authenticate', async ({ page }) => {
   } catch (error) {
     // The login page did not appear within 10 seconds, so just ignore and continue.
   }
-  // Accept the cookies if popup appears
-  try {
-    // Wait for 'Accept All Cookies' button to appear for up to 4 seconds.
-    await page.waitForSelector('button:has-text("Accept All Cookies")', {
-      timeout: 4000,
-    });
-    // If the button appears, click it.
-    await page.getByRole('button', { name: 'Accept All Cookies' }).click();
-  } catch (error) {
-    // 'Accept All Cookies' button did not appear within 4 seconds, so just ignore and continue.
-  }
   await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.
   await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.
+  await page.locator('label').filter({ hasText: 'Remember me' }).click();
   await page.getByRole('button', { name: 'Sign in' }).click();
   try {
-    await page.waitForSelector('input[type="submit"][value="Authorize"]', {
-      timeout: 10000,
-    });
-    await page.click('input[type="submit"][value="Authorize"]');
+    await page.getByRole('button', { name: 'Authorize' }).click();
   } catch (error) {
     // 'Authorize' button did not appear within 4 seconds, so just ignore and continue.
   }

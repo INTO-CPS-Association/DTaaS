@@ -43,6 +43,30 @@ The URL endpoint for this microservice is located at: `localhost:PORT/lib`
 
 The [API](./API.md) page shows sample queries and responses.
 
+## Manual testing
+
+As of now, some features require manual testing or attention.
+
+### CloudCMD (a npm package dependency)
+
+Due to how CloudCMD works,
+it is required to manually run `yarn test:http` with `LOCAL_PATH` both as an
+absolute path and local path. For example, the manual tests
+need to be done with the following `LOCAL_PATH` values.
+
+| OS      | Absolute Path                 | Relative Path |
+| ------- | ----------------------------- | ------------- |
+| Windows | C:\DTaaS\files                | ..\..\files  |
+| Linux   | /Users/\<Username\>/DTaaS/files | ../../files   |
+
+### PM2
+
+the pm2 might not close spawned processes correctly,
+therefore please use the following command to kill a process.
+`pm2 del <id>`.
+
+**NOTE:** to see the processes spawned by pm2 use `pm2 list`
+
 ## :package: :ship: Packages
 
 ### Docker images
@@ -85,6 +109,44 @@ with publishing **libms npm package** in local computer.
 
 Application of the advice given on that page for **libms** will require
 running the following commands.
+
+## Use in Docker Environment
+
+### Adjust Configuration (Optional)
+
+The microservices require configuration and the docker version
+of the microservices uses the configuration
+file available in `config/.env.default`.
+
+Please add a `.env` file with the environment variables for
+the docker compose file to use.
+e.g.
+
+```sh
+PORT='4001'
+MODE='local'
+LOCAL_PATH='..\..\files'
+```
+
+### Use
+
+The commands to start and stop the appliation are:
+
+**NOTE**: the docker compose file is located in the `servers/lib` directory.
+
+```bash
+docker compose -f compose.lib.dev.yml up -d
+```
+
+This command brings up the lib docker container and makes
+the website available at <http://localhost:4001>.
+The `config/.env.default` file is used as the microservice configuration.
+If the configuration values are changed, please restart the container.
+
+```bash
+docker compose -f compose.lib.dev.yml down
+docker compose -f compose.lib.dev.yml up -d
+```
 
 ### Publish
 

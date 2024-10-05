@@ -39,9 +39,6 @@ yarn test:e2e   #run end-to-end tests
 yarn test:all   #run all tests
 ```
 
-:bug: The end-to-end tests are extremely brittle.
-They are not being used at present.
-
 ## Authorization
 
 The react client website uses OAuth authorization.
@@ -90,6 +87,16 @@ yarn config:<config-name>
 It is therefore reccommend to keep the configurations in the
 `client/config/` directory and use one of the `yarn config`
 sub-commands to switch between them.
+
+The purpose of different configuration files are given in the table below.
+
+| Configuration File Name | Usage Scenario |
+|:--------|:--------|
+| `dev.js` | Check functionality of the client application without using any other parts of the DTaaS software |
+| `gitlab.js` | Used for testing the gitlab code written in `src/utils/gitlab.ts`. These credentials are not used by the client application |
+| `local.js` | Used by the `docker/compose.dev.yml` to setup a check the complete DTaaS application on the developer computer |
+| `prod.js` | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
+| `test.js` | Used by all the tests |
 
 ## Example configuration for developers
 

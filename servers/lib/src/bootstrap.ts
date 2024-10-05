@@ -15,7 +15,7 @@ export default async function bootstrap(options?: BootstrapOptions) {
     path: options?.config ?? '.env',
     override: true,
   });
-  if (configFile.error) {
+  if (configFile.error && process.env.LOCAL_PATH === undefined) {
     // eslint-disable-next-line no-console
     console.error(configFile.error);
     if (options.runHelp) {
