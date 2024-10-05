@@ -24,7 +24,7 @@
     "develop": "npx shx cp config/gitlab.json src/util/gitlab.json && npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "gitlab:compile": "npx shx cp config/gitlab.json src/util/gitlab.json && npx tsc --project tsconfig.gitlab.json && npx rimraf src/util/gitlab.json",
-    "gitlab:run": "node dist/gitlabDriver.js",
+    "gitlab:run": "node dist/src/preview/util/gitlabDriver.js",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
     "start": "serve -s build -l 4000",
     "stop": "npx kill-port 4000",
