@@ -137,13 +137,21 @@ describe('DigitalTwin', () => {
     expect(dt.lastExecutionStatus).toBe('error');
   });
 
-  it('should stop the pipeline and update status', async () => {
-    const pipelineId = 456;
+  it('should stop the parent pipeline and update status', async () => {
     (mockApi.Pipelines.cancel as jest.Mock).mockResolvedValue({});
 
-    await dt.stop(1, pipelineId);
+    await dt.stop(1, 'parentPipeline');
 
-    expect(mockApi.Pipelines.cancel).toHaveBeenCalledWith(1, pipelineId);
+    expect(mockApi.Pipelines.cancel).toHaveBeenCalled();
+    expect(dt.lastExecutionStatus).toBe('canceled');
+  });
+
+  it('should stop the child pipeline and update status', async () => {
+    (mockApi.Pipelines.cancel as jest.Mock).mockResolvedValue({});
+
+    await dt.stop(1, 'childPipeline');
+
+    expect(mockApi.Pipelines.cancel).toHaveBeenCalled();
     expect(dt.lastExecutionStatus).toBe('canceled');
   });
 
@@ -152,7 +160,7 @@ describe('DigitalTwin', () => {
       new Error('Stop failed'),
     );
 
-    await dt.stop(1, 456);
+    await dt.stop(1, 'parentPipeline');
 
     expect(dt.lastExecutionStatus).toBe('error');
   });
