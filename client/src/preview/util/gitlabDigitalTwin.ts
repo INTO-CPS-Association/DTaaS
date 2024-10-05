@@ -103,9 +103,11 @@ class DigitalTwin {
     }
   }
 
-  async stop(projectId: number, pipelineId: number): Promise<void> {
+  async stop(projectId: number, pipeline: string): Promise<void> {
+    const pipelineId =
+      pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
     try {
-      await this.gitlabInstance.api.Pipelines.cancel(projectId, pipelineId);
+      await this.gitlabInstance.api.Pipelines.cancel(projectId, pipelineId!);
       this.gitlabInstance.logs.push({
         status: 'canceled',
         DTName: this.DTName,

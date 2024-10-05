@@ -84,11 +84,11 @@ export const stopPipelines = async (digitalTwin: DigitalTwin) => {
   if (digitalTwin.gitlabInstance.projectId && digitalTwin.pipelineId) {
     await digitalTwin.stop(
       digitalTwin.gitlabInstance.projectId,
-      digitalTwin.pipelineId,
+      'parentPipeline',
     );
     await digitalTwin.stop(
       digitalTwin.gitlabInstance.projectId,
-      digitalTwin.pipelineId + 1,
+      'childPipeline',
     );
   }
 };
