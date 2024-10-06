@@ -1,12 +1,15 @@
-# Install DTaaS on localhost
-
-The installation instructions provided in this README are
-ideal for running the **DTaaS on both localhost served over HTTPS connection**.
-The intention is to integrate Gitlab into DTaaS so that both these
-are running on localhost.
+# Install DTaaS on localhost with Gitlab Integration
 
 This installation is ideal for single users intending to use
 DTaaS on their own computers.
+
+The installation instructions provided in this README are
+ideal for running the **DTaaS on localhost served over HTTPS connection**.
+**The intention is to integrate Gitlab into DTaaS so that both**
+**are running on localhost.**
+
+If you do not need gitlab running on localhost, please use
+the simpler [localhost setup](LOCALHOST.md).
 
 ## Design
 
@@ -38,7 +41,7 @@ cd DTaaS
    paths mentioned below are relatively to the top-level
    **DTaaS** directory.
 
-## Configuration
+## Configure and Run
 
 ### Create User Workspace
 
@@ -70,42 +73,11 @@ the `privkey.pem` corresponds to private key.
 
 Copy the two certificate files into:
 
-- `certs/localhost/fullchain.pem`
-- `certs/localhost/privkey.pem`
+- `deploy/docker/certs/localhost/fullchain.pem`
+- `deploy/docker/certs/localhost/privkey.pem`
 
 Traefik will run with self-issued certificates if the above two certificates
 are either not found or found invalid.
-
-### Start DTaaS
-
-The commands to start and stop the appliation are:
-
-```bash
-docker compose -f compose.local.secure.yml --env-file .env.server up -d
-docker compose -f compose.local.secure.yml --env-file .env.server down
-```
-
-To restart only a specific container, for example `client``
-
-```bash
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
-```
-
-### Start Gitlab
-
-Use the instructions provided in
-[gitlab integration](../services/gitlab/README.md) to bring up
-Gitlab on localhost and the Gitlab service will be available at <https://localhost/gitlab>
-
-### OAuth2 Application Registration
-
-The Gitlab integration requires authorization setup for frontend website.
-The details of Oauth2 app for the frontend website are in
-[client docs](../../docs/admin/client/auth.md).
-
-Please see
-[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-documentation for further help with creating these two OAuth applications.
 
 ### Configure Docker Compose
 
@@ -127,13 +99,70 @@ Edit all the fields according to your specific case.
 :clipboard: The path examples given here are for Linux OS.
 These paths can be Windows OS compatible paths as well.
 
-### Restart DTaaS
+### Start DTaaS to Integrate Gitlab
 
-The commands to start and stop the appliation are:
+Start the appliation with
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.server down
 docker compose -f compose.local.secure.yml --env-file .env.server up -d
+```
+
+### Start Gitlab
+
+Use the instructions provided in
+[gitlab integration](../services/gitlab/README.md) to bring up
+Gitlab on localhost and the Gitlab service will be available at <https://localhost/gitlab>
+
+### Register OAuth2 Application
+
+The frontend website requires OAuth2 application registration on the integrated Gitlab.
+The details of Oauth2 app for the frontend website are in
+[client docs](../../docs/admin/client/auth.md).
+
+This application needs to be created on gitlab running at <https://localhost/gitlab>.
+
+Remember to use <https://localhost/Library> as the Callback URL (`REACT_APP_REDIRECT_URI`).
+
+Please see
+[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+documentation for further help with creating this OAuth application.
+
+### Update Client Website Configuration
+
+Replace the contents of `deploy/config/client/env.local.js` with
+the following.
+
+```js
+if (typeof window !== 'undefined') {
+  window.env = {
+    REACT_APP_ENVIRONMENT: 'local',
+    REACT_APP_URL: 'https://localhost/',
+    REACT_APP_URL_BASENAME: '',
+    REACT_APP_URL_DTLINK: '/lab',
+    REACT_APP_URL_LIBLINK: '',
+    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+
+    REACT_APP_CLIENT_ID: 'xxxxxx',
+    REACT_APP_AUTH_AUTHORITY: 'https://localhost/gitlab/',
+    REACT_APP_REDIRECT_URI: 'https://localhost/Library',
+    REACT_APP_LOGOUT_REDIRECT_URI: 'https://localhost/',
+    REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+  };
+};
+```
+
+And then update OAuth2 client application ID (`REACT_APP_CLIENT_ID`) with that
+of the newly registered OAuth2 application.
+
+### Restart DTaaS Client Website
+
+To update the client website configuration, run
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
 ```
 
 ## Use
@@ -149,6 +178,22 @@ through the single page client now.
 
 The [library microservice](../../docs/admin/servers/lib/docker.md) is not
 included in the localhost installation scenario.
+
+## Docker Help
+
+The commands to start and stop the appliation are:
+
+```bash
+docker compose -f compose.local.secure.yml --env-file .env.server up -d
+docker compose -f compose.local.secure.yml --env-file .env.server down
+```
+
+To restart only a specific container, for example `client`
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+```
+
 
 ## References
 

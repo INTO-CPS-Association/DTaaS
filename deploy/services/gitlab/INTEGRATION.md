@@ -1,6 +1,7 @@
 # GitLab Instance Integration Guide
 
-This guide helps with setting up a GitLab instance on a DTaaS server, and
+This guide helps with setting up a dedicated GitLab instance for a DTaaS server installation,
+and
 integrating its OAuth Authorization feature with the rest of web application.
 
 > [!IMPORTANT]
@@ -21,17 +22,18 @@ URL for authorization.
 
 ### 1. Setting up the DTaaS server
 
-Follow the guide to set up the DTaaS web application on either localhost or a
-custom domain - _deploy/README.md_.
+Follow the [existing guide](../../docker/README.md)
+to set up the DTaaS web application on either localhost or a
+custom domain.
 
 > [!NOTE]
-> The section "Add TLS Certificates (Optional)" should be treated as
+> The section "Add TLS Certificates" should be treated as
 > mandatory for now, to ensure `react-oidc-context` correctly redirects users
 > for authorization.
 
 > [!NOTE]
 > You may ignore steps related to configuring OAuth application tokens
-> at `https://gitlab.com`. We will be using this initial installation to host
+> at `https://gitlab.com`. We will be using the initial installation to host
 > the local GitLab instance, on which we will later create the OAuth
 > application tokens.
 
