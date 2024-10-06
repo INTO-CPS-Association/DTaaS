@@ -12,7 +12,7 @@ class GitlabDriver {
     );
 
     await gitlabInstance.init();
-    
+
     console.log('GitLab username:', gitlabInstance.username);
     console.log('GitLab logs:', gitlabInstance.logs);
     console.log('GitLab subfolders:', gitlabInstance.subfolders);
