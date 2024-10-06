@@ -104,7 +104,7 @@ These paths can be Windows OS compatible paths as well.
 Start the appliation with
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.server up -d
+docker compose -f compose.local.secure.yml --env-file .env.local up -d
 ```
 
 ### Start Gitlab

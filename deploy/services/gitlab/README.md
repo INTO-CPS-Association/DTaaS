@@ -11,17 +11,24 @@ needed to set up the docker container containing the local GitLab instance.
 
 ## Configure and Install
 
-Ensure that the client config file (_env.js_ or _env.local.js_) and the server
-config file (_compose.server.secure.yml_ or _compose.local.yml_) both use the
-path prefixed gitlab instance (`https://foo.com/gitlab` or
-`https://localhost/gitlab`).
+If the DTaaS application and gitlab are to be hosted at <https://foo.com>, then
+the client config file (`deploy/config/client/env.js`)
+needs to use the <https://foo.com/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
+In addition, this hosting at <https://foo.com> also requires changes to
+config file (`.env.server`).
 
-Edit the `.env` file to contain the following variables:
+If the DTaaS application and gitlab are to be hosted at <https://localhost>, then
+the client config file (`deploy/config/client/env.local.js`)
+needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
+If the application and the integrated gitlab are to be hosted at
+`https://localhost/gitlab`, then `.env.server` need not be modified.
+
+Edit the `.env` file available in this directory to contain the following variables:
 
 | Variable    | Example Value                                | Explanation                                                                                                                  |
 | :---------- | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
 | GITLAB_HOME | '/home/Desktop/DTaaS/deploy/services/gitlab' | Full path to the DTaaS gitlab directory. This is an absolute path with no trailing slash.                                    |
-| SERVER_DNS  | 'foo.com'                                    | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
+| SERVER_DNS  | either `foo.com` or `localhost`                               | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
 
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which
 incorrectly causes redirects to use the `HTTPS` URL scheme. This is a
@@ -30,6 +37,10 @@ and forces us to use `HTTPS` for the DTaaS server. If you are hosting the site
 locally, your GitLab instance should be available at `https://localhost/gitlab`.
 
 ## Run
+
+**NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
+requires the DTaaS server to be running before you start it. You may refer to
+_deploy/docker/README.md_ file for the same.
 
 The commands to start and stop the instance are:
 
@@ -42,10 +53,6 @@ docker compose -f compose.gitlab.yml down
 Each time you start the container, it may take a few minutes. You can monitor
 the progress with `watch docker ps` and check if the gitlab container is
 `healthy`.
-
-**NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
-requires the DTaaS server to be running before you start it. You may refer to
-_deploy/docker/README.md_ file for the same.
 
 ## Post-Install Configuration
 
@@ -60,14 +67,17 @@ The configuration file to change is _/etc/gitlab/gitlab.rb_. The variables to
 change are:
 
 ```rb
-external_url 'http(s)://foo.com/gitlab'
-nginx['listen_port'] = 80
+external_url 'https://foo.com/gitlab'
 nginx['enable'] = true
-
-nginx['listen_https'] = false
 nginx['redirect_http_to_https'] = false
+
+nginx['listen_port'] = 80
+nginx['listen_https'] = false
 letsencrypt['enable'] = false
 ```
+
+If the gitlab needs to be available at <https://localhost/gitlab>, then
+the `external_url` should be <https://localhost/gitlab>.
 
 Save the changes and reconfigure gitlab by running:
 
@@ -83,4 +93,5 @@ from the first time you start the local instance.
 ## Use
 
 After running the container, your local GitLab instance will be available at
-`https://foo.com/gitlab`.
+`external_url` specified in _gitlab.rb_, i.e., either at
+`https://foo.com/gitlab` or at `https://localhost/gitlab`.
