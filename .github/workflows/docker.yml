@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   workflow_call:
     inputs:
-      registry:
-        required: false
-        type: string
-        default: "ghcr.io"
+      # registry:
+      #   required: false
+      #   type: string
+      #   default: "ghcr.io"
       image-name:
         required: true
         type: string
@@ -48,7 +48,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         run: |
-          if docker manifest inspect ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+          if docker manifest inspect ${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_ENV
           else
@@ -62,7 +62,8 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push Docker image
+        if: env.exists == 'false'
         uses: docker/build-push-action@v6
         with:
           context: .
