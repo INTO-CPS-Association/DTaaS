@@ -11,13 +11,32 @@ import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 import { RootState } from 'store/store';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
+import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
+import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
+import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
+import DetailsButton from './DetailsButton';
+import ReconfigureButton from './ReconfigureButton';
+import DeleteButton from './DeleteButton';
 
 interface AssetCardProps {
   asset: Asset;
   buttons?: React.ReactNode;
+}
+
+interface AssetCardManageProps {
+  asset: Asset;
+  buttons?: React.ReactNode;
+  onDelete: () => void;
+}
+
+interface CardButtonsContainerManageProps {
+  assetName: string;
+  setShowDetails: Dispatch<SetStateAction<boolean>>;
+  setShowReconfigure: Dispatch<SetStateAction<boolean>>;
+  setShowDelete: Dispatch<SetStateAction<boolean>>;
 }
 
 interface CardButtonsContainerExecuteProps {
@@ -67,6 +86,21 @@ function CardActionAreaContainer(asset: Asset) {
   );
 }
 
+function CardButtonsContainerManage({
+  assetName,
+  setShowDetails,
+  setShowReconfigure,
+  setShowDelete,
+}: CardButtonsContainerManageProps) {
+  return (
+    <CardActions style={{ justifyContent: 'flex-end' }}>
+      <DetailsButton assetName={assetName} setShowLog={setShowDetails} />
+      <ReconfigureButton setShowReconfigure={setShowReconfigure} />
+      <DeleteButton setShowLog={setShowDelete} />
+    </CardActions>
+  );
+}
+
 function CardButtonsContainerExecute({
   assetName,
   setShowLog,
@@ -105,6 +139,48 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
   );
 }
 
+function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
+  const [showDetailsLog, setShowDetailsLog] = useState(false);
+  const [showDeleteLog, setShowDeleteLog] = useState(false);
+  const [showReconfigure, setShowReconfigure] = useState(false);
+  const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
+
+  return (
+    digitalTwin && (
+      <>
+        <AssetCard
+          asset={asset}
+          buttons={
+            <CardButtonsContainerManage
+              assetName={asset.name}
+              setShowDelete={setShowDeleteLog}
+              setShowDetails={setShowDetailsLog}
+              setShowReconfigure={setShowReconfigure}
+            />
+          }
+        />
+        <CustomSnackbar />
+        <DetailsDialog
+          showLog={showDetailsLog}
+          setShowLog={setShowDetailsLog}
+          name={asset.name}
+        />
+        <ReconfigureDialog
+          showLog={showReconfigure}
+          setShowLog={setShowReconfigure}
+          name={asset.name}
+        />
+        <DeleteDialog
+          showLog={showDeleteLog}
+          setShowLog={setShowDeleteLog}
+          name={asset.name}
+          onDelete={onDelete}
+        />
+      </>
+    )
+  );
+}
+
 function AssetCardExecute({ asset }: AssetCardProps) {
   useState<AlertColor>('success');
   const [showLog, setShowLog] = useState(false);
@@ -133,4 +209,4 @@ function AssetCardExecute({ asset }: AssetCardProps) {
   );
 }
 
-export default AssetCardExecute;
+export { AssetCardManage, AssetCardExecute };

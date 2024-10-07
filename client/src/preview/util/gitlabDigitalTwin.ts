@@ -124,6 +124,108 @@ class DigitalTwin {
       this.lastExecutionStatus = 'error';
     }
   }
+  
+  async delete() {
+    if (this.gitlabInstance.projectId) {
+      const digitalTwinPath = `digital_twins/${this.DTName}`;
+      try {
+        await this.gitlabInstance.api.RepositoryFiles.remove(
+          this.gitlabInstance.projectId,
+          digitalTwinPath,
+          'main',
+          `Removing ${this.DTName} digital twin`,
+        );
+        return `${this.DTName} deleted successfully`;
+      } catch (error) {
+        return `Error deleting ${this.DTName} digital twin`;
+      }
+    }
+    return `Error deleting ${this.DTName} digital twin: no project id`;
+  }
+
+  async getDescriptionFiles() {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: `digital_twins/${this.DTName}`,
+            recursive: true,
+          },
+        );
+
+      const filteredFiles = response
+        .filter(
+          (item: { type: string; name: string; path: string }) =>
+            item.type === 'blob' &&
+            (item.name.endsWith('.md') ||
+              item.name.endsWith('.yml') ||
+              item.path.includes('/lifecycle/')),
+        )
+        .map((file: { name: string }) => file.name);
+
+      this.descriptionFiles = filteredFiles;
+    } catch (error) {
+      this.descriptionFiles = [];
+    }
+  }
+
+  async getConfigFiles() {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: `digital_twins/${this.DTName}`,
+            recursive: false,
+          },
+        );
+
+      const filteredFiles = response
+        .filter(
+          (item: { type: string; name: string }) =>
+            item.type === 'blob' && item.name.endsWith('.json'),
+        )
+        .map((file: { name: string }) => file.name);
+
+      this.configFiles = filteredFiles;
+    } catch (error) {
+      this.configFiles = [];
+    }
+  }
+
+  async getFileContent(fileName: string) {
+    const isFileWithoutExtension = !fileName.includes('.');
+
+    const filePath = isFileWithoutExtension
+      ? `digital_twins/${this.DTName}/lifecycle/${fileName}`
+      : `digital_twins/${this.DTName}/${fileName}`;
+
+    const response = await this.gitlabInstance.api.RepositoryFiles.show(
+      this.gitlabInstance.projectId!,
+      filePath,
+      'main',
+    );
+    const fileContent = atob(response.content);
+    return fileContent;
+  }
+
+  async updateFileContent(fileName: string, fileContent: string) {
+    const hasExtension = fileName.includes('.');
+
+    const filePath = hasExtension
+      ? `digital_twins/${this.DTName}/${fileName}`
+      : `digital_twins/${this.DTName}/lifecycle/${fileName}`;
+
+    const commitMessage = `Update ${fileName} content`;
+    await this.gitlabInstance.api.RepositoryFiles.edit(
+      this.gitlabInstance.projectId!,
+      filePath,
+      'main',
+      fileContent,
+      commitMessage,
+    );
+  }
 }
 
 export default DigitalTwin;

@@ -16,7 +16,7 @@ import tabs from './DigitalTwinTabDataPreview';
 
 export const createDTTab = (error: string | null): TabData[] =>
   tabs
-    .filter((tab) => tab.label === 'Execute')
+    .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
     .map((tab) => ({
       label: tab.label,
       body: (
