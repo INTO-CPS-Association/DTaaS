@@ -98,7 +98,7 @@ jobs:
     needs: [client, get_version]
     uses: ./.github/workflows/docker.yml
     with: 
-      registry: ghcr.io
-      image-name: into-cps-association/dtaas-web
+      image-name: dtaas-web
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
+    secrets: inherit
