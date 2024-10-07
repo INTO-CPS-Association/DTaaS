@@ -45,21 +45,21 @@ jobs:
       #     username: ${{ github.actor }}
       #     password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Check if version exists
-      #   id: check_version
-      #   run: |
-      #     if docker manifest inspect ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
-      #       echo "Version ${{ inputs.version }} already exists."
-      #       echo "exists=true" >> $GITHUB_ENV
-      #     else
-      #       echo "Version ${{ inputs.version }} does not exist."
-      #       echo "exists=false" >> $GITHUB_ENV
-      #     fi
+      - name: Check if version exists
+        id: check_version
+        run: |
+          if docker manifest inspect ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+            echo "Version ${{ inputs.version }} already exists."
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "Version ${{ inputs.version }} does not exist."
+            echo "exists=false" >> $GITHUB_ENV
+          fi
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
@@ -68,12 +68,12 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:latest
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
+          repository: ${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
           readme-filepath: ${{ inputs.readme-file }}
