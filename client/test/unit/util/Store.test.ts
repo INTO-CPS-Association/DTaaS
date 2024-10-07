@@ -48,7 +48,7 @@ describe('reducers', () => {
   });
 
   describe('auth reducer', () => {
-    it('authReducer should return the initial menu state when an unknown action type is passed with an undefined state', () => {
+    it('authReducer should return the initial auth state when an unknown action type is passed with an undefined state', () => {
       expect(authReducer(undefined, { type: 'unknown' })).toEqual(
         initialState.auth,
       );

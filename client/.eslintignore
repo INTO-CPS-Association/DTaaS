@@ -4,3 +4,7 @@ config/
 node_modules/
 script/
 coverage/
+dist/
+test-results/
+playwright-report/
+public/

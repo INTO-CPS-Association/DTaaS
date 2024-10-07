@@ -26,9 +26,9 @@
   },
   "exclude": ["**/node_modules/*", "babel.config.cjs", "dist", "test"],
   "include": [
-    "./src/util/gitlab.json",
-    "./src/util/gitlab*.ts",
-    "./test/unitTests/Util/gitlab*.test.ts"
+    "./config/gitlab.json",
+    "./src/preview/util/gitlab*.ts",
+    "./test/preview/unit/util/gitlab*.test.ts"
   ],
   "typeRoots": [ "**/node_modules/@types" ]
 }

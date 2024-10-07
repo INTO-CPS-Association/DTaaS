@@ -118,6 +118,7 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
@@ -147,6 +148,7 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
@@ -204,6 +206,12 @@ api, read_api, read_user, create_runner, k8s_proxy, read_repository, write_repos
 
 The token information needs to be updated in `config/gitlab.json`.
 
+In addition to the personal access token, you also need to create a
+[pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html).
+This token is required to trigger pipelines by using the API.
+You can create this token in your GitLab project's CI/CD settings under
+the *Pipeline trigger tokens* section.
+
 Once the token configuration is in place, the gitlab code can be developed
 and tested using the following yarn commands.
 
@@ -237,3 +245,11 @@ Execution Logs: [
   }
 ]
 ```
+
+## Digital Twins page preview
+
+In the Workbench section, there is a link to preview the **Digital Twins**
+page. The GitLab account used as OAuth provider must have a *DTaaS* group,
+a project under your username, and a *digital_twins* folder which contains
+the Digital Twins. From this interface, you can start or stop execution of
+Digital Twins, and once the execution is complete, view the complete logs.

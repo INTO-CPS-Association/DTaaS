@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import GitlabInstance from './gitlab.js';
 import DigitalTwin from './gitlabDigitalTwin.js';
-import config from './gitlab.json' assert { type: 'json' };
+import config from '../../../config/gitlab.json' assert { type: 'json' };
 
 class GitlabDriver {
   public static async run(): Promise<void> {
@@ -10,6 +10,9 @@ class GitlabDriver {
       config.host,
       config.oauth_token,
     );
+
+    await gitlabInstance.init();
+
     console.log('GitLab username:', gitlabInstance.username);
     console.log('GitLab logs:', gitlabInstance.logs);
     console.log('GitLab subfolders:', gitlabInstance.subfolders);
@@ -21,18 +24,16 @@ class GitlabDriver {
     console.log('Subfolders:', subfolders);
 
     const dtName = subfolders[0].name;
-    const runnerTag = 'dtaas';
 
     const triggerToken = await gitlabInstance.getTriggerToken(projectId);
     console.log('Trigger token:', triggerToken);
 
     const digitalTwin = new DigitalTwin(dtName, gitlabInstance);
-    const result = await digitalTwin.execute(runnerTag);
+    const result = await digitalTwin.execute();
 
     console.log('Execution Result:', result);
 
-    const lastExecutionStatus = digitalTwin.executionStatus();
-    console.log('Execution Status:', lastExecutionStatus);
+    console.log('Last execution Status:', digitalTwin.lastExecutionStatus);
 
     const logs = gitlabInstance.executionLogs();
     console.log('Execution Logs:', logs);
