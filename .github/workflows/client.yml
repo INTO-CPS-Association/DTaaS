@@ -12,7 +12,10 @@ on:
 jobs:
   client:
     name: Test react website
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: client/
