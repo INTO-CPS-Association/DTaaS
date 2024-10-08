@@ -70,7 +70,18 @@ jobs:
           yarn build
           yarn start:pm2
       
-      - name: Check server is running
+      - name: Check server is running (Windows)
+        if: runner.os == 'Windows'
+        env:
+          PORT: 4003
+        uses: nick-fields/retry@v3
+        with:
+          timeout_seconds: 10
+          max_attempts: 4
+          command: "Invoke-WebRequest -Uri http://localhost:${{ env.PORT }}/lib/files -Method Head -UseBasicParsing"
+
+      - name: Check server is running (Linux)
+        if: runner.os != 'Windows'
         env:
           PORT: 4003
         uses: nick-fields/retry@v3
@@ -78,7 +89,7 @@ jobs:
           timeout_seconds: 10
           max_attempts: 4
           command: "curl -f -LI http://localhost:${{ env.PORT }}/lib/files"
-          
+
       - name: Run http test
         env:
           PORT: 4003
