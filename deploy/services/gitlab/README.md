@@ -8,7 +8,7 @@ needed to set up the docker container containing the local GitLab instance.
 
 1. `./data`, `./config`, `./logs` are the directories that will contain data for
    the GitLab instance
-2. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
+1. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
    to manage the containerized instance of gitlab
 
 ## Configure and Install

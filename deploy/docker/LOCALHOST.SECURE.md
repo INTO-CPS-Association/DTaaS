@@ -194,7 +194,6 @@ To restart only a specific container, for example `client`
 docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
 ```
 
-
 ## References
 
 Image sources:

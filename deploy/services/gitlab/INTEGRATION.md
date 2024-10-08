@@ -68,7 +68,7 @@ Configure the following files:
       installation
    1. _deploy/config/client/env.js_ -  for <https://foo.com>
       installation
-2. _deploy/docker/.env.server_ - Add the client ID and client secret from the
+1. _deploy/docker/.env.server_ - Add the client ID and client secret from the
    **DTaaS Server Authorization** token (**not required for localhost setup**)
 
 ## Restart Services
@@ -105,4 +105,5 @@ If you have set up everything correctly:
    will be available on the DTaaS server within the directory:
    _deploy/services/gitlab_.
 1. Traefik Forward Auth will use the path-prefixed GitLab instance for
-   authorization on the multi-user installation scenario i.e. `foo.com` (but not on `localhost`).
+   authorization on the multi-user installation scenario i.e.
+   `foo.com` (but not on `localhost`).
