@@ -170,5 +170,5 @@ jobs:
       image-name: libms
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: libms.dockerfile
-      readme-file: servers/lib/README.md
+      readme-file: servers/lib/DOCKER.md
     secrets: inherit
