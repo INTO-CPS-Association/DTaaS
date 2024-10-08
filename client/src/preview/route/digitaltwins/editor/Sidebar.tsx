@@ -1,18 +1,12 @@
-import * as React from 'react';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { Grid, Typography } from '@mui/material';
+import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { Grid, Typography, CircularProgress } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import DigitalTwin from '../../../util/gitlabDigitalTwin';
-
-interface DataItem {
-  id: string;
-  name: string;
-}
 
 interface SidebarProps {
   name: string;
@@ -21,17 +15,10 @@ interface SidebarProps {
   setFileType: Dispatch<SetStateAction<string>>;
 }
 
-const fetchData = async (
-  digitalTwin: DigitalTwin,
-  setDescriptionData: Dispatch<SetStateAction<DataItem[]>>,
-  setConfigData: Dispatch<SetStateAction<DataItem[]>>,
-) => {
+const fetchData = async (digitalTwin: DigitalTwin) => {
   await digitalTwin.getDescriptionFiles();
+  await digitalTwin.getLifecycleFiles();
   await digitalTwin.getConfigFiles();
-  setDescriptionData(
-    digitalTwin.descriptionFiles.map((name) => ({ id: name, name })),
-  );
-  setConfigData(digitalTwin.configFiles.map((name) => ({ id: name, name })));
 };
 
 const handleFileClick = async (
@@ -40,7 +27,6 @@ const handleFileClick = async (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
-  dispatch: ReturnType<typeof useDispatch>,
   modifiedFiles: FileState[],
 ) => {
   const modifiedFile = modifiedFiles.find((file) => file.name === fileName);
@@ -67,15 +53,40 @@ const Sidebar = ({
   setFileContent,
   setFileType,
 }: SidebarProps) => {
-  const [descriptionData, setDescriptionData] = useState<DataItem[]>([]);
-  const [configData, setConfigData] = useState<DataItem[]>([]);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
   const modifiedFiles = useSelector((state: RootState) => state.files);
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchData(digitalTwin, setDescriptionData, setConfigData);
+    const loadData = async () => {
+      await fetchData(digitalTwin);
+      setIsLoading(false);
+    };
+
+    loadData();
   }, [digitalTwin]);
+
+  if (isLoading) {
+    return (
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          padding: 2,
+          height: '100%',
+          maxWidth: '300px',
+          position: 'sticky',
+          top: 0,
+          alignSelf: 'flex-start',
+          overflowY: 'auto',
+        }}
+      >
+        <CircularProgress />
+      </Grid>
+    );
+  }  
 
   return (
     <Grid
@@ -95,19 +106,41 @@ const Sidebar = ({
         Description
       </Typography>
       <SimpleTreeView>
-        {descriptionData.map((item) => (
+        {digitalTwin.descriptionFiles.map((item, id) => (
           <TreeItem
-            key={item.id}
-            itemId={item.id}
-            label={item.name}
+            key={id}
+            itemId={item}
+            label={item}
             onClick={() =>
               handleFileClick(
-                item.name,
+                item,
                 digitalTwin,
                 setFileName,
                 setFileContent,
                 setFileType,
-                dispatch,
+                modifiedFiles,
+              )
+            }
+          />
+        ))}
+      </SimpleTreeView>
+
+      <Typography variant="h6" gutterBottom>
+        Lifecycle
+      </Typography>
+      <SimpleTreeView>
+        {digitalTwin.lifecycleFiles.map((item, id) => (
+          <TreeItem
+            key={id}
+            itemId={item}
+            label={item}
+            onClick={() =>
+              handleFileClick(
+                item,
+                digitalTwin,
+                setFileName,
+                setFileContent,
+                setFileType,
                 modifiedFiles,
               )
             }
@@ -119,27 +152,26 @@ const Sidebar = ({
         Config
       </Typography>
       <SimpleTreeView>
-        {configData.map((item) => (
+        {digitalTwin.configFiles.map((item, id) => (
           <TreeItem
-            key={item.id}
-            itemId={item.id}
-            label={item.name}
+            key={id}
+            itemId={item}
+            label={item}
             onClick={() =>
               handleFileClick(
-                item.name,
+                item,
                 digitalTwin,
                 setFileName,
                 setFileContent,
                 setFileType,
-                dispatch,
                 modifiedFiles,
               )
             }
           >
-            {item.name.startsWith('Service') && (
+            {item.startsWith('Service') && (
               <TreeItem
-                itemId={`${item.id}-service`}
-                label={`More info for ${item.name}`}
+                itemId={`${id}-service`}
+                label={`More info for ${item}`}
               />
             )}
           </TreeItem>

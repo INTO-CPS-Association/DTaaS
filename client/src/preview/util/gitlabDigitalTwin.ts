@@ -26,6 +26,8 @@ class DigitalTwin {
 
   public descriptionFiles: string[] = [];
 
+  public lifecycleFiles: string[] = [];
+
   public configFiles: string[] = [];
 
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
@@ -124,7 +126,7 @@ class DigitalTwin {
       this.lastExecutionStatus = 'error';
     }
   }
-  
+
   async delete() {
     if (this.gitlabInstance.projectId) {
       const digitalTwinPath = `digital_twins/${this.DTName}`;
@@ -157,16 +159,38 @@ class DigitalTwin {
       const filteredFiles = response
         .filter(
           (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' &&
-            (item.name.endsWith('.md') ||
-              item.name.endsWith('.yml') ||
-              item.path.includes('/lifecycle/')),
+            item.type === 'blob' && item.name.endsWith('.md')
         )
         .map((file: { name: string }) => file.name);
 
       this.descriptionFiles = filteredFiles;
     } catch (error) {
       this.descriptionFiles = [];
+    }
+  }
+  
+  async getLifecycleFiles() {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: `digital_twins/${this.DTName}`,
+            recursive: true,
+          },
+        );
+
+      const filteredFiles = response
+        .filter(
+          (item: { type: string; name: string; path: string }) =>
+            item.type === 'blob' &&
+              item.path.includes('/lifecycle/'),
+        )
+        .map((file: { name: string }) => file.name);
+
+      this.lifecycleFiles = filteredFiles;
+    } catch (error) {
+      this.lifecycleFiles = [];
     }
   }
 
