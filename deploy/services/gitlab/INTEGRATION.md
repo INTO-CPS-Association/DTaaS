@@ -63,12 +63,27 @@ If the DTaaS application is hosted at <https://localhost>, then configure
 
 Configure the following files:
 
-1. _deploy/config/client/env.js_ - Add the client ID from the **DTaaS Client
-   Authorization** token
+1. **DTaaS Client Authorization** token:
+   1. _deploy/config/client/env.local.js_ - for <https://localhost>
+      installation
+   1. _deploy/config/client/env.js_ -  for <https://foo.com>
+      installation
 2. _deploy/docker/.env.server_ - Add the client ID and client secret from the
-   **DTaaS Server Authorization** token
+   **DTaaS Server Authorization** token (**not required for localhost setup**)
 
 ## Restart Services
+
+### Localhost Installation
+
+The updated OAuth application configuration needs to be loaded into
+the **client website** service.
+
+```sh
+cd deploy/docker
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+```
+
+### Production Server Installation
 
 The updated OAuth application configuration needs to be loaded into
 the **client website** and the **forward-auth** services.
