@@ -7,7 +7,7 @@ application for the Digital Twin support platform.
 ## Authorization
 
 The react client website uses OAuth authorization.
-The [authorization page](../docs/admin/client/auth.md)
+The [authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
 provides details on setting up oauth authorization for
 the client application.
 
@@ -16,7 +16,7 @@ the client application.
 ### Adjust Configuration
 
 The client application requires configuration.
-See the [config page](../docs/admin/client/config.md)
+See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
 for an explanation of client configuration.
 
 The docker version of client application uses configuration
