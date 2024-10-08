@@ -12,7 +12,10 @@ on:
 jobs:
   test-lib-ms:
     name: Test library microservice
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: servers/lib
