@@ -37,7 +37,7 @@ docker compose -f compose.lib.yml down
 docker compose -f compose.lib.yml up -d
 ```
 
-## :gear: Configure
+## ⚙ Configure
 
 The microservices requires config specified in INI format.
 The template configuration file is:
@@ -58,7 +58,7 @@ by the Library microservice.
 Replace the default values the appropriate values for your setup.
 Please save this config in a file.
 
-## :rocket: Use
+## 🚀 Use
 
 Display help.
 
