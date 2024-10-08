@@ -112,7 +112,6 @@ jobs:
 
 
   publish-package:
-
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
@@ -169,7 +168,8 @@ jobs:
     needs: [ publish-package, get_version]
     uses: ./.github/workflows/docker.yml
     with: 
-        registry: ghcr.io
-        image-name: into-cps-association/libms
-        version: ${{ needs.get_version.outputs.version }}
-        dockerfile: libms.dockerfile
+      image-name: libms
+      version: ${{ needs.get_version.outputs.version }}
+      dockerfile: libms.dockerfile
+      readme-file: servers/lib/README.md
+    secrets: inherit

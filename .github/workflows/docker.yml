@@ -17,6 +17,9 @@ on:
       dockerfile:
         required: true
         type: string
+      readme-file:
+        required: true
+        type: string
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -72,5 +75,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/dtaas-web
-          readme-filepath: client/README.md
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
+          readme-filepath: ${{ inputs.readme-file }}

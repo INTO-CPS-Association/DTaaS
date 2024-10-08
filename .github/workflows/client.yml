@@ -101,4 +101,5 @@ jobs:
       image-name: dtaas-web
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
+      readme-file: client/README.md
     secrets: inherit
