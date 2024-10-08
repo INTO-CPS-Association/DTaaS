@@ -1,3 +1,4 @@
+import { getAuthority } from 'util/envUtil';
 import GitlabInstance from './gitlab';
 
 const RUNNER_TAG = 'linux';
@@ -38,13 +39,17 @@ class DigitalTwin {
   async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       const readmePath = `digital_twins/${this.DTName}/README.md`;
+      const imagesPath = `digital_twins/${this.DTName}/`; // Path per le immagini
       try {
         const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
           this.gitlabInstance.projectId,
           readmePath,
           'main',
         );
-        this.fullDescription = atob(fileData.content);
+        this.fullDescription = atob(fileData.content).replace(/(!\[[^\]]*\])\(([^)]+)\)/g, (match, altText, imagePath) => {
+          const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
+          return `${altText}(${fullUrl})`;
+        });
       } catch (error) {
         this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
@@ -52,6 +57,7 @@ class DigitalTwin {
       this.fullDescription = 'Error fetching description, retry.';
     }
   }
+  
 
   isValidInstance(): boolean {
     return !!(
