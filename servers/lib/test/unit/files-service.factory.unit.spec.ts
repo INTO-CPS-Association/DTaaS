@@ -1,4 +1,5 @@
 // files-service.factory.spec.ts
+import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';

@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
-import AppModule from './app.module';
-import cloudCMD from './cloudcmd/cloudcmd';
+import AppModule from './app.module.js';
+import cloudCMD from './cloudcmd/cloudcmd.js';
 
 type BootstrapOptions = {
   config?: string;
