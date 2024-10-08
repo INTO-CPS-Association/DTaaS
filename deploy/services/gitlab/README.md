@@ -44,7 +44,7 @@ should be available at <https://foo.com/gitlab>.
 
 **NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
 requires the DTaaS server to be running before you start it. You may refer to
-_deploy/docker/README.md_ file for the same.
+[deployment README](../../docker/README.md) file for the same.
 
 The commands to start and stop the instance are:
 

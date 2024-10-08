@@ -68,7 +68,16 @@ Configure the following files:
 2. _deploy/docker/.env.server_ - Add the client ID and client secret from the
    **DTaaS Server Authorization** token
 
-Restart the DTaaS server to use these token details in production.
+## Restart Services
+
+The updated OAuth application configuration needs to be loaded into
+the **client website** and the **forward-auth** services.
+
+```sh
+cd deploy/docker
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+```
 
 ## Post Setup Usage
 
