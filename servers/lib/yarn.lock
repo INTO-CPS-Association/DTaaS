@@ -111,9 +111,9 @@
     "@apollographql/graphql-playground-html" "1.6.29"
 
 "@apollo/server@^4.10.0":
-  version "4.10.2"
-  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.10.2.tgz#7a0caa7292d512ec44fe065d28dc68d32d4865a1"
-  integrity sha512-qlTZE4XyzMPprtkxFjmPxMwc2KC4nvNQrKXk2PMotEACKcaLXVZFIgstxbSqBCNl2KgzbsgU1g6vvbV6Xcfikw==
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.11.0.tgz#21c0f10ad805192a5485e58ed5c5b3dbe2243174"
+  integrity sha512-SWDvbbs0wl2zYhKG6aGLxwTJ72xpqp0awb2lotNpfezd9VcAvzaUizzKQqocephin2uMoaA8MguoyBmgtPzNWw==
   dependencies:
     "@apollo/cache-control-types" "^1.0.3"
     "@apollo/server-gateway-interface" "^1.1.1"
@@ -126,7 +126,6 @@
     "@apollo/utils.usagereporting" "^2.1.0"
     "@apollo/utils.withrequired" "^2.0.0"
     "@graphql-tools/schema" "^9.0.0"
-    "@josephg/resolvable" "^1.0.0"
     "@types/express" "^4.17.13"
     "@types/express-serve-static-core" "^4.17.30"
     "@types/node-fetch" "^2.6.1"
@@ -1017,11 +1016,6 @@
     "@types/node" "*"
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
-
-"@josephg/resolvable@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@josephg/resolvable/-/resolvable-1.0.1.tgz#69bc4db754d79e1a2f17a650d3466e038d94a5eb"
-  integrity sha512-CtzORUwWTTOTqfVtHaKRJ0I1kNQd1bpn3sUh8I3nJDVY+5/M/Oe1DnEWzPQvqq/xPIIkzzzIP7mfCoAjFRvDhg==
 
 "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.5"
