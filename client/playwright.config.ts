@@ -19,8 +19,8 @@ export default defineConfig({
   webServer: useExtServer
     ? undefined
     : {
-        command: 'yarn start',
-      },
+      command: 'yarn start',
+    },
   timeout: 60 * 1000,
   globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',
