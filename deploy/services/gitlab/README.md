@@ -1,13 +1,15 @@
 # Local GitLab Instance
 
-The DTaaS server uses a local GitLab instance as an OAuth2 authorization
-provider, hosted at `https://foo.com/gitlab`. This directory contains files
+The DTaaS server can have a local GitLab instance as an OAuth2 authorization
+provider.
+
+This directory contains files
 needed to set up the docker container containing the local GitLab instance.
 
 1. `./data`, `./config`, `./logs` are the directories that will contain data for
    the GitLab instance
-1. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
-   to manage the containerized instance
+2. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
+   to manage the containerized instance of gitlab
 
 ## Configure and Install
 
@@ -19,7 +21,7 @@ config file (`.env.server`).
 
 If the DTaaS application and gitlab are to be hosted at <https://localhost>, then
 the client config file (`deploy/config/client/env.local.js`)
-needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
+eeds to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 If the application and the integrated gitlab are to be hosted at
 `https://localhost/gitlab`, then `.env.server` need not be modified.
 
@@ -33,8 +35,10 @@ Edit the `.env` file available in this directory to contain the following variab
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which
 incorrectly causes redirects to use the `HTTPS` URL scheme. This is a
 [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
-and forces us to use `HTTPS` for the DTaaS server. If you are hosting the site
-locally, your GitLab instance should be available at `https://localhost/gitlab`.
+and forces us to use `HTTPS` for the DTaaS server. If you are hosting the DTaaS
+locally, your GitLab instance should be available at <https://localhost/gitlab>.
+If you are hosting the DTaaS at <https://foo.com>, then you Gitlab instance
+should be available at <https://foo.com/gitlab>.
 
 ## Run
 
@@ -76,13 +80,17 @@ nginx['listen_https'] = false
 letsencrypt['enable'] = false
 ```
 
+The `external_url` mentioned about indicates hosting of gitlab at
+<https://foo.com/gitlab>.
 If the gitlab needs to be available at <https://localhost/gitlab>, then
 the `external_url` should be <https://localhost/gitlab>.
 
 Save the changes and reconfigure gitlab by running:
 
 ```bash
+# inside the gitlab docker container
 gitlab-ctl reconfigure
+exit
 ```
 
 The administrator username for GitLab is: `root`. The password for this user
@@ -94,4 +102,10 @@ from the first time you start the local instance.
 
 After running the container, your local GitLab instance will be available at
 `external_url` specified in _gitlab.rb_, i.e., either at
-`https://foo.com/gitlab` or at `https://localhost/gitlab`.
+<https://foo.com/gitlab> or at <https://localhost/gitlab>.
+
+## Pending Tasks
+
+This README helps with installation of Gitlab along side DTaaS application.
+But the OAuth2 integration between Gitlab and DTaaS will still be still pending.
+Follow the [INTEGRATION](./INTEGRATION.md) guide to setup the Gitlab integration.
