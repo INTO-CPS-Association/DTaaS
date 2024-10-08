@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
-import FilesModule from './files/files.module';
+import FilesModule from './files/files.module.js';
 
 @Module({
   imports: [

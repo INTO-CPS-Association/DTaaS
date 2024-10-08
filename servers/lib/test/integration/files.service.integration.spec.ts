@@ -1,3 +1,4 @@
+import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import FilesResolver from '../../src/files/resolvers/files.resolver';
