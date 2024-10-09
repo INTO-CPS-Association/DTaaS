@@ -162,10 +162,20 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
-  publish-docker-image:
-    name: Publish Docker image
+  publish-docker-image-ghcr:
+    name: Publish Docker image (GHCR)
     needs: [get_version, test-lib-ms]
-    uses: ./.github/workflows/docker.yml
+    uses: ./.github/workflows/docker-ghcr.yml
+    with: 
+      image-name: libms
+      version: ${{ needs.get_version.outputs.version }}
+      dockerfile: libms.dockerfile
+    secrets: inherit
+
+  publish-docker-image-dockerhub:
+    name: Publish Docker image (DockerHub)
+    needs: [get_version, test-lib-ms]
+    uses: ./.github/workflows/docker-dockerhub.yml
     with: 
       image-name: libms
       version: ${{ needs.get_version.outputs.version }}

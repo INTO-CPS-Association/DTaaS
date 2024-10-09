@@ -89,14 +89,28 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
 
-  publish-docker-image:
+  publish-docker-image-ghcr:
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
       
-    name: Publish Docker image
+    name: Publish Docker image (GHCR)
     needs: [client, get_version]
-    uses: ./.github/workflows/docker.yml
+    uses: ./.github/workflows/docker-ghcr.yml
+    with: 
+      image-name: dtaas-web
+      version: ${{ needs.get_version.outputs.version }}
+      dockerfile: client.dockerfile
+    secrets: inherit
+
+  publish-docker-image-dockerhub:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+      
+    name: Publish Docker image (DockerHub)
+    needs: [client, get_version]
+    uses: ./.github/workflows/docker-dockerhub.yml
     with: 
       image-name: dtaas-web
       version: ${{ needs.get_version.outputs.version }}
