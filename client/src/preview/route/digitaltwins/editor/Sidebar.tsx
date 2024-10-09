@@ -32,19 +32,39 @@ const handleFileClick = async (
   const modifiedFile = modifiedFiles.find((file) => file.name === fileName);
 
   if (modifiedFile) {
-    setFileName(modifiedFile.name);
-    setFileContent(modifiedFile.content);
-    setFileType(modifiedFile.name.split('.').pop() || '');
+    updateFileState(
+      modifiedFile.name,
+      modifiedFile.content,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
   } else {
     const fileContent = await digitalTwin.getFileContent(fileName);
     if (fileContent) {
-      setFileName(fileName);
-      setFileContent(fileContent);
-      setFileType(fileName.split('.').pop() || '');
+      updateFileState(
+        fileName,
+        fileContent,
+        setFileName,
+        setFileContent,
+        setFileType,
+      );
     } else {
       setFileContent(`Error fetching ${fileName} content`);
     }
   }
+};
+
+const updateFileState = (
+  fileName: string,
+  fileContent: string,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+) => {
+  setFileName(fileName);
+  setFileContent(fileContent);
+  setFileType(fileName.split('.').pop()!);
 };
 
 const Sidebar = ({
@@ -86,7 +106,7 @@ const Sidebar = ({
         <CircularProgress />
       </Grid>
     );
-  }  
+  }
 
   return (
     <Grid

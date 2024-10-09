@@ -46,10 +46,13 @@ class DigitalTwin {
           readmePath,
           'main',
         );
-        this.fullDescription = atob(fileData.content).replace(/(!\[[^\]]*\])\(([^)]+)\)/g, (match, altText, imagePath) => {
-          const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
-          return `${altText}(${fullUrl})`;
-        });
+        this.fullDescription = atob(fileData.content).replace(
+          /(!\[[^\]]*\])\(([^)]+)\)/g,
+          (match, altText, imagePath) => {
+            const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
+            return `${altText}(${fullUrl})`;
+          },
+        );
       } catch (error) {
         this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
@@ -57,7 +60,6 @@ class DigitalTwin {
       this.fullDescription = 'Error fetching description, retry.';
     }
   }
-  
 
   isValidInstance(): boolean {
     return !!(
@@ -165,7 +167,7 @@ class DigitalTwin {
       const filteredFiles = response
         .filter(
           (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' && item.name.endsWith('.md')
+            item.type === 'blob' && item.name.endsWith('.md'),
         )
         .map((file: { name: string }) => file.name);
 
@@ -174,7 +176,7 @@ class DigitalTwin {
       this.descriptionFiles = [];
     }
   }
-  
+
   async getLifecycleFiles() {
     try {
       const response =
@@ -189,8 +191,7 @@ class DigitalTwin {
       const filteredFiles = response
         .filter(
           (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' &&
-              item.path.includes('/lifecycle/'),
+            item.type === 'blob' && item.path.includes('/lifecycle/'),
         )
         .map((file: { name: string }) => file.name);
 

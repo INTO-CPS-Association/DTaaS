@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 
@@ -13,13 +12,17 @@ import {
   AlertColor,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { getModifiedFiles, saveAllFiles } from '../../../store/file.slice';
+import {
+  FileState,
+  getModifiedFiles,
+  saveAllFiles,
+} from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,
 } from '../../../store/digitalTwin.slice';
 import { showSnackbar } from '../../../store/snackbar.slice';
-import { formatName } from '../../../util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from '../../../util/gitlabDigitalTwin';
 import Editor from '../editor/Editor';
 
 interface ReconfigureDialogProps {
@@ -43,120 +46,150 @@ function ReconfigureDialog({
   const modifiedFiles = useSelector(getModifiedFiles);
   const dispatch = useDispatch();
 
-  const handleSave = () => {
-    setOpenSaveDialog(true);
-  };
-
-  const handleCancel = () => {
-    setOpenCancelDialog(true);
-  };
-
-  const handleCloseSaveDialog = () => {
-    setOpenSaveDialog(false);
-  };
-
-  const handleCloseCancelDialog = () => {
-    setOpenCancelDialog(false);
-  };
+  const handleSave = () => setOpenSaveDialog(true);
+  const handleCancel = () => setOpenCancelDialog(true);
+  const handleCloseSaveDialog = () => setOpenSaveDialog(false);
+  const handleCloseCancelDialog = () => setOpenCancelDialog(false);
 
   const handleConfirmSave = async () => {
-    for (const file of modifiedFiles) {
-      try {
-        await digitalTwin.updateFileContent(file.name, file.content);
-  
-        if (file.name === 'description.md') {
-          dispatch(
-            updateDescription({
-              assetName: digitalTwin.DTName,
-              description: file.content,
-            }),
-          );
-        }
-      } catch (error) {
-        console.error(`Error updating file ${file.name}:`, error);
-        dispatch(
-          showSnackbar({
-            message: `Error updating file ${file.name}: ${error}`,
-            severity: 'error',
-          }),
-        );
-      }
-    }
-  
-    dispatch(
-      showSnackbar({
-        message: `${formatName(name)} reconfigured successfully`,
-        severity: 'success' as AlertColor,
-      }),
-    );
-  
-    dispatch(saveAllFiles());
+    await saveChanges(modifiedFiles, digitalTwin, dispatch, name);
     setOpenSaveDialog(false);
     setShowLog(false);
   };
-  
-  
-    const handleConfirmCancel = () => {
+
+  const handleConfirmCancel = () => {
     setOpenCancelDialog(false);
     setShowLog(false);
   };
 
   return (
     <>
-      <Dialog
-        open={showLog}
-        onClose={() => handleCloseLog(setShowLog)}
-        fullWidth={true}
-        maxWidth="lg"
-        sx={{
-          '& .MuiDialog-paper': {
-            maxHeight: '65vh',
-          },
-        }}
-      >
-        <DialogTitle>
-          Reconfigure <strong>{formatName(name)}</strong>
-        </DialogTitle>
-        <DialogContent>
-          <Editor DTName={name} />
-        </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button color="primary" onClick={handleSave}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ReconfigureMainDialog
+        showLog={showLog}
+        setShowLog={setShowLog}
+        name={name}
+        handleCancel={handleCancel}
+        handleSave={handleSave}
+      />
 
       {/* Save Confirmation Dialog */}
-      <Dialog open={openSaveDialog} onClose={handleCloseSaveDialog}>
-        <DialogContent>
-          Are you sure you want to apply the changes?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseSaveDialog}>No</Button>
-          <Button color="primary" onClick={handleConfirmSave}>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        open={openSaveDialog}
+        onClose={handleCloseSaveDialog}
+        onConfirm={handleConfirmSave}
+        content="Are you sure you want to apply the changes?"
+      />
 
       {/* Cancel Confirmation Dialog */}
-      <Dialog open={openCancelDialog} onClose={handleCloseCancelDialog}>
-        <DialogContent>
-          Are you sure you want to cancel? Changes will not be applied.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCancelDialog}>No</Button>
-          <Button color="primary" onClick={handleConfirmCancel}>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        open={openCancelDialog}
+        onClose={handleCloseCancelDialog}
+        onConfirm={handleConfirmCancel}
+        content="Are you sure you want to cancel? Changes will not be applied."
+      />
     </>
   );
 }
+
+const saveChanges = async (
+  modifiedFiles: FileState[],
+  digitalTwin: DigitalTwin,
+  dispatch: ReturnType<typeof useDispatch>,
+  name: string,
+) => {
+  for (const file of modifiedFiles) {
+    try {
+      await digitalTwin.updateFileContent(file.name, file.content);
+
+      if (file.name === 'description.md') {
+        dispatch(
+          updateDescription({
+            assetName: digitalTwin.DTName,
+            description: file.content,
+          }),
+        );
+      }
+    } catch (error) {
+      dispatch(
+        showSnackbar({
+          message: `Error updating file ${file.name}: ${error}`,
+          severity: 'error',
+        }),
+      );
+    }
+  }
+
+  dispatch(
+    showSnackbar({
+      message: `${formatName(name)} reconfigured successfully`,
+      severity: 'success' as AlertColor,
+    }),
+  );
+
+  dispatch(saveAllFiles());
+};
+
+const ReconfigureMainDialog = ({
+  showLog,
+  setShowLog,
+  name,
+  handleCancel,
+  handleSave,
+}: {
+  showLog: boolean;
+  setShowLog: Dispatch<SetStateAction<boolean>>;
+  name: string;
+  handleCancel: () => void;
+  handleSave: () => void;
+}) => (
+  <Dialog
+    open={showLog}
+    onClose={() => handleCloseLog(setShowLog)}
+    fullWidth={true}
+    maxWidth="lg"
+    sx={{
+      '& .MuiDialog-paper': {
+        maxHeight: '65vh',
+      },
+    }}
+  >
+    <DialogTitle>
+      Reconfigure <strong>{formatName(name)}</strong>
+    </DialogTitle>
+    <DialogContent>
+      <Editor DTName={name} />
+    </DialogContent>
+    <DialogActions>
+      <Button color="primary" onClick={handleCancel}>
+        Cancel
+      </Button>
+      <Button color="primary" onClick={handleSave}>
+        Save
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
+
+const ConfirmationDialog = ({
+  open,
+  onClose,
+  onConfirm,
+  content,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  content: string;
+}) => (
+  <Dialog open={open} onClose={onClose}>
+    <DialogContent>{content}</DialogContent>
+    <DialogActions>
+      <Button onClick={onClose}>No</Button>
+      <Button color="primary" onClick={onConfirm}>
+        Yes
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
 
 export default ReconfigureDialog;
