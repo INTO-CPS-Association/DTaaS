@@ -25,6 +25,10 @@ export default [{
         "**/node_modules/",
         "**/script/",
         "**/coverage/",
+        "**/dist/",
+        "**/test-results/",
+        "**/playwright-report/",
+        "**/public/"
     ],
 }, ...compat.extends(
     "eslint:recommended",
