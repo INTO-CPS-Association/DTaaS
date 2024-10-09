@@ -120,7 +120,9 @@ a development workflow is in place. Each developer should follow these steps:
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
+<!--
 1. Install git-hooks for the project.
+-->
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
