@@ -1,3 +1,7 @@
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+
 import * as React from 'react';
 import { useState, Dispatch, SetStateAction } from 'react';
 import {
@@ -56,9 +60,10 @@ function ReconfigureDialog({
   };
 
   const handleConfirmSave = async () => {
-    const updatePromises = modifiedFiles.map(async (file) => {
+    for (const file of modifiedFiles) {
       try {
         await digitalTwin.updateFileContent(file.name, file.content);
+  
         if (file.name === 'description.md') {
           dispatch(
             updateDescription({
@@ -68,6 +73,7 @@ function ReconfigureDialog({
           );
         }
       } catch (error) {
+        console.error(`Error updating file ${file.name}:`, error);
         dispatch(
           showSnackbar({
             message: `Error updating file ${file.name}: ${error}`,
@@ -75,23 +81,22 @@ function ReconfigureDialog({
           }),
         );
       }
-    });
-
-    await Promise.all(updatePromises).then(() => {
-      dispatch(
-        showSnackbar({
-          message: `${formatName(name)} reconfigured successfully`,
-          severity: 'success' as AlertColor,
-        }),
-      );
-    });
+    }
+  
+    dispatch(
+      showSnackbar({
+        message: `${formatName(name)} reconfigured successfully`,
+        severity: 'success' as AlertColor,
+      }),
+    );
+  
     dispatch(saveAllFiles());
-
     setOpenSaveDialog(false);
     setShowLog(false);
   };
-
-  const handleConfirmCancel = () => {
+  
+  
+    const handleConfirmCancel = () => {
     setOpenCancelDialog(false);
     setShowLog(false);
   };
