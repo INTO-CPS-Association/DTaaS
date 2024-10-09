@@ -47,12 +47,6 @@
     "singleQuote": true
   },
   "dependencies": {
-    "@babel/plugin-transform-class-properties": "^7.25.7",
-    "@babel/plugin-transform-nullish-coalescing-operator": "^7.25.7",
-    "@babel/plugin-transform-numeric-separator": "^7.25.7",
-    "@babel/plugin-transform-optional-chaining": "^7.25.7",
-    "@babel/plugin-transform-private-methods": "^7.25.7",
-    "@babel/plugin-transform-private-property-in-object": "^7.25.7",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@eslint/config-array": "^0.18.0",
