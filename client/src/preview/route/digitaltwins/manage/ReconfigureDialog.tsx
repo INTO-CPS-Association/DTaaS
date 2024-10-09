@@ -98,35 +98,49 @@ const saveChanges = async (
   name: string,
 ) => {
   for (const file of modifiedFiles) {
-    try {
-      await digitalTwin.updateFileContent(file.name, file.content);
+    await handleFileUpdate(file, digitalTwin, dispatch);
+  }
 
-      if (file.name === 'description.md') {
-        dispatch(
-          updateDescription({
-            assetName: digitalTwin.DTName,
-            description: file.content,
-          }),
-        );
-      }
-    } catch (error) {
+  showSuccessSnackbar(dispatch, name);
+  dispatch(saveAllFiles());
+};
+
+const handleFileUpdate = async (
+  file: FileState,
+  digitalTwin: DigitalTwin,
+  dispatch: ReturnType<typeof useDispatch>,
+) => {
+  try {
+    await digitalTwin.updateFileContent(file.name, file.content);
+
+    if (file.name === 'description.md') {
       dispatch(
-        showSnackbar({
-          message: `Error updating file ${file.name}: ${error}`,
-          severity: 'error',
+        updateDescription({
+          assetName: digitalTwin.DTName,
+          description: file.content,
         }),
       );
     }
+  } catch (error) {
+    dispatch(
+      showSnackbar({
+        message: `Error updating file ${file.name}: ${error}`,
+        severity: 'error',
+      }),
+    );
   }
+};
 
+const showSuccessSnackbar = (
+  dispatch: ReturnType<typeof useDispatch>,
+  name: string,
+) => {
   dispatch(
     showSnackbar({
       message: `${formatName(name)} reconfigured successfully`,
       severity: 'success' as AlertColor,
     }),
   );
-
-  dispatch(saveAllFiles());
 };
 
 const ReconfigureMainDialog = ({
