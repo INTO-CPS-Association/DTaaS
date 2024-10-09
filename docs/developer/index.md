@@ -113,6 +113,11 @@ option with care.
 To manage collaboration by multiple developers on the software,
 a development workflow is in place. Each developer should follow these steps:
 
+<!--
+TODO Insert before Use fork,branch ... when githooks works
+ 1. Install git-hooks for the project.
+-->
+
 1. Fork of the main repository into your github account.
 1. Setup
    [Code Climate](https://docs.codeclimate.com/docs/getting-started-with-code-climate)
@@ -120,9 +125,6 @@ a development workflow is in place. Each developer should follow these steps:
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
-<!--
-1. Install git-hooks for the project.
--->
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
