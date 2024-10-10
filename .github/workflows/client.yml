@@ -100,7 +100,7 @@ jobs:
     needs: [client, get_version]
     uses: ./.github/workflows/docker-ghcr.yml
     with: 
-      image-name: dtaas-web
+      image-name: into-cps-association/dtaas-web
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
     secrets: inherit
@@ -114,7 +114,7 @@ jobs:
     needs: [client, get_version]
     uses: ./.github/workflows/docker-dockerhub.yml
     with: 
-      image-name: dtaas-web
+      image-name: into-cps-association/dtaas-web
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
       readme-file: client/DOCKER.md
