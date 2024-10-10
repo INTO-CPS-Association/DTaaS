@@ -110,7 +110,7 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-  publish-package:
+  publish-npm-package:
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
