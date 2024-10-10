@@ -117,7 +117,7 @@ jobs:
 
     name: Publish NPM Package to GitHub Packages
     runs-on: ubuntu-latest
-    needs: [get_version, test-lib-ms]
+    needs: test-lib-ms
     permissions:
       packages: write
       contents: read
