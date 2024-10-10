@@ -110,22 +110,6 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-  get_version:
-    name: Get version
-    runs-on: ubuntu-latest
-    steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v4
-        - name: Install jq
-          run: sudo apt-get install -y jq
-        - name: get version
-          id: get_version
-          run: | 
-            version=`cat ./servers/lib/package.json | jq -r '.version'`
-            echo "version=$version" >> $GITHUB_OUTPUT
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
   publish-package:
     if: | 
       github.event_name == 'push' &&
@@ -161,6 +145,22 @@ jobs:
           yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+  get_version:
+    name: Get version
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+        - name: Install jq
+          run: sudo apt-get install -y jq
+        - name: get version
+          id: get_version
+          run: | 
+            version=`cat ./servers/lib/package.json | jq -r '.version'`
+            echo "version=$version" >> $GITHUB_OUTPUT
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
 
   publish-docker-image-ghcr:
     if: | 
