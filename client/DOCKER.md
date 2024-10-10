@@ -1,32 +1,23 @@
 # Introduction
 
-Client (frontend) for Digital Twin as a Service (DTaaS) software.
-This software shall be used for providing a React single page web
-application for the Digital Twin support platform.
+This is a container image for client application of
+the Digital Twin as a Service (DTaaS) software.
+This image can be used for providing a React single page web
+application for the DTaaS.
 
 ## Authorization
 
 The react client website uses OAuth authorization.
 The [authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
-provides details on setting up oauth authorization for
+provides details on setting up OAuth authorization for
 the client application.
 
 ## Use in Docker Environment
 
-### Adjust Configuration
+### Create Docker Compose File
 
-The client application requires configuration.
-See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
-for an explanation of client configuration.
-
-The docker version of client application uses configuration
-file available in `config/test.js`. This default configuration
-works well if you have an account on <https://gitlab.com>.
-If you would like to adjust the configuration, please change this file.
-
-### Use
-
-Create a file `compose.client.yml` and copy the following:
+Create an empty file named `compose.client.yml` and copy
+the following into the file:
 
 ```yml
 services:
@@ -34,12 +25,22 @@ services:
     image: intocps/dtaas-web:latest
     restart: unless-stopped
     volumes:
-      - ./config/test.js:/dtaas/client/build/env.js
+      - ./config.js:/dtaas/client/build/env.js
     ports:
       - "4000:4000"
 ```
 
-Create a file `config/test.js` with the following contents:
+### Create Configuration
+
+The client application requires configuration.
+See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+for an explanation of client configuration.
+
+The docker version of client application uses configuration
+saved in `config.js` file. Please create this file
+in the same file system location as that of the `compose.client.yml` file.
+
+Create a file `config.js` with the following contents:
 
 ```js
 if (typeof window !== 'undefined') {
@@ -63,23 +64,27 @@ if (typeof window !== 'undefined') {
 };
 ```
 
-Note that you will need a GitLab account (at https://gitlab.com) to be authorized to access the client application.
+This default configuration
+works well if you have an account on <https://gitlab.com>.
+If you would like to adjust the configuration, please change this file.
 
-Use the following commands to run and stop the container respectively:
+### Run
+
+Use the following commands to start and stop the container respectively:
 
 ```bash
 docker compose -f compose.client.yml up -d
 docker compose -f compose.client.yml down
 ```
 
-The website is available at <http://localhost:4000>.
+The website will become available at <http://localhost:4000>.
 
 ## Missing Workspace
 
-The development environment does not have user workspaces and
-traefik gateway running in the background. As a consequence, the iframe
-links pointing to user workspace will not work correctly. Instead, you
-will see the following error.
+The docker compose only brings up the client application.
+This development environment does not have user workspaces and
+traefik gateway running in the background. As a consequence,
+you will see the following error.
 
 ```txt
 Unexpected Application Error!
@@ -87,7 +92,7 @@ Unexpected Application Error!
 ```
 
 This error can be seen on the **Library** and **Digital Twins** pages.
-This error is expected.
+The error is expected.
 
 If you would like to try the complete DTaaS application, please see
 localhost installation in

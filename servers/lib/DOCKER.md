@@ -1,14 +1,17 @@
 # Overview
 
-The **lib microservice** is a simplified file manager providing graphQL API.
+The **libms microservice** is a simplified file manager providing graphQL API.
 It has two features:
 
 * provide a listing of directory contents.
 * transfer a file to user.
 
-## Use
+## Use in Docker Environment
 
-Create a file `compose.lib.yml` and copy the following into it:
+### Create Docker Compose File
+
+Create an empty file named `compose.lib.yml` and copy
+the following into the file:
 
 ```yml
 services:
@@ -21,7 +24,11 @@ services:
       - "4001:4001"
 ```
 
-Create a directory `files` with the following structure:
+### Create Files Directory
+
+The **libms microservice** serves files available from
+`files` directory.
+So, create a directory named `files` with the following structure:
 
 ```text
 files/
@@ -37,14 +44,19 @@ files/
     tools/
 ```
 
-Use the following commands to run and stop the container respectively:
+Please create this `files` directory
+in the same file system location as that of the `compose.lib.yml` file.
+
+### Run
+
+Use the following commands to start and stop the container respectively:
 
 ```bash
 docker compose -f compose.lib.yml up -d
 docker compose -f compose.lib.yml down
 ```
 
-The website is available at <http://localhost:4001>.
+The lib microservice website will become available at <http://localhost:4001>.
 
 ## Application Programming Interface (API)
 
@@ -53,14 +65,14 @@ two end points:
 
 ### HTTP protocol
 
-Endpoint: `localhost:PORT/lib/files`
+**URL:** `localhost:4001/lib/files`
 
-This option needs to be enabled with `-H http.json` flag.
-The regular file upload and download options become available.
+The regular file upload and download options become available
+via web browser.
 
 ### GraphQL protocol
 
-Endpoint: `localhost:4001/lib`
+**URL:** `localhost:4001/lib`
 
 <details>
 <summary>GraphQL API details</summary>
@@ -73,7 +85,7 @@ in that directory. A sample query and response are given here.
 
 ``` graphql
 query {
-  listDirectory(path: "user1") {
+  listDirectory(path: ".") {
     repository {
       tree {
         blobs {
@@ -158,14 +170,14 @@ query {
 
 This query receives directory path and send the file contents to user in response.
 
-To check this query, create a file `files/user2/data/welcome.txt`
+To check this query, create a file `files/data/welcome.txt`
 with content of `hello world`.
 
 A sample query and response are given here.
 
 ```graphql
 query {
-  readFile(path: "user2/data/sample.txt") {
+  readFile(path: "data/welcome.txt") {
     repository {
       blobs {
         nodes {
@@ -187,7 +199,7 @@ query {
         "blobs": {
           "nodes": [
             {
-              "name": "sample.txt",
+              "name": "welcome.txt",
               "rawBlob": "hello world",
               "rawTextBlob": "hello world"
             }
@@ -231,7 +243,7 @@ Content-Type: application/json
 Content-Length: 388
 
 {
-   "query":"query {\n  listDirectory(path: \"user1\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+   "query":"query {\n  listDirectory(path: \".\") {\n    repository {\n      tree {\n        blobs {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n        trees {\n          edges {\n            node {\n              name\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n}"
 }
 ```
 
@@ -253,7 +265,7 @@ X-Powered-By: Express
 
 This query receives directory path and send the file contents to user in response.
 
-To check this query, create a file `files/user2/data/welcome.txt`
+To check this query, create a file `files/data/welcome.txt`
 with content of `hello world`.
 
 ```http
@@ -263,7 +275,7 @@ Content-Type: application/json
 Content-Length: 217
 
 {
-   "query":"query {\n  readFile(path: \"user2/data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
+   "query":"query {\n  readFile(path: \"data/welcome.txt\") {\n    repository {\n      blobs {\n        nodes {\n          name\n          rawBlob\n          rawTextBlob\n        }\n      }\n    }\n  }\n}"
 }
 ```
 
