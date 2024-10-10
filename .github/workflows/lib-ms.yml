@@ -163,6 +163,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
   publish-docker-image-ghcr:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
     name: Publish Docker image (GHCR)
     needs: [get_version, test-lib-ms]
     uses: ./.github/workflows/docker-ghcr.yml
@@ -173,6 +177,10 @@ jobs:
     secrets: inherit
 
   publish-docker-image-dockerhub:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
     name: Publish Docker image (DockerHub)
     needs: [get_version, test-lib-ms]
     uses: ./.github/workflows/docker-dockerhub.yml
