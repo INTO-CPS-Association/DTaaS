@@ -47,6 +47,8 @@ jobs:
         run: |
           yarn test:int
           yarn test:unit
+          yarn test:preview:unit
+          yarn test:preview:int
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3
