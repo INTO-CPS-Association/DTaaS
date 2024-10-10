@@ -1,6 +1,6 @@
 # Reusable workflow for building and pushing a Docker Image to DockerHub.
 # 
-# Username is taken from the repository variable, "DOCKERHUB_USERNAME"
+# Username is taken from the repository secret, "DOCKERHUB_USERNAME"
 # Password is taken from the repository secret, "DOCKERHUB_TOKEN"
 
 name: Build and Push Docker Image (DockerHub)
@@ -22,12 +22,14 @@ on:
         required: true
         type: string
     secrets:
+      DOCKERHUB_USERNAME:
+        required: true
       DOCKERHUB_TOKEN:
         required: true
 
 env:
   registry: docker.io
-  username: ${{ vars.DOCKERHUB_USERNAME }}
+  username: ${{ secrets.DOCKERHUB_USERNAME }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:

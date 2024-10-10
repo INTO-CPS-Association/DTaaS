@@ -118,4 +118,6 @@ jobs:
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: client.dockerfile
       readme-file: client/DOCKER.md
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
