@@ -53,14 +53,6 @@ docker run hello-world
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
-
-#install docker-compose from https://docs.docker.com/compose/install/other/
-sudo curl -SL "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64" \
-  -o /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-sudo chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-
 # Install nodejs environment
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl gnupg
