@@ -115,7 +115,7 @@ a development workflow is in place. Each developer should follow these steps:
 
 <!--
 TODO Insert before Use fork,branch ... when githooks works
- 1. Install git-hooks for the project.
+Install git-hooks for the project.
 -->
 
 1. Fork of the main repository into your github account.
