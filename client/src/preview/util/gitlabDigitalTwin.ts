@@ -44,7 +44,7 @@ class DigitalTwin {
         );
         this.fullDescription = atob(fileData.content);
       } catch (error) {
-        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
+        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder${error}`;
       }
     } else {
       this.fullDescription = 'Error fetching description, retry.';

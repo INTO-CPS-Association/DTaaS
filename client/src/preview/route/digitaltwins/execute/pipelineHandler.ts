@@ -71,7 +71,7 @@ export const handleStop = async (
   } catch (error) {
     dispatch(
       showSnackbar({
-        message: `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
+        message: `Execution stop failed for ${formatName(digitalTwin.DTName)}${error}`,
         severity: 'error',
       }),
     );
