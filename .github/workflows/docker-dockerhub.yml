@@ -1,7 +1,14 @@
 # Reusable workflow for building and pushing a Docker Image to DockerHub.
 # 
-# Username is taken from the repository secret, "DOCKERHUB_USERNAME"
+# Auth username is taken from the repository secret, "DOCKERHUB_USERNAME"
+# Publish username is taken from the repository secret, "DOCKERHUB_SCOPE"
 # Password is taken from the repository secret, "DOCKERHUB_TOKEN"
+# 
+# NOTE: DockerHub currently does not provide PATs for organizations.
+# Users belonging to the org must use their own, which is why we need a
+# username to publish through: DOCKERHUB_USERNAME, and a username to publish
+# under: DOCKERHUB_SCOPE.
+# You may use the same username for both.
 
 name: Build and Push Docker Image (DockerHub)
 
@@ -22,14 +29,21 @@ on:
         required: true
         type: string
     secrets:
+      # Username used for DockerHub authorization
       DOCKERHUB_USERNAME:
         required: true
+      # Username under which the image will be published
+      DOCKERHUB_SCOPE:
+        required: true
+      # Personal Access Token created by the user `DOCKERHUB_USERNAME`
+      # Must have read, write and delete permissions
       DOCKERHUB_TOKEN:
         required: true
 
 env:
   registry: docker.io
   username: ${{ secrets.DOCKERHUB_USERNAME }}
+  dockerhub-scope: ${{ secrets.DOCKERHUB_SCOPE }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
@@ -54,7 +68,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         run: |
-          if docker manifest inspect ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+          if docker manifest inspect ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_ENV
           else
@@ -69,12 +83,12 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:latest
+          tags: ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ env.username }}
           password: ${{ env.password }}
-          repository: ${{ env.username }}/${{ inputs.image-name }}
+          repository: ${{ env.dockerhub-scope }}/${{ inputs.image-name }}
           readme-filepath: ${{ inputs.readme-file }}
