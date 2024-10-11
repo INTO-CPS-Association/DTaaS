@@ -185,7 +185,7 @@ jobs:
     needs: [get_version, test-lib-ms]
     uses: ./.github/workflows/docker-dockerhub.yml
     with: 
-      image-name: libms
+      image-name: intocps/libms
       version: ${{ needs.get_version.outputs.version }}
       dockerfile: libms.dockerfile
       readme-file: servers/lib/DOCKER.md
