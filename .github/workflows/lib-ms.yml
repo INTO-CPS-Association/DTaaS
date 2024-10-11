@@ -110,14 +110,12 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-
-  publish-package:
-
+  publish-npm-package:
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
-    name: Publish to GitHub Packages
+    name: Publish NPM Package to GitHub Packages
     runs-on: ubuntu-latest
     needs: test-lib-ms
     permissions:
@@ -164,12 +162,33 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
 
-  publish-docker-image:
-    name: Publish Docker image
-    needs: [ publish-package, get_version]
-    uses: ./.github/workflows/docker.yml
+  publish-docker-image-ghcr:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish Docker image (GHCR)
+    needs: [get_version, test-lib-ms]
+    uses: ./.github/workflows/docker-ghcr.yml
     with: 
-        registry: ghcr.io
-        image-name: into-cps-association/libms
-        version: ${{ needs.get_version.outputs.version }}
-        dockerfile: libms.dockerfile
+      image-name: into-cps-association/libms
+      version: ${{ needs.get_version.outputs.version }}
+      dockerfile: libms.dockerfile
+    secrets: inherit
+
+  publish-docker-image-dockerhub:
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish Docker image (DockerHub)
+    needs: [get_version, test-lib-ms]
+    uses: ./.github/workflows/docker-dockerhub.yml
+    with: 
+      image-name: intocps/libms
+      version: ${{ needs.get_version.outputs.version }}
+      dockerfile: libms.dockerfile
+      readme-file: servers/lib/DOCKER.md
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
