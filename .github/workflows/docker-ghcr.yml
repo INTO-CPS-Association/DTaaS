@@ -21,7 +21,7 @@ on:
 
 env:
   registry: ghcr.io
-  username: ${{ github.actor }}
+  username: ${{ github.repository_owner }}
   password: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
