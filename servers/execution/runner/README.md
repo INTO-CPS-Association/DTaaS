@@ -72,6 +72,9 @@ the `location`. The path to _runner.yaml_ can either be relative or
 absolute path. However, the `location` path is always relative path
 with respect to the path of _runner.yaml_ file.
 
+:warning: The commands must be executable. Please make sure that
+the commands have execute permission on Linux platforms.
+
 ## :pen: Create Commands
 
 The runner requires commands / scripts to be run.
@@ -151,7 +154,7 @@ If the command is neither permitted nor available, the response will be
 
 ```http
 {
-  "status": "invalid command
+  "status": "invalid command"
 }
 ```
 
