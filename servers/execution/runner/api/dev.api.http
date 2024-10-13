@@ -1,0 +1,71 @@
+// This file is to be used for testing runner during development
+
+@hostname = localhost
+@port = 5000
+@ContentType = application/json
+
+### 
+GET http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+GET http://{{hostname}}:{{port}}/history HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "create"
+}
+
+###
+
+GET http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+GET http://{{hostname}}:{{port}}/history HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "configure"
+}
+
+###
+
+GET http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+GET http://{{hostname}}:{{port}}/history HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "command": "create"
+}
+
+###
+
+GET http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+GET http://{{hostname}}:{{port}}/history HTTP/1.1
+content-type: {{ContentType}}

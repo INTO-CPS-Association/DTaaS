@@ -1,6 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import Runner from 'src/interfaces/runner.interface';
 import ExecaRunner from 'src/execa-runner';
+import { nonExistingCommand } from 'test/utils';
 
 describe('check command Runner based on execa library', () => {
   it('should execute a valid command', async () => {
@@ -9,13 +10,8 @@ describe('check command Runner based on execa library', () => {
     expect(await cmdrunner.run()).toBe(true);
   });
 
-  it('should attempt execution of an invalid command', async () => {
-    const cmdrunner: Runner = new ExecaRunner('asdfghjkl');
-    await cmdrunner.run();
-  });
-
-  it('should not succeed in execution of a command given in incorrect format', async () => {
-    const cmdrunner: Runner = new ExecaRunner('asdfghjkl');
+  it('should attempt but not succeed in execution of an invalid command', async () => {
+    const cmdrunner: Runner = new ExecaRunner(nonExistingCommand);
     const status: boolean = await cmdrunner.run();
 
     expect(status).toBe(false);

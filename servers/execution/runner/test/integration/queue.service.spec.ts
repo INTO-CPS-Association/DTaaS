@@ -2,23 +2,22 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import Queue from 'src/queue.service';
 import { Command } from 'src/interfaces/command.interface';
-import RunnerFactory from 'src/runner-factory.service';
 
 const commands: Command[] = [
   {
     name: 'hello',
     status: 'valid',
-    task: RunnerFactory.create('cd .'),
+    task: undefined,
   },
   {
     name: 'world',
     status: 'valid',
-    task: RunnerFactory.create('cd .'),
+    task: undefined,
   },
   {
     name: 'terminate',
     status: 'invalid',
-    task: RunnerFactory.create('cd .'),
+    task: undefined,
   },
 ];
 
@@ -31,10 +30,6 @@ describe('check Queue service', () => {
     }).compile();
 
     queue = module.get<Queue>(Queue);
-  });
-
-  it('should store a command', async () => {
-    expect(queue.enqueue(commands[0])).toBe(true);
   });
 
   it('should return active command as undefined when queue is empty', async () => {
@@ -59,17 +54,10 @@ describe('check Queue service', () => {
   });
 
   it('should return correct command history when queue has more than one command', async () => {
-    const history = [
-      {
-        name: 'hello',
-      },
-      {
-        name: 'world',
-      },
-    ];
-    queue.enqueue(commands[0]);
-    queue.enqueue(commands[1]);
-
+    const history = commands.map((command) => {
+      queue.enqueue(command);
+      return { name: command.name };
+    });
     expect(queue.checkHistory()).toStrictEqual(history);
   });
 });

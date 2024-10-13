@@ -4,6 +4,8 @@ import chalk from 'chalk';
 import Keyv from 'keyv';
 import resolveFile from './util.js';
 
+const PACKAGE_VERSION: string = '0.2.0';
+
 export function createCommand(name: string): [Command, Keyv] {
   return [new Command(name), new Keyv()];
 }
@@ -14,6 +16,7 @@ export default async function CLI(
 ): Promise<Keyv> {
   program
     .description('Remote code execution for humans')
+    .version(PACKAGE_VERSION, '-v --version', 'package version')
     .option(
       '-c --config <string>',
       'runner config file specified in yaml format',

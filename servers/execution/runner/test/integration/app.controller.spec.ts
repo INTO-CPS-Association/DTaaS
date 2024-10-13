@@ -7,6 +7,8 @@ import { Response } from 'express';
 import { ExecuteCommandDto } from 'src/dto/command.dto';
 import { Manager } from 'src/interfaces/command.interface';
 import ExecaManager from 'src/execa-manager.service';
+import Keyv from 'keyv';
+import Config from 'src/config/configuration.service';
 
 type ResponseBody = {
   status: string;
@@ -18,6 +20,8 @@ describe('Test AppController', () => {
   let app: INestApplication;
   let controller: AppController;
   let manager: Manager;
+  const CLIOptions: Keyv = new Keyv();
+  let config: Config;
 
   async function newCommandTest(
     executeCommandDto: ExecuteCommandDto,
@@ -46,6 +50,10 @@ describe('Test AppController', () => {
     expect(resSend).toHaveBeenCalledWith(resBody);
   }
 
+  beforeAll(async () => {
+    await CLIOptions.set('configFile', 'runner.test.yaml');
+  });
+
   beforeEach(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
@@ -54,6 +62,8 @@ describe('Test AppController', () => {
     app = moduleFixture.createNestApplication();
     controller = app.get<AppController>(AppController);
     manager = app.get<ExecaManager>(ExecaManager);
+    config = app.get<Config>(Config);
+    config.loadConfig(CLIOptions);
   });
 
   afterEach(() => jest.resetAllMocks());
@@ -85,13 +95,11 @@ describe('Test AppController', () => {
       {
         name: 'create',
       },
-      {
-        name: 'test',
-      },
+      { name: 'test' },
     ]);
   });
 
-  it('Should return correct command status', async () => {
+  it('Should return correct command status after valid command execution followed by invalid command execution', async () => {
     await newCommandTest({ name: 'create' }, HttpStatus.OK, {
       status: 'success',
     });
@@ -112,6 +120,19 @@ describe('Test AppController', () => {
     });
     expect(unsuccessStatus).toEqual({
       name: 'test',
+      status: 'invalid',
+      logs: {
+        stdout: '',
+        stderr: '',
+      },
+    });
+  });
+
+  it('Should return correct command status without any prior command execution', async () => {
+    const unsuccessStatus = await controller.cmdStatus();
+
+    expect(unsuccessStatus).toEqual({
+      name: 'none',
       status: 'invalid',
       logs: {
         stdout: '',

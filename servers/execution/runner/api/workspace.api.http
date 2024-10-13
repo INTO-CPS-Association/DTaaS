@@ -1,0 +1,113 @@
+// This file is to be used for testing runner deployed
+// in the user workspace of DTaaS.
+// It is assumed that the Traefik gateway to DTaaS application
+// is using HTTP basic authentication for login
+
+@hostname = foo.com
+@port = 5000
+@User = alice
+@URLToken = 4b7d01e14269e12e38f3ed041043e58f877c6b63
+@AuthToken = VGVzdFazZXJZdGFhczpUZXN5VXNlckq0YWFzVGVxdFVzZGJEdGFhcw==
+@WorkspaceCookie = workspace-token-tool-5000="4b7d01e14269e45f56f3ed067129e58f877c6b63"
+@ContentType = application/json
+@_XSRFCookie = _xsrf:2|19tf64b5|2037f58cf647235b3a6c43k4l4v643fk|4349295348
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/history?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+POST http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+{
+    "name": "create"
+}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/history?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+POST http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+{
+    "name": "configure"
+}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/history?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+POST http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+{
+    "command": "create"
+}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}
+
+###
+
+GET http://{{hostname}}/{{User}}/shared/tools/{{port}}/history?token={{URLToken}} HTTP/1.1
+Authorization: Basic {{AuthToken}}
+content-type: {{ContentType}}
+Cookie:{{WorkspaceCookie}}
+Cookie:{{_XSRFCookie}}

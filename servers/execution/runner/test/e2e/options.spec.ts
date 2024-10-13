@@ -5,133 +5,116 @@ import Keyv from 'keyv';
 import Config from 'src/config/configuration.service';
 import { getRequest, postRequest, queriesJSON, RequestBody } from './util';
 
-const OptionsArray = [
-  {
-    option: null,
-    testName: 'default configuration',
-  },
-  {
-    option: async (): Promise<Keyv> => {
-      const keyv = new Keyv();
-      await keyv.set('configFile', 'runner.yaml');
-      return keyv;
-    },
-    testName: 'configuration loaded from configuration file',
-  },
+const option = async (): Promise<Keyv> => {
+  const keyv = new Keyv();
+  await keyv.set('configFile', 'runner.test.yaml');
+  return keyv;
+};
+
+const queryTypes: (keyof typeof queriesJSON)[] = [
+  'permitted',
+  'notPermitted',
+  'nonExisting',
+  'incorrect',
 ];
 
-OptionsArray.forEach((element) => {
-  describe(`Runner end-to-end tests with ${element.testName}`, () => {
-    let app: INestApplication;
+describe('Runner end-to-end tests with of the application', () => {
+  let app: INestApplication;
 
-    beforeEach(async () => {
-      const moduleFixture = await Test.createTestingModule({
-        imports: [AppModule],
-      }).compile();
+  beforeEach(async () => {
+    const moduleFixture = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
 
-      app = moduleFixture.createNestApplication();
-      if (element.option !== null) {
-        const config = app.get<Config>(Config);
-        config.loadConfig(await element.option());
-      }
-      await app.init();
+    app = moduleFixture.createNestApplication();
+    const config = app.get<Config>(Config);
+    config.loadConfig(await option());
+    await app.init();
+  });
+  afterEach(async () => {
+    await app.close();
+  });
+
+  describe('POST /', () => {
+    queryTypes.forEach((key) => {
+      const query = queriesJSON[key];
+      it(`execute ${key} command`, () =>
+        postRequest({
+          app,
+          route: '/',
+          HttpStatus: query.HttpStatus,
+          reqBody: query.reqBody,
+          resBody: query.resBody.POST,
+        }));
     });
-    afterEach(async () => {
-      await app.close();
-    });
+  });
 
-    describe('POST /', () => {
-      const keys: (keyof typeof queriesJSON)[] = [
-        'valid',
-        'invalid',
-        'incorrect',
-      ];
-      keys.forEach((key) => {
-        const query = queriesJSON[key];
-        it(`execute ${key} command`, () =>
-          postRequest({
-            app,
-            route: '/',
-            HttpStatus: query.HttpStatus,
-            reqBody: query.reqBody,
-            resBody: query.resBody.POST,
-          }));
-      });
-    });
-
-    describe('GET /', () => {
-      const keys: (keyof typeof queriesJSON)[] = [
-        'valid',
-        'invalid',
-        'incorrect',
-      ];
-      keys.forEach((key) => {
-        const query = queriesJSON[key];
-        it(`execution status of ${key} command`, async () => {
-          await postRequest({
-            app,
-            route: '/',
-            HttpStatus: query.HttpStatus,
-            reqBody: query.reqBody,
-            resBody: query.resBody.POST,
-          });
-          return getRequest({
-            app,
-            route: '/',
-            HttpStatus: 200,
-            reqBody: {},
-            resBody: query.resBody.GET,
-          });
+  describe('GET /', () => {
+    queryTypes.forEach((key) => {
+      const query = queriesJSON[key];
+      it(`execution status of ${key} command`, async () => {
+        await postRequest({
+          app,
+          route: '/',
+          HttpStatus: query.HttpStatus,
+          reqBody: query.reqBody,
+          resBody: query.resBody.POST,
         });
-      });
-
-      it('execution status without any prior command executions', () =>
-        getRequest({
+        return getRequest({
           app,
           route: '/',
           HttpStatus: 200,
           reqBody: {},
-          resBody: {
-            name: 'none',
-            status: 'invalid',
-            logs: { stdout: '', stderr: '' },
-          },
-        }));
+          resBody: query.resBody.GET,
+        });
+      });
     });
 
-    describe('GET /history', () => {
-      it('without any prior command executions', () =>
-        getRequest({
-          app,
-          route: '/history',
-          HttpStatus: 200,
-          reqBody: {},
-          resBody: new Array<RequestBody>(),
-        }));
+    it('execution status without any prior command executions', () =>
+      getRequest({
+        app,
+        route: '/',
+        HttpStatus: 200,
+        reqBody: {},
+        resBody: {
+          name: 'none',
+          status: 'invalid',
+          logs: { stdout: '', stderr: '' },
+        },
+      }));
+  });
 
-      it('after multiple command executions', async () => {
-        const keys: (keyof typeof queriesJSON)[] = [
-          'valid',
-          'invalid',
-          'incorrect',
-        ];
-        keys.forEach(async (key) => {
-          const query = queriesJSON[key];
-          await postRequest({
-            app,
-            route: '/',
-            HttpStatus: query.HttpStatus,
-            reqBody: query.reqBody,
-            resBody: query.resBody.POST,
-          });
-        });
-        return getRequest({
+  describe('GET /history', () => {
+    it('without any prior command executions', () =>
+      getRequest({
+        app,
+        route: '/history',
+        HttpStatus: 200,
+        reqBody: {},
+        resBody: new Array<RequestBody>(),
+      }));
+
+    it('after multiple command executions', async () => {
+      queryTypes.forEach(async (key) => {
+        const query = queriesJSON[key];
+        await postRequest({
           app,
-          route: '/history',
-          HttpStatus: 200,
-          reqBody: {},
-          resBody: [{ name: 'create' }, { name: 'configure' }],
+          route: '/',
+          HttpStatus: query.HttpStatus,
+          reqBody: query.reqBody,
+          resBody: query.resBody.POST,
         });
+      });
+      return getRequest({
+        app,
+        route: '/history',
+        HttpStatus: 200,
+        reqBody: {},
+        resBody: [
+          { name: 'create' },
+          { name: 'execute' },
+          { name: 'configure' },
+        ],
       });
     });
   });
