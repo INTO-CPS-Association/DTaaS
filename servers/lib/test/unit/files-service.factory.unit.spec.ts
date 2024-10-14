@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
 import LocalFilesService from '../../src/files/services/local-files.service';
 import { IFilesService } from '../../src/files/interfaces/files.service.interface';
+import GitFilesService from '../../src/files/services/git-files.service';
 
 describe('FilesServiceFactory', () => {
   let serviceFactory: FilesServiceFactory;
@@ -17,6 +18,7 @@ describe('FilesServiceFactory', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FilesServiceFactory,
+        GitFilesService,
         { provide: ConfigService, useValue: { get: jest.fn() } },
         { provide: LocalFilesService, useValue: localFilesService },
       ],

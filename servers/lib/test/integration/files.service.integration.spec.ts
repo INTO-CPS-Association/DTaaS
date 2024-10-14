@@ -11,6 +11,7 @@ import {
   testFileContent,
   MockConfigService,
 } from '../testUtil';
+import GitFilesService from '../../src/files/services/git-files.service';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -23,6 +24,7 @@ describe('Integration tests for FilesResolver', () => {
         FilesResolver,
         FilesServiceFactory,
         LocalFilesService,
+        GitFilesService,
         { provide: ConfigService, useClass: MockConfigService },
       ],
     }).compile();
