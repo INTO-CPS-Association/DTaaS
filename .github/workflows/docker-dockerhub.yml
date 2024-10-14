@@ -1,0 +1,94 @@
+# Reusable workflow for building and pushing a Docker Image to DockerHub.
+# 
+# Auth username is taken from the repository secret, "DOCKERHUB_USERNAME"
+# Publish username is taken from the repository secret, "DOCKERHUB_SCOPE"
+# Password is taken from the repository secret, "DOCKERHUB_TOKEN"
+# 
+# NOTE: DockerHub currently does not provide PATs for organizations.
+# Users belonging to the org must use their own, which is why we need a
+# username to publish through: DOCKERHUB_USERNAME, and a username to publish
+# under: DOCKERHUB_SCOPE.
+# You may use the same username for both.
+
+name: Build and Push Docker Image (DockerHub)
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+        default: "latest"
+      dockerfile:
+        required: true
+        type: string
+      readme-file:
+        required: true
+        type: string
+    secrets:
+      # Username used for DockerHub authorization
+      DOCKERHUB_USERNAME:
+        required: true
+      # Username under which the image will be published
+      DOCKERHUB_SCOPE:
+        required: true
+      # Personal Access Token created by the user `DOCKERHUB_USERNAME`
+      # Must have read, write and delete permissions
+      DOCKERHUB_TOKEN:
+        required: true
+
+env:
+  registry: docker.io
+  username: ${{ secrets.DOCKERHUB_USERNAME }}
+  dockerhub-scope: ${{ secrets.DOCKERHUB_SCOPE }}
+  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.registry }}
+          username: ${{ env.username }}
+          password: ${{ env.password }}
+
+      - name: Check if version exists
+        id: check_version
+        run: |
+          if docker manifest inspect ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+            echo "Version ${{ inputs.version }} already exists."
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "Version ${{ inputs.version }} does not exist."
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push Docker image
+        if: env.exists == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/${{ inputs.dockerfile }}
+          push: true
+          tags: ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ env.username }}
+          password: ${{ env.password }}
+          repository: ${{ env.dockerhub-scope }}/${{ inputs.image-name }}
+          readme-filepath: ${{ inputs.readme-file }}

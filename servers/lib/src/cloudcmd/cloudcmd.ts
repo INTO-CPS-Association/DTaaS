@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Server } from 'socket.io';
-import * as cloudcmd from 'cloudcmd';
+import cloudcmd from 'cloudcmd';
 import { join, relative } from 'path';
 
 const isWindowsAbsolutePath = (filesPath: string) => filesPath.includes(':');

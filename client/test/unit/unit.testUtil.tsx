@@ -106,6 +106,39 @@ export function itDisplaysContentOfTabs(
   });
 }
 
+export function itDisplaysContentOfExecuteTab(
+  tabs: { label: string; body: string }[],
+) {
+  const executeTab = tabs.find((tab) => tab.label === 'Execute');
+
+  if (!executeTab) return;
+
+  it('should render the label of the Execute tab', () => {
+    expect(
+      screen.getByRole('tab', { name: executeTab.label }),
+    ).toBeInTheDocument();
+  });
+
+  it('should render the content of the clicked Execute tab', () => {
+    const tabElement = screen.getByRole('tab', { name: executeTab.label });
+
+    act(() => {
+      tabElement.click();
+    });
+
+    const executeTabContent = screen.getAllByText(executeTab.body, {
+      normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+    });
+    expect(executeTabContent.length).toBeGreaterThan(0);
+
+    tabs
+      .filter((tab) => tab.label !== 'Execute')
+      .forEach((otherTab) => {
+        expect(screen.queryByText(otherTab.body)).not.toBeInTheDocument();
+      });
+  });
+}
+
 export function itPreventsDefaultActionWhenLinkIsClicked(linkText: string) {
   it(`should prevent default action when ${linkText} is clicked`, () => {
     const linkElement = screen.getByRole('link', { name: linkText });
@@ -169,6 +202,20 @@ export function itHasCorrectTabNameinDTIframe(tablabels: string[]) {
   });
 }
 
+export function itHasCorrectExecuteTabNameInDTIframe(tablabels: string[]) {
+  it("should render the Iframe component on DT page for the 'Execute' tab with the correct title", () => {
+    const executeTabLabel = tablabels.find((label) => label === 'Execute');
+
+    if (!executeTabLabel) return;
+
+    const tabElement = screen.getByRole('tab', {
+      name: executeTabLabel,
+    });
+
+    expect(tabElement).toBeTruthy();
+  });
+}
+
 export function testStaticAccountProfile(mockUser: mockUserType) {
   const profilePicture = screen.getByTestId('profile-picture');
   expect(profilePicture).toBeInTheDocument();
@@ -194,7 +241,6 @@ export async function testAccountSettings(mockUser: mockUserType) {
       screen.getByRole('heading', { level: 2, name: 'Settings' }),
     ).toBeInTheDocument();
 
-    // Testing that the text is present, the link is correct and in bold
     const settingsParagraph = screen.getByText(/Edit the profile on/);
     expect(settingsParagraph).toHaveProperty(
       'innerHTML',

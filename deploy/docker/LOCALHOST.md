@@ -1,7 +1,8 @@
 # Install DTaaS on localhost
 
 The installation instructions provided in this README are
-ideal for running the DTaaS on both localhost.
+ideal for running the **DTaaS on localhost served over HTTP connection**.
+
 This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
@@ -88,7 +89,7 @@ docker compose -f compose.local.yml --env-file .env.local down
 To restart only a specific container, for example `client``
 
 ```bash
-docker compose -f compose.local.yml --env-file .env up -d --force-recreate client
+docker compose -f compose.local.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ## Use
