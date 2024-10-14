@@ -7,25 +7,25 @@ import DigitalTwin from '../../util/gitlabDigitalTwin';
 
 interface DialogButtonProps {
   assetName: string;
-  setShowLog: Dispatch<React.SetStateAction<boolean>>;
+  setShowDetails: Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const handleToggleLog = async (
   digitalTwin: DigitalTwin,
-  setShowLog: Dispatch<SetStateAction<boolean>>,
+  setShowDetails: Dispatch<SetStateAction<boolean>>,
 ) => {
   await digitalTwin.getFullDescription();
-  setShowLog(true);
+  setShowDetails(true);
 };
 
-function DetailsButton({ assetName, setShowLog }: DialogButtonProps) {
+function DetailsButton({ assetName, setShowDetails }: DialogButtonProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(assetName));
   return (
     <Button
       variant="contained"
       size="small"
       color="primary"
-      onClick={() => handleToggleLog(digitalTwin, setShowLog)}
+      onClick={() => handleToggleLog(digitalTwin, setShowDetails)}
     >
       Details
     </Button>

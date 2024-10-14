@@ -94,9 +94,9 @@ function CardButtonsContainerManage({
 }: CardButtonsContainerManageProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton assetName={assetName} setShowLog={setShowDetails} />
+      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} />
       <ReconfigureButton setShowReconfigure={setShowReconfigure} />
-      <DeleteButton setShowLog={setShowDelete} />
+      <DeleteButton setShowDelete={setShowDelete} />
     </CardActions>
   );
 }

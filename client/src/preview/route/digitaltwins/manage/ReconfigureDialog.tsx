@@ -31,7 +31,9 @@ interface ReconfigureDialogProps {
   name: string;
 }
 
-const handleCloseLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+export const handleCloseLog = (
+  setShowLog: Dispatch<SetStateAction<boolean>>,
+) => {
   setShowLog(false);
 };
 
@@ -43,7 +45,7 @@ function ReconfigureDialog({
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const modifiedFiles = useSelector(getModifiedFiles);
+  const modifiedFiles: FileState[] = useSelector(getModifiedFiles);
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);
@@ -72,7 +74,6 @@ function ReconfigureDialog({
         handleSave={handleSave}
       />
 
-      {/* Save Confirmation Dialog */}
       <ConfirmationDialog
         open={openSaveDialog}
         onClose={handleCloseSaveDialog}
@@ -80,7 +81,6 @@ function ReconfigureDialog({
         content="Are you sure you want to apply the changes?"
       />
 
-      {/* Cancel Confirmation Dialog */}
       <ConfirmationDialog
         open={openCancelDialog}
         onClose={handleCloseCancelDialog}
@@ -91,7 +91,7 @@ function ReconfigureDialog({
   );
 }
 
-const saveChanges = async (
+export const saveChanges = async (
   modifiedFiles: FileState[],
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,
@@ -105,7 +105,7 @@ const saveChanges = async (
   dispatch(saveAllFiles());
 };
 
-const handleFileUpdate = async (
+export const handleFileUpdate = async (
   file: FileState,
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,

@@ -39,7 +39,7 @@ class DigitalTwin {
   async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       const readmePath = `digital_twins/${this.DTName}/README.md`;
-      const imagesPath = `digital_twins/${this.DTName}/`; // Path per le immagini
+      const imagesPath = `digital_twins/${this.DTName}/`;
       try {
         const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
           this.gitlabInstance.projectId,
@@ -249,6 +249,7 @@ class DigitalTwin {
       : `digital_twins/${this.DTName}/lifecycle/${fileName}`;
 
     const commitMessage = `Update ${fileName} content`;
+
     await this.gitlabInstance.api.RepositoryFiles.edit(
       this.gitlabInstance.projectId!,
       filePath,

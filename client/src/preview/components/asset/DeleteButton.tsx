@@ -3,20 +3,20 @@ import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 
 interface DeleteButtonProps {
-  setShowLog: Dispatch<React.SetStateAction<boolean>>;
+  setShowDelete: Dispatch<React.SetStateAction<boolean>>;
 }
 
-const handleToggleLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
-  setShowLog(true);
+const handleToggleLog = (setShowDelete: Dispatch<SetStateAction<boolean>>) => {
+  setShowDelete(true);
 };
 
-function DeleteButton({ setShowLog }: DeleteButtonProps) {
+function DeleteButton({ setShowDelete }: DeleteButtonProps) {
   return (
     <Button
       variant="contained"
       size="small"
       color="primary"
-      onClick={() => handleToggleLog(setShowLog)}
+      onClick={() => handleToggleLog(setShowDelete)}
     >
       Delete
     </Button>

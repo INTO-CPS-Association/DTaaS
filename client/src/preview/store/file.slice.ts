@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from 'store/store';
 
 export interface FileState {
   name: string;
@@ -36,11 +35,11 @@ const filesSlice = createSlice({
   },
 });
 
-export const findFileByName = (name: string) => (state: RootState) =>
-  state.files.find((file) => file.name === name);
+export const getModifiedFiles = (files: FileState[]) =>
+  files.filter((file) => file.isModified);
 
-export const getModifiedFiles = (state: RootState) =>
-  state.files.filter((file) => file.isModified);
+export const findFileByName = (files: FileState[], name: string) =>
+  files.find((file) => file.name === name);
 
 export const { addOrUpdateFile, saveAllFiles } = filesSlice.actions;
 export default filesSlice.reducer;

@@ -6,7 +6,7 @@ interface ReconfigureButtonProps {
   setShowReconfigure: Dispatch<SetStateAction<boolean>>;
 }
 
-const handleToggleReconfigure = (
+export const handleToggleReconfigure = (
   setShowReconfigure: Dispatch<SetStateAction<boolean>>,
 ) => {
   setShowReconfigure((prev) => !prev);

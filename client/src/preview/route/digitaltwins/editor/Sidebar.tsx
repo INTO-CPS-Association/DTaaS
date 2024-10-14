@@ -1,4 +1,5 @@
-import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import * as React from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Grid, Typography, CircularProgress } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
@@ -21,7 +22,7 @@ const fetchData = async (digitalTwin: DigitalTwin) => {
   await digitalTwin.getConfigFiles();
 };
 
-const handleFileClick = async (
+export const handleFileClick = async (
   fileName: string,
   digitalTwin: DigitalTwin,
   setFileName: Dispatch<SetStateAction<string>>,
