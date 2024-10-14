@@ -35,8 +35,8 @@ const filesSlice = createSlice({
   },
 });
 
-export const getModifiedFiles = (files: FileState[]) =>
-  files.filter((file) => file.isModified);
+export const getModifiedFiles = (state: { files: FileState[] }) =>
+  state.files.filter((file) => file.isModified);
 
 export const findFileByName = (files: FileState[], name: string) =>
   files.find((file) => file.name === name);
