@@ -9,6 +9,9 @@ on:
       - 'servers/lib/**'
   workflow_dispatch:
 
+env:
+  NODE_VERSION: 20
+
 jobs:
   test-lib-ms:
     name: Test library microservice
@@ -27,7 +30,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -128,7 +131,7 @@ jobs:
       - name: Publish npm package to NPM js
         uses: ./.github/workflows/publish_npm_package.yml
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
           working-directory: servers/lib
         env:
@@ -137,7 +140,7 @@ jobs:
       - name: Publish npm package to github packages
         uses: ./.github/workflows/publish_npm_package.yml
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://npm.pkg.github.com/'
           working-directory: servers/lib
         env:
