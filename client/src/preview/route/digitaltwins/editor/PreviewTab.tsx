@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { Remarkable } from 'remarkable';
+import 'katex/dist/katex.min.css';
+// @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
+import RemarkableKatex from 'remarkable-katex';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 interface PreviewProps {
@@ -8,13 +11,55 @@ interface PreviewProps {
 }
 
 function PreviewTab({ fileContent, fileType }: PreviewProps) {
-  const md = new Remarkable();
-
   if (fileType === 'md') {
+    const md = new Remarkable({
+      html: true,
+      typographer: true,
+    }).use(RemarkableKatex);
+
     const renderedMarkdown = md.render(fileContent);
 
-    return <div dangerouslySetInnerHTML={{ __html: renderedMarkdown }} />;
+    return (
+      <div style={{
+        width: '100%',
+        overflowWrap: 'break-word',
+        wordWrap: 'break-word',
+        whiteSpace: 'normal',
+        overflow: 'hidden',
+      }}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: renderedMarkdown,
+          }}
+          style={{
+            maxWidth: '100%',
+          }}
+        />
+        <style>{`
+          img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+          }
+          th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+          }
+          th {
+            background-color: #f0f0f0;
+          }
+        `}</style>
+      </div>
+    );
   }
+  
   if (fileType === 'json') {
     return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
   }
