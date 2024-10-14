@@ -215,7 +215,7 @@ class DigitalTwin {
       const filteredFiles = response
         .filter(
           (item: { type: string; name: string }) =>
-            item.type === 'blob' && item.name.endsWith('.json'),
+            item.type === 'blob' && (item.name.endsWith('.json') || item.name.endsWith('.yaml')),
         )
         .map((file: { name: string }) => file.name);
 
