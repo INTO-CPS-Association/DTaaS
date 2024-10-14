@@ -21,7 +21,7 @@ on:
 
 env:
   registry: ghcr.io
-  username: ${{ github.actor }}
+  ghcr-scope: ${{ github.repository_owner }}
   password: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -40,13 +40,13 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.registry }}
-          username: ${{ env.username }}
+          username: ${{ github.actor }}
           password: ${{ env.password }}
 
       - name: Check if version exists
         id: check_version
         run: |
-          if docker manifest inspect ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+          if docker manifest inspect ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_ENV
           else
@@ -61,4 +61,4 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.username }}/${{ inputs.image-name }}:latest
+          tags: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:latest
