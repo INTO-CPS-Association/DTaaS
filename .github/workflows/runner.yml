@@ -8,8 +8,6 @@ on:
     paths:
       - 'servers/execution/**'
   workflow_dispatch:
-    paths:
-      - 'servers/execution/**'
 
 jobs:
   test-runner:

@@ -8,8 +8,6 @@ on:
     paths:
       - 'client/**'
   workflow_dispatch:
-    paths:
-      - 'client/**'
 
 jobs:
   client:
