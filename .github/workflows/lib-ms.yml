@@ -110,12 +110,14 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-  publish-npm-package:
+
+  publish-package:
+
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
-    name: Publish NPM Package to GitHub Packages
+    name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     needs: test-lib-ms
     permissions:
@@ -123,28 +125,23 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - name: Publish npm package to NPM js
+        uses: ./.github/workflows/publish_npm_package.yml
         with:
           node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          always-auth: true
-          registry-url: 'https://npm.pkg.github.com/'
-
-      - name: Publish npm package
-        run: |
-          # copy README.md to project root
-          cp servers/lib/README.md .
-          cd servers/lib
-          yarn install
-          yarn build
-          yarn publish --access public
+          registry-url: 'https://registry.npmjs.org'
+          working-directory: servers/lib
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish npm package to github packages
+        uses: ./.github/workflows/publish_npm_package.yml
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com/'
+          working-directory: servers/lib
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   get_version:
     name: Get version
@@ -162,34 +159,12 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
 
-  publish-docker-image-ghcr:
-    if: | 
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish Docker image (GHCR)
-    needs: [get_version, test-lib-ms]
-    uses: ./.github/workflows/docker-ghcr.yml
+  publish-docker-image:
+    name: Publish Docker image
+    needs: [ publish-package, get_version]
+    uses: ./.github/workflows/docker.yml
     with: 
-      image-name: libms
-      version: ${{ needs.get_version.outputs.version }}
-      dockerfile: libms.dockerfile
-    secrets: inherit
-
-  publish-docker-image-dockerhub:
-    if: | 
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish Docker image (DockerHub)
-    needs: [get_version, test-lib-ms]
-    uses: ./.github/workflows/docker-dockerhub.yml
-    with: 
-      image-name: libms
-      version: ${{ needs.get_version.outputs.version }}
-      dockerfile: libms.dockerfile
-      readme-file: servers/lib/DOCKER.md
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_SCOPE: ${{ secrets.DOCKERHUB_SCOPE }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        registry: ghcr.io
+        image-name: into-cps-association/libms
+        version: ${{ needs.get_version.outputs.version }}
+        dockerfile: libms.dockerfile
