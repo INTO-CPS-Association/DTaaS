@@ -1,0 +1,64 @@
+# Reusable workflow for building and pushing a Docker Image to GHCR.
+# 
+# Username is taken from the user who scheduled the workflow
+# Password is taken from the auto-generated GitHub token
+
+name: Build and Push Docker Image (GHCR)
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+        default: "latest"
+      dockerfile:
+        required: true
+        type: string
+
+env:
+  registry: ghcr.io
+  ghcr-scope: ${{ github.repository_owner }}
+  password: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.registry }}
+          username: ${{ github.actor }}
+          password: ${{ env.password }}
+
+      - name: Check if version exists
+        id: check_version
+        run: |
+          if docker manifest inspect ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+            echo "Version ${{ inputs.version }} already exists."
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "Version ${{ inputs.version }} does not exist."
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push Docker image
+        if: env.exists == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/${{ inputs.dockerfile }}
+          push: true
+          tags: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:latest

@@ -1,0 +1,34 @@
+# Reference: https://docs.gitlab.com/ee/install/docker/installation.html
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:16.4.1-ce.0'
+    container_name: gitlab
+    restart: always
+    hostname: ${SERVER_DNS}
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://${SERVER_DNS}/gitlab'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+        nginx['listen_port'] = 80
+        nginx['enable'] = true
+        nginx['listen_https'] = false
+        nginx['redirect_http_to_https'] = false
+        letsencrypt['enable'] = false
+    volumes:
+      - '${GITLAB_HOME}/config:/etc/gitlab'
+      - '${GITLAB_HOME}/logs:/var/log/gitlab'
+      - '${GITLAB_HOME}/data:/var/opt/gitlab'
+    shm_size: '256m'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitlab.entryPoints=web-secure"
+      - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/gitlab`)"
+      - "traefik.http.routers.gitlab.service=gitlab"
+      - "traefik.http.services.gitlab.loadbalancer.server.port=80"
+      - "traefik.http.routers.gitlab.tls=true"
+    networks:
+      - dtaas-frontend
+
+networks:
+  dtaas-frontend:
+    external: true

@@ -40,37 +40,6 @@ your Github username and the password is your Github
 In order for the npm to download the package, your personal access token
 needs to have _read:packages_ scope.
 
-## Use in Docker Environment
-
-### Adjust Configuration (Optional)
-
-The microservices require configuration,
-see the [Configure](#gear-configure) section for more info.
-
-The docker version of the microservices uses the configuration
-file available in `config/.env.default`.
-If you would like to adjust the configuration, please change this file.
-
-### Use
-
-The commands to start and stop the appliation are:
-
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd servers/lib
-docker compose -f compose.lib.yml up -d
-```
-
-This command brings up the lib docker container and makes
-the website available at <http://localhost:4001>.
-The `config/.env.default` file is used as the microservice configuration.
-If the configuration values are changed, please restart the container.
-
-```bash
-docker compose -f compose.lib.yml down
-docker compose -f compose.lib.yml up -d
-```
-
 ## :gear: Configure
 
 The microservices requires config specified in INI format.

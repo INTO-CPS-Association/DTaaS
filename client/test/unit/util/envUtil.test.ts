@@ -32,6 +32,7 @@ describe('envUtil', () => {
     REACT_APP_WORKBENCHLINK_VSCODE: testWorkbenchEndpoints[1],
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: testWorkbenchEndpoints[2],
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: testWorkbenchEndpoints[3],
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: testWorkbenchEndpoints[4],
 
     REACT_APP_CLIENT_ID: testAppID,
     REACT_APP_AUTH_AUTHORITY: testAuthority,
