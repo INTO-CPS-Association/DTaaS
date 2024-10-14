@@ -161,18 +161,18 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
         />
         <CustomSnackbar />
         <DetailsDialog
-          showLog={showDetailsLog}
-          setShowLog={setShowDetailsLog}
+          showDialog={showDetailsLog}
+          setShowDialog={setShowDetailsLog}
           name={asset.name}
         />
         <ReconfigureDialog
-          showLog={showReconfigure}
-          setShowLog={setShowReconfigure}
+          showDialog={showReconfigure}
+          setShowDialog={setShowReconfigure}
           name={asset.name}
         />
         <DeleteDialog
-          showLog={showDeleteLog}
-          setShowLog={setShowDeleteLog}
+          showDialog={showDeleteLog}
+          setShowDialog={setShowDeleteLog}
           name={asset.name}
           onDelete={onDelete}
         />

@@ -13,13 +13,13 @@ import DigitalTwin, { formatName } from '../../../util/gitlabDigitalTwin';
 import { showSnackbar } from '../../../store/snackbar.slice';
 
 interface DeleteDialogProps {
-  showLog: boolean;
-  setShowLog: Dispatch<SetStateAction<boolean>>;
+  showDialog: boolean;
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
   onDelete: () => void;
 }
 
-const handleCloseLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+const handleCloseDeleteDialog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
   setShowLog(false);
 };
 
@@ -41,15 +41,15 @@ const handleDelete = async (
 };
 
 function DeleteDialog({
-  showLog,
-  setShowLog,
+  showDialog,
+  setShowDialog,
   name,
   onDelete,
 }: DeleteDialogProps) {
   const dispatch = useDispatch();
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
   return (
-    <Dialog open={showLog} maxWidth="md">
+    <Dialog open={showDialog} maxWidth="md">
       <DialogContent>
         <Typography variant="body2">
           This step is irreversible. Would you like to delete{' '}
@@ -57,13 +57,13 @@ function DeleteDialog({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={() => handleCloseLog(setShowLog)}>
+        <Button color="primary" onClick={() => handleCloseDeleteDialog(setShowDialog)}>
           Cancel
         </Button>
         <Button
           color="primary"
           onClick={() =>
-            handleDelete(digitalTwin, setShowLog, onDelete, dispatch)
+            handleDelete(digitalTwin, setShowDialog, onDelete, dispatch)
           }
         >
           Yes

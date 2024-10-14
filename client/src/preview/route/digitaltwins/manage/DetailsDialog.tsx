@@ -9,16 +9,16 @@ import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 
 interface DetailsDialogProps {
-  showLog: boolean;
-  setShowLog: Dispatch<SetStateAction<boolean>>;
+  showDialog: boolean;
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
 }
 
-const handleCloseLog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+const handleCloseDetailsDialog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
   setShowLog(false);
 };
 
-function DetailsDialog({ showLog, setShowLog, name }: DetailsDialogProps) {
+function DetailsDialog({ showDialog, setShowDialog, name }: DetailsDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
 
   const md = new Remarkable({
@@ -27,7 +27,7 @@ function DetailsDialog({ showLog, setShowLog, name }: DetailsDialogProps) {
   }).use(RemarkableKatex);
 
   return (
-    <Dialog open={showLog} maxWidth="md">
+    <Dialog open={showDialog} maxWidth="md">
       <DialogContent dividers>
         <div
           dangerouslySetInnerHTML={{
@@ -39,7 +39,7 @@ function DetailsDialog({ showLog, setShowLog, name }: DetailsDialogProps) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleCloseLog(setShowLog)} color="primary">
+        <Button onClick={() => handleCloseDetailsDialog(setShowDialog)} color="primary">
           Close
         </Button>
       </DialogActions>

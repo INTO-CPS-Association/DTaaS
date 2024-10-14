@@ -6,7 +6,7 @@ interface ReconfigureButtonProps {
   setShowReconfigure: Dispatch<SetStateAction<boolean>>;
 }
 
-export const handleToggleReconfigure = (
+export const handleToggleReconfigureDialog = (
   setShowReconfigure: Dispatch<SetStateAction<boolean>>,
 ) => {
   setShowReconfigure((prev) => !prev);
@@ -18,7 +18,7 @@ function ReconfigureButton({ setShowReconfigure }: ReconfigureButtonProps) {
       variant="contained"
       size="small"
       color="primary"
-      onClick={() => handleToggleReconfigure(setShowReconfigure)}
+      onClick={() => handleToggleReconfigureDialog(setShowReconfigure)}
     >
       Reconfigure
     </Button>

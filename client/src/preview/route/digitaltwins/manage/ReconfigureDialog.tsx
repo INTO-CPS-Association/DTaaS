@@ -26,20 +26,20 @@ import DigitalTwin, { formatName } from '../../../util/gitlabDigitalTwin';
 import Editor from '../editor/Editor';
 
 interface ReconfigureDialogProps {
-  showLog: boolean;
-  setShowLog: Dispatch<SetStateAction<boolean>>;
+  showDialog: boolean;
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
 }
 
-export const handleCloseLog = (
-  setShowLog: Dispatch<SetStateAction<boolean>>,
+export const handleCloseReconfigureDialog = (
+  setShowDialog: Dispatch<SetStateAction<boolean>>,
 ) => {
-  setShowLog(false);
+  setShowDialog(false);
 };
 
 function ReconfigureDialog({
-  showLog,
-  setShowLog,
+  showDialog,
+  setShowDialog,
   name,
 }: ReconfigureDialogProps) {
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
@@ -56,19 +56,19 @@ function ReconfigureDialog({
   const handleConfirmSave = async () => {
     await saveChanges(modifiedFiles, digitalTwin, dispatch, name);
     setOpenSaveDialog(false);
-    setShowLog(false);
+    setShowDialog(false);
   };
 
   const handleConfirmCancel = () => {
     setOpenCancelDialog(false);
-    setShowLog(false);
+    setShowDialog(false);
   };
 
   return (
     <>
       <ReconfigureMainDialog
-        showLog={showLog}
-        setShowLog={setShowLog}
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
         name={name}
         handleCancel={handleCancel}
         handleSave={handleSave}
@@ -144,21 +144,21 @@ const showSuccessSnackbar = (
 };
 
 const ReconfigureMainDialog = ({
-  showLog,
-  setShowLog,
+  showDialog,
+  setShowDialog,
   name,
   handleCancel,
   handleSave,
 }: {
-  showLog: boolean;
-  setShowLog: Dispatch<SetStateAction<boolean>>;
+  showDialog: boolean;
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
   handleCancel: () => void;
   handleSave: () => void;
 }) => (
   <Dialog
-    open={showLog}
-    onClose={() => handleCloseLog(setShowLog)}
+    open={showDialog}
+    onClose={() => handleCloseReconfigureDialog(setShowDialog)}
     fullWidth={true}
     maxWidth="lg"
     sx={{

@@ -10,7 +10,7 @@ interface DialogButtonProps {
   setShowDetails: Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const handleToggleLog = async (
+export const handleToggleDetailsDialog= async (
   digitalTwin: DigitalTwin,
   setShowDetails: Dispatch<SetStateAction<boolean>>,
 ) => {
@@ -25,7 +25,7 @@ function DetailsButton({ assetName, setShowDetails }: DialogButtonProps) {
       variant="contained"
       size="small"
       color="primary"
-      onClick={() => handleToggleLog(digitalTwin, setShowDetails)}
+      onClick={() => handleToggleDetailsDialog(digitalTwin, setShowDetails)}
     >
       Details
     </Button>
