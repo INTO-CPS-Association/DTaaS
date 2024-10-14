@@ -125,6 +125,7 @@ Install git-hooks for the project.
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
+1. nvm use 22 (if nvm or node isn't installed)
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
