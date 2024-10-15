@@ -16,17 +16,17 @@ jest.mock('preview/util/gitlabDigitalTwin', () => ({
 }));
 
 describe('DeleteDialog', () => {
-  const showLog = true;
+  const showDialog = true;
   const name = 'testName';
-  const setShowLog = jest.fn();
+  const setShowDialog = jest.fn();
   const onDelete = jest.fn();
 
   it('renders the DeleteDialog', () => {
     render(
       <Provider store={store}>
         <DeleteDialog
-          showLog={showLog}
-          setShowLog={setShowLog}
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
           name={name}
           onDelete={onDelete}
         />
@@ -39,8 +39,8 @@ describe('DeleteDialog', () => {
     render(
       <Provider store={store}>
         <DeleteDialog
-          showLog={showLog}
-          setShowLog={setShowLog}
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
           name={name}
           onDelete={onDelete}
         />
@@ -48,7 +48,7 @@ describe('DeleteDialog', () => {
     );
     const closeButton = screen.getByRole('button', { name: /Cancel/i });
     closeButton.click();
-    expect(setShowLog).toHaveBeenCalled();
+    expect(setShowDialog).toHaveBeenCalled();
   });
 
   it('handles delete button click', async () => {
@@ -59,8 +59,8 @@ describe('DeleteDialog', () => {
     render(
       <Provider store={store}>
         <DeleteDialog
-          showLog={showLog}
-          setShowLog={setShowLog}
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
           name={name}
           onDelete={onDelete}
         />
@@ -72,7 +72,7 @@ describe('DeleteDialog', () => {
 
     await waitFor(() => {
       expect(onDelete).toHaveBeenCalled();
-      expect(setShowLog).toHaveBeenCalledWith(false);
+      expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
 
@@ -84,8 +84,8 @@ describe('DeleteDialog', () => {
     render(
       <Provider store={store}>
         <DeleteDialog
-          showLog={showLog}
-          setShowLog={setShowLog}
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
           name={name}
           onDelete={onDelete}
         />
@@ -97,7 +97,7 @@ describe('DeleteDialog', () => {
 
     await waitFor(() => {
       expect(onDelete).toHaveBeenCalled();
-      expect(setShowLog).toHaveBeenCalledWith(false);
+      expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
 });

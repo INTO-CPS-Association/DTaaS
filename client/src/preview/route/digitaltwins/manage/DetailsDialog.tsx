@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { Remarkable } from 'remarkable';
 import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
-import RemarkableKatex from 'remarkable-katex';
+import * as RemarkableKatex from 'remarkable-katex';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 

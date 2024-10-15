@@ -3,11 +3,6 @@ import * as React from 'react';
 import EditorTab from 'preview/route/digitaltwins/editor/EditorTab';
 import { addOrUpdateFile } from 'preview/store/file.slice';
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
-}));
-
 jest.mock('preview/store/file.slice', () => ({
   addOrUpdateFile: jest.fn(),
 }));

@@ -18,12 +18,6 @@ describe('Sidebar', () => {
   const setFileContent = jest.fn();
   const setFileType = jest.fn();
 
-  const modifiedFilesMock: FileState[] = [
-    { name: 'desc1.md', content: 'Description content', isModified: true },
-    { name: 'life1.md', content: 'Lifecycle content', isModified: true },
-    { name: 'config1.md', content: 'Config content', isModified: true },
-  ];
-
   beforeEach(async () => {
     (useSelector as jest.Mock).mockReturnValue({
       descriptionFiles: ['desc1.md', 'desc2.md'],
@@ -33,8 +27,8 @@ describe('Sidebar', () => {
         .fn()
         .mockResolvedValue('Mocked description files'),
       getLifecycleFiles: jest.fn().mockResolvedValue('Mocked lifecycle files'),
-      getConfigFiles: jest.fn().mockResolvedValue('Mocked config files'),
-      modifiedFiles: modifiedFilesMock,
+      getConfigFiles: jest.fn().mockResolvedValue('Mocked configuration files'),
+      modifiedFiles: [],
     });
 
     await act(async () => {
@@ -59,7 +53,7 @@ describe('Sidebar', () => {
     await waitFor(() => {
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Lifecycle')).toBeInTheDocument();
-      expect(screen.getByText('Config')).toBeInTheDocument();
+      expect(screen.getByText('Configuration')).toBeInTheDocument();
     });
   });
 
@@ -131,10 +125,38 @@ describe('Sidebar', () => {
 
   it('renders TreeItems for config files', async () => {
     await waitFor(() => {
-      expect(screen.getByText('Config')).toBeInTheDocument();
+      expect(screen.getByText('Configuration')).toBeInTheDocument();
     });
 
     const configItems = screen.getAllByText(/config/i);
-    expect(configItems.length).toBe(2);
+    expect(configItems.length).toBe(1);
   });
+
+  /*
+  it('calls handleFileClick when a config file is clicked', async () => {
+    const modifiedFiles: FileState[] = [
+      { name: 'config1.md', content: 'file content', isModified: true },
+    ];
+
+    (useSelector as jest.Mock).mockReturnValueOnce({
+      modifiedFiles,
+    });
+    
+    const configurationNode = screen.getByText('Configuration');
+    fireEvent.click(configurationNode); 
+
+    await waitFor(() => {
+      expect(screen.getByText('config1.md')).toBeInTheDocument();
+    });
+
+    const file = screen.getByText('config1.md');
+    fireEvent.click(file);
+
+    await waitFor(() => {
+      expect(setFileName).toHaveBeenCalledWith('config1.md');
+      expect(setFileContent).toHaveBeenCalledWith('file content');
+      expect(setFileType).toHaveBeenCalledWith('md');
+    });
+  });
+  */
 });

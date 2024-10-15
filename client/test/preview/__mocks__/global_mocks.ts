@@ -66,7 +66,6 @@ export const mockGitlabInstance: GitlabInstance = {
   init: jest.fn(),
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
-  getDTDescription: jest.fn(),
   getDTSubfolders: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
@@ -88,6 +87,7 @@ export const mockDigitalTwin: DigitalTwin = {
   lifecycleFiles: ['lifecycleFile'],
   configFiles: ['configFile'],
 
+  getDescription: jest.fn(),
   getFullDescription: jest.fn(),
   execute: jest.fn(),
   isValidInstance: jest.fn(),

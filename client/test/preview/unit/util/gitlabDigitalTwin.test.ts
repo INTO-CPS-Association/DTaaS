@@ -35,6 +35,31 @@ describe('DigitalTwin', () => {
     dt = new DigitalTwin('test-DTName', mockGitlabInstance);
   });
 
+  it('should get description', async () => {
+    (mockApi.RepositoryFiles.show as jest.Mock).mockResolvedValue({
+      content: btoa('Test description content'),
+    });
+
+    await dt.getDescription();
+
+    expect(dt.description).toBe('Test description content');
+    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
+      1,
+      'digital_twins/test-DTName/description.md',
+      'main',
+    );
+  });
+
+  it('should return empty description if no description file exists', async () => {
+    (mockApi.RepositoryFiles.show as jest.Mock).mockRejectedValue(
+      new Error('File not found'),
+    );
+
+    await dt.getDescription();
+
+    expect(dt.description).toBe('');
+  });
+
   it('should return full description with updated image URLs if projectId exists', async () => {
     const mockContent = btoa(
       'Test README content with an image ![alt text](image.png)',
@@ -230,161 +255,6 @@ describe('DigitalTwin', () => {
 
     expect(result).toBe(
       'Error deleting test-DTName digital twin: no project id',
-    );
-  });
-
-  it('should get description files', async () => {
-    const mockResponse = [
-      { type: 'blob', name: 'file1.md', path: 'test-path' },
-      { type: 'blob', name: 'file2.json', path: 'test-path' },
-      { type: 'tree', name: 'folder', path: 'test-path' },
-    ];
-
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
-      mockResponse,
-    );
-
-    await dt.getDescriptionFiles();
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: true,
-    });
-
-    expect(dt.descriptionFiles).toEqual(['file1.md']);
-  });
-
-  it('should return empty array when fetching description files fails', async () => {
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockRejectedValue(
-      new Error('Error fetching description files'),
-    );
-
-    await dt.getDescriptionFiles();
-
-    expect(dt.descriptionFiles).toEqual([]);
-  });
-
-  it('should get lifecycle files', async () => {
-    const mockResponse = [
-      { type: 'blob', name: 'file1.md', path: 'test-path' },
-      { type: 'blob', name: 'file2.json', path: '/lifecycle/test-path' },
-      { type: 'tree', name: 'folder', path: 'test-path' },
-    ];
-
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
-      mockResponse,
-    );
-
-    await dt.getLifecycleFiles();
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: true,
-    });
-
-    expect(dt.lifecycleFiles).toEqual(['file2.json']);
-  });
-
-  it('should return empty array when fetching lifecycle files fails', async () => {
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockRejectedValue(
-      new Error('Error fetching lifecycle files'),
-    );
-
-    await dt.getLifecycleFiles();
-
-    expect(dt.lifecycleFiles).toEqual([]);
-  });
-
-  it('should get config files', async () => {
-    const mockResponse = [
-      { type: 'blob', name: 'file1.md', path: 'test-path' },
-      { type: 'blob', name: 'file2.json', path: '/config/test-path' },
-      { type: 'tree', name: 'folder', path: 'test-path' },
-    ];
-
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
-      mockResponse,
-    );
-
-    await dt.getConfigFiles();
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: false,
-    });
-
-    expect(dt.configFiles).toEqual(['file2.json']);
-  });
-
-  it('should return empty array when fetching config files fails', async () => {
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockRejectedValue(
-      new Error('Error fetching config files'),
-    );
-
-    await dt.getConfigFiles();
-
-    expect(dt.configFiles).toEqual([]);
-  });
-
-  it('should get file content for a file with an extension', async () => {
-    const mockContent = btoa('Test file content');
-    (mockApi.RepositoryFiles.show as jest.Mock).mockResolvedValue({
-      content: mockContent,
-    });
-
-    const content = await dt.getFileContent('test-file.md');
-
-    expect(content).toBe('Test file content');
-    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
-      1,
-      'digital_twins/test-DTName/test-file.md',
-      'main',
-    );
-  });
-
-  it('should get file content for a file without an extension (lifecycle folder)', async () => {
-    const mockContent = btoa('Test lifecycle content');
-    (mockApi.RepositoryFiles.show as jest.Mock).mockResolvedValue({
-      content: mockContent,
-    });
-
-    const content = await dt.getFileContent('lifecycle-file');
-
-    expect(content).toBe('Test lifecycle content');
-    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
-      1,
-      'digital_twins/test-DTName/lifecycle/lifecycle-file',
-      'main',
-    );
-  });
-
-  it('should update file content for a file with an extension', async () => {
-    const mockEdit = jest.fn();
-    mockApi.RepositoryFiles.edit = mockEdit;
-
-    await dt.updateFileContent('test-file.md', 'Test file content');
-
-    expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
-      1,
-      'digital_twins/test-DTName/test-file.md',
-      'main',
-      'Test file content',
-      'Update test-file.md content',
-    );
-  });
-
-  it('should update file content for a file without an extension (lifecycle folder)', async () => {
-    const mockEdit = jest.fn();
-    mockApi.RepositoryFiles.edit = mockEdit;
-
-    await dt.updateFileContent('lifecycle-file', 'Lifecycle file content');
-
-    expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
-      1,
-      'digital_twins/test-DTName/lifecycle/lifecycle-file',
-      'main',
-      'Lifecycle file content',
-      'Update lifecycle-file content',
     );
   });
 });

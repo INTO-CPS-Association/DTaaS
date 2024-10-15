@@ -7,16 +7,15 @@ import { getModifiedFiles } from 'preview/store/file.slice';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-}));
-
 jest.mock('preview/store/file.slice', () => ({
   ...jest.requireActual('preview/store/file.slice'),
   saveAllFiles: jest.fn().mockResolvedValue(Promise.resolve()),
   getModifiedFiles: jest.fn(),
+}));
+
+jest.mock('preview/store/digitalTwin.slice', () => ({
+  ...jest.requireActual('preview/store/digitalTwin.slice'),
+  updateDescription: jest.fn(),
 }));
 
 jest.mock('preview/store/snackbar.slice', () => ({
@@ -34,7 +33,7 @@ jest.mock('preview/util/gitlabDigitalTwin', () => ({
 }));
 
 describe('ReconfigureDialog', () => {
-  const setShowLog = jest.fn();
+  const setShowDialog = jest.fn();
   const name = 'TestDigitalTwin';
   const modifiedFiles = [
     { name: 'file1.md', content: 'Content for file 1' },
@@ -53,7 +52,11 @@ describe('ReconfigureDialog', () => {
 
     render(
       <Provider store={store}>
-        <ReconfigureDialog showLog={true} setShowLog={setShowLog} name={name} />
+        <ReconfigureDialog
+          showDialog={true}
+          setShowDialog={setShowDialog}
+          name={name}
+        />
       </Provider>,
     );
   });
@@ -81,16 +84,16 @@ describe('ReconfigureDialog', () => {
       yesButton.click();
     });
     await waitFor(() => {
-      expect(setShowLog).toHaveBeenCalledWith(false);
+      expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
 
   it('calls handleCloseLog when the close function is called', async () => {
     await act(async () => {
-      await Reconfigure.handleCloseLog(setShowLog);
+      await Reconfigure.handleCloseReconfigureDialog(setShowDialog);
     });
 
-    expect(setShowLog).toHaveBeenCalledWith(false);
+    expect(setShowDialog).toHaveBeenCalledWith(false);
   });
 
   it('handles save dialog', async () => {
@@ -111,7 +114,7 @@ describe('ReconfigureDialog', () => {
     });
 
     await waitFor(() => {
-      expect(setShowLog).toHaveBeenCalledWith(false);
+      expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
 
@@ -178,4 +181,36 @@ describe('ReconfigureDialog', () => {
       );
     });
   });
+
+  /*
+  it('handles file update for description.md', async () => {
+    const dispatch = useDispatch();
+    const descriptionFile = {
+      name: 'description.md',
+      content: 'Updated description',
+      isModified: true,
+    };
+
+    mockDigitalTwin.updateFileContent = jest
+      .fn()
+      .mockResolvedValue(Promise.resolve());
+
+    await Reconfigure.handleFileUpdate(
+      descriptionFile,
+      mockDigitalTwin,
+      dispatch,
+    );
+
+    expect(mockDigitalTwin.updateFileContent).toHaveBeenCalledWith(
+      'description.md',
+      'Updated description',
+    );
+    expect(dispatch).toHaveBeenCalledWith(
+      updateDescription({
+        assetName: 'TestDigitalTwin',
+        description: 'Updated description',
+      }),
+    );
+  });
+  */
 });

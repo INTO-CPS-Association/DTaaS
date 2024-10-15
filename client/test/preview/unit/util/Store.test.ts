@@ -203,7 +203,9 @@ describe('reducers', () => {
 
     it('should getModifiedFiles', () => {
       initialState.files = [file1, file2];
-      const getModifiedFilesSelector = getModifiedFiles(initialState.files);
+      const getModifiedFilesSelector = getModifiedFiles({
+        files: initialState.files,
+      });
       expect(getModifiedFilesSelector).toEqual([file1, file2]);
     });
 
