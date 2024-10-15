@@ -52,13 +52,13 @@ describe('DigitalTwin', () => {
   beforeEach(() => {
     mockGitlabInstance.projectId = 1;
     dt = new DigitalTwin('test-DTName', mockGitlabInstance);
-  });
 
-  it('should get description files', async () => {
     (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
       mockResponse,
     );
+  });
 
+  it('should get description files', async () => {
     await dt.getDescriptionFiles();
 
     expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
@@ -78,10 +78,6 @@ describe('DigitalTwin', () => {
   });
 
   it('should get lifecycle files', async () => {
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
-      mockResponse,
-    );
-
     await dt.getLifecycleFiles();
 
     expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
@@ -101,10 +97,6 @@ describe('DigitalTwin', () => {
   });
 
   it('should get config files', async () => {
-    (mockApi.Repositories.allRepositoryTrees as jest.Mock).mockResolvedValue(
-      mockResponse,
-    );
-
     await dt.getConfigFiles();
 
     expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
