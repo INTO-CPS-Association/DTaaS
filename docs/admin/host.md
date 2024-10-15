@@ -234,7 +234,7 @@ please change,
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
+      - ${DTAAS_DIR}/deploy/config/lib.env:/dtaas/libms/.env
       - ${DTAAS_DIR}/files/common:/dtaas/libms/files
 ```
 

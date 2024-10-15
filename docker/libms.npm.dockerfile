@@ -9,7 +9,7 @@ WORKDIR /dtaas/libms
 ARG VERSION="latest"
 RUN npm i -g @into-cps-association/libms@${VERSION}
 
-COPY ./deploy/config/lib.docker .env
+COPY ./deploy/config/lib.env .env
 COPY ./servers/lib/config/http.json .
 
 # Define the command to run your app
