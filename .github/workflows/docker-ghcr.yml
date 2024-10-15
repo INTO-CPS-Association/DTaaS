@@ -21,7 +21,6 @@ on:
 
 env:
   registry: ghcr.io
-  ghcr-scope: ${{ github.repository_owner }}
   password: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -35,6 +34,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      # Sets a new environment variable that can be accessed in later
+      # steps via ${{ env.ghcr-scope }}
+      - name: Get repository owner in lower-case
+        run: |
+          echo "ghcr-scope=${REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
