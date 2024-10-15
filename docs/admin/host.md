@@ -113,8 +113,8 @@ Edit all the fields according to your specific case.
   | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
-  | CLIENT_ID | 'xx' | The ID of your server OAuth application |
-  | CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
+  | OAUTH_CLIENT_ID | 'xx' | The ID of your server OAuth application |
+  | OAUTH_CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
   | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
