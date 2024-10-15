@@ -49,6 +49,13 @@ describe('DigitalTwin', () => {
     expect(resultArray).toEqual([]);
   };
 
+  const expectAllRepositoryTreesCalled = (recursive = true) => {
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
+      path: 'digital_twins/test-DTName',
+      recursive,
+    });
+  };
+
   beforeEach(() => {
     mockGitlabInstance.projectId = 1;
     dt = new DigitalTwin('test-DTName', mockGitlabInstance);
@@ -61,10 +68,7 @@ describe('DigitalTwin', () => {
   it('should get description files', async () => {
     await dt.getDescriptionFiles();
 
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: true,
-    });
+    expectAllRepositoryTreesCalled();
 
     expect(dt.descriptionFiles).toEqual(['file1.md']);
   });
@@ -80,10 +84,7 @@ describe('DigitalTwin', () => {
   it('should get lifecycle files', async () => {
     await dt.getLifecycleFiles();
 
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: true,
-    });
+    expectAllRepositoryTreesCalled();
 
     expect(dt.lifecycleFiles).toEqual(['file3']);
   });
@@ -99,10 +100,7 @@ describe('DigitalTwin', () => {
   it('should get config files', async () => {
     await dt.getConfigFiles();
 
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
-      path: 'digital_twins/test-DTName',
-      recursive: false,
-    });
+    expectAllRepositoryTreesCalled(false);
 
     expect(dt.configFiles).toEqual(['file2.json']);
   });
