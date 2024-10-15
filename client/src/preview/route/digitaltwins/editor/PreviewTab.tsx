@@ -20,13 +20,15 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
     const renderedMarkdown = md.render(fileContent);
 
     return (
-      <div style={{
-        width: '100%',
-        overflowWrap: 'break-word',
-        wordWrap: 'break-word',
-        whiteSpace: 'normal',
-        overflow: 'hidden',
-      }}>
+      <div
+        style={{
+          width: '100%',
+          overflowWrap: 'break-word',
+          wordWrap: 'break-word',
+          whiteSpace: 'normal',
+          overflow: 'hidden',
+        }}
+      >
         <div
           dangerouslySetInnerHTML={{
             __html: renderedMarkdown,
@@ -59,7 +61,7 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
       </div>
     );
   }
-  
+
   if (fileType === 'json') {
     return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
   }

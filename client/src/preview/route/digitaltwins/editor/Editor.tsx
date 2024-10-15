@@ -45,7 +45,7 @@ function Editor({ DTName }: EditorProps) {
             padding: 2,
             border: '1px solid lightgray',
             marginTop: 2,
-            width: '800px'
+            width: '800px',
           }}
         >
           {activeTab === 0 && (

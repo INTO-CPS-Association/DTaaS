@@ -14,11 +14,17 @@ interface DetailsDialogProps {
   name: string;
 }
 
-const handleCloseDetailsDialog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+const handleCloseDetailsDialog = (
+  setShowLog: Dispatch<SetStateAction<boolean>>,
+) => {
   setShowLog(false);
 };
 
-function DetailsDialog({ showDialog, setShowDialog, name }: DetailsDialogProps) {
+function DetailsDialog({
+  showDialog,
+  setShowDialog,
+  name,
+}: DetailsDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
 
   const md = new Remarkable({
@@ -39,7 +45,10 @@ function DetailsDialog({ showDialog, setShowDialog, name }: DetailsDialogProps) 
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleCloseDetailsDialog(setShowDialog)} color="primary">
+        <Button
+          onClick={() => handleCloseDetailsDialog(setShowDialog)}
+          color="primary"
+        >
           Close
         </Button>
       </DialogActions>

@@ -36,6 +36,22 @@ class DigitalTwin {
     this.gitlabInstance = gitlabInstance;
   }
 
+  async getDescription(): Promise<void> {
+    if (this.gitlabInstance.projectId) {
+      const descriptionPath = `digital_twins/${this.DTName}/description.md`;
+      try {
+        const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
+          this.gitlabInstance.projectId,
+          descriptionPath,
+          'main',
+        );
+        this.description = atob(fileData.content);
+      } catch (error) {
+        this.description = '';
+      }
+    }
+  }
+
   async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       const readmePath = `digital_twins/${this.DTName}/README.md`;
@@ -215,7 +231,8 @@ class DigitalTwin {
       const filteredFiles = response
         .filter(
           (item: { type: string; name: string }) =>
-            item.type === 'blob' && (item.name.endsWith('.json') || item.name.endsWith('.yml')),
+            item.type === 'blob' &&
+            (item.name.endsWith('.json') || item.name.endsWith('.yml')),
         )
         .map((file: { name: string }) => file.name);
 

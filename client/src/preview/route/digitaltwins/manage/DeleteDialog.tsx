@@ -19,7 +19,9 @@ interface DeleteDialogProps {
   onDelete: () => void;
 }
 
-const handleCloseDeleteDialog = (setShowLog: Dispatch<SetStateAction<boolean>>) => {
+const handleCloseDeleteDialog = (
+  setShowLog: Dispatch<SetStateAction<boolean>>,
+) => {
   setShowLog(false);
 };
 
@@ -57,7 +59,10 @@ function DeleteDialog({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={() => handleCloseDeleteDialog(setShowDialog)}>
+        <Button
+          color="primary"
+          onClick={() => handleCloseDeleteDialog(setShowDialog)}
+        >
           Cancel
         </Button>
         <Button

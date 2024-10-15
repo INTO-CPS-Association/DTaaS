@@ -6,7 +6,9 @@ interface DeleteButtonProps {
   setShowDelete: Dispatch<React.SetStateAction<boolean>>;
 }
 
-const handleToggleDeleteDialog = (setShowDelete: Dispatch<SetStateAction<boolean>>) => {
+const handleToggleDeleteDialog = (
+  setShowDelete: Dispatch<SetStateAction<boolean>>,
+) => {
   setShowDelete(true);
 };
 

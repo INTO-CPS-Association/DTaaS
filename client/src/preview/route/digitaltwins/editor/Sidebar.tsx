@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Grid, Typography, CircularProgress } from '@mui/material';
+import { Grid, CircularProgress } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useSelector } from 'react-redux';
@@ -123,80 +123,73 @@ const Sidebar = ({
         overflowY: 'auto',
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        Description
-      </Typography>
       <SimpleTreeView>
-        {digitalTwin.descriptionFiles.map((item, id) => (
-          <TreeItem
-            key={id}
-            itemId={item}
-            label={item}
-            onClick={() =>
-              handleFileClick(
-                item,
-                digitalTwin,
-                setFileName,
-                setFileContent,
-                setFileType,
-                modifiedFiles,
-              )
-            }
-          />
-        ))}
-      </SimpleTreeView>
+        <TreeItem itemId="description" label="Description">
+          {digitalTwin.descriptionFiles.map((item, id) => (
+            <TreeItem
+              key={id}
+              itemId={item}
+              label={item}
+              onClick={() =>
+                handleFileClick(
+                  item,
+                  digitalTwin,
+                  setFileName,
+                  setFileContent,
+                  setFileType,
+                  modifiedFiles,
+                )
+              }
+            />
+          ))}
+        </TreeItem>
 
-      <Typography variant="h6" gutterBottom>
-        Lifecycle
-      </Typography>
-      <SimpleTreeView>
-        {digitalTwin.lifecycleFiles.map((item, id) => (
-          <TreeItem
-            key={id}
-            itemId={item}
-            label={item}
-            onClick={() =>
-              handleFileClick(
-                item,
-                digitalTwin,
-                setFileName,
-                setFileContent,
-                setFileType,
-                modifiedFiles,
-              )
-            }
-          />
-        ))}
-      </SimpleTreeView>
+        <TreeItem itemId="configuration" label="Configuration">
+          {digitalTwin.configFiles.map((item, id) => (
+            <TreeItem
+              key={id}
+              itemId={item}
+              label={item}
+              onClick={() =>
+                handleFileClick(
+                  item,
+                  digitalTwin,
+                  setFileName,
+                  setFileContent,
+                  setFileType,
+                  modifiedFiles,
+                )
+              }
+            >
+              {item.startsWith('Service') && (
+                <TreeItem
+                  itemId={`${id}-service`}
+                  label={`More info for ${item}`}
+                />
+              )}
+            </TreeItem>
+          ))}
+        </TreeItem>
 
-      <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
-        Config
-      </Typography>
-      <SimpleTreeView>
-        {digitalTwin.configFiles.map((item, id) => (
-          <TreeItem
-            key={id}
-            itemId={item}
-            label={item}
-            onClick={() =>
-              handleFileClick(
-                item,
-                digitalTwin,
-                setFileName,
-                setFileContent,
-                setFileType,
-                modifiedFiles,
-              )
-            }
-          >
-            {item.startsWith('Service') && (
-              <TreeItem
-                itemId={`${id}-service`}
-                label={`More info for ${item}`}
-              />
-            )}
-          </TreeItem>
-        ))}
+        <TreeItem itemId="lifecycle" label="Lifecycle">
+          {digitalTwin.lifecycleFiles.map((item, id) => (
+            <TreeItem
+              key={id}
+              itemId={item}
+              label={item}
+              onClick={() =>
+                handleFileClick(
+                  item,
+                  digitalTwin,
+                  setFileName,
+                  setFileContent,
+                  setFileType,
+                  modifiedFiles,
+                )
+              }
+            />
+          ))}
+        </TreeItem>
       </SimpleTreeView>
     </Grid>
   );
