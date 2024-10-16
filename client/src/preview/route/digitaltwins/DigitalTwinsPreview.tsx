@@ -44,7 +44,7 @@ export const fetchSubfolders = async (
     dispatch(setAssets([]));
     return [];
   } catch (error) {
-    setError(`An error occurred${error}`);
+    setError(`An error occurred. ${error}`);
     return [];
   }
 };
