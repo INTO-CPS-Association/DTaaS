@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install
+          yarn install --network-timeout 1000000
           yarn playwright install --with-deps
 
       - name: Run the linting checks
