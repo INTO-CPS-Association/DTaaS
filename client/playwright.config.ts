@@ -55,7 +55,7 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      use: { browserName: 'firefox' },
+      use: { browserName: 'chromium' },
     },
     {
       name: 'chromium',

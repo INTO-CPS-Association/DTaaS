@@ -1,21 +1,8 @@
 import { JobSchema } from '@gitbeaker/rest';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
-import digitalTwinReducer, {
-  setDigitalTwin,
-} from 'preview/store/digitalTwin.slice';
-import snackbarSlice from 'preview/store/snackbar.slice';
+import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
-
-const store = configureStore({
-  reducer: {
-    digitalTwin: digitalTwinReducer,
-    snackbar: snackbarSlice,
-  },
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
-});
+import { previewStore as store } from 'test/preview/integration/integration.testUtil';
 
 describe('PipelineUtils', () => {
   const digitalTwin = mockDigitalTwin;
