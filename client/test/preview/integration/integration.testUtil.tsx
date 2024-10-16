@@ -5,7 +5,21 @@ import routes from 'routes';
 import * as React from 'react';
 import { useAuth } from 'react-oidc-context';
 import store from 'store/store';
+import { configureStore } from '@reduxjs/toolkit';
+import digitalTwinReducer from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
 import { mockAuthState, mockAuthStateType } from '../__mocks__/global_mocks';
+
+export const previewStore = configureStore({
+  reducer: {
+    digitalTwin: digitalTwinReducer,
+    snackbar: snackbarSlice,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
 
 const renderWithAppProvider = (route: string) => {
   window.history.pushState({}, 'Test page', route);
