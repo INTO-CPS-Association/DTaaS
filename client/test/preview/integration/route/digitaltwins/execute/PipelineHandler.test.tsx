@@ -68,7 +68,7 @@ describe('PipelineHandler Integration Tests', () => {
 
     const snackbarState = store.getState().snackbar as SnackbarState;
     expect(snackbarState.message).toBe(
-      `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
+      `Execution stop failed for ${formatName(digitalTwin.DTName)}. Error: error`,
     );
 
     stopPipelinesMock.mockRestore();
