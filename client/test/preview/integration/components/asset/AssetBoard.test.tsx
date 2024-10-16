@@ -2,11 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
@@ -32,9 +28,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   }),
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 mockDigitalTwin.description = 'Mocked description';
