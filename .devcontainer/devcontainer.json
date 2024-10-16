@@ -28,7 +28,7 @@
 		"ghcr.io/devcontainers-contrib/features/markdownlint-cli:1": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/mkdocs:2": {
+		"ghcr.io/devcontainers-extra/features/mkdocs:2": {
 			"version": "latest",
 			"plugins": "mkdocs-material pymdown-extensions mkdocstrings[crystal,python] mkdocs-monorepo-plugin mkdocs-pdf-export-plugin mkdocs-awesome-pages-plugin python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode"
 		},
@@ -58,9 +58,9 @@
 			"username": "node"
 		}
 	},
-  "customizations": {
-    "vscode": {
-      "extensions": [
+	"customizations": {
+		"vscode": {
+			"extensions": [
 				"AlexShen.classdiagram-ts",
 				"christian-kohler.npm-intellisense",
 				"DavidAnson.vscode-markdownlin",
@@ -74,34 +74,34 @@
 				"VisualStudioExptTeam.vscodeintellicode",
 				"vscode-icons-team.vscode-icons"
 			],
-      "settings": {
-        "editor.tabSize": 2,
-        "terminal.integrated.defaultProfile.linux": "zsh",
-        "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "bash",
-            "icon": "terminal-bash"
-          },
-          "zsh": {
-            "path": "zsh"
-          },
-          "tmux": {
-            "path": "tmux",
-            "icon": "terminal-tmux"
-          },
-          "pwsh": {
-            "path": "pwsh",
-            "icon": "terminal-powershell"
-          }
-        }
-      }
-    }
-  },
+			"settings": {
+				"editor.tabSize": 2,
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash"
+					},
+					"zsh": {
+						"path": "zsh"
+					},
+					"tmux": {
+						"path": "tmux",
+						"icon": "terminal-tmux"
+					},
+					"pwsh": {
+						"path": "pwsh",
+						"icon": "terminal-powershell"
+					}
+				}
+			}
+		}
+	},
 	"forwardPorts": [
-    4000,		//react client
-    4001,		// lib microservice
-    5000,		// DT runner
-		8000		// mkdocs
+		4000, //react client
+		4001, // lib microservice
+		5000, // DT runner
+		8000 // mkdocs
 	]
 }
 // Execute after login:
