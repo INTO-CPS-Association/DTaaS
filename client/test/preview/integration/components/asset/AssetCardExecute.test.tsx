@@ -1,8 +1,4 @@
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
@@ -20,9 +16,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   }),
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 describe('AssetCardExecute Integration Test', () => {

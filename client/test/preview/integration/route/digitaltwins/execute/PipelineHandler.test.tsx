@@ -1,6 +1,6 @@
 import * as PipelineHandlers from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
@@ -12,9 +12,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   },
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 describe('PipelineHandler Integration Tests', () => {
@@ -80,7 +81,7 @@ describe('PipelineHandler Integration Tests', () => {
 
     const snackbarState = store.getState().snackbar as SnackbarState;
     expect(snackbarState.message).toBe(
-      `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
+      `Execution stop failed for ${formatName(digitalTwin.DTName)}. Error: error`,
     );
 
     stopPipelinesMock.mockRestore();

@@ -1,5 +1,5 @@
 import { JobSchema } from '@gitbeaker/rest';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import digitalTwinReducer, {
   setDigitalTwin,
@@ -12,9 +12,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   },
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 describe('PipelineUtils', () => {
