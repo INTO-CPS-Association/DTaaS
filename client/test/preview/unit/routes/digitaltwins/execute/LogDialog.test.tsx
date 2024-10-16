@@ -25,7 +25,7 @@ describe('LogDialog', () => {
   });
 
   it('renders the LogDialog with logs available', () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       jobLogs: [{ jobName: 'job', log: 'testLog' }],
     });
 
@@ -37,7 +37,7 @@ describe('LogDialog', () => {
   });
 
   it('renders the LogDialog with no logs available', () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       jobLogs: [],
     });
 
@@ -47,7 +47,7 @@ describe('LogDialog', () => {
   });
 
   it('handles button click', async () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       jobLogs: [{ jobName: 'create', log: 'create log' }],
     });
 

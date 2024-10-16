@@ -55,7 +55,9 @@ describe('StartStopButton', () => {
   });
 
   it('renders the circular progress when pipelineLoading is true', () => {
-    (redux.useSelector as jest.Mock).mockReturnValue({
+    (
+      redux.useSelector as jest.MockedFunction<typeof redux.useSelector>
+    ).mockReturnValue({
       DTName: assetName,
       pipelineLoading: true,
     });
