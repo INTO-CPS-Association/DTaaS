@@ -9,6 +9,7 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web.forwardedHeaders.insecure=true"
       - "--entrypoints.web.proxyProtocol.insecure=true"
+      - "--log.level=DEBUG"
     ports:
       - "80:80"
     volumes:
@@ -102,6 +103,7 @@ services:
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
       - CONFIG=/conf
+      - LOG_LEVEL=debug
     labels:
       - "traefik.enable=true"
 
