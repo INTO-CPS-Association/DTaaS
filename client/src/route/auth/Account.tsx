@@ -11,7 +11,7 @@ function AccountContent() {
   }));
 
   return (
-    <Layout>
+    <Layout sx={{ display: 'flex' }}>
       <TabComponent assetType={AccountTab} scope={[]} />
     </Layout>
   );

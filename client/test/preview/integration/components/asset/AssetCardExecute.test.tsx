@@ -4,7 +4,7 @@ import {
   getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
-import AssetCardExecute from 'preview/components/asset/AssetCard';
+import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
@@ -37,7 +37,6 @@ describe('AssetCardExecute Integration Test', () => {
       setAssets([
         {
           name: 'Asset 1',
-          description: 'Mocked description',
           path: 'path/asset1',
         },
       ]),

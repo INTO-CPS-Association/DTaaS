@@ -66,7 +66,6 @@ export const mockGitlabInstance: GitlabInstance = {
   init: jest.fn(),
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
-  getDTDescription: jest.fn(),
   getDTSubfolders: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
@@ -84,9 +83,11 @@ export const mockDigitalTwin: DigitalTwin = {
   jobLogs: [{ jobName: 'job1', log: 'log1' }],
   pipelineLoading: false,
   pipelineCompleted: false,
-  descriptionFiles: ['file1'],
-  configFiles: ['file2'],
+  descriptionFiles: ['descriptionFile'],
+  lifecycleFiles: ['lifecycleFile'],
+  configFiles: ['configFile'],
 
+  getDescription: jest.fn(),
   getFullDescription: jest.fn(),
   execute: jest.fn(),
   isValidInstance: jest.fn(),
@@ -94,6 +95,12 @@ export const mockDigitalTwin: DigitalTwin = {
   logSuccess: jest.fn(),
   logError: jest.fn(),
   stop: jest.fn(),
+  delete: jest.fn(),
+  getDescriptionFiles: jest.fn(),
+  getLifecycleFiles: jest.fn(),
+  getConfigFiles: jest.fn(),
+  getFileContent: jest.fn(),
+  updateFileContent: jest.fn(),
 };
 
 jest.mock('util/envUtil', () => ({

@@ -5,12 +5,6 @@ import { Provider, useSelector, useDispatch } from 'react-redux';
 import store from 'store/store';
 import { hideSnackbar } from 'preview/store/snackbar.slice';
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useSelector: jest.fn(),
-  useDispatch: jest.fn(),
-}));
-
 jest.useFakeTimers();
 
 describe('CustomSnackbar', () => {

@@ -82,24 +82,6 @@ describe('GitlabInstance', () => {
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
   });
 
-  it('should handle error fetching DT description', async () => {
-    const dtName = 'test-dt';
-    const readmePath = `digital_twins/${dtName}/description.md`;
-
-    mockApi.RepositoryFiles.show.mockRejectedValue(
-      new Error('Failed to fetch'),
-    );
-
-    await expect(gitlab.getDTDescription(dtName)).rejects.toThrow(
-      'Failed to fetch',
-    );
-    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
-      gitlab.projectId!,
-      readmePath,
-      'main',
-    );
-  });
-
   it('should fetch DT subfolders successfully', async () => {
     const projectId = 1;
     const files = [
@@ -107,12 +89,6 @@ describe('GitlabInstance', () => {
       { name: 'subfolder2', path: 'digital_twins/subfolder2', type: 'tree' },
       { name: 'file1', path: 'digital_twins/file1', type: 'blob' },
     ];
-
-    gitlab.getDTDescription = jest
-      .fn()
-      .mockImplementation((name: string) =>
-        Promise.resolve(`Description for ${name}`),
-      );
 
     mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
 
@@ -123,12 +99,10 @@ describe('GitlabInstance', () => {
       {
         name: 'subfolder1',
         path: 'digital_twins/subfolder1',
-        description: 'Description for subfolder1',
       },
       {
         name: 'subfolder2',
         path: 'digital_twins/subfolder2',
-        description: 'Description for subfolder2',
       },
     ]);
     expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
@@ -198,23 +172,5 @@ describe('GitlabInstance', () => {
 
     expect(result).toBe(status);
     expect(mockApi.Pipelines.show).toHaveBeenCalledWith(projectId, pipelineId);
-  });
-
-  it('should fetch DT description successfully and decode content', async () => {
-    const dtName = 'test-dt';
-    const readmePath = `digital_twins/${dtName}/description.md`;
-    const encodedContent = btoa('Description content');
-    const mockFileData = { content: encodedContent };
-
-    mockApi.RepositoryFiles.show.mockResolvedValue(mockFileData);
-
-    const description = await gitlab.getDTDescription(dtName);
-
-    expect(description).toBe('Description content');
-    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
-      gitlab.projectId!,
-      readmePath,
-      'main',
-    );
   });
 });

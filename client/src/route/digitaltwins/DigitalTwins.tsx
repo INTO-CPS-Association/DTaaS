@@ -24,7 +24,7 @@ function DTContent() {
   }));
 
   return (
-    <Layout>
+    <Layout sx={{ display: 'flex' }}>
       <TabComponent assetType={DTTab} scope={[]} />
     </Layout>
   );
