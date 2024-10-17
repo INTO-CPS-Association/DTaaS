@@ -112,7 +112,7 @@
         <mxCell id="H2EkaaQp6U4Bhbb27kao-24" value="GET /BackendMS" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="100" y="98" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="H2EkaaQp6U4Bhbb27kao-25" value="GET authcode (using CLIENT ID);&lt;br&gt;redirects user for login &amp;amp; approval" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="H2EkaaQp6U4Bhbb27kao-25" value="GET authcode (using OAUTH_CLIENT_ID);&lt;br&gt;redirects user for login &amp;amp; approval" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="351" y="115" width="210" height="40" as="geometry" />
         </mxCell>
         <mxCell id="H2EkaaQp6U4Bhbb27kao-26" value="Serves login page to user" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
