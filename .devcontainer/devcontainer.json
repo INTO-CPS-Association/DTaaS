@@ -3,14 +3,16 @@
 {
 	"name": "Digital Twin as a Service",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:22-bullseye",
 	"features": {
-		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+		"ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
+			"version": "latest",
 			"clean_ppas": true,
 			"preserve_apt_list": true,
 			"packages": "curl graphviz htop net-tools powerline"
 		},
 		"ghcr.io/devcontainers/features/common-utils:2": {
+			"version": "latest",
 			"installZsh": true,
 			"configureZshAsDefaultShell": true,
 			"installOhMyZsh": true,
@@ -19,40 +21,45 @@
 			"userUid": "1001",
 			"userGid": "automatic"
 		},
-		"ghcr.io/devcontainers-contrib/features/exa:1": {
+		"ghcr.io/devcontainers-extra/features/exa:1": {
 			"version": "latest"
 		},
 		"ghcr.io/devcontainers/features/git:1": {
 			"version": "os-provided"
 		},
-		"ghcr.io/devcontainers-contrib/features/markdownlint-cli:1": {
+		"ghcr.io/devcontainers-extra/features/markdownlint-cli:1": {
 			"version": "latest"
 		},
 		"ghcr.io/devcontainers-extra/features/mkdocs:2": {
 			"version": "latest",
 			"plugins": "mkdocs-material pymdown-extensions mkdocstrings[crystal,python] mkdocs-monorepo-plugin mkdocs-pdf-export-plugin mkdocs-awesome-pages-plugin python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode"
 		},
-		"ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {
+		"ghcr.io/devcontainers-extra/features/nestjs-cli:2": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/npm-package:1": {
+		"ghcr.io/devcontainers-extra/features/npm-package:1": {
 			"package": "madge"
 		},
-		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {},
-		"ghcr.io/devcontainers-contrib/features/poetry:2": {
+		"ghcr.io/devcontainers-extra/features/pipx-package:1": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/pre-commit:2": {
+		"ghcr.io/devcontainers-extra/features/poetry:2": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/tmux-apt-get:1": {},
-		"ghcr.io/devcontainers-contrib/features/typescript:2": {
+		"ghcr.io/devcontainers-extra/features/pre-commit:2": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/vercel-serve:1": {
+		"ghcr.io/devcontainers-extra/features/tmux-apt-get:1": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
+		"ghcr.io/devcontainers-extra/features/typescript:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-extra/features/vercel-serve:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+			"version": "latest",
 			"plugins": "ssh-agent npm zsh-autosuggestions",
 			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
 			"username": "node"
