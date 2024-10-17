@@ -47,7 +47,7 @@ class DigitalTwin {
         );
         this.description = atob(fileData.content);
       } catch (error) {
-        this.description = '';
+        this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
       }
     }
   }

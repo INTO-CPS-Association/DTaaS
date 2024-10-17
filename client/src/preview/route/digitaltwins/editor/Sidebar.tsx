@@ -160,14 +160,7 @@ const Sidebar = ({
                   modifiedFiles,
                 )
               }
-            >
-              {item.startsWith('Service') && (
-                <TreeItem
-                  itemId={`${id}-service`}
-                  label={`More info for ${item}`}
-                />
-              )}
-            </TreeItem>
+            />
           ))}
         </TreeItem>
 

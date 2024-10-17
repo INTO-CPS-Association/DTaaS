@@ -57,7 +57,9 @@ describe('DigitalTwin', () => {
 
     await dt.getDescription();
 
-    expect(dt.description).toBe('');
+    expect(dt.description).toBe(
+      'There is no description.md file in the test-DTName GitLab folder',
+    );
   });
 
   it('should return full description with updated image URLs if projectId exists', async () => {
