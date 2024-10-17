@@ -41,7 +41,7 @@ actual request (a user redirect) looks like:
 https ://gitlab.foo.com/oauth/
 authorize?
 response_type=code&
-client_id=CLIENT_ID&
+client_id=OAUTH_CLIENT_ID&
 redirect_uri=REDIRECT_URI&
 scope=read_user&state = STATE
 ```
@@ -97,8 +97,8 @@ REDIRECT_URI?code=AUTHCODE&state=STATE
 
 ```json
 POST https://gitlab.foo.com/oauth/token,
-parameters = 'client_id=CLIENT_ID&
-client_secret=CLIENT_SECRET&
+parameters = 'client_id=OAUTH_CLIENT_ID&
+client_secret=OAUTH_CLIENT_SECRET&
 code=AUTHCODE&
 grant_type=authorization_code&
 redirect_uri=REDIRECT_URI'
@@ -346,8 +346,8 @@ environment:
   - PROVIDERS_GENERIC_OAUTH_AUTH_URL=https://gitlab.foo.com/oauth/authorize
   - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=https://gitlab.foo.com/oauth/token
   - PROVIDERS_GENERIC_OAUTH_USER_URL=https://gitlab.foo.com/api/v4/user
-  - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=CLIENT_ID
-  - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=CLIENT_SECRET
+  - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=OAUTH_CLIENT_ID
+  - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=OAUTH_CLIENT_SECRET
   - PROVIDERS_GENERIC_OAUTH_SCOPE = read_user
   - SECRET = a - random - string
   # INSECURE_COOKIE is required if
