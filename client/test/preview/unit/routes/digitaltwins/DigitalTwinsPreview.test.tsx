@@ -93,6 +93,6 @@ describe('Digital Twins', () => {
     expect(init).toHaveBeenCalled();
     expect(getDTSubfolders).toHaveBeenCalledWith(1);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(setError).toHaveBeenCalledWith('An error occurred. Error: error');
+    expect(setError).toHaveBeenCalledWith('An error occurred');
   });
 });
