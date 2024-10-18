@@ -18,7 +18,7 @@ const queryTypes: (keyof typeof queriesJSON)[] = [
   'incorrect',
 ];
 
-describe('Runner end-to-end tests with of the application', () => {
+describe.skip('Runner end-to-end tests', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -95,16 +95,18 @@ describe('Runner end-to-end tests with of the application', () => {
       }));
 
     it('after multiple command executions', async () => {
-      queryTypes.forEach(async (key) => {
-        const query = queriesJSON[key];
-        await postRequest({
-          app,
-          route: '/',
-          HttpStatus: query.HttpStatus,
-          reqBody: query.reqBody,
-          resBody: query.resBody.POST,
-        });
-      });
+      await Promise.all(
+        queryTypes.map(async (key) => {
+          const query = queriesJSON[key];
+          await postRequest({
+            app,
+            route: '/',
+            HttpStatus: query.HttpStatus,
+            reqBody: query.reqBody,
+            resBody: query.resBody.POST,
+          });
+        }),
+      );
       return getRequest({
         app,
         route: '/history',

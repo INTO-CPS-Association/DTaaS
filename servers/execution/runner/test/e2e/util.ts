@@ -33,7 +33,7 @@ export async function postRequest(query: Query) {
     .expect(query.resBody);
 }
 
-export function getRequest(query: Query) {
+export async function getRequest(query: Query) {
   return supertest(query.app.getHttpServer())
     .get(query.route)
     .send(query.reqBody)
