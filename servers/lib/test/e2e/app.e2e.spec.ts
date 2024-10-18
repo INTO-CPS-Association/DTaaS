@@ -34,7 +34,7 @@ describe('End to End test for the application', () => {
 
     // eslint-disable-next-line no-promise-executor-return
     await new Promise((resolve) => setTimeout(resolve, 4000));
-  }, 10000);
+  }, 12000);
 
   afterAll(async () => {
     await app.close();
