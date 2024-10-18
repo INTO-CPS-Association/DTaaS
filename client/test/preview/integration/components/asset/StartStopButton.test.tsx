@@ -8,11 +8,7 @@ import {
 import StartStopButton from 'preview/components/asset/StartStopButton';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
   setPipelineLoading,
@@ -35,9 +31,10 @@ const createStore = () =>
     reducer: combineReducers({
       digitalTwin: digitalTwinReducer,
     }),
-    middleware: getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
   });
 
 describe('StartStopButton Integration Test', () => {

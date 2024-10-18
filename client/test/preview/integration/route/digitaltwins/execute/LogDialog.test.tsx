@@ -2,11 +2,7 @@ import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import { Provider } from 'react-redux';
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
   setJobLogs,
@@ -17,9 +13,10 @@ const store = configureStore({
   reducer: combineReducers({
     digitalTwin: digitalTwinReducer,
   }),
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 describe('LogDialog', () => {

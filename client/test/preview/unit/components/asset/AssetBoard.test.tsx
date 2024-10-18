@@ -29,16 +29,19 @@ describe('AssetBoard', () => {
     );
 
   beforeEach(() => {
-    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      mockDispatch,
+    );
 
     const mockAssets = [
       { name: 'Asset 1', description: 'Test Asset', path: 'path1' },
     ];
 
-    (useSelector as jest.Mock).mockImplementation((selector) =>
-      selector({
-        assets: { items: mockAssets },
-      }),
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          assets: { items: mockAssets },
+        }),
     );
   });
 
