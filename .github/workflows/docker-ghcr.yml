@@ -1,6 +1,6 @@
 # Reusable workflow for building and pushing a Docker Image to GHCR.
 # 
-# Username is taken from the user who scheduled the workflow
+# Username is the repository owner converted to lowercase
 # Password is taken from the auto-generated GitHub token
 
 name: Build and Push Docker Image (GHCR)
