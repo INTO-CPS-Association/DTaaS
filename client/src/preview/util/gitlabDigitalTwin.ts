@@ -69,8 +69,8 @@ class DigitalTwin {
             return `${altText}(${fullUrl})`;
           },
         );
-      } catch (error) {
-        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder. ${error}`;
+      } catch (_error) {
+        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder. ${_error}`;
       }
     } else {
       this.fullDescription = 'Error fetching description, retry.';
