@@ -83,6 +83,12 @@ export default [{
             devDependencies: true,
         }],
 
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+              "caughtErrorsIgnorePattern": "^_",
+            }
+        ],
         "no-console": "error",
         "import/first": "error",
         "react/prop-types": "off",

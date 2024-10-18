@@ -43,8 +43,8 @@ export const fetchSubfolders = async (
     }
     dispatch(setAssets([]));
     return [];
-  } catch (error) {
-    setError(`An error occurred. ${error}`);
+  } catch (_error) {
+    setError(`An error occurred`);
     return [];
   }
 };
@@ -66,7 +66,6 @@ export const createDigitalTwinsForAssets = async (
   });
 };
 
-//
 export const DTContent = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
