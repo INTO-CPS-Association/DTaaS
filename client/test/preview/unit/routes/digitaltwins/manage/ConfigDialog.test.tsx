@@ -1,8 +1,14 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import ReconfigureDialog, * as Reconfigure from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import * as React from 'react';
-import { Provider, useDispatch } from 'react-redux';
-import store from 'store/store';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import store, { RootState } from 'store/store';
 
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
@@ -36,23 +42,32 @@ describe('ReconfigureDialog', () => {
   const setShowDialog = jest.fn();
   const name = 'TestDigitalTwin';
 
-
   beforeEach(() => {
     const dispatch = jest.fn();
     (useDispatch as jest.Mock).mockReturnValue(dispatch);
 
-    jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector: any) => {
-      if (selector === selectDigitalTwinByName('TestDigitalTwin')) {
+    (useSelector as jest.Mock).mockImplementation(
+      (selector: (state: RootState) => unknown) => {
+        if (selector === selectDigitalTwinByName('mockedDTName')) {
+          return mockDigitalTwin;
+        }
+        if (selector.toString().includes('state.files')) {
+          return [
+            {
+              name: 'description.md',
+              content: 'Updated description',
+              isModified: true,
+            },
+            {
+              name: 'lifecycle.md',
+              content: 'Updated lifecycle',
+              isModified: true,
+            },
+          ];
+        }
         return mockDigitalTwin;
-      }
-      if (selector.toString().includes('state.files')) {
-        return [
-          { name: 'description.md', content: 'Updated description', isModified: true },
-          { name: 'lifecycle.md', content: 'Updated lifecycle', isModified: true },
-        ];
-      }
-      return mockDigitalTwin;
-    });
+      },
+    );
 
     render(
       <Provider store={store}>
@@ -76,27 +91,26 @@ describe('ReconfigureDialog', () => {
 
   it('handles close dialog', async () => {
     const closeButton = screen.getByRole('button', { name: /Cancel/i });
-  
+
     act(() => {
       fireEvent.click(closeButton);
     });
-  
+
     expect(
       screen.getByText(
         'Are you sure you want to cancel? Changes will not be applied.',
       ),
     ).toBeInTheDocument();
-  
+
     const yesButton = screen.getByRole('button', { name: /Yes/i });
     act(() => {
       fireEvent.click(yesButton);
     });
-  
+
     await waitFor(() => {
       expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
-  
 
   it('calls handleCloseLog when the close function is called', async () => {
     await act(async () => {

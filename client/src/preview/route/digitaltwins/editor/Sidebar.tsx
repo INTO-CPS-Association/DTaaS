@@ -87,6 +87,28 @@ const Sidebar = ({
     loadData();
   }, [digitalTwin]);
 
+  const renderFileTreeItems = (label: string, files: string[]) => (
+    <TreeItem itemId={label.toLowerCase()} label={label}>
+      {files.map((item, id) => (
+        <TreeItem
+          key={id}
+          itemId={item}
+          label={item}
+          onClick={() =>
+            handleFileClick(
+              item,
+              digitalTwin,
+              setFileName,
+              setFileContent,
+              setFileType,
+              modifiedFiles,
+            )
+          }
+        />
+      ))}
+    </TreeItem>
+  );
+
   if (isLoading) {
     return (
       <Grid
@@ -124,65 +146,9 @@ const Sidebar = ({
       }}
     >
       <SimpleTreeView>
-        <TreeItem itemId="description" label="Description">
-          {digitalTwin.descriptionFiles.map((item, id) => (
-            <TreeItem
-              key={id}
-              itemId={item}
-              label={item}
-              onClick={() =>
-                handleFileClick(
-                  item,
-                  digitalTwin,
-                  setFileName,
-                  setFileContent,
-                  setFileType,
-                  modifiedFiles,
-                )
-              }
-            />
-          ))}
-        </TreeItem>
-
-        <TreeItem itemId="configuration" label="Configuration">
-          {digitalTwin.configFiles.map((item, id) => (
-            <TreeItem
-              key={id}
-              itemId={item}
-              label={item}
-              onClick={() =>
-                handleFileClick(
-                  item,
-                  digitalTwin,
-                  setFileName,
-                  setFileContent,
-                  setFileType,
-                  modifiedFiles,
-                )
-              }
-            />
-          ))}
-        </TreeItem>
-
-        <TreeItem itemId="lifecycle" label="Lifecycle">
-          {digitalTwin.lifecycleFiles.map((item, id) => (
-            <TreeItem
-              key={id}
-              itemId={item}
-              label={item}
-              onClick={() =>
-                handleFileClick(
-                  item,
-                  digitalTwin,
-                  setFileName,
-                  setFileContent,
-                  setFileType,
-                  modifiedFiles,
-                )
-              }
-            />
-          ))}
-        </TreeItem>
+        {renderFileTreeItems('Description', digitalTwin.descriptionFiles)}
+        {renderFileTreeItems('Configuration', digitalTwin.configFiles)}
+        {renderFileTreeItems('Lifecycle', digitalTwin.lifecycleFiles)}
       </SimpleTreeView>
     </Grid>
   );

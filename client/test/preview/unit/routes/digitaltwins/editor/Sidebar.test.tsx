@@ -1,10 +1,18 @@
-import { render, waitFor, screen, act, fireEvent } from '@testing-library/react';
-import Sidebar, { handleFileClick } from 'preview/route/digitaltwins/editor/Sidebar';
+import {
+  render,
+  waitFor,
+  screen,
+  act,
+  fireEvent,
+} from '@testing-library/react';
+import Sidebar, {
+  handleFileClick,
+} from 'preview/route/digitaltwins/editor/Sidebar';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
-import { FileState} from 'preview/store/file.slice';
+import { FileState } from 'preview/store/file.slice';
 import * as React from 'react';
-import { Provider } from 'react-redux';
-import store from 'store/store';
+import { Provider, useSelector } from 'react-redux';
+import store, { RootState } from 'store/store';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
@@ -12,22 +20,23 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-
 describe('Sidebar', () => {
   const setFileName = jest.fn();
   const setFileContent = jest.fn();
   const setFileType = jest.fn();
 
   beforeEach(async () => {
-    jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector: any) => {
-      if (selector === selectDigitalTwinByName('mockedDTName')) {
+    (useSelector as jest.Mock).mockImplementation(
+      (selector: (state: RootState) => unknown) => {
+        if (selector === selectDigitalTwinByName('mockedDTName')) {
+          return mockDigitalTwin;
+        }
+        if (selector.toString().includes('state.files')) {
+          return [];
+        }
         return mockDigitalTwin;
-      }
-      if (selector.toString().includes('state.files')) {
-        return [];
-      }
-      return mockDigitalTwin;
-    });
+      },
+    );
 
     await act(async () => {
       render(
@@ -54,7 +63,6 @@ describe('Sidebar', () => {
       expect(screen.getByText('Configuration')).toBeInTheDocument();
     });
   });
-  
 
   it('should update file state if the file is modified', async () => {
     const modifiedFiles: FileState[] = [
@@ -80,7 +88,9 @@ describe('Sidebar', () => {
 
   it('should fetch and update file state if the file is not modified', async () => {
     const modifiedFiles: FileState[] = [];
-    mockDigitalTwin.getFileContent = jest.fn().mockResolvedValue('fetched content');
+    mockDigitalTwin.getFileContent = jest
+      .fn()
+      .mockResolvedValue('fetched content');
 
     await act(async () => {
       await handleFileClick(
@@ -122,7 +132,7 @@ describe('Sidebar', () => {
 
   it('calls handleFileClick when a description file is clicked', async () => {
     const descriptionNode = screen.getByText('Description');
-    fireEvent.click(descriptionNode); 
+    fireEvent.click(descriptionNode);
 
     await waitFor(() => {
       expect(screen.getByText('descriptionFile')).toBeInTheDocument();
@@ -134,7 +144,7 @@ describe('Sidebar', () => {
 
   it('calls handleFileClick when a config file is clicked', async () => {
     const configurationNode = screen.getByText('Configuration');
-    fireEvent.click(configurationNode); 
+    fireEvent.click(configurationNode);
 
     await waitFor(() => {
       expect(screen.getByText('configFile')).toBeInTheDocument();
@@ -146,7 +156,7 @@ describe('Sidebar', () => {
 
   it('calls handleFileClick when a lifecycle file is clicked', async () => {
     const lifecycleNode = screen.getByText('Lifecycle');
-    fireEvent.click(lifecycleNode); 
+    fireEvent.click(lifecycleNode);
 
     await waitFor(() => {
       expect(screen.getByText('lifecycleFile')).toBeInTheDocument();
@@ -170,7 +180,8 @@ describe('Sidebar', () => {
       );
     });
 
-    expect(setFileContent).toHaveBeenCalledWith('Error fetching testFile.md content');
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching testFile.md content',
+    );
   });
 });
-

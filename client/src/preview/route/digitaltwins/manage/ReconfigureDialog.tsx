@@ -13,10 +13,7 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import {
-  FileState,
-  saveAllFiles,
-} from '../../../store/file.slice';
+import { FileState, saveAllFiles } from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,

@@ -13,7 +13,9 @@ import {
   getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
-import digitalTwinReducer, { setDigitalTwin } from 'preview/store/digitalTwin.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import snackbarReducer, { showSnackbar } from 'preview/store/snackbar.slice';
@@ -224,8 +226,10 @@ describe('ReconfigureDialog', () => {
     const file = { name: 'test.md', content: 'Content', isModified: true };
     const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
     const dispatch = jest.fn();
-  
-    jest.spyOn(DigitalTwin.prototype, 'updateFileContent').mockRejectedValue('Mocked error');
+
+    jest
+      .spyOn(DigitalTwin.prototype, 'updateFileContent')
+      .mockRejectedValue('Mocked error');
 
     await ReconfigureDialog.handleFileUpdate(file, digitalTwin, dispatch);
 
