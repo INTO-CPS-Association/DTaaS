@@ -39,26 +39,22 @@ describe('Sidebar', () => {
       .mockResolvedValue(digitalTwin.lifecycleFiles);
   };
 
-  const clickFileType = async (
-    type: 'Description' | 'Configuration' | 'Lifecycle',
-    mockContent: string,
-  ) => {
+  const clickFileType = async (type: string) => {
     const node = screen.getByText(type);
     fireEvent.click(node);
 
     await waitFor(() => {
       expect(screen.queryByRole('circular-progress')).not.toBeInTheDocument();
     });
-
-    digitalTwin.getFileContent = jest.fn().mockResolvedValue(mockContent);
   };
 
   const testFileClick = async (
-    type: 'Description' | 'Configuration' | 'Lifecycle',
+    type: string,
     expectedFileNames: string[],
     mockContent: string,
   ) => {
-    await clickFileType(type, mockContent);
+    await clickFileType(type);
+    digitalTwin.getFileContent = jest.fn().mockResolvedValue(mockContent);
 
     await waitFor(() => {
       expectedFileNames.forEach((fileName) => {
@@ -72,6 +68,24 @@ describe('Sidebar', () => {
     await waitFor(() => {
       expect(setFileNameMock).toHaveBeenCalledWith(expectedFileNames[0]);
     });
+  };
+
+  const performFileTests = async () => {
+    await testFileClick(
+      'Description',
+      ['file1.md', 'file2.md'],
+      'file 1 content',
+    );
+    await testFileClick(
+      'Configuration',
+      ['config1.json', 'config2.json'],
+      'config 1 content',
+    );
+    await testFileClick(
+      'Lifecycle',
+      ['lifecycle1.txt', 'lifecycle2.txt'],
+      'lifecycle 1 content',
+    );
   };
 
   beforeEach(async () => {
@@ -93,12 +107,7 @@ describe('Sidebar', () => {
 
       setupDigitalTwin('Asset 1');
 
-      store.dispatch(
-        setDigitalTwin({
-          assetName: 'Asset 1',
-          digitalTwin,
-        }),
-      );
+      store.dispatch(setDigitalTwin({ assetName: 'Asset 1', digitalTwin }));
 
       render(
         <Provider store={store}>
@@ -117,27 +126,7 @@ describe('Sidebar', () => {
     jest.clearAllMocks();
   });
 
-  it('calls handleFileClick when a description file is clicked', async () => {
-    await testFileClick(
-      'Description',
-      ['file1.md', 'file2.md'],
-      'file 1 content',
-    );
-  });
-
-  it('calls handleFileClick when a configuration file is clicked', async () => {
-    await testFileClick(
-      'Configuration',
-      ['config1.json', 'config2.json'],
-      'config 1 content',
-    );
-  });
-
-  it('calls handleFileClick when a lifecycle file is clicked', async () => {
-    await testFileClick(
-      'Lifecycle',
-      ['lifecycle1.txt', 'lifecycle2.txt'],
-      'lifecycle 1 content',
-    );
+  it('calls handleFileClick when a file type is clicked', async () => {
+    await performFileTests();
   });
 });
