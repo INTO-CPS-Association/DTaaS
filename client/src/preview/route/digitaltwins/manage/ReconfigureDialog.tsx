@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import {
   FileState,
-  getModifiedFiles,
   saveAllFiles,
 } from '../../../store/file.slice';
 import {
@@ -46,8 +45,7 @@ function ReconfigureDialog({
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const files: FileState[] = useSelector((state: RootState) => state.files);
-  const modifiedFiles = getModifiedFiles(files) || [];
+  const modifiedFiles = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);

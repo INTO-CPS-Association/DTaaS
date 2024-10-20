@@ -96,10 +96,10 @@ export const mockDigitalTwin: DigitalTwin = {
   logError: jest.fn(),
   stop: jest.fn(),
   delete: jest.fn(),
-  getDescriptionFiles: jest.fn(),
-  getLifecycleFiles: jest.fn(),
-  getConfigFiles: jest.fn(),
-  getFileContent: jest.fn(),
+  getDescriptionFiles: jest.fn().mockResolvedValue(['descriptionFile']),
+  getLifecycleFiles: jest.fn().mockResolvedValue(['lifecycleFile']),
+  getConfigFiles: jest.fn().mockResolvedValue(['configFile']),
+  getFileContent: jest.fn().mockResolvedValue('fileContent'),
   updateFileContent: jest.fn(),
 };
 

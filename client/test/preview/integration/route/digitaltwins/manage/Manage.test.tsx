@@ -16,7 +16,7 @@ import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
-import snackbarReducer from 'preview/store/snackbar.slice';
+import snackbarReducer, { showSnackbar } from 'preview/store/snackbar.slice';
 import * as ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 
 jest.mock('react-redux', () => ({
@@ -218,6 +218,23 @@ describe('ReconfigureDialog', () => {
     ReconfigureDialog.handleCloseReconfigureDialog(setShowDialog);
 
     expect(setShowDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('should dispatch error message when updateFileContent throws an error', async () => {
+    const file = { name: 'test.md', content: 'Content', isModified: true };
+    const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+    const dispatch = jest.fn();
+  
+    jest.spyOn(DigitalTwin.prototype, 'updateFileContent').mockRejectedValue('Mocked error');
+
+    await ReconfigureDialog.handleFileUpdate(file, digitalTwin, dispatch);
+
+    expect(dispatch).toHaveBeenCalledWith(
+      showSnackbar({
+        message: 'Error updating file test.md: Mocked error',
+        severity: 'error',
+      }),
+    );
   });
 });
 

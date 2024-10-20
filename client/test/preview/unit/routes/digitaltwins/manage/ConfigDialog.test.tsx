@@ -1,16 +1,16 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ReconfigureDialog, * as Reconfigure from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import * as React from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import store from 'store/store';
 
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 
 jest.mock('preview/store/file.slice', () => ({
   ...jest.requireActual('preview/store/file.slice'),
   saveAllFiles: jest.fn().mockResolvedValue(Promise.resolve()),
-  getModifiedFiles: jest.fn(),
 }));
 
 jest.mock('preview/store/digitalTwin.slice', () => ({
@@ -35,15 +35,24 @@ jest.mock('preview/util/gitlabDigitalTwin', () => ({
 describe('ReconfigureDialog', () => {
   const setShowDialog = jest.fn();
   const name = 'TestDigitalTwin';
-  const modifiedFiles = [
-    { name: 'file1.md', content: 'Content for file 1' },
-    { name: 'description.md', content: 'Updated description' },
-  ];
+
 
   beforeEach(() => {
     const dispatch = jest.fn();
     (useDispatch as jest.Mock).mockReturnValue(dispatch);
-    (useSelector as jest.Mock).mockImplementation(() => modifiedFiles);
+
+    jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector: any) => {
+      if (selector === selectDigitalTwinByName('TestDigitalTwin')) {
+        return mockDigitalTwin;
+      }
+      if (selector.toString().includes('state.files')) {
+        return [
+          { name: 'description.md', content: 'Updated description', isModified: true },
+          { name: 'lifecycle.md', content: 'Updated lifecycle', isModified: true },
+        ];
+      }
+      return mockDigitalTwin;
+    });
 
     render(
       <Provider store={store}>
@@ -67,22 +76,27 @@ describe('ReconfigureDialog', () => {
 
   it('handles close dialog', async () => {
     const closeButton = screen.getByRole('button', { name: /Cancel/i });
+  
     act(() => {
-      closeButton.click();
+      fireEvent.click(closeButton);
     });
+  
     expect(
       screen.getByText(
         'Are you sure you want to cancel? Changes will not be applied.',
       ),
     ).toBeInTheDocument();
+  
     const yesButton = screen.getByRole('button', { name: /Yes/i });
     act(() => {
-      yesButton.click();
+      fireEvent.click(yesButton);
     });
+  
     await waitFor(() => {
       expect(setShowDialog).toHaveBeenCalledWith(false);
     });
   });
+  
 
   it('calls handleCloseLog when the close function is called', async () => {
     await act(async () => {
@@ -160,7 +174,7 @@ describe('ReconfigureDialog', () => {
     });
   });
 
-  /* it('saves changes and calls handleFileUpdate for each modified file', async () => {
+  it('saves changes and calls handleFileUpdate for each modified file', async () => {
     const handleFileUpdateSpy = jest.spyOn(Reconfigure, 'handleFileUpdate');
 
     const saveButton = screen.getByRole('button', { name: /Save/i });
@@ -174,8 +188,7 @@ describe('ReconfigureDialog', () => {
     });
 
     await waitFor(() => {
-      expect(handleFileUpdateSpy).toHaveBeenCalledTimes(modifiedFiles.length);
+      expect(handleFileUpdateSpy).toHaveBeenCalledTimes(2);
     });
   });
-  */
 });

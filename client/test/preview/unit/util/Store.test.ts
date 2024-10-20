@@ -20,7 +20,6 @@ import snackbarSlice, {
 import { AlertColor } from '@mui/material';
 import fileSlice, {
   addOrUpdateFile,
-  getModifiedFiles,
   saveAllFiles,
 } from 'preview/store/file.slice';
 
@@ -198,12 +197,6 @@ describe('reducers', () => {
       initialState.files = [file1, file2];
       const newState = fileSlice(initialState.files, saveAllFiles());
       expect(newState).toEqual([]);
-    });
-
-    it('should getModifiedFiles', () => {
-      initialState.files = [file1, file2];
-      const getModifiedFilesSelector = getModifiedFiles(initialState.files);
-      expect(getModifiedFilesSelector).toEqual([file1, file2]);
     });
   });
 });

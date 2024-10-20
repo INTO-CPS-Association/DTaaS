@@ -35,8 +35,5 @@ const filesSlice = createSlice({
   },
 });
 
-export const getModifiedFiles = (files: FileState[]) =>
-  files.filter((file) => file.isModified);
-
 export const { addOrUpdateFile, saveAllFiles } = filesSlice.actions;
 export default filesSlice.reducer;
