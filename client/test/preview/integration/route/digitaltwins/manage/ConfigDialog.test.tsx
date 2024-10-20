@@ -12,14 +12,14 @@ import setupStore from './utils';
 jest.useFakeTimers();
 
 describe('ReconfigureDialog', () => {
-  let store: ReturnType<typeof setupStore>;
+  let storeConfig: ReturnType<typeof setupStore>;
 
   beforeEach(() => {
-    store = setupStore();
+    storeConfig = setupStore();
 
     React.act(() => {
       render(
-        <Provider store={store}>
+        <Provider store={storeConfig}>
           <AssetBoard tab="Manage" error={null} />
         </Provider>,
       );
@@ -87,7 +87,7 @@ describe('ReconfigureDialog', () => {
     };
 
     React.act(() => {
-      store.dispatch(addOrUpdateFile(modifiedFile));
+      storeConfig.dispatch(addOrUpdateFile(modifiedFile));
     });
 
     const reconfigureButton = screen.getByRole('button', {
@@ -112,7 +112,7 @@ describe('ReconfigureDialog', () => {
         'description.md',
         'New content',
       );
-      const state = store.getState();
+      const state = storeConfig.getState();
       expect(state.digitalTwin['Asset 1'].description).toBe('New content');
     });
   });

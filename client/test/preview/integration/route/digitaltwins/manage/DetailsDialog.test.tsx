@@ -11,14 +11,14 @@ jest.mock('react-redux', () => ({
 jest.useFakeTimers();
 
 describe('DetailsDialog', () => {
-  let store: ReturnType<typeof setupStore>;
+  let storeDetails: ReturnType<typeof setupStore>;
 
   beforeEach(() => {
-    store = setupStore();
+    storeDetails = setupStore();
 
     React.act(() => {
       render(
-        <Provider store={store}>
+        <Provider store={storeDetails}>
           <AssetBoard tab="Manage" error={null} />
         </Provider>,
       );

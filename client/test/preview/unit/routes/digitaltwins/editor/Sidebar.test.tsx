@@ -25,6 +25,18 @@ describe('Sidebar', () => {
   const setFileContent = jest.fn();
   const setFileType = jest.fn();
 
+  const clickFile = async (fileType: string, expectedFileName: string) => {
+    const fileNode = screen.getByText(fileType);
+    fireEvent.click(fileNode);
+
+    await waitFor(() => {
+      expect(screen.getByText(expectedFileName)).toBeInTheDocument();
+    });
+
+    const file = screen.getByText(expectedFileName);
+    fireEvent.click(file);
+  };
+
   beforeEach(async () => {
     (useSelector as jest.Mock).mockImplementation(
       (selector: (state: RootState) => unknown) => {
@@ -131,39 +143,15 @@ describe('Sidebar', () => {
   });
 
   it('calls handleFileClick when a description file is clicked', async () => {
-    const descriptionNode = screen.getByText('Description');
-    fireEvent.click(descriptionNode);
-
-    await waitFor(() => {
-      expect(screen.getByText('descriptionFile')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('descriptionFile');
-    fireEvent.click(file);
+    await clickFile('Description', 'descriptionFile');
   });
 
   it('calls handleFileClick when a config file is clicked', async () => {
-    const configurationNode = screen.getByText('Configuration');
-    fireEvent.click(configurationNode);
-
-    await waitFor(() => {
-      expect(screen.getByText('configFile')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('configFile');
-    fireEvent.click(file);
+    await clickFile('Configuration', 'configFile');
   });
 
   it('calls handleFileClick when a lifecycle file is clicked', async () => {
-    const lifecycleNode = screen.getByText('Lifecycle');
-    fireEvent.click(lifecycleNode);
-
-    await waitFor(() => {
-      expect(screen.getByText('lifecycleFile')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('lifecycleFile');
-    fireEvent.click(file);
+    await clickFile('Lifecycle', 'lifecycleFile');
   });
 
   it('call setFileContent with error message if file content is null', async () => {

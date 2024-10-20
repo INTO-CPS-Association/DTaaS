@@ -8,14 +8,14 @@ import setupStore from './utils';
 jest.useFakeTimers();
 
 describe('DeleteDialog', () => {
-  let store: ReturnType<typeof setupStore>;
+  let storeDelete: ReturnType<typeof setupStore>;
 
   beforeEach(() => {
-    store = setupStore();
+    storeDelete = setupStore();
 
     React.act(() => {
       render(
-        <Provider store={store}>
+        <Provider store={storeDelete}>
           <AssetBoard tab="Manage" error={null} />
         </Provider>,
       );
@@ -77,7 +77,7 @@ describe('DeleteDialog', () => {
     });
 
     await waitFor(() => {
-      const state = store.getState();
+      const state = storeDelete.getState();
       expect(state.snackbar.open).toBe(true);
       expect(state.snackbar.message).toBe('Asset 1 deleted successfully');
       expect(state.snackbar.severity).toBe('success');
