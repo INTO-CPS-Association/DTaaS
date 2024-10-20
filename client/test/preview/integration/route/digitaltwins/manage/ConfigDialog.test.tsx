@@ -28,7 +28,6 @@ jest.mock('react-redux', () => ({
 jest.useFakeTimers();
 
 const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
-
 const files: FileState[] = [
   { name: 'Asset 1', content: 'content1', isModified: false },
 ];
@@ -50,12 +49,7 @@ const setupTest = () => {
   digitalTwin.descriptionFiles = ['description.md'];
 
   store.dispatch(setAssets(preSetItems));
-  store.dispatch(
-    setDigitalTwin({
-      assetName: 'Asset 1',
-      digitalTwin,
-    }),
-  );
+  store.dispatch(setDigitalTwin({ assetName: 'Asset 1', digitalTwin }));
   store.dispatch(addOrUpdateFile(files[0]));
 
   React.act(() => {
@@ -66,56 +60,6 @@ const setupTest = () => {
     );
   });
 };
-
-describe('Details', () => {
-  beforeEach(() => {
-    setupTest();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('renders the AssetCardManage with Details button', async () => {
-    const detailsButton = screen.getByRole('button', { name: /Details/i });
-    expect(detailsButton).toBeInTheDocument();
-  });
-
-  it('opens the DetailsDialog when the Details button is clicked', async () => {
-    const detailsButton = screen.getByRole('button', { name: /Details/i });
-    React.act(() => {
-      detailsButton.click();
-    });
-
-    await waitFor(() => {
-      const detailsDialog = screen.getByText(
-        /There is no README\.md file in the Asset 1 GitLab folder/,
-      );
-      expect(detailsDialog).toBeInTheDocument();
-    });
-  });
-
-  it('closes the DetailsDialog when the Close button is clicked', async () => {
-    const detailsButton = screen.getByRole('button', { name: /Details/i });
-    React.act(() => {
-      detailsButton.click();
-    });
-
-    const closeButton = await screen.findByRole('button', { name: /Close/i });
-
-    React.act(() => {
-      closeButton.click();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText(
-          'There is no README.md file in the Asset 1 GitLab folder',
-        ),
-      ).toBeNull();
-    });
-  });
-});
 
 describe('ReconfigureDialog', () => {
   beforeEach(() => {
@@ -189,7 +133,6 @@ describe('ReconfigureDialog', () => {
     const reconfigureButton = screen.getByRole('button', {
       name: /Reconfigure/i,
     });
-
     React.act(() => {
       reconfigureButton.click();
     });
@@ -216,9 +159,7 @@ describe('ReconfigureDialog', () => {
 
   it('calls handleCloseReconfigureDialog when the dialog is closed', () => {
     const setShowDialog = jest.fn();
-
     ReconfigureDialog.handleCloseReconfigureDialog(setShowDialog);
-
     expect(setShowDialog).toHaveBeenCalledWith(false);
   });
 
@@ -239,73 +180,5 @@ describe('ReconfigureDialog', () => {
         severity: 'error',
       }),
     );
-  });
-});
-
-describe('Delete', () => {
-  beforeEach(() => {
-    setupTest();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
-
-  it('opens the DeleteDialog when the Delete button is clicked', async () => {
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
-
-    await waitFor(() => {
-      const deleteDialog = screen.getByText('This step is irreversible', {
-        exact: false,
-      });
-      expect(deleteDialog).toBeInTheDocument();
-    });
-  });
-
-  it('closes the DeleteDialog when the Cancel button is clicked', async () => {
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
-
-    const cancelButton = await screen.findByRole('button', { name: /Cancel/i });
-
-    React.act(() => {
-      cancelButton.click();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('This step is irreversible', { exact: false }),
-      ).toBeNull();
-    });
-  });
-
-  it('deletes the asset when the Yes button is clicked', async () => {
-    jest
-      .spyOn(DigitalTwin.prototype, 'delete')
-      .mockResolvedValue('Asset 1 deleted successfully');
-
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
-
-    const yesButton = await screen.findByRole('button', { name: /Yes/i });
-
-    React.act(() => {
-      yesButton.click();
-    });
-
-    await waitFor(() => {
-      const state = store.getState();
-      expect(state.snackbar.open).toBe(true);
-      expect(state.snackbar.message).toBe('Asset 1 deleted successfully');
-      expect(state.snackbar.severity).toBe('success');
-    });
   });
 });

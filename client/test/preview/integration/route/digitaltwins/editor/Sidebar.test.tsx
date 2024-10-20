@@ -53,6 +53,27 @@ describe('Sidebar', () => {
     digitalTwin.getFileContent = jest.fn().mockResolvedValue(mockContent);
   };
 
+  const testFileClick = async (
+    type: 'Description' | 'Configuration' | 'Lifecycle',
+    expectedFileNames: string[],
+    mockContent: string,
+  ) => {
+    await clickFileType(type, mockContent);
+
+    await waitFor(() => {
+      expectedFileNames.forEach((fileName) => {
+        expect(screen.getByText(fileName)).toBeInTheDocument();
+      });
+    });
+
+    const fileToClick = screen.getByText(expectedFileNames[0]);
+    fireEvent.click(fileToClick);
+
+    await waitFor(() => {
+      expect(setFileNameMock).toHaveBeenCalledWith(expectedFileNames[0]);
+    });
+  };
+
   beforeEach(async () => {
     await React.act(async () => {
       store = configureStore({
@@ -97,50 +118,26 @@ describe('Sidebar', () => {
   });
 
   it('calls handleFileClick when a description file is clicked', async () => {
-    await clickFileType('Description', 'file 1 content');
-
-    await waitFor(() => {
-      expect(screen.getByText('file1.md')).toBeInTheDocument();
-      expect(screen.getByText('file2.md')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('file1.md');
-    fireEvent.click(file);
-
-    await waitFor(() => {
-      expect(setFileNameMock).toHaveBeenCalledWith('file1.md');
-    });
+    await testFileClick(
+      'Description',
+      ['file1.md', 'file2.md'],
+      'file 1 content',
+    );
   });
 
   it('calls handleFileClick when a configuration file is clicked', async () => {
-    await clickFileType('Configuration', 'config 1 content');
-
-    await waitFor(() => {
-      expect(screen.getByText('config1.json')).toBeInTheDocument();
-      expect(screen.getByText('config2.json')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('config1.json');
-    fireEvent.click(file);
-
-    await waitFor(() => {
-      expect(setFileNameMock).toHaveBeenCalledWith('config1.json');
-    });
+    await testFileClick(
+      'Configuration',
+      ['config1.json', 'config2.json'],
+      'config 1 content',
+    );
   });
 
   it('calls handleFileClick when a lifecycle file is clicked', async () => {
-    await clickFileType('Lifecycle', 'lifecycle 1 content');
-
-    await waitFor(() => {
-      expect(screen.getByText('lifecycle1.txt')).toBeInTheDocument();
-      expect(screen.getByText('lifecycle2.txt')).toBeInTheDocument();
-    });
-
-    const file = screen.getByText('lifecycle1.txt');
-    fireEvent.click(file);
-
-    await waitFor(() => {
-      expect(setFileNameMock).toHaveBeenCalledWith('lifecycle1.txt');
-    });
+    await testFileClick(
+      'Lifecycle',
+      ['lifecycle1.txt', 'lifecycle2.txt'],
+      'lifecycle 1 content',
+    );
   });
 });
