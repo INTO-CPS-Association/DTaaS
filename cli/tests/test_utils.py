@@ -140,7 +140,6 @@ def getReplaceAllObject(randomVals):
 
 def getTestComposeObject():
     testCompose = {
-        "version": '3',
         "services":{
             "astitvasehgal05":{
                 "image": "mltooling/ml-workspace-minimal:0.13.2",
