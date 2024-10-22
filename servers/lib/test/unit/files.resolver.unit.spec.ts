@@ -7,8 +7,10 @@ import {
   pathToTestFileContent,
   testFileContent,
 } from '../testUtil';
-import { IFilesService } from '../../src/files/interfaces/files.service.interface';
-import FilesServiceFactory from '../../src/files/services/files-service.factory';
+import {
+  FILE_SERVICE,
+  IFilesService,
+} from '../../src/files/interfaces/files.service.interface';
 import { Project } from 'src/types';
 
 describe('Unit tests for FilesResolver', () => {
@@ -17,27 +19,28 @@ describe('Unit tests for FilesResolver', () => {
 
   beforeEach(async () => {
     const mockFilesService: IFilesService = {
-      listDirectory: jest.fn<() => Promise<Project>>().mockResolvedValue(testDirectory),
-      readFile: jest.fn<() => Promise<Project>>().mockImplementation(() => Promise.resolve(testFileContent)),
+      listDirectory: jest
+        .fn<() => Promise<Project>>()
+        .mockResolvedValue(testDirectory),
+      readFile: jest
+        .fn<() => Promise<Project>>()
+        .mockImplementation(() => Promise.resolve(testFileContent)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FilesResolver,
-        FilesServiceFactory,
         {
-          provide: FilesServiceFactory,
-          useValue: {
-            create: () => mockFilesService,
+          provide: FILE_SERVICE,
+          useFactory: () => {
+            return mockFilesService;
           },
         },
       ],
     }).compile();
 
     filesResolver = module.get<FilesResolver>(FilesResolver);
-    filesService = module
-      .get<FilesServiceFactory>(FilesServiceFactory)
-      .create();
+    filesService = module.get<IFilesService>(FILE_SERVICE);
   });
 
   it('should be defined', () => {
