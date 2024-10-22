@@ -16,7 +16,7 @@ import tabs from './DigitalTwinTabDataPreview';
 
 export const createDTTab = (error: string | null): TabData[] =>
   tabs
-    .filter((tab) => tab.label === 'Execute')
+    .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute')
     .map((tab) => ({
       label: tab.label,
       body: (
@@ -61,7 +61,7 @@ export const createDigitalTwinsForAssets = async (
     );
     await gitlabInstance.init();
     const digitalTwin = new DigitalTwin(asset.name, gitlabInstance);
-    digitalTwin.description = asset.description;
+    await digitalTwin.getDescription();
     dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin }));
   });
 };
@@ -85,6 +85,11 @@ export const DTContent = () => {
 
   return (
     <Layout>
+      <Typography variant="body1" style={{ marginBottom: 0 }}>
+        This page demonstrates integration of DTaaS with gitlab CI/CD workflows.
+        The feature is experimental and requires certain gitlab setup in order
+        for it to work.
+      </Typography>
       <TabComponent assetType={createDTTab(error)} scope={[]} />
     </Layout>
   );

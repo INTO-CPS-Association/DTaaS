@@ -15,7 +15,7 @@ const Container = styled.div`
 function WorkBenchContent() {
   const linkValues = getWorkbenchLinkValues();
   return (
-    <Layout>
+    <Layout sx={{ display: 'flex' }}>
       <Paper
         sx={{
           p: 2,

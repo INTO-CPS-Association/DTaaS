@@ -68,16 +68,6 @@ class GitlabInstance {
     return token;
   }
 
-  async getDTDescription(DTName: string): Promise<string> {
-    const readmePath = `digital_twins/${DTName}/description.md`;
-    const fileData = await this.api.RepositoryFiles.show(
-      this.projectId!,
-      readmePath,
-      'main',
-    );
-    return atob(fileData.content);
-  }
-
   async getDTSubfolders(projectId: number): Promise<Asset[]> {
     const files = await this.api.Repositories.allRepositoryTrees(projectId, {
       path: DT_DIRECTORY,
@@ -90,7 +80,6 @@ class GitlabInstance {
         .map(async (file) => ({
           name: file.name,
           path: file.path,
-          description: await this.getDTDescription(file.name),
         })),
     );
 
