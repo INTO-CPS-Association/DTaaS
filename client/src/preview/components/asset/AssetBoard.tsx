@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
-import AssetCardExecute from './AssetCard';
+import { deleteAsset } from 'preview/store/assets.slice';
+import { AssetCardExecute, AssetCardManage } from './AssetCard';
 import { Asset } from './Asset';
 
 const outerGridContainerProps = {
@@ -24,7 +25,8 @@ interface AssetBoardProps {
 const AssetGridItem: React.FC<{
   asset: Asset;
   tab: string;
-}> = ({ asset }) => (
+  onDelete: (path: string) => void;
+}> = ({ asset, tab, onDelete }) => (
   <Grid
     key={asset.path}
     item
@@ -34,12 +36,21 @@ const AssetGridItem: React.FC<{
     lg={3}
     sx={{ minWidth: 250 }}
   >
-    <AssetCardExecute asset={asset} />
+    {tab === 'Execute' ? (
+      <AssetCardExecute asset={asset} />
+    ) : (
+      <AssetCardManage asset={asset} onDelete={() => onDelete(asset.path)} />
+    )}
   </Grid>
 );
 
 const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
   const assets = useSelector((state: RootState) => state.assets.items);
+  const dispatch = useDispatch();
+
+  const handleDelete = (deletedAssetPath: string) => {
+    dispatch(deleteAsset(deletedAssetPath));
+  };
 
   if (error) {
     return <em style={{ textAlign: 'center' }}>{error}</em>;
@@ -47,8 +58,13 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
 
   return (
     <Grid {...outerGridContainerProps}>
-      {assets.map((asset: Asset) => (
-        <AssetGridItem key={asset.path} asset={asset} tab={tab} />
+      {assets.map((asset) => (
+        <AssetGridItem
+          key={asset.path}
+          asset={asset}
+          tab={tab}
+          onDelete={handleDelete}
+        />
       ))}
     </Grid>
   );

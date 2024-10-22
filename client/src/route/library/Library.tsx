@@ -45,7 +45,7 @@ function LibraryContent() {
   const combinedData = createCombinedTabs();
 
   return (
-    <Layout>
+    <Layout sx={{ display: 'flex' }}>
       <TabComponent assetType={tabsData} scope={combinedData} />
     </Layout>
   );

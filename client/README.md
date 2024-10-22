@@ -132,3 +132,17 @@ sudo gitlab-runner run
 ```
 
 It can also be used to reactivate offline runners during subsequent sessions.
+
+## Digital Twins page preview
+
+In the Workbench section, there is a link to preview the **Digital Twins**
+page. The GitLab account used as OAuth provider must have a *DTaaS* group,
+a project under your username, and a *digital_twins* folder which contains
+the Digital Twins.
+
+In the Manage tab, you can read the README.md file of the selected Digital
+Twin, reconfigure the content of files included in its GitLab folder or
+delete the entire folder.
+
+In the Execute tab, you can start or stop execution of Digital Twins, and
+once the execution is complete, view the complete logs.
