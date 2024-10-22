@@ -5,11 +5,11 @@ import { LocalFilesModule } from './modules/local-files.module.js';
 import LocalFilesService from './services/local-files.service.js';
 import GitFilesService from './services/git-files.service.js';
 import { FILE_SERVICE } from './interfaces/files.service.interface.js';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import FilesServiceFactory from './services/files-service.factory.js';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [LocalFilesModule, GitFilesModule, ConfigModule],
+  imports: [LocalFilesModule, GitFilesModule],
   providers: [
     FilesResolver,
     {
