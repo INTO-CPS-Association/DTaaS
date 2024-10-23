@@ -76,6 +76,9 @@ powershell -F script/docker.ps1
 about 5GB of bandwidth and 15GB of space.
 You will have to download the docker images on a really good network.
 
+<!-- 
+TODO insert when githooks works
+
 ### git hooks
 
 The git-hooks will ensure that your commits are formatted
@@ -107,6 +110,8 @@ If you want to skip the tests or formatting,
 you can use the `--no-verify` flag
 on `git commit` or `git push`. Please use this
 option with care.
+
+-->
 
 ## :building_construction: Development Workflow
 
