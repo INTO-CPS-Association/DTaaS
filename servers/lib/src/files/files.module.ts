@@ -4,7 +4,7 @@ import { GitFilesModule } from './modules/git-files.module.js';
 import { LocalFilesModule } from './modules/local-files.module.js';
 import LocalFilesService from './services/local-files.service.js';
 import GitFilesService from './services/git-files.service.js';
-import { FILE_SERVICE } from './interfaces/files.service.interface.js';
+import { FILE_SERVICE, IFilesService } from './interfaces/files.service.interface.js';
 import FilesServiceFactory from './services/files-service.factory.js';
 import { ConfigService } from '@nestjs/config';
 
@@ -16,14 +16,17 @@ import { ConfigService } from '@nestjs/config';
       provide: FILE_SERVICE,
       useFactory: (
         configService: ConfigService,
-        localFileService: LocalFilesService,
+        localFilesService: LocalFilesService,
         gitFilesService: GitFilesService,
       ) => {
-        return new FilesServiceFactory(
+        const fileServices = new Map<string, IFilesService>([
+          [localFilesService.getFileMode(), localFilesService],
+          [gitFilesService.getFileMode(), gitFilesService],
+        ]);
+        return FilesServiceFactory.create(
           configService,
-          localFileService,
-          gitFilesService,
-        ).create();
+          fileServices,
+        );
       },
       inject: [ConfigService, LocalFilesService, GitFilesService],
     },

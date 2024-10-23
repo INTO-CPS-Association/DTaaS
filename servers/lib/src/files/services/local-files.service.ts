@@ -9,6 +9,9 @@ import { IFilesService } from '../interfaces/files.service.interface.js';
 export default class LocalFilesService implements IFilesService {
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor(private configService: ConfigService) {}
+  getFileMode(): string {
+    return 'local';
+  }
 
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get('LOCAL_PATH');

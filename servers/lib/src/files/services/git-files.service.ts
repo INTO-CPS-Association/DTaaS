@@ -6,6 +6,9 @@ import { IFilesService } from '../interfaces/files.service.interface.js';
 export default class GitFilesService implements IFilesService {
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor() {}
+  getFileMode(): string {
+    return 'git';
+  }
 
   listDirectory(): Promise<Project> {
     throw new Error('Method not implemented.');

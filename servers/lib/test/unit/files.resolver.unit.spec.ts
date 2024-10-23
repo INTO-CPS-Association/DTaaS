@@ -25,6 +25,7 @@ describe('Unit tests for FilesResolver', () => {
       readFile: jest
         .fn<() => Promise<Project>>()
         .mockImplementation(() => Promise.resolve(testFileContent)),
+      getFileMode: jest.fn<() => string>().mockReturnValue('mock'),
     };
 
     const module: TestingModule = await Test.createTestingModule({

@@ -11,7 +11,7 @@ import {
   MockConfigService,
 } from '../testUtil';
 import GitFilesService from '../../src/files/services/git-files.service';
-import { FILE_SERVICE } from '../../src/files/interfaces/files.service.interface';
+import { FILE_SERVICE, IFilesService } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
 
 describe('Integration tests for FilesResolver', () => {
@@ -30,11 +30,11 @@ describe('Integration tests for FilesResolver', () => {
             localFilesService: LocalFilesService,
             gitFilesService: GitFilesService,
           ) => {
-            return new FilesServiceFactory(
-              configService,
-              localFilesService,
-              gitFilesService,
-            ).create();
+            const fileServices = new Map<string, IFilesService>([
+              [localFilesService.getFileMode(), localFilesService],
+              [gitFilesService.getFileMode(), gitFilesService],
+            ]);
+            return FilesServiceFactory.create(configService, fileServices);
           },
           inject: [ConfigService, LocalFilesService, GitFilesService],
         },
