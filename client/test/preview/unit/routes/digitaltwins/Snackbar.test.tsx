@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from 'store/store';
 import { hideSnackbar } from 'preview/store/snackbar.slice';
 
@@ -13,7 +13,7 @@ describe('CustomSnackbar', () => {
   });
 
   it('renders the Snackbar with the correct message', () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       open: true,
       message: 'test message',
       severity: 'success',
@@ -29,14 +29,16 @@ describe('CustomSnackbar', () => {
   });
 
   it('handles the close event', () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       open: true,
       message: 'test message',
       severity: 'success',
     });
 
     const mockDispatch = jest.fn();
-    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      mockDispatch,
+    );
 
     render(
       <Provider store={store}>
@@ -58,7 +60,9 @@ describe('CustomSnackbar', () => {
       message: 'test message',
       severity: 'success',
     };
-    (useSelector as jest.Mock).mockReturnValue(mockSnackbarState);
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue(
+      mockSnackbarState,
+    );
 
     render(
       <Provider store={store}>
@@ -68,7 +72,8 @@ describe('CustomSnackbar', () => {
 
     expect(useSelector).toHaveBeenCalledWith(expect.any(Function));
 
-    const selectState = (useSelector as jest.Mock).mock.calls[0][0];
+    const selectState = (useSelector as jest.MockedFunction<typeof useSelector>)
+      .mock.calls[0][0];
     const result = selectState({ snackbar: mockSnackbarState });
     expect(result).toEqual(mockSnackbarState);
   });

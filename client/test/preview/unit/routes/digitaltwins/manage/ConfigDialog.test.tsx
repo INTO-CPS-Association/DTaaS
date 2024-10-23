@@ -44,9 +44,9 @@ describe('ReconfigureDialog', () => {
 
   beforeEach(() => {
     const dispatch = jest.fn();
-    (useDispatch as jest.Mock).mockReturnValue(dispatch);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(dispatch);
 
-    (useSelector as jest.Mock).mockImplementation(
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {
         if (selector === selectDigitalTwinByName('mockedDTName')) {
           return mockDigitalTwin;

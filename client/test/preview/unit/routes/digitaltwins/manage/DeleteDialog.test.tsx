@@ -52,7 +52,7 @@ describe('DeleteDialog', () => {
   });
 
   it('handles delete button click', async () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       delete: jest.fn().mockResolvedValue('Deleted successfully'),
     });
 
@@ -77,7 +77,7 @@ describe('DeleteDialog', () => {
   });
 
   it('handles delete button click and shows error message', async () => {
-    (useSelector as jest.Mock).mockReturnValue({
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockReturnValue({
       delete: jest.fn().mockResolvedValue('Error: deletion failed'),
     });
 

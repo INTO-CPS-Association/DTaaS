@@ -1,11 +1,7 @@
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
@@ -30,9 +26,10 @@ describe('Editor', () => {
       digitalTwin: digitalTwinReducer,
       files: fileSlice,
     }),
-    middleware: getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
   });
 
   const digitalTwinInstance = new DigitalTwin('Asset 1', mockGitlabInstance);

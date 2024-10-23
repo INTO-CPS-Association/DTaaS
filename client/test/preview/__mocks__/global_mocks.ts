@@ -105,6 +105,7 @@ export const mockDigitalTwin: DigitalTwin = {
 
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),
+  useAppURL: () => mockAppURL,
   useURLforDT: () => mockURLforDT,
   useURLforLIB: () => mockURLforLIB,
   getClientID: () => mockClientID,
