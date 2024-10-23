@@ -11,7 +11,10 @@ import {
   MockConfigService,
 } from '../testUtil';
 import GitFilesService from '../../src/files/git/git-files.service';
-import { FILE_SERVICE, IFilesService } from '../../src/files/interfaces/files.service.interface';
+import {
+  FILE_SERVICE,
+  IFilesService,
+} from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/files-service.factory';
 import { CONFIG_MODE } from '@/enums/config-mode.enum';
 

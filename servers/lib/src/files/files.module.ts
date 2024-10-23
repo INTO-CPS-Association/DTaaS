@@ -4,7 +4,10 @@ import { GitFilesModule } from './git/git-files.module.js';
 import { LocalFilesModule } from './local/local-files.module.js';
 import LocalFilesService from './local/local-files.service.js';
 import GitFilesService from './git/git-files.service.js';
-import { FILE_SERVICE, IFilesService } from './interfaces/files.service.interface.js';
+import {
+  FILE_SERVICE,
+  IFilesService,
+} from './interfaces/files.service.interface.js';
 import FilesServiceFactory from './files-service.factory.js';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
@@ -24,10 +27,7 @@ import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
           [localFilesService.getMode(), localFilesService],
           [gitFilesService.getMode(), gitFilesService],
         ]);
-        return FilesServiceFactory.create(
-          configService,
-          fileServices,
-        );
+        return FilesServiceFactory.create(configService, fileServices);
       },
       inject: [ConfigService, LocalFilesService, GitFilesService],
     },

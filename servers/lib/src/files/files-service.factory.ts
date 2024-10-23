@@ -7,7 +7,7 @@ import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
 export default class FilesServiceFactory {
   static create(
     configService: ConfigService,
-    fileServices: Map<CONFIG_MODE, IFilesService>
+    fileServices: Map<CONFIG_MODE, IFilesService>,
   ): IFilesService {
     const mode = configService.get<string>('MODE');
 
