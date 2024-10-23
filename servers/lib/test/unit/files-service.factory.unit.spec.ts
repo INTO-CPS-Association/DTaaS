@@ -2,7 +2,7 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import FilesServiceFactory from '../../src/files/services/files-service.factory';
+import FilesServiceFactory from '../../src/files/files-service.factory';
 import LocalFilesService from '../../src/files/local/local-files.service';
 import { IFilesService } from '../../src/files/interfaces/files.service.interface';
 import GitFilesService from '../../src/files/git/git-files.service';

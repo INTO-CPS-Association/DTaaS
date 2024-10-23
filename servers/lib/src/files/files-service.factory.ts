@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IFilesService } from '../interfaces/files.service.interface.js';
+import { IFilesService } from './interfaces/files.service.interface.js';
 
 @Injectable()
 export default class FilesServiceFactory {

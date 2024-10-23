@@ -1,7 +1,7 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import FilesResolver from '../../src/files/resolvers/files.resolver';
+import FilesResolver from '../../src/files/files.resolver';
 import LocalFilesService from '../../src/files/local/local-files.service';
 import {
   pathToTestDirectory,
@@ -12,7 +12,7 @@ import {
 } from '../testUtil';
 import GitFilesService from '../../src/files/git/git-files.service';
 import { FILE_SERVICE, IFilesService } from '../../src/files/interfaces/files.service.interface';
-import FilesServiceFactory from '../../src/files/services/files-service.factory';
+import FilesServiceFactory from '../../src/files/files-service.factory';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;

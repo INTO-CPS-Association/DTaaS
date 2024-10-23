@@ -2,8 +2,8 @@ import { Resolver, Query, Args } from '@nestjs/graphql';
 import {
   FILE_SERVICE,
   IFilesService,
-} from '../interfaces/files.service.interface.js';
-import { Project } from '../../types.js';
+} from './interfaces/files.service.interface.js';
+import { Project } from '../types.js';
 import { Inject } from '@nestjs/common';
 
 @Resolver()
