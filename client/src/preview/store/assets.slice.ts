@@ -16,9 +16,14 @@ const assetsSlice = createSlice({
     setAssets: (state, action: PayloadAction<Asset[]>) => {
       state.items = action.payload;
     },
+    deleteAsset: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter(
+        (asset) => asset.path !== action.payload,
+      );
+    },
   },
 });
 
-export const { setAssets } = assetsSlice.actions;
+export const { setAssets, deleteAsset } = assetsSlice.actions;
 
 export default assetsSlice.reducer;

@@ -51,6 +51,7 @@
     "<rootDir>/src/"
   ],
   "moduleNameMapper": {
-    "^test/(.*)$": "<rootDir>/test/$1"
+    "^test/(.*)$": "<rootDir>/test/$1",
+    "\\.(css|less|scss)$": "<rootDir>/test/preview/__mocks__/styleMock.ts"
   }
 }

@@ -212,44 +212,11 @@ This token is required to trigger pipelines by using the API.
 You can create this token in your GitLab project's CI/CD settings under
 the *Pipeline trigger tokens* section.
 
-Once the token configuration is in place, the gitlab code can be developed
+Once the token configuration is in place, the gitlab integration can be developed
 and tested using the following yarn commands.
 
 ```bash
-yarn gitlab:compile
-yarn gitlab:run
+yarn test:preview:int
+yarn test:preview:unit
 ```
 
-These two commands run `src/util/gitlabDriver.ts` code to check the correct
-functioning of the gitlab code placed in `src/util` directory.
-
-A piece of code in `src/util/gitlabDriver.ts` checks for correct execution
-of a DT in gitlab runner. The token owner must have a hosted runner
-in order for this piece of code to be executed successfully.
-Otherwise, the following error appears.
-
-```log
-....
-Execution Result: false
-Execution Status: error
-Execution Logs: [
-  {
-    status: 'error',
-    error: Error: GitbeakerRequestError: Not Found
-        at DigitalTwin.<anonymous> (file:///C:/Users/au598657/git/DTaaS/client/dist/gitlabDigitalTwin.js:32:73)
-        at Generator.throw (<anonymous>)
-        at rejected (file:///C:/Users/au598657/git/DTaaS/client/dist/gitlabDigitalTwin.js:5:65)
-        at process.processTicksAndRejections (node:internal/process/task_queues:95:5),
-    DTName: 'hello-world',
-    runnerTag: 'dtaas'
-  }
-]
-```
-
-## Digital Twins page preview
-
-In the Workbench section, there is a link to preview the **Digital Twins**
-page. The GitLab account used as OAuth provider must have a *DTaaS* group,
-a project under your username, and a *digital_twins* folder which contains
-the Digital Twins. From this interface, you can start or stop execution of
-Digital Twins, and once the execution is complete, view the complete logs.

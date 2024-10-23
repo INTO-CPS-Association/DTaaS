@@ -1,9 +1,13 @@
-import assetsSlice, { setAssets } from 'preview/store/assets.slice';
+import assetsSlice, {
+  deleteAsset,
+  setAssets,
+} from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
+  updateDescription,
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
@@ -14,6 +18,10 @@ import snackbarSlice, {
   showSnackbar,
 } from 'preview/store/snackbar.slice';
 import { AlertColor } from '@mui/material';
+import fileSlice, {
+  addOrUpdateFile,
+  saveAllFiles,
+} from 'preview/store/file.slice';
 
 describe('reducers', () => {
   let initialState: {
@@ -28,6 +36,11 @@ describe('reducers', () => {
       message: string;
       severity: AlertColor;
     };
+    files: {
+      name: string;
+      content: string;
+      isModified: boolean;
+    }[];
   };
 
   beforeEach(() => {
@@ -39,24 +52,37 @@ describe('reducers', () => {
         message: '',
         severity: 'info',
       },
+      files: [],
     };
   });
 
   describe('assets reducer', () => {
-    it('should handle setAssets', () => {
-      const asset1 = {
-        name: 'asset1',
-        description: 'description',
-        path: 'path',
-      };
+    const asset1 = {
+      name: 'asset1',
+      description: 'description',
+      path: 'path',
+    };
 
+    it('should handle setAssets', () => {
       const newState = assetsSlice(initialState.assets, setAssets([asset1]));
 
       expect(newState.items).toEqual([asset1]);
     });
+
+    it('should handle deleteAsset', () => {
+      initialState.assets.items = [asset1];
+      const newState = assetsSlice(initialState.assets, deleteAsset('path'));
+
+      expect(newState.items).toEqual([]);
+    });
   });
 
   describe('digitalTwin reducer', () => {
+    const digitalTwin = new DigitalTwin(
+      'asset1',
+      new GitlabInstance('user1', 'authority', 'token1'),
+    );
+
     it('digitalTwinReducer should return the initial digitalTwin state when an unknown action type is passed with an undefined state', () => {
       expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(
         initialState.digitalTwin,
@@ -64,10 +90,6 @@ describe('reducers', () => {
     });
 
     it('should handle setDigitalTwin', () => {
-      const digitalTwin = new DigitalTwin(
-        'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
-      );
       const newState = digitalTwinReducer(
         initialState.digitalTwin,
         setDigitalTwin({ assetName: 'asset1', digitalTwin }),
@@ -77,10 +99,6 @@ describe('reducers', () => {
 
     it('should handle setJobLogs', () => {
       const jobLogs: JobLog[] = [{ jobName: 'job1', log: 'log' }];
-      const digitalTwin = new DigitalTwin(
-        'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
-      );
       digitalTwin.jobLogs = jobLogs;
       initialState.digitalTwin.asset1 = digitalTwin;
       const newState = digitalTwinReducer(
@@ -91,10 +109,6 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineCompleted', () => {
-      const digitalTwin = new DigitalTwin(
-        'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
-      );
       initialState.digitalTwin.asset1 = digitalTwin;
       const newState = digitalTwinReducer(
         initialState.digitalTwin,
@@ -104,16 +118,22 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineLoading', () => {
-      const digitalTwin = new DigitalTwin(
-        'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
-      );
       initialState.digitalTwin.asset1 = digitalTwin;
       const newState = digitalTwinReducer(
         initialState.digitalTwin,
         setPipelineLoading({ assetName: 'asset1', pipelineLoading: true }),
       );
       expect(newState.asset1.pipelineLoading).toBe(true);
+    });
+
+    it('should handle updateDescription', () => {
+      initialState.digitalTwin.asset1 = digitalTwin;
+      const description = 'new description';
+      const newState = digitalTwinReducer(
+        initialState.digitalTwin,
+        updateDescription({ assetName: 'asset1', description }),
+      );
+      expect(newState.asset1.description).toBe(description);
     });
   });
 
@@ -138,6 +158,45 @@ describe('reducers', () => {
       expect(newState.open).toBe(false);
       expect(newState.message).toBe('');
       expect(newState.severity).toBe('info');
+    });
+  });
+
+  describe('file reducer', () => {
+    const file1 = {
+      name: 'fileName',
+      content: 'fileContent',
+      isModified: true,
+    };
+
+    const file2 = {
+      name: 'fileName2',
+      content: 'fileContent2',
+      isModified: true,
+    };
+
+    it('should handle addOrUpdateFile', () => {
+      const newState = fileSlice(initialState.files, addOrUpdateFile(file1));
+      expect(newState).toEqual([file1]);
+    });
+
+    it('should handle addOrUpdateFile when file already exists', () => {
+      const file1Updated = {
+        name: 'fileName',
+        content: 'newContent',
+        isModified: true,
+      };
+      initialState.files = [file1];
+      const newState = fileSlice(
+        initialState.files,
+        addOrUpdateFile(file1Updated),
+      );
+      expect(newState).toEqual([file1Updated]);
+    });
+
+    it('should handle saveAllFiles', () => {
+      initialState.files = [file1, file2];
+      const newState = fileSlice(initialState.files, saveAllFiles());
+      expect(newState).toEqual([]);
     });
   });
 });

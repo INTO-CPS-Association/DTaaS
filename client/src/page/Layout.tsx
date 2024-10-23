@@ -27,13 +27,16 @@ function MenuLayout(props: { children: React.ReactNode }) {
   );
 }
 
-function Layout(props: { children: React.ReactNode }) {
+function Layout(props: {
+  children: React.ReactNode;
+  sx?: React.CSSProperties;
+}) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <MenuLayout>
         <Container
           maxWidth="lg"
-          sx={{ mt: 1, mb: 1, flexGrow: 1, display: 'flex' }}
+          sx={{ mt: 1, mb: 1, flexGrow: 1, ...props.sx }}
           className="content"
         >
           <Grid container spacing={3} sx={{ minHeight: '100%' }}>

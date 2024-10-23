@@ -7,11 +7,11 @@ const tabs: ITabs[] = [
   },
   {
     label: 'Manage',
-    body: `Read the complete description of digital twins. If necessary, users can delete a digital twin, removing it from the workspace with all its associated data. Users can also reconfigure the digital twin, through a link that redirects to the Create tab.`,
+    body: `Read the complete description of digital twins. If necessary, users can delete a digital twin, removing it from the workspace with all its associated data. Users can also reconfigure the digital twin.`,
   },
   {
     label: 'Execute',
-    body: 'This page demonstrates integration of DTaaS with gitlab CI/CD workflows. The feature is experimental and requires certain gitlab setup in order for it to work.',
+    body: 'Execute the Digital Twins using Gitlab CI/CD workflows.',
   },
   {
     label: 'Analyze',
