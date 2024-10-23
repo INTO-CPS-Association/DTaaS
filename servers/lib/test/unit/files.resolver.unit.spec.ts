@@ -12,6 +12,7 @@ import {
   IFilesService,
 } from '../../src/files/interfaces/files.service.interface';
 import { Project } from 'src/types';
+import { CONFIG_MODE } from '@/enums/config-mode.enum';
 
 describe('Unit tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -25,7 +26,7 @@ describe('Unit tests for FilesResolver', () => {
       readFile: jest
         .fn<() => Promise<Project>>()
         .mockImplementation(() => Promise.resolve(testFileContent)),
-      getFileMode: jest.fn<() => string>().mockReturnValue('mock'),
+      getMode: jest.fn<() => CONFIG_MODE>().mockReturnValue(CONFIG_MODE.LOCAL),
     };
 
     const module: TestingModule = await Test.createTestingModule({

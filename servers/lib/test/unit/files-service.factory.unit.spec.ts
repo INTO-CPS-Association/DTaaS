@@ -6,12 +6,13 @@ import FilesServiceFactory from '../../src/files/files-service.factory';
 import LocalFilesService from '../../src/files/local/local-files.service';
 import { IFilesService } from '../../src/files/interfaces/files.service.interface';
 import GitFilesService from '../../src/files/git/git-files.service';
+import { CONFIG_MODE } from '@/enums/config-mode.enum';
 
 describe('FilesServiceFactory', () => {
   let configService: ConfigService;
   let localFilesService: IFilesService;
   let gitFilesService: IFilesService;
-  let fileServices: Map<string, IFilesService>;
+  let fileServices: Map<CONFIG_MODE, IFilesService>;
 
   beforeEach(async () => {
     localFilesService = new LocalFilesService(configService as ConfigService);
@@ -26,9 +27,9 @@ describe('FilesServiceFactory', () => {
 
     configService = module.get<ConfigService>(ConfigService);
     gitFilesService = module.get<GitFilesService>(GitFilesService);
-    fileServices = new Map<string, IFilesService>([
-      [gitFilesService.getFileMode(), gitFilesService],
-      [localFilesService.getFileMode(), localFilesService],
+    fileServices = new Map<CONFIG_MODE, IFilesService>([
+      [gitFilesService.getMode(), gitFilesService],
+      [localFilesService.getMode(), localFilesService],
     ]);
   });
 
