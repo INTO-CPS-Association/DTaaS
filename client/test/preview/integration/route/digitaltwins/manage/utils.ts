@@ -1,8 +1,4 @@
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Asset } from 'preview/components/asset/Asset';
 import fileSlice, {
   FileState,
@@ -29,9 +25,10 @@ const setupStore = () => {
       snackbar: snackbarReducer,
       files: fileSlice,
     }),
-    middleware: getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
   });
 
   const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);

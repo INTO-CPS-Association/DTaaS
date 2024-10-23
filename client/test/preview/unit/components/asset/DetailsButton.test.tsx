@@ -36,7 +36,7 @@ describe('DetailsButton', () => {
   it('handles button click and shows details', async () => {
     const mockSetShowDetails = jest.fn();
 
-    (redux.useSelector as jest.Mock).mockReturnValue({
+    (redux.useSelector as jest.MockedFunction<typeof redux.useSelector>).mockReturnValue({
       getFullDescription: jest.fn().mockResolvedValue('Mocked description'),
     });
 
