@@ -14,12 +14,15 @@ Edit all the fields according to your specific case.
   | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
-  | CLIENT_CONFIG | '/Users/username/DTaaS/deploy/config/client/env.js' | Full path to env.js file for client |
 
-:clipboard: Important points to note:
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    Important points to note:
 
-1. The path examples given here are for Linux OS.
-   These paths can be Windows OS compatible paths as well.
-1. The Server DNS can also be an IP address.
-   However, for proper working it is neccessary to use the
-   same convention (IP/DNS) in the `CLIENT_CONFIG` file as well.
+    1. The path examples given here are for Linux OS.
+       These paths can be Windows OS compatible paths as well.
+    1. The Server DNS can also be an IP address.
+       However, for proper working it is neccessary to use the
+       same convention (IP/DNS) in the client configuration file (`deploy/config/client/env.js`) as well.
+<!-- markdownlint-enable MD046 -->

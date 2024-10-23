@@ -96,11 +96,7 @@ Description of file configuration can be found here. [.env file description](./D
 ### Website Client
 
 The frontend React website requires configuration which is specified
-via a filename provided in `CLIENT_CONFIG` variable of
-`deploy/docker/.env.server` file.
-
-The `CLIENT_CONFIG` file is in relative directory of
-`deploy/config/client/env.js`.
+in the client configuration file (`deploy/config/client/env.js`).
 
 Further explanation on the client configuration is available in
 [client config](../../docs/admin/client/config.md).
