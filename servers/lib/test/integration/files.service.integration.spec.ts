@@ -2,7 +2,7 @@ import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import FilesResolver from '../../src/files/resolvers/files.resolver';
-import LocalFilesService from '../../src/files/services/local-files.service';
+import LocalFilesService from '../../src/files/local/local-files.service';
 import {
   pathToTestDirectory,
   pathToTestFileContent,
@@ -10,7 +10,7 @@ import {
   testFileContent,
   MockConfigService,
 } from '../testUtil';
-import GitFilesService from '../../src/files/services/git-files.service';
+import GitFilesService from '../../src/files/git/git-files.service';
 import { FILE_SERVICE, IFilesService } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
 

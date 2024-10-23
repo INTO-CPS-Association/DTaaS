@@ -3,9 +3,9 @@ import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import FilesServiceFactory from '../../src/files/services/files-service.factory';
-import LocalFilesService from '../../src/files/services/local-files.service';
+import LocalFilesService from '../../src/files/local/local-files.service';
 import { IFilesService } from '../../src/files/interfaces/files.service.interface';
-import GitFilesService from '../../src/files/services/git-files.service';
+import GitFilesService from '../../src/files/git/git-files.service';
 
 describe('FilesServiceFactory', () => {
   let configService: ConfigService;

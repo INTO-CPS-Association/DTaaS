@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import LocalFilesService from '../services/local-files.service.js';
+import LocalFilesService from './local-files.service.js';
 
 @Module({
   providers: [LocalFilesService],

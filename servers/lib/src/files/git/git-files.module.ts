@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import GitFilesService from '../services/git-files.service.js';
+import GitFilesService from './git-files.service.js';
 
 @Module({
     providers: [GitFilesService],
