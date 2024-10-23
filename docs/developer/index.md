@@ -76,6 +76,9 @@ powershell -F script/docker.ps1
 about 5GB of bandwidth and 15GB of space.
 You will have to download the docker images on a really good network.
 
+<!-- 
+TODO insert when githooks works
+
 ### git hooks
 
 The git-hooks will ensure that your commits are formatted
@@ -108,10 +111,17 @@ you can use the `--no-verify` flag
 on `git commit` or `git push`. Please use this
 option with care.
 
+-->
+
 ## :building_construction: Development Workflow
 
 To manage collaboration by multiple developers on the software,
 a development workflow is in place. Each developer should follow these steps:
+
+<!--
+TODO Insert before Use fork,branch ... when githooks works
+Install git-hooks for the project.
+-->
 
 1. Fork of the main repository into your github account.
 1. Setup
@@ -120,10 +130,11 @@ a development workflow is in place. Each developer should follow these steps:
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
-1. Install git-hooks for the project.
+1. nvm use 22 (if nvm or node isn't installed)
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
+1. Active the Python Virtual Enviornment by calling (`./dtaas-venv/bin/activate`)
 1. Work in your fork and open a PR from your working
    branch to your `feature/distributed-demo` branch.
    The PR will run all the github actions, code climate and codecov checks.
