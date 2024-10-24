@@ -65,13 +65,17 @@ Edit all the fields according to your specific case.
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
 
-:clipboard: Important points to note:
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! tip
+    Important points to note:
 
-1. The path examples given here are for Linux OS.
-   These paths can be Windows OS compatible paths as well.
-1. The client configuration file is located at `deploy/config/client/env.local.js`.
-   If you are following the guide to use HTTPS on localhost, edit the URLs in this file by replacing `http` with `https`.
-   Beyond this, it is not necessary to modify this file.
+    1. The path examples given here are for Linux OS.
+       These paths can be Windows OS compatible paths as well.
+    1. The client configuration file is located at `deploy/config/client/env.local.js`.
+       If you are following the guide to use HTTPS on localhost, edit the URLs in this file by replacing `http` with `https`.
+       Beyond this, it is not necessary to modify this file.
+<!-- markdownlint-enable MD046 -->
 
 ### Create User Workspace
 
