@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
-import LocalFilesService from '../../src/files/services/local-files.service';
+import LocalFilesService from '../../src/files/local/local-files.service';
 import {
   fstestFileContent,
   pathToTestDirectory,

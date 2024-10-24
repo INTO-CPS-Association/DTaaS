@@ -4,11 +4,15 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { Project } from 'src/types.js';
 import { IFilesService } from '../interfaces/files.service.interface.js';
+import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
 
 @Injectable()
 export default class LocalFilesService implements IFilesService {
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor(private configService: ConfigService) {}
+  getMode(): CONFIG_MODE {
+    return CONFIG_MODE.LOCAL;
+  }
 
   async listDirectory(path: string): Promise<Project> {
     const dataPath = this.configService.get('LOCAL_PATH');
