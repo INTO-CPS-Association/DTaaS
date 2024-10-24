@@ -119,18 +119,13 @@ Edit all the fields according to your specific case.
   | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
   | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip
-    Important points to note:
+:clipboard: Important points to note:
 
-    1. The path examples given here are for Linux OS.
-       These paths can be Windows OS compatible paths as well.
-    1. The client configuration file is located at `deploy/config/client/env.js`.
-    1. The Server DNS can also be an IP address.
-       However, for proper working it is neccessary to use the
-       same convention (IP/DNS) in the client configuration file as well.
-<!-- markdownlint-enable MD046 -->
+1. The path examples given here are for Linux OS.
+   These paths can be Windows OS compatible paths as well.
+1. The client configuration file is located at `deploy/config/client/env.js`.
+1. The Server DNS can also be an IP address.
+   However, for proper working it is neccessary to use the same convention (IP/DNS) in the client configuration file as well.
 
 ### Website Client
 
