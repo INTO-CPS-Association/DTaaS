@@ -6,11 +6,9 @@ import LocalFilesService from './local/local-files.service.js';
 import GitFilesService from './git/git-files.service.js';
 import {
   FILE_SERVICE,
-  IFilesService,
 } from './interfaces/files.service.interface.js';
 import FilesServiceFactory from './files-service.factory.js';
 import { ConfigService } from '@nestjs/config';
-import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
 
 @Module({
   imports: [LocalFilesModule, GitFilesModule],
@@ -23,10 +21,7 @@ import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
         localFilesService: LocalFilesService,
         gitFilesService: GitFilesService,
       ) => {
-        const fileServices = new Map<CONFIG_MODE, IFilesService>([
-          [localFilesService.getMode(), localFilesService],
-          [gitFilesService.getMode(), gitFilesService],
-        ]);
+        const fileServices = [localFilesService, gitFilesService];
         return FilesServiceFactory.create(configService, fileServices);
       },
       inject: [ConfigService, LocalFilesService, GitFilesService],
