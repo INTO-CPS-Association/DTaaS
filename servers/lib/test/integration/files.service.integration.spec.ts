@@ -13,10 +13,8 @@ import {
 import GitFilesService from '../../src/files/git/git-files.service';
 import {
   FILE_SERVICE,
-  IFilesService,
 } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/files-service.factory';
-import { CONFIG_MODE } from '@/enums/config-mode.enum';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -34,10 +32,7 @@ describe('Integration tests for FilesResolver', () => {
             localFilesService: LocalFilesService,
             gitFilesService: GitFilesService,
           ) => {
-            const fileServices = new Map<CONFIG_MODE, IFilesService>([
-              [localFilesService.getMode(), localFilesService],
-              [gitFilesService.getMode(), gitFilesService],
-            ]);
+            const fileServices = [localFilesService,gitFilesService];
             return FilesServiceFactory.create(configService, fileServices);
           },
           inject: [ConfigService, LocalFilesService, GitFilesService],
