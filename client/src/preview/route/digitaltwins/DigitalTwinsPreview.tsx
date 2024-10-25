@@ -64,15 +64,15 @@ export const DTContent = () => {
   }, [dispatch]);
 
   useEffect(() => {
-      const defaultFiles = [
-        { name: 'description.md', type: 'description' },
-        { name: 'README.md', type: 'description' },
-        { name: '.gitlab-ci.yml', type: 'config' },
-      ];
-      defaultFiles.forEach(file => {
-        dispatch(addNewFile(file));
-      });
-  }, []);
+    const defaultFiles = [
+      { name: 'description.md', type: 'description' },
+      { name: 'README.md', type: 'description' },
+      { name: '.gitlab-ci.yml', type: 'config' },
+    ];
+    defaultFiles.forEach((file) => {
+      dispatch(addNewFile(file));
+    });
+  }, [dispatch]);
 
   return (
     <Layout>

@@ -47,7 +47,6 @@ function Editor({
 
   const handleCancelConfirmation = () => {
     setOpenConfirmDeleteDialog(false);
-    // Ulteriore logica per la cancellazione dei file se necessario
   };
 
   const handleConfirmCancel = () => {
@@ -59,26 +58,41 @@ function Editor({
   };
 
   const confirmSave = () => {
+    setErrorMessage('');
     setOpenInputDialog(true);
   };
 
   const handleInputDialogClose = () => {
     setOpenInputDialog(false);
-    setNewDigitalTwinName(''); // Reset dell'input
+    setNewDigitalTwinName('');
   };
 
   const handleInputDialogConfirm = async () => {
+    const emptyNewFiles = files
+      .filter((file) => file.isNew && file.content === '')
+      .map((file) => file.name);
+
+    if (emptyNewFiles.length > 0) {
+      setErrorMessage(
+        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`
+      );
+      return;
+    }
+
     const gitlabInstance = new GitlabInstance(
       sessionStorage.getItem('username') || '',
       getAuthority(),
       sessionStorage.getItem('access_token') || '',
     );
     await gitlabInstance.init();
-    // Logica per salvare il Digital Twin con il nome newDigitalTwinName
-    // console.log('Saving Digital Twin:', newDigitalTwinName);
     const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
     await digitalTwin.createDT(files);
+    dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
     handleInputDialogClose();
+    setFileName('');
+    setFileContent('');
+    setFileType('');
+    dispatch(removeAllCreationFiles());
   };
 
   const isFileModifiable = () =>
