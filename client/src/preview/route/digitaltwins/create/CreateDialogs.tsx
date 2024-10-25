@@ -7,9 +7,9 @@ interface CreateDialogsProps {
   openChangeFileNameDialog: boolean;
   onCloseChangeFileNameDialog: () => void;
   fileName: string;
-  setFileName: (name: string) => void; // Function to set file name
-  setFileContent: (content: string) => void; // Function to set file content
-  setFileType: (type: string) => void; // Function to set file type
+  setFileName: (name: string) => void;
+  setFileContent: (content: string) => void;
+  setFileType: (type: string) => void;
 
   openDeleteFileDialog: boolean;
   onCloseDeleteFileDialog: () => void;
@@ -26,7 +26,7 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
   openDeleteFileDialog,
   onCloseDeleteFileDialog,
 }) => {
-  const [modifiedFileName, setModifiedFileName] = React.useState(fileName); // Set initial value to fileName
+  const [modifiedFileName, setModifiedFileName] = React.useState(fileName);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -38,11 +38,9 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
 
     setFileName(modifiedFileName);
 
-    // Update the file type to just the extension
     const extension = modifiedFileName.split('.').pop();
     setFileType(extension || '');
 
-    // Close the dialog
     onCloseChangeFileNameDialog();
   };
 
@@ -55,7 +53,6 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
 
   return (
     <>
-      {/* Dialog per cambiare il nome del file */}
       <Dialog open={openChangeFileNameDialog} onClose={onCloseChangeFileNameDialog}>
         <DialogTitle>Change the file name</DialogTitle>
         <DialogContent>
@@ -66,7 +63,7 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
             fullWidth
             variant="outlined"
             value={modifiedFileName}
-            onChange={(e) => setModifiedFileName(e.target.value)} // Update local state
+            onChange={(e) => setModifiedFileName(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
@@ -79,7 +76,6 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
         </DialogActions>
       </Dialog>
 
-      {/* Dialog per eliminare il file */}
       <Dialog open={openDeleteFileDialog} onClose={onCloseDeleteFileDialog}>
       <DialogContent>
         Are you sure you want to delete the <strong>{fileName}</strong> file and its content?

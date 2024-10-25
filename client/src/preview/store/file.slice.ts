@@ -20,24 +20,13 @@ const filesSlice = createSlice({
       });
     },
 
-    /* addOrUpdateNewDTFile: (state, action: PayloadAction<FileState>) => {
-      const index = state.findIndex((file) => file.name === action.payload.name);
-      if (index >= 0) {
-        state[index] = { ...action.payload, isModified: true };
-      } else {
-        state.push({ ...action.payload, isModified: true });
-      }
-    },
-    */
-
     addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
       const index = state.findIndex((file) => file.name === action.payload.name);
       if (index >= 0) {
-        // Mantieni il tipo esistente se presente
         state[index] = { 
-          ...state[index], // Mantieni il file esistente
-          ...action.payload, // Aggiorna solo le proprietà di action.payload
-          isModified: true // Segna come modificato
+          ...state[index],
+          ...action.payload,
+          isModified: true
         };
       } else {
         state.push({ ...action.payload, isModified: true });
@@ -47,18 +36,16 @@ const filesSlice = createSlice({
     renameFile: (state, action: PayloadAction<{ oldName: string; newName: string }>) => {
       const index = state.findIndex((file) => file.name === action.payload.oldName);
       if (index >= 0) {
-        // Update the file name
         state[index].name = action.payload.newName;
-        state[index].isModified = true; // Mark as modified
+        state[index].isModified = true;
         
-        // Determine the new type based on the new name's extension
         const extension = action.payload.newName.split('.').pop();
         if (extension === 'md') {
           state[index].type = 'description';
         } else if (['json', 'yaml', 'yml'].includes(extension!)) {
           state[index].type = 'configuration';
         } else {
-          state[index].type = 'lifecycle'; // Default case for other extensions
+          state[index].type = 'lifecycle';
         }
       }
     },
@@ -76,32 +63,29 @@ const filesSlice = createSlice({
     deleteFile: (state, action: PayloadAction<string>) => {
       const index = state.findIndex((file) => file.name === action.payload);
       if (index >= 0) {
-        state.splice(index, 1); // Rimuove il file dal state
+        state.splice(index, 1);
       }
     },    
 
     removeAllCreationFiles: (state) => {
       const protectedFiles = ['description.md', 'README.md', '.gitlab-ci.yml'];
     
-      // Mantieni solo i file protetti
       const remainingFiles = state.filter(file => protectedFiles.includes(file.name));
     
-      // Reimposta il contenuto dei file rimanenti a vuoto
       remainingFiles.forEach(file => {
         const index = state.findIndex(f => f.name === file.name);
         if (index >= 0) {
-          state[index].content = ''; // Reimposta il contenuto a vuoto
-          state[index].isModified = false; // Imposta isModified a false
+          state[index].content = '';
+          state[index].isModified = false;
         }
       });
     
-      // Rimuovi tutti i file non protetti
-      state.splice(0, state.length); // Elimina tutti i file
-      state.push(...remainingFiles); // Aggiungi i file protetti vuoti
+      state.splice(0, state.length);
+      state.push(...remainingFiles);
     },
     
     removeAllFiles: (state) => {
-      state.splice(0, state.length); // Rimuovi tutti i file dallo stato
+      state.splice(0, state.length);
     }
     
   },

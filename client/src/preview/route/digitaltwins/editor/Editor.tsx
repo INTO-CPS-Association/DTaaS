@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
+import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import {
   Box,
   Grid,
@@ -40,8 +41,9 @@ function Editor({ DTName, tab }: EditorProps) {
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
   const [openInputDialog, setOpenInputDialog] = useState(false);
   const [newDigitalTwinName, setNewDigitalTwinName] = useState('');
-  const files: FileState[] = useSelector((state: RootState) => state.files);
+  const [errorMessage, setErrorMessage] = useState('');
 
+  const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -54,7 +56,6 @@ function Editor({ DTName, tab }: EditorProps) {
 
   const handleCancelConfirmation = () => {
     setOpenConfirmDeleteDialog(false);
-    // Ulteriore logica per la cancellazione dei file se necessario
   };
 
   const handleConfirmCancel = () => {
@@ -66,26 +67,41 @@ function Editor({ DTName, tab }: EditorProps) {
   };
 
   const confirmSave = () => {
+    setErrorMessage('');
     setOpenInputDialog(true);
   };
 
   const handleInputDialogClose = () => {
     setOpenInputDialog(false);
-    setNewDigitalTwinName(''); // Reset dell'input
+    setNewDigitalTwinName('');
   };
 
   const handleInputDialogConfirm = async () => {
+    const emptyNewFiles = files
+      .filter((file) => file.isNew && file.content === '')
+      .map((file) => file.name);
+
+    if (emptyNewFiles.length > 0) {
+      setErrorMessage(
+        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`
+      );
+      return;
+    }
+
     const gitlabInstance = new GitlabInstance(
       sessionStorage.getItem('username') || '',
       getAuthority(),
       sessionStorage.getItem('access_token') || '',
     );
     await gitlabInstance.init();
-    // Logica per salvare il Digital Twin con il nome newDigitalTwinName
-    // console.log('Saving Digital Twin:', newDigitalTwinName);
     const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
     await digitalTwin.createDT(files);
+    dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
     handleInputDialogClose();
+    setFileName('');
+    setFileContent('');
+    setFileType('');
+    dispatch(removeAllCreationFiles());
   };
 
   const isFileModifiable = () =>
@@ -172,7 +188,6 @@ function Editor({ DTName, tab }: EditorProps) {
           </Box>
         )}
 
-        {/* Dialog per il nome del Digital Twin */}
         <Dialog open={openInputDialog} onClose={handleInputDialogClose}>
           <DialogTitle>Enter the name of the digital twin</DialogTitle>
           <DialogContent>
@@ -186,6 +201,7 @@ function Editor({ DTName, tab }: EditorProps) {
               value={newDigitalTwinName}
               onChange={(e) => setNewDigitalTwinName(e.target.value)}
             />
+            <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleInputDialogClose}>Cancel</Button>
@@ -193,7 +209,6 @@ function Editor({ DTName, tab }: EditorProps) {
           </DialogActions>
         </Dialog>
 
-        {/* Dialog di conferma per la cancellazione */}
         <Dialog open={openConfirmDeleteDialog} onClose={handleCancelConfirmation}>
           <DialogContent>Are you sure you want to delete the inserted files and their content?</DialogContent>
           <DialogActions>
@@ -202,7 +217,6 @@ function Editor({ DTName, tab }: EditorProps) {
           </DialogActions>
         </Dialog>
 
-        {/* Dialog per i file di creazione */}
         <CreateDialogs
           openChangeFileNameDialog={openChangeFileNameDialog}
           onCloseChangeFileNameDialog={() => setOpenChangeFileNameDialog(false)}

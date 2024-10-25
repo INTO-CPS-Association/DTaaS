@@ -54,7 +54,7 @@ function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
           )
         }
         options={{
-          readOnly: fileName === '', // Disable the editor if fileName is an empty string
+          readOnly: fileName === '',
         }}
       />
       {fileName === '' && (

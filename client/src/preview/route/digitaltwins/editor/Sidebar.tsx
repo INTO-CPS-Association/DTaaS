@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Grid, CircularProgress, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
@@ -35,7 +33,6 @@ const handleFileClick = (
   tab: string
 ) => {
   if (tab === 'create') {
-    // In 'create' tab, find file with isNew: true
     const newFile = files.find((file) => file.name === fileName && file.isNew);
     if (newFile) {
       updateFileState(
@@ -47,8 +44,7 @@ const handleFileClick = (
       );
     }
   } else if (tab === 'reconfigure') {
-    // In 'manage' tab, find file with isModified: true
-    const modifiedFile = files.find((file) => file.name === fileName && file.isModified);
+    const modifiedFile = files.find((file) => file.name === fileName && file.isModified && !file.isNew);
     if (modifiedFile) {
       updateFileState(
         modifiedFile.name,
@@ -57,9 +53,8 @@ const handleFileClick = (
         setFileContent,
         setFileType
       );
-    } else if (digitalTwin) {
-      // If the file is not found in the store, get file content
-      digitalTwin.getFileContent(fileName).then((fileContent) => {
+    } else {
+      digitalTwin!.getFileContent(fileName).then((fileContent) => {
         if (fileContent) {
           updateFileState(
             fileName,
@@ -95,14 +90,13 @@ const Sidebar = ({
   setFileType,
   tab,
 }: SidebarProps) => {
-  const digitalTwin = name ? useSelector(selectDigitalTwinByName(name)) : null;
-  const files: FileState[] = useSelector((state: RootState) => state.files);
   const [isLoading, setIsLoading] = useState(!!name);
   const [newFileName, setNewFileName] = useState('');
   const [isFileNameDialogOpen, setIsFileNameDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-
+  const digitalTwin = name ? useSelector(selectDigitalTwinByName(name)) : null;
+  const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -123,16 +117,14 @@ const Sidebar = ({
   const handleFileSubmit = () => {
     const fileExtension = newFileName.split('.').pop()?.toLowerCase();
   
-    // Controlla se esiste già un file con lo stesso nome
-    // const files = useSelector(selectAllFiles); // Supponendo che tu abbia un selettore per ottenere tutti i file
     const fileExists = files.some((fileStore: { name: string; }) => fileStore.name === newFileName);
   
     if (fileExists) {
-      // Mostra un messaggio di errore
-      setErrorMessage("A file with this name already exists."); // Setta un messaggio di errore
-      return; // Non procedere oltre
+      setErrorMessage("A file with this name already exists.");
+      return;
     }
-  
+    
+    setErrorMessage('');
     let type;
     
     if (fileExtension === 'md') {
@@ -154,7 +146,7 @@ const Sidebar = ({
       {filesToRender.map((item) => (
         <TreeItem
           key={item}
-          itemId={`${label.toLowerCase()}-${item}`} // Item ID unico
+          itemId={`${label.toLowerCase()}-${item}`}
           label={item}
           onClick={() =>
             handleFileClick(
@@ -226,7 +218,7 @@ const Sidebar = ({
             value={newFileName}
             onChange={(e) => setNewFileName(e.target.value)}
           />
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Mostra il messaggio di errore */}
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsFileNameDialogOpen(false)}>Cancel</Button>
