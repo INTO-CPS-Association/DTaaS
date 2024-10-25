@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
+import {
+  addNewFile,
+  FileState,
+  removeAllCreationFiles,
+} from 'preview/store/file.slice';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import {
   Box,
@@ -20,6 +24,7 @@ import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import { RootState } from 'store/store';
 import GitlabInstance from 'preview/util/gitlab';
 import { getAuthority } from 'util/envUtil';
+import { showSnackbar } from 'preview/store/snackbar.slice';
 import EditorTab from './EditorTab';
 import PreviewTab from './PreviewTab';
 import Sidebar from './Sidebar';
@@ -36,7 +41,8 @@ function Editor({ DTName, tab }: EditorProps) {
   const [fileContent, setFileContent] = useState('');
   const [fileType, setFileType] = useState('');
 
-  const [openChangeFileNameDialog, setOpenChangeFileNameDialog] = useState(false);
+  const [openChangeFileNameDialog, setOpenChangeFileNameDialog] =
+    useState(false);
   const [openDeleteFileDialog, setOpenDeleteFileDialog] = useState(false);
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
   const [openInputDialog, setOpenInputDialog] = useState(false);
@@ -45,6 +51,12 @@ function Editor({ DTName, tab }: EditorProps) {
 
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
+
+  const defaultFiles = [
+    { name: 'description.md', type: 'description' },
+    { name: 'README.md', type: 'description' },
+    { name: '.gitlab-ci.yml', type: 'config' },
+  ];
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -83,7 +95,7 @@ function Editor({ DTName, tab }: EditorProps) {
 
     if (emptyNewFiles.length > 0) {
       setErrorMessage(
-        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`
+        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`,
       );
       return;
     }
@@ -95,20 +107,38 @@ function Editor({ DTName, tab }: EditorProps) {
     );
     await gitlabInstance.init();
     const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
-    await digitalTwin.createDT(files);
-    dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+    const result = await digitalTwin.createDT(files);
+    if (result.startsWith('Error')) {
+      dispatch(showSnackbar({ message: result, severity: 'error' }));
+    } else {
+      dispatch(
+        showSnackbar({
+          message: `Digital twin ${newDigitalTwinName} created successfully`,
+          severity: 'success',
+        }),
+      );
+      dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+      dispatch(removeAllCreationFiles());
+
+      defaultFiles.forEach((file) => {
+        const fileExists = files.some(
+          (existingFile) => existingFile.name === file.name,
+        );
+        if (!fileExists) {
+          dispatch(addNewFile(file));
+        }
+      });
+    }
     handleInputDialogClose();
     setFileName('');
     setFileContent('');
     setFileType('');
-    dispatch(removeAllCreationFiles());
   };
 
   const isFileModifiable = () =>
     !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
 
-  const isFileDelatable = () =>
-    !['.gitlab-ci.yml'].includes(fileName);
+  const isFileDelatable = () => !['.gitlab-ci.yml'].includes(fileName);
 
   return (
     <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -121,7 +151,13 @@ function Editor({ DTName, tab }: EditorProps) {
       />
 
       <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
@@ -130,16 +166,22 @@ function Editor({ DTName, tab }: EditorProps) {
             <Tab label="Editor" />
             <Tab label="Preview" />
           </Tabs>
-          
+
           {tab === 'create' && fileName && (
             <Box sx={{ display: 'flex', gap: 1 }}>
               {isFileModifiable() && (
-                <Button variant="outlined" onClick={() => setOpenChangeFileNameDialog(true)}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenChangeFileNameDialog(true)}
+                >
                   Change File Name
                 </Button>
               )}
               {isFileDelatable() && (
-                <Button variant="outlined" onClick={() => setOpenDeleteFileDialog(true)}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenDeleteFileDialog(true)}
+                >
                   Delete File
                 </Button>
               )}
@@ -169,7 +211,7 @@ function Editor({ DTName, tab }: EditorProps) {
             <PreviewTab fileContent={fileContent} fileType={fileType} />
           )}
         </Box>
-        
+
         {tab === 'create' && (
           <Box
             sx={{
@@ -188,10 +230,13 @@ function Editor({ DTName, tab }: EditorProps) {
           </Box>
         )}
 
-        <Dialog open={openInputDialog} onClose={handleInputDialogClose}>
+        <Dialog open={openInputDialog}>
           <DialogTitle>Enter the name of the digital twin</DialogTitle>
           <DialogContent>
-            <Typography>This will be the name of the subfolder in your <i>digitaltwins</i> folder.</Typography>
+            <Typography>
+              This will be the name of the subfolder in your <i>digitaltwins</i>{' '}
+              folder.
+            </Typography>
             <TextField
               autoFocus
               margin="dense"
@@ -209,8 +254,11 @@ function Editor({ DTName, tab }: EditorProps) {
           </DialogActions>
         </Dialog>
 
-        <Dialog open={openConfirmDeleteDialog} onClose={handleCancelConfirmation}>
-          <DialogContent>Are you sure you want to delete the inserted files and their content?</DialogContent>
+        <Dialog open={openConfirmDeleteDialog}>
+          <DialogContent>
+            Are you sure you want to delete the inserted files and their
+            content?
+          </DialogContent>
           <DialogActions>
             <Button onClick={handleCancelConfirmation}>Cancel</Button>
             <Button onClick={handleConfirmCancel}>Yes</Button>

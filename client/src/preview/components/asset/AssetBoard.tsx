@@ -63,7 +63,9 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
       try {
         await gitlabInstance.init();
         if (gitlabInstance.projectId) {
-          const subfolders = await gitlabInstance.getDTSubfolders(gitlabInstance.projectId);
+          const subfolders = await gitlabInstance.getDTSubfolders(
+            gitlabInstance.projectId,
+          );
           dispatch(setAssets(subfolders));
 
           subfolders.forEach(async (asset) => {

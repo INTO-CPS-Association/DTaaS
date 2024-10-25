@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+} from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { deleteFile, renameFile } from 'preview/store/file.slice';
 
@@ -53,7 +60,7 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
 
   return (
     <>
-      <Dialog open={openChangeFileNameDialog} onClose={onCloseChangeFileNameDialog}>
+      <Dialog open={openChangeFileNameDialog}>
         <DialogTitle>Change the file name</DialogTitle>
         <DialogContent>
           <TextField
@@ -76,10 +83,11 @@ const CreateDialogs: React.FC<CreateDialogsProps> = ({
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openDeleteFileDialog} onClose={onCloseDeleteFileDialog}>
-      <DialogContent>
-        Are you sure you want to delete the <strong>{fileName}</strong> file and its content?
-      </DialogContent>
+      <Dialog open={openDeleteFileDialog}>
+        <DialogContent>
+          Are you sure you want to delete the <strong>{fileName}</strong> file
+          and its content?
+        </DialogContent>
         <DialogActions>
           <Button onClick={onCloseDeleteFileDialog} color="primary">
             No

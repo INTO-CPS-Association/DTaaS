@@ -9,10 +9,16 @@ import AssetBoard from 'preview/components/asset/AssetBoard';
 import { addNewFile } from 'preview/store/file.slice';
 import tabs from './DigitalTwinTabDataPreview';
 import Editor from './editor/Editor';
+import CustomSnackbar from './Snackbar';
 
 export const createDTTab = (): TabData[] =>
   tabs
-    .filter((tab) => tab.label === 'Manage' || tab.label === 'Execute' || tab.label === 'Create')
+    .filter(
+      (tab) =>
+        tab.label === 'Manage' ||
+        tab.label === 'Execute' ||
+        tab.label === 'Create',
+    )
     .map((tab) => ({
       label: tab.label,
       body: (
@@ -20,12 +26,13 @@ export const createDTTab = (): TabData[] =>
           {tab.label === 'Create' ? (
             <>
               <Typography variant="body1">{tab.body}</Typography>
-              <Editor tab={'create'}/>
+              <Editor tab={'create'} />
+              <CustomSnackbar />
             </>
           ) : (
             <>
               <Typography variant="body1">{tab.body}</Typography>
-              <AssetBoard tab={tab.label}/>
+              <AssetBoard tab={tab.label} />
             </>
           )}
         </>

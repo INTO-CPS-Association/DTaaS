@@ -1,6 +1,15 @@
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Grid, CircularProgress, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import {
+  Grid,
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +39,7 @@ const handleFileClick = (
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
   files: FileState[],
-  tab: string
+  tab: string,
 ) => {
   if (tab === 'create') {
     const newFile = files.find((file) => file.name === fileName && file.isNew);
@@ -40,33 +49,38 @@ const handleFileClick = (
         newFile.content,
         setFileName,
         setFileContent,
-        setFileType
+        setFileType,
       );
     }
   } else if (tab === 'reconfigure') {
-    const modifiedFile = files.find((file) => file.name === fileName && file.isModified && !file.isNew);
+    const modifiedFile = files.find(
+      (file) => file.name === fileName && file.isModified && !file.isNew,
+    );
     if (modifiedFile) {
       updateFileState(
         modifiedFile.name,
         modifiedFile.content,
         setFileName,
         setFileContent,
-        setFileType
+        setFileType,
       );
     } else {
-      digitalTwin!.getFileContent(fileName).then((fileContent) => {
-        if (fileContent) {
-          updateFileState(
-            fileName,
-            fileContent,
-            setFileName,
-            setFileContent,
-            setFileType
-          );
-        }
-      }).catch(() => {
-        setFileContent(`Error fetching ${fileName} content`);
-      });
+      digitalTwin!
+        .getFileContent(fileName)
+        .then((fileContent) => {
+          if (fileContent) {
+            updateFileState(
+              fileName,
+              fileContent,
+              setFileName,
+              setFileContent,
+              setFileType,
+            );
+          }
+        })
+        .catch(() => {
+          setFileContent(`Error fetching ${fileName} content`);
+        });
     }
   }
 };
@@ -116,27 +130,33 @@ const Sidebar = ({
 
   const handleFileSubmit = () => {
     const fileExtension = newFileName.split('.').pop()?.toLowerCase();
-  
-    const fileExists = files.some((fileStore: { name: string; }) => fileStore.name === newFileName);
-  
+
+    const fileExists = files.some(
+      (fileStore: { name: string }) => fileStore.name === newFileName,
+    );
+
     if (fileExists) {
-      setErrorMessage("A file with this name already exists.");
+      setErrorMessage('A file with this name already exists.');
       return;
     }
-    
+
     setErrorMessage('');
     let type;
-    
+
     if (fileExtension === 'md') {
       type = 'description';
-    } else if (fileExtension === 'json' || fileExtension === 'yaml' || fileExtension === 'yml') {
+    } else if (
+      fileExtension === 'json' ||
+      fileExtension === 'yaml' ||
+      fileExtension === 'yml'
+    ) {
       type = 'config';
     } else {
       type = 'lifecycle';
     }
-  
+
     dispatch(addNewFile({ name: newFileName, type }));
-  
+
     setIsFileNameDialogOpen(false);
     setNewFileName('');
   };
@@ -201,12 +221,16 @@ const Sidebar = ({
       }}
     >
       {tab === 'create' && (
-        <Button variant="contained" onClick={handleAddFileClick} sx={{ marginBottom: 2 }}>
+        <Button
+          variant="contained"
+          onClick={handleAddFileClick}
+          sx={{ marginBottom: 2 }}
+        >
           Add new file
         </Button>
       )}
 
-      <Dialog open={isFileNameDialogOpen} onClose={() => setIsFileNameDialogOpen(false)}>
+      <Dialog open={isFileNameDialogOpen}>
         <DialogTitle>Enter the file name</DialogTitle>
         <DialogContent>
           <TextField
@@ -222,12 +246,16 @@ const Sidebar = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsFileNameDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleFileSubmit} variant="contained" color="primary">
+          <Button
+            onClick={handleFileSubmit}
+            variant="contained"
+            color="primary"
+          >
             Add
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       <SimpleTreeView>
         {name ? (
           <>
@@ -237,9 +265,24 @@ const Sidebar = ({
           </>
         ) : (
           <>
-            {renderFileTreeItems('Description', files.filter(f => f.type === 'description' && f.isNew).map(f => f.name))}
-            {renderFileTreeItems('Configuration', files.filter(f => f.type === 'config' && f.isNew).map(f => f.name))}
-            {renderFileTreeItems('Lifecycle', files.filter(f => f.type === 'lifecycle' && f.isNew).map(f => f.name))}
+            {renderFileTreeItems(
+              'Description',
+              files
+                .filter((f) => f.type === 'description' && f.isNew)
+                .map((f) => f.name),
+            )}
+            {renderFileTreeItems(
+              'Configuration',
+              files
+                .filter((f) => f.type === 'config' && f.isNew)
+                .map((f) => f.name),
+            )}
+            {renderFileTreeItems(
+              'Lifecycle',
+              files
+                .filter((f) => f.type === 'lifecycle' && f.isNew)
+                .map((f) => f.name),
+            )}
           </>
         )}
       </SimpleTreeView>
