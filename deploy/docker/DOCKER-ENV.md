@@ -20,4 +20,6 @@ Edit all the fields according to your specific case.
 1. The path examples given here are for Linux OS.
    These paths can be Windows OS compatible paths as well.
 1. The Server DNS can also be an IP address.
-   However, for proper working it is neccessary to use the same convention (IP/DNS) in the client configuration file (`deploy/config/client/env.js`) as well.
+   However, for proper working it is neccessary to use the same
+   convention (IP/DNS) in the client configuration file
+   (`deploy/config/client/env.js`) as well.
