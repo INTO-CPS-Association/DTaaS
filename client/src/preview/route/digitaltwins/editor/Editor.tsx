@@ -74,7 +74,7 @@ function Editor({
 
     if (emptyNewFiles.length > 0) {
       setErrorMessage(
-        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`
+        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`,
       );
       return;
     }
@@ -86,20 +86,38 @@ function Editor({
     );
     await gitlabInstance.init();
     const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
-    await digitalTwin.createDT(files);
-    dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+    const result = await digitalTwin.createDT(files);
+    if (result.startsWith('Error')) {
+      dispatch(showSnackbar({ message: result, severity: 'error' }));
+    } else {
+      dispatch(
+        showSnackbar({
+          message: `Digital twin ${newDigitalTwinName} created successfully`,
+          severity: 'success',
+        }),
+      );
+      dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+      dispatch(removeAllCreationFiles());
+
+      defaultFiles.forEach((file) => {
+        const fileExists = files.some(
+          (existingFile) => existingFile.name === file.name,
+        );
+        if (!fileExists) {
+          dispatch(addNewFile(file));
+        }
+      });
+    }
     handleInputDialogClose();
     setFileName('');
     setFileContent('');
     setFileType('');
-    dispatch(removeAllCreationFiles());
   };
 
   const isFileModifiable = () =>
     !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
 
-  const isFileDelatable = () =>
-    !['.gitlab-ci.yml'].includes(fileName);
+  const isFileDelatable = () => !['.gitlab-ci.yml'].includes(fileName);
 
   return (
     <Box
