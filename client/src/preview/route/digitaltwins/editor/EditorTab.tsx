@@ -39,7 +39,7 @@ function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
   }, [fileContent]);
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Editor
         height="400px"
         defaultLanguage="markdown"
@@ -53,7 +53,32 @@ function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
             dispatch,
           )
         }
+        options={{
+          readOnly: fileName === '', // Disable the editor if fileName is an empty string
+        }}
       />
+      {fileName === '' && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            color: 'black',
+            zIndex: 1,
+            fontSize: '16px',
+            fontWeight: 'bold',
+            pointerEvents: 'none',
+          }}
+        >
+          Please select a file to edit.
+        </div>
+      )}
     </div>
   );
 }

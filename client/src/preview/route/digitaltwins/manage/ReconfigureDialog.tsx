@@ -168,7 +168,7 @@ const ReconfigureMainDialog = ({
       Reconfigure <strong>{formatName(name)}</strong>
     </DialogTitle>
     <DialogContent>
-      <Editor DTName={name} />
+      <Editor DTName={name} tab={'reconfigure'}/>
     </DialogContent>
     <DialogActions>
       <Button color="primary" onClick={handleCancel}>

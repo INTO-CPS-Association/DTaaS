@@ -48,6 +48,13 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
   const assets = useSelector((state: RootState) => state.assets.items);
   const dispatch = useDispatch();
 
+  /* useEffect(() => {
+    if (tab === 'Manage') {
+      dispatch(removeAllFiles()); // Dispatch l'azione per svuotare il file store
+    }
+  }, [tab, dispatch]);
+  */
+
   const handleDelete = (deletedAssetPath: string) => {
     dispatch(deleteAsset(deletedAssetPath));
   };

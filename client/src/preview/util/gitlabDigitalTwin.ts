@@ -1,4 +1,5 @@
 import { getAuthority } from 'util/envUtil';
+import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
 
 const RUNNER_TAG = 'linux';
@@ -275,6 +276,43 @@ class DigitalTwin {
       commitMessage,
     );
   }
-}
+  
+  async createDT(files: FileState[]): Promise<string> {
+    if (!this.gitlabInstance.projectId) {
+      return `Error creating ${this.DTName} digital twin: no project id`;
+    }
+
+    const mainFolderPath = `digital_twins/${this.DTName}`;
+    const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
+
+    try {
+
+      // Save files to the main folder and lifecycle folder
+      await Promise.all(
+        files.map(async (file) => {
+          if (file.isNew) {
+            const filePath = file.type === 'lifecycle'
+              ? lifecycleFolderPath
+              : mainFolderPath;
+
+            const commitMessage = `Add ${file.name} to ${file.type === 'lifecycle' ? 'lifecycle' : 'digital twin'} folder`;
+            
+            await this.gitlabInstance.api.RepositoryFiles.create(
+              this.gitlabInstance.projectId!,
+              `${filePath}/${file.name}`,
+              'main',
+              btoa(file.content),  // Base64 encode the content
+              commitMessage,
+            );
+          }
+        }),
+      );
+
+      return `${this.DTName} digital twin created successfully with files.`;
+    } catch (error) {
+      return `Error creating ${this.DTName} digital twin: ${String(error)}`;
+    }
+  }
+} 
 
 export default DigitalTwin;
