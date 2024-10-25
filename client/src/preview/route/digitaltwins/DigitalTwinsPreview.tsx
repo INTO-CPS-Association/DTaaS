@@ -63,6 +63,17 @@ export const DTContent = () => {
     });
   }, [dispatch]);
 
+  useEffect(() => {
+      const defaultFiles = [
+        { name: 'description.md', type: 'description' },
+        { name: 'README.md', type: 'description' },
+        { name: '.gitlab-ci.yml', type: 'config' },
+      ];
+      defaultFiles.forEach(file => {
+        dispatch(addNewFile(file));
+      });
+  }, []);
+
   return (
     <Layout>
       <Typography variant="body1" sx={{ marginBottom: 0 }}>

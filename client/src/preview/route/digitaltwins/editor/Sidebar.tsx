@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Grid, CircularProgress, Button } from '@mui/material';

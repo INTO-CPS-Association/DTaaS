@@ -4,6 +4,7 @@ import { Box, Grid, Tabs, Tab } from '@mui/material';
 import EditorTab from './EditorTab';
 import PreviewTab from './PreviewTab';
 import Sidebar from './Sidebar';
+import CreateDialogs from '../create/CreateDialogs';
 
 interface EditorProps {
   DTName?: string;
@@ -39,6 +40,52 @@ function Editor({
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
+
+  const confirmCancel = () => {
+    setOpenConfirmDeleteDialog(true);
+  };
+
+  const handleCancelConfirmation = () => {
+    setOpenConfirmDeleteDialog(false);
+    // Ulteriore logica per la cancellazione dei file se necessario
+  };
+
+  const handleConfirmCancel = () => {
+    setFileName('');
+    setFileContent('');
+    setFileType('');
+    dispatch(removeAllCreationFiles());
+    setOpenConfirmDeleteDialog(false);
+  };
+
+  const confirmSave = () => {
+    setOpenInputDialog(true);
+  };
+
+  const handleInputDialogClose = () => {
+    setOpenInputDialog(false);
+    setNewDigitalTwinName(''); // Reset dell'input
+  };
+
+  const handleInputDialogConfirm = async () => {
+    const gitlabInstance = new GitlabInstance(
+      sessionStorage.getItem('username') || '',
+      getAuthority(),
+      sessionStorage.getItem('access_token') || '',
+    );
+    await gitlabInstance.init();
+    // Logica per salvare il Digital Twin con il nome newDigitalTwinName
+    // console.log('Saving Digital Twin:', newDigitalTwinName);
+    const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
+    await digitalTwin.createDT(files);
+    handleInputDialogClose();
+  };
+
+  const isFileModifiable = () =>
+    !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
+
+  const isFileDelatable = () =>
+    !['.gitlab-ci.yml'].includes(fileName);
 
   return (
     <Box
