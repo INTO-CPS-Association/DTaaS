@@ -2,15 +2,17 @@ import * as React from 'react';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
-import { addOrUpdateFile } from '../../../store/file.slice';
+import { addOrUpdateFile, addOrUpdateNewFile } from '../../../store/file.slice';
 
 interface EditorTabProps {
+  tab: string;
   fileName: string;
   fileContent: string;
   setFileContent: Dispatch<SetStateAction<string>>;
 }
 
 const handleEditorChange = (
+  tab: string,
   value: string | undefined,
   setEditorValue: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
@@ -21,16 +23,31 @@ const handleEditorChange = (
   setEditorValue(updatedValue);
   setFileContent(updatedValue);
 
-  dispatch(
-    addOrUpdateFile({
-      name: fileName,
-      content: updatedValue,
-      isModified: true,
-    }),
-  );
+  if (tab === 'create') {
+    dispatch(
+      addOrUpdateNewFile({
+        name: fileName,
+        content: updatedValue,
+        isModified: true,
+      }),
+    );
+  } else {
+    dispatch(
+      addOrUpdateFile({
+        name: fileName,
+        content: updatedValue,
+        isModified: true,
+      }),
+    );
+  }
 };
 
-function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
+function EditorTab({
+  tab,
+  fileName,
+  fileContent,
+  setFileContent,
+}: EditorTabProps) {
   const [editorValue, setEditorValue] = useState(fileContent);
   const dispatch = useDispatch();
 
@@ -46,6 +63,7 @@ function EditorTab({ fileName, fileContent, setFileContent }: EditorTabProps) {
         value={editorValue}
         onChange={(value) =>
           handleEditorChange(
+            tab,
             value,
             setEditorValue,
             setFileContent,

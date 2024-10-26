@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { FileState, saveAllFiles } from '../../../store/file.slice';
+import { FileState, removeAllModifiedFiles } from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,
@@ -42,7 +42,9 @@ function ReconfigureDialog({
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const modifiedFiles = useSelector((state: RootState) => state.files);
+  const modifiedFiles = useSelector((state: RootState) =>
+    state.files.filter((file) => !file.isNew),
+  );
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);
@@ -57,6 +59,7 @@ function ReconfigureDialog({
   };
 
   const handleConfirmCancel = () => {
+    dispatch(removeAllModifiedFiles());
     setOpenCancelDialog(false);
     setShowDialog(false);
   };
@@ -99,7 +102,7 @@ export const saveChanges = async (
   }
 
   showSuccessSnackbar(dispatch, name);
-  dispatch(saveAllFiles());
+  dispatch(removeAllModifiedFiles());
 };
 
 export const handleFileUpdate = async (

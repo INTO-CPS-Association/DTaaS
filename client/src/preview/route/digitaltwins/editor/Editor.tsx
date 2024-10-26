@@ -230,6 +230,7 @@ function Editor({ DTName, tab }: EditorProps) {
           >
             {activeTab === 0 && (
               <EditorTab
+                tab={tab}
                 fileName={fileName}
                 fileContent={fileContent}
                 setFileContent={setFileContent}

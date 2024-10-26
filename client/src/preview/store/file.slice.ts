@@ -26,10 +26,27 @@ const filesSlice = createSlice({
       });
     },
 
-    addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
+    addOrUpdateNewFile: (state, action: PayloadAction<FileState>) => {
       const index = state.findIndex(
         (file) => file.name === action.payload.name,
       );
+      if (index >= 0) {
+        state[index] = {
+          ...state[index],
+          ...action.payload,
+          isModified: true,
+          isNew: true,
+        };
+      } else {
+        state.push({ ...action.payload, isModified: true, isNew: true });
+      }
+    },
+
+    addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
+      const index = state.findIndex(
+        (file) => file.name === action.payload.name && !file.isNew,
+      );
+
       if (index >= 0) {
         state[index] = {
           ...state[index],
@@ -63,10 +80,12 @@ const filesSlice = createSlice({
       }
     },
 
-    saveAllFiles: (state) => {
-      const filesToSave = state.filter((file) => file.isModified);
+    removeAllModifiedFiles: (state) => {
+      const filesToSave = state.filter(
+        (file) => file.isModified && !file.isNew,
+      );
       filesToSave.forEach((file) => {
-        const index = state.findIndex((f) => f.name === file.name);
+        const index = state.findIndex((f) => f.name === file.name && !f.isNew);
         if (index >= 0) {
           state.splice(index, 1);
         }
@@ -107,11 +126,12 @@ const filesSlice = createSlice({
 
 export const {
   addNewFile,
+  addOrUpdateNewFile,
   addOrUpdateFile,
   renameFile,
-  saveAllFiles,
   deleteFile,
   removeAllCreationFiles,
+  removeAllModifiedFiles,
   removeAllFiles,
 } = filesSlice.actions;
 export default filesSlice.reducer;
