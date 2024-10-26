@@ -14,7 +14,6 @@ import {
   Tab,
   Button,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
@@ -141,141 +140,168 @@ function Editor({ DTName, tab }: EditorProps) {
   const isFileDelatable = () => !['.gitlab-ci.yml'].includes(fileName);
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-      <Sidebar
-        name={DTName}
-        setFileName={setFileName}
-        setFileContent={setFileContent}
-        setFileType={setFileType}
-        tab={tab}
-      />
-
-      <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        height: '100%',
+        width: '100%',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      {tab === 'create' && (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            aria-label="editor preview tabs"
-          >
-            <Tab label="Editor" />
-            <Tab label="Preview" />
-          </Tabs>
-
-          {tab === 'create' && fileName && (
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              {isFileModifiable() && (
-                <Button
-                  variant="outlined"
-                  onClick={() => setOpenChangeFileNameDialog(true)}
-                >
-                  Change File Name
-                </Button>
-              )}
-              {isFileDelatable() && (
-                <Button
-                  variant="outlined"
-                  onClick={() => setOpenDeleteFileDialog(true)}
-                >
-                  Delete File
-                </Button>
-              )}
-            </Box>
-          )}
-        </Box>
-
-        <Box
-          sx={{
-            flexGrow: 1,
-            padding: 2,
-            border: '1px solid lightgray',
+            width: '30%',
+            textAlign: 'center',
             marginTop: 2,
-            width: '800px',
-            display: 'flex',
-            flexDirection: 'column',
+            marginBottom: 1,
           }}
         >
-          {activeTab === 0 && (
-            <EditorTab
-              fileName={fileName}
-              fileContent={fileContent}
-              setFileContent={setFileContent}
-            />
-          )}
-          {activeTab === 1 && (
-            <PreviewTab fileContent={fileContent} fileType={fileType} />
-          )}
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Digital twin name"
+            value={newDigitalTwinName}
+            onChange={(e) => setNewDigitalTwinName(e.target.value)}
+            sx={{ marginBottom: 1 }}
+          />
         </Box>
+      )}
 
-        {tab === 'create' && (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginTop: 2,
-              gap: 1,
-            }}
-          >
-            <Button variant="outlined" onClick={confirmCancel}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={confirmSave}>
-              Save
-            </Button>
-          </Box>
-        )}
-
-        <Dialog open={openInputDialog}>
-          <DialogTitle>Enter the name of the digital twin</DialogTitle>
-          <DialogContent>
-            <Typography>
-              This will be the name of the subfolder in your <i>digitaltwins</i>{' '}
-              folder.
-            </Typography>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Digital twin name"
-              fullWidth
-              variant="outlined"
-              value={newDigitalTwinName}
-              onChange={(e) => setNewDigitalTwinName(e.target.value)}
-            />
-            <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleInputDialogClose}>Cancel</Button>
-            <Button onClick={handleInputDialogConfirm}>Confirm</Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={openConfirmDeleteDialog}>
-          <DialogContent>
-            Are you sure you want to delete the inserted files and their
-            content?
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCancelConfirmation}>Cancel</Button>
-            <Button onClick={handleConfirmCancel}>Yes</Button>
-          </DialogActions>
-        </Dialog>
-
-        <CreateDialogs
-          openChangeFileNameDialog={openChangeFileNameDialog}
-          onCloseChangeFileNameDialog={() => setOpenChangeFileNameDialog(false)}
-          fileName={fileName}
+      <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
+        <Sidebar
+          name={DTName}
           setFileName={setFileName}
           setFileContent={setFileContent}
           setFileType={setFileType}
-          openDeleteFileDialog={openDeleteFileDialog}
-          onCloseDeleteFileDialog={() => setOpenDeleteFileDialog(false)}
+          tab={tab}
         />
-      </Grid>
+
+        <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              aria-label="editor preview tabs"
+            >
+              <Tab label="Editor" />
+              <Tab label="Preview" />
+            </Tabs>
+
+            {tab === 'create' && fileName && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {isFileModifiable() && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenChangeFileNameDialog(true)}
+                  >
+                    Change File Name
+                  </Button>
+                )}
+                {isFileDelatable() && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenDeleteFileDialog(true)}
+                  >
+                    Delete File
+                  </Button>
+                )}
+              </Box>
+            )}
+          </Box>
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              padding: 2,
+              border: '1px solid lightgray',
+              marginTop: 2,
+              width: '800px',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {activeTab === 0 && (
+              <EditorTab
+                fileName={fileName}
+                fileContent={fileContent}
+                setFileContent={setFileContent}
+              />
+            )}
+            {activeTab === 1 && (
+              <PreviewTab fileContent={fileContent} fileType={fileType} />
+            )}
+          </Box>
+
+          {tab === 'create' && (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: 2,
+                gap: 1,
+              }}
+            >
+              <Button variant="outlined" onClick={confirmCancel}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={confirmSave}
+                disabled={!newDigitalTwinName}
+              >
+                Save
+              </Button>
+            </Box>
+          )}
+
+          <Dialog open={openInputDialog}>
+            <DialogContent>
+              <Typography>
+                Are you sure you want to create the{' '}
+                <strong>{newDigitalTwinName}</strong> digital twin?
+              </Typography>
+              <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleInputDialogClose}>Cancel</Button>
+              <Button onClick={handleInputDialogConfirm}>Confirm</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog open={openConfirmDeleteDialog}>
+            <DialogContent>
+              Are you sure you want to delete the inserted files and their
+              content?
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCancelConfirmation}>Cancel</Button>
+              <Button onClick={handleConfirmCancel}>Yes</Button>
+            </DialogActions>
+          </Dialog>
+
+          <CreateDialogs
+            openChangeFileNameDialog={openChangeFileNameDialog}
+            onCloseChangeFileNameDialog={() =>
+              setOpenChangeFileNameDialog(false)
+            }
+            fileName={fileName}
+            setFileName={setFileName}
+            setFileContent={setFileContent}
+            setFileType={setFileType}
+            openDeleteFileDialog={openDeleteFileDialog}
+            onCloseDeleteFileDialog={() => setOpenDeleteFileDialog(false)}
+          />
+        </Grid>
+      </Box>
     </Box>
   );
 }
