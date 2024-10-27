@@ -4,7 +4,6 @@ import { Box, Grid, Tabs, Tab } from '@mui/material';
 import EditorTab from './EditorTab';
 import PreviewTab from './PreviewTab';
 import Sidebar from './Sidebar';
-import CreateDialogs from '../create/CreateDialogs';
 
 interface EditorProps {
   DTName?: string;
@@ -40,84 +39,6 @@ function Editor({
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
-  const confirmCancel = () => {
-    setOpenConfirmDeleteDialog(true);
-  };
-
-  const handleCancelConfirmation = () => {
-    setOpenConfirmDeleteDialog(false);
-  };
-
-  const handleConfirmCancel = () => {
-    setFileName('');
-    setFileContent('');
-    setFileType('');
-    dispatch(removeAllCreationFiles());
-    setOpenConfirmDeleteDialog(false);
-  };
-
-  const confirmSave = () => {
-    setErrorMessage('');
-    setOpenInputDialog(true);
-  };
-
-  const handleInputDialogClose = () => {
-    setOpenInputDialog(false);
-    setNewDigitalTwinName('');
-  };
-
-  const handleInputDialogConfirm = async () => {
-    const emptyNewFiles = files
-      .filter((file) => file.isNew && file.content === '')
-      .map((file) => file.name);
-
-    if (emptyNewFiles.length > 0) {
-      setErrorMessage(
-        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`,
-      );
-      return;
-    }
-
-    const gitlabInstance = new GitlabInstance(
-      sessionStorage.getItem('username') || '',
-      getAuthority(),
-      sessionStorage.getItem('access_token') || '',
-    );
-    await gitlabInstance.init();
-    const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
-    const result = await digitalTwin.createDT(files);
-    if (result.startsWith('Error')) {
-      dispatch(showSnackbar({ message: result, severity: 'error' }));
-    } else {
-      dispatch(
-        showSnackbar({
-          message: `Digital twin ${newDigitalTwinName} created successfully`,
-          severity: 'success',
-        }),
-      );
-      dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
-      dispatch(removeAllCreationFiles());
-
-      defaultFiles.forEach((file) => {
-        const fileExists = files.some(
-          (existingFile) => existingFile.name === file.name,
-        );
-        if (!fileExists) {
-          dispatch(addNewFile(file));
-        }
-      });
-    }
-    handleInputDialogClose();
-    setFileName('');
-    setFileContent('');
-    setFileType('');
-  };
-
-  const isFileModifiable = () =>
-    !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
-
-  const isFileDelatable = () => !['.gitlab-ci.yml'].includes(fileName);
 
   return (
     <Box
