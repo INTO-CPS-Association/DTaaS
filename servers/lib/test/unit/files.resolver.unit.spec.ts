@@ -12,7 +12,7 @@ import {
   IFilesService,
 } from '../../src/files/interfaces/files.service.interface';
 import { Project } from 'src/types';
-import { CONFIG_MODE } from '@/enums/config-mode.enum';
+import { CONFIG_MODE } from '../../src/enums/config-mode.enum';
 
 describe('Unit tests for FilesResolver', () => {
   let filesResolver: FilesResolver;

@@ -11,7 +11,7 @@ export default class FilesServiceFactory {
     const mode = configService.get<string>('MODE');
     const service = fileServices.find((s) => s.getMode() == mode);
 
-    if (service != undefined) {
+    if (service == undefined) {
       throw new Error(`Invalid MODE: ${mode}`);
     }
     return service;

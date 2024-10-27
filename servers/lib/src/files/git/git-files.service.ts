@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Project } from 'src/types.js';
 import { IFilesService } from '../interfaces/files.service.interface.js';
-import { CONFIG_MODE } from '@/enums/config-mode.enum.js';
+import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
 
 @Injectable()
 export default class GitFilesService implements IFilesService {
