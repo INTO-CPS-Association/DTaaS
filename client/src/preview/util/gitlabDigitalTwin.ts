@@ -4,6 +4,7 @@
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
+import { createFile, getCommitMessage, getFilePath, isValidInstance, logError, logSuccess } from './digitalTwinUtils';
 
 const RUNNER_TAG = 'linux';
 
@@ -81,31 +82,6 @@ class DigitalTwin {
     }
   }
 
-  isValidInstance(): boolean {
-    return !!(
-      this.gitlabInstance.projectId && this.gitlabInstance.triggerToken
-    );
-  }
-
-  logSuccess(): void {
-    this.gitlabInstance.logs.push({
-      status: 'success',
-      DTName: this.DTName,
-      runnerTag: RUNNER_TAG,
-    });
-    this.lastExecutionStatus = 'success';
-  }
-
-  logError(error: string): void {
-    this.gitlabInstance.logs.push({
-      status: 'error',
-      error: new Error(error),
-      DTName: this.DTName,
-      runnerTag: RUNNER_TAG,
-    });
-    this.lastExecutionStatus = 'error';
-  }
-
   async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
     return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
@@ -117,18 +93,18 @@ class DigitalTwin {
   }
 
   async execute(): Promise<number | null> {
-    if (!this.isValidInstance()) {
-      this.logError('Missing projectId or triggerToken');
+    if (!isValidInstance(this)) {
+      logError(this, RUNNER_TAG, 'Missing projectId or triggerToken');
       return null;
     }
 
     try {
       const response = await this.triggerPipeline();
-      this.logSuccess();
+      logSuccess(this, RUNNER_TAG);
       this.pipelineId = response.id;
       return this.pipelineId;
     } catch (error) {
-      this.logError(String(error));
+      logError(this, RUNNER_TAG, String(error));
       return null;
     }
   }
@@ -284,28 +260,20 @@ class DigitalTwin {
     if (!this.gitlabInstance.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
     }
-
+  
     const mainFolderPath = `digital_twins/${this.DTName}`;
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
-
+  
     try {
       for (const file of files) {
         if (file.isNew) {
-          const filePath =
-            file.type === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
-
-          const commitMessage = `Add ${file.name} to ${file.type === 'lifecycle' ? 'lifecycle' : 'digital twin'} folder`;
-
-          await this.gitlabInstance.api.RepositoryFiles.create(
-            this.gitlabInstance.projectId!,
-            `${filePath}/${file.name}`,
-            'main',
-            file.content,
-            commitMessage,
-          );
+          const filePath = getFilePath(file, mainFolderPath, lifecycleFolderPath);
+          const commitMessage = getCommitMessage(file);
+  
+          await createFile(this.gitlabInstance, this.gitlabInstance.projectId, file, filePath, commitMessage);
         }
       }
-
+  
       return `${this.DTName} digital twin created successfully.`;
     } catch (error) {
       return `Error creating ${this.DTName} digital twin: ${String(error)}`;
