@@ -270,7 +270,7 @@ class DigitalTwin {
           const filePath = getFilePath(file, mainFolderPath, lifecycleFolderPath);
           const commitMessage = getCommitMessage(file);
   
-          await createFile(this.gitlabInstance, this.gitlabInstance.projectId, file, filePath, commitMessage);
+          await createFile(this, file, filePath, commitMessage);
         }
       }
   

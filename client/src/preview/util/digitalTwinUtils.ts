@@ -1,5 +1,4 @@
 import { FileState } from "preview/store/file.slice";
-import GitlabInstance from "./gitlab";
 import DigitalTwin from "./gitlabDigitalTwin";
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
@@ -36,14 +35,13 @@ export function getCommitMessage(file: FileState): string {
 }
 
 export async function createFile(
-  gitlabInstance: GitlabInstance,
-  projectId: number,
+  digitalTwin: DigitalTwin,
   file: FileState,
   filePath: string,
   commitMessage: string
 ): Promise<void> {
-  await gitlabInstance.api.RepositoryFiles.create(
-    projectId,
+  await digitalTwin.gitlabInstance.api.RepositoryFiles.create(
+    digitalTwin.gitlabInstance.projectId!,
     `${filePath}/${file.name}`,
     'main',
     file.content,
