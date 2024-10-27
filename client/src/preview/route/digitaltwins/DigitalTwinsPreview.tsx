@@ -8,8 +8,7 @@ import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import { addNewFile } from 'preview/store/file.slice';
 import tabs from './DigitalTwinTabDataPreview';
-import Editor from './editor/Editor';
-import CustomSnackbar from './Snackbar';
+import CreatePage from './create/CreatePage';
 
 export const createDTTab = (): TabData[] =>
   tabs
@@ -26,8 +25,7 @@ export const createDTTab = (): TabData[] =>
           {tab.label === 'Create' ? (
             <>
               <Typography variant="body1">{tab.body}</Typography>
-              <Editor tab={'create'} />
-              <CustomSnackbar />
+              <CreatePage />
             </>
           ) : (
             <>

@@ -39,6 +39,9 @@ function ReconfigureDialog({
   setShowDialog,
   name,
 }: ReconfigureDialogProps) {
+  const [fileName, setFileName] = useState<string>('');
+  const [fileContent, setFileContent] = useState<string>('');
+  const [fileType, setFileType] = useState<string>('');
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
@@ -72,6 +75,12 @@ function ReconfigureDialog({
         name={name}
         handleCancel={handleCancel}
         handleSave={handleSave}
+        fileName={fileName}
+        setFileName={setFileName}
+        fileContent={fileContent}
+        setFileContent={setFileContent}
+        fileType={fileType}
+        setFileType={setFileType}
       />
 
       <ConfirmationDialog
@@ -149,12 +158,24 @@ const ReconfigureMainDialog = ({
   name,
   handleCancel,
   handleSave,
+  fileName,
+  setFileName,
+  fileContent,
+  setFileContent,
+  fileType,
+  setFileType,
 }: {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
   handleCancel: () => void;
   handleSave: () => void;
+  fileName: string;
+  setFileName: Dispatch<SetStateAction<string>>;
+  fileContent: string;
+  setFileContent: Dispatch<SetStateAction<string>>;
+  fileType: string;
+  setFileType: Dispatch<SetStateAction<string>>;
 }) => (
   <Dialog
     open={showDialog}
@@ -171,7 +192,16 @@ const ReconfigureMainDialog = ({
       Reconfigure <strong>{formatName(name)}</strong>
     </DialogTitle>
     <DialogContent>
-      <Editor DTName={name} tab={'reconfigure'} />
+      <Editor
+        DTName={name}
+        tab={'reconfigure'}
+        fileName={fileName}
+        setFileName={setFileName}
+        fileContent={fileContent}
+        setFileContent={setFileContent}
+        fileType={fileType}
+        setFileType={setFileType}
+      />
     </DialogContent>
     <DialogActions>
       <Button color="primary" onClick={handleCancel}>

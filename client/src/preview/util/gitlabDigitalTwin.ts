@@ -4,7 +4,14 @@
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
-import { createFile, getCommitMessage, getFilePath, isValidInstance, logError, logSuccess } from './digitalTwinUtils';
+import {
+  createFile,
+  getCommitMessage,
+  getFilePath,
+  isValidInstance,
+  logError,
+  logSuccess,
+} from './digitalTwinUtils';
 
 const RUNNER_TAG = 'linux';
 
@@ -260,20 +267,24 @@ class DigitalTwin {
     if (!this.gitlabInstance.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
     }
-  
+
     const mainFolderPath = `digital_twins/${this.DTName}`;
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
-  
+
     try {
       for (const file of files) {
         if (file.isNew) {
-          const filePath = getFilePath(file, mainFolderPath, lifecycleFolderPath);
+          const filePath = getFilePath(
+            file,
+            mainFolderPath,
+            lifecycleFolderPath,
+          );
           const commitMessage = getCommitMessage(file);
-  
+
           await createFile(this, file, filePath, commitMessage);
         }
       }
-  
+
       return `${this.DTName} digital twin created successfully.`;
     } catch (error) {
       return `Error creating ${this.DTName} digital twin: ${String(error)}`;
