@@ -5,11 +5,8 @@ import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
 
 @Injectable()
 export default class GitFilesService implements IFilesService {
-  private readonly dataPath: string;
-
-  constructor() {
-    this.dataPath = ''; //Should be set from config service
-  }
+// eslint-disable-next-line no-useless-constructor, no-empty-function
+  constructor() {}
   getMode(): CONFIG_MODE {
     return CONFIG_MODE.GIT;
   }
