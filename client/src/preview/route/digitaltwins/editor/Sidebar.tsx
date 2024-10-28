@@ -14,9 +14,15 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { addNewFile, FileState } from '../../../store/file.slice';
+import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import DigitalTwin from '../../../util/gitlabDigitalTwin';
+import {
+  handleAddFileClick,
+  handleCreateFileClick,
+  handleFileSubmit,
+  handleReconfigureFileClick,
+} from './sidebarFunctions';
 
 interface SidebarProps {
   name?: string;
@@ -61,89 +67,75 @@ const handleFileClick = (
   }
 };
 
-const handleCreateFileClick = (
-  fileName: string,
+const renderFileTreeItems = (
+  label: string,
+  filesToRender: string[],
+  digitalTwin: DigitalTwin,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
   files: FileState[],
+  tab: string,
+) => (
+  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
+    {filesToRender.map((item) => (
+      <TreeItem
+        key={item}
+        itemId={`${label.toLowerCase()}-${item}`}
+        label={item}
+        onClick={() =>
+          handleFileClick(
+            item,
+            digitalTwin!,
+            setFileName,
+            setFileContent,
+            setFileType,
+            files,
+            tab,
+          )
+        }
+      />
+    ))}
+  </TreeItem>
+);
+
+const getFilteredFileNames = (type: string, files: FileState[]) =>
+  files
+    .filter((file) => file.type === type && file.isNew)
+    .map((file) => file.name);
+
+const renderFileSection = (
+  label: string,
+  type: string,
+  filesToRender: string[],
+  digitalTwin: DigitalTwin,
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
-) => {
-  const newFile = files.find((file) => file.name === fileName && file.isNew);
-  if (newFile) {
-    updateFileState(
-      newFile.name,
-      newFile.content,
-      setFileName,
-      setFileContent,
-      setFileType,
-    );
-  }
-};
-
-const handleReconfigureFileClick = (
-  fileName: string,
-  digitalTwin: DigitalTwin | null,
   files: FileState[],
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-) => {
-  const modifiedFile = files.find(
-    (file) => file.name === fileName && file.isModified && !file.isNew,
-  );
-  if (modifiedFile) {
-    updateFileState(
-      modifiedFile.name,
-      modifiedFile.content,
-      setFileName,
-      setFileContent,
-      setFileType,
-    );
-  } else {
-    fetchAndSetFileContent(
-      fileName,
-      digitalTwin,
-      setFileName,
-      setFileContent,
-      setFileType,
-    );
-  }
-};
-
-const fetchAndSetFileContent = async (
-  fileName: string,
-  digitalTwin: DigitalTwin | null,
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-) => {
-  try {
-    const fileContent = await digitalTwin!.getFileContent(fileName);
-    if (fileContent) {
-      updateFileState(
-        fileName,
-        fileContent,
-        setFileName,
-        setFileContent,
-        setFileType,
-      );
-    }
-  } catch {
-    setFileContent(`Error fetching ${fileName} content`);
-  }
-};
-
-const updateFileState = (
-  fileName: string,
-  fileContent: string,
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-) => {
-  setFileName(fileName);
-  setFileContent(fileContent);
-  setFileType(fileName.split('.').pop()!);
-};
+  tab: string,
+) => (
+  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
+    {filesToRender.map((item) => (
+      <TreeItem
+        key={item}
+        itemId={`${label.toLowerCase()}-${item}`}
+        label={item}
+        onClick={() =>
+          handleFileClick(
+            item,
+            digitalTwin!,
+            setFileName,
+            setFileContent,
+            setFileType,
+            files,
+            tab,
+          )
+        }
+      />
+    ))}
+  </TreeItem>
+);
 
 const Sidebar = ({
   name,
@@ -171,66 +163,6 @@ const Sidebar = ({
       loadData();
     }
   }, [name, digitalTwin]);
-
-  const handleAddFileClick = () => {
-    setIsFileNameDialogOpen(true);
-  };
-
-  const handleFileSubmit = () => {
-    const fileExtension = newFileName.split('.').pop()?.toLowerCase();
-
-    const fileExists = files.some(
-      (fileStore: { name: string }) => fileStore.name === newFileName,
-    );
-
-    if (fileExists) {
-      setErrorMessage('A file with this name already exists.');
-      return;
-    }
-
-    setErrorMessage('');
-    let type;
-
-    if (fileExtension === 'md') {
-      type = 'description';
-    } else if (
-      fileExtension === 'json' ||
-      fileExtension === 'yaml' ||
-      fileExtension === 'yml'
-    ) {
-      type = 'config';
-    } else {
-      type = 'lifecycle';
-    }
-
-    dispatch(addNewFile({ name: newFileName, type }));
-
-    setIsFileNameDialogOpen(false);
-    setNewFileName('');
-  };
-
-  const renderFileTreeItems = (label: string, filesToRender: string[]) => (
-    <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
-      {filesToRender.map((item) => (
-        <TreeItem
-          key={item}
-          itemId={`${label.toLowerCase()}-${item}`}
-          label={item}
-          onClick={() =>
-            handleFileClick(
-              item,
-              digitalTwin!,
-              setFileName,
-              setFileContent,
-              setFileType,
-              files,
-              tab,
-            )
-          }
-        />
-      ))}
-    </TreeItem>
-  );
 
   if (isLoading) {
     return (
@@ -271,7 +203,7 @@ const Sidebar = ({
       {tab === 'create' && (
         <Button
           variant="contained"
-          onClick={handleAddFileClick}
+          onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
           sx={{ marginBottom: 2 }}
         >
           Add new file
@@ -295,7 +227,16 @@ const Sidebar = ({
         <DialogActions>
           <Button onClick={() => setIsFileNameDialogOpen(false)}>Cancel</Button>
           <Button
-            onClick={handleFileSubmit}
+            onClick={() =>
+              handleFileSubmit(
+                files,
+                newFileName,
+                setErrorMessage,
+                dispatch,
+                setIsFileNameDialogOpen,
+                setNewFileName,
+              )
+            }
             variant="contained"
             color="primary"
           >
@@ -307,29 +248,71 @@ const Sidebar = ({
       <SimpleTreeView>
         {name ? (
           <>
-            {renderFileTreeItems('Description', digitalTwin!.descriptionFiles)}
-            {renderFileTreeItems('Configuration', digitalTwin!.configFiles)}
-            {renderFileTreeItems('Lifecycle', digitalTwin!.lifecycleFiles)}
-          </>
-        ) : (
-          <>
             {renderFileTreeItems(
               'Description',
-              files
-                .filter((f) => f.type === 'description' && f.isNew)
-                .map((f) => f.name),
+              digitalTwin!.descriptionFiles,
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
             )}
             {renderFileTreeItems(
               'Configuration',
-              files
-                .filter((f) => f.type === 'config' && f.isNew)
-                .map((f) => f.name),
+              digitalTwin!.configFiles,
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
             )}
             {renderFileTreeItems(
               'Lifecycle',
-              files
-                .filter((f) => f.type === 'lifecycle' && f.isNew)
-                .map((f) => f.name),
+              digitalTwin!.lifecycleFiles,
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
+            )}
+          </>
+        ) : (
+          <>
+            {renderFileSection(
+              'Description',
+              'description',
+              getFilteredFileNames('description', files),
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
+            )}
+            {renderFileSection(
+              'Configuration',
+              'config',
+              getFilteredFileNames('config', files),
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
+            )}
+            {renderFileSection(
+              'Lifecycle',
+              'lifecycle',
+              getFilteredFileNames('lifecycle', files),
+              digitalTwin!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              files,
+              tab,
             )}
           </>
         )}
