@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { removeAllCreationFiles, addNewFile } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,10 +8,10 @@ import { RootState } from 'store/store';
 interface ConfirmDeleteDialogProps {
   open: boolean;
   onClose: () => void;
-  setFileName: (name: string) => void;
-  setFileContent: (content: string) => void;
-  setFileType: (type: string) => void;
-  setNewDigitalTwinName: (name: string) => void;
+  setFileName: Dispatch<SetStateAction<string>>;
+  setFileContent: Dispatch<SetStateAction<string>>;
+  setFileType: Dispatch<SetStateAction<string>>;
+  setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
 }
 
 const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
@@ -24,8 +25,6 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   const dispatch = useDispatch();
 
   const files = useSelector((state: RootState) => state.files);
-
-  console.log(files);
 
   const handleConfirmCancel = () => {
     setFileName('');

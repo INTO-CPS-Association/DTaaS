@@ -1,16 +1,7 @@
 import * as React from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Typography,
-  Button,
-} from '@mui/material';
-import {
-  addNewFile,
-  FileState,
-  removeAllCreationFiles,
-} from 'preview/store/file.slice';
+import { Dispatch, SetStateAction } from 'react';
+import { Dialog, DialogActions, DialogContent, Typography, Button } from '@mui/material';
+import { addNewFile, FileState, removeAllCreationFiles } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import GitlabInstance from 'preview/util/gitlab';
@@ -23,13 +14,13 @@ interface CreateDTDialogProps {
   open: boolean;
   onClose: () => void;
   newDigitalTwinName: string;
-  setNewDigitalTwinName: (name: string) => void;
+  setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
   errorMessage: string;
-  setErrorMessage: (message: string) => void;
-  setFileName: (name: string) => void;
-  setFileContent: (content: string) => void;
-  setFileType: (type: string) => void;
-  setOpenInputDialog: (open: boolean) => void;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
+  setFileName: Dispatch<SetStateAction<string>>;
+  setFileContent: Dispatch<SetStateAction<string>>;
+  setFileType: Dispatch<SetStateAction<string>>;
+  setOpenCreateDTDialog: Dispatch<SetStateAction<boolean>>;
 }
 
 const defaultFiles = [
@@ -38,7 +29,7 @@ const defaultFiles = [
   { name: '.gitlab-ci.yml', type: 'config' },
 ];
 
-const InputDialog: React.FC<CreateDTDialogProps> = ({
+const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   open,
   onClose,
   newDigitalTwinName,
@@ -48,56 +39,63 @@ const InputDialog: React.FC<CreateDTDialogProps> = ({
   setFileName,
   setFileContent,
   setFileType,
-  setOpenInputDialog,
+  setOpenCreateDTDialog,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   const handleInputDialogClose = () => {
-    setOpenInputDialog(false);
+    setOpenCreateDTDialog(false);
   };
 
-  const handleInputDialogConfirm = async () => {
-    const emptyNewFiles = files
+  const checkEmptyNewFiles = (): boolean => {
+    const emptyFiles = files
       .filter((file) => file.isNew && file.content === '')
       .map((file) => file.name);
 
-    if (emptyNewFiles.length > 0) {
+    if (emptyFiles.length > 0) {
       setErrorMessage(
-        `The following files have empty content: ${emptyNewFiles.join(', ')}. Edit them in order to create the new digital twin.`,
+        `The following files have empty content: ${emptyFiles.join(', ')}. Edit them in order to create the new digital twin.`
       );
-      return;
+      return true;
     }
+    return false;
+  };
 
+  const initializeDigitalTwin = async () => {
     const gitlabInstance = new GitlabInstance(
       sessionStorage.getItem('username') || '',
       getAuthority(),
-      sessionStorage.getItem('access_token') || '',
+      sessionStorage.getItem('access_token') || ''
     );
     await gitlabInstance.init();
-    const digitalTwin = new DigitalTwin(newDigitalTwinName, gitlabInstance);
+    return new DigitalTwin(newDigitalTwinName, gitlabInstance);
+  };
+
+  const addMissingDefaultFiles = () => {
+    defaultFiles.forEach((file) => {
+      const fileExists = files.some((existingFile) => existingFile.name === file.name);
+      if (!fileExists) {
+        dispatch(addNewFile(file));
+      }
+    });
+  };
+
+  const handleInputDialogConfirm = async () => {
+    if (checkEmptyNewFiles()) return;
+
+    const digitalTwin = await initializeDigitalTwin();
     const result = await digitalTwin.createDT(files);
+
     if (result.startsWith('Error')) {
       dispatch(showSnackbar({ message: result, severity: 'error' }));
     } else {
-      dispatch(
-        showSnackbar({
-          message: `Digital twin ${newDigitalTwinName} created successfully`,
-          severity: 'success',
-        }),
-      );
+      dispatch(showSnackbar({ message: `Digital twin ${newDigitalTwinName} created successfully`, severity: 'success' }));
       dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
       dispatch(removeAllCreationFiles());
-
-      defaultFiles.forEach((file) => {
-        const fileExists = files.some(
-          (existingFile) => existingFile.name === file.name,
-        );
-        if (!fileExists) {
-          dispatch(addNewFile(file));
-        }
-      });
+      addMissingDefaultFiles();
     }
+
     handleInputDialogClose();
     setFileName('');
     setFileContent('');
@@ -109,8 +107,7 @@ const InputDialog: React.FC<CreateDTDialogProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <Typography>
-          Are you sure you want to create the{' '}
-          <strong>{newDigitalTwinName}</strong> digital twin?
+          Are you sure you want to create the <strong>{newDigitalTwinName}</strong> digital twin?
         </Typography>
         <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
       </DialogContent>
@@ -122,4 +119,4 @@ const InputDialog: React.FC<CreateDTDialogProps> = ({
   );
 };
 
-export default InputDialog;
+export default CreateDTDialog;

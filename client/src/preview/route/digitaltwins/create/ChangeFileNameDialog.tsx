@@ -9,14 +9,14 @@ import {
 } from '@mui/material';
 import { renameFile } from 'preview/store/file.slice';
 import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 interface ChangeFileNameDialogProps {
   open: boolean;
   onClose: () => void;
   fileName: string;
-  setFileName: (name: string) => void;
-  setFileType: (type: string) => void;
+  setFileName: Dispatch<SetStateAction<string>>;
+  setFileType: Dispatch<SetStateAction<string>>;
 }
 
 const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({

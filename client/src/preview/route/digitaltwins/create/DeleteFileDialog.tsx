@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { deleteFile } from 'preview/store/file.slice';
 import { useDispatch } from 'react-redux';
@@ -7,8 +8,8 @@ interface DeleteFileDialogProps {
   open: boolean;
   onClose: () => void;
   fileName: string;
-  setFileName: (name: string) => void;
-  setFileContent: (content: string) => void;
+  setFileName: Dispatch<SetStateAction<string>>;
+  setFileContent: Dispatch<SetStateAction<string>>;
 }
 
 const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({

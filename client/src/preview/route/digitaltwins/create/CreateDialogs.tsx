@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import ChangeFileNameDialog from './ChangeFileNameDialog';
 import DeleteFileDialog from './DeleteFileDialog';
 import ConfirmDeleteDialog from './ConfirmDeleteDialog';
@@ -8,19 +9,19 @@ interface CreateDialogsProps {
   openChangeFileNameDialog: boolean;
   onCloseChangeFileNameDialog: () => void;
   fileName: string;
-  setFileName: (name: string) => void;
-  setFileContent: (content: string) => void;
-  setFileType: (type: string) => void;
+  setFileName: Dispatch<SetStateAction<string>>;
+  setFileContent: Dispatch<SetStateAction<string>>;
+  setFileType: Dispatch<SetStateAction<string>>;
   openDeleteFileDialog: boolean;
   onCloseDeleteFileDialog: () => void;
   openConfirmDeleteDialog: boolean;
-  setOpenConfirmDeleteDialog: (open: boolean) => void;
-  openInputDialog: boolean;
-  setOpenInputDialog: (open: boolean) => void;
+  setOpenConfirmDeleteDialog: Dispatch<SetStateAction<boolean>>;
+  openCreateDTDialog: boolean;
+  setOpenCreateDTDialog: Dispatch<SetStateAction<boolean>>;
   newDigitalTwinName: string;
-  setNewDigitalTwinName: (name: string) => void;
+  setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
   errorMessage: string;
-  setErrorMessage: (message: string) => void;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
 const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
@@ -42,8 +43,8 @@ const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
     />
 
     <CreateDTDialog
-      open={props.openInputDialog}
-      onClose={() => props.setOpenInputDialog(false)}
+      open={props.openCreateDTDialog}
+      onClose={() => props.setOpenCreateDTDialog(false)}
       newDigitalTwinName={props.newDigitalTwinName}
       setNewDigitalTwinName={props.setNewDigitalTwinName}
       errorMessage={props.errorMessage}
@@ -51,7 +52,7 @@ const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
       setFileName={props.setFileName}
       setFileContent={props.setFileContent}
       setFileType={props.setFileType}
-      setOpenInputDialog={props.setOpenInputDialog}
+      setOpenCreateDTDialog={props.setOpenCreateDTDialog}
     />
 
     <ConfirmDeleteDialog

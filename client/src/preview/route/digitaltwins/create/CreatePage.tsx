@@ -104,7 +104,7 @@ function CreatePage({
     useState(false);
   const [openDeleteFileDialog, setOpenDeleteFileDialog] = useState(false);
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
-  const [openInputDialog, setOpenInputDialog] = useState(false);
+  const [openCreateDTDialog, setOpenCreateDTDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const confirmCancel = () => {
@@ -113,7 +113,7 @@ function CreatePage({
 
   const confirmSave = () => {
     setErrorMessage('');
-    setOpenInputDialog(true);
+    setOpenCreateDTDialog(true);
   };
 
   return (
@@ -167,8 +167,8 @@ function CreatePage({
         onCloseDeleteFileDialog={() => setOpenDeleteFileDialog(false)}
         openConfirmDeleteDialog={openConfirmDeleteDialog}
         setOpenConfirmDeleteDialog={setOpenConfirmDeleteDialog}
-        openInputDialog={openInputDialog}
-        setOpenInputDialog={setOpenInputDialog}
+        openCreateDTDialog={openCreateDTDialog}
+        setOpenCreateDTDialog={setOpenCreateDTDialog}
         newDigitalTwinName={newDigitalTwinName}
         setNewDigitalTwinName={setNewDigitalTwinName}
         errorMessage={errorMessage}
