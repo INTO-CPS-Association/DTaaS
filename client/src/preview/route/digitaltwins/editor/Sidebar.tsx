@@ -11,18 +11,18 @@ import {
   DialogActions,
 } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
-import DigitalTwin from '../../../util/gitlabDigitalTwin';
 import {
+  fetchData,
+  getFilteredFileNames,
   handleAddFileClick,
   handleCloseFileNameDialog,
-  handleCreateFileClick,
   handleFileSubmit,
-  handleReconfigureFileClick,
+  renderFileSection,
+  renderFileTreeItems,
 } from './sidebarFunctions';
 
 interface SidebarProps {
@@ -32,111 +32,6 @@ interface SidebarProps {
   setFileType: Dispatch<SetStateAction<string>>;
   tab: string;
 }
-
-const fetchData = async (digitalTwin: DigitalTwin) => {
-  await digitalTwin.getDescriptionFiles();
-  await digitalTwin.getLifecycleFiles();
-  await digitalTwin.getConfigFiles();
-};
-
-const handleFileClick = (
-  fileName: string,
-  digitalTwin: DigitalTwin | null,
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-  files: FileState[],
-  tab: string,
-) => {
-  if (tab === 'create') {
-    handleCreateFileClick(
-      fileName,
-      files,
-      setFileName,
-      setFileContent,
-      setFileType,
-    );
-  } else if (tab === 'reconfigure') {
-    handleReconfigureFileClick(
-      fileName,
-      digitalTwin,
-      files,
-      setFileName,
-      setFileContent,
-      setFileType,
-    );
-  }
-};
-
-const renderFileTreeItems = (
-  label: string,
-  filesToRender: string[],
-  digitalTwin: DigitalTwin,
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-  files: FileState[],
-  tab: string,
-) => (
-  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
-    {filesToRender.map((item) => (
-      <TreeItem
-        key={item}
-        itemId={`${label.toLowerCase()}-${item}`}
-        label={item}
-        onClick={() =>
-          handleFileClick(
-            item,
-            digitalTwin!,
-            setFileName,
-            setFileContent,
-            setFileType,
-            files,
-            tab,
-          )
-        }
-      />
-    ))}
-  </TreeItem>
-);
-
-const getFilteredFileNames = (type: string, files: FileState[]) =>
-  files
-    .filter((file) => file.type === type && file.isNew)
-    .map((file) => file.name);
-
-const renderFileSection = (
-  label: string,
-  type: string,
-  filesToRender: string[],
-  digitalTwin: DigitalTwin,
-  setFileName: Dispatch<SetStateAction<string>>,
-  setFileContent: Dispatch<SetStateAction<string>>,
-  setFileType: Dispatch<SetStateAction<string>>,
-  files: FileState[],
-  tab: string,
-) => (
-  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
-    {filesToRender.map((item) => (
-      <TreeItem
-        key={item}
-        itemId={`${label.toLowerCase()}-${item}`}
-        label={item}
-        onClick={() =>
-          handleFileClick(
-            item,
-            digitalTwin!,
-            setFileName,
-            setFileContent,
-            setFileType,
-            files,
-            tab,
-          )
-        }
-      />
-    ))}
-  </TreeItem>
-);
 
 const Sidebar = ({
   name,

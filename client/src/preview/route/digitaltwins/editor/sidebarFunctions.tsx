@@ -2,6 +2,116 @@ import { addNewFile, FileState } from 'preview/store/file.slice';
 import DigitalTwin from 'preview/util/gitlabDigitalTwin';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
+import * as React from 'react';
+
+export const fetchData = async (digitalTwin: DigitalTwin) => {
+  await digitalTwin.getDescriptionFiles();
+  await digitalTwin.getLifecycleFiles();
+  await digitalTwin.getConfigFiles();
+};
+
+export const handleFileClick = (
+  fileName: string,
+  digitalTwin: DigitalTwin | null,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+  files: FileState[],
+  tab: string,
+) => {
+  if (tab === 'create') {
+    handleCreateFileClick(
+      fileName,
+      files,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  } else if (tab === 'reconfigure') {
+    handleReconfigureFileClick(
+      fileName,
+      digitalTwin,
+      files,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  }
+};
+
+export const renderFileTreeItems = (
+  label: string,
+  filesToRender: string[],
+  digitalTwin: DigitalTwin,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+  files: FileState[],
+  tab: string,
+) => (
+  <TreeItem
+    itemId={`${label.toLowerCase()}-${label}`}
+    label={label as TreeItemProps['label']}
+  >
+    {filesToRender.map((item) => (
+      <TreeItem
+        key={item}
+        itemId={`${label.toLowerCase()}-${item}`}
+        label={item}
+        onClick={() =>
+          handleFileClick(
+            item,
+            digitalTwin!,
+            setFileName,
+            setFileContent,
+            setFileType,
+            files,
+            tab,
+          )
+        }
+      />
+    ))}
+  </TreeItem>
+);
+
+export const getFilteredFileNames = (type: string, files: FileState[]) =>
+  files
+    .filter((file) => file.type === type && file.isNew)
+    .map((file) => file.name);
+
+export const renderFileSection = (
+  label: string,
+  type: string,
+  filesToRender: string[],
+  digitalTwin: DigitalTwin,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+  files: FileState[],
+  tab: string,
+) => (
+  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
+    {filesToRender.map((item) => (
+      <TreeItem
+        key={item}
+        itemId={`${label.toLowerCase()}-${item}`}
+        label={item}
+        onClick={() =>
+          handleFileClick(
+            item,
+            digitalTwin!,
+            setFileName,
+            setFileContent,
+            setFileType,
+            files,
+            tab,
+          )
+        }
+      />
+    ))}
+  </TreeItem>
+);
 
 export const handleCreateFileClick = (
   fileName: string,
