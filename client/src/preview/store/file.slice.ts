@@ -27,6 +27,10 @@ const filesSlice = createSlice({
     },
 
     addOrUpdateNewFile: (state, action: PayloadAction<FileState>) => {
+      const { name } = action.payload;
+
+      if (!name) return;
+
       const index = state.findIndex(
         (file) => file.name === action.payload.name,
       );
@@ -43,6 +47,10 @@ const filesSlice = createSlice({
     },
 
     addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
+      const { name } = action.payload;
+
+      if (!name) return;
+
       const index = state.findIndex(
         (file) => file.name === action.payload.name && !file.isNew,
       );

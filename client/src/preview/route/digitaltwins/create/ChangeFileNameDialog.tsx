@@ -6,10 +6,12 @@ import {
   DialogTitle,
   TextField,
   Button,
+  Typography,
 } from '@mui/material';
 import { renameFile } from 'preview/store/file.slice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { RootState } from 'store/store';
 
 interface ChangeFileNameDialogProps {
   open: boolean;
@@ -27,7 +29,9 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   setFileType,
 }) => {
   const [modifiedFileName, setModifiedFileName] = useState(fileName);
+  const [errorChangeMessage, setErrorChangeMessage] = useState('');
 
+  const files = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,12 +39,33 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   }, [fileName]);
 
   const handleChangeFileName = () => {
+    const fileExists = files.some(
+      (fileStore: { name: string }) => fileStore.name === modifiedFileName,
+    );
+
+    if (fileExists) {
+      setErrorChangeMessage('A file with this name already exists.');
+      return;
+    }
+
+    if (modifiedFileName === '') {
+      setErrorChangeMessage("File name can't be empty.");
+      return;
+    }
+
+    setErrorChangeMessage('');
     dispatch(renameFile({ oldName: fileName, newName: modifiedFileName }));
     setFileName(modifiedFileName);
 
     const extension = modifiedFileName.split('.').pop();
     setFileType(extension || '');
 
+    onClose();
+  };
+
+  const handleCloseChangeFileNameDialog = () => {
+    setErrorChangeMessage('');
+    setModifiedFileName(fileName);
     onClose();
   };
 
@@ -57,12 +82,16 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
           value={modifiedFileName}
           onChange={(e) => setModifiedFileName(e.target.value)}
         />
+        <Typography style={{ color: 'red' }}>{errorChangeMessage}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button
+          onClick={() => handleCloseChangeFileNameDialog()}
+          color="primary"
+        >
           Cancel
         </Button>
-        <Button onClick={handleChangeFileName} color="secondary">
+        <Button onClick={() => handleChangeFileName()} color="secondary">
           Change
         </Button>
       </DialogActions>

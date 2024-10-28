@@ -19,6 +19,7 @@ import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import DigitalTwin from '../../../util/gitlabDigitalTwin';
 import {
   handleAddFileClick,
+  handleCloseFileNameDialog,
   handleCreateFileClick,
   handleFileSubmit,
   handleReconfigureFileClick,
@@ -225,7 +226,17 @@ const Sidebar = ({
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsFileNameDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() =>
+              handleCloseFileNameDialog(
+                setIsFileNameDialogOpen,
+                setNewFileName,
+                setErrorMessage,
+              )
+            }
+          >
+            Cancel
+          </Button>
           <Button
             onClick={() =>
               handleFileSubmit(
