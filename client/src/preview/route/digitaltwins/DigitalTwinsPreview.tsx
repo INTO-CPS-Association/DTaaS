@@ -10,7 +10,15 @@ import { addNewFile } from 'preview/store/file.slice';
 import tabs from './DigitalTwinTabDataPreview';
 import CreatePage from './create/CreatePage';
 
-export const createDTTab = (): TabData[] =>
+interface DTTabProps {
+  newDigitalTwinName: string;
+  setNewDigitalTwinName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const createDTTab = ({
+  newDigitalTwinName,
+  setNewDigitalTwinName,
+}: DTTabProps): TabData[] =>
   tabs
     .filter(
       (tab) =>
@@ -20,24 +28,25 @@ export const createDTTab = (): TabData[] =>
     )
     .map((tab) => ({
       label: tab.label,
-      body: (
-        <>
-          {tab.label === 'Create' ? (
-            <>
-              <Typography variant="body1">{tab.body}</Typography>
-              <CreatePage />
-            </>
-          ) : (
-            <>
-              <Typography variant="body1">{tab.body}</Typography>
-              <AssetBoard tab={tab.label} />
-            </>
-          )}
-        </>
-      ),
+      body:
+        tab.label === 'Create' ? (
+          <>
+            <Typography variant="body1">{tab.body}</Typography>
+            <CreatePage
+              newDigitalTwinName={newDigitalTwinName}
+              setNewDigitalTwinName={setNewDigitalTwinName}
+            />
+          </>
+        ) : (
+          <>
+            <Typography variant="body1">{tab.body}</Typography>
+            <AssetBoard tab={tab.label} />
+          </>
+        ),
     }));
 
 export const DTContent = () => {
+  const [newDigitalTwinName, setNewDigitalTwinName] = React.useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -53,12 +62,15 @@ export const DTContent = () => {
 
   return (
     <Layout>
-      <Typography variant="body1" style={{ marginBottom: 0 }}>
-        This page demonstrates integration of DTaaS with gitlab CI/CD workflows.
-        The feature is experimental and requires certain gitlab setup in order
+      <Typography variant="body1" sx={{ marginBottom: 0 }}>
+        This page demonstrates integration of DTaaS with GitLab CI/CD workflows.
+        The feature is experimental and requires certain GitLab setup in order
         for it to work.
       </Typography>
-      <TabComponent assetType={createDTTab()} scope={[]} />
+      <TabComponent
+        assetType={createDTTab({ newDigitalTwinName, setNewDigitalTwinName })}
+        scope={[]}
+      />
     </Layout>
   );
 };

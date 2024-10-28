@@ -1,12 +1,102 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
 
-function CreatePage() {
-  const [newDigitalTwinName, setNewDigitalTwinName] = useState('');
+interface CreatePageProps {
+  newDigitalTwinName: string;
+  setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
+}
+
+function FileActionButtons({
+  fileName,
+  onDeleteClick,
+  onChangeFileNameClick,
+}: {
+  fileName: string;
+  onDeleteClick: () => void;
+  onChangeFileNameClick: () => void;
+}) {
+  const isFileModifiable = () =>
+    !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
+  const isFileDeletable = () => !['.gitlab-ci.yml'].includes(fileName);
+
+  return (
+    <Box sx={{ display: 'flex', gap: 1, paddingLeft: 2, marginTop: 5 }}>
+      {isFileDeletable() && fileName && (
+        <Button variant="contained" onClick={onDeleteClick}>
+          Delete File
+        </Button>
+      )}
+      {isFileModifiable() && fileName && (
+        <Button variant="contained" onClick={onChangeFileNameClick}>
+          Change File Name
+        </Button>
+      )}
+    </Box>
+  );
+}
+
+function DigitalTwinNameInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <Box sx={{ display: 'flex', width: '35%', marginTop: 5 }}>
+      <TextField
+        fullWidth
+        variant="outlined"
+        label="Digital twin name"
+        value={value}
+        onChange={onChange}
+      />
+    </Box>
+  );
+}
+
+function ActionButtons({
+  onCancel,
+  onSave,
+  isSaveDisabled,
+}: {
+  onCancel: () => void;
+  onSave: () => void;
+  isSaveDisabled: boolean;
+}) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        width: '100%',
+        marginBottom: 2,
+        gap: 1,
+      }}
+    >
+      <Button variant="outlined" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onSave}
+        disabled={isSaveDisabled}
+      >
+        Save
+      </Button>
+    </Box>
+  );
+}
+
+function CreatePage({
+  newDigitalTwinName,
+  setNewDigitalTwinName,
+}: CreatePageProps) {
   const [fileName, setFileName] = useState('');
   const [fileContent, setFileContent] = useState('');
   const [fileType, setFileType] = useState('');
@@ -16,11 +106,6 @@ function CreatePage() {
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
   const [openInputDialog, setOpenInputDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
-  const isFileModifiable = () =>
-    !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
-
-  const isFileDeletable = () => !['.gitlab-ci.yml'].includes(fileName);
 
   const confirmCancel = () => {
     setOpenConfirmDeleteDialog(true);
@@ -39,40 +124,21 @@ function CreatePage() {
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          marginTop: 5,
+          margintTop: 5,
         }}
       >
-        <Box sx={{ display: 'flex', gap: 1, paddingLeft: 2 }}>
-          {isFileDeletable() && fileName && (
-            <Button
-              variant="contained"
-              onClick={() => setOpenDeleteFileDialog(true)}
-            >
-              Delete File
-            </Button>
-          )}
-          {isFileModifiable() && fileName && (
-            <Button
-              variant="contained"
-              onClick={() => setOpenChangeFileNameDialog(true)}
-            >
-              Change File Name
-            </Button>
-          )}
-        </Box>
-
-        <Box sx={{ display: 'flex', width: '35%' }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Digital twin name"
-            value={newDigitalTwinName}
-            onChange={(e) => setNewDigitalTwinName(e.target.value)}
-          />
-        </Box>
+        <FileActionButtons
+          fileName={fileName}
+          onDeleteClick={() => setOpenDeleteFileDialog(true)}
+          onChangeFileNameClick={() => setOpenChangeFileNameDialog(true)}
+        />
+        <DigitalTwinNameInput
+          value={newDigitalTwinName}
+          onChange={(e) => setNewDigitalTwinName(e.target.value)}
+        />
       </Box>
 
-      <Box sx={{ width: '100%', marginTop: -1 }}>
+      <Box sx={{ width: '100%', marginTop: -2 }}>
         <Editor
           tab="create"
           fileName={fileName}
@@ -84,28 +150,11 @@ function CreatePage() {
         />
       </Box>
 
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          width: '100%',
-          marginTop: 0.5,
-          marginBottom: 2,
-          gap: 1,
-        }}
-      >
-        <Button variant="outlined" onClick={confirmCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={confirmSave}
-          disabled={!newDigitalTwinName}
-        >
-          Save
-        </Button>
-      </Box>
+      <ActionButtons
+        onCancel={confirmCancel}
+        onSave={confirmSave}
+        isSaveDisabled={!newDigitalTwinName}
+      />
 
       <CreateDialogs
         openChangeFileNameDialog={openChangeFileNameDialog}
@@ -121,6 +170,7 @@ function CreatePage() {
         openInputDialog={openInputDialog}
         setOpenInputDialog={setOpenInputDialog}
         newDigitalTwinName={newDigitalTwinName}
+        setNewDigitalTwinName={setNewDigitalTwinName}
         errorMessage={errorMessage}
         setErrorMessage={setErrorMessage}
       />
