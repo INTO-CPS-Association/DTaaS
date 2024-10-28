@@ -36,10 +36,11 @@ jobs:
           npm install -g pm2
           npm install -g jest
 
-      - name: Run the linting checks
+      - name: Run the linting checks and formatting
         run: |
           yarn install
           yarn syntax
+          yarn format
 
       - name: Build the lib microservice
         run: |
