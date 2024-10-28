@@ -42,46 +42,94 @@ const handleFileClick = (
   tab: string,
 ) => {
   if (tab === 'create') {
-    const newFile = files.find((file) => file.name === fileName && file.isNew);
-    if (newFile) {
-      updateFileState(
-        newFile.name,
-        newFile.content,
-        setFileName,
-        setFileContent,
-        setFileType,
-      );
-    }
-  } else if (tab === 'reconfigure') {
-    const modifiedFile = files.find(
-      (file) => file.name === fileName && file.isModified && !file.isNew,
+    handleCreateFileClick(
+      fileName,
+      files,
+      setFileName,
+      setFileContent,
+      setFileType,
     );
-    if (modifiedFile) {
+  } else if (tab === 'reconfigure') {
+    handleReconfigureFileClick(
+      fileName,
+      digitalTwin,
+      files,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  }
+};
+
+const handleCreateFileClick = (
+  fileName: string,
+  files: FileState[],
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+) => {
+  const newFile = files.find((file) => file.name === fileName && file.isNew);
+  if (newFile) {
+    updateFileState(
+      newFile.name,
+      newFile.content,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  }
+};
+
+const handleReconfigureFileClick = (
+  fileName: string,
+  digitalTwin: DigitalTwin | null,
+  files: FileState[],
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+) => {
+  const modifiedFile = files.find(
+    (file) => file.name === fileName && file.isModified && !file.isNew,
+  );
+  if (modifiedFile) {
+    updateFileState(
+      modifiedFile.name,
+      modifiedFile.content,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  } else {
+    fetchAndSetFileContent(
+      fileName,
+      digitalTwin,
+      setFileName,
+      setFileContent,
+      setFileType,
+    );
+  }
+};
+
+const fetchAndSetFileContent = async (
+  fileName: string,
+  digitalTwin: DigitalTwin | null,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+) => {
+  try {
+    const fileContent = await digitalTwin!.getFileContent(fileName);
+    if (fileContent) {
       updateFileState(
-        modifiedFile.name,
-        modifiedFile.content,
+        fileName,
+        fileContent,
         setFileName,
         setFileContent,
         setFileType,
       );
-    } else {
-      digitalTwin!
-        .getFileContent(fileName)
-        .then((fileContent) => {
-          if (fileContent) {
-            updateFileState(
-              fileName,
-              fileContent,
-              setFileName,
-              setFileContent,
-              setFileType,
-            );
-          }
-        })
-        .catch(() => {
-          setFileContent(`Error fetching ${fileName} content`);
-        });
     }
+  } catch {
+    setFileContent(`Error fetching ${fileName} content`);
   }
 };
 

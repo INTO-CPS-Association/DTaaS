@@ -1,7 +1,17 @@
 import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
-import { Dialog, DialogActions, DialogContent, Typography, Button } from '@mui/material';
-import { addNewFile, FileState, removeAllCreationFiles } from 'preview/store/file.slice';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+  Button,
+} from '@mui/material';
+import {
+  addNewFile,
+  FileState,
+  removeAllCreationFiles,
+} from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import GitlabInstance from 'preview/util/gitlab';
@@ -44,76 +54,89 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
-  const handleInputDialogClose = () => {
-    setOpenCreateDTDialog(false);
-  };
-
-  const checkEmptyNewFiles = (): boolean => {
+  const validateFiles = (): boolean => {
     const emptyFiles = files
       .filter((file) => file.isNew && file.content === '')
       .map((file) => file.name);
 
     if (emptyFiles.length > 0) {
       setErrorMessage(
-        `The following files have empty content: ${emptyFiles.join(', ')}. Edit them in order to create the new digital twin.`
+        `The following files have empty content: ${emptyFiles.join(', ')}. Edit them in order to create the new digital twin.`,
       );
       return true;
     }
     return false;
   };
 
-  const initializeDigitalTwin = async () => {
+  const initDigitalTwin = async () => {
     const gitlabInstance = new GitlabInstance(
       sessionStorage.getItem('username') || '',
       getAuthority(),
-      sessionStorage.getItem('access_token') || ''
+      sessionStorage.getItem('access_token') || '',
     );
     await gitlabInstance.init();
     return new DigitalTwin(newDigitalTwinName, gitlabInstance);
   };
 
-  const addMissingDefaultFiles = () => {
+  const addDefaultFiles = () => {
     defaultFiles.forEach((file) => {
-      const fileExists = files.some((existingFile) => existingFile.name === file.name);
-      if (!fileExists) {
+      if (!files.some((existingFile) => existingFile.name === file.name)) {
         dispatch(addNewFile(file));
       }
     });
   };
 
-  const handleInputDialogConfirm = async () => {
-    if (checkEmptyNewFiles()) return;
+  const handleError = (message: string) => {
+    dispatch(showSnackbar({ message, severity: 'error' }));
+  };
 
-    const digitalTwin = await initializeDigitalTwin();
-    const result = await digitalTwin.createDT(files);
+  const handleSuccess = (digitalTwin: DigitalTwin) => {
+    dispatch(
+      showSnackbar({
+        message: `Digital twin ${newDigitalTwinName} created successfully`,
+        severity: 'success',
+      }),
+    );
+    dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+    dispatch(removeAllCreationFiles());
+    addDefaultFiles();
+  };
 
-    if (result.startsWith('Error')) {
-      dispatch(showSnackbar({ message: result, severity: 'error' }));
-    } else {
-      dispatch(showSnackbar({ message: `Digital twin ${newDigitalTwinName} created successfully`, severity: 'success' }));
-      dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
-      dispatch(removeAllCreationFiles());
-      addMissingDefaultFiles();
-    }
-
-    handleInputDialogClose();
+  const resetDialogAndForm = () => {
+    setOpenCreateDTDialog(false);
     setFileName('');
     setFileContent('');
     setFileType('');
     setNewDigitalTwinName('');
   };
 
+  const handleConfirm = async () => {
+    if (validateFiles()) return;
+
+    const digitalTwin = await initDigitalTwin();
+    const result = await digitalTwin.createDT(files);
+
+    if (result.startsWith('Error')) {
+      handleError(result);
+    } else {
+      handleSuccess(digitalTwin);
+    }
+
+    resetDialogAndForm();
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <Typography>
-          Are you sure you want to create the <strong>{newDigitalTwinName}</strong> digital twin?
+          Are you sure you want to create the{' '}
+          <strong>{newDigitalTwinName}</strong> digital twin?
         </Typography>
         <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleInputDialogClose}>Cancel</Button>
-        <Button onClick={handleInputDialogConfirm}>Confirm</Button>
+        <Button onClick={resetDialogAndForm}>Cancel</Button>
+        <Button onClick={handleConfirm}>Confirm</Button>
       </DialogActions>
     </Dialog>
   );
