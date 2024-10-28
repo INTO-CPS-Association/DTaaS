@@ -36,14 +36,14 @@ jobs:
           npm install -g pm2
           npm install -g jest
 
-      - name: Run the linting checks
+      - name: Run the linting checks and formatting
         run: |
           yarn install
           yarn syntax
+          yarn format
 
       - name: Build the lib microservice
         run: |
-          yarn install	
           yarn build
 
       - name: Run all tests
@@ -54,7 +54,6 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
         run: |
-          yarn install
           yarn build
           yarn test:all
 
@@ -66,7 +65,6 @@ jobs:
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
         run: |
-          yarn install
           yarn build
           yarn start:pm2
       

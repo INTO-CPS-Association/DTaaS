@@ -1,9 +1,8 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import FilesResolver from '../../src/files/resolvers/files.resolver';
-import FilesServiceFactory from '../../src/files/services/files-service.factory';
-import LocalFilesService from '../../src/files/services/local-files.service';
+import FilesResolver from '../../src/files/files.resolver';
+import LocalFilesService from '../../src/files/local/local-files.service';
 import {
   pathToTestDirectory,
   pathToTestFileContent,
@@ -11,6 +10,9 @@ import {
   testFileContent,
   MockConfigService,
 } from '../testUtil';
+import GitFilesService from '../../src/files/git/git-files.service';
+import { FILE_SERVICE } from '../../src/files/interfaces/files.service.interface';
+import FilesServiceFactory from '../../src/files/files-service.factory';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -21,8 +23,20 @@ describe('Integration tests for FilesResolver', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FilesResolver,
-        FilesServiceFactory,
+        {
+          provide: FILE_SERVICE,
+          useFactory: (
+            configService: ConfigService,
+            localFilesService: LocalFilesService,
+            gitFilesService: GitFilesService,
+          ) => {
+            const fileServices = [localFilesService, gitFilesService];
+            return FilesServiceFactory.create(configService, fileServices);
+          },
+          inject: [ConfigService, LocalFilesService, GitFilesService],
+        },
         LocalFilesService,
+        GitFilesService,
         { provide: ConfigService, useClass: MockConfigService },
       ],
     }).compile();

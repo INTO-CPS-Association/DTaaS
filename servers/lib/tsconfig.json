@@ -11,9 +11,6 @@
     "lib": [
       "ES2022"
     ],
-    "paths": {
-      "@/*": ["src/*"]
-    },
     "module": "ES2022", //use node module system
     "moduleResolution": "node", //use node module resolution strategy node
     "noImplicitReturns": true, //raise error on implicit returns

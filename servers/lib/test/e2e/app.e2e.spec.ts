@@ -3,8 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import fetch from 'cross-fetch';
-import { ApolloClient, DocumentNode, InMemoryCache, gql} from "@apollo/client/core/core.cjs";
-import { HttpLink } from "@apollo/client/link/http/http.cjs";
+import {
+  ApolloClient,
+  DocumentNode,
+  InMemoryCache,
+  gql,
+} from '@apollo/client/core/core.cjs';
+import { HttpLink } from '@apollo/client/link/http/http.cjs';
 import AppModule from '../../src/app.module';
 import {
   e2eReadFile,
