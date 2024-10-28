@@ -39,7 +39,6 @@ jobs:
       - name: Build the runner
         if: success() || failure()
         run: |
-          cd servers/execution/runner
           yarn build
 
       - name: Run tests
