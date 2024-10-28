@@ -18,7 +18,7 @@ const queryTypes: (keyof typeof queriesJSON)[] = [
   'incorrect',
 ];
 
-describe.skip('Runner end-to-end tests', () => {
+describe('Runner end-to-end tests', () => {
   let app: INestApplication;
 
   beforeEach(async () => {

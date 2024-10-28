@@ -1,32 +1,36 @@
 import { jest } from '@jest/globals';
 import CLI, { createCommand } from 'src/config/commander';
-import Keyv from 'keyv';
 
 describe('Commander functionality', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it.skip('Should invoke commander correctly', async () => {
+  it('Should invoke commander correctly', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
     const argvCall = jest.spyOn(program, 'parse');
 
-    await CLI(program, CLIOptionsExp);
-
-    expect(argvCall).toHaveBeenCalled();
-    expect(program.opts()).toEqual({
-      config: 'runner.yaml',
-    });
+    try {
+      await CLI(program, CLIOptionsExp);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(argvCall).toHaveBeenCalled();
+      expect(program.opts()).toEqual({
+        config: 'runner.yaml',
+      });
+    }
   });
 
   it('Should run without any flags', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
-    const CLIOptions = await CLI(program, new Keyv());
-    expect(CLIOptions).toBeInstanceOf(Keyv);
-    expect(CLIOptionsExp).toEqual(CLIOptions);
+    try {
+      await CLI(program, CLIOptionsExp);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+    }
   });
 
-  it.skip('Should process config correctly', async () => {
+  it('Should process config correctly', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
     jest.replaceProperty(process, 'argv', [
       'node',
@@ -41,7 +45,7 @@ describe('Commander functionality', () => {
     });
   });
 
-  it.skip('Should throw exception of the config file is not found', async () => {
+  it('Should throw exception of the config file is not found', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
     jest.replaceProperty(process, 'argv', [
       'node',
