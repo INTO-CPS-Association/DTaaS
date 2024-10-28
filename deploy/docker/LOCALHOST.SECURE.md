@@ -189,14 +189,14 @@ included in the localhost installation scenario.
 The commands to start and stop the appliation are:
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.server up -d
-docker compose -f compose.local.secure.yml --env-file .env.server down
+docker compose -f compose.local.secure.yml --env-file .env.local up -d
+docker compose -f compose.local.secure.yml --env-file .env.local down
 ```
 
 To restart only a specific container, for example `client`
 
 ```bash
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.local.secure.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ## References
