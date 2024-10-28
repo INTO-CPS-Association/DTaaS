@@ -14,17 +14,16 @@ describe('FilesServiceFactory', () => {
   let fileServices: IFilesService[];
 
   beforeEach(async () => {
-    localFilesService = new LocalFilesService(configService as ConfigService);
-
+    
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GitFilesService,
         { provide: ConfigService, useValue: { get: jest.fn() } },
-        { provide: LocalFilesService, useValue: localFilesService },
       ],
     }).compile();
-
+    
     configService = module.get<ConfigService>(ConfigService);
+    localFilesService = new LocalFilesService(configService);
     gitFilesService = module.get<GitFilesService>(GitFilesService);
     fileServices = [gitFilesService, localFilesService];
   });
