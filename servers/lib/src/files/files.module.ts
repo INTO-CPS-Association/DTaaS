@@ -4,9 +4,7 @@ import { GitFilesModule } from './git/git-files.module.js';
 import { LocalFilesModule } from './local/local-files.module.js';
 import LocalFilesService from './local/local-files.service.js';
 import GitFilesService from './git/git-files.service.js';
-import {
-  FILE_SERVICE,
-} from './interfaces/files.service.interface.js';
+import { FILE_SERVICE } from './interfaces/files.service.interface.js';
 import FilesServiceFactory from './files-service.factory.js';
 import { ConfigService } from '@nestjs/config';
 

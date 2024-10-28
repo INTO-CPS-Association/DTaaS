@@ -3,6 +3,6 @@ import LocalFilesService from './local-files.service.js';
 
 @Module({
   providers: [LocalFilesService],
-  exports: [LocalFilesService]
+  exports: [LocalFilesService],
 })
 export class LocalFilesModule {}

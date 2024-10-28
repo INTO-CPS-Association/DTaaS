@@ -1,4 +1,4 @@
-import { CONFIG_MODE } from "../../enums/config-mode.enum.js";
+import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
 import { Project } from 'src/types.js';
 
 export const FILE_SERVICE = 'FILE_SERVICE';
