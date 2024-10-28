@@ -8,16 +8,18 @@ import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
 
 @Injectable()
 export default class LocalFilesService implements IFilesService {
-  // eslint-disable-next-line no-useless-constructor, no-empty-function
-  constructor(private configService: ConfigService) {}
+  private readonly dataPath: string;
+
+  constructor(private configService: ConfigService) {
+    this.dataPath = this.configService.get('LOCAL_PATH');
+
+  }
   getMode(): CONFIG_MODE {
     return CONFIG_MODE.LOCAL;
   }
 
   async listDirectory(path: string): Promise<Project> {
-    const dataPath = this.configService.get('LOCAL_PATH');
-    const fullPath = join(dataPath, path);
-
+    const fullPath = join(this.dataPath, path);
     const files = await fs.promises.readdir(fullPath);
 
     const edges = await Promise.all(
@@ -37,8 +39,7 @@ export default class LocalFilesService implements IFilesService {
   }
 
   async readFile(path: string): Promise<Project> {
-    const dataPath = this.configService.get('LOCAL_PATH');
-    const fullPath = join(dataPath, path);
+    const fullPath = join(this.dataPath, path);
 
     try {
       const content = await (
