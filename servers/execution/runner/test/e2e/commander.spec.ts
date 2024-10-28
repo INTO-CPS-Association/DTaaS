@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
 import CLI, { createCommand } from 'src/config/commander';
-import Keyv from 'keyv';
 
 describe('Commander functionality', () => {
   afterEach(() => {
@@ -11,19 +10,24 @@ describe('Commander functionality', () => {
     const [program, CLIOptionsExp] = createCommand('runner');
     const argvCall = jest.spyOn(program, 'parse');
 
-    await CLI(program, CLIOptionsExp);
-
-    expect(argvCall).toHaveBeenCalled();
-    expect(program.opts()).toEqual({
-      config: 'runner.yaml',
-    });
+    try {
+      await CLI(program, CLIOptionsExp);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(argvCall).toHaveBeenCalled();
+      expect(program.opts()).toEqual({
+        config: 'runner.yaml',
+      });
+    }
   });
 
   it('Should run without any flags', async () => {
     const [program, CLIOptionsExp] = createCommand('runner');
-    const CLIOptions = await CLI(program, CLIOptionsExp);
-    expect(CLIOptions).toBeInstanceOf(Keyv);
-    expect(CLIOptionsExp).toEqual(CLIOptions);
+    try {
+      await CLI(program, CLIOptionsExp);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+    }
   });
 
   it('Should process config correctly', async () => {

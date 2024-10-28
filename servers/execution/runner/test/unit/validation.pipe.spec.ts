@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 import ZodValidationPipe from 'src/validation.pipe';
 import { ExecuteCommandDto, executeCommandSchema } from 'src/dto/command.dto';
 
-describe('Check UpdatePhaseDto validation pipe', () => {
+describe('Check UpdateCommandDto validation pipe', () => {
   it('Validation successful for correct json request', async () => {
     const updateCommandDto: ExecuteCommandDto = {
       name: 'create',

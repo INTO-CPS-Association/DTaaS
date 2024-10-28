@@ -4,7 +4,7 @@ import Runner from './runner.interface.js';
 type Command = {
   name: string;
   status: string;
-  task: Runner;
+  task: Runner | undefined;
 };
 
 type CommandStatus = {

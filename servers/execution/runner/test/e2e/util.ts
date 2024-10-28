@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, HttpStatus } from '@nestjs/common';
 
 export interface RequestBody {
   name?: string;
@@ -23,7 +23,7 @@ type Query = {
   resBody: ResponseBody | Array<RequestBody>;
 };
 
-export function postRequest(query: Query) {
+export async function postRequest(query: Query) {
   return supertest(query.app.getHttpServer())
     .post(query.route)
     .send(query.reqBody)
@@ -33,7 +33,7 @@ export function postRequest(query: Query) {
     .expect(query.resBody);
 }
 
-export function getRequest(query: Query) {
+export async function getRequest(query: Query) {
   return supertest(query.app.getHttpServer())
     .get(query.route)
     .send(query.reqBody)
@@ -43,12 +43,29 @@ export function getRequest(query: Query) {
     .expect(query.resBody);
 }
 
+const invalidQuery = (name: string) => ({
+  reqBody: {
+    name,
+  },
+  HttpStatus: HttpStatus.BAD_REQUEST,
+  resBody: {
+    POST: {
+      status: 'invalid command',
+    },
+    GET: {
+      name,
+      status: 'invalid',
+      logs: { stdout: '', stderr: '' },
+    },
+  },
+});
+
 export const queriesJSON = {
-  valid: {
+  permitted: {
     reqBody: {
       name: 'create',
     },
-    HttpStatus: 200,
+    HttpStatus: HttpStatus.OK,
     resBody: {
       POST: {
         status: 'success',
@@ -60,27 +77,13 @@ export const queriesJSON = {
       },
     },
   },
-  invalid: {
-    reqBody: {
-      name: 'configure',
-    },
-    HttpStatus: 400,
-    resBody: {
-      POST: {
-        status: 'invalid command',
-      },
-      GET: {
-        name: 'configure',
-        status: 'invalid',
-        logs: { stdout: '', stderr: '' },
-      },
-    },
-  },
+  notPermitted: invalidQuery('execute'),
+  nonExisting: invalidQuery('configure'),
   incorrect: {
     reqBody: {
       command: 'create',
     },
-    HttpStatus: 400,
+    HttpStatus: HttpStatus.BAD_REQUEST,
     resBody: {
       POST: {
         message: 'Validation Failed',

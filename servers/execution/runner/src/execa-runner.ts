@@ -4,11 +4,11 @@ import Runner from './interfaces/runner.interface.js';
 export default class ExecaRunner implements Runner {
   command: string;
 
-  stdin?: string;
+  stdin: string = '';
 
-  stdout?: string;
+  stdout: string = '';
 
-  stderr?: string;
+  stderr: string = '';
 
   constructor(command: string) {
     this.command = command;
@@ -16,7 +16,6 @@ export default class ExecaRunner implements Runner {
 
   async run(): Promise<boolean> {
     let status: boolean = false;
-
     try {
       const { stdout, stderr } = await execa(this.command);
       this.stderr = stderr;
@@ -32,11 +31,8 @@ export default class ExecaRunner implements Runner {
   checkLogs(): Map<string, string> {
     const logs: Map<string, string> = new Map<string, string>();
 
-    let stackString: string = this.stdout !== undefined ? this.stdout : '';
-    logs.set('stdout', stackString);
-
-    stackString = this.stderr !== undefined ? this.stderr : '';
-    logs.set('stderr', stackString);
+    logs.set('stdout', this.stdout);
+    logs.set('stderr', this.stderr);
 
     return logs;
   }

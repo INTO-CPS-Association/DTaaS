@@ -19,34 +19,55 @@ export default class ExecaManager implements Manager {
   ) {} // eslint-disable-line no-empty-function
 
   async newCommand(name: string): Promise<[boolean, Map<string, string>]> {
-    let success: boolean = false;
+    let logs: Map<string, string> = new Map<string, string>();
+    let status: boolean = false;
     const command: Command = {
       name,
       status: 'invalid',
-      task: RunnerFactory.create(join(this.config.getLocation(), name)),
+      task: undefined,
     };
     this.commandQueue.enqueue(command);
-    await command.task.run().then((value) => {
-      success = value;
-      if (success) command.status = 'valid';
-    });
-    return [success, command.task.checkLogs()];
+
+    if (this.config.permitCommands().includes(name)) {
+      command.task = RunnerFactory.create(
+        join(this.config.getLocation(), name),
+      );
+      await command.task.run().then((value) => {
+        status = value;
+        if (value) {
+          command.status = 'valid';
+        }
+
+        if (command.task !== undefined) {
+          logs = command.task.checkLogs();
+        }
+      });
+    }
+    return [status, logs];
+  }
+
+  private static createStatus(name: string, status: string) {
+    return {
+      name,
+      status,
+      logs: {
+        stdout: '',
+        stderr: '',
+      },
+    };
   }
 
   checkStatus(): CommandStatus {
-    let commandStatus: CommandStatus;
+    let commandStatus: CommandStatus = ExecaManager.createStatus(
+      'none',
+      'invalid',
+    );
     const command: Command | undefined = this.commandQueue.activeCommand();
 
-    if (command === undefined) {
-      commandStatus = {
-        name: 'none',
-        status: 'invalid',
-        logs: {
-          stdout: '',
-          stderr: '',
-        },
-      };
-    } else {
+    if (command !== undefined && command.task === undefined) {
+      commandStatus = ExecaManager.createStatus(command.name, command.status);
+    }
+    if (command !== undefined && command.task !== undefined) {
       commandStatus = {
         name: command.name,
         status: command.status,

@@ -6,9 +6,8 @@ import { ExecuteCommandDto } from './dto/command.dto.js';
 export default class Queue {
   private queue: Command[] = [];
 
-  enqueue(command: Command): boolean {
+  enqueue(command: Command): void {
     this.queue.push(command);
-    return true;
   }
 
   checkHistory(): Array<ExecuteCommandDto> {
