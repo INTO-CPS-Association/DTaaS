@@ -2,7 +2,8 @@ services:
   traefik:
     image: traefik:v2.10
     restart: unless-stopped
-    command: 
+    command:
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
@@ -86,6 +87,7 @@ services:
     volumes:
       - ${DTAAS_DIR}/deploy/docker/conf.server:/conf
     environment:
+      - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
       - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token
