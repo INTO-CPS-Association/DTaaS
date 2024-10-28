@@ -93,6 +93,16 @@ export const handleAddFileClick = (
   setIsFileNameDialogOpen(true);
 };
 
+export const handleCloseFileNameDialog = (
+  setIsFileNameDialogOpen: Dispatch<SetStateAction<boolean>>,
+  setNewFileName: Dispatch<SetStateAction<string>>,
+  setErrorMessage: Dispatch<SetStateAction<string>>,
+) => {
+  setIsFileNameDialogOpen(false);
+  setNewFileName('');
+  setErrorMessage('');
+};
+
 export const handleFileSubmit = (
   files: FileState[],
   newFileName: string,
@@ -109,6 +119,11 @@ export const handleFileSubmit = (
 
   if (fileExists) {
     setErrorMessage('A file with this name already exists.');
+    return;
+  }
+
+  if (newFileName === '') {
+    setErrorMessage("File name can't be empty.");
     return;
   }
 
