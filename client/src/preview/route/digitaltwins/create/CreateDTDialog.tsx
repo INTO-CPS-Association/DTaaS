@@ -126,8 +126,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
     <Dialog open={open} onClose={setOpenCreateDTDialog}>
       <DialogContent>
         <Typography>
-          Are you sure you want to create the{' '}
-          <strong>{newDigitalTwinName}</strong> digital twin?
+          Are you sure you want to create the <strong>{newDigitalTwinName}</strong> digital twin?
         </Typography>
         <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
       </DialogContent>
