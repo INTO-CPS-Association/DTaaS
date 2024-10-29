@@ -1,0 +1,50 @@
+name: Test and Publish
+
+on:
+ workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: servers/lib
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yarn
+        run: npm install -g install yarn
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          always-auth: true
+          registry-url: 'https://registry.npmjs.org'
+
+
+      - name: Publish npm package
+        env:
+         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # copy README.md to project root
+          yarn install
+          yarn build
+          yarn publish --access public
+
+      # - name: Publish npm package to NPM js
+      #   uses: ./.github/workflows/templates/publish_npm_package.yml
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     registry-url: 'https://registry.npmjs.org'
+      #     working-directory: servers/lib
+
+      
