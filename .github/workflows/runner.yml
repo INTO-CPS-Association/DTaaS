@@ -15,6 +15,9 @@ jobs:
   test-runner:
     name: Test digital twin runner
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: servers/execution/runner/
 
     steps:
       - name: Checkout
@@ -27,24 +30,21 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Run linting checks on runner
+      - name: Run linting and formatting checks on runner
         run: |
-          cd servers/execution/runner
+          npm install -g prettier
           yarn install
           yarn syntax
+          prettier -c --ignore-path ../.gitignore "**/*.{ts,tsx,css,scss}"
 
       - name: Build the runner
         if: success() || failure()
         run: |
-          cd servers/execution/runner
-          yarn install	
           yarn build
 
       - name: Run tests
         if: success() || failure()
         run: |
-          cd servers/execution/runner
-          yarn install
           yarn test
 
       - name: Upload test coverage to Codecov
