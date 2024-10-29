@@ -116,7 +116,6 @@ jobs:
 
   publish-package:
     if: | 
-      github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to GitHub Packages & NPM
