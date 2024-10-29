@@ -1,7 +1,17 @@
 name: Test and Publish
 
 on:
- workflow_dispatch:
+ workflow_call:
+  inputs:
+   registry-url:
+    required: true
+    type: string
+   directory:
+    required: true
+    type: string
+   node-version:
+    required: true
+    type: string
 
 env:
   NODE_VERSION: 20
@@ -14,37 +24,26 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: servers/lib
+        working-directory: ${{ inputs.directory }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install yarn
-        run: npm install -g install yarn
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           always-auth: true
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: ${{ inputs.registry-url }}
 
 
       - name: Publish npm package
         env:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # copy README.md to project root
           yarn install
           yarn build
           yarn publish --access public
-
-      # - name: Publish npm package to NPM js
-      #   uses: ./.github/workflows/templates/publish_npm_package.yml
-      #   with:
-      #     node-version: ${{ env.NODE_VERSION }}
-      #     registry-url: 'https://registry.npmjs.org'
-      #     working-directory: servers/lib
 
       
