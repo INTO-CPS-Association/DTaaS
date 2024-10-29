@@ -32,9 +32,10 @@ jobs:
 
       - name: Run linting and formatting checks on runner
         run: |
+          npm install -g prettier
           yarn install
           yarn syntax
-          yarn format
+          prettier -c --ignore-path ../.gitignore "**/*.{ts,tsx,css,scss}"
 
       - name: Build the runner
         if: success() || failure()
