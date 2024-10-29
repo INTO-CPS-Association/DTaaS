@@ -119,7 +119,7 @@ jobs:
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
-    name: Publish to GitHub Packages
+    name: Publish to GitHub Packages & NPM
     runs-on: ubuntu-latest
     needs: test-lib-ms
     permissions:
@@ -128,7 +128,7 @@ jobs:
 
     steps:
       - name: Publish npm package to NPM js
-        uses: ./.github/workflows/publish_npm_package.yml
+        uses: ./.github/workflows/test-publish-npm.yml
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
@@ -137,7 +137,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish npm package to github packages
-        uses: ./.github/workflows/publish_npm_package.yml
+        uses: ./.github/workflows/test-publish-npm.yml
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://npm.pkg.github.com/'
