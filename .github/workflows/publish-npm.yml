@@ -12,6 +12,9 @@ on:
    node-version:
     required: true
     type: string
+   package-name:
+    default: ''
+    type: string
 
 env:
   NODE_VERSION: 20
@@ -37,6 +40,12 @@ jobs:
           always-auth: true
           registry-url: ${{ inputs.registry-url }}
 
+      - name: Rename package name in package.json
+        if: ${{ inputs.package-name != '' }}
+        run: |
+          sudo apt-get install -y jq
+          jq '.name = $package-name' package.json > temp.json
+          mv temp.json package.json
 
       - name: Publish npm package
         env:
