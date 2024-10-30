@@ -26,7 +26,8 @@ Follow the steps below:
 A detailed guide on installation of
 [gitlab runners](https://docs.gitlab.com/runner/install/)
 on Linux OS is available on
-[gitlab website](https://docs.gitlab.com/runner/install/linux-repository.html)
+[gitlab website](https://docs.gitlab.com/runner/install/linux-repository.html).
+Remember to use `linux` as tag for the runner.
 
 ### Register Runner
 
