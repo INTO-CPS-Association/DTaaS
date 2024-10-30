@@ -113,33 +113,6 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-
-  publish-package-github:
-    if: | 
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish to GitHub Packages
-    needs: test-lib-ms
-    uses: ./.github/workflows/test-publish-npm.yml
-    with:
-      node-version: ${{ env.NODE_VERSION }}
-      registry-url: 'https://npm.pkg.github.com/'
-      directory: servers/lib
-    secrets: inherit
-
-  publish-package-npm:
-    if: | 
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish to GitHub Packages
-    needs: test-lib-ms
-    uses: ./.github/workflows/test-publish-npm.yml
-    with:
-      node-version: ${{ env.NODE_VERSION }}
-      registry-url: 'https://registry.npmjs.org'
-      directory: servers/lib
-    secrets: inherit
-
   get_version:
     name: Get version
     runs-on: ubuntu-latest
@@ -153,8 +126,36 @@ jobs:
           run: | 
             version=`cat ./servers/lib/package.json | jq -r '.version'`
             echo "version=$version" >> $GITHUB_OUTPUT
+            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get_version.outputs.version }}
+      node-version: ${{ steps.get_version.outputs.node-version }}
+
+  publish-package-github:
+    if: | 
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish to GitHub Packages
+    needs: [get_version,test-lib-ms]
+    uses: ./.github/workflows/test-publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/lib
+    secrets: inherit
+
+  publish-package-npm:
+    if: | 
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish to GitHub Packages
+    needs: [get_version,test-lib-ms]
+    uses: ./.github/workflows/test-publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/lib
+    secrets: inherit
 
   publish-docker-image-ghcr:
     if: | 
