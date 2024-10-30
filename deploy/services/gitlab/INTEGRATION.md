@@ -103,8 +103,8 @@ run the following commands.
 
 ```sh
 cd deploy/docker
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 ```
 
 ## Post Setup Usage

@@ -298,7 +298,7 @@ Run the appropritate command for a server/local installation:
 # if the server is installed with http option, execute
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 # if the server is installed with https option, execute
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 ```
 
 The new users are now added to the DTaaS instance, with authorization enabled.
