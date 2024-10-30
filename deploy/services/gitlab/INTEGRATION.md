@@ -80,7 +80,7 @@ the **client website** service.
 
 ```sh
 cd deploy/docker
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.local.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ### Production Server Installation
@@ -88,10 +88,23 @@ docker compose -f compose.server.yml --env-file .env.server up -d --force-recrea
 The updated OAuth application configuration needs to be loaded into
 the **client website** and the **forward-auth** services.
 
+The production server can be installed with either **http**
+or **https** option.
+If it is installed with **http** option, run the following commands.
+
 ```sh
 cd deploy/docker
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+```
+
+If the production server is installed with **https** option,
+run the following commands.
+
+```sh
+cd deploy/docker
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 ```
 
 ## Post Setup Usage

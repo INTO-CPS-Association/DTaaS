@@ -21,7 +21,7 @@ config file (`.env.server`).
 
 If the DTaaS application and gitlab are to be hosted at <https://localhost>, then
 the client config file (`deploy/config/client/env.local.js`)
-eeds to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
+needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 If the application and the integrated gitlab are to be hosted at
 `https://localhost/gitlab`, then `.env.server` need not be modified.
 
@@ -103,6 +103,13 @@ from the first time you start the local instance.
 After running the container, your local GitLab instance will be available at
 `external_url` specified in _gitlab.rb_, i.e., either at
 <https://foo.com/gitlab> or at <https://localhost/gitlab>.
+
+### Create Users
+
+The newly installed gitlab only contains `root` user. More users need
+to be created for use with DTaaS. Please see the
+[Gitlab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)
+for further help.
 
 ## Pending Tasks
 

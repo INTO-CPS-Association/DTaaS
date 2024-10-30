@@ -3,6 +3,7 @@ services:
     image: traefik:v2.10
     restart: unless-stopped
     command: 
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
@@ -20,7 +21,7 @@ services:
     image: intocps/dtaas-web:latest
     restart: unless-stopped
     volumes:
-      - ${CLIENT_CONFIG}:/dtaas/client/build/env.js
+      - ${DTAAS_DIR}/deploy/config/client/env.local.js:/dtaas/client/build/env.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"

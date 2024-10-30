@@ -94,10 +94,15 @@ Edit all the fields according to your specific case.
   |:------------|:---------------|:---------------|
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
-  | CLIENT_CONFIG | '/home/Desktop/DTaaS/deploy/config/client/env.local.js' | Full path to env.js file for client |
 
-:clipboard: The path examples given here are for Linux OS.
-These paths can be Windows OS compatible paths as well.
+:clipboard: Important points to note:
+
+1. The path examples given here are for Linux OS.
+   These paths can be Windows OS compatible paths as well.
+1. The client configuration file is located at
+   `deploy/config/client/env.local.js`.
+   Edit the URLs in this file by replacing `http` with `https`.
+   Beyond this, it is not necessary to modify this file.
 
 ### Start DTaaS to Integrate Gitlab
 
@@ -184,14 +189,14 @@ included in the localhost installation scenario.
 The commands to start and stop the appliation are:
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.server up -d
-docker compose -f compose.local.secure.yml --env-file .env.server down
+docker compose -f compose.local.secure.yml --env-file .env.local up -d
+docker compose -f compose.local.secure.yml --env-file .env.local down
 ```
 
 To restart only a specific container, for example `client`
 
 ```bash
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.local.secure.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ## References

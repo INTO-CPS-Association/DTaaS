@@ -1,4 +1,3 @@
-version: '3'
 services:
   traefik:
     image: traefik:v2.10
@@ -9,6 +8,7 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web.forwardedHeaders.insecure=true"
       - "--entrypoints.web.proxyProtocol.insecure=true"
+      - "--log.level=DEBUG"
     ports:
       - "80:80"
     volumes:
@@ -40,6 +40,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files:/dtaas/libms/files
+      - ${LIB_CONFIG}:/dtaas/libms/config/.env.default
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.libms.entryPoints=web"
@@ -95,13 +96,14 @@ services:
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
       - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token
       - PROVIDERS_GENERIC_OAUTH_USER_URL=${OAUTH_URL}/api/v4/user
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${CLIENT_ID}
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${CLIENT_SECRET}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
       - SECRET= ${OAUTH_SECRET}
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
       - CONFIG=/conf
+      - LOG_LEVEL=debug
     labels:
       - "traefik.enable=true"
 

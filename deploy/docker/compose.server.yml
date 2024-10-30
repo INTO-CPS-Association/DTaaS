@@ -2,7 +2,8 @@ services:
   traefik:
     image: traefik:v2.10
     restart: unless-stopped
-    command: 
+    command:
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
@@ -20,7 +21,6 @@ services:
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
       - ${DTAAS_DIR}/files:/dtaas/libms/files
     labels:
       - "traefik.enable=true"
@@ -35,7 +35,7 @@ services:
     image: intocps/dtaas-web:latest
     restart: unless-stopped
     volumes:
-      - ${CLIENT_CONFIG}:/dtaas/client/build/env.js
+      - ${DTAAS_DIR}/deploy/config/client/env.js:/dtaas/client/build/env.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
@@ -87,12 +87,13 @@ services:
     volumes:
       - ${DTAAS_DIR}/deploy/docker/conf.server:/conf
     environment:
+      - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
       - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token
       - PROVIDERS_GENERIC_OAUTH_USER_URL=${OAUTH_URL}/api/v4/user
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${CLIENT_ID}
-      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${CLIENT_SECRET}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
       - SECRET= ${OAUTH_SECRET}
       # INSECURE_COOKIE is required if not using a https entrypoint

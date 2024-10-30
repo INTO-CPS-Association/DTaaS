@@ -96,11 +96,7 @@ Description of file configuration can be found here. [.env file description](./D
 ### Website Client
 
 The frontend React website requires configuration which is specified
-via a filename provided in `CLIENT_CONFIG` variable of
-`deploy/docker/.env.server` file.
-
-The `CLIENT_CONFIG` file is in relative directory of
-`deploy/config/client/env.js`.
+in the client configuration file (`deploy/config/client/env.js`).
 
 Further explanation on the client configuration is available in
 [client config](../../docs/admin/client/config.md).
@@ -188,7 +184,6 @@ please change,
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.docker:/dtaas/libms/.env
       - ${DTAAS_DIR}/files/common:/dtaas/libms/files
 ```
 
@@ -300,7 +295,10 @@ To add a new user to your DTaaS instance, follow these steps:
 Run the appropritate command for a server/local installation:
 
 ```bash
+# if the server is installed with http option, execute
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+# if the server is installed with https option, execute
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 ```
 
 The new users are now added to the DTaaS instance, with authorization enabled.
