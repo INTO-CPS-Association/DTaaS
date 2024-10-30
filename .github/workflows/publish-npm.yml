@@ -44,7 +44,7 @@ jobs:
         if: ${{ inputs.package-name != '' }}
         run: |
           sudo apt-get install -y jq
-          jq '.name = $package-name' package.json > temp.json
+          jq '.name = ${{inputs.package-name}}' package.json > temp.json
           mv temp.json package.json
 
       - name: Publish npm package
