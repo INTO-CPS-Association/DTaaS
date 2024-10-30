@@ -44,7 +44,9 @@ describe('ReconfigureDialog', () => {
 
   beforeEach(() => {
     const dispatch = jest.fn();
-    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(dispatch);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      dispatch,
+    );
 
     (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {

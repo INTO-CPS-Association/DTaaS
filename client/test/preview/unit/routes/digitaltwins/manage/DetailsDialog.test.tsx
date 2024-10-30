@@ -7,10 +7,11 @@ describe('DetailsDialog', () => {
   const setShowDialog = jest.fn();
 
   beforeEach(() => {
-    (useSelector as jest.MockedFunction<typeof useSelector>
-    ).mockImplementation(() => ({
-      fullDescription: 'fullDescription',
-    }));
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      () => ({
+        fullDescription: 'fullDescription',
+      }),
+    );
   });
 
   it('renders DetailsDialog', () => {
