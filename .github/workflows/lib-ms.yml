@@ -155,7 +155,6 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/lib
-      package-name: '@orbit-ece/libms'
     secrets: inherit
 
   publish-docker-image-ghcr:
