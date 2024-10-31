@@ -142,7 +142,8 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/lib
-    secrets: inherit
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
 
   publish-package-npm:
     if: | 
@@ -155,7 +156,8 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/lib
-    secrets: inherit
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
 
   publish-docker-image-ghcr:
     if: | 

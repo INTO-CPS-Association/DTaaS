@@ -15,9 +15,9 @@ on:
    package-name:
     default: ''
     type: string
-
-env:
-  NODE_VERSION: 20
+  secrets:
+    NPM_TOKEN:
+      required: true
 
 jobs:
   publish-package:
@@ -36,7 +36,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ inputs.node-version }}
           always-auth: true
           registry-url: ${{ inputs.registry-url }}
 
