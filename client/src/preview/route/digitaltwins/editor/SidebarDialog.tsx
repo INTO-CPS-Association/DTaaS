@@ -36,50 +36,50 @@ const SidebarDialog = ({
   files,
   dispatch,
 }: SidebarDialogProps) => (
-    <Dialog open={isOpen}>
-      <DialogTitle>Enter the file name</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="File Name"
-          fullWidth
-          variant="outlined"
-          value={newFileName}
-          onChange={(e) => setNewFileName(e.target.value)}
-        />
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() =>
-            handleCloseFileNameDialog(
-              setIsFileNameDialogOpen,
-              setNewFileName,
-              setErrorMessage,
-            )
-          }
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() =>
-            handleFileSubmit(
-              files,
-              newFileName,
-              setErrorMessage,
-              dispatch,
-              setIsFileNameDialogOpen,
-              setNewFileName,
-            )
-          }
-          variant="contained"
-          color="primary"
-        >
-          Add
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+  <Dialog open={isOpen}>
+    <DialogTitle>Enter the file name</DialogTitle>
+    <DialogContent>
+      <TextField
+        autoFocus
+        margin="dense"
+        label="File Name"
+        fullWidth
+        variant="outlined"
+        value={newFileName}
+        onChange={(e) => setNewFileName(e.target.value)}
+      />
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    </DialogContent>
+    <DialogActions>
+      <Button
+        onClick={() =>
+          handleCloseFileNameDialog(
+            setIsFileNameDialogOpen,
+            setNewFileName,
+            setErrorMessage,
+          )
+        }
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={() =>
+          handleFileSubmit(
+            files,
+            newFileName,
+            setErrorMessage,
+            dispatch,
+            setIsFileNameDialogOpen,
+            setNewFileName,
+          )
+        }
+        variant="contained"
+        color="primary"
+      >
+        Add
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
 
 export default SidebarDialog;

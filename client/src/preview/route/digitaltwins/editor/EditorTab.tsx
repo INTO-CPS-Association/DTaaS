@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
-import { addOrUpdateFile, addOrUpdateNewFile } from '../../../store/file.slice';
+import { addOrUpdateFile } from '../../../store/file.slice';
 
 interface EditorTabProps {
   tab: string;
@@ -25,9 +25,10 @@ const handleEditorChange = (
 
   if (tab === 'create') {
     dispatch(
-      addOrUpdateNewFile({
+      addOrUpdateFile({
         name: fileName,
         content: updatedValue,
+        isNew: true,
         isModified: true,
       }),
     );
@@ -36,6 +37,7 @@ const handleEditorChange = (
       addOrUpdateFile({
         name: fileName,
         content: updatedValue,
+        isNew: false,
         isModified: true,
       }),
     );

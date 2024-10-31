@@ -3,8 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface FileState {
   name: string;
   content: string;
-  isNew?: boolean;
-  isModified?: boolean;
+  isNew: boolean;
+  isModified: boolean;
   type?: string;
 }
 
@@ -14,55 +14,27 @@ const filesSlice = createSlice({
   name: 'files',
   initialState,
   reducers: {
-    addNewFile: (
+    addOrUpdateFile: (
       state,
-      action: PayloadAction<{ name: string; type: string }>,
+      action: PayloadAction<FileState & { isNew?: boolean }>,
     ) => {
-      state.push({
-        name: action.payload.name,
-        content: '',
-        isNew: true,
-        type: action.payload.type,
-      });
-    },
-
-    addOrUpdateNewFile: (state, action: PayloadAction<FileState>) => {
-      const { name } = action.payload;
+      const { name, isNew = false, ...rest } = action.payload;
 
       if (!name) return;
 
       const index = state.findIndex(
-        (file) => file.name === action.payload.name,
-      );
-      if (index >= 0) {
-        state[index] = {
-          ...state[index],
-          ...action.payload,
-          isModified: true,
-          isNew: true,
-        };
-      } else {
-        state.push({ ...action.payload, isModified: true, isNew: true });
-      }
-    },
-
-    addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
-      const { name } = action.payload;
-
-      if (!name) return;
-
-      const index = state.findIndex(
-        (file) => file.name === action.payload.name && !file.isNew,
+        (file) => file.name === name && file.isNew === isNew,
       );
 
       if (index >= 0) {
         state[index] = {
           ...state[index],
-          ...action.payload,
+          ...rest,
           isModified: true,
+          isNew,
         };
       } else {
-        state.push({ ...action.payload, isModified: true });
+        state.push({ name, ...rest, isModified: false, isNew });
       }
     },
 
@@ -133,8 +105,6 @@ const filesSlice = createSlice({
 });
 
 export const {
-  addNewFile,
-  addOrUpdateNewFile,
   addOrUpdateFile,
   renameFile,
   deleteFile,

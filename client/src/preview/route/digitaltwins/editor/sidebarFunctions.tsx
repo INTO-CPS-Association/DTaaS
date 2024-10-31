@@ -1,9 +1,17 @@
-import { addNewFile, FileState } from 'preview/store/file.slice';
+import { addOrUpdateFile, FileState } from 'preview/store/file.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import * as React from 'react';
+
+export const getFileTypeFromExtension = (fileName: string): string => {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+  if (extension === 'md') return 'description';
+  if (extension === 'json' || extension === 'yaml' || extension === 'yml')
+    return 'config';
+  return 'lifecycle';
+};
 
 export const fetchData = async (digitalTwin: DigitalTwin) => {
   await digitalTwin.getDescriptionFiles();
@@ -77,7 +85,9 @@ export const renderFileTreeItems = (
 
 export const getFilteredFileNames = (type: string, files: FileState[]) =>
   files
-    .filter((file) => file.type === type && file.isNew)
+    .filter(
+      (file) => file.isNew && getFileTypeFromExtension(file.name) === type,
+    )
     .map((file) => file.name);
 
 export const renderFileSection = (
@@ -221,8 +231,6 @@ export const handleFileSubmit = (
   setIsFileNameDialogOpen: Dispatch<SetStateAction<boolean>>,
   setNewFileName: Dispatch<SetStateAction<string>>,
 ) => {
-  const fileExtension = newFileName.split('.').pop()?.toLowerCase();
-
   const fileExists = files.some(
     (fileStore: { name: string }) => fileStore.name === newFileName,
   );
@@ -238,21 +246,17 @@ export const handleFileSubmit = (
   }
 
   setErrorMessage('');
-  let type;
+  const type = getFileTypeFromExtension(newFileName);
 
-  if (fileExtension === 'md') {
-    type = 'description';
-  } else if (
-    fileExtension === 'json' ||
-    fileExtension === 'yaml' ||
-    fileExtension === 'yml'
-  ) {
-    type = 'config';
-  } else {
-    type = 'lifecycle';
-  }
-
-  dispatch(addNewFile({ name: newFileName, type }));
+  dispatch(
+    addOrUpdateFile({
+      name: newFileName,
+      content: '',
+      isNew: true,
+      isModified: false,
+      type,
+    }),
+  );
 
   setIsFileNameDialogOpen(false);
   setNewFileName('');

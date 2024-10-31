@@ -6,8 +6,8 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { addNewFile } from 'preview/store/file.slice';
 import { defaultFiles } from 'preview/util/file';
+import { addOrUpdateFile } from 'preview/store/file.slice';
 import tabs from './DigitalTwinTabDataPreview';
 import CreatePage from './create/CreatePage';
 
@@ -52,7 +52,14 @@ export const DTContent = () => {
 
   useEffect(() => {
     defaultFiles.forEach((file) => {
-      dispatch(addNewFile(file));
+      dispatch(
+        addOrUpdateFile({
+          name: file.name,
+          content: '',
+          isNew: true,
+          isModified: false,
+        }),
+      );
     });
   }, [dispatch]);
 

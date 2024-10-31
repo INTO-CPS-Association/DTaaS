@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
-import { removeAllCreationFiles, addNewFile } from 'preview/store/file.slice';
+import {
+  removeAllCreationFiles,
+  addOrUpdateFile,
+} from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { defaultFiles } from 'preview/util/file';
@@ -39,7 +42,14 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
         (f) => f.name === file.name && f.isNew === true,
       );
       if (!fileExists) {
-        dispatch(addNewFile(file));
+        dispatch(
+          addOrUpdateFile({
+            name: file.name,
+            content: '',
+            isNew: true,
+            isModified: false,
+          }),
+        );
       }
     });
 
