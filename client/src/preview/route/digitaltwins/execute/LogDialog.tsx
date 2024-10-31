@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
-import { formatName } from 'preview/util/gitlabDigitalTwin';
+import { formatName } from 'preview/util/digitalTwin';
 
 interface LogDialogProps {
   showLog: boolean;

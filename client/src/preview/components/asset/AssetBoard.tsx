@@ -2,11 +2,8 @@ import * as React from 'react';
 import { Grid } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
-import { deleteAsset, setAssets } from 'preview/store/assets.slice';
-import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
-import GitlabInstance from 'preview/util/gitlab';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
-import { getAuthority } from 'util/envUtil';
+import { deleteAsset } from 'preview/store/assets.slice';
+import { fetchAssetsAndCreateTwins } from 'preview/util/init';
 import { Asset } from './Asset';
 import { AssetCardExecute, AssetCardManage } from './AssetCard';
 
@@ -52,36 +49,11 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
   const [error, setError] = React.useState<string | null>(null);
   const dispatch = useDispatch();
 
-  const gitlabInstance = new GitlabInstance(
-    sessionStorage.getItem('username') || '',
-    getAuthority(),
-    sessionStorage.getItem('access_token') || '',
-  );
-
   React.useEffect(() => {
-    const fetchAssetsAndCreateTwins = async () => {
-      try {
-        await gitlabInstance.init();
-        if (gitlabInstance.projectId) {
-          const subfolders = await gitlabInstance.getDTSubfolders(
-            gitlabInstance.projectId,
-          );
-          dispatch(setAssets(subfolders));
-
-          subfolders.forEach(async (asset) => {
-            const digitalTwin = new DigitalTwin(asset.name, gitlabInstance);
-            await digitalTwin.getDescription();
-            dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin }));
-          });
-        } else {
-          dispatch(setAssets([]));
-        }
-      } catch (err) {
-        setError(`An error occurred while fetching assets: ${err}`);
-      }
+    const fetchData = async () => {
+      await fetchAssetsAndCreateTwins(dispatch, setError);
     };
-
-    fetchAssetsAndCreateTwins();
+    fetchData();
   }, []);
 
   const handleDelete = (deletedAssetPath: string) => {

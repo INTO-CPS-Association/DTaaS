@@ -8,9 +8,9 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { renameFile } from 'preview/store/file.slice';
-import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { handleChangeFileName } from 'preview/util/file';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 
 interface ChangeFileNameDialogProps {
@@ -37,31 +37,6 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   useEffect(() => {
     setModifiedFileName(fileName);
   }, [fileName]);
-
-  const handleChangeFileName = () => {
-    const fileExists = files.some(
-      (fileStore: { name: string }) => fileStore.name === modifiedFileName,
-    );
-
-    if (fileExists) {
-      setErrorChangeMessage('A file with this name already exists.');
-      return;
-    }
-
-    if (modifiedFileName === '') {
-      setErrorChangeMessage("File name can't be empty.");
-      return;
-    }
-
-    setErrorChangeMessage('');
-    dispatch(renameFile({ oldName: fileName, newName: modifiedFileName }));
-    setFileName(modifiedFileName);
-
-    const extension = modifiedFileName.split('.').pop();
-    setFileType(extension || '');
-
-    onClose();
-  };
 
   const handleCloseChangeFileNameDialog = () => {
     onClose();
@@ -91,7 +66,21 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
         >
           Cancel
         </Button>
-        <Button onClick={() => handleChangeFileName()} color="secondary">
+        <Button
+          onClick={() =>
+            handleChangeFileName(
+              files,
+              modifiedFileName,
+              fileName,
+              setFileName,
+              setFileType,
+              setErrorChangeMessage,
+              onClose,
+              dispatch,
+            )
+          }
+          color="secondary"
+        >
           Change
         </Button>
       </DialogActions>

@@ -1,5 +1,5 @@
 import { addNewFile, FileState } from 'preview/store/file.slice';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';

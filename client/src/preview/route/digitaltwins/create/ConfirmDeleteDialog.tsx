@@ -4,6 +4,7 @@ import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { removeAllCreationFiles, addNewFile } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
+import { defaultFiles } from 'preview/util/file';
 
 interface ConfirmDeleteDialogProps {
   open: boolean;
@@ -32,12 +33,6 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
     setFileType('');
     setNewDigitalTwinName('');
     dispatch(removeAllCreationFiles());
-
-    const defaultFiles = [
-      { name: 'description.md', type: 'description' },
-      { name: 'README.md', type: 'description' },
-      { name: '.gitlab-ci.yml', type: 'config' },
-    ];
 
     defaultFiles.forEach((file) => {
       const fileExists = files.some(

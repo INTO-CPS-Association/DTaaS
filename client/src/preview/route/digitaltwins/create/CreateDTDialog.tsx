@@ -7,18 +7,18 @@ import {
   Typography,
   Button,
 } from '@mui/material';
-import {
-  addNewFile,
-  FileState,
-  removeAllCreationFiles,
-} from 'preview/store/file.slice';
+import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import GitlabInstance from 'preview/util/gitlab';
-import { getAuthority } from 'util/envUtil';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
+import {
+  addDefaultFiles,
+  defaultFiles,
+  validateFiles,
+} from 'preview/util/file';
+import { initDigitalTwin } from 'preview/util/init';
 
 interface CreateDTDialogProps {
   open: boolean;
@@ -32,51 +32,6 @@ interface CreateDTDialogProps {
   setFileType: Dispatch<SetStateAction<string>>;
   setOpenCreateDTDialog: Dispatch<SetStateAction<boolean>>;
 }
-
-const defaultFiles = [
-  { name: 'description.md', type: 'description' },
-  { name: 'README.md', type: 'description' },
-  { name: '.gitlab-ci.yml', type: 'config' },
-];
-
-const validateFiles = (
-  files: FileState[],
-  setErrorMessage: Dispatch<SetStateAction<string>>,
-): boolean => {
-  const emptyFiles = files
-    .filter((file) => file.isNew && file.content === '')
-    .map((file) => file.name);
-
-  if (emptyFiles.length > 0) {
-    setErrorMessage(
-      `The following files have empty content: ${emptyFiles.join(', ')}. Edit them in order to create the new digital twin.`,
-    );
-    return true;
-  }
-  return false;
-};
-
-const initDigitalTwin = async (newDigitalTwinName: string) => {
-  const gitlabInstance = new GitlabInstance(
-    sessionStorage.getItem('username') || '',
-    getAuthority(),
-    sessionStorage.getItem('access_token') || '',
-  );
-  await gitlabInstance.init();
-  return new DigitalTwin(newDigitalTwinName, gitlabInstance);
-};
-
-const addDefaultFiles = (
-  defaultFilesNames: { name: string; type: string }[],
-  files: FileState[],
-  dispatch: ReturnType<typeof useDispatch>,
-) => {
-  defaultFilesNames.forEach((file) => {
-    if (!files.some((existingFile) => existingFile.name === file.name)) {
-      dispatch(addNewFile(file));
-    }
-  });
-};
 
 const handleError = (
   message: string,

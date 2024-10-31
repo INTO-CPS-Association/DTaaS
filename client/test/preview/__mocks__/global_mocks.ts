@@ -1,6 +1,6 @@
 import { Gitlab } from '@gitbeaker/core';
 import GitlabInstance from 'preview/util/gitlab';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';

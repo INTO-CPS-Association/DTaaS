@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { FileState } from 'preview/store/file.slice';
-import DigitalTwin from './gitlabDigitalTwin';
+import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   return !!(

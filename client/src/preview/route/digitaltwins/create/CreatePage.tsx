@@ -4,39 +4,11 @@ import { Box, Button, TextField } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
+import FileActionButtons from './FileActionButtons';
 
 interface CreatePageProps {
   newDigitalTwinName: string;
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
-}
-
-function FileActionButtons({
-  fileName,
-  onDeleteClick,
-  onChangeFileNameClick,
-}: {
-  fileName: string;
-  onDeleteClick: () => void;
-  onChangeFileNameClick: () => void;
-}) {
-  const isFileModifiable = () =>
-    !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
-  const isFileDeletable = () => !['.gitlab-ci.yml'].includes(fileName);
-
-  return (
-    <Box sx={{ display: 'flex', gap: 1, paddingLeft: 2, marginTop: 5 }}>
-      {isFileDeletable() && fileName && (
-        <Button variant="contained" onClick={onDeleteClick}>
-          Delete File
-        </Button>
-      )}
-      {isFileModifiable() && fileName && (
-        <Button variant="contained" onClick={onChangeFileNameClick}>
-          Change File Name
-        </Button>
-      )}
-    </Box>
-  );
 }
 
 function DigitalTwinNameInput({

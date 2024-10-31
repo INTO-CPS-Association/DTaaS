@@ -1,15 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import {
-  Grid,
-  CircularProgress,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
-} from '@mui/material';
+import { Grid, CircularProgress, Button } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
@@ -19,11 +10,10 @@ import {
   fetchData,
   getFilteredFileNames,
   handleAddFileClick,
-  handleCloseFileNameDialog,
-  handleFileSubmit,
   renderFileSection,
   renderFileTreeItems,
 } from './sidebarFunctions';
+import SidebarDialog from './SidebarDialog';
 
 interface SidebarProps {
   name?: string;
@@ -55,7 +45,6 @@ const Sidebar = ({
         await fetchData(digitalTwin);
         setIsLoading(false);
       };
-
       loadData();
     }
   }, [name, digitalTwin]);
@@ -106,50 +95,16 @@ const Sidebar = ({
         </Button>
       )}
 
-      <Dialog open={isFileNameDialogOpen}>
-        <DialogTitle>Enter the file name</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="File Name"
-            fullWidth
-            variant="outlined"
-            value={newFileName}
-            onChange={(e) => setNewFileName(e.target.value)}
-          />
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              handleCloseFileNameDialog(
-                setIsFileNameDialogOpen,
-                setNewFileName,
-                setErrorMessage,
-              )
-            }
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() =>
-              handleFileSubmit(
-                files,
-                newFileName,
-                setErrorMessage,
-                dispatch,
-                setIsFileNameDialogOpen,
-                setNewFileName,
-              )
-            }
-            variant="contained"
-            color="primary"
-          >
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SidebarDialog
+        isOpen={isFileNameDialogOpen}
+        newFileName={newFileName}
+        setNewFileName={setNewFileName}
+        setIsFileNameDialogOpen={setIsFileNameDialogOpen}
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+        files={files}
+        dispatch={dispatch}
+      />
 
       <SimpleTreeView>
         {name ? (
