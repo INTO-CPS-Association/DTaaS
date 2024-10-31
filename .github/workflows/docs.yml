@@ -8,8 +8,6 @@ on:
     paths:
       - 'docs/**'
   workflow_dispatch:
-    paths:
-      - 'docs/**'
 
 jobs:
   docs:

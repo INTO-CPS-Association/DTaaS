@@ -1,0 +1,58 @@
+name: Test and Publish
+
+on:
+ workflow_call:
+  inputs:
+   registry-url:
+    required: true
+    type: string
+   directory:
+    required: true
+    type: string
+   node-version:
+    required: true
+    type: string
+   package-name:
+    default: ''
+    type: string
+  secrets:
+    NPM_TOKEN:
+      required: true
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.directory }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          always-auth: true
+          registry-url: ${{ inputs.registry-url }}
+
+      - name: Rename package name in package.json
+        if: ${{ inputs.package-name != '' }}
+        run: |
+          sudo apt-get install -y jq
+          jq '.name = "${{inputs.package-name}}"' package.json > temp.json
+          mv temp.json package.json
+
+      - name: Publish npm package
+        env:
+         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          yarn install
+          yarn build
+          yarn publish --access public
+
+      

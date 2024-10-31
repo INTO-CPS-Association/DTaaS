@@ -9,6 +9,9 @@ on:
       - 'servers/lib/**'
   workflow_dispatch:
 
+env:
+  NODE_VERSION: 20
+
 jobs:
   test-lib-ms:
     name: Test library microservice
@@ -27,7 +30,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -108,44 +111,8 @@ jobs:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
 
-  publish-npm-package:
-    if: | 
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish NPM Package to GitHub Packages
-    runs-on: ubuntu-latest
-    needs: test-lib-ms
-    permissions:
-      packages: write
-      contents: read
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          always-auth: true
-          registry-url: 'https://npm.pkg.github.com/'
-
-      - name: Publish npm package
-        run: |
-          # copy README.md to project root
-          cp servers/lib/README.md .
-          cd servers/lib
-          yarn install
-          yarn build
-          yarn publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-
   get_version:
-    name: Get version
+    name: Get version and variables
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
@@ -157,8 +124,40 @@ jobs:
           run: | 
             version=`cat ./servers/lib/package.json | jq -r '.version'`
             echo "version=$version" >> $GITHUB_OUTPUT
+            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get_version.outputs.version }}
+      node-version: ${{ steps.get_version.outputs.node-version }}
+
+  publish-package-github:
+    if: | 
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish to GitHub Packages
+    needs: [get_version,test-lib-ms]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/lib
+      package-name: ${{ vars.PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-package-npm:
+    if: | 
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish to NPM
+    needs: [get_version,test-lib-ms]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/lib
+      package-name: ${{ vars.PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
 
   publish-docker-image-ghcr:
     if: | 
