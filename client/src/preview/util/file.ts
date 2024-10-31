@@ -1,4 +1,8 @@
-import { addNewFile, FileState, renameFile } from 'preview/store/file.slice';
+import {
+  addOrUpdateFile,
+  FileState,
+  renameFile,
+} from 'preview/store/file.slice';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -37,7 +41,15 @@ export const addDefaultFiles = (
 ) => {
   defaultFilesNames.forEach((file) => {
     if (!files.some((existingFile) => existingFile.name === file.name)) {
-      dispatch(addNewFile(file));
+      dispatch(
+        addOrUpdateFile({
+          name: file.name,
+          content: '',
+          isNew: true,
+          isModified: false,
+          type: file.type,
+        }),
+      );
     }
   });
 };
