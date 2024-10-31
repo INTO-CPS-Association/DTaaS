@@ -142,6 +142,7 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/lib
+      package-name: ${{ env.PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -156,6 +157,7 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/lib
+      package-name: ${{ env.PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
 
