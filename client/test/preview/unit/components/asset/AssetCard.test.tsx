@@ -50,12 +50,13 @@ describe('AssetCardManage', () => {
   });
 
   it('renders AssetCardManage with digital twin description', () => {
-    (useSelector as jest.Mock).mockImplementation((selector) =>
-      selector({
-        digitalTwin: {
-          [asset.name]: { description: 'Digital Twin description' },
-        },
-      }),
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          digitalTwin: {
+            [asset.name]: { description: 'Digital Twin description' },
+          },
+        }),
     );
 
     render(
@@ -79,12 +80,13 @@ describe('AssetCardExecute', () => {
   });
 
   it('renders AssetCardExecute with digital twin description', () => {
-    (useSelector as jest.Mock).mockImplementation((selector) =>
-      selector({
-        digitalTwin: {
-          [asset.name]: { description: 'Digital Twin description' },
-        },
-      }),
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          digitalTwin: {
+            [asset.name]: { description: 'Digital Twin description' },
+          },
+        }),
     );
 
     render(

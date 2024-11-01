@@ -12,7 +12,10 @@ on:
 jobs:
   client:
     name: Test react website
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: client/
@@ -29,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install
+          yarn install --network-timeout 1000000
           yarn playwright install --with-deps
 
       - name: Run the linting checks
@@ -59,11 +62,19 @@ jobs:
         run: |
           yarn test:e2e
 
-      - name: Upload Playwright Report
+      - name: Upload Playwright Report (Linux)
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && runner.os == 'Linux'}}
         with:
-          name: playwright-report
+          name: playwright-report-linux
+          path: client/playwright-report/**
+          retention-days: 30
+
+      - name: Upload Playwright Report (Windows)
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && runner.os == 'Windows'}}
+        with:
+          name: playwright-report-windows
           path: client/playwright-report/**
           retention-days: 30
 

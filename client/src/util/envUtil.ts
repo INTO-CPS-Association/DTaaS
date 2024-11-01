@@ -76,7 +76,7 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
   return workbenchLinkValues;
 }
 
-export function getDTPagePreviewLink(): string {
+export function useGetDTPagePreviewLink(): string {
   return useUserLink(useAppURL(), 'preview/digitaltwins');
 }
 

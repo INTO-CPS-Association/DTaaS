@@ -38,7 +38,7 @@ describe('Sidebar', () => {
   };
 
   beforeEach(async () => {
-    (useSelector as jest.Mock).mockImplementation(
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {
         if (selector === selectDigitalTwinByName('mockedDTName')) {
           return mockDigitalTwin;

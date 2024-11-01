@@ -43,8 +43,8 @@ export const fetchSubfolders = async (
     }
     dispatch(setAssets([]));
     return [];
-  } catch (error) {
-    setError('An error occurred');
+  } catch (_error) {
+    setError(`An error occurred`);
     return [];
   }
 };
@@ -69,13 +69,13 @@ export const createDigitalTwinsForAssets = async (
 export const DTContent = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
-  const gitlabInstance = new GitlabInstance(
-    sessionStorage.getItem('username') || '',
-    getAuthority(),
-    sessionStorage.getItem('access_token') || '',
-  );
 
   useEffect(() => {
+    const gitlabInstance = new GitlabInstance(
+      sessionStorage.getItem('username') || '',
+      getAuthority(),
+      sessionStorage.getItem('access_token') || '',
+    );
     fetchSubfolders(gitlabInstance, dispatch, setError).then((assets) => {
       if (assets) {
         createDigitalTwinsForAssets(assets, dispatch);

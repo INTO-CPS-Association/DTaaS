@@ -44,6 +44,7 @@ export const mockAuthState: mockAuthStateType = {
 
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),
+  useAppURL: () => mockAppURL,
   useURLforDT: () => mockURLforDT,
   useURLforLIB: () => mockURLforLIB,
   getClientID: () => mockClientID,

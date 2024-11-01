@@ -21,6 +21,7 @@ export default defineConfig({
     : {
         command: 'yarn start',
       },
+  retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 60 * 1000,
   globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',
@@ -48,14 +49,14 @@ export default defineConfig({
   ], // Codecov handled through Monocart-Reporter https://github.com/cenfun/monocart-reporter
   use: {
     baseURL: BASE_URI,
-    trace: 'retain-on-failure',
+    trace: 'on-first-retry', // Wil not record trace on Github actions because of no retries
   },
   projects: [
     // Setup project
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      use: { browserName: 'firefox' },
+      use: { browserName: 'chromium' },
     },
     {
       name: 'chromium',

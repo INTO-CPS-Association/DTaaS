@@ -46,7 +46,7 @@ class DigitalTwin {
           'main',
         );
         this.description = atob(fileData.content);
-      } catch (error) {
+      } catch (_error) {
         this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
       }
     }
@@ -69,7 +69,7 @@ class DigitalTwin {
             return `${altText}(${fullUrl})`;
           },
         );
-      } catch (error) {
+      } catch (_error) {
         this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
     } else {
@@ -162,7 +162,7 @@ class DigitalTwin {
           `Removing ${this.DTName} digital twin`,
         );
         return `${this.DTName} deleted successfully`;
-      } catch (error) {
+      } catch (_error) {
         return `Error deleting ${this.DTName} digital twin`;
       }
     }
@@ -188,7 +188,7 @@ class DigitalTwin {
         .map((file: { name: string }) => file.name);
 
       this.descriptionFiles = filteredFiles;
-    } catch (error) {
+    } catch (_error) {
       this.descriptionFiles = [];
     }
   }
@@ -212,7 +212,7 @@ class DigitalTwin {
         .map((file: { name: string }) => file.name);
 
       this.lifecycleFiles = filteredFiles;
-    } catch (error) {
+    } catch (_error) {
       this.lifecycleFiles = [];
     }
   }
@@ -237,7 +237,7 @@ class DigitalTwin {
         .map((file: { name: string }) => file.name);
 
       this.configFiles = filteredFiles;
-    } catch (error) {
+    } catch (_error) {
       this.configFiles = [];
     }
   }
