@@ -70,7 +70,7 @@ class DigitalTwin {
           },
         );
       } catch (_error) {
-        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder. ${_error}`;
+        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
     } else {
       this.fullDescription = 'Error fetching description, retry.';
