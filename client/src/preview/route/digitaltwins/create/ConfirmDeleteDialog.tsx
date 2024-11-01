@@ -7,7 +7,7 @@ import {
 } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { defaultFiles } from 'preview/util/file';
+import { defaultFiles } from 'preview/util/fileUtils';
 
 interface ConfirmDeleteDialogProps {
   open: boolean;

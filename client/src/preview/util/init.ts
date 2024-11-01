@@ -46,5 +46,5 @@ export async function initDigitalTwin(
     sessionStorage.getItem('access_token') || '',
   );
   await gitlabInstanceDT.init();
-  return new DigitalTwin(newDigitalTwinName, gitlabInstance);
+  return new DigitalTwin(newDigitalTwinName, gitlabInstanceDT);
 }

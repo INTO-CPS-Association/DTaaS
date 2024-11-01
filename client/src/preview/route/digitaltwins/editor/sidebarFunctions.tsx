@@ -180,7 +180,10 @@ export const fetchAndSetFileContent = async (
   setFileType: Dispatch<SetStateAction<string>>,
 ) => {
   try {
-    const fileContent = await digitalTwin!.getFileContent(fileName);
+    const fileContent = await digitalTwin!.fileHandler.getFileContent(
+      fileName,
+      digitalTwin!.DTName,
+    );
     if (fileContent) {
       updateFileState(
         fileName,

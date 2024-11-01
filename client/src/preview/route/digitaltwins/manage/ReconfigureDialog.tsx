@@ -120,7 +120,7 @@ export const handleFileUpdate = async (
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   try {
-    await digitalTwin.updateFileContent(file.name, file.content);
+    await digitalTwin.fileHandler.updateFileContent(file.name, file.content);
 
     if (file.name === 'description.md') {
       dispatch(

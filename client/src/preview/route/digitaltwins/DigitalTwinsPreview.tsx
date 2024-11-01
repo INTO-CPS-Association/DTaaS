@@ -6,7 +6,7 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { defaultFiles } from 'preview/util/file';
+import { defaultFiles } from 'preview/util/fileUtils';
 import { addOrUpdateFile } from 'preview/store/file.slice';
 import tabs from './DigitalTwinTabDataPreview';
 import CreatePage from './create/CreatePage';

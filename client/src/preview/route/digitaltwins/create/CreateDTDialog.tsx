@@ -17,7 +17,7 @@ import {
   addDefaultFiles,
   defaultFiles,
   validateFiles,
-} from 'preview/util/file';
+} from 'preview/util/fileUtils';
 import { initDigitalTwin } from 'preview/util/init';
 
 interface CreateDTDialogProps {
@@ -84,7 +84,7 @@ const handleConfirm = async (
   if (validateFiles(files, setErrorMessage)) return;
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.createDT(files);
+  const result = await digitalTwin.createDTWithFiles(files);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
