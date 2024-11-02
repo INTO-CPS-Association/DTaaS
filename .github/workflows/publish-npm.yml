@@ -54,5 +54,3 @@ jobs:
           yarn install
           yarn build
           yarn publish --access public
-
-      

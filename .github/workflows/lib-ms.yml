@@ -140,12 +140,12 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/lib
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_LIBMS_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-package-npm:
-    if: | 
+    if: |
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to NPM
@@ -155,7 +155,7 @@ jobs:
       node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/lib
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_LIBMS_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
 

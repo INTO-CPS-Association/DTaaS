@@ -9,6 +9,9 @@ on:
       - 'servers/execution/**'
   workflow_dispatch:
 
+env:
+  NODE_VERSION: 20
+
 jobs:
   test-runner:
     name: Test digital twin runner
@@ -24,7 +27,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -51,39 +54,32 @@ jobs:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner
 
-  publish-package:
-
+  publish-package-github:
     if: | 
-      github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to GitHub Packages
-    runs-on: ubuntu-latest
-    needs: test-runner
-    permissions:
-      packages: write
-      contents: read
+    needs: [test-runner]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ env.NODE_VERSION }}
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/execution/runner
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  publish-package-npm:
+    if: |
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          always-auth: true
-          registry-url: 'https://npm.pkg.github.com/'
-
-      - name: Publish npm package
-        run: |
-          # copy README.md to project root
-          cp servers/execution/runner/README.md .
-          cd servers/execution/runner
-          yarn install
-          yarn build
-          yarn publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    name: Publish to GitHub Packages
+    needs: [test-runner]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ env.NODE_VERSION }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/execution/runner
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
