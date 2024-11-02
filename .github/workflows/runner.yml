@@ -62,7 +62,7 @@ jobs:
     needs: [test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
-      node-version: $NODE_VERSION
+      node-version: 20
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/execution/runner
       package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
@@ -77,7 +77,7 @@ jobs:
     needs: [test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
-      node-version: $NODE_VERSION
+      node-version: 20
       registry-url: 'https://registry.npmjs.org'
       directory: servers/execution/runner
       package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
