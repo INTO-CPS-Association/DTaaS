@@ -70,6 +70,7 @@ nav:
           - NPM: admin/servers/lib/npm.md
           - Docker: admin/servers/lib/docker.md
       - Guides:
+        - GUI Installation: admin/guides/localhost_portainer.md
         - Add user: admin/guides/add_user.md
         - Remove user: admin/guides/remove_user.md
         - Add Service: admin/guides/add_service.md
