@@ -70,6 +70,7 @@ nav:
           - NPM: admin/servers/lib/npm.md
           - Docker: admin/servers/lib/docker.md
       - Guides:
+        - GUI Installation: admin/guides/localhost_portainer.md
         - Add user: admin/guides/add_user.md
         - Remove user: admin/guides/remove_user.md
         - Add Service: admin/guides/add_service.md
@@ -78,8 +79,9 @@ nav:
         - Common Assets: admin/guides/common_workspace_readonly.md
         - HTTP Mode: admin/guides/hosting_site_without_https.md
   - FAQ: FAQ.md
-  - Developer: 
-      - Developer Guide: developer/index.md 
+  - Developer:
+      - Developer Guide: developer/index.md
+      - GitHub Actions: developer/github-actions.md
       - System:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md

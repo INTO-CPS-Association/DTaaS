@@ -1,7 +1,7 @@
 # Secrets for Github Action
 
 The Github actions require the following secrets to be obtained
-from [docker hub](hub.docker.com):
+from [docker hub](https://hub.docker.com):
 
 | Secret Name | Explanation |
 |:---|:---|
