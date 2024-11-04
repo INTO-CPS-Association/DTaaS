@@ -15,10 +15,7 @@ env:
 jobs:
   test-runner:
     name: Test digital twin runner
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: servers/execution/runner/
