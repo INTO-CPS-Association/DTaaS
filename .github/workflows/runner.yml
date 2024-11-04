@@ -54,6 +54,21 @@ jobs:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner
 
+  get_version:
+    name: Get version and variables
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+        - name: Install jq
+          run: sudo apt-get install -y jq
+        - name: get version
+          id: get_version
+          run: |
+            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+    outputs:
+      node-version: ${{ steps.get_version.outputs.node-version }}
+
   publish-package-github:
     if: | 
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
@@ -62,10 +77,10 @@ jobs:
     needs: [test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
-      node-version: 20
+      node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/execution/runner
-      package-name: ${{ secrets.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -77,9 +92,9 @@ jobs:
     needs: [test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
-      node-version: 20
+      node-version: ${{ needs.get_version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/execution/runner
-      package-name: ${{ secrets.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
