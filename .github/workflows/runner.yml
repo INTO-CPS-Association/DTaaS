@@ -65,7 +65,7 @@ jobs:
       node-version: 20
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/execution/runner
-      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: ${{ secrets.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -80,6 +80,6 @@ jobs:
       node-version: 20
       registry-url: 'https://registry.npmjs.org'
       directory: servers/execution/runner
-      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: ${{ secrets.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
