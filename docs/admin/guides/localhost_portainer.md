@@ -11,7 +11,7 @@ DTaaS on their own computers.
 An illustration of the docker containers used and the authorization
 setup is shown here.
 
-![Traefik OAuth](./localhost.png)
+![Traefik OAuth](../localhost.png)
 
 ## Requirements
 
