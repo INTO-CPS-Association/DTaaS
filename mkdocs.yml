@@ -79,8 +79,9 @@ nav:
         - Common Assets: admin/guides/common_workspace_readonly.md
         - HTTP Mode: admin/guides/hosting_site_without_https.md
   - FAQ: FAQ.md
-  - Developer: 
-      - Developer Guide: developer/index.md 
+  - Developer:
+      - Developer Guide: developer/index.md
+      - GitHub Actions: developer/github-actions.md
       - System:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md

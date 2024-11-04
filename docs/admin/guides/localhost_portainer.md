@@ -26,7 +26,7 @@ The installation requirements to run this docker version of the DTaaS are:
     The frontend website requires authorization.
     The default authorization configuration works for _gitlab.com_.
     If you desire to use locally hosted gitlab instance, please see
-    the [client docs](client/auth.md).
+    the [client docs](../client/auth.md).
 <!-- markdownlint-enable MD046 -->
 
 ## Download a Release
@@ -146,7 +146,7 @@ through the single page client now.
 
 ## Limitations
 
-The [library microservice](servers/lib/docker.md) is not
+The [library microservice](../servers/lib/docker.md) is not
 included in the localhost installation scenario.
 
 ## References
