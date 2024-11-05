@@ -29,7 +29,7 @@ const filesSlice = createSlice({
           ...state[index],
           ...rest,
           isModified: true,
-          isNew,
+          isNew: false,
         };
       } else {
         state.push({ name, ...rest, isModified: false, isNew });
