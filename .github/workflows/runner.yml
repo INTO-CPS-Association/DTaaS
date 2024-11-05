@@ -74,7 +74,7 @@ jobs:
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to github npm registry
-    needs: [test-runner]
+    needs: [get_version,test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
       node-version: ${{ needs.get_version.outputs.node-version }}
@@ -89,7 +89,7 @@ jobs:
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to npmjs registry
-    needs: [test-runner]
+    needs: [get_version,test-runner]
     uses: ./.github/workflows/publish-npm.yml
     with:
       node-version: ${{ needs.get_version.outputs.node-version }}
