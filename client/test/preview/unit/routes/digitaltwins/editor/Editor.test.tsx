@@ -19,7 +19,18 @@ jest.mock('preview/route/digitaltwins/editor/Sidebar', () => ({
 
 describe('Editor', () => {
   beforeEach(() => {
-    render(<Editor DTName="DTName" />);
+    render(
+      <Editor
+        DTName="DTName"
+        tab={'reconfigure'}
+        fileName={'fileName'}
+        setFileName={jest.fn()}
+        fileContent={'fileContent'}
+        setFileContent={jest.fn()}
+        fileType={'fileType'}
+        setFileType={jest.fn()}
+      />,
+    );
   });
 
   afterEach(() => {

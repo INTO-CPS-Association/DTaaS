@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import { addOrUpdateFile } from 'preview/store/file.slice';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import * as ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';

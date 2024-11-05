@@ -34,7 +34,7 @@ jest.mock('preview/route/digitaltwins/editor/Sidebar', () => ({
   default: () => <div>Sidebar</div>,
 }));
 
-jest.mock('preview/util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/digitalTwin', () => ({
   formatName: jest.fn().mockReturnValue('TestDigitalTwin'),
 }));
 
@@ -58,14 +58,22 @@ describe('ReconfigureDialog', () => {
             {
               name: 'description.md',
               content: 'Updated description',
+              isNew: false,
               isModified: true,
             },
             {
               name: 'lifecycle.md',
               content: 'Updated lifecycle',
+              isNew: false,
               isModified: true,
             },
-          ];
+            {
+              name: 'newFile.md',
+              content: 'New file content',
+              isNew: true,
+              isModified: false,
+            },
+          ].filter((file) => !file.isNew);
         }
         return mockDigitalTwin;
       },
@@ -149,10 +157,11 @@ describe('ReconfigureDialog', () => {
     const descriptionFile = {
       name: 'description.md',
       content: 'Updated description',
+      isNew: false,
       isModified: true,
     };
 
-    mockDigitalTwin.updateFileContent = jest
+    mockDigitalTwin.fileHandler.updateFileContent = jest
       .fn()
       .mockResolvedValue(Promise.resolve());
 
@@ -167,7 +176,7 @@ describe('ReconfigureDialog', () => {
     const dispatch = useDispatch();
     const saveButton = screen.getByRole('button', { name: /Save/i });
 
-    mockDigitalTwin.updateFileContent = jest
+    mockDigitalTwin.fileHandler.updateFileContent = jest
       .fn()
       .mockRejectedValueOnce(new Error('Error updating file'));
 
@@ -205,6 +214,19 @@ describe('ReconfigureDialog', () => {
 
     await waitFor(() => {
       expect(handleFileUpdateSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should not return new files from modified files', async () => {
+    const modifiedFiles = useSelector((state: RootState) =>
+      state.files.filter((file) => !file.isNew),
+    );
+
+    await waitFor(() => {
+      expect(modifiedFiles).toHaveLength(2);
+      expect(modifiedFiles).not.toContainEqual(
+        expect.objectContaining({ name: 'newFile.md' }),
+      );
     });
   });
 });

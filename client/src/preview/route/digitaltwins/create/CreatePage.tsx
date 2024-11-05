@@ -101,8 +101,8 @@ function CreatePage({
       >
         <FileActionButtons
           fileName={fileName}
-          onDeleteClick={() => setOpenDeleteFileDialog(true)}
-          onChangeFileNameClick={() => setOpenChangeFileNameDialog(true)}
+          setOpenDeleteFileDialog={setOpenDeleteFileDialog}
+          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
         />
         <DigitalTwinNameInput
           value={newDigitalTwinName}
@@ -130,13 +130,13 @@ function CreatePage({
 
       <CreateDialogs
         openChangeFileNameDialog={openChangeFileNameDialog}
-        onCloseChangeFileNameDialog={() => setOpenChangeFileNameDialog(false)}
+        setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
         fileName={fileName}
         setFileName={setFileName}
         setFileContent={setFileContent}
         setFileType={setFileType}
         openDeleteFileDialog={openDeleteFileDialog}
-        onCloseDeleteFileDialog={() => setOpenDeleteFileDialog(false)}
+        setOpenDeleteFileDialog={setOpenDeleteFileDialog}
         openConfirmDeleteDialog={openConfirmDeleteDialog}
         setOpenConfirmDeleteDialog={setOpenConfirmDeleteDialog}
         openCreateDTDialog={openCreateDTDialog}

@@ -2,7 +2,7 @@ import { combineReducers, configureStore, createStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import * as React from 'react';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { Provider } from 'react-redux';

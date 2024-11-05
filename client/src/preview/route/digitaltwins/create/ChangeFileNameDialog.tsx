@@ -15,7 +15,7 @@ import { RootState } from 'store/store';
 
 interface ChangeFileNameDialogProps {
   open: boolean;
-  onClose: () => void;
+  setOpenChangeFileNameDialog: Dispatch<SetStateAction<boolean>>;
   fileName: string;
   setFileName: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
@@ -23,7 +23,7 @@ interface ChangeFileNameDialogProps {
 
 const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   open,
-  onClose,
+  setOpenChangeFileNameDialog,
   fileName,
   setFileName,
   setFileType,
@@ -39,13 +39,13 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   }, [fileName]);
 
   const handleCloseChangeFileNameDialog = () => {
-    onClose();
+    setOpenChangeFileNameDialog(false);
     setErrorChangeMessage('');
     setModifiedFileName(fileName);
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={setOpenChangeFileNameDialog}>
       <DialogTitle>Change the file name</DialogTitle>
       <DialogContent>
         <TextField
@@ -75,7 +75,7 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
               setFileName,
               setFileType,
               setErrorChangeMessage,
-              onClose,
+              setOpenChangeFileNameDialog,
               dispatch,
             )
           }

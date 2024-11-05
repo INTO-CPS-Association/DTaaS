@@ -28,6 +28,7 @@ describe('EditorTab', () => {
           fileName="fileName"
           fileContent="fileContent"
           setFileContent={mockSetFileContent}
+          tab={'reconfigure'}
         />,
       );
 
@@ -45,6 +46,7 @@ describe('EditorTab', () => {
           fileName="fileName"
           fileContent="fileContent"
           setFileContent={mockSetFileContent}
+          tab={'reconfigure'}
         />,
       );
 
@@ -60,6 +62,7 @@ describe('EditorTab', () => {
           addOrUpdateFile({
             name: 'fileName',
             content: newValue,
+            isNew: false,
             isModified: true,
           }),
         );

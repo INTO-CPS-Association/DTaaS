@@ -14,11 +14,8 @@ const filesSlice = createSlice({
   name: 'files',
   initialState,
   reducers: {
-    addOrUpdateFile: (
-      state,
-      action: PayloadAction<FileState & { isNew?: boolean }>,
-    ) => {
-      const { name, isNew = false, ...rest } = action.payload;
+    addOrUpdateFile: (state, action: PayloadAction<FileState>) => {
+      const { name, isNew, ...rest } = action.payload;
 
       if (!name) return;
 
@@ -31,7 +28,7 @@ const filesSlice = createSlice({
           ...state[index],
           ...rest,
           isModified: true,
-          isNew,
+          isNew: false,
         };
       } else {
         state.push({ name, ...rest, isModified: false, isNew });

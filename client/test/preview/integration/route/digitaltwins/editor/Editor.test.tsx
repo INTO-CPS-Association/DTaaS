@@ -12,7 +12,7 @@ import fileSlice, {
 } from 'preview/store/file.slice';
 import { Asset } from 'preview/components/asset/Asset';
 import * as React from 'react';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/Sidebar';
 

@@ -14,7 +14,7 @@ import fileSlice, {
   FileState,
   addOrUpdateFile,
 } from 'preview/store/file.slice';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

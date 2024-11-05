@@ -17,6 +17,11 @@ export const defaultFiles = [
   { name: '.gitlab-ci.yml', type: 'config' },
 ];
 
+export const getExtension = (filename: string): string => {
+  const parts = filename.split('.');
+  return parts.length > 1 ? parts.pop()! : '';
+};
+
 export const validateFiles = (
   files: FileState[],
   setErrorMessage: Dispatch<SetStateAction<string>>,
@@ -61,7 +66,7 @@ export const handleChangeFileName = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
   setErrorChangeMessage: Dispatch<SetStateAction<string>>,
-  onClose: () => void,
+  setOpenChangeFileNameDialog: Dispatch<SetStateAction<boolean>>,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   const fileExists = files.some(
@@ -82,8 +87,8 @@ export const handleChangeFileName = (
   dispatch(renameFile({ oldName: fileName, newName: modifiedFileName }));
   setFileName(modifiedFileName);
 
-  const extension = modifiedFileName.split('.').pop();
-  setFileType(extension || '');
+  const extension = getExtension(modifiedFileName);
+  setFileType(extension);
 
-  onClose();
+  setOpenChangeFileNameDialog(false);
 };

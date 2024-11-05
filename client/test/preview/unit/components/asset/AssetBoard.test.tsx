@@ -18,13 +18,17 @@ jest.mock('preview/store/assets.slice', () => ({
   ...jest.requireActual('preview/store/assets.slice'),
 }));
 
+jest.mock('preview/util/init', () => ({
+  fetchAssetsAndCreateTwins: jest.fn(),
+}));
+
 describe('AssetBoard', () => {
   const mockDispatch = jest.fn();
 
-  const renderAssetBoard = (tab: string, error: null | string) =>
+  const renderAssetBoard = (tab: string) =>
     render(
       <Provider store={store}>
-        <AssetBoard tab={tab} error={error} />
+        <AssetBoard tab={tab} />
       </Provider>,
     );
 
@@ -50,29 +54,36 @@ describe('AssetBoard', () => {
   });
 
   it('renders AssetBoard with Manage Card', () => {
-    renderAssetBoard('Manage', null);
+    renderAssetBoard('Manage');
 
     expect(screen.getByText('Asset Card Manage')).toBeInTheDocument();
   });
 
   it('renders AssetBoard with Execute Card', () => {
-    renderAssetBoard('Execute', null);
+    renderAssetBoard('Execute');
 
     expect(screen.getByText('Asset Card Execute')).toBeInTheDocument();
   });
 
-  it('renders error message when error is present', () => {
-    renderAssetBoard('Execute', 'An error occurred');
-
-    expect(screen.getByText('An error occurred')).toBeInTheDocument();
-  });
-
   it('dispatches deleteAsset action when onDelete is called', () => {
-    renderAssetBoard('Manage', null);
+    renderAssetBoard('Manage');
 
     const deleteButton = screen.getByText('Delete');
     deleteButton.click();
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows error message when error is set', () => {
+    const realUseState = React.useState;
+
+    const stubInitialState: unknown = ['Error message'];
+    jest
+      .spyOn(React, 'useState')
+      .mockImplementationOnce(() => realUseState(stubInitialState));
+
+    renderAssetBoard('Manage');
+
+    expect(screen.getByText('Error message')).toBeInTheDocument();
   });
 });

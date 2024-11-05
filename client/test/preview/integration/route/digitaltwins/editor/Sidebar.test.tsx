@@ -8,7 +8,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 
 describe('Sidebar', () => {
   const setFileNameMock = jest.fn();

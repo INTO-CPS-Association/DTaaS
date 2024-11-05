@@ -5,22 +5,28 @@ import { isFileDeletable, isFileModifiable } from 'preview/util/fileUtils';
 
 function FileActionButtons({
   fileName,
-  onDeleteClick,
-  onChangeFileNameClick,
+  setOpenDeleteFileDialog,
+  setOpenChangeFileNameDialog,
 }: {
   fileName: string;
-  onDeleteClick: () => void;
-  onChangeFileNameClick: () => void;
+  setOpenDeleteFileDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenChangeFileNameDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <Box sx={{ display: 'flex', gap: 1, paddingLeft: 2, marginTop: 5 }}>
       {isFileDeletable(fileName) && fileName && (
-        <Button variant="contained" onClick={onDeleteClick}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenDeleteFileDialog(true)}
+        >
           Delete File
         </Button>
       )}
       {isFileModifiable(fileName) && fileName && (
-        <Button variant="contained" onClick={onChangeFileNameClick}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenChangeFileNameDialog(true)}
+        >
           Change File Name
         </Button>
       )}

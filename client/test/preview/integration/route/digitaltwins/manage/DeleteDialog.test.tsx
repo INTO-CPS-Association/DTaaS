@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { Provider } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import setupStore from './utils';

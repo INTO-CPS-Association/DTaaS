@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 interface DeleteFileDialogProps {
   open: boolean;
-  onClose: () => void;
+  setOpenDeleteFileDialog: Dispatch<SetStateAction<boolean>>;
   fileName: string;
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
@@ -14,7 +14,7 @@ interface DeleteFileDialogProps {
 
 const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({
   open,
-  onClose,
+  setOpenDeleteFileDialog,
   fileName,
   setFileName,
   setFileContent,
@@ -25,17 +25,17 @@ const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({
     dispatch(deleteFile(fileName));
     setFileName('');
     setFileContent('');
-    onClose();
+    setOpenDeleteFileDialog(false);
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={setOpenDeleteFileDialog}>
       <DialogContent>
         Are you sure you want to delete the <strong>{fileName}</strong> file and
         its content?
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={() => setOpenDeleteFileDialog(false)} color="primary">
           No
         </Button>
         <Button onClick={handleDeleteFile} color="secondary">

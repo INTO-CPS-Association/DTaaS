@@ -1,7 +1,7 @@
 import { FileState } from 'preview/store/file.slice';
 
 export interface IFile {
-  getFileContent(fileName: string, DTName: string): Promise<string>;
+  getFileContent(fileName: string): Promise<string>;
   updateFileContent(fileName: string, fileContent: string): Promise<void>;
   createFile(
     file: FileState,

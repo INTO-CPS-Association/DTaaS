@@ -11,7 +11,7 @@ import { defaultFiles } from 'preview/util/fileUtils';
 
 interface ConfirmDeleteDialogProps {
   open: boolean;
-  onClose: () => void;
+  setOpenConfirmDeleteDialog: Dispatch<SetStateAction<boolean>>;
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
@@ -20,7 +20,7 @@ interface ConfirmDeleteDialogProps {
 
 const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
   open,
-  onClose,
+  setOpenConfirmDeleteDialog,
   setFileName,
   setFileContent,
   setFileType,
@@ -53,16 +53,18 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
       }
     });
 
-    onClose();
+    setOpenConfirmDeleteDialog(false);
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={setOpenConfirmDeleteDialog}>
       <DialogContent>
         Are you sure you want to delete the inserted files and their content?
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={() => setOpenConfirmDeleteDialog(false)}>
+          Cancel
+        </Button>
         <Button onClick={handleConfirmCancel}>Yes</Button>
       </DialogActions>
     </Dialog>

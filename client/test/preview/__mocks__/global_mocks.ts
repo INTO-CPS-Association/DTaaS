@@ -1,6 +1,7 @@
 import { Gitlab } from '@gitbeaker/core';
 import GitlabInstance from 'preview/util/gitlab';
 import DigitalTwin from 'preview/util/digitalTwin';
+import FileHandler from 'preview/util/fileHandler';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
@@ -73,11 +74,26 @@ export const mockGitlabInstance: GitlabInstance = {
   getPipelineStatus: jest.fn(),
 };
 
+export const fileHandler: FileHandler = {
+  DTName: 'mockedDTName',
+  gitlabInstance: mockGitlabInstance,
+  getFileContent: jest.fn(),
+  updateFileContent: jest.fn(),
+  getDescriptionFiles: jest.fn(),
+  getConfigFiles: jest.fn(),
+  getLifecycleFiles: jest.fn(),
+  createFile: jest.fn(),
+  createFiles: jest.fn(),
+  appendTriggerToPipeline: jest.fn(),
+  removeTriggerFromPipeline: jest.fn(),
+};
+
 export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
   description: 'mockedDescription',
   fullDescription: 'mockedFullDescription',
   gitlabInstance: mockGitlabInstance,
+  fileHandler,
   pipelineId: 1,
   lastExecutionStatus: 'mockedStatus',
   jobLogs: [{ jobName: 'job1', log: 'log1' }],
@@ -90,17 +106,13 @@ export const mockDigitalTwin: DigitalTwin = {
   getDescription: jest.fn(),
   getFullDescription: jest.fn(),
   execute: jest.fn(),
-  isValidInstance: jest.fn(),
   triggerPipeline: jest.fn(),
-  logSuccess: jest.fn(),
-  logError: jest.fn(),
   stop: jest.fn(),
+  createDTWithFiles: jest.fn().mockResolvedValue('Success'),
   delete: jest.fn(),
   getDescriptionFiles: jest.fn().mockResolvedValue(['descriptionFile']),
   getLifecycleFiles: jest.fn().mockResolvedValue(['lifecycleFile']),
   getConfigFiles: jest.fn().mockResolvedValue(['configFile']),
-  getFileContent: jest.fn().mockResolvedValue('fileContent'),
-  updateFileContent: jest.fn(),
 };
 
 jest.mock('util/envUtil', () => ({

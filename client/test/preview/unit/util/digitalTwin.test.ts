@@ -1,11 +1,13 @@
 import GitlabInstance from 'preview/util/gitlab';
-import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
+import * as dtUtils from 'preview/util/digitalTwinUtils';
 
 const mockApi = {
   RepositoryFiles: {
     show: jest.fn(),
     remove: jest.fn(),
     edit: jest.fn(),
+    create: jest.fn(),
   },
   Repositories: {
     allRepositoryTrees: jest.fn(),
@@ -26,6 +28,15 @@ const mockGitlabInstance = {
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
 } as unknown as GitlabInstance;
+
+const files = [
+  {
+    name: 'fileName',
+    content: 'fileContent',
+    isNew: true,
+    isModified: false,
+  },
+];
 
 describe('DigitalTwin', () => {
   let dt: DigitalTwin;
@@ -136,7 +147,7 @@ describe('DigitalTwin', () => {
     dt.gitlabInstance.projectId = null;
     dt.gitlabInstance.triggerToken = null;
 
-    jest.spyOn(dt, 'isValidInstance').mockReturnValue(false);
+    jest.spyOn(dtUtils, 'isValidInstance').mockReturnValue(false);
 
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockReset();
 
@@ -148,7 +159,7 @@ describe('DigitalTwin', () => {
   });
 
   it('should log success and update status', () => {
-    dt.logSuccess();
+    dtUtils.logSuccess(dt, 'linux');
 
     expect(dt.gitlabInstance.logs).toContainEqual({
       status: 'success',
@@ -159,7 +170,7 @@ describe('DigitalTwin', () => {
   });
 
   it('should log error when triggering pipeline fails', async () => {
-    jest.spyOn(dt, 'isValidInstance').mockReturnValue(true);
+    jest.spyOn(dtUtils, 'isValidInstance').mockReturnValue(true);
     const errorMessage = 'Trigger failed';
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockRejectedValue(
       errorMessage,
@@ -257,6 +268,36 @@ describe('DigitalTwin', () => {
 
     expect(result).toBe(
       'Error deleting test-DTName digital twin: no project id',
+    );
+  });
+
+  it('should create digital twin with files', async () => {
+    const result = await dt.createDTWithFiles(files);
+
+    expect(result).toBe(
+      'test-DTName digital twin files initialized successfully.',
+    );
+  });
+
+  it('should return error message when creating digital twin fails', async () => {
+    (mockApi.RepositoryFiles.create as jest.Mock).mockRejectedValue(
+      new Error('Create failed'),
+    );
+
+    const result = await dt.createDTWithFiles(files);
+
+    expect(result).toBe(
+      'Error initializing test-DTName digital twin files: Error: Create failed',
+    );
+  });
+
+  it('should return error message when projectId is missing during creation', async () => {
+    dt.gitlabInstance.projectId = null;
+
+    const result = await dt.createDTWithFiles(files);
+
+    expect(result).toBe(
+      'Error creating test-DTName digital twin: no project id',
     );
   });
 });

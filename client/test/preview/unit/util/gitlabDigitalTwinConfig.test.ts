@@ -1,5 +1,5 @@
 import GitlabInstance from 'preview/util/gitlab';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 
 const mockApi = {
   RepositoryFiles: {
@@ -119,7 +119,7 @@ describe('DigitalTwin', () => {
       content: mockContent,
     });
 
-    const content = await dt.getFileContent('test-file.md');
+    const content = await dt.fileHandler.getFileContent('test-file.md');
 
     expect(content).toBe('Test file content');
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
@@ -135,7 +135,7 @@ describe('DigitalTwin', () => {
       content: mockContent,
     });
 
-    const content = await dt.getFileContent('lifecycle-file');
+    const content = await dt.fileHandler.getFileContent('lifecycle-file');
 
     expect(content).toBe('Test lifecycle content');
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
@@ -149,7 +149,7 @@ describe('DigitalTwin', () => {
     const mockEdit = jest.fn();
     mockApi.RepositoryFiles.edit = mockEdit;
 
-    await dt.updateFileContent('test-file.md', 'Test file content');
+    await dt.fileHandler.updateFileContent('test-file.md', 'Test file content');
 
     expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
       1,
@@ -164,7 +164,10 @@ describe('DigitalTwin', () => {
     const mockEdit = jest.fn();
     mockApi.RepositoryFiles.edit = mockEdit;
 
-    await dt.updateFileContent('lifecycle-file', 'Lifecycle file content');
+    await dt.fileHandler.updateFileContent(
+      'lifecycle-file',
+      'Lifecycle file content',
+    );
 
     expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
       1,

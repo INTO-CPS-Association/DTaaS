@@ -22,7 +22,7 @@ import { initDigitalTwin } from 'preview/util/init';
 
 interface CreateDTDialogProps {
   open: boolean;
-  onClose: () => void;
+  setOpenCreateDTDialog: Dispatch<SetStateAction<boolean>>;
   newDigitalTwinName: string;
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
   errorMessage: string;
@@ -30,7 +30,6 @@ interface CreateDTDialogProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
-  setOpenCreateDTDialog: Dispatch<SetStateAction<boolean>>;
 }
 
 const handleError = (
@@ -103,7 +102,7 @@ const handleConfirm = async (
 
 const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   open,
-  onClose,
+  setOpenCreateDTDialog,
   newDigitalTwinName,
   setNewDigitalTwinName,
   errorMessage,
@@ -111,13 +110,12 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   setFileName,
   setFileContent,
   setFileType,
-  setOpenCreateDTDialog,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={setOpenCreateDTDialog}>
       <DialogContent>
         <Typography>
           Are you sure you want to create the{' '}

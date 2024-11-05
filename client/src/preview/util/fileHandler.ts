@@ -5,7 +5,7 @@ import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
 
-function getFilePath(
+export function getFilePath(
   file: FileState,
   mainFolderPath: string,
   lifecycleFolderPath: string,
@@ -14,9 +14,9 @@ function getFilePath(
 }
 
 class FileHandler implements IFile {
-  private DTName: string;
+  public DTName: string;
 
-  private gitlabInstance: GitlabInstance;
+  public gitlabInstance: GitlabInstance;
 
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
