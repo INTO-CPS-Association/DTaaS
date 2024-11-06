@@ -28,6 +28,10 @@ export default async function bootstrap(options?: BootstrapOptions) {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
+  const localPath = configService.get<string>('LOCAL_PATH');
+  const mode = configService.get<string>('MODE');
+
+  console.log(`\x1b[32mStarting libms in \x1b[33m${mode} \x1b[32mmode, serving files from \x1b[34m${localPath} \x1b[32mon port \x1b[35m${port}\x1b[0m`);
 
   if (options.httpServer) {
     cloudCMD(app, options.httpServer, configService.get<string>('LOCAL_PATH'));
