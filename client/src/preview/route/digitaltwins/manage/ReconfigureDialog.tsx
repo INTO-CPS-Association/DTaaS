@@ -12,8 +12,7 @@ import {
   AlertColor,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
-import { FileState, removeAllModifiedFiles } from '../../../store/file.slice';
+import { FileState, removeAllModifiedFiles, selectModifiedFiles } from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,
@@ -45,9 +44,7 @@ function ReconfigureDialog({
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const modifiedFiles = useSelector((state: RootState) =>
-    state.files.filter((file) => !file.isNew),
-  );
+  const modifiedFiles = useSelector(selectModifiedFiles);
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);

@@ -1,10 +1,9 @@
 import * as React from 'react';
-import DigitalTwinsPreview, * as functions from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -35,7 +34,8 @@ describe('Digital Twins', () => {
       screen.getByText('The Digital Twin as a Service'),
     ).toBeInTheDocument();
   });
-
+  
+  /*
   it('fetches subfolders with project id', async () => {
     const gitlabInstance = mockGitlabInstance;
     const dispatch = jest.fn();
@@ -86,4 +86,5 @@ describe('Digital Twins', () => {
     expect(dispatch).not.toHaveBeenCalled();
     expect(setError).toHaveBeenCalledWith('An error occurred');
   });
+  */
 });

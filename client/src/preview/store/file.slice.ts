@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'store/store';
 
 export interface FileState {
   name: string;
@@ -100,6 +101,11 @@ const filesSlice = createSlice({
     },
   },
 });
+
+export const selectModifiedFiles = createSelector(
+  (state: RootState) => state.files,
+  (files) => files.filter(file => !file.isNew)
+);
 
 export const {
   addOrUpdateFile,

@@ -15,7 +15,7 @@ import DigitalTwin from 'preview/util/digitalTwin';
 const setupStore = () => {
   const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
   const files: FileState[] = [
-    { name: 'Asset 1', content: 'content1', isModified: false },
+    { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
   ];
 
   const store = configureStore({

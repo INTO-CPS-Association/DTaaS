@@ -7,6 +7,10 @@ import setupStore from './utils';
 
 jest.useFakeTimers();
 
+jest.mock('preview/util/init', () => ({
+  fetchAssetsAndCreateTwins: jest.fn(),
+}));
+
 describe('DeleteDialog', () => {
   let storeDelete: ReturnType<typeof setupStore>;
 
@@ -16,7 +20,7 @@ describe('DeleteDialog', () => {
     React.act(() => {
       render(
         <Provider store={storeDelete}>
-          <AssetBoard tab="Manage" error={null} />
+          <AssetBoard tab="Manage"/>
         </Provider>,
       );
     });

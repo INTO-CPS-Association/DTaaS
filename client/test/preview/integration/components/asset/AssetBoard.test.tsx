@@ -20,12 +20,16 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
 }));
 
+jest.mock('preview/util/init', () => ({
+  fetchAssetsAndCreateTwins: jest.fn(),
+}));
+
 jest.useFakeTimers();
 
 const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
 
 const files: FileState[] = [
-  { name: 'Asset 1', content: 'content1', isModified: false },
+  { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
 ];
 
 const store = configureStore({
@@ -62,40 +66,37 @@ describe('AssetBoard Integration Tests', () => {
   });
 
   it('renders AssetBoard with AssetCardExecute', () => {
-    render(
-      <Provider store={store}>
-        <AssetBoard tab="Execute" error={null} />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <AssetBoard tab="Execute"/>
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText('Asset 1')).toBeInTheDocument();
   });
 
   it('renders AssetBoard with AssetCardManage', () => {
-    render(
-      <Provider store={store}>
-        <AssetBoard tab="Manage" error={null} />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <AssetBoard tab="Manage"/>
+        </Provider>,
+      );
+    });
+
     expect(screen.getByText('Asset 1')).toBeInTheDocument();
   });
 
-  it('renders error message when error is present', () => {
-    render(
-      <Provider store={store}>
-        <AssetBoard tab="Execute" error="An error occurred" />
-      </Provider>,
-    );
-
-    expect(screen.getByText('An error occurred')).toBeInTheDocument();
-  });
-
   it('deletes an asset', async () => {
-    render(
-      <Provider store={store}>
-        <AssetBoard tab="Manage" error={null} />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <AssetBoard tab="Manage"/>
+        </Provider>,
+      );
+    });
 
     const deleteButton = screen.getByRole('button', { name: /Delete/i });
     expect(deleteButton).toBeInTheDocument();

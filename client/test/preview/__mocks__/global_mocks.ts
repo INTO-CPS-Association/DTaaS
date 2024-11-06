@@ -74,7 +74,7 @@ export const mockGitlabInstance: GitlabInstance = {
   getPipelineStatus: jest.fn(),
 };
 
-export const fileHandler: FileHandler = {
+export const mockFileHandler: FileHandler = {
   DTName: 'mockedDTName',
   gitlabInstance: mockGitlabInstance,
   getFileContent: jest.fn(),
@@ -93,7 +93,7 @@ export const mockDigitalTwin: DigitalTwin = {
   description: 'mockedDescription',
   fullDescription: 'mockedFullDescription',
   gitlabInstance: mockGitlabInstance,
-  fileHandler,
+  fileHandler: mockFileHandler,
   pipelineId: 1,
   lastExecutionStatus: 'mockedStatus',
   jobLogs: [{ jobName: 'job1', log: 'log1' }],

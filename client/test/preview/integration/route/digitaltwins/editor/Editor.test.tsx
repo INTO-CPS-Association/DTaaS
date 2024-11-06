@@ -1,5 +1,5 @@
 import Editor from 'preview/route/digitaltwins/editor/Editor';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act,render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
@@ -14,11 +14,18 @@ import { Asset } from 'preview/components/asset/Asset';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
-import { handleFileClick } from 'preview/route/digitaltwins/editor/Sidebar';
+import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
 
 describe('Editor', () => {
+  const fileName = 'file1.md';
+  const fileContent = 'content1';
+  const fileType = 'md';
+  const setFileName = jest.fn();
+  const setFileContent = jest.fn();
+  const setFileType = jest.fn();
+
   const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
-  const files = [{ name: 'Asset 1', content: 'content1', isModified: false }];
+  const files = [{ name: 'file1.md', content: 'content1', isNew: false, isModified: false }];
 
   const store = configureStore({
     reducer: combineReducers({
@@ -39,17 +46,19 @@ describe('Editor', () => {
 
   const setupTest = async () => {
     store.dispatch(setAssets(preSetItems));
-    store.dispatch(
-      setDigitalTwin({
-        assetName: 'Asset 1',
-        digitalTwin: digitalTwinInstance,
-      }),
-    );
-    store.dispatch(addOrUpdateFile(files[0]));
+    await act(async () => {
+      store.dispatch(
+        setDigitalTwin({
+          assetName: 'Asset 1',
+          digitalTwin: digitalTwinInstance,
+        }),
+      );
+      store.dispatch(addOrUpdateFile(files[0]));
+    });
   };
 
   const dispatchSetDigitalTwin = async (digitalTwin: DigitalTwin) => {
-    await React.act(async () => {
+    await act(async () => {
       store.dispatch(
         setDigitalTwin({
           assetName: 'Asset 1',
@@ -61,11 +70,11 @@ describe('Editor', () => {
 
   beforeEach(async () => {
     await setupTest();
-    await React.act(async () => {
+    await act(async () => {
       await waitFor(() => {
         render(
           <Provider store={store}>
-            <Editor DTName={'Asset 1'} />
+            <Editor DTName={'Asset 1'} tab='reconfigure' fileName={fileName} setFileName={setFileName} fileContent={fileContent} setFileContent={setFileContent} fileType={fileType} setFileType={setFileType} />
           </Provider>,
         );
       });
@@ -83,7 +92,7 @@ describe('Editor', () => {
     expect(editorTab).toHaveAttribute('aria-selected', 'true');
     expect(previewTab).toHaveAttribute('aria-selected', 'false');
 
-    React.act(() => {
+    act(() => {
       previewTab.click();
     });
 
@@ -92,26 +101,25 @@ describe('Editor', () => {
   });
 
   it('should update state when a modified file is clicked', async () => {
-    const setFileName = jest.fn();
-    const setFileContent = jest.fn();
-    const setFileType = jest.fn();
-
     const modifiedFiles = [
-      { name: 'file1.md', content: 'modified content', isModified: true },
+      { name: 'file1.md', content: 'modified content', isNew: false, isModified: true },
     ];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
 
     await dispatchSetDigitalTwin(newDigitalTwin);
 
-    await handleFileClick(
-      'file1.md',
-      newDigitalTwin,
-      setFileName,
-      setFileContent,
-      setFileType,
-      modifiedFiles,
-    );
+    await act(async () => {
+      await handleFileClick(
+        'file1.md',
+        newDigitalTwin,
+        setFileName,
+        setFileContent,
+        setFileType,
+        modifiedFiles,
+        'reconfigure'
+      );
+    });
 
     expect(setFileName).toHaveBeenCalledWith('file1.md');
     expect(setFileContent).toHaveBeenCalledWith('modified content');
@@ -119,27 +127,26 @@ describe('Editor', () => {
   });
 
   it('should fetch file content for an unmodified file', async () => {
-    const setFileName = jest.fn();
-    const setFileContent = jest.fn();
-    const setFileType = jest.fn();
-
     const modifiedFiles: FileState[] = [];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
-    newDigitalTwin.getFileContent = jest
+    newDigitalTwin.fileHandler.getFileContent = jest
       .fn()
       .mockResolvedValueOnce('Fetched content');
 
     await dispatchSetDigitalTwin(newDigitalTwin);
 
-    await handleFileClick(
-      'file1.md',
-      newDigitalTwin,
-      setFileName,
-      setFileContent,
-      setFileType,
-      modifiedFiles,
-    );
+    await act(async () => {
+      await handleFileClick(
+        'file1.md',
+        newDigitalTwin,
+        setFileName,
+        setFileContent,
+        setFileType,
+        modifiedFiles,
+        'reconfigure'
+      );
+    });
 
     expect(setFileName).toHaveBeenCalledWith('file1.md');
     expect(setFileContent).toHaveBeenCalledWith('Fetched content');
@@ -147,28 +154,27 @@ describe('Editor', () => {
   });
 
   it('should set error message when fetching file content fails', async () => {
-    const setFileName = jest.fn();
-    const setFileContent = jest.fn();
-    const setFileType = jest.fn();
-
     const modifiedFiles: FileState[] = [];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
-    newDigitalTwin.getFileContent = jest.fn().mockResolvedValueOnce(null);
+    newDigitalTwin.fileHandler.getFileContent = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Fetch error'));
 
     await dispatchSetDigitalTwin(newDigitalTwin);
 
-    await handleFileClick(
-      'file1.md',
-      newDigitalTwin,
-      setFileName,
-      setFileContent,
-      setFileType,
-      modifiedFiles,
-    );
+    await React.act(async () => {
+      await handleFileClick(
+        'file1.md',
+        newDigitalTwin,
+        setFileName,
+        setFileContent,
+        setFileType,
+        modifiedFiles,
+        'reconfigure'
+      );
+    });
 
-    expect(setFileContent).toHaveBeenCalledWith(
-      'Error fetching file1.md content',
-    );
+    expect(setFileContent).toHaveBeenCalledWith('Error fetching file1.md content');
   });
 });

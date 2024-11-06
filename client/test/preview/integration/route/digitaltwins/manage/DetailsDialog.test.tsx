@@ -1,11 +1,15 @@
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import setupStore from './utils';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
+}));
+
+jest.mock('preview/util/init', () => ({
+  fetchAssetsAndCreateTwins: jest.fn(),
 }));
 
 jest.useFakeTimers();
@@ -16,10 +20,10 @@ describe('DetailsDialog', () => {
   beforeEach(() => {
     storeDetails = setupStore();
 
-    React.act(() => {
+    act(() => {
       render(
         <Provider store={storeDetails}>
-          <AssetBoard tab="Manage" error={null} />
+          <AssetBoard tab="Manage"/>
         </Provider>,
       );
     });
@@ -36,7 +40,7 @@ describe('DetailsDialog', () => {
 
   it('opens the DetailsDialog when the Details button is clicked', async () => {
     const detailsButton = screen.getByRole('button', { name: /Details/i });
-    React.act(() => {
+    act(() => {
       detailsButton.click();
     });
 
@@ -50,13 +54,13 @@ describe('DetailsDialog', () => {
 
   it('closes the DetailsDialog when the Close button is clicked', async () => {
     const detailsButton = screen.getByRole('button', { name: /Details/i });
-    React.act(() => {
+    act(() => {
       detailsButton.click();
     });
 
     const closeButton = await screen.findByRole('button', { name: /Close/i });
 
-    React.act(() => {
+    act(() => {
       closeButton.click();
     });
 
