@@ -33,15 +33,17 @@ plugins:
         enabled: false
 
 exclude_patterns:
-  - "**.txt"
   - "**.json"
+  - "**.txt"
+  - ".pylintrc"
+  - servers/lib/src/types.ts
   - "**/api/"
   - "**/build/"
   - "**/coverage/"
   - "**/dist/"
   - "**/node_modules/"
   - "**/public/"
-  - client/config/
-  - servers/lib/src/types.ts
+  - "**/script/"
+  - "client/config/"
   - "deploy/config/client/env*.js"
-  - .pylintrc
+  - "files/"
