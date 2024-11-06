@@ -26,6 +26,10 @@ replaced with _options_ in the names of test files.
 
 ## :package: :ship: NPM package
 
+The package version is hardcoded as `PACKAGE_VERSION: string` in
+[CLI code](src/config/commander.ts). This package version needs to be
+same as `version` in `package.json`.
+
 ### Github Package Registry
 
 The Github actions workflow of
