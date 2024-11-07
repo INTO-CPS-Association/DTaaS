@@ -15,7 +15,7 @@ sudo apt-get install -y \
     net-tools \
     python3-dev \
     python3-pip \
-    python3-env
+    python3-venv
 
 sudo mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/docker.gpg ]
