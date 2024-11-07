@@ -191,6 +191,8 @@ describe('Editor', () => {
       );
     });
 
-    expect(setFileContent).toHaveBeenCalledWith('Error fetching file1.md content');
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file1.md content',
+    );
   });
 });
