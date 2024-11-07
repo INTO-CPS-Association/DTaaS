@@ -116,4 +116,19 @@ describe('AssetBoard Integration Tests', () => {
       expect(screen.queryByText('Asset 1')).not.toBeInTheDocument();
     });
   });
+
+  it('shows an error message', async () => {
+    const error = 'An error occurred';
+    jest.spyOn(React, 'useState').mockReturnValue([error, jest.fn()]);
+
+    act(() => {
+      render(
+        <Provider store={store}>
+          <AssetBoard tab="Manage" />
+        </Provider>,
+      );
+    });
+
+    expect(screen.getByText(error)).toBeInTheDocument();
+  });
 });

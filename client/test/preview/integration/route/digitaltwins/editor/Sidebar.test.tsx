@@ -20,6 +20,7 @@ import { Provider } from 'react-redux';
 import * as React from 'react';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
+import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 
 describe('Sidebar', () => {
   const setFileNameMock = jest.fn();
@@ -119,7 +120,13 @@ describe('Sidebar', () => {
     setupDigitalTwin('Asset 1');
 
     store.dispatch(setDigitalTwin({ assetName: 'Asset 1', digitalTwin }));
+  });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls handleFileClick when a file type is clicked', async () => {
     await act(async () => {
       render(
         <Provider store={store}>
@@ -133,13 +140,87 @@ describe('Sidebar', () => {
         </Provider>,
       );
     });
-  });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('calls handleFileClick when a file type is clicked', async () => {
     await performFileTests();
+  });
+
+  it('calls handle addFileCkick when add file is clicked', async () => {
+    const handleAddFileClick = jest.spyOn(
+      SidebarFunctions,
+      'handleAddFileClick',
+    );
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <Sidebar
+            name={'Asset 1'}
+            setFileName={setFileNameMock}
+            setFileContent={setFileContentMock}
+            setFileType={setFileTypeMock}
+            tab={'create'}
+          />
+        </Provider>,
+      );
+    });
+
+    const addFile = screen.getByText('Add new file');
+    await act(async () => {
+      fireEvent.click(addFile);
+    });
+
+    await waitFor(() => {
+      expect(handleAddFileClick).toHaveBeenCalled();
+    });
+  });
+
+  it('should open the sidebar dialog when a new file is added', async () => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <Sidebar
+            name={'Asset 1'}
+            setFileName={setFileNameMock}
+            setFileContent={setFileContentMock}
+            setFileType={setFileTypeMock}
+            tab={'create'}
+          />
+        </Provider>,
+      );
+    });
+
+    const addFile = screen.getByText('Add new file');
+    act(() => {
+      fireEvent.click(addFile);
+    });
+
+    waitFor(() => {
+      expect(screen.getByText('Enter the file name')).toBeInTheDocument();
+    });
+  });
+
+  it('renders file section when no digital twin is selected', async () => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <Sidebar
+            name={''}
+            setFileName={setFileNameMock}
+            setFileContent={setFileContentMock}
+            setFileType={setFileTypeMock}
+            tab={'create'}
+          />
+        </Provider>,
+      );
+    });
+
+    const lifecycle = screen.getByText('Lifecycle');
+    act(() => {
+      fireEvent.click(lifecycle);
+    });
+
+    waitFor(() => {
+      expect(screen.getByText('Asset 1')).toBeInTheDocument();
+    });
   });
 });

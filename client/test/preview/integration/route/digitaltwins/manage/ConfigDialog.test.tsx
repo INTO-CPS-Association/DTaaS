@@ -7,7 +7,10 @@ import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import * as ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import FileHandler from 'preview/util/fileHandler';
-import { addOrUpdateFile } from 'preview/store/file.slice';
+import {
+  addOrUpdateFile,
+  removeAllModifiedFiles,
+} from 'preview/store/file.slice';
 import setupStore from './utils';
 
 jest.useFakeTimers();
@@ -18,9 +21,12 @@ jest.mock('preview/util/init', () => ({
 
 describe('ReconfigureDialog', () => {
   let storeConfig: ReturnType<typeof setupStore>;
+  let dispatchSpy: jest.SpyInstance;
 
   beforeEach(() => {
     storeConfig = setupStore();
+
+    dispatchSpy = jest.spyOn(storeConfig, 'dispatch');
 
     React.act(() => {
       render(
@@ -81,6 +87,8 @@ describe('ReconfigureDialog', () => {
     await waitFor(() => {
       expect(screen.queryByText('Editor')).toBeNull();
     });
+
+    expect(dispatchSpy).toHaveBeenCalledWith(removeAllModifiedFiles());
   });
 
   it('updates the description when description.md is modified', async () => {
