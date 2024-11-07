@@ -35,7 +35,9 @@ const Sidebar = ({
   const [isFileNameDialogOpen, setIsFileNameDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const digitalTwin = useSelector((state: RootState) => name ? selectDigitalTwinByName(name)(state) : null);
+  const digitalTwin = useSelector((state: RootState) =>
+    name ? selectDigitalTwinByName(name)(state) : null,
+  );
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
 

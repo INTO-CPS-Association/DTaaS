@@ -53,7 +53,7 @@ class DigitalTwin {
           'main',
         );
         this.description = atob(fileData.content);
-      } catch (error) {
+      } catch (_error) {
         this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
       }
     }
@@ -76,7 +76,7 @@ class DigitalTwin {
             return `${altText}(${fullUrl})`;
           },
         );
-      } catch (error) {
+      } catch (_error) {
         this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
     } else {
@@ -166,7 +166,7 @@ class DigitalTwin {
         );
         await this.fileHandler.removeTriggerFromPipeline();
         return `${this.DTName} deleted successfully`;
-      } catch (error) {
+      } catch (_error) {
         return `Error deleting ${this.DTName} digital twin`;
       }
     }

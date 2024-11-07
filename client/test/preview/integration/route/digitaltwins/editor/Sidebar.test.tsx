@@ -1,8 +1,4 @@
-import {
-  combineReducers,
-  configureStore,
-  createStore,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore, createStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
@@ -108,8 +104,8 @@ describe('Sidebar', () => {
       }),
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-        serializableCheck: false,
-      }),
+          serializableCheck: false,
+        }),
     });
 
     const files = [

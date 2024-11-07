@@ -8,10 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import {
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
 import fileSlice from 'preview/store/file.slice';
@@ -22,10 +19,10 @@ const store = configureStore({
     snackbar: snackbarSlice,
     files: fileSlice,
   }),
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+      serializableCheck: false,
+    }),
 });
 
 describe('CreatePage', () => {

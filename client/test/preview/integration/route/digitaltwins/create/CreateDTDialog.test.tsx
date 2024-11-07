@@ -2,10 +2,7 @@ import * as React from 'react';
 import CreateDTDialog from 'preview/route/digitaltwins/create/CreateDTDialog';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import {
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import fileSlice from 'preview/store/file.slice';
 import { validateFiles } from 'preview/util/fileUtils';
 import { initDigitalTwin } from 'preview/util/init';
@@ -22,10 +19,10 @@ const store = configureStore({
   reducer: combineReducers({
     files: fileSlice,
   }),
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+      serializableCheck: false,
+    }),
 });
 
 describe('CreateDTDialog - handleConfirm function', () => {

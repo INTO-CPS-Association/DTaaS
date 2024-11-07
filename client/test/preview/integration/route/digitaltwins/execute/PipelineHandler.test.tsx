@@ -12,10 +12,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   },
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+      serializableCheck: false,
+    }),
 });
 
 describe('PipelineHandler Integration Tests', () => {

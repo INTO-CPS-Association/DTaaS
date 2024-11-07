@@ -2,10 +2,7 @@ import * as React from 'react';
 import ConfirmDeleteDialog from 'preview/route/digitaltwins/create/ConfirmDeleteDialog';
 import { act } from 'react';
 import { render, screen } from '@testing-library/react';
-import {
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
 
@@ -13,10 +10,10 @@ const store = configureStore({
   reducer: combineReducers({
     files: fileSlice,
   }),
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+      serializableCheck: false,
+    }),
 });
 
 describe('ConfirmDeleteDialog', () => {
