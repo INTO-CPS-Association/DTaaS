@@ -63,6 +63,9 @@ export class MockConfigService {
         if (process.env.MODE === 'local') {
           return 'local';
         }
+        if (process.env.MODE === 'git') {
+          return 'git';
+        }
         return 'unknown';
 
       default:

@@ -14,16 +14,16 @@ describe('FilesServiceFactory', () => {
   let fileServices: IFilesService[];
 
   beforeEach(async () => {
-    
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GitFilesService,
         { provide: ConfigService, useValue: { get: jest.fn() } },
+        LocalFilesService,
       ],
     }).compile();
-    
+
     configService = module.get<ConfigService>(ConfigService);
-    localFilesService = new LocalFilesService(configService);
+    localFilesService = module.get<LocalFilesService>(LocalFilesService);
     gitFilesService = module.get<GitFilesService>(GitFilesService);
     fileServices = [gitFilesService, localFilesService];
   });
@@ -32,6 +32,13 @@ describe('FilesServiceFactory', () => {
     jest.spyOn(configService, 'get').mockReturnValue('local');
     expect(FilesServiceFactory.create(configService, fileServices)).toBe(
       localFilesService,
+    );
+  });
+
+  it('should create a git files service when MODE is git', () => {
+    jest.spyOn(configService, 'get').mockReturnValue('git');
+    expect(FilesServiceFactory.create(configService, fileServices)).toBe(
+      gitFilesService,
     );
   });
 
