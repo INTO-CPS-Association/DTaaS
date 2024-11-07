@@ -54,7 +54,7 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
       await fetchAssets(dispatch, setError);
     };
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   const handleDelete = (deletedAssetPath: string) => {
     dispatch(deleteAsset(deletedAssetPath));
