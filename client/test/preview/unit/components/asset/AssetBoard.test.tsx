@@ -19,7 +19,7 @@ jest.mock('preview/store/assets.slice', () => ({
 }));
 
 jest.mock('preview/util/init', () => ({
-  fetchAssetsAndCreateTwins: jest.fn(),
+  fetchAssets: jest.fn(),
 }));
 
 describe('AssetBoard', () => {

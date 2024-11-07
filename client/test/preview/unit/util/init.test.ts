@@ -1,4 +1,4 @@
-import { fetchAssetsAndCreateTwins } from 'preview/util/init';
+import { fetchAssets } from 'preview/util/init';
 import { setAssets } from 'preview/store/assets.slice';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import {
@@ -29,7 +29,7 @@ jest.mock('preview/store/digitalTwin.slice', () => ({
   setDigitalTwin: jest.fn(),
 }));
 
-describe('fetchAssetsAndCreateTwins', () => {
+describe('fetchAssets', () => {
   const dispatch = jest.fn();
   const setError = jest.fn();
 
@@ -43,7 +43,7 @@ describe('fetchAssetsAndCreateTwins', () => {
       { name: 'asset1', path: 'path1' },
     ]);
 
-    await fetchAssetsAndCreateTwins(dispatch, setError);
+    await fetchAssets(dispatch, setError);
 
     expect(dispatch).toHaveBeenCalledWith(
       setAssets([{ name: 'asset1', path: 'path1' }]),
@@ -59,7 +59,7 @@ describe('fetchAssetsAndCreateTwins', () => {
   it('should handle empty project ID by setting assets to an empty array', async () => {
     mockGitlabInstance.projectId = null;
 
-    await fetchAssetsAndCreateTwins(dispatch, setError);
+    await fetchAssets(dispatch, setError);
 
     expect(dispatch).toHaveBeenCalledWith(setAssets([]));
   });
@@ -68,7 +68,7 @@ describe('fetchAssetsAndCreateTwins', () => {
     (mockGitlabInstance.init as jest.Mock).mockResolvedValue({});
     (mockGitlabInstance.getDTSubfolders as jest.Mock).mockResolvedValue([]);
 
-    await fetchAssetsAndCreateTwins(dispatch, setError);
+    await fetchAssets(dispatch, setError);
 
     expect(dispatch).toHaveBeenCalledWith(setAssets([]));
   });

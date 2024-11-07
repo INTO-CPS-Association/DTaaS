@@ -1,9 +1,16 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
+/* eslint-disable no-shadow */
 
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
+
+export enum FileType {
+  DESCRIPTION = 'description',
+  CONFIGURATION = 'configuration',
+  LIFECYCLE = 'lifecycle',
+}
 
 export function getFilePath(
   file: FileState,
@@ -11,6 +18,21 @@ export function getFilePath(
   lifecycleFolderPath: string,
 ): string {
   return file.type === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
+}
+
+export function isValidFileType(
+  item: { type: string; name: string; path: string },
+  fileType: FileType,
+): boolean {
+  const typeChecks = {
+    [FileType.DESCRIPTION]: item.type === 'blob' && item.name.endsWith('.md'),
+    [FileType.CONFIGURATION]:
+      item.type === 'blob' && /\.(json|yml|yaml)$/.test(item.name),
+    [FileType.LIFECYCLE]:
+      item.type === 'blob' && item.path.includes('/lifecycle/'),
+  };
+
+  return typeChecks[fileType];
 }
 
 class FileHandler implements IFile {
@@ -60,30 +82,6 @@ class FileHandler implements IFile {
     );
   }
 
-  async getDescriptionFiles(): Promise<string[]> {
-    try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
-          {
-            path: `digital_twins/${this.DTName}`,
-            recursive: true,
-          },
-        );
-
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' && item.name.endsWith('.md'),
-        )
-        .map((file: { name: string }) => file.name);
-
-      return filteredFiles as string[];
-    } catch (error) {
-      return [];
-    }
-  }
-
   async createFile(
     file: FileState,
     filePath: string,
@@ -112,51 +110,27 @@ class FileHandler implements IFile {
     }
   }
 
-  async getConfigFiles(): Promise<string[]> {
+  async getFileNames(fileType: FileType): Promise<string[]> {
+    const pathMap = {
+      [FileType.DESCRIPTION]: `digital_twins/${this.DTName}`,
+      [FileType.CONFIGURATION]: `digital_twins/${this.DTName}`,
+      [FileType.LIFECYCLE]: `digital_twins/${this.DTName}/lifecycle`,
+    };
+
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
           this.gitlabInstance.projectId!,
           {
-            path: `digital_twins/${this.DTName}`,
-            recursive: false,
+            path: pathMap[fileType],
+            recursive: fileType === FileType.LIFECYCLE,
           },
         );
 
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string }) =>
-            item.type === 'blob' &&
-            (item.name.endsWith('.json') || item.name.endsWith('.yml')),
-        )
-        .map((file: { name: string }) => file.name);
-
-      return filteredFiles;
-    } catch (error) {
-      return [];
-    }
-  }
-
-  async getLifecycleFiles(): Promise<string[]> {
-    try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
-          {
-            path: `digital_twins/${this.DTName}`,
-            recursive: true,
-          },
-        );
-
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' && item.path.includes('/lifecycle/'),
-        )
-        .map((file: { name: string }) => file.name);
-
-      return filteredFiles;
-    } catch (error) {
+      return response
+        .filter((item) => isValidFileType(item, fileType))
+        .map((file) => file.name);
+    } catch {
       return [];
     }
   }

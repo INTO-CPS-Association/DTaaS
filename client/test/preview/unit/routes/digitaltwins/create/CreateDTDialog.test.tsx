@@ -93,7 +93,7 @@ describe('CreateDTDialog', () => {
   it('calls handleConfirm when "Create" button is clicked', async () => {
     (validateFiles as jest.Mock).mockReturnValue(false);
     const mockDigitalTwinInstance = {
-      createDTWithFiles: jest.fn().mockResolvedValue('Success'),
+      create: jest.fn().mockResolvedValue('Success'),
     };
 
     (initDigitalTwin as jest.Mock).mockResolvedValue(mockDigitalTwinInstance);
@@ -114,7 +114,7 @@ describe('CreateDTDialog', () => {
 
   it('calls handleConfirm when "Create" button is clicked and an error occurs', async () => {
     const mockDigitalTwinInstance = {
-      createDTWithFiles: jest.fn().mockResolvedValue('Error'),
+      create: jest.fn().mockResolvedValue('Error'),
     };
 
     (initDigitalTwin as jest.Mock).mockResolvedValue(mockDigitalTwinInstance);

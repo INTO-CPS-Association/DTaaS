@@ -1,4 +1,5 @@
 import { FileState } from 'preview/store/file.slice';
+import { FileType } from './fileHandler';
 
 export interface IFile {
   getFileContent(fileName: string): Promise<string>;
@@ -13,9 +14,7 @@ export interface IFile {
     filePath: string,
     commitMessage: string,
   ): Promise<void>;
-  getDescriptionFiles(): Promise<string[]>;
-  getConfigFiles(): Promise<string[]>;
-  getLifecycleFiles(): Promise<string[]>;
+  getFileNames(fileType: FileType): Promise<string[]>;
   appendTriggerToPipeline(): Promise<string>;
   removeTriggerFromPipeline(): Promise<string>;
 }

@@ -12,7 +12,11 @@ import {
   AlertColor,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { FileState, removeAllModifiedFiles, selectModifiedFiles } from '../../../store/file.slice';
+import {
+  FileState,
+  removeAllModifiedFiles,
+  selectModifiedFiles,
+} from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,

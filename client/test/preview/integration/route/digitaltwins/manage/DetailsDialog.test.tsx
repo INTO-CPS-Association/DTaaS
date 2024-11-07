@@ -9,7 +9,7 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('preview/util/init', () => ({
-  fetchAssetsAndCreateTwins: jest.fn(),
+  fetchAssets: jest.fn(),
 }));
 
 jest.useFakeTimers();
@@ -23,7 +23,7 @@ describe('DetailsDialog', () => {
     act(() => {
       render(
         <Provider store={storeDetails}>
-          <AssetBoard tab="Manage"/>
+          <AssetBoard tab="Manage" />
         </Provider>,
       );
     });

@@ -79,14 +79,13 @@ export const mockFileHandler: FileHandler = {
   gitlabInstance: mockGitlabInstance,
   getFileContent: jest.fn(),
   updateFileContent: jest.fn(),
-  getDescriptionFiles: jest.fn(),
-  getConfigFiles: jest.fn(),
-  getLifecycleFiles: jest.fn(),
+  getFileNames: jest.fn(),
+  isValidFileType: jest.fn(),
   createFile: jest.fn(),
   createFiles: jest.fn(),
   appendTriggerToPipeline: jest.fn(),
   removeTriggerFromPipeline: jest.fn(),
-};
+} as unknown as FileHandler;
 
 export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
@@ -108,12 +107,12 @@ export const mockDigitalTwin: DigitalTwin = {
   execute: jest.fn(),
   triggerPipeline: jest.fn(),
   stop: jest.fn(),
-  createDTWithFiles: jest.fn().mockResolvedValue('Success'),
+  create: jest.fn().mockResolvedValue('Success'),
   delete: jest.fn(),
   getDescriptionFiles: jest.fn().mockResolvedValue(['descriptionFile']),
   getLifecycleFiles: jest.fn().mockResolvedValue(['lifecycleFile']),
   getConfigFiles: jest.fn().mockResolvedValue(['configFile']),
-};
+} as unknown as DigitalTwin;
 
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),

@@ -1,5 +1,5 @@
 import Editor from 'preview/route/digitaltwins/editor/Editor';
-import { act,render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
@@ -25,7 +25,9 @@ describe('Editor', () => {
   const setFileType = jest.fn();
 
   const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
-  const files = [{ name: 'file1.md', content: 'content1', isNew: false, isModified: false }];
+  const files = [
+    { name: 'file1.md', content: 'content1', isNew: false, isModified: false },
+  ];
 
   const store = configureStore({
     reducer: combineReducers({
@@ -74,7 +76,16 @@ describe('Editor', () => {
       await waitFor(() => {
         render(
           <Provider store={store}>
-            <Editor DTName={'Asset 1'} tab='reconfigure' fileName={fileName} setFileName={setFileName} fileContent={fileContent} setFileContent={setFileContent} fileType={fileType} setFileType={setFileType} />
+            <Editor
+              DTName={'Asset 1'}
+              tab="reconfigure"
+              fileName={fileName}
+              setFileName={setFileName}
+              fileContent={fileContent}
+              setFileContent={setFileContent}
+              fileType={fileType}
+              setFileType={setFileType}
+            />
           </Provider>,
         );
       });
@@ -102,7 +113,12 @@ describe('Editor', () => {
 
   it('should update state when a modified file is clicked', async () => {
     const modifiedFiles = [
-      { name: 'file1.md', content: 'modified content', isNew: false, isModified: true },
+      {
+        name: 'file1.md',
+        content: 'modified content',
+        isNew: false,
+        isModified: true,
+      },
     ];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
@@ -117,7 +133,7 @@ describe('Editor', () => {
         setFileContent,
         setFileType,
         modifiedFiles,
-        'reconfigure'
+        'reconfigure',
       );
     });
 
@@ -144,7 +160,7 @@ describe('Editor', () => {
         setFileContent,
         setFileType,
         modifiedFiles,
-        'reconfigure'
+        'reconfigure',
       );
     });
 
@@ -171,10 +187,12 @@ describe('Editor', () => {
         setFileContent,
         setFileType,
         modifiedFiles,
-        'reconfigure'
+        'reconfigure',
       );
     });
 
-    expect(setFileContent).toHaveBeenCalledWith('Error fetching file1.md content');
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file1.md content',
+    );
   });
 });

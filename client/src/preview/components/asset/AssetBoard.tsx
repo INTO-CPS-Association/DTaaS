@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { deleteAsset } from 'preview/store/assets.slice';
-import { fetchAssetsAndCreateTwins } from 'preview/util/init';
+import { fetchAssets } from 'preview/util/init';
 import { Asset } from './Asset';
 import { AssetCardExecute, AssetCardManage } from './AssetCard';
 
@@ -51,7 +51,7 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      await fetchAssetsAndCreateTwins(dispatch, setError);
+      await fetchAssets(dispatch, setError);
     };
     fetchData();
   }, []);

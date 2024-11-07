@@ -83,7 +83,7 @@ const handleConfirm = async (
   if (validateFiles(files, setErrorMessage)) return;
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.createDTWithFiles(files);
+  const result = await digitalTwin.create(files);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);

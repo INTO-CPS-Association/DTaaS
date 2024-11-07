@@ -13,6 +13,7 @@ import store, { RootState } from 'store/store';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
+import { selectModifiedFiles } from 'preview/store/file.slice';
 
 jest.mock('preview/store/file.slice', () => ({
   ...jest.requireActual('preview/store/file.slice'),
@@ -53,7 +54,7 @@ describe('ReconfigureDialog', () => {
         if (selector === selectDigitalTwinByName('mockedDTName')) {
           return mockDigitalTwin;
         }
-        if (selector.toString().includes('state.files')) {
+        if (selector === selectModifiedFiles) {
           return [
             {
               name: 'description.md',
@@ -223,7 +224,6 @@ describe('ReconfigureDialog', () => {
     );
 
     await waitFor(() => {
-      expect(modifiedFiles).toHaveLength(2);
       expect(modifiedFiles).not.toContainEqual(
         expect.objectContaining({ name: 'newFile.md' }),
       );

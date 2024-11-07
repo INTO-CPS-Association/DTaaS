@@ -34,7 +34,7 @@ describe('Digital Twins', () => {
       screen.getByText('The Digital Twin as a Service'),
     ).toBeInTheDocument();
   });
-  
+
   /*
   it('fetches subfolders with project id', async () => {
     const gitlabInstance = mockGitlabInstance;

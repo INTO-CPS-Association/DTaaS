@@ -6,14 +6,14 @@ import DigitalTwin from 'preview/util/digitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import * as ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
-import setupStore from './utils';
 import FileHandler from 'preview/util/fileHandler';
 import { addOrUpdateFile } from 'preview/store/file.slice';
+import setupStore from './utils';
 
 jest.useFakeTimers();
 
 jest.mock('preview/util/init', () => ({
-  fetchAssetsAndCreateTwins: jest.fn(),
+  fetchAssets: jest.fn(),
 }));
 
 describe('ReconfigureDialog', () => {
@@ -25,7 +25,7 @@ describe('ReconfigureDialog', () => {
     React.act(() => {
       render(
         <Provider store={storeConfig}>
-          <AssetBoard tab="Manage"/>
+          <AssetBoard tab="Manage" />
         </Provider>,
       );
     });
@@ -37,7 +37,9 @@ describe('ReconfigureDialog', () => {
   });
 
   it('closes the ConfirmationDialog with No', async () => {
-    const reconfigureButton = screen.getByRole('button', { name: /Reconfigure/i });
+    const reconfigureButton = screen.getByRole('button', {
+      name: /Reconfigure/i,
+    });
     await React.act(async () => {
       reconfigureButton.click();
     });
@@ -59,7 +61,9 @@ describe('ReconfigureDialog', () => {
   });
 
   it('closes the Confirmation dialog with Yes', async () => {
-    const reconfigureButton = screen.getByRole('button', { name: /Reconfigure/i });
+    const reconfigureButton = screen.getByRole('button', {
+      name: /Reconfigure/i,
+    });
     await React.act(async () => {
       reconfigureButton.click();
     });
@@ -80,7 +84,9 @@ describe('ReconfigureDialog', () => {
   });
 
   it('updates the description when description.md is modified', async () => {
-    const updateFileContent = jest.spyOn(FileHandler.prototype, 'updateFileContent').mockResolvedValue();
+    const updateFileContent = jest
+      .spyOn(FileHandler.prototype, 'updateFileContent')
+      .mockResolvedValue();
     const modifiedFile = {
       name: 'description.md',
       content: 'New content',
@@ -92,7 +98,9 @@ describe('ReconfigureDialog', () => {
       storeConfig.dispatch(addOrUpdateFile(modifiedFile));
     });
 
-    const reconfigureButton = screen.getByRole('button', { name: /Reconfigure/i });
+    const reconfigureButton = screen.getByRole('button', {
+      name: /Reconfigure/i,
+    });
     await React.act(async () => {
       reconfigureButton.click();
     });
@@ -121,11 +129,18 @@ describe('ReconfigureDialog', () => {
   });
 
   it('should dispatch error message when updateFileContent throws an error', async () => {
-    const file = { name: 'test.md', content: 'Content', isNew: false, isModified: true };
+    const file = {
+      name: 'test.md',
+      content: 'Content',
+      isNew: false,
+      isModified: true,
+    };
     const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
     const dispatch = jest.fn();
 
-    jest.spyOn(digitalTwin.fileHandler, 'updateFileContent').mockRejectedValue(new Error('Mocked error'));
+    jest
+      .spyOn(digitalTwin.fileHandler, 'updateFileContent')
+      .mockRejectedValue(new Error('Mocked error'));
 
     await React.act(async () => {
       await ReconfigureDialog.handleFileUpdate(file, digitalTwin, dispatch);

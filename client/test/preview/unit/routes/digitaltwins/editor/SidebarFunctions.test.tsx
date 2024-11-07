@@ -22,17 +22,27 @@ describe('SidebarFunctions', () => {
   const files: FileState[] = []; // spostato qui per evitare conflitti di scope
 
   it('should return the correct file type from the extension', () => {
-    expect(SidebarFunctions.getFileTypeFromExtension('file.md')).toBe('description');
-    expect(SidebarFunctions.getFileTypeFromExtension('file.json')).toBe('config');
-    expect(SidebarFunctions.getFileTypeFromExtension('file.yaml')).toBe('config');
-    expect(SidebarFunctions.getFileTypeFromExtension('file.yml')).toBe('config');
+    expect(SidebarFunctions.getFileTypeFromExtension('file.md')).toBe(
+      'description',
+    );
+    expect(SidebarFunctions.getFileTypeFromExtension('file.json')).toBe(
+      'config',
+    );
+    expect(SidebarFunctions.getFileTypeFromExtension('file.yaml')).toBe(
+      'config',
+    );
+    expect(SidebarFunctions.getFileTypeFromExtension('file.yml')).toBe(
+      'config',
+    );
     expect(SidebarFunctions.getFileTypeFromExtension('file')).toBe('lifecycle');
   });
 
   it('should handle file click correctly in create tab', () => {
     const tab = 'create';
-    const handleCreateFileClick = jest.spyOn(SidebarFunctions, 'handleCreateFileClick').mockImplementation(jest.fn());
-    
+    const handleCreateFileClick = jest
+      .spyOn(SidebarFunctions, 'handleCreateFileClick')
+      .mockImplementation(jest.fn());
+
     SidebarFunctions.handleFileClick(
       'file',
       null,
@@ -48,8 +58,10 @@ describe('SidebarFunctions', () => {
 
   it('should handle file click correctly in reconfigure tab', () => {
     const tab = 'reconfigure';
-    const handleReconfigureFileClick = jest.spyOn(SidebarFunctions, 'handleReconfigureFileClick').mockImplementation(jest.fn());
-    
+    const handleReconfigureFileClick = jest
+      .spyOn(SidebarFunctions, 'handleReconfigureFileClick')
+      .mockImplementation(jest.fn());
+
     SidebarFunctions.handleFileClick(
       'file',
       null,
@@ -64,7 +76,9 @@ describe('SidebarFunctions', () => {
   });
 
   it('should render file tree items correctly and handle file click', () => {
-    const handleFileClick = jest.spyOn(SidebarFunctions, 'handleFileClick').mockImplementation(jest.fn());
+    const handleFileClick = jest
+      .spyOn(SidebarFunctions, 'handleFileClick')
+      .mockImplementation(jest.fn());
 
     render(
       <SimpleTreeView>
@@ -95,14 +109,15 @@ describe('SidebarFunctions', () => {
       { name: 'file2', content: 'content', isNew: true, isModified: false },
       { name: 'file3', content: 'content', isNew: true, isModified: false },
     ];
-    expect(SidebarFunctions.getFilteredFileNames('lifecycle', testFiles)).toEqual([
-      'file2',
-      'file3',
-    ]);
+    expect(
+      SidebarFunctions.getFilteredFileNames('lifecycle', testFiles),
+    ).toEqual(['file2', 'file3']);
   });
 
   it('should render file section correctly and handle file click', () => {
-    const handleFileClick = jest.spyOn(SidebarFunctions, 'handleFileClick').mockImplementation(jest.fn());
+    const handleFileClick = jest
+      .spyOn(SidebarFunctions, 'handleFileClick')
+      .mockImplementation(jest.fn());
 
     render(
       <SimpleTreeView>

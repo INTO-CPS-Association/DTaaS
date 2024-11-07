@@ -21,7 +21,7 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('preview/util/init', () => ({
-  fetchAssetsAndCreateTwins: jest.fn(),
+  fetchAssets: jest.fn(),
 }));
 
 jest.useFakeTimers();
@@ -69,7 +69,7 @@ describe('AssetBoard Integration Tests', () => {
     act(() => {
       render(
         <Provider store={store}>
-          <AssetBoard tab="Execute"/>
+          <AssetBoard tab="Execute" />
         </Provider>,
       );
     });
@@ -81,7 +81,7 @@ describe('AssetBoard Integration Tests', () => {
     act(() => {
       render(
         <Provider store={store}>
-          <AssetBoard tab="Manage"/>
+          <AssetBoard tab="Manage" />
         </Provider>,
       );
     });
@@ -93,7 +93,7 @@ describe('AssetBoard Integration Tests', () => {
     act(() => {
       render(
         <Provider store={store}>
-          <AssetBoard tab="Manage"/>
+          <AssetBoard tab="Manage" />
         </Provider>,
       );
     });

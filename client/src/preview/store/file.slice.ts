@@ -104,7 +104,7 @@ const filesSlice = createSlice({
 
 export const selectModifiedFiles = createSelector(
   (state: RootState) => state.files,
-  (files) => files.filter(file => !file.isNew)
+  (files) => files.filter((file) => !file.isNew),
 );
 
 export const {

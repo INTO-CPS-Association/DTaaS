@@ -12,7 +12,7 @@ const gitlabInstance = new GitlabInstance(
   sessionStorage.getItem('access_token') || '',
 );
 
-export const fetchAssetsAndCreateTwins = async (
+export const fetchAssets = async (
   dispatch: ReturnType<typeof useDispatch>,
   setError: Dispatch<SetStateAction<string | null>>,
 ) => {
