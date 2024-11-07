@@ -181,7 +181,7 @@ class DigitalTwin {
         await this.DTAssets.delete();
 
         return `${this.DTName} deleted successfully`;
-      } catch (error) {
+      } catch (_error) {
         return `Error deleting ${this.DTName} digital twin`;
       }
     }
