@@ -13,7 +13,10 @@ import {
 import DTAssets from 'preview/util/DTAssets';
 import setupStore from './utils';
 import FileHandler from 'preview/util/fileHandler';
-import { addOrUpdateFile } from 'preview/store/file.slice';
+import {
+  addOrUpdateFile,
+  removeAllModifiedFiles,
+} from 'preview/store/file.slice';
 import setupStore from './utils';
 
 jest.useFakeTimers();
