@@ -42,8 +42,8 @@ describe('CreateDTDialog', () => {
   const mockDispatch = jest.fn();
 
   beforeEach(() => {
-    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
-    (useSelector as jest.Mock).mockReturnValue([
+    (useDispatch as unknown as jest.Mock).mockReturnValue(mockDispatch);
+    (useSelector as unknown as jest.Mock).mockReturnValue([
       {
         name: 'testFile',
         content: 'testContent',

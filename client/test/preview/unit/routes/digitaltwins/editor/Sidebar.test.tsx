@@ -135,7 +135,7 @@ describe('Sidebar', () => {
   });
 
   it('renders Sidebar with null digitalTwin when tab is create', async () => {
-    (useSelector as jest.Mock).mockImplementationOnce(
+    (useSelector as unknown as jest.Mock).mockImplementationOnce(
       (selector: (state: RootState) => unknown) => {
         if (selector === selectDigitalTwinByName('')) {
           return null;

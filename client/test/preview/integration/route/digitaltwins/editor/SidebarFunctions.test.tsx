@@ -67,7 +67,7 @@ describe('handleFileSubmit', () => {
   const mockSetNewFileName = jest.fn();
   const dispatch = jest.fn();
 
-  (useDispatch as jest.Mock).mockReturnValue(dispatch);
+  (useDispatch as unknown as jest.Mock).mockReturnValue(dispatch);
 
   afterEach(() => {
     jest.clearAllMocks();

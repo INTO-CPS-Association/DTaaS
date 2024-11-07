@@ -4,8 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import {
   combineReducers,
-  configureStore,
-  getDefaultMiddleware,
+  configureStore
 } from '@reduxjs/toolkit';
 import fileSlice from 'preview/store/file.slice';
 import { act } from 'react';
@@ -14,7 +13,8 @@ const store = configureStore({
   reducer: combineReducers({
     files: fileSlice,
   }),
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware({
     serializableCheck: false,
   }),
 });

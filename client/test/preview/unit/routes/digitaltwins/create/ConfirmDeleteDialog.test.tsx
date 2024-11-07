@@ -25,8 +25,8 @@ describe('ConfirmDeleteDialog', () => {
   const mockDispatch = jest.fn();
 
   beforeEach(() => {
-    (useDispatch as jest.Mock).mockReturnValue(mockDispatch);
-    (useSelector as jest.Mock).mockReturnValue([
+    (useDispatch as unknown as jest.Mock).mockReturnValue(mockDispatch);
+    (useSelector as unknown as jest.Mock).mockReturnValue([
       { name: defaultFiles[0].name, isNew: true },
     ]);
 

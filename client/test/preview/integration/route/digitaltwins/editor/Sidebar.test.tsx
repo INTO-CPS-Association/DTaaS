@@ -2,7 +2,6 @@ import {
   combineReducers,
   configureStore,
   createStore,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
@@ -107,7 +106,8 @@ describe('Sidebar', () => {
         digitalTwin: digitalTwinReducer,
         files: fileSlice,
       }),
-      middleware: getDefaultMiddleware({
+      middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
         serializableCheck: false,
       }),
     });

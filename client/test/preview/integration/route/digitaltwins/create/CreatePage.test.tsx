@@ -11,7 +11,6 @@ import { Provider } from 'react-redux';
 import {
   combineReducers,
   configureStore,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import digitalTwinReducer from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
@@ -23,7 +22,8 @@ const store = configureStore({
     snackbar: snackbarSlice,
     files: fileSlice,
   }),
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware({
     serializableCheck: false,
   }),
 });

@@ -16,7 +16,7 @@ describe('DeleteFileDialog', () => {
   const dispatch = jest.fn();
 
   beforeEach(() => {
-    (useDispatch as jest.Mock).mockReturnValue(dispatch);
+    (useDispatch as unknown as jest.Mock).mockReturnValue(dispatch);
     render(
       <DeleteFileDialog
         open={true}

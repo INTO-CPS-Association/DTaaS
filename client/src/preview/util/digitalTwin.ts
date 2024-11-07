@@ -1,17 +1,9 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
-import {
-  createFile,
-  getCommitMessage,
-  getFilePath,
-  isValidInstance,
-  logError,
-  logSuccess,
-} from './digitalTwinUtils';
+import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
+import { IFile } from './ifile';
+import FileHandler, { FileType } from './fileHandler';
 
 const RUNNER_TAG = 'linux';
 
@@ -27,6 +19,8 @@ class DigitalTwin {
 
   public gitlabInstance: GitlabInstance;
 
+  public fileHandler: IFile;
+
   public pipelineId: number | null = null;
 
   public lastExecutionStatus: string | null = null;
@@ -39,13 +33,14 @@ class DigitalTwin {
 
   public descriptionFiles: string[] = [];
 
-  public lifecycleFiles: string[] = [];
-
   public configFiles: string[] = [];
+
+  public lifecycleFiles: string[] = [];
 
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
     this.gitlabInstance = gitlabInstance;
+    this.fileHandler = new FileHandler(DTName, this.gitlabInstance);
   }
 
   async getDescription(): Promise<void> {
@@ -58,7 +53,7 @@ class DigitalTwin {
           'main',
         );
         this.description = atob(fileData.content);
-      } catch (_error) {
+      } catch (error) {
         this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
       }
     }
@@ -81,7 +76,7 @@ class DigitalTwin {
             return `${altText}(${fullUrl})`;
           },
         );
-      } catch (_error) {
+      } catch (error) {
         this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
       }
     } else {
@@ -89,7 +84,7 @@ class DigitalTwin {
     }
   }
 
-  async triggerPipeline() {
+  private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
     return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
       this.gitlabInstance.projectId!,
@@ -138,6 +133,27 @@ class DigitalTwin {
     }
   }
 
+  async create(files: FileState[]): Promise<string> {
+    if (!this.gitlabInstance.projectId) {
+      return `Error creating ${this.DTName} digital twin: no project id`;
+    }
+
+    const mainFolderPath = `digital_twins/${this.DTName}`;
+    const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
+
+    try {
+      await this.fileHandler.createFiles(
+        files,
+        mainFolderPath,
+        lifecycleFolderPath,
+      );
+      await this.fileHandler.appendTriggerToPipeline();
+      return `${this.DTName} digital twin files initialized successfully.`;
+    } catch (error) {
+      return `Error initializing ${this.DTName} digital twin files: ${String(error)}`;
+    }
+  }
+
   async delete() {
     if (this.gitlabInstance.projectId) {
       const digitalTwinPath = `digital_twins/${this.DTName}`;
@@ -148,8 +164,9 @@ class DigitalTwin {
           'main',
           `Removing ${this.DTName} digital twin`,
         );
+        await this.fileHandler.removeTriggerFromPipeline();
         return `${this.DTName} deleted successfully`;
-      } catch (_error) {
+      } catch (error) {
         return `Error deleting ${this.DTName} digital twin`;
       }
     }
@@ -157,138 +174,21 @@ class DigitalTwin {
   }
 
   async getDescriptionFiles() {
-    try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
-          {
-            path: `digital_twins/${this.DTName}`,
-            recursive: true,
-          },
-        );
-
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' && item.name.endsWith('.md'),
-        )
-        .map((file: { name: string }) => file.name);
-
-      this.descriptionFiles = filteredFiles;
-    } catch (_error) {
-      this.descriptionFiles = [];
-    }
-  }
-
-  async getLifecycleFiles() {
-    try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
-          {
-            path: `digital_twins/${this.DTName}`,
-            recursive: true,
-          },
-        );
-
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string; path: string }) =>
-            item.type === 'blob' && item.path.includes('/lifecycle/'),
-        )
-        .map((file: { name: string }) => file.name);
-
-      this.lifecycleFiles = filteredFiles;
-    } catch (_error) {
-      this.lifecycleFiles = [];
-    }
+    this.descriptionFiles = await this.fileHandler.getFileNames(
+      FileType.DESCRIPTION,
+    );
   }
 
   async getConfigFiles() {
-    try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
-          {
-            path: `digital_twins/${this.DTName}`,
-            recursive: false,
-          },
-        );
-
-      const filteredFiles = response
-        .filter(
-          (item: { type: string; name: string }) =>
-            item.type === 'blob' &&
-            (item.name.endsWith('.json') || item.name.endsWith('.yml')),
-        )
-        .map((file: { name: string }) => file.name);
-
-      this.configFiles = filteredFiles;
-    } catch (_error) {
-      this.configFiles = [];
-    }
-  }
-
-  async getFileContent(fileName: string) {
-    const isFileWithoutExtension = !fileName.includes('.');
-
-    const filePath = isFileWithoutExtension
-      ? `digital_twins/${this.DTName}/lifecycle/${fileName}`
-      : `digital_twins/${this.DTName}/${fileName}`;
-
-    const response = await this.gitlabInstance.api.RepositoryFiles.show(
-      this.gitlabInstance.projectId!,
-      filePath,
-      'main',
-    );
-    const fileContent = atob(response.content);
-    return fileContent;
-  }
-
-  async updateFileContent(fileName: string, fileContent: string) {
-    const hasExtension = fileName.includes('.');
-
-    const filePath = hasExtension
-      ? `digital_twins/${this.DTName}/${fileName}`
-      : `digital_twins/${this.DTName}/lifecycle/${fileName}`;
-
-    const commitMessage = `Update ${fileName} content`;
-
-    await this.gitlabInstance.api.RepositoryFiles.edit(
-      this.gitlabInstance.projectId!,
-      filePath,
-      'main',
-      fileContent,
-      commitMessage,
+    this.configFiles = await this.fileHandler.getFileNames(
+      FileType.CONFIGURATION,
     );
   }
 
-  async createDT(files: FileState[]): Promise<string> {
-    if (!this.gitlabInstance.projectId) {
-      return `Error creating ${this.DTName} digital twin: no project id`;
-    }
-
-    const mainFolderPath = `digital_twins/${this.DTName}`;
-    const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
-
-    try {
-      for (const file of files) {
-        if (file.isNew) {
-          const filePath = getFilePath(
-            file,
-            mainFolderPath,
-            lifecycleFolderPath,
-          );
-          const commitMessage = getCommitMessage(file);
-
-          await createFile(this, file, filePath, commitMessage);
-        }
-      }
-
-      return `${this.DTName} digital twin created successfully.`;
-    } catch (error) {
-      return `Error creating ${this.DTName} digital twin: ${String(error)}`;
-    }
+  async getLifecycleFiles() {
+    this.lifecycleFiles = await this.fileHandler.getFileNames(
+      FileType.LIFECYCLE,
+    );
   }
 }
 

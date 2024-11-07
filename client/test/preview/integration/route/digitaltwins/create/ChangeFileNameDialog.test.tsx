@@ -5,7 +5,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import {
   combineReducers,
   configureStore,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import fileSlice from 'preview/store/file.slice';
 import { act } from 'react';
@@ -14,7 +13,8 @@ const store = configureStore({
   reducer: combineReducers({
     files: fileSlice,
   }),
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
     serializableCheck: false,
   }),
 });

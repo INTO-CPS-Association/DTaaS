@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import {
   combineReducers,
   configureStore,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import fileSlice from 'preview/store/file.slice';
 import { validateFiles } from 'preview/util/fileUtils';
@@ -23,7 +22,8 @@ const store = configureStore({
   reducer: combineReducers({
     files: fileSlice,
   }),
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware({
     serializableCheck: false,
   }),
 });
