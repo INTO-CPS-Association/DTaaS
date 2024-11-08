@@ -37,6 +37,24 @@ APOLLO_PATH='/lib'
 GRAPHQL_PLAYGROUND='true'
 ```
 
+Here is another with `git` mode.
+
+```ini
+PORT='4001'
+MODE='git'
+LOCAL_PATH ='/Users/<Username>/DTaaS/files'
+LOG_LEVEL='debug'
+APOLLO_PATH='/lib'
+GRAPHQL_PLAYGROUND='true'
+
+GIT_USER1_REPO_URL='<git repo url>'
+GIT_USER1_API_TOKEN='<TOKEN>'
+...
+GIT_USERX_REPO_URL='<git repo url>'
+GIT_USERX_API_TOKEN='<TOKEN>'
+```
+
+
 ## Service Endpoint
 
 The URL endpoint for this microservice is located at: `localhost:PORT/lib`
