@@ -14,7 +14,8 @@ sudo apt-get install -y \
     apache2-utils \
     net-tools \
     python3-dev \
-    python3-pip
+    python3-pip \
+    python3-venv
 
 sudo mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/docker.gpg ]
@@ -26,7 +27,7 @@ then
 fi
 
 sudo apt-get update -y
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo groupadd docker || true
 sudo usermod -aG docker "$USER" || true
 
@@ -52,27 +53,15 @@ docker run hello-world
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
-
-#install docker-compose from https://docs.docker.com/compose/install/other/
-sudo curl -SL "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64" \
-  -o /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-sudo chmod 755 /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-
 # Install nodejs environment
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl gnupg
-sudo mkdir -p /etc/apt/keyrings
-if [ ! -f /etc/apt/keyrings/nodesource.gpg ]
-then
-  curl -fsSL "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key" | \
-    sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-fi
-NODE_MAJOR=20
-printf "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
-  https://deb.nodesource.com/node_%s.x nodistro main" "$NODE_MAJOR" | \
-  sudo tee /etc/apt/sources.list.d/nodesource.list
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+nvm install 22
+nvm use 22
 
 sudo apt-get update
 sudo apt-get install -y nodejs
