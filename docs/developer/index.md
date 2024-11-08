@@ -21,7 +21,6 @@ Please use the steps given here to install the required software packages.
 
 ```bash
 bash script/env.sh
-bash script/configure-git-hooks.sh
 bash script/docker.sh
 ```
 
@@ -68,7 +67,6 @@ following commands in the given order:
 ```bash
 powershell -F script/base.ps1
 powershell -F script/env.ps1
-powershell -F script/configure-git-hooks.ps1
 powershell -F script/docker.ps1
 ```
 
