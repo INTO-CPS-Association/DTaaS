@@ -25,7 +25,7 @@ export default class GitFilesService implements IFilesService {
     while ((userRepoUrl = this.configService.get(
       `GIT_USER${userCounter}_REPO_URL`
     )) !== undefined) {
-      userRepoUrls.push(userRepoUrl);
+      userRepoUrls.push(userRepoUrl.includes('.git') ? userRepoUrl : userRepoUrl + '.git');
       ++userCounter;
     }
 
