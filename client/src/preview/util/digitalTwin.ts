@@ -2,8 +2,7 @@ import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
 import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
-import { IFile } from './ifile';
-import FileHandler, { FileType } from './fileHandler';
+import DTAssets, { FileType } from './DTAssets';
 
 const RUNNER_TAG = 'linux';
 
@@ -19,7 +18,7 @@ class DigitalTwin {
 
   public gitlabInstance: GitlabInstance;
 
-  public fileHandler: IFile;
+  public DTAssets: DTAssets;
 
   public pipelineId: number | null = null;
 
@@ -40,19 +39,15 @@ class DigitalTwin {
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
     this.gitlabInstance = gitlabInstance;
-    this.fileHandler = new FileHandler(DTName, this.gitlabInstance);
+    this.DTAssets = new DTAssets(DTName, this.gitlabInstance);
   }
 
   async getDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
-      const descriptionPath = `digital_twins/${this.DTName}/description.md`;
       try {
-        const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
-          this.gitlabInstance.projectId,
-          descriptionPath,
-          'main',
-        );
-        this.description = atob(fileData.content);
+        const fileContent =
+          await this.DTAssets.getFileContent('description.md');
+        this.description = fileContent;
       } catch (_error) {
         this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
       }
@@ -61,15 +56,10 @@ class DigitalTwin {
 
   async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
-      const readmePath = `digital_twins/${this.DTName}/README.md`;
       const imagesPath = `digital_twins/${this.DTName}/`;
       try {
-        const fileData = await this.gitlabInstance.api.RepositoryFiles.show(
-          this.gitlabInstance.projectId,
-          readmePath,
-          'main',
-        );
-        this.fullDescription = atob(fileData.content).replace(
+        const fileContent = await this.DTAssets.getFileContent('README.md');
+        this.fullDescription = fileContent.replace(
           /(!\[[^\]]*\])\(([^)]+)\)/g,
           (match, altText, imagePath) => {
             const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
@@ -142,12 +132,12 @@ class DigitalTwin {
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
 
     try {
-      await this.fileHandler.createFiles(
+      await this.DTAssets.createFiles(
         files,
         mainFolderPath,
         lifecycleFolderPath,
       );
-      await this.fileHandler.appendTriggerToPipeline();
+      await this.DTAssets.appendTriggerToPipeline();
       return `${this.DTName} digital twin files initialized successfully.`;
     } catch (error) {
       return `Error initializing ${this.DTName} digital twin files: ${String(error)}`;
@@ -156,15 +146,9 @@ class DigitalTwin {
 
   async delete() {
     if (this.gitlabInstance.projectId) {
-      const digitalTwinPath = `digital_twins/${this.DTName}`;
       try {
-        await this.gitlabInstance.api.RepositoryFiles.remove(
-          this.gitlabInstance.projectId,
-          digitalTwinPath,
-          'main',
-          `Removing ${this.DTName} digital twin`,
-        );
-        await this.fileHandler.removeTriggerFromPipeline();
+        await this.DTAssets.delete();
+
         return `${this.DTName} deleted successfully`;
       } catch (_error) {
         return `Error deleting ${this.DTName} digital twin`;
@@ -174,21 +158,17 @@ class DigitalTwin {
   }
 
   async getDescriptionFiles() {
-    this.descriptionFiles = await this.fileHandler.getFileNames(
+    this.descriptionFiles = await this.DTAssets.getFileNames(
       FileType.DESCRIPTION,
     );
   }
 
   async getConfigFiles() {
-    this.configFiles = await this.fileHandler.getFileNames(
-      FileType.CONFIGURATION,
-    );
+    this.configFiles = await this.DTAssets.getFileNames(FileType.CONFIGURATION);
   }
 
   async getLifecycleFiles() {
-    this.lifecycleFiles = await this.fileHandler.getFileNames(
-      FileType.LIFECYCLE,
-    );
+    this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
   }
 }
 

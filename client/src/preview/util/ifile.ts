@@ -1,20 +1,18 @@
 import { FileState } from 'preview/store/file.slice';
-import { FileType } from './fileHandler';
+import { FileType } from './DTAssets';
 
 export interface IFile {
-  getFileContent(fileName: string): Promise<string>;
-  updateFileContent(fileName: string, fileContent: string): Promise<void>;
   createFile(
     file: FileState,
     filePath: string,
     commitMessage: string,
   ): Promise<void>;
-  createFiles(
-    files: FileState[],
+  updateFile(
     filePath: string,
+    updatedContent: string,
     commitMessage: string,
   ): Promise<void>;
+  deleteDT(digitalTwinPath: string): Promise<void>;
+  getFileContent(filePath: string): Promise<string>;
   getFileNames(fileType: FileType): Promise<string[]>;
-  appendTriggerToPipeline(): Promise<string>;
-  removeTriggerFromPipeline(): Promise<string>;
 }
