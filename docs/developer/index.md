@@ -21,7 +21,6 @@ Please use the steps given here to install the required software packages.
 
 ```bash
 bash script/env.sh
-bash script/configure-git-hooks.sh
 bash script/docker.sh
 ```
 
@@ -68,45 +67,12 @@ following commands in the given order:
 ```bash
 powershell -F script/base.ps1
 powershell -F script/env.ps1
-powershell -F script/configure-git-hooks.ps1
 powershell -F script/docker.ps1
 ```
 
 :warning: The docker images are large and are likely to consume
 about 5GB of bandwidth and 15GB of space.
 You will have to download the docker images on a really good network.
-
-### git hooks
-
-The git-hooks will ensure that your commits are formatted
-correctly and that the tests pass before you
-push the commits to remote repositories.
-
-The project uses pre-commit for managing git hooks. Install git hooks using
-
-```bash
-pre-commit install
-```
-
-The git hooks run during pre-commit (`git commit`) and
-pre-push (`git push`) stages. No special flags and options are
-needed to run these git hooks.
-
-You can also run the git-hooks manually before committing or pushing
-by using the run commands below. The autoupdate command will set the
-revisions of the git repos used in the .pre-commit-config.yaml up to date.
-
-```bash
-pre-commit run --hook-stage pre-commit # runs format and syntax checks
-pre-commit run --hook-stage pre-push   # runs test
-pre-commit autoupdate                  # update hooks to latests versions
-```
-
-Be aware that the some tests may take a long time to run.
-If you want to skip the tests or formatting,
-you can use the `--no-verify` flag
-on `git commit` or `git push`. Please use this
-option with care.
 
 ## :building_construction: Development Workflow
 

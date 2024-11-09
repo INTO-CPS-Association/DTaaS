@@ -23,9 +23,10 @@ nav:
       - Reusable Assets: 
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
-      - Digital Twins: 
+      - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
+          - DevOps Preview: user/digital-twins/devops.md
       - Runner: user/servers/execution/runner/README.md
       - Examples:
           - Overview: user/examples/index.md
@@ -57,12 +58,17 @@ nav:
           - Library: admin/servers/lib/config.md
         - Docker:
           - Localhost: admin/localhost.md
+          - Secure Localhost: admin/localhost-secure.md
           - Production: admin/host.md
         - Vagrant:
           - Base Box: admin/vagrant/base-box.md
           - Single Machine: admin/vagrant/single-machine.md
           - Two Machines: admin/vagrant/two-machines.md
         - Services: admin/services.md
+      - Integrated Gitlab:
+        - Installation: admin/gitlab/index.md
+        - Integration: admin/gitlab/integration.md
+        - Gitlab Runner: admin/gitlab/runner.md
       - CLI: admin/cli.md
       - Independent Packages:
         - Listing: admin/packages.md
@@ -74,10 +80,8 @@ nav:
         - Add user: admin/guides/add_user.md
         - Remove user: admin/guides/remove_user.md
         - Add Service: admin/guides/add_service.md
-        - Install Gitlab: admin/guides/gitlab.md
         - Link services: admin/guides/link_service.md
         - Common Assets: admin/guides/common_workspace_readonly.md
-        - HTTP Mode: admin/guides/hosting_site_without_https.md
   - FAQ: FAQ.md
   - Developer:
       - Developer Guide: developer/index.md
@@ -89,9 +93,6 @@ nav:
         - Concepts: developer/oauth/OAUTH2.0.md
         - System Design: developer/oauth/DESIGN.md
         - Microservice: developer/oauth/AUTHMS.md
-      - Components:
-        - Client: developer/client/client.md
-        - Library Microservice: developer/servers/lib/lib-ms.md
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md

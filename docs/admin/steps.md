@@ -26,12 +26,19 @@ The [production server](host.md) installation requires both
 ### Configure Components
 
 DTaaS is available as docker compose application. There are
-two docker compose files
+four docker compose files
 
 1. `compose.local.yml` for [localhost](localhost.md) installation
+   served over HTTP connection.
+1. `compose.local.secure.yml` for
+   [secure localhost](localhost-secure.md) installation
+   served over HTTPS connection.
 1. `compose.server.yml` for [production server](host.md) installation
+   served over HTTP connection.
+1. `compose.server.secure.yml` for [production server](host.md) installation
+   served over HTTPS connection.
 
-Both these compose files require environment configuration files.
+These four compose files require environment configuration files.
 The explanation of this configuration file is available directly
 on the installation pages.
 
