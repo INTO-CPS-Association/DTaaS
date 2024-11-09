@@ -126,7 +126,7 @@ describe('DigitalTwin', () => {
       content: mockContent,
     });
 
-    const content = await dt.fileHandler.getFileContent('test-file.md');
+    const content = await dt.DTAssets.getFileContent('test-file.md');
 
     expect(content).toBe('Test file content');
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
@@ -142,7 +142,7 @@ describe('DigitalTwin', () => {
       content: mockContent,
     });
 
-    const content = await dt.fileHandler.getFileContent('lifecycle-file');
+    const content = await dt.DTAssets.getFileContent('lifecycle-file');
 
     expect(content).toBe('Test lifecycle content');
     expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
@@ -156,7 +156,7 @@ describe('DigitalTwin', () => {
     const mockEdit = jest.fn();
     mockApi.RepositoryFiles.edit = mockEdit;
 
-    await dt.fileHandler.updateFileContent('test-file.md', 'Test file content');
+    await dt.DTAssets.updateFileContent('test-file.md', 'Test file content');
 
     expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
       1,
@@ -171,7 +171,7 @@ describe('DigitalTwin', () => {
     const mockEdit = jest.fn();
     mockApi.RepositoryFiles.edit = mockEdit;
 
-    await dt.fileHandler.updateFileContent(
+    await dt.DTAssets.updateFileContent(
       'lifecycle-file',
       'Lifecycle file content',
     );

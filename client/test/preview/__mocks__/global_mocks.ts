@@ -2,6 +2,7 @@ import { Gitlab } from '@gitbeaker/core';
 import GitlabInstance from 'preview/util/gitlab';
 import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
+import DTAssets from 'preview/util/DTAssets';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
@@ -77,22 +78,32 @@ export const mockGitlabInstance: GitlabInstance = {
 export const mockFileHandler: FileHandler = {
   DTName: 'mockedDTName',
   gitlabInstance: mockGitlabInstance,
-  getFileContent: jest.fn(),
-  updateFileContent: jest.fn(),
-  getFileNames: jest.fn(),
-  isValidFileType: jest.fn(),
   createFile: jest.fn(),
+  updateFile: jest.fn(),
+  deleteDT: jest.fn(),
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+};
+
+export const mockDTAssets: DTAssets = {
+  DTName: 'mockedDTName',
+  gitlabInstance: mockGitlabInstance,
+  fileHandler: mockFileHandler,
   createFiles: jest.fn(),
+  updateFileContent: jest.fn(),
   appendTriggerToPipeline: jest.fn(),
   removeTriggerFromPipeline: jest.fn(),
-} as unknown as FileHandler;
+  delete: jest.fn(),
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+};
 
 export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
   description: 'mockedDescription',
   fullDescription: 'mockedFullDescription',
   gitlabInstance: mockGitlabInstance,
-  fileHandler: mockFileHandler,
+  DTAssets: mockDTAssets,
   pipelineId: 1,
   lastExecutionStatus: 'mockedStatus',
   jobLogs: [{ jobName: 'job1', log: 'log1' }],

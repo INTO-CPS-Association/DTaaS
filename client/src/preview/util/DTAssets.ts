@@ -84,7 +84,7 @@ ${triggerKey}:
     RunnerTag: $RunnerTag
 `;
 
-      const updatedContent = `${fileContent.trimEnd()  }\n${  triggerContent}`;
+      const updatedContent = `${fileContent.trimEnd()}\n${triggerContent}`;
 
       const commitMessage = `Add trigger for ${this.DTName} to .gitlab-ci.yml`;
       await this.fileHandler.updateFile(

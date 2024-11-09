@@ -162,7 +162,7 @@ describe('ReconfigureDialog', () => {
       isModified: true,
     };
 
-    mockDigitalTwin.fileHandler.updateFileContent = jest
+    mockDigitalTwin.DTAssets.updateFileContent = jest
       .fn()
       .mockResolvedValue(Promise.resolve());
 
@@ -177,7 +177,7 @@ describe('ReconfigureDialog', () => {
     const dispatch = useDispatch();
     const saveButton = screen.getByRole('button', { name: /Save/i });
 
-    mockDigitalTwin.fileHandler.updateFileContent = jest
+    mockDigitalTwin.DTAssets.updateFileContent = jest
       .fn()
       .mockRejectedValueOnce(new Error('Error updating file'));
 

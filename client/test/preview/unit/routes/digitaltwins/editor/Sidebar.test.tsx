@@ -94,14 +94,14 @@ describe('Sidebar', () => {
     expect(setFileName).toHaveBeenCalledWith('testFile.md');
     expect(setFileContent).toHaveBeenCalledWith('modified content');
     expect(setFileType).toHaveBeenCalledWith('md');
-    expect(mockDigitalTwin.fileHandler.getFileContent).not.toHaveBeenCalled();
+    expect(mockDigitalTwin.DTAssets.getFileContent).not.toHaveBeenCalled();
   });
 
   it('should fetch and update file state if the file is not modified', async () => {
     await renderSidebar('reconfigure', 'mockedDTName');
 
     const modifiedFiles: FileState[] = [];
-    mockDigitalTwin.fileHandler.getFileContent = jest
+    mockDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockResolvedValue('fetched content');
 
@@ -116,7 +116,7 @@ describe('Sidebar', () => {
       );
     });
 
-    expect(mockDigitalTwin.fileHandler.getFileContent).toHaveBeenCalledWith(
+    expect(mockDigitalTwin.DTAssets.getFileContent).toHaveBeenCalledWith(
       'testFile.md',
     );
     expect(setFileName).toHaveBeenCalledWith('testFile.md');

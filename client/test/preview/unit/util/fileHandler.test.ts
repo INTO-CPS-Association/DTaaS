@@ -1,12 +1,13 @@
-import FileHandler, { getFilePath } from 'preview/util/fileHandler';
+import { FileType } from 'preview/util/DTAssets';
+import FileHandler from 'preview/util/fileHandler';
 import GitlabInstance from 'preview/util/gitlab';
 
 const mockApi = {
   RepositoryFiles: {
-    show: jest.fn().mockResolvedValue({ content: btoa('existing content') }),
-    remove: jest.fn(),
+    show: jest.fn(),
     edit: jest.fn(),
     create: jest.fn(),
+    remove: jest.fn(),
   },
   Repositories: {
     allRepositoryTrees: jest.fn(),
@@ -35,77 +36,68 @@ describe('FileHandler', () => {
     fileHandler = new FileHandler('DTName', mockGitlabInstance);
   });
 
-  it('should get file path for lifecycle file', () => {
-    const file = {
-      name: 'fileName',
+  it('should create a file', async () => {
+    const fileState = {
+      name: 'file',
       content: 'content',
       isNew: true,
       isModified: false,
-      type: 'lifecycle',
     };
-
-    const result = getFilePath(file, 'main', 'lifecycle');
-
-    expect(result).toBe('lifecycle');
-  });
-
-  it('should create files for lifecycle', async () => {
-    const files = [
-      {
-        name: 'fileName',
-        content: 'content',
-        isNew: true,
-        isModified: false,
-        type: 'lifecycle',
-      },
-    ];
-
-    await fileHandler.createFiles(files, 'main', 'lifecycle');
-
+    await fileHandler.createFile(fileState, 'path', 'commit message');
     expect(mockApi.RepositoryFiles.create).toHaveBeenCalledWith(
       1,
-      'lifecycle/fileName',
+      'path/file',
       'main',
       'content',
-      'Add fileName to lifecycle folder',
+      'commit message',
     );
   });
 
-  it('should append trigger to pipeline', async () => {
-    jest
-      .spyOn(mockApi.RepositoryFiles, 'show')
-      .mockResolvedValue({ content: btoa('existing content') });
-
-    const result = await fileHandler.appendTriggerToPipeline();
-
+  it('should update a file', async () => {
+    await fileHandler.updateFile('path', 'updated content', 'commit message');
     expect(mockApi.RepositoryFiles.edit).toHaveBeenCalledWith(
-      mockGitlabInstance.projectId!,
-      '.gitlab-ci.yml',
+      1,
+      'path',
       'main',
-      expect.stringContaining('existing content'),
-      expect.stringContaining('Add trigger for DTName to .gitlab-ci.yml'),
+      'updated content',
+      'commit message',
     );
-
-    expect(result).toBe('Trigger appended to pipeline for DTName');
   });
 
-  it('should remove trigger from pipeline', async () => {
-    jest
-      .spyOn(mockApi.RepositoryFiles, 'show')
-      .mockResolvedValue({ content: btoa('trigger_DTName: existing content') });
-
-    const result = await fileHandler.removeTriggerFromPipeline();
-
-    expect(result).toBe('Trigger removed from pipeline for DTName');
+  it('should delete a file', async () => {
+    await fileHandler.deleteDT('path');
+    expect(mockApi.RepositoryFiles.remove).toHaveBeenCalledWith(
+      1,
+      'path',
+      'main',
+      'Removing DTName digital twin',
+    );
   });
 
-  it('should not remove trigger from pipeline if it does not exist', async () => {
+  it('should get file content', async () => {
     jest
       .spyOn(mockApi.RepositoryFiles, 'show')
       .mockResolvedValue({ content: btoa('existing content') });
+    const content = await fileHandler.getFileContent('path');
+    expect(content).toBe('existing content');
+    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
+      1,
+      'path',
+      'main',
+    );
+  });
 
-    const result = await fileHandler.removeTriggerFromPipeline();
+  it('should get file names', async () => {
+    mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
+      { type: 'blob', name: 'file1.md', path: 'digital_twins/DTName/file1.md' },
+      { type: 'blob', name: 'file2.md', path: 'digital_twins/DTName/file2.md' },
+    ]);
 
-    expect(result).toBe('No trigger found for DTName in .gitlab-ci.yml');
+    const fileNames = await fileHandler.getFileNames(FileType.DESCRIPTION);
+    expect(fileNames).toEqual(['file1.md', 'file2.md']);
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
+      path: 'digital_twins/DTName',
+      recursive: false,
+    });
   });
 });
