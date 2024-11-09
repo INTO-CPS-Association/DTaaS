@@ -6,11 +6,11 @@ import DigitalTwin from 'preview/util/digitalTwin';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import * as ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
-import FileHandler from 'preview/util/fileHandler';
 import {
   addOrUpdateFile,
   removeAllModifiedFiles,
 } from 'preview/store/file.slice';
+import DTAssets from 'preview/util/DTAssets';
 import setupStore from './utils';
 
 jest.useFakeTimers();
@@ -93,7 +93,7 @@ describe('ReconfigureDialog', () => {
 
   it('updates the description when description.md is modified', async () => {
     const updateFileContent = jest
-      .spyOn(FileHandler.prototype, 'updateFileContent')
+      .spyOn(DTAssets.prototype, 'updateFileContent')
       .mockResolvedValue();
     const modifiedFile = {
       name: 'description.md',
@@ -147,7 +147,7 @@ describe('ReconfigureDialog', () => {
     const dispatch = jest.fn();
 
     jest
-      .spyOn(digitalTwin.fileHandler, 'updateFileContent')
+      .spyOn(digitalTwin.DTAssets, 'updateFileContent')
       .mockRejectedValue(new Error('Mocked error'));
 
     await React.act(async () => {

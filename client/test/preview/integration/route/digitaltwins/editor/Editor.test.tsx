@@ -146,7 +146,7 @@ describe('Editor', () => {
     const modifiedFiles: FileState[] = [];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
-    newDigitalTwin.fileHandler.getFileContent = jest
+    newDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockResolvedValueOnce('Fetched content');
 
@@ -173,7 +173,7 @@ describe('Editor', () => {
     const modifiedFiles: FileState[] = [];
 
     const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
-    newDigitalTwin.fileHandler.getFileContent = jest
+    newDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockRejectedValueOnce(new Error('Fetch error'));
 

@@ -24,10 +24,10 @@ describe('DTAssets', () => {
       variables:
         RunnerTag: $RunnerTag
     `;
-    const fileName = 'file.md';
-    const fileContent = 'updated content';
-    const expectedFilePath = `digital_twins/${dtName}/${fileName}`;
-    const commitMessage = `Update ${fileName} content`;
+  const fileName = 'file.md';
+  const fileContent = 'updated content';
+  const expectedFilePath = `digital_twins/${dtName}/${fileName}`;
+  const commitMessage = `Update ${fileName} content`;
 
   beforeEach(() => {
     dtAssets = new DTAssets('DTName', mockGitlabInstance);

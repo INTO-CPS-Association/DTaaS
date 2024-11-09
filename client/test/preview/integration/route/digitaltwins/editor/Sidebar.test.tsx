@@ -58,7 +58,7 @@ describe('Sidebar', () => {
     mockContent: string,
   ) => {
     await clickFileType(type);
-    digitalTwin.fileHandler.getFileContent = jest
+    digitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockResolvedValue(mockContent);
 
