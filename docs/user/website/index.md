@@ -60,7 +60,7 @@ of your Gitlab account.
 The DTaaS website needs your permission to use your Gitlab account for
 authorization. Click on **Authorize** button.
 
-![Gitlab OAuth permission](gitlab-sso-3.png)
+![Gitlab OAuth permission](gitlab-sso-2.png)
 
 After successful authorization, you will be redirected to the **Library**
 page of the DTaaS website.
@@ -92,9 +92,8 @@ You have more tools at your disposal on this page.
 
 ![Menu](library.png)
 
-You can see the file manager and five tabs above the library manager. Each tab
-provides help text to guide users in the use of different directories
-in their workspace.
+You can see five tabs each corresponding to one type of digital twin assets.
+Each tab provides help text to guide users on the type of an asset.
 
 ??? tip "Functions"
     The functions responsible for pre- and post-processing of: data inputs,
@@ -147,24 +146,16 @@ in their workspace.
     These are ready to use digital twins created by one or more users.
     These digital twins can be reconfigured later for specific use cases.
 
-In addition to the five directories, there is also **common** directory
-in which five sub-directories exist. These sub-directories are:
-data, functions, models, tools and digital twins.
+There are two sub-tabs, namely **private** and **common**. The library assets
+in private category are visible only to the logged in user while the library
+assets in common category are available to all the users.
 
-??? tip "Common Assets"
-    The common directory again has four sub-directories:
-    - data
-    - functions
-    - functions
-    - models
-    - tools
-    - digital twins
-    The assets common to all users are placed in **common**.
+Further explanation on the placement of reusable assets within each type
+and the underlying directory structure on the server
+is in the [assets page](../servers/lib/assets.md#file-system-structure)
 
-The items used by more than one user are placed in **common**. The items in
-the **common** directory are available to all users. Further explanation of
-directory structure and placement of reusable assets within the the directory
-structure is in the [assets page](../servers/lib/assets.md#file-system-structure)
+!!! note
+  You can upload assets (files) using the **upload** button.
 
 :fontawesome-solid-circle-info: The file manager is based on Jupyter notebook
 and all the tasks you can perform in the Jupyter Notebook can be
@@ -217,6 +208,11 @@ files with the external git repositories.
 
 The **workbench** page provides links to four integrated tools.
 
+* Desktop
+* VS Code
+* Jupyter Lab
+* Jupyter Notebook
+
 ![Workbench](workbench.png)
 
 The hyperlinks open in new browser tab. The screenshots of pages opened
@@ -229,6 +225,27 @@ in new browser are:
     If you want terminal. Please use the tools dropdown
     in the Jupyter Notebook.
     ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
+
+## Digital Twins Preview Page
+
+There is a fifth link on the Workbench page. It is **Digital Twins Preview Page**.
+It is an experimental feature at the moment. Clicking on the link opens a new page
+that is similar to the Digital Twins page.
+
+There are two tabs, namely **Manage** and **Execute**.
+
+![Digital Twins Preview Page - Manage](dt_preview_manage.png)
+
+![Digital Twins Preview Page - Execute](dt_preview_execute.png)
+
+??? Manage tip
+    Read the complete description of digital twins.
+    If necessary, users can delete a digital twin, removing it
+    from the workspace with all its associated data. Users can
+    also reconfigure the digital twin.
+
+??? Execute tip
+    Execute the Digital Twins using Gitlab CI/CD workflows.
 
 ## Finally logout
 

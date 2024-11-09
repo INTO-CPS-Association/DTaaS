@@ -167,7 +167,7 @@ of the newly registered OAuth2 application.
 To update the client website configuration, run
 
 ```bash
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
+docker compose -f compose.local.secure.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ## Use
