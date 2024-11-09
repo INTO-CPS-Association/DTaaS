@@ -53,7 +53,7 @@ correspond to three categories.
 
 ![Digital Twin Reconfigure](dt_manage_reconfigure.png)
 
-# Execute
+## Execute
 
 ![Digital Twin Execute](dt_execute_running.png)
 
