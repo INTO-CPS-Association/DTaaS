@@ -17,6 +17,7 @@ import {
   addOrUpdateFile,
   removeAllModifiedFiles,
 } from 'preview/store/file.slice';
+import DTAssets from 'preview/util/DTAssets';
 import setupStore from './utils';
 
 jest.useFakeTimers();
