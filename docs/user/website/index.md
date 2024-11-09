@@ -155,7 +155,7 @@ and the underlying directory structure on the server
 is in the [assets page](../servers/lib/assets.md#file-system-structure)
 
 !!! note
-  You can upload assets (files) using the **upload** button.
+    You can upload assets (files) using the **upload** button.
 
 :fontawesome-solid-circle-info: The file manager is based on Jupyter notebook
 and all the tasks you can perform in the Jupyter Notebook can be
