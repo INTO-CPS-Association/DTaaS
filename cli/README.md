@@ -3,6 +3,9 @@
 This is a command line tool for the
 INTO-CPS-Association Digital Twins as a Service.
 
+The CLI helps with addition and deletion of
+users on a live DTaaS application.
+
 ## Prerequisite
 
 Please visit and download the
@@ -106,7 +109,9 @@ have the expected ownership rights, the command fails.
 
 #### Caveats
 
-This brings up the containers, without the AuthMS authentication.
+This brings up the containers, without any authorization
+protection for the user workspaces. The authorization
+microservice must be updated for enabling protection for new users.
 
 - Currently the _email_ fields for each user in
   _dtaas.toml_ are not in use, and are not necessary
@@ -129,10 +134,13 @@ rule.onlyu3.rule=PathPrefix(`/user3`)
 rule.onlyu3.whitelist = user3@emailservice.com
 ```
 
-- Run the command for these changes to take effect:
+- Run one of the following the commands for these changes to take effect:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+# if the server is installed with http option, execute
+docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+# if the server is installed with https option, execute
+docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
 ```
 
 The new users are now added to the DTaaS

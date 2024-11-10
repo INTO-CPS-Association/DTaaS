@@ -64,7 +64,8 @@ Edit all the fields according to your specific case.
 1. The path examples given here are for Linux OS.
    These paths can be Windows OS compatible paths as well.
 1. The client configuration file is located at `deploy/config/client/env.local.js`.
-   It is not necessary to modify this file.
+   It is not necessary to modify this file unless you wish to change
+   the OAuth client details.
 
 ### Create User Workspace
 
