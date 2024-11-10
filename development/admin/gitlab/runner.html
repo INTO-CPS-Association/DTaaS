@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="add_service.html">
+        <link rel="prev" href="integration.html">
       
       
-        <link rel="next" href="link_service.html">
+        <link rel="next" href="../cli.html">
       
       
       <link rel="icon" href="../../assets/dtaas-logo.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Install Gitlab - Digital Twin as a Service (DTaaS)</title>
+        <title>Gitlab Runner - Digital Twin as a Service (DTaaS)</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#install-gitlab" class="md-skip">
+        <a href="#gitlab-runner-integration" class="md-skip">
           Skip to content
         </a>
       
@@ -97,7 +97,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Gitlab
+              Gitlab Runner
             
           </span>
         </div>
@@ -650,6 +650,27 @@
   
   <span class="md-ellipsis">
     Lifecycle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DevOps Preview
   </span>
   
 
@@ -1463,6 +1484,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../localhost-secure.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Secure Localhost
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../host.html" class="md-nav__link">
         
   
@@ -1627,6 +1669,217 @@
                 
   
   
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Integrated Gitlab
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Integrated Gitlab
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="integration.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Gitlab Runner
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="runner.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Gitlab Runner
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configure-gitlab-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure Gitlab Project
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install Runner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Register Runner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start Runner
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-trigger-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline Trigger Token
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -1661,10 +1914,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
         
           
-          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1675,8 +1928,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
             <span class="md-nav__icon md-icon"></span>
             Independent Packages
           </label>
@@ -1720,10 +1973,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_3_3_2" id="__nav_3_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_4_2" id="__nav_3_4_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1734,8 +1987,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_3_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4_2">
             <span class="md-nav__icon md-icon"></span>
             Library Microservice
           </label>
@@ -1803,8 +2056,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1814,14 +2065,14 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
         
           
-          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1832,8 +2083,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             Guides
           </label>
@@ -1846,7 +2097,28 @@
   
   
     <li class="md-nav__item">
-      <a href="add_user.html" class="md-nav__link">
+      <a href="../guides/localhost_portainer.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GUI Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/add_user.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1867,7 +2139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="remove_user.html" class="md-nav__link">
+      <a href="../guides/remove_user.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1888,7 +2160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="add_service.html" class="md-nav__link">
+      <a href="../guides/add_service.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1906,113 +2178,10 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Install Gitlab
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="gitlab.html" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Install Gitlab
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#configure-and-install" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configure and Install
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configure and Install">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post-install-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Post-install Configuration
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#traefik-gateway-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Traefik Gateway Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#use" class="md-nav__link">
-    <span class="md-ellipsis">
-      Use
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="link_service.html" class="md-nav__link">
+      <a href="../guides/link_service.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2033,32 +2202,11 @@
   
   
     <li class="md-nav__item">
-      <a href="common_workspace_readonly.html" class="md-nav__link">
+      <a href="../guides/common_workspace_readonly.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     Common Assets
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="hosting_site_without_https.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    HTTP Mode
   </span>
   
 
@@ -2168,6 +2316,27 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../developer/github-actions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -2179,10 +2348,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
         
           
-          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2193,8 +2362,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
             System
           </label>
@@ -2267,10 +2436,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2281,8 +2450,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
             OAuth2 Authorization
           </label>
@@ -2342,94 +2511,6 @@
   
   <span class="md-ellipsis">
     Microservice
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Components
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_4">
-            <span class="md-nav__icon md-icon"></span>
-            Components
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../developer/client/client.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Client
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../developer/servers/lib/lib-ms.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Library Microservice
   </span>
   
 
@@ -2671,28 +2752,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configure-and-install" class="md-nav__link">
+  <a href="#configure-gitlab-project" class="md-nav__link">
     <span class="md-ellipsis">
-      Configure and Install
+      Configure Gitlab Project
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Configure and Install">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runner">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#post-install-configuration" class="md-nav__link">
+  <a href="#install-runner" class="md-nav__link">
     <span class="md-ellipsis">
-      Post-install Configuration
+      Install Runner
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#traefik-gateway-configuration" class="md-nav__link">
+  <a href="#register-runner" class="md-nav__link">
     <span class="md-ellipsis">
-      Traefik Gateway Configuration
+      Register Runner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start Runner
     </span>
   </a>
   
@@ -2704,9 +2803,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use" class="md-nav__link">
+  <a href="#pipeline-trigger-token" class="md-nav__link">
     <span class="md-ellipsis">
-      Use
+      Pipeline Trigger Token
     </span>
   </a>
   
@@ -2730,73 +2829,67 @@
   
 
 
-<h1 id="install-gitlab">Install Gitlab</h1>
-<p>This guide helps with installation of a dedicated
-<a href="https://gitlab.com">Gitlab</a> service. This Gitlab installation can be used
-as OAuth2 authorization provider to the DTaaS software.</p>
-<p>There are two possible ways you can install Gitlab:</p>
-<ul>
-<li>At dedicated domain name (ex: <http:><em>gitlab.foo.com</em></http:>)</li>
-<li>At a URL path on existing WWW server (ex: <http:>foo.com/gitlab</http>)</li>
-</ul>
-<p>This guide illustrates the installation of Gitlab at:
-<http:>foo.com/gitlab</http>. But the instructions can be
-adapted to install Gitlab at a dedicated domain name.</p>
-<h2 id="configure-and-install">Configure and Install</h2>
-<p>If you have not cloned the DTaaS git repository, cloning would be
-the first step.
-In case you already have the codebase, you can skip the cloning step.
-To clone, do:</p>
+<h1 id="gitlab-runner-integration">Gitlab Runner Integration</h1>
+<p>To properly use the <strong>Digital Twins Preview Page</strong>, you need to
+configure at least one project runner in your GitLab profile.
+The first step is to configure the CI/CD pipeline in gitlab project.
+The second step is to install the runner and integrate it
+with the selected gitlab project.</p>
+<h2 id="configure-gitlab-project">Configure Gitlab Project</h2>
+<p>Follow the steps below:</p>
+<ol>
+<li>Navigate to the <em>DTaaS</em> group and select the project named after your
+   GitLab username.</li>
+<li>In the project menu, go to Settings and select CI/CD.</li>
+<li>Expand the <strong>Runners</strong> section and click on <em>New project runner</em>. Follow the
+   configuration instructions carefully:</li>
+<li>Add <strong>linux</strong> as a tag during configuration.</li>
+<li>Click on <em>Create runner</em>. A runner authentication token is generated.
+     This token will be used later for registering a runner.</li>
+</ol>
+<h2 id="runner">Runner</h2>
+<h3 id="install-runner">Install Runner</h3>
+<p>A detailed guide on installation of
+<a href="https://docs.gitlab.com/runner/install/">gitlab runners</a>
+on Linux OS is available on
+<a href="https://docs.gitlab.com/runner/install/linux-repository.html">gitlab website</a>.
+Remember to use <code>linux</code> as tag for the runner.</p>
+<h3 id="register-runner">Register Runner</h3>
+<p>Please see this <a href="https://docs.gitlab.com/runner/register/">gitlab guide</a>
+on registering a runner.</p>
+<p>Remember to choose <em>docker</em> as executor and <em>ruby:2.7</em> as
+the default docker image.</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/into-cps-association/DTaaS.git
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>DTaaS/deploy/services
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nv">$sudo</span><span class="w"> </span>gitlab-runner<span class="w"> </span>register<span class="w">  </span>--url<span class="w"> </span>https://gitlab.foo.com<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">  </span>--token<span class="w"> </span>xxxxx
 </span></code></pre></div></td></tr></table></div>
-<p>The next step in installation is to specify the config for the Gitlab.
-The <strong>gitlab.yml</strong> contains the required configuration settings.
-Update the configuration file before proceeding with the installation.</p>
-<p>Now continue with the installation of services.</p>
+<p>Or, you can also register the runner in non-interactive mode by running</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>yarn<span class="w"> </span>install
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>node<span class="w"> </span>gitlab.js
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span>
+<span class="normal"><a href="#__codelineno-1-5">5</a></span>
+<span class="normal"><a href="#__codelineno-1-6">6</a></span>
+<span class="normal"><a href="#__codelineno-1-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nv">$sudo</span><span class="w"> </span>gitlab-runner<span class="w"> </span>register<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span>--non-interactive<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">  </span>--url<span class="w"> </span><span class="s2">&quot;https://gitlab.foo.com/&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">  </span>--token<span class="w"> </span><span class="s2">&quot;xxxx&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">  </span>--executor<span class="w"> </span><span class="s2">&quot;docker&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">  </span>--docker-image<span class="w"> </span>ruby:2.7<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">  </span>--description<span class="w"> </span><span class="s2">&quot;docker-runner&quot;</span>
 </span></code></pre></div></td></tr></table></div>
-<h3 id="post-install-configuration">Post-install Configuration</h3>
-<p>Gitlab also requires post-installation configuration.</p>
-<div class="admonition information">
-<p class="admonition-title">Information</p>
-<p><!-- markdownlint-disable-file MD013 -->
-This configuration needs to be done from within the running container.</p>
-</div>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>gitlab<span class="w"> </span>bash
+<h3 id="start-runner">Start Runner</h3>
+<p>You can manually verify that the runner is available to pick up jobs by running
+the following command:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nv">$sudo</span><span class="w"> </span>gitlab-runner<span class="w"> </span>run
 </span></code></pre></div></td></tr></table></div>
-<p>The configuration file to change is <em>/etc/gitlab/gitlab.rb</em>.
-The variables to change are:</p>
-<div class="language-ini highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span>
-<span class="normal"><a href="#__codelineno-3-5">5</a></span>
-<span class="normal"><a href="#__codelineno-3-6">6</a></span>
-<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="na">external_url &#39;http(s)</span><span class="o">:</span><span class="s">//foo.com/gitlab&#39;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="na">nginx[&#39;listen_port&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">80</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="na">nginx[&#39;enable&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="na">nginx[&#39;listen_https&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="na">nginx[&#39;redirect_http_to_https&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="na">letsencrypt[&#39;enable&#39;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
-</span></code></pre></div></td></tr></table></div>
-<p>If you want to use <http:><em>gitlab.foo.com</em></http:> for Gitlab installation,
-you can make one change:
-<code>external_url http(s)://foo.com/gitlab</code>. Other settings remain the same.</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a>gitlab-ctl<span class="w"> </span>reconfigure
-</span></code></pre></div></td></tr></table></div>
-<p>The administrator username for Gitlab is: <code>root</code>. The password for
-this user account is available in: <code>/etc/gitlab/initial_root_password</code>.</p>
-<h3 id="traefik-gateway-configuration">Traefik Gateway Configuration</h3>
-<p>It is likely that you are going to put the Gitlab behind Traefik gateway.
-If so, do remove the middleware authorization from gitlab PathPrefix.</p>
-<h2 id="use">Use</h2>
-<p>After the installation is complete, the required user accounts and OAuth2
-applications can be setup on this Gitlab instance.</p>
+<p>It can also be used to reactivate offline runners during subsequent sessions.</p>
+<h2 id="pipeline-trigger-token">Pipeline Trigger Token</h2>
+<p>You also need to create a
+<a href="https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html">pipeline trigger token</a>.
+This token is required to trigger pipelines by using the API.
+You can create this token in your GitLab project's CI/CD settings under
+the <em>Pipeline trigger tokens</em> section.</p>
 
 
 
@@ -2826,7 +2919,7 @@ applications can be setup on this Gitlab instance.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="add_service.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Add Service">
+          <a href="integration.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Integration">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2836,20 +2929,20 @@ applications can be setup on this Gitlab instance.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Add Service
+                Integration
               </div>
             </div>
           </a>
         
         
           
-          <a href="link_service.html" class="md-footer__link md-footer__link--next" aria-label="Next: Link services">
+          <a href="../cli.html" class="md-footer__link md-footer__link--next" aria-label="Next: CLI">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Link services
+                CLI
               </div>
             </div>
             <div class="md-footer__button md-icon">
