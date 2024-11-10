@@ -49,6 +49,7 @@ fi
 
 cd "${TOP_DIR}" || exit
 mv site/index.html .
+rm -rf assets
 mv site/assets .
 rm -rf site
 
