@@ -25,12 +25,13 @@ The installation requirements to run this docker version of the DTaaS are:
 - docker desktop / docker CLI with compose plugin
 - [mkcert](https://github.com/FiloSottile/mkcert)
 
-## Clone Codebase
+## Download Release Package
 
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd DTaaS
-```
+The software is available for as
+[zip package](https://github.com/INTO-CPS-Association/DTaaS/releases/download/v0.6.0/DTaaS-v0.6.0.zip).
+Please download and unzip the same. A new **DTaaS-v0.6.0** folder gets created.
+The rest of the installation instructions assume that you are using
+Windows/Linux/MacOS terminal in **DTaaS-v0.6.0** folder.
 
 :clipboard: file pathnames
 

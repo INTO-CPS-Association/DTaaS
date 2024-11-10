@@ -28,19 +28,15 @@ configuration makes permits access to Grafana at URL: http(s): _foo.com/vis_.
 
 ## Configure and Install
 
-If you have not cloned the DTaaS git repository, cloning would be
-the first step.
-In case you already have the codebase, you can skip the cloning step.
-To clone, do:
-
-```bash
-git clone https://github.com/into-cps-association/DTaaS.git
-cd DTaaS/deploy/services
-```
+The software is available for as
+[zip package](https://github.com/INTO-CPS-Association/DTaaS/releases/download/v0.6.0/DTaaS-v0.6.0.zip).
+Please download and unzip the same. A new **DTaaS-v0.6.0** folder gets created.
+The rest of the installation instructions assume that you are using
+Windows/Linux/MacOS terminal in **DTaaS-v0.6.0** folder.
 
 The next step in installation is to specify the config of the services.
-There are two configuration files. The __services.yml__ contains most
-of configuration settings. The __mqtt-default.conf__ file contains
+There are two configuration files. The `services.yml` contains most
+of configuration settings. The `mqtt-default.conf` file contains
 the MQTT listening port. Update these two config files before proceeding
 with the installation of the services.
 

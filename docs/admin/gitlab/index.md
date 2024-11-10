@@ -15,15 +15,17 @@ This guide illustrates the installation of Gitlab at:
 <http:>foo.com/gitlab</http>. But the instructions can be
 adapted to install Gitlab at a dedicated domain name.
 
+## Download Release Package
+
+The software is available for as
+[zip package](https://github.com/INTO-CPS-Association/DTaaS/releases/download/v0.6.0/DTaaS-v0.6.0.zip).
+Please download and unzip the same. A new **DTaaS-v0.6.0** folder gets created.
+The rest of the installation instructions assume that you are using
+Windows/Linux/MacOS terminal in **DTaaS-v0.6.0** folder.
+
 ## Configure and Install
 
-If you have not cloned the DTaaS git repository, cloning would be
-the first step.
-In case you already have the codebase, you can skip the cloning step.
-To clone, do:
-
 ```bash
-git clone https://github.com/into-cps-association/DTaaS.git
 cd DTaaS/deploy/services/gitlab
 ```
 
