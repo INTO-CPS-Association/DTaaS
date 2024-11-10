@@ -18,7 +18,7 @@ services:
       - users
 
   client:
-    image: intocps/dtaas-web:latest
+    image: intocps/dtaas-web:0.6.1
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/deploy/config/client/env.local.js:/dtaas/client/build/env.js

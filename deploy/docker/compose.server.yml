@@ -18,7 +18,7 @@ services:
       - users
 
   libms:
-    image: intocps/libms:latest
+    image: intocps/libms:0.4.7
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files:/dtaas/libms/files
@@ -32,7 +32,7 @@ services:
       - frontend
 
   client:
-    image: intocps/dtaas-web:latest
+    image: intocps/dtaas-web:0.6.1
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/deploy/config/client/env.js:/dtaas/client/build/env.js
