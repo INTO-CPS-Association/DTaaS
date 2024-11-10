@@ -84,14 +84,20 @@ workspace/
     ...
   digital_twins/
     digital_twin-1/ (ex: incubator)
-      code and config
+      config (yaml and json)
       README.md (usage instructions)
+      description.md (short summary of digital twin)
+      lifecycle/ (directory containing lifecycle scripts)
     digital_twin-2/ (ex: mass spring damper)
-      code and config
+      config (yaml and json)
       README.md (usage instructions)
+      description.md (short summary of digital twin)
+      lifecycle/ (directory containing lifecycle scripts)
     digital_twin-3/ (ex: model swap)
-      code and config
+      config (yaml and json)
       README.md (usage instructions)
+      description.md (short summary of digital twin)
+      lifecycle/ (directory containing lifecycle scripts)
     ...
   functions/
     function1/ (ex: graphs)

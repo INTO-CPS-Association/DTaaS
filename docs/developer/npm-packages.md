@@ -6,7 +6,8 @@ The DTaaS software is developed as a monorepo with multiple npm packages.
 
 The default registry for npm packages is [npmjs](https://registry.npmjs.org).
 The freely-accessible public packages are published to the **npmjs** registry.
-The publication step is manual.
+The publication step is manual for the
+[runner](../user/servers/execution/runner/README.md).
 
 ```bash
 npm login --registry="https://registry.npmjs.org"
@@ -16,8 +17,12 @@ yarn publish --registry="https://registry.npmjs.org" \
   --no-git-tag-version --access public
 ```
 
-At least one package is published to this registry for each release of DTaaS.
-This published package is used in the release scripts.
+At least one version of runner package is published to this registry
+for each release of DTaaS.
+
+The publication step for
+[library microservice](../admin/servers/lib/npm.md) is automated via
+github actions.
 
 ## Github  npm registry
 
