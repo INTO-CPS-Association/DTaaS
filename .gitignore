@@ -1,3 +1,7 @@
+# compiled output
+/dist
+/node_modules
+
 # Logs
 logs
 *.log
@@ -5,6 +9,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# NPM registry configuration
+.yarnrc
+.npmrc
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -113,19 +121,17 @@ build/
 # Test reports
 coverage/
 playwright-report/
-playwright/
+client/playwright/
 test_results/
 
 # Mac temp files
 servers/.DS_Store
 data/.DS_Store
 **/.DS_Store
+.DS_Store
 
-# Code and Built docs
-/site/
-/client/
-/servers/
-/files/
+# Built docs
+site/
 
 # IDEs and editors
 /.idea
@@ -156,3 +162,17 @@ runner.yml
 
 # Jupter Lab
 .workspace
+
+# command scripts for runner
+servers/execution/runner/lifecycle*
+
+# certs
+*.pem
+
+# gitlab service data
+deploy/services/gitlab/logs/
+deploy/services/gitlab/data/
+deploy/services/gitlab/config/
+
+# website files
+client/
