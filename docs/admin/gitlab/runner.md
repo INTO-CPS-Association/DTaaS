@@ -1,6 +1,6 @@
 # Gitlab Runner Integration
 
-To properly use the __Digital Twins__ page preview, you need to
+To properly use the __Digital Twins Preview Page__, you need to
 configure at least one project runner in your GitLab profile.
 The first step is to configure the CI/CD pipeline in gitlab project.
 The second step is to install the runner and integrate it

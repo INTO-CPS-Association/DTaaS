@@ -9,14 +9,14 @@ the working of the OAtuh 2.0 technology.
 OAuth2, as used for user identity verification,
 has 3 main entities:
 
-- The User: This is the entity whose identity
+- **The User:** This is the entity whose identity
   we are trying to verify/know. In our case,
   this is the same as the user of the DTaaS software.
-- The Client: This is the entity that wishes to know/verify the identity
+- **The Client:** This is the entity that wishes to know/verify the identity
   of a user. In our case, this is the Auth MS (initialised with a Gitlab
   application). This shouldn’t be confused with the frontend website of
   DTaaS (referred to as Client in the previous section).
-- The OAuth2 Identity Provider: This is the entity that allows the client
+- **The OAuth2 Identity Provider:** This is the entity that allows the client
   to know the identity of the user. In our case, this is GitLab. Most
   commonly, users have an existing, protected account with this entity.
   The account is registered using a unique key,
@@ -55,11 +55,11 @@ and configuring a Gitlab
 instance-wide application.
 There are two main things in this configuration:
 
-- Redirect URI - It is the URI where the users
+- **Redirect URI**: It is the URI where the users
   are redirected to after
   they approve sharing information
   with the client.
-- Scopes - These are the types and levels
+- **Scopes:** These are the types and levels
   of access that the client can
   have over the user’s profile.
   For our purposes, we only require the

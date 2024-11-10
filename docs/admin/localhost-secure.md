@@ -9,7 +9,7 @@ ideal for running the **DTaaS on localhost served over HTTPS connection**.
 **are running on localhost.**
 
 If you do not need gitlab running on localhost, please use
-the simpler [localhost setup](LOCALHOST.md).
+the simpler [localhost setup](localhost.md).
 
 ## Design
 
@@ -115,14 +115,14 @@ docker compose -f compose.local.secure.yml --env-file .env.local up -d
 ### Start Gitlab
 
 Use the instructions provided in
-[gitlab integration](../services/gitlab/README.md) to bring up
+[gitlab integration](gitlab/index.md) to bring up
 Gitlab on localhost and the Gitlab service will be available at <https://localhost/gitlab>
 
 ### Register OAuth2 Application
 
 The frontend website requires OAuth2 application registration on the integrated Gitlab.
 The details of Oauth2 app for the frontend website are in
-[client docs](../../docs/admin/client/auth.md).
+[client docs](client/auth.md).
 
 This application needs to be created on gitlab running at <https://localhost/gitlab>.
 
@@ -181,7 +181,7 @@ through the single page client now.
 
 ## Limitations
 
-The [library microservice](../../docs/admin/servers/lib/docker.md) is not
+The [library microservice](servers/lib/docker.md) is not
 included in the localhost installation scenario.
 
 ## Docker Help

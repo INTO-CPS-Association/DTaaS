@@ -14,7 +14,7 @@ are published more frequently but are not user tested.
 The packages on [npmjs](https://www.npmjs.com/org/into-cps-association)
 and [docker hub](https://hub.docker.com/u/intocps)
 are published at least once per release.
-The regular users are encouraged to use the packages from npm and docker.
+The regular users are encouraged to use the packages from npm and docker hub.
 
 A brief explanation of the packages is given below.
 

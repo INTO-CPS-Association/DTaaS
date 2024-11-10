@@ -168,3 +168,8 @@ servers/execution/runner/lifecycle*
 
 # certs
 *.pem
+
+# gitlab service data
+deploy/services/gitlab/logs/
+deploy/services/gitlab/data/
+deploy/services/gitlab/config/

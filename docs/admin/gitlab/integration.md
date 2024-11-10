@@ -1,4 +1,4 @@
-# GitLab Instance Integration Guide
+# GitLab Integration Guide
 
 This guide helps with integration of a local GitLab instance with
 a DTaaS server installation, and integrating the OAuth Authorization feature
@@ -8,34 +8,34 @@ After following this guide, the GitLab instance will be integrated
 as OAuth provider for both DTaaS client application and
 Traefik Forward Auth backend authorization.
 
-> [!IMPORTANT]
-> The DTaaS client uses the `react-oidc-context` node package,
-> which incorrectly causes authorization redirects to use the `HTTPS` URL
-> scheme. This is a
-> [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
-> and forces us to use `HTTPS` for the DTaaS server. This means your server
-> should be set up to use either <https://localhost> or <https://foo.com>. This
-> guide will henceforth use `foo.com` to represent either localhost or a custom
-> domain.
+!!! note
+    The DTaaS client uses the `react-oidc-context` node package,
+    which incorrectly causes authorization redirects to use the `HTTPS` URL
+    scheme. This is a
+    [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
+    and forces us to use `HTTPS` for the DTaaS server. This means your server
+    should be set up to use either <https://localhost> or <https://foo.com>. This
+    guide will henceforth use `foo.com` to represent either localhost or a custom
+    domain.
 
 ## Integration Steps
 
 ### 1. Set up the DTaaS server over HTTPS
 
-Follow the [existing guide](../../docker/README.md)
+Follow the existing guides
 to set up the DTaaS web application over HTTPS connection on either
-localhost (<https://localhost>) or a custom domain (<https://foo.com>).
+[localhost](../localhost-secure.md) (<https://localhost>) or
+a [custom domain](../host.md) (<https://foo.com>).
 
-> [!NOTE]
-> You may ignore steps related to configuring OAuth application tokens
-> at <https://gitlab.com>. We will be using the initial installation to host
-> the local GitLab instance, on which we will later create the OAuth
-> application tokens.
+!!! note
+    You may ignore steps related to configuring OAuth application tokens
+    at <https://gitlab.com>. We will be using the initial installation to host
+    the local GitLab instance, on which we will later create the OAuth
+    application tokens.
 
 ### 2. Set up the GitLab Instance
 
-Follow the guide to set up a GitLab instance -
-[README](./README.md).
+Follow the [guide](index.md) to set up a GitLab instance.
 
 After this step, and once you run `gitlab-ctl reconfigure`, you will have a
 functioning GitLab instance (at either <https://localhost/gitlab>
@@ -45,9 +45,9 @@ Login credentials of the root user.
 ### 3. Create OAuth Tokens in GitLab
 
 Follow these guides to create OAuth Application Tokens for -
-[backend](../../../docs/admin/servers/auth.md) and
-[client](../../../docs/admin/client/auth.md). Please note that
-[backend](../../../docs/admin/servers/auth.md) is not required
+[backend](../servers/auth.md) and
+[client](../client/auth.md). Please note that
+[backend](../servers/auth.md) is not required
 for <https://localhost> installation.
 
 After this step you will have credentials for the application tokens titled
@@ -66,7 +66,7 @@ the following files:
    _deploy/config/client/env.local.js_.
 1. _deploy/docker/.env.local_ Add localpath and username.
 
-If the DTaaS application is hosted at <https://localhost>, then configure
+If the DTaaS application is hosted at <https://foo.com>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in

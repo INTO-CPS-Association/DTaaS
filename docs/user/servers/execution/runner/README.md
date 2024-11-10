@@ -49,6 +49,10 @@ The template configuration file is:
 ```ini
 port: 5000
 location: 'script' #directory location of scripts
+commands: #list of permitted scripts
+  - create
+  - execute
+  - terminate
 ```
 
 It is suggested that the configuration file be named as _runner.yaml_
@@ -61,6 +65,10 @@ However, there is no limitation on either the configuration filename or
 the `location`. The path to _runner.yaml_ can either be relative or
 absolute path. However, the `location` path is always relative path
 with respect to the path of _runner.yaml_ file.
+
+:fontawesome-solid-circle-info:
+The commands must be executable. Please make sure that the commands
+have execute permission on Linux platforms.
 
 ## :pen: Create Commands
 
@@ -81,6 +89,7 @@ Usage: runner [options]
 Remote code execution for humans
 
 Options:
+  -v --version          package version
   -c --config <string>  runner config file specified in yaml format (default: "runner.yaml")
   -h --help             display help
 ```

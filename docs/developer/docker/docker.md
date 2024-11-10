@@ -26,64 +26,10 @@ for development environment.
 
 ## Build and Publish Docker Images
 
-### Project Managers
-
-Build and publish the docker images. This step is required only for
-the publication of images to Docker Hub.
-
-:stop_sign: This publishing step is managed
-only by project managers. Regular developers can skip this step.
-
-#### React Website
-
-```sh
-docker build -t intocps/dtaas-web:latest -f ./docker/client.dockerfile .
-docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
-docker push intocps/dtaas-web:latest
-docker push intocps/dtaas-web:<version>
-```
-
-To tag version **0.3.1** for example, use
-
-```sh
-docker tag intocps/dtaas-web:latest intocps/dtaas-web:0.3.1
-```
-
-To test the react website container on localhost, please use
-
-```bash
-docker run -d \
-  -v ${PWD}/client/config/local.js:/dtaas/client/build/env.js \
-  -p 4000:4000 intocps/dtaas-web:latest
-```
-
-#### Library Microservice
-
-The Dockerfile of library microservice has `VERSION` argument.
-This argument helps pick the right package version from <http://npmjs.com>.
-
-```sh
-docker login -u <username> -p <password>
-docker build -t intocps/libms:latest -f ./docker/libms.npm.dockerfile .
-docker push intocps/libms:latest
-docker build --build-arg="VERSION=<version>" \
-  -t intocps/libms:<version> -f ./docker/libms.npm.dockerfile .
-docker push intocps/libms:<version>
-```
-
-To tag version 0.3.1 for example, use
-
-```sh
-docker build --build-arg="VERSION=0.3.1" \
-  -t intocps/libms:0.3.1 -f ./docker/libms.npm.dockerfile .
-```
-
-To test the library microservice on localhost, please use
-
-```bash
-docker run -d -v ${PWD}/files:/dtaas/libms/files \
-  -p 4001:4001 intocps/libms:latest
-```
+The github workflows publish docker images of client website and libms to
+[github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
+and
+[docker hub](https://hub.docker.com/u/intocps).
 
 ### Developers
 
