@@ -28,24 +28,24 @@ describe('FilesServiceFactory', () => {
     fileServices = [gitFilesService, localFilesService];
   });
 
-  it('should create a local files service when MODE is local', () => {
+  it('should create a local files service when MODE is local', async () => {
     jest.spyOn(configService, 'get').mockReturnValue('local');
-    expect(FilesServiceFactory.create(configService, fileServices)).toBe(
+    expect(await FilesServiceFactory.create(configService, fileServices)).toBe(
       localFilesService,
     );
   });
 
-  it('should create a git files service when MODE is git', () => {
+  it('should create a git files service when MODE is git', async () => {
     jest.spyOn(configService, 'get').mockReturnValue('git');
-    expect(FilesServiceFactory.create(configService, fileServices)).toBe(
+    expect(await FilesServiceFactory.create(configService, fileServices)).toBe(
       gitFilesService,
     );
   });
 
   it('should throw an error when MODE is invalid', () => {
     jest.spyOn(configService, 'get').mockReturnValue('invalid');
-    expect(() =>
-      FilesServiceFactory.create(configService, fileServices),
+    expect(async () =>
+      await FilesServiceFactory.create(configService, fileServices),
     ).toThrow(`Invalid MODE: invalid`);
   });
 });

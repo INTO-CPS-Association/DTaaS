@@ -25,13 +25,13 @@ describe('Integration tests for FilesResolver', () => {
         FilesResolver,
         {
           provide: FILE_SERVICE,
-          useFactory: (
+          useFactory: async (
             configService: ConfigService,
             localFilesService: LocalFilesService,
             gitFilesService: GitFilesService,
           ) => {
             const fileServices = [localFilesService, gitFilesService];
-            return FilesServiceFactory.create(configService, fileServices);
+            return await FilesServiceFactory.create(configService, fileServices);
           },
           inject: [ConfigService, LocalFilesService, GitFilesService],
         },

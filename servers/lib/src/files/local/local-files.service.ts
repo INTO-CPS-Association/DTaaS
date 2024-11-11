@@ -12,8 +12,12 @@ export default class LocalFilesService implements IFilesService {
 
   constructor(private configService: ConfigService) {
     this.dataPath = this.configService.get('LOCAL_PATH');
-
   }
+  
+  init(): Promise<void> {
+    return Promise.resolve();
+  }
+
   getMode(): CONFIG_MODE {
     return CONFIG_MODE.LOCAL;
   }

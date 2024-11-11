@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Project } from 'src/types.js';
 import { IFilesService } from '../interfaces/files.service.interface.js';
 import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
@@ -11,26 +11,36 @@ import LocalFilesService from '../local/local-files.service.js';
 @Injectable()
 export default class GitFilesService implements IFilesService {
   private readonly dataPath: string;
+  private readonly logger: Logger;
   @Inject(LocalFilesService) private localFilesService: LocalFilesService;
 
   constructor(private configService: ConfigService) {
     this.dataPath = this.configService.get('LOCAL_PATH');
-    this.cloneRepositories();
+    this.logger = new Logger(GitFilesService.name);
   }
 
-  private cloneRepositories() {
+  
+  async init(): Promise<void> {
+    await this.cloneRepositories();
+  }
+
+  private cloneRepositories(): Promise<void[]> {
     let userRepoUrl = '';
     let userRepoUrls = [];
     let userCounter = 1;
-    while ((userRepoUrl = this.configService.get(
-      `GIT_USER${userCounter}_REPO_URL`
-    )) !== undefined) {
-      userRepoUrls.push(userRepoUrl.includes('.git') ? userRepoUrl : userRepoUrl + '.git');
+    while (
+      (userRepoUrl = this.configService.get(
+        `GIT_USER${userCounter}_REPO_URL`,
+      )) !== undefined
+    ) {
+      userRepoUrls.push(
+        userRepoUrl.includes('.git') ? userRepoUrl : userRepoUrl + '.git',
+      );
       ++userCounter;
     }
 
-    userRepoUrls.forEach((userRepoUrl, i) => {
-      git
+    const clonePromises = userRepoUrls.map((userRepoUrl, i) => {
+      return git
         .clone({
           fs,
           http,
@@ -39,8 +49,10 @@ export default class GitFilesService implements IFilesService {
           ref: 'main',
           singleBranch: true,
         })
-        .then(() => console.log('done cloning ' + userRepoUrl));
+        .then(() => this.logger.log('done cloning ' + userRepoUrl));
     });
+
+    return Promise.all(clonePromises);
   }
 
   getMode(): CONFIG_MODE {
