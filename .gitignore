@@ -173,6 +173,3 @@ servers/execution/runner/lifecycle*
 deploy/services/gitlab/logs/
 deploy/services/gitlab/data/
 deploy/services/gitlab/config/
-
-# website files
-client/
