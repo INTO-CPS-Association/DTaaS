@@ -82,20 +82,20 @@ The microservices responsible for satisfying the user requirements are:
 If you are interested, please take a look at
 the [C4 architectural diagram](C4-L2_diagram.png).
 
-A mapping of the architectural components to related pages in
-the documentation is available in the table.
+A mapping of the architectural components to the implementation
+components is available in the table.
 
 | System Component  | Doc Page(s)                                                                                                                             |
 | :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Service Router           | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Web Application | [React Webapplication](../client/client.md)                                                                                              |
-| Reusable Assets   | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
-| Digital Twins and DevOps   | [Integrated Gitlab](../../admin/gitlab/index.md)                                                                                         |
-| Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB)                                                       |
-| DT Lifecycle      | Not available yet                                                                                      |
-| Security          | Gitlab [client OAuth](../../admin/client/auth.md) and [server OAuth](../../admin/servers/auth.md)                                                                                               |
-| Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/README.md)                                                                          |
-| Accounting        | Not available yet                                                                                                                                     |
+| Service Router           | [Traefik Gateway](https://doc.traefik.io/traefik/) |
+| Web Application | [React Webapplication](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/client/README.md)                       |
+| Reusable Assets   | [Library Microservice](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/lib/README.md)                |
+| Digital Twins and DevOps   | [Integrated Gitlab](../../admin/gitlab/index.md)                                                                                |
+| Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB)                                    |
+| DT Lifecycle      | Not available yet                                                                                                                        |
+| Security          | Gitlab [client OAuth](../../admin/client/auth.md) and [server OAuth](../../admin/servers/auth.md)                                        |
+| Digital Twins as Services | [DT Runner](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/execution/runner/README.md)      |
+| Accounting        | Not available yet                                                                                                                        |
 | Execution Manager | Not available yet                                                                                                                        |
 
 ## References

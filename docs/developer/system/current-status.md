@@ -37,7 +37,7 @@ also gets access to shared DT assets. Users can synchronize their
 private DT assets with external git repositories. In addition,
 the asset repository transparently gets mapped to user workspaces
 within which users can perform DT lifecycle operations.
-There is also a [library microservice](../servers/lib/lib-ms.md) which
+There is also a [library microservice](../../admin/servers/lib/npm.md) which
 in the long-run will replace the file server.
 
 Users can run DTs in their workspaces and also permit remote access
