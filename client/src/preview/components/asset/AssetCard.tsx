@@ -20,10 +20,12 @@ import { Asset } from './Asset';
 import DetailsButton from './DetailsButton';
 import ReconfigureButton from './ReconfigureButton';
 import DeleteButton from './DeleteButton';
+import AddToCartButton from './AddToCartButton';
 
 interface AssetCardProps {
   asset: Asset;
   buttons?: React.ReactNode;
+  library?: boolean;
 }
 
 interface AssetCardManageProps {
@@ -42,6 +44,11 @@ interface CardButtonsContainerManageProps {
 interface CardButtonsContainerExecuteProps {
   assetName: string;
   setShowLog: Dispatch<SetStateAction<boolean>>;
+}
+
+interface CaardButtonsContainerLibraryProps {
+  assetName: string;
+  setShowDetails: Dispatch<SetStateAction<boolean>>;
 }
 
 const Header = styled(Typography)`
@@ -86,6 +93,30 @@ function CardActionAreaContainer(asset: Asset) {
   );
 }
 
+//TODO: get description from library
+function CardLibraryAreaContainer(asset: Asset) {
+  return (
+    <Grid container>
+      <Grid item xs={12}>
+        <CardContent
+          sx={{
+            padding: '5px 0px 0px 0px',
+            ':last-child': { paddingBottom: 0 },
+            maxHeight: '85px',
+            overflowY: 'auto',
+            width: '100%',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <Description variant="body2" color="text.secondary">
+            Test description
+          </Description>
+        </CardContent>
+      </Grid>
+    </Grid>
+  );
+}
+
 function CardButtonsContainerManage({
   assetName,
   setShowDetails,
@@ -120,7 +151,16 @@ function CardButtonsContainerExecute({
   );
 }
 
-function AssetCard({ asset, buttons }: AssetCardProps) {
+function CardButtonsContainerLibrary({ assetName, setShowDetails }: CaardButtonsContainerLibraryProps) {
+  return (
+    <CardActions style={{ justifyContent: 'flex-end' }}>
+      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} library={true}/>
+      <AddToCartButton assetName={assetName}/>
+    </CardActions>
+  );
+}
+
+function AssetCard({ asset, buttons, library }: AssetCardProps) {
   return (
     <Card
       sx={{
@@ -133,7 +173,7 @@ function AssetCard({ asset, buttons }: AssetCardProps) {
       }}
     >
       <Header variant="h6">{formatName(asset.name)}</Header>
-      <CardActionAreaContainer {...asset} />
+      {library ? <CardLibraryAreaContainer {...asset} /> : <CardActionAreaContainer {...asset} />}
       {buttons}
     </Card>
   );
@@ -209,4 +249,30 @@ function AssetCardExecute({ asset }: AssetCardProps) {
   );
 }
 
-export { AssetCardManage, AssetCardExecute };
+function AssetCardLibrary({ asset }: AssetCardProps) {
+  useState<AlertColor>('success');
+  const [showDetails, setShowDetails] = useState(false);
+
+  return (
+    <>
+        <AssetCard
+          asset={asset}
+          buttons={
+            <CardButtonsContainerLibrary
+              assetName={asset.name}
+              setShowDetails={setShowDetails}
+            />
+          }
+          library={true}
+        />
+        <DetailsDialog
+          showDialog={showDetails}
+          setShowDialog={setShowDetails}
+          name={asset.name}
+          library={true}
+        />
+      </>
+        );
+}
+
+export { AssetCardManage, AssetCardExecute, AssetCardLibrary };

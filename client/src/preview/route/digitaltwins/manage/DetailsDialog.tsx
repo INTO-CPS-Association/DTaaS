@@ -7,11 +7,13 @@ import 'katex/dist/katex.min.css';
 import * as RemarkableKatex from 'remarkable-katex';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
+import LibraryAsset from 'preview/util/LibraryAsset';
 
 interface DetailsDialogProps {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
+  library?: boolean;
 }
 
 const handleCloseDetailsDialog = (
@@ -20,13 +22,30 @@ const handleCloseDetailsDialog = (
   setShowLog(false);
 };
 
+//TODO: delete fakeAsset
+const fakeAsset: LibraryAsset = {
+  assetName: 'fakeAsset',
+  path: 'fakePath',
+  isPrivate: false,
+  type: 'fakeType',
+  fullDescription: 'fakeDescription',
+
+  async getFullDescription() {
+    this.fullDescription = 'This is a description';
+  },
+};
+
 function DetailsDialog({
   showDialog,
   setShowDialog,
   name,
+  library,
 }: DetailsDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
+  const assetLibrary = fakeAsset;
 
+  const asset = library ? assetLibrary : digitalTwin;
+    
   const md = new Remarkable({
     html: true,
     typographer: true,
@@ -37,7 +56,7 @@ function DetailsDialog({
       <DialogContent dividers>
         <div
           dangerouslySetInnerHTML={{
-            __html: md.render(digitalTwin.fullDescription),
+            __html: md.render(asset.fullDescription),
           }}
           style={{
             maxWidth: '100%',

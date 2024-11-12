@@ -7,6 +7,7 @@ import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
+import LibraryPreview from 'preview/route/library/LibraryPreview';
 
 export const routes = [
   {
@@ -54,6 +55,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <DigitalTwinsPreview />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'preview/library',
+    element: (
+      <PrivateRoute>
+        <LibraryPreview />
       </PrivateRoute>
     ),
   },
