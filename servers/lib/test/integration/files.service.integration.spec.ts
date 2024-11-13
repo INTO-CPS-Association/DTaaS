@@ -13,6 +13,7 @@ import {
 import GitFilesService from '../../src/files/git/git-files.service';
 import { FILE_SERVICE } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/files-service.factory';
+import Config from '../../src/config/config.service';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
@@ -26,7 +27,7 @@ describe('Integration tests for FilesResolver', () => {
         {
           provide: FILE_SERVICE,
           useFactory: async (
-            configService: ConfigService,
+            configService: Config,
             localFilesService: LocalFilesService,
             gitFilesService: GitFilesService,
           ) => {
@@ -55,7 +56,7 @@ describe('Integration tests for FilesResolver', () => {
     // eslint-disable-next-line no-loop-func
     describe(`when MODE is ${mode}`, () => {
       beforeEach(() => {
-        jest.spyOn(mockConfigService, 'get').mockReturnValue(mode);
+        jest.spyOn(mockConfigService, 'getMode').mockReturnValue(mode);
       });
 
       it('should be defined', () => {

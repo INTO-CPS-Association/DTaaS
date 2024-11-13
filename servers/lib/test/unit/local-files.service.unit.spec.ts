@@ -47,7 +47,7 @@ describe('LocalFilesService', () => {
 
   it('should list directory', async () => {
     const fullPath = join(
-      mockConfigService.get('LOCAL_PATH'),
+      mockConfigService.getMode('LOCAL_PATH'),
       pathToTestDirectory,
     );
 
@@ -85,7 +85,7 @@ describe('LocalFilesService', () => {
 
   it('should read file', async () => {
     const fullPath = join(
-      mockConfigService.get('LOCAL_PATH'),
+      mockConfigService.getMode('LOCAL_PATH'),
       pathToTestFileContent,
     );
 

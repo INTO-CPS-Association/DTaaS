@@ -31,6 +31,7 @@ describe('GitFilesService', () => {
       .fn<() => Promise<Project>>()
       .mockImplementation(() => Promise.resolve(testFileContent)),
     getMode: jest.fn<() => CONFIG_MODE>().mockReturnValue(CONFIG_MODE.LOCAL),
+    init: jest.fn<() => Promise<void>>(),
   };
 
   beforeEach(async () => {

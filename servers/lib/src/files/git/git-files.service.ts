@@ -2,11 +2,11 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Project } from 'src/types.js';
 import { IFilesService } from '../interfaces/files.service.interface.js';
 import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
-import { ConfigService } from '@nestjs/config';
 import * as git from 'isomorphic-git';
 import * as fs from 'fs';
 import * as http from 'isomorphic-git/http/node/index.cjs';
 import LocalFilesService from '../local/local-files.service.js';
+import Config from '../../config/config.service.js';
 
 @Injectable()
 export default class GitFilesService implements IFilesService {
@@ -14,44 +14,34 @@ export default class GitFilesService implements IFilesService {
   private readonly logger: Logger;
   @Inject(LocalFilesService) private localFilesService: LocalFilesService;
 
-  constructor(private configService: ConfigService) {
-    this.dataPath = this.configService.get('LOCAL_PATH');
+  constructor(private configService: Config) {
+    this.dataPath = this.configService.getLocalPath();
     this.logger = new Logger(GitFilesService.name);
   }
 
-  
   async init(): Promise<void> {
     await this.cloneRepositories();
   }
 
   private cloneRepositories(): Promise<void[]> {
-    let userRepoUrl = '';
-    let userRepoUrls = [];
-    let userCounter = 1;
-    while (
-      (userRepoUrl = this.configService.get(
-        `GIT_USER${userCounter}_REPO_URL`,
-      )) !== undefined
-    ) {
-      userRepoUrls.push(
-        userRepoUrl.includes('.git') ? userRepoUrl : userRepoUrl + '.git',
-      );
-      ++userCounter;
-    }
+    const userRepoConfigs = this.configService.getGitRepos();
+    
+    const clonePromises = userRepoConfigs.map((repoConf) => {
+      const user = Object.keys(repoConf)[0];
+      const repoUrl = repoConf[user]['repo-url'];
 
-    const clonePromises = userRepoUrls.map((userRepoUrl, i) => {
       return git
         .clone({
           fs,
           http,
-          dir: this.dataPath + `/user${i + 1}`,
-          url: userRepoUrl,
+          dir: this.dataPath + `/${user}`,
+          url: repoUrl.includes('.git') ? repoUrl : repoUrl + '.git',
           ref: 'main',
           singleBranch: true,
+          depth: 1,
         })
-        .then(() => this.logger.log('done cloning ' + userRepoUrl));
+        .then(() => this.logger.log('done cloning ' + repoUrl));
     });
-
     return Promise.all(clonePromises);
   }
 

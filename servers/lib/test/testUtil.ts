@@ -55,7 +55,7 @@ export function sleep(ms) {
 
 export class MockConfigService {
   // eslint-disable-next-line class-methods-use-this
-  get(key: string): string {
+  getMode(key: string): string {
     switch (key) {
       case 'LOCAL_PATH':
         return process.env.LOCAL_PATH;
