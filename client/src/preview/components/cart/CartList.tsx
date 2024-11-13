@@ -1,6 +1,6 @@
 import React from 'react';
 import useCart from 'preview/store/CartAccess';
-import LibraryAsset from 'preview/util/LibraryAsset';
+import LibraryAsset from 'preview/util/libraryAsset';
 
 function CartList() {
   const { state } = useCart();

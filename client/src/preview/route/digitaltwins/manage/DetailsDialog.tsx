@@ -6,14 +6,15 @@ import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
 import * as RemarkableKatex from 'remarkable-katex';
 import { useSelector } from 'react-redux';
-import LibraryAsset from 'preview/util/LibraryAsset';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface DetailsDialogProps {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
   library?: boolean;
+  path?: string;
 }
 
 const handleCloseDetailsDialog = (
@@ -22,30 +23,19 @@ const handleCloseDetailsDialog = (
   setShowLog(false);
 };
 
-// TODO: delete fakeAsset
-const fakeAsset: LibraryAsset = {
-  assetName: 'fakeAsset',
-  path: 'fakePath',
-  isPrivate: false,
-  type: 'fakeType',
-  fullDescription: 'fakeDescription',
-
-  async getFullDescription() {
-    this.fullDescription = 'This is a description';
-  },
-};
-
 function DetailsDialog({
   showDialog,
   setShowDialog,
   name,
   library,
+  path,
 }: DetailsDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const assetLibrary = fakeAsset;
+  const libraryAsset = useSelector(selectAssetByPath(path || ''));
 
-  const asset = library ? assetLibrary : digitalTwin;
 
+  const asset = library ? libraryAsset : digitalTwin;
+  
   const md = new Remarkable({
     html: true,
     typographer: true,
@@ -56,7 +46,7 @@ function DetailsDialog({
       <DialogContent dividers>
         <div
           dangerouslySetInnerHTML={{
-            __html: md.render(asset.fullDescription),
+            __html: md.render(asset!.fullDescription),
           }}
           style={{
             maxWidth: '100%',
@@ -97,3 +87,4 @@ function DetailsDialog({
 }
 
 export default DetailsDialog;
+

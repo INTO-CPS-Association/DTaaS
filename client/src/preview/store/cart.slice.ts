@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import LibraryAsset from 'preview/util/LibraryAsset';
+import LibraryAsset from 'preview/util/libraryAsset';
 
 export interface CartState {
   assets: LibraryAsset[];
@@ -13,14 +13,15 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState: initState,
   reducers: {
-    addToCart: (state: CartState, action: PayloadAction<LibraryAsset>) => {
-      if (!state.assets.find((asset) => asset.path === action.payload.path))
+    addToCart: (state, action: PayloadAction<LibraryAsset>) => {
+      if (!state.assets.find((asset) => asset.path === action.payload.path)) {
         state.assets.push(action.payload);
+      }
     },
-    removeFromCart: (state: CartState, action: PayloadAction<LibraryAsset>) => {
+    removeFromCart: (state, action: PayloadAction<LibraryAsset>) => {
       state.assets = state.assets.filter((a) => a.path !== action.payload.path);
     },
-    clearCart: (state: CartState) => {
+    clearCart: (state) => {
       state.assets = [];
     },
   },

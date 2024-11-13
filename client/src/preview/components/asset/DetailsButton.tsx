@@ -2,15 +2,17 @@ import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
-import LibraryAsset from 'preview/util/LibraryAsset';
+import LibraryAsset from 'preview/util/libraryAsset';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
 
 import DigitalTwin from '../../util/digitalTwin';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface DialogButtonProps {
   assetName: string;
   setShowDetails: Dispatch<SetStateAction<boolean>>;
   library?: boolean;
+  assetPath?: string;
 }
 
 export const handleToggleDetailsDialog = async (
@@ -29,27 +31,16 @@ export const handleToggleDetailsLibraryDialog = async (
   setShowDetails(true);
 };
 
-const fakeAsset: LibraryAsset = {
-  assetName: 'fakeAsset',
-  path: 'fakePath',
-  isPrivate: false,
-  type: 'fakeType',
-  fullDescription: 'fakeDescription',
-
-  async getFullDescription() {
-    this.fullDescription = 'This is a description';
-  },
-};
-
 function DetailsButton({
   assetName,
   setShowDetails,
   library,
+  assetPath,
 }: DialogButtonProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(assetName));
-  const assetLibrary = fakeAsset;
+  const libraryAsset = useSelector(selectAssetByPath(assetPath || ''));
 
-  const asset = library ? assetLibrary : digitalTwin;
+  const asset = library ? libraryAsset : digitalTwin;
 
   return (
     <Button
@@ -70,3 +61,4 @@ function DetailsButton({
 }
 
 export default DetailsButton;
+

@@ -1,27 +1,18 @@
 import * as React from 'react';
 import { Button } from '@mui/material';
-import LibraryAsset from 'preview/util/LibraryAsset';
+import LibraryAsset from 'preview/util/libraryAsset';
 import useCart from 'preview/store/CartAccess';
+import { useSelector } from 'react-redux';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface AddToCartButtonProps {
   assetName: string;
 }
 
-const fakeAsset: LibraryAsset = {
-  assetName: 'fakeAsset',
-  path: 'fakePath',
-  isPrivate: false,
-  type: 'fakeType',
-  fullDescription: 'fakeDescription',
-
-  async getFullDescription() {
-    this.fullDescription = 'This is a description';
-  },
-};
-
+// TODO: change name to path
 function AddToCartButton({ assetName }: AddToCartButtonProps) {
   const { state: cartState, actions } = useCart();
-  const asset = fakeAsset;
+  const asset = useSelector(selectAssetByPath(assetName)) as LibraryAsset;
 
   const isInCart = cartState.assets.some(
     (item: LibraryAsset) => item.path === asset.path,

@@ -140,6 +140,7 @@ ${triggerKey}:
       ? `digital_twins/${this.DTName}/lifecycle/${fileName}`
       : `digital_twins/${this.DTName}/${fileName}`;
 
+    console.log(filePath);
     const fileContent = await this.fileHandler.getFileContent(filePath);
 
     return fileContent;

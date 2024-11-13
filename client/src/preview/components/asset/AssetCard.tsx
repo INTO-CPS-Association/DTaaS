@@ -21,6 +21,7 @@ import DetailsButton from './DetailsButton';
 import ReconfigureButton from './ReconfigureButton';
 import DeleteButton from './DeleteButton';
 import AddToCartButton from './AddToCartButton';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface AssetCardProps {
   asset: Asset;
@@ -46,8 +47,9 @@ interface CardButtonsContainerExecuteProps {
   setShowLog: Dispatch<SetStateAction<boolean>>;
 }
 
-interface CaardButtonsContainerLibraryProps {
+interface CardButtonsContainerLibraryProps {
   assetName: string;
+  assetPath: string;
   setShowDetails: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -66,35 +68,15 @@ const Description = styled(Typography)`
   text-overflow: ellipsis;
 `;
 
-function CardActionAreaContainer(asset: Asset) {
+function CardActionAreaContainer(asset: Asset, library?: boolean) {
   const digitalTwin = useSelector(
     (state: RootState) => state.digitalTwin[asset.name],
   );
 
-  return (
-    <Grid container>
-      <Grid item xs={12}>
-        <CardContent
-          sx={{
-            padding: '5px 0px 0px 0px',
-            ':last-child': { paddingBottom: 0 },
-            maxHeight: '85px',
-            overflowY: 'auto',
-            width: '100%',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <Description variant="body2" color="text.secondary">
-            {digitalTwin.description}
-          </Description>
-        </CardContent>
-      </Grid>
-    </Grid>
-  );
-}
+  const libraryAsset = useSelector(selectAssetByPath(asset.path));
 
-// TODO: get description from library
-function CardLibraryAreaContainer(asset: Asset) {
+  const selectedAsset = library? libraryAsset : digitalTwin;
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -109,7 +91,7 @@ function CardLibraryAreaContainer(asset: Asset) {
           }}
         >
           <Description variant="body2" color="text.secondary">
-            Test description
+            {selectedAsset!.description}
           </Description>
         </CardContent>
       </Grid>
@@ -151,18 +133,11 @@ function CardButtonsContainerExecute({
   );
 }
 
-function CardButtonsContainerLibrary({
-  assetName,
-  setShowDetails,
-}: CaardButtonsContainerLibraryProps) {
+function CardButtonsContainerLibrary({ assetName, assetPath, setShowDetails }: CardButtonsContainerLibraryProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton
-        assetName={assetName}
-        setShowDetails={setShowDetails}
-        library={true}
-      />
-      <AddToCartButton assetName={assetName} />
+      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} library={true} assetPath={assetPath}/>
+      <AddToCartButton assetName={assetName}/>
     </CardActions>
   );
 }
@@ -180,11 +155,7 @@ function AssetCard({ asset, buttons, library }: AssetCardProps) {
       }}
     >
       <Header variant="h6">{formatName(asset.name)}</Header>
-      {library ? (
-        <CardLibraryAreaContainer {...asset} />
-      ) : (
-        <CardActionAreaContainer {...asset} />
-      )}
+      <CardActionAreaContainer {...{ ...asset, library }} />
       {buttons}
     </Card>
   );
@@ -266,24 +237,26 @@ function AssetCardLibrary({ asset }: AssetCardProps) {
 
   return (
     <>
-      <AssetCard
-        asset={asset}
-        buttons={
-          <CardButtonsContainerLibrary
-            assetName={asset.name}
-            setShowDetails={setShowDetails}
-          />
-        }
-        library={true}
-      />
-      <DetailsDialog
-        showDialog={showDetails}
-        setShowDialog={setShowDetails}
-        name={asset.name}
-        library={true}
-      />
-    </>
-  );
+        <AssetCard
+          asset={asset}
+          buttons={
+            <CardButtonsContainerLibrary
+              assetName={asset.name}
+              assetPath={asset.path}
+              setShowDetails={setShowDetails}
+            />
+          }
+          library={true}
+        />
+        <DetailsDialog
+          showDialog={showDetails}
+          setShowDialog={setShowDetails}
+          name={asset.name}
+          library={true}
+          path={asset.path}
+        />
+      </>
+        );
 }
 
 export { AssetCardManage, AssetCardExecute, AssetCardLibrary };
