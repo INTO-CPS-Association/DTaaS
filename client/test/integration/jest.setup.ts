@@ -8,6 +8,6 @@ beforeEach(() => {
 
 global.window.env = {
   ...global.window.env,
-  REACT_APP_AUTH_AUTHORITY: process.env.REACT_APP_AUTH_AUTHORITY || 'https://example.com',
+  REACT_APP_AUTH_AUTHORITY:
+    process.env.REACT_APP_AUTH_AUTHORITY || 'https://example.com',
 };
-
