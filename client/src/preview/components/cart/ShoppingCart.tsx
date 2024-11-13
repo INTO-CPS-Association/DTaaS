@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import useCart from 'preview/store/CartAccess';
@@ -22,13 +23,20 @@ function ShoppingCart() {
   };
 
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      minHeight="170px"
+      padding="10px"
+    >
       <CartList />
-      <div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
         <Button variant="contained" onClick={() => setOpenDialog(true)}>
           Clear Cart
         </Button>
-        <Button variant="contained" onClick={() => navigate('/digitaltwins')}>
+        <Button variant="contained" onClick={() => navigate('/preview/digitaltwins')}>
           Proceed
         </Button>
       </div>
@@ -49,7 +57,7 @@ function ShoppingCart() {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 }
 

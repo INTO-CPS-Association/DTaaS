@@ -6,13 +6,12 @@ import { useSelector } from 'react-redux';
 import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface AddToCartButtonProps {
-  assetName: string;
+  assetPath: string;
 }
 
-// TODO: change name to path
-function AddToCartButton({ assetName }: AddToCartButtonProps) {
+function AddToCartButton({ assetPath }: AddToCartButtonProps) {
   const { state: cartState, actions } = useCart();
-  const asset = useSelector(selectAssetByPath(assetName)) as LibraryAsset;
+  const asset = useSelector(selectAssetByPath(assetPath)) as LibraryAsset;
 
   const isInCart = cartState.assets.some(
     (item: LibraryAsset) => item.path === asset.path,

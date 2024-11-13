@@ -137,7 +137,7 @@ function CardButtonsContainerLibrary({ assetName, assetPath, setShowDetails }: C
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
       <DetailsButton assetName={assetName} setShowDetails={setShowDetails} library={true} assetPath={assetPath}/>
-      <AddToCartButton assetName={assetName}/>
+      <AddToCartButton assetPath={assetPath}/>
     </CardActions>
   );
 }

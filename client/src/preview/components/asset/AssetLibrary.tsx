@@ -15,11 +15,6 @@ const outerGridContainerProps = {
   },
 };
 
-/**
- * Displays a board with navigational properties to locate and select assets for DT configuration.
- * @param props Takes relative path to Assets. E.g `Functions` for function assets.
- * @returns
- */
 function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
   const assets = useSelector(
     selectAssetsByTypeAndPrivacy(props.pathToAssets, props.privateRepo),
@@ -48,7 +43,13 @@ function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
         container
         justifyContent="center"
         alignItems="center"
-        style={{ minHeight: '80vh', marginTop: '-10vh' }}
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 999,
+        }}
       >
         <CircularProgress />
       </Grid>
