@@ -1,8 +1,9 @@
-/* eslint-disable no-console */
-
 import * as React from 'react';
-import { Grid } from '@mui/material';
+import { Grid, CircularProgress } from '@mui/material';
 import { AssetCardLibrary } from 'preview/components/asset/AssetCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAssetsByTypeAndPrivacy } from 'preview/store/assets.slice';
+import { fetchLibraryAssets } from 'preview/util/init';
 
 const outerGridContainerProps = {
   container: true,
@@ -14,34 +15,53 @@ const outerGridContainerProps = {
   },
 };
 
-// TODO: Make it not capital letters.!
-
 /**
  * Displays a board with navigational properties to locate and select assets for DT configuration.
  * @param props Takes relative path to Assets. E.g `Functions` for function assets.
  * @returns
  */
-function AssetLibrary(props: { pathToAssets: string; privateRepo?: boolean }) {
-  // eslint-disable-next-line no-console
-  console.log(props.pathToAssets);
+function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
+  const assets = useSelector(
+    selectAssetsByTypeAndPrivacy(props.pathToAssets, props.privateRepo),
+  );
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const dispatch = useDispatch();
 
-  //TODO: Implement fetching assets from GitLab.
-  const assetsFetched = [{
-    name: 'Assets',
-    path: 'path',
-  }];
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchLibraryAssets(
+        dispatch,
+        setError,
+        props.pathToAssets,
+        props.privateRepo,
+      );
+      setLoading(false);
+    };
+    fetchData();
+  }, [dispatch, props.pathToAssets, props.privateRepo]);
 
-  if (!assetsFetched.length) {
+  if (loading) {
     return (
-        //TODO: substitute error with the specific error message.
-      <em style={{ textAlign: 'center' }}>error</em>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        style={{ minHeight: '80vh', marginTop: '-10vh' }}
+      >
+        <CircularProgress />
+      </Grid>
     );
+  }
+
+  if (!assets.length) {
+    return <em style={{ textAlign: 'center' }}>{error}</em>;
   }
 
   return (
     <Grid {...outerGridContainerProps}>
-      {assetsFetched.map((asset, i) => (
-        console.log('Creating AssetCardLibrary'),
+      {assets.map((asset, i) => (
         <Grid key={i} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
           <AssetCardLibrary asset={asset} />
         </Grid>

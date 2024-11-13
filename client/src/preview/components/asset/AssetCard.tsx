@@ -93,7 +93,7 @@ function CardActionAreaContainer(asset: Asset) {
   );
 }
 
-//TODO: get description from library
+// TODO: get description from library
 function CardLibraryAreaContainer(asset: Asset) {
   return (
     <Grid container>
@@ -151,11 +151,18 @@ function CardButtonsContainerExecute({
   );
 }
 
-function CardButtonsContainerLibrary({ assetName, setShowDetails }: CaardButtonsContainerLibraryProps) {
+function CardButtonsContainerLibrary({
+  assetName,
+  setShowDetails,
+}: CaardButtonsContainerLibraryProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} library={true}/>
-      <AddToCartButton assetName={assetName}/>
+      <DetailsButton
+        assetName={assetName}
+        setShowDetails={setShowDetails}
+        library={true}
+      />
+      <AddToCartButton assetName={assetName} />
     </CardActions>
   );
 }
@@ -173,7 +180,11 @@ function AssetCard({ asset, buttons, library }: AssetCardProps) {
       }}
     >
       <Header variant="h6">{formatName(asset.name)}</Header>
-      {library ? <CardLibraryAreaContainer {...asset} /> : <CardActionAreaContainer {...asset} />}
+      {library ? (
+        <CardLibraryAreaContainer {...asset} />
+      ) : (
+        <CardActionAreaContainer {...asset} />
+      )}
       {buttons}
     </Card>
   );
@@ -255,24 +266,24 @@ function AssetCardLibrary({ asset }: AssetCardProps) {
 
   return (
     <>
-        <AssetCard
-          asset={asset}
-          buttons={
-            <CardButtonsContainerLibrary
-              assetName={asset.name}
-              setShowDetails={setShowDetails}
-            />
-          }
-          library={true}
-        />
-        <DetailsDialog
-          showDialog={showDetails}
-          setShowDialog={setShowDetails}
-          name={asset.name}
-          library={true}
-        />
-      </>
-        );
+      <AssetCard
+        asset={asset}
+        buttons={
+          <CardButtonsContainerLibrary
+            assetName={asset.name}
+            setShowDetails={setShowDetails}
+          />
+        }
+        library={true}
+      />
+      <DetailsDialog
+        showDialog={showDetails}
+        setShowDialog={setShowDetails}
+        name={asset.name}
+        library={true}
+      />
+    </>
+  );
 }
 
 export { AssetCardManage, AssetCardExecute, AssetCardLibrary };

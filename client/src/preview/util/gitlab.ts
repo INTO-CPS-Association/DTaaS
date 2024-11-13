@@ -4,6 +4,23 @@ import { Asset } from '../components/asset/Asset';
 const GROUP_NAME = 'DTaaS';
 const DT_DIRECTORY = 'digital_twins';
 
+export function mapStringToAssetPath(type: string): string | undefined {
+  switch (type) {
+    case 'Functions':
+      return 'functions';
+    case 'Models':
+      return 'models';
+    case 'Tools':
+      return 'tools';
+    case 'Data':
+      return 'data';
+    case 'Digital Twins':
+      return 'digital_twins';
+    default:
+      return undefined;
+  }
+}
+
 interface LogEntry {
   status: string;
   DTName: string;
@@ -18,8 +35,6 @@ class GitlabInstance {
 
   public logs: LogEntry[];
 
-  public subfolders: Asset[];
-
   public projectId: number | null = null;
 
   public triggerToken: string | null = null;
@@ -31,7 +46,6 @@ class GitlabInstance {
       oauthToken,
     });
     this.logs = [];
-    this.subfolders = [];
   }
 
   async init() {
@@ -80,10 +94,41 @@ class GitlabInstance {
         .map(async (file) => ({
           name: file.name,
           path: file.path,
+          type: 'digitalTwin',
+          isPrivate: true,
+        })),
+    );
+    return subfolders;
+  }
+
+  async getLibrarySubfolders(
+    projectId: number,
+    type: string,
+    isPrivate: boolean,
+  ): Promise<Asset[]> {
+    const mappedPath = mapStringToAssetPath(type);
+    if (!mappedPath) {
+      throw new Error(`Invalid asset type: ${type}`);
+    }
+
+    const basePath = isPrivate ? mappedPath : `common/${mappedPath}`;
+
+    const files = await this.api.Repositories.allRepositoryTrees(projectId, {
+      path: basePath,
+      recursive: false,
+    });
+
+    const subfolders: Asset[] = await Promise.all(
+      files
+        .filter((file) => file.type === 'tree' && file.path !== basePath)
+        .map(async (file) => ({
+          name: file.name,
+          path: file.path,
+          type,
+          isPrivate,
         })),
     );
 
-    this.subfolders = subfolders;
     return subfolders;
   }
 

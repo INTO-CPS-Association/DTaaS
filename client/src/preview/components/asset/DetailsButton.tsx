@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
+import LibraryAsset from 'preview/util/LibraryAsset';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
 
 import DigitalTwin from '../../util/digitalTwin';
-import LibraryAsset from 'preview/util/LibraryAsset';
 
 interface DialogButtonProps {
   assetName: string;
@@ -40,8 +40,12 @@ const fakeAsset: LibraryAsset = {
     this.fullDescription = 'This is a description';
   },
 };
-  
-function DetailsButton({ assetName, setShowDetails, library }: DialogButtonProps) {
+
+function DetailsButton({
+  assetName,
+  setShowDetails,
+  library,
+}: DialogButtonProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(assetName));
   const assetLibrary = fakeAsset;
 

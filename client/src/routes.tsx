@@ -2,12 +2,12 @@ import * as React from 'react';
 import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
+import LibraryPreview from 'preview/route/library/LibraryPreview';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
-import LibraryPreview from 'preview/route/library/LibraryPreview';
 
 export const routes = [
   {

@@ -12,7 +12,30 @@ const gitlabInstance = new GitlabInstance(
   sessionStorage.getItem('access_token') || '',
 );
 
-export const fetchAssets = async (
+export const fetchLibraryAssets = async (
+  dispatch: ReturnType<typeof useDispatch>,
+  setError: Dispatch<SetStateAction<string | null>>,
+  type: string,
+  isPrivate: boolean,
+) => {
+  try {
+    await gitlabInstance.init();
+    if (gitlabInstance.projectId) {
+      const subfolders = await gitlabInstance.getLibrarySubfolders(
+        gitlabInstance.projectId,
+        type,
+        isPrivate,
+      );
+      dispatch(setAssets(subfolders));
+    } else {
+      dispatch(setAssets([]));
+    }
+  } catch (err) {
+    setError(`An error occurred while fetching assets: ${err}`);
+  }
+};
+
+export const fetchDigitalTwins = async (
   dispatch: ReturnType<typeof useDispatch>,
   setError: Dispatch<SetStateAction<string | null>>,
 ) => {

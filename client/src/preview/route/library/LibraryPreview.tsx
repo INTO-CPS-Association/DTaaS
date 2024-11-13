@@ -4,9 +4,9 @@ import TabComponent from 'components/tab/TabComponent';
 import { Paper, Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
 import ShoppingCart from 'preview/components/cart/ShoppingCart';
-import { assetType, scope } from './LibraryTabDataPreview';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
 import AssetLibrary from 'preview/components/asset/AssetLibrary';
+import { assetType, scope } from './LibraryTabDataPreview';
 
 export function createTabs() {
   return assetType.map((tab) => ({
@@ -27,9 +27,9 @@ export function createCombinedTabs() {
         <div style={{ display: 'flex', gap: '2rem' }}>
           <div style={{ flex: 2 }}>
             <Typography variant="body1">{subtab.body}</Typography>
-            <AssetLibrary 
-              pathToAssets={tab.label} 
-              privateRepo={subtab.label === "Private"} 
+            <AssetLibrary
+              pathToAssets={tab.label}
+              privateRepo={subtab.label === 'Private'}
             />
           </div>
           <Paper

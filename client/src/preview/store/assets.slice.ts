@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'store/store';
 import { Asset } from '../components/asset/Asset';
 
 interface AssetsState {
@@ -23,6 +24,13 @@ const assetsSlice = createSlice({
     },
   },
 });
+
+export const selectAssetsByTypeAndPrivacy =
+  (type: string, isPrivate: boolean) =>
+  (state: RootState): Asset[] =>
+    state.assets.items.filter(
+      (asset) => asset.type === type && asset.isPrivate === isPrivate,
+    );
 
 export const { setAssets, deleteAsset } = assetsSlice.actions;
 

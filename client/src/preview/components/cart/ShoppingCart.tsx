@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import useCart from 'preview/store/CartAccess';
 import CartList from './CartList';

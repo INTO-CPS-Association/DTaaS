@@ -23,7 +23,9 @@ function AddToCartButton({ assetName }: AddToCartButtonProps) {
   const { state: cartState, actions } = useCart();
   const asset = fakeAsset;
 
-  const isInCart = cartState.assets.some((item: LibraryAsset) => item.path === asset.path);
+  const isInCart = cartState.assets.some(
+    (item: LibraryAsset) => item.path === asset.path,
+  );
 
   const handleAddToCart = async () => {
     actions.add(asset);

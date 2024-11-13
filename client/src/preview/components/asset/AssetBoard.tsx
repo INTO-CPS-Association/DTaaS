@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'store/store';
-import { deleteAsset } from 'preview/store/assets.slice';
-import { fetchAssets } from 'preview/util/init';
+import {
+  deleteAsset,
+  selectAssetsByTypeAndPrivacy,
+} from 'preview/store/assets.slice';
+import { fetchDigitalTwins } from 'preview/util/init';
 import { Asset } from './Asset';
 import { AssetCardExecute, AssetCardManage } from './AssetCard';
 
@@ -45,13 +47,13 @@ const AssetGridItem: React.FC<{
 );
 
 const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
-  const assets = useSelector((state: RootState) => state.assets.items);
+  const assets = useSelector(selectAssetsByTypeAndPrivacy('digitalTwin', true));
   const [error, setError] = React.useState<string | null>(null);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     const fetchData = async () => {
-      await fetchAssets(dispatch, setError);
+      await fetchDigitalTwins(dispatch, setError);
     };
     fetchData();
   }, [dispatch]);
