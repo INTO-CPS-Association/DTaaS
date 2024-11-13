@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/preview/route/digitaltwins/create/CreateDTDialog.tsx</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../../../../prettify.css">
+    <link rel="stylesheet" href="../../../../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">src/preview/route/digitaltwins/create/CreateDTDialog.tsx</span></h1>
+    <h2>
+        Statements: <span class="metric">100% <small>(39 / 39)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(3 / 3)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(9 / 9)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(37 / 37)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../../../../index.html">All files</a> &#187; <a href="index.html">src/preview/route/digitaltwins/create/</a> &#187; CreateDTDialog.tsx</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162</td><td class="line-coverage"><span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+  Button,
+} from '@mui/material';
+import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'store/store';
+import DigitalTwin from 'preview/util/digitalTwin';
+import { showSnackbar } from 'preview/store/snackbar.slice';
+import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
+import {
+  addDefaultFiles,
+  defaultFiles,
+  validateFiles,
+} from 'preview/util/fileUtils';
+import { initDigitalTwin } from 'preview/util/init';
+&nbsp;
+interface CreateDTDialogProps {
+  open: boolean;
+  setOpenCreateDTDialog: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;;
+  newDigitalTwinName: string;
+  setNewDigitalTwinName: Dispatch&lt;SetStateAction&lt;string&gt;&gt;;
+  errorMessage: string;
+  setErrorMessage: Dispatch&lt;SetStateAction&lt;string&gt;&gt;;
+  setFileName: Dispatch&lt;SetStateAction&lt;string&gt;&gt;;
+  setFileContent: Dispatch&lt;SetStateAction&lt;string&gt;&gt;;
+  setFileType: Dispatch&lt;SetStateAction&lt;string&gt;&gt;;
+}
+&nbsp;
+const handleError = (
+  message: string,
+  dispatch: ReturnType&lt;typeof useDispatch&gt;,
+) =&gt; {
+  dispatch(showSnackbar({ message, severity: 'error' }));
+};
+&nbsp;
+const handleSuccess = (
+  digitalTwin: DigitalTwin,
+  dispatch: ReturnType&lt;typeof useDispatch&gt;,
+  newDigitalTwinName: string,
+  files: FileState[],
+) =&gt; {
+  dispatch(
+    showSnackbar({
+      message: `Digital twin ${newDigitalTwinName} created successfully`,
+      severity: 'success',
+    }),
+  );
+  dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+  dispatch(removeAllCreationFiles());
+&nbsp;
+  addDefaultFiles(defaultFiles, files, dispatch);
+};
+&nbsp;
+const resetDialogAndForm = (
+  setOpenCreateDTDialog: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;,
+  setFileName: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  setFileContent: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  setFileType: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+) =&gt; {
+  setOpenCreateDTDialog(false);
+  setFileName('');
+  setFileContent('');
+  setFileType('');
+};
+&nbsp;
+const handleConfirm = async (
+  files: FileState[],
+  setErrorMessage: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  newDigitalTwinName: string,
+  dispatch: ReturnType&lt;typeof useDispatch&gt;,
+  setOpenCreateDTDialog: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;,
+  setFileName: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  setFileContent: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  setFileType: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+  setNewDigitalTwinName: Dispatch&lt;SetStateAction&lt;string&gt;&gt;,
+) =&gt; {
+  if (validateFiles(files, setErrorMessage)) return;
+&nbsp;
+  const digitalTwin = await initDigitalTwin(newDigitalTwinName);
+  const result = await digitalTwin.create(files);
+&nbsp;
+  if (result.startsWith('Error')) {
+    handleError(result, dispatch);
+  } else {
+    handleSuccess(digitalTwin, dispatch, newDigitalTwinName, files);
+  }
+&nbsp;
+  resetDialogAndForm(
+    setOpenCreateDTDialog,
+    setFileName,
+    setFileContent,
+    setFileType,
+  );
+  setNewDigitalTwinName('');
+};
+&nbsp;
+const CreateDTDialog: React.FC&lt;CreateDTDialogProps&gt; = ({
+  open,
+  setOpenCreateDTDialog,
+  newDigitalTwinName,
+  setNewDigitalTwinName,
+  errorMessage,
+  setErrorMessage,
+  setFileName,
+  setFileContent,
+  setFileType,
+}) =&gt; {
+  const files: FileState[] = useSelector((state: RootState) =&gt; state.files);
+  const dispatch = useDispatch();
+&nbsp;
+  return (
+    &lt;Dialog open={open} onClose={setOpenCreateDTDialog}&gt;
+      &lt;DialogContent&gt;
+        &lt;Typography&gt;
+          Are you sure you want to create the{' '}
+          &lt;strong&gt;{newDigitalTwinName}&lt;/strong&gt; digital twin?
+        &lt;/Typography&gt;
+        &lt;Typography style={{ color: 'red' }}&gt;{errorMessage}&lt;/Typography&gt;
+      &lt;/DialogContent&gt;
+      &lt;DialogActions&gt;
+        &lt;Button
+          onClick={() =&gt;
+            resetDialogAndForm(
+              setOpenCreateDTDialog,
+              setFileName,
+              setFileContent,
+              setFileType,
+            )
+          }
+        &gt;
+          Cancel
+        &lt;/Button&gt;
+        &lt;Button
+          onClick={() =&gt;
+            handleConfirm(
+              files,
+              setErrorMessage,
+              newDigitalTwinName,
+              dispatch,
+              setOpenCreateDTDialog,
+              setFileName,
+              setFileContent,
+              setFileType,
+              setNewDigitalTwinName,
+            )
+          }
+        &gt;
+          Confirm
+        &lt;/Button&gt;
+      &lt;/DialogActions&gt;
+    &lt;/Dialog&gt;
+  );
+};
+&nbsp;
+export default CreateDTDialog;
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Nov 13 2024 18:51:40 GMT+0100 (Ora standard dell’Europa centrale)</div>
+</div>
+<script src="../../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../../sorter.js"></script>
+</body>
+</html>

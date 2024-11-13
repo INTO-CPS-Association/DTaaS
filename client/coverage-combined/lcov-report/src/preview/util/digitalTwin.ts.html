@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/preview/util/digitalTwin.ts</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../../prettify.css">
+    <link rel="stylesheet" href="../../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">src/preview/util/digitalTwin.ts</span></h1>
+    <h2>
+        Statements: <span class="metric">100% <small>(73 / 73)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(71 / 71)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../../index.html">All files</a> &#187; <a href="index.html">src/preview/util/</a> &#187; digitalTwin.ts</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176</td><td class="line-coverage"><span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-yes">116</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-yes">61</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { getAuthority } from 'util/envUtil';
+import { FileState } from 'preview/store/file.slice';
+import GitlabInstance from './gitlab';
+import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
+import DTAssets, { FileType } from './DTAssets';
+&nbsp;
+const RUNNER_TAG = 'linux';
+&nbsp;
+export const formatName = (name: string) =&gt;
+  name.replace(/-/g, ' ').replace(/^./, (char) =&gt; char.toUpperCase());
+&nbsp;
+class DigitalTwin {
+  public DTName: string;
+&nbsp;
+  public description: string | undefined = '';
+&nbsp;
+  public fullDescription: string = '';
+&nbsp;
+  public gitlabInstance: GitlabInstance;
+&nbsp;
+  public DTAssets: DTAssets;
+&nbsp;
+  public pipelineId: number | null = null;
+&nbsp;
+  public lastExecutionStatus: string | null = null;
+&nbsp;
+  public jobLogs: { jobName: string; log: string }[] = [];
+&nbsp;
+  public pipelineLoading: boolean = false;
+&nbsp;
+  public pipelineCompleted: boolean = false;
+&nbsp;
+  public descriptionFiles: string[] = [];
+&nbsp;
+  public configFiles: string[] = [];
+&nbsp;
+  public lifecycleFiles: string[] = [];
+&nbsp;
+  constructor(DTName: string, gitlabInstance: GitlabInstance) {
+    this.DTName = DTName;
+    this.gitlabInstance = gitlabInstance;
+    this.DTAssets = new DTAssets(DTName, this.gitlabInstance);
+  }
+&nbsp;
+  async getDescription(): Promise&lt;void&gt; {
+    if (this.gitlabInstance.projectId) {
+      try {
+        const fileContent =
+          await this.DTAssets.getFileContent('description.md');
+        this.description = fileContent;
+      } catch (_error) {
+        this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
+      }
+    }
+  }
+&nbsp;
+  async getFullDescription(): Promise&lt;void&gt; {
+    if (this.gitlabInstance.projectId) {
+      const imagesPath = `digital_twins/${this.DTName}/`;
+      try {
+        const fileContent = await this.DTAssets.getFileContent('README.md');
+        this.fullDescription = fileContent.replace(
+          /(!\[[^\]]*\])\(([^)]+)\)/g,
+          (match, altText, imagePath) =&gt; {
+            const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
+            return `${altText}(${fullUrl})`;
+          },
+        );
+      } catch (_error) {
+        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
+      }
+    } else {
+      this.fullDescription = 'Error fetching description, retry.';
+    }
+  }
+&nbsp;
+  private async triggerPipeline() {
+    const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
+    return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
+      this.gitlabInstance.projectId!,
+      'main',
+      this.gitlabInstance.triggerToken!,
+      { variables },
+    );
+  }
+&nbsp;
+  async execute(): Promise&lt;number | null&gt; {
+    if (!isValidInstance(this)) {
+      logError(this, RUNNER_TAG, 'Missing projectId or triggerToken');
+      return null;
+    }
+&nbsp;
+    try {
+      const response = await this.triggerPipeline();
+      logSuccess(this, RUNNER_TAG);
+      this.pipelineId = response.id;
+      return this.pipelineId;
+    } catch (error) {
+      logError(this, RUNNER_TAG, String(error));
+      return null;
+    }
+  }
+&nbsp;
+  async stop(projectId: number, pipeline: string): Promise&lt;void&gt; {
+    const pipelineId =
+      pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
+    try {
+      await this.gitlabInstance.api.Pipelines.cancel(projectId, pipelineId!);
+      this.gitlabInstance.logs.push({
+        status: 'canceled',
+        DTName: this.DTName,
+        runnerTag: RUNNER_TAG,
+      });
+      this.lastExecutionStatus = 'canceled';
+    } catch (error) {
+      this.gitlabInstance.logs.push({
+        status: 'error',
+        error: new Error(String(error)),
+        DTName: this.DTName,
+        runnerTag: RUNNER_TAG,
+      });
+      this.lastExecutionStatus = 'error';
+    }
+  }
+&nbsp;
+  async create(files: FileState[]): Promise&lt;string&gt; {
+    if (!this.gitlabInstance.projectId) {
+      return `Error creating ${this.DTName} digital twin: no project id`;
+    }
+&nbsp;
+    const mainFolderPath = `digital_twins/${this.DTName}`;
+    const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
+&nbsp;
+    try {
+      await this.DTAssets.createFiles(
+        files,
+        mainFolderPath,
+        lifecycleFolderPath,
+      );
+      await this.DTAssets.appendTriggerToPipeline();
+      return `${this.DTName} digital twin files initialized successfully.`;
+    } catch (error) {
+      return `Error initializing ${this.DTName} digital twin files: ${String(error)}`;
+    }
+  }
+&nbsp;
+  async delete() {
+    if (this.gitlabInstance.projectId) {
+      try {
+        await this.DTAssets.delete();
+&nbsp;
+        return `${this.DTName} deleted successfully`;
+      } catch (_error) {
+        return `Error deleting ${this.DTName} digital twin`;
+      }
+    }
+    return `Error deleting ${this.DTName} digital twin: no project id`;
+  }
+&nbsp;
+  async getDescriptionFiles() {
+    this.descriptionFiles = await this.DTAssets.getFileNames(
+      FileType.DESCRIPTION,
+    );
+  }
+&nbsp;
+  async getConfigFiles() {
+    this.configFiles = await this.DTAssets.getFileNames(FileType.CONFIGURATION);
+  }
+&nbsp;
+  async getLifecycleFiles() {
+    this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
+  }
+}
+&nbsp;
+export default DigitalTwin;
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Nov 13 2024 18:51:40 GMT+0100 (Ora standard dell’Europa centrale)</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

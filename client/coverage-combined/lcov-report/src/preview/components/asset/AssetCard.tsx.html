@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/preview/components/asset/AssetCard.tsx</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../../../prettify.css">
+    <link rel="stylesheet" href="../../../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">src/preview/components/asset/AssetCard.tsx</span></h1>
+    <h2>
+        Statements: <span class="metric">100% <small>(40 / 40)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(4 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(7 / 7)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(39 / 39)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../../../index.html">All files</a> &#187; <a href="index.html">src/preview/components/asset/</a> &#187; AssetCard.tsx</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213</td><td class="line-coverage"><span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-yes">53</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as React from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import { AlertColor, CardActions, Grid } from '@mui/material';
+import styled from '@emotion/styled';
+import { formatName } from 'preview/util/digitalTwin';
+import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
+import { useSelector } from 'react-redux';
+import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
+import { RootState } from 'store/store';
+import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
+import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
+import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
+import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
+import StartStopButton from './StartStopButton';
+import LogButton from './LogButton';
+import { Asset } from './Asset';
+import DetailsButton from './DetailsButton';
+import ReconfigureButton from './ReconfigureButton';
+import DeleteButton from './DeleteButton';
+&nbsp;
+interface AssetCardProps {
+  asset: Asset;
+  buttons?: React.ReactNode;
+}
+&nbsp;
+interface AssetCardManageProps {
+  asset: Asset;
+  buttons?: React.ReactNode;
+  onDelete: () =&gt; void;
+}
+&nbsp;
+interface CardButtonsContainerManageProps {
+  assetName: string;
+  setShowDetails: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;;
+  setShowReconfigure: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;;
+  setShowDelete: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;;
+}
+&nbsp;
+interface CardButtonsContainerExecuteProps {
+  assetName: string;
+  setShowLog: Dispatch&lt;SetStateAction&lt;boolean&gt;&gt;;
+}
+&nbsp;
+const Header = styled(Typography)`
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space. nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+&nbsp;
+const Description = styled(Typography)`
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+`;
+&nbsp;
+function CardActionAreaContainer(asset: Asset) {
+  const digitalTwin = useSelector(
+    (state: RootState) =&gt; state.digitalTwin[asset.name],
+  );
+&nbsp;
+  return (
+    &lt;Grid container&gt;
+      &lt;Grid item xs={12}&gt;
+        &lt;CardContent
+          sx={{
+            padding: '5px 0px 0px 0px',
+            ':last-child': { paddingBottom: 0 },
+            maxHeight: '85px',
+            overflowY: 'auto',
+            width: '100%',
+            justifyContent: 'flex-start',
+          }}
+        &gt;
+          &lt;Description variant="body2" color="text.secondary"&gt;
+            {digitalTwin.description}
+          &lt;/Description&gt;
+        &lt;/CardContent&gt;
+      &lt;/Grid&gt;
+    &lt;/Grid&gt;
+  );
+}
+&nbsp;
+function CardButtonsContainerManage({
+  assetName,
+  setShowDetails,
+  setShowReconfigure,
+  setShowDelete,
+}: CardButtonsContainerManageProps) {
+  return (
+    &lt;CardActions style={{ justifyContent: 'flex-end' }}&gt;
+      &lt;DetailsButton assetName={assetName} setShowDetails={setShowDetails} /&gt;
+      &lt;ReconfigureButton setShowReconfigure={setShowReconfigure} /&gt;
+      &lt;DeleteButton setShowDelete={setShowDelete} /&gt;
+    &lt;/CardActions&gt;
+  );
+}
+&nbsp;
+function CardButtonsContainerExecute({
+  assetName,
+  setShowLog,
+}: CardButtonsContainerExecuteProps) {
+  const [logButtonDisabled, setLogButtonDisabled] = useState(true);
+  return (
+    &lt;CardActions style={{ justifyContent: 'flex-end' }}&gt;
+      &lt;StartStopButton
+        assetName={assetName}
+        setLogButtonDisabled={setLogButtonDisabled}
+      /&gt;
+      &lt;LogButton
+        setShowLog={setShowLog}
+        logButtonDisabled={logButtonDisabled}
+      /&gt;
+    &lt;/CardActions&gt;
+  );
+}
+&nbsp;
+function AssetCard({ asset, buttons }: AssetCardProps) {
+  return (
+    &lt;Card
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minWidth: 235,
+        height: 170,
+        justifyContent: 'space-between',
+        padding: '5px 10px 5px 10px',
+      }}
+    &gt;
+      &lt;Header variant="h6"&gt;{formatName(asset.name)}&lt;/Header&gt;
+      &lt;CardActionAreaContainer {...asset} /&gt;
+      {buttons}
+    &lt;/Card&gt;
+  );
+}
+&nbsp;
+function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
+  const [showDetailsLog, setShowDetailsLog] = useState(false);
+  const [showDeleteLog, setShowDeleteLog] = useState(false);
+  const [showReconfigure, setShowReconfigure] = useState(false);
+  const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
+&nbsp;
+  return (
+    digitalTwin &amp;&amp; (
+      &lt;&gt;
+        &lt;AssetCard
+          asset={asset}
+          buttons={
+            &lt;CardButtonsContainerManage
+              assetName={asset.name}
+              setShowDelete={setShowDeleteLog}
+              setShowDetails={setShowDetailsLog}
+              setShowReconfigure={setShowReconfigure}
+            /&gt;
+          }
+        /&gt;
+        &lt;CustomSnackbar /&gt;
+        &lt;DetailsDialog
+          showDialog={showDetailsLog}
+          setShowDialog={setShowDetailsLog}
+          name={asset.name}
+        /&gt;
+        &lt;ReconfigureDialog
+          showDialog={showReconfigure}
+          setShowDialog={setShowReconfigure}
+          name={asset.name}
+        /&gt;
+        &lt;DeleteDialog
+          showDialog={showDeleteLog}
+          setShowDialog={setShowDeleteLog}
+          name={asset.name}
+          onDelete={onDelete}
+        /&gt;
+      &lt;/&gt;
+    )
+  );
+}
+&nbsp;
+function AssetCardExecute({ asset }: AssetCardProps) {
+  useState&lt;AlertColor&gt;('success');
+  const [showLog, setShowLog] = useState(false);
+  const digitalTwin = useSelector(selectDigitalTwinByName(asset.name));
+&nbsp;
+  return (
+    digitalTwin &amp;&amp; (
+      &lt;&gt;
+        &lt;AssetCard
+          asset={asset}
+          buttons={
+            &lt;CardButtonsContainerExecute
+              assetName={asset.name}
+              setShowLog={setShowLog}
+            /&gt;
+          }
+        /&gt;
+        &lt;CustomSnackbar /&gt;
+        &lt;LogDialog
+          showLog={showLog}
+          setShowLog={setShowLog}
+          name={asset.name}
+        /&gt;
+      &lt;/&gt;
+    )
+  );
+}
+&nbsp;
+export { AssetCardManage, AssetCardExecute };
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Nov 13 2024 18:51:40 GMT+0100 (Ora standard dell’Europa centrale)</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>
