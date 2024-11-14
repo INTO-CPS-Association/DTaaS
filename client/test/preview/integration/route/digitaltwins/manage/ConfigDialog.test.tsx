@@ -1,5 +1,5 @@
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
@@ -102,7 +102,7 @@ describe('ReconfigureDialog', () => {
       isModified: true,
     };
 
-    React.act(() => {
+    act(() => {
       storeConfig.dispatch(addOrUpdateFile(modifiedFile));
     });
 

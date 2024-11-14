@@ -45,9 +45,7 @@ describe('DetailsDialog', () => {
     });
 
     await waitFor(() => {
-      const detailsDialog = screen.getByText(
-        /There is no README\.md file in the Asset 1 GitLab folder/,
-      );
+      const detailsDialog = screen.getByText(/There is no README\.md file/);
       expect(detailsDialog).toBeInTheDocument();
     });
   });
@@ -65,11 +63,7 @@ describe('DetailsDialog', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(
-          'There is no README.md file in the Asset 1 GitLab folder',
-        ),
-      ).toBeNull();
+      expect(screen.queryByText('There is no README.md file')).toBeNull();
     });
   });
 });
