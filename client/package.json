@@ -87,7 +87,6 @@
     "redux": "^5.0.1",
     "remarkable": "^2.0.1",
     "remarkable-katex": "^1.2.1",
-    "reselect": "^5.1.1",
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.2.1",
     "styled-components": "^6.1.1",
