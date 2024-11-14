@@ -50,6 +50,7 @@ jobs:
           yarn test:unit
           yarn test:preview:unit
           yarn test:preview:int
+          yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov
         uses: codecov/codecov-action@v3

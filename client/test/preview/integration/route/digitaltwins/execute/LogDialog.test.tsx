@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -24,11 +24,13 @@ describe('LogDialog', () => {
   const setShowLog = jest.fn();
 
   const renderLogDialog = () => {
-    render(
-      <Provider store={store}>
-        <LogDialog name={assetName} showLog={true} setShowLog={setShowLog} />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <LogDialog name={assetName} showLog={true} setShowLog={setShowLog} />
+        </Provider>,
+      );
+    });
   };
 
   beforeEach(() => {
@@ -83,7 +85,9 @@ describe('LogDialog', () => {
     renderLogDialog();
 
     const closeButton = screen.getByRole('button', { name: /Close/i });
-    fireEvent.click(closeButton);
+    act(() => {
+      fireEvent.click(closeButton);
+    });
 
     expect(setShowLog).toHaveBeenCalled();
   });

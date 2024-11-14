@@ -2,11 +2,11 @@ import { combineReducers, configureStore, createStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import * as React from 'react';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { Provider } from 'react-redux';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
 import PreviewTab from 'preview/route/digitaltwins/editor/PreviewTab';
 
@@ -47,11 +47,13 @@ describe('PreviewTab', () => {
   it('renders Markdown content using md.render', () => {
     const markdownContent = '# Heading\nSome **bold** text.';
 
-    render(
-      <Provider store={store}>
-        <PreviewTab fileContent={markdownContent} fileType="md" />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <PreviewTab fileContent={markdownContent} fileType="md" />
+        </Provider>,
+      );
+    });
     expect(screen.getByText('Heading')).toBeInTheDocument();
 
     expect(
@@ -73,6 +75,7 @@ describe('PreviewTab', () => {
     const jsonFile = {
       name: 'config.json',
       content: '{"key": "value"}',
+      isNew: false,
       isModified: false,
     };
 
@@ -80,11 +83,13 @@ describe('PreviewTab', () => {
       store.dispatch(addOrUpdateFile(jsonFile));
     });
 
-    render(
-      <Provider store={store}>
-        <PreviewTab fileContent={jsonFile.content} fileType="json" />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <PreviewTab fileContent={jsonFile.content} fileType="json" />
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText(/"key"/)).toBeInTheDocument();
     expect(screen.getByText(/"value"/)).toBeInTheDocument();
@@ -97,11 +102,13 @@ describe('PreviewTab', () => {
       isModified: false,
     };
 
-    render(
-      <Provider store={store}>
-        <PreviewTab fileContent={yamlFile.content} fileType="yaml" />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <PreviewTab fileContent={yamlFile.content} fileType="yaml" />
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText(/key:/)).toBeInTheDocument();
     expect(screen.getByText(/value/)).toBeInTheDocument();
@@ -114,11 +121,13 @@ describe('PreviewTab', () => {
       isModified: false,
     };
 
-    render(
-      <Provider store={store}>
-        <PreviewTab fileContent={bashFile.content} fileType="sh" />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <PreviewTab fileContent={bashFile.content} fileType="sh" />
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText(/echo/)).toBeInTheDocument();
     expect(screen.getByText(/"Hello World"/)).toBeInTheDocument();

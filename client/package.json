@@ -31,10 +31,11 @@
     "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
     "test:e2e:ext": "cross-env ext=true yarn test:e2e",
     "test:e2e": "yarn config:test && playwright test -c ./playwright.config.ts",
-    "test:int": "jest -c ./jest.config.json ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
-    "test:unit": "jest -c ./jest.config.json ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
-    "test:preview:int": "jest -c ./jest.config.json ../test/preview/integration --setupFilesAfterEnv ./test/preview/integration/jest.setup.ts",
-    "test:preview:unit": "jest -c ./jest.config.json ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
+    "test:coverage:int-unit": "npx istanbul-combine -d coverage/all -r lcov -r json -r text coverage/unit/coverage-final.json coverage/int/coverage-final.json coverage/preview/unit/coverage-final.json coverage/preview/int/coverage-final.json",
+    "test:int": "jest -c ./jest.config.json jest --coverage --coverageDirectory=coverage/int ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
+    "test:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/unit ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
+    "test:preview:int": "jest -c ./jest.config.json --coverageDirectory=coverage/preview/int ../test/preview/integration --setupFilesAfterEnv ./test/preview/integration/jest.setup.ts",
+    "test:preview:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/preview/unit ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
   },
   "eslintConfig": {
     "extends": [

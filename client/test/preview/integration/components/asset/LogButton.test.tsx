@@ -1,4 +1,4 @@
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render, fireEvent, act } from '@testing-library/react';
 import LogButton from 'preview/components/asset/LogButton';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -13,14 +13,16 @@ describe('LogButton', () => {
     setShowLog: jest.Mock = jest.fn(),
     logButtonDisabled = false,
   ) =>
-    render(
-      <Provider store={store}>
-        <LogButton
-          setShowLog={setShowLog}
-          logButtonDisabled={logButtonDisabled}
-        />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <LogButton
+            setShowLog={setShowLog}
+            logButtonDisabled={logButtonDisabled}
+          />
+        </Provider>,
+      );
+    });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -35,7 +37,9 @@ describe('LogButton', () => {
     renderLogButton();
 
     const logButton = screen.getByRole('button', { name: /Log/i });
-    fireEvent.click(logButton);
+    act(() => {
+      fireEvent.click(logButton);
+    });
 
     expect(logButton).toBeEnabled();
   });
@@ -44,7 +48,9 @@ describe('LogButton', () => {
     renderLogButton(jest.fn(), true);
 
     const logButton = screen.getByRole('button', { name: /Log/i });
-    fireEvent.click(logButton);
+    act(() => {
+      fireEvent.click(logButton);
+    });
   });
 
   it('toggles setShowLog value correctly', () => {
@@ -57,10 +63,14 @@ describe('LogButton', () => {
 
     const logButton = screen.getByRole('button', { name: /Log/i });
 
-    fireEvent.click(logButton);
+    act(() => {
+      fireEvent.click(logButton);
+    });
     expect(toggleValue).toBe(true);
 
-    fireEvent.click(logButton);
+    act(() => {
+      fireEvent.click(logButton);
+    });
     expect(toggleValue).toBe(false);
   });
 });

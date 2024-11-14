@@ -5,9 +5,8 @@ import {
   act,
   fireEvent,
 } from '@testing-library/react';
-import Sidebar, {
-  handleFileClick,
-} from 'preview/route/digitaltwins/editor/Sidebar';
+import Sidebar from 'preview/route/digitaltwins/editor/Sidebar';
+import { handleReconfigureFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 import { FileState } from 'preview/store/file.slice';
 import * as React from 'react';
@@ -25,16 +24,20 @@ describe('Sidebar', () => {
   const setFileContent = jest.fn();
   const setFileType = jest.fn();
 
-  const clickFile = async (fileType: string, expectedFileName: string) => {
-    const fileNode = screen.getByText(fileType);
-    fireEvent.click(fileNode);
-
-    await waitFor(() => {
-      expect(screen.getByText(expectedFileName)).toBeInTheDocument();
+  const renderSidebar = async (tab: string, name?: string) => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <Sidebar
+            name={name}
+            setFileName={setFileName}
+            setFileContent={setFileContent}
+            setFileType={setFileType}
+            tab={tab}
+          />
+        </Provider>,
+      );
     });
-
-    const file = screen.getByText(expectedFileName);
-    fireEvent.click(file);
   };
 
   beforeEach(async () => {
@@ -49,19 +52,6 @@ describe('Sidebar', () => {
         return mockDigitalTwin;
       },
     );
-
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <Sidebar
-            name="mockedDTName"
-            setFileName={setFileName}
-            setFileContent={setFileContent}
-            setFileType={setFileType}
-          />
-        </Provider>,
-      );
-    });
   });
 
   afterEach(() => {
@@ -69,6 +59,8 @@ describe('Sidebar', () => {
   });
 
   it('renders Sidebar', async () => {
+    await renderSidebar('reconfigure', 'mockedDTName');
+
     await waitFor(() => {
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Lifecycle')).toBeInTheDocument();
@@ -77,99 +69,84 @@ describe('Sidebar', () => {
   });
 
   it('should update file state if the file is modified', async () => {
+    await renderSidebar('reconfigure', 'mockedDTName');
+
     const modifiedFiles: FileState[] = [
-      { name: 'testFile.md', content: 'modified content', isModified: true },
+      {
+        name: 'testFile.md',
+        content: 'modified content',
+        isNew: false,
+        isModified: true,
+      },
     ];
 
     await act(async () => {
-      await handleFileClick(
+      handleReconfigureFileClick(
         'testFile.md',
         mockDigitalTwin,
+        modifiedFiles,
         setFileName,
         setFileContent,
         setFileType,
-        modifiedFiles,
       );
     });
 
     expect(setFileName).toHaveBeenCalledWith('testFile.md');
     expect(setFileContent).toHaveBeenCalledWith('modified content');
     expect(setFileType).toHaveBeenCalledWith('md');
-    expect(mockDigitalTwin.getFileContent).not.toHaveBeenCalled();
+    expect(mockDigitalTwin.DTAssets.getFileContent).not.toHaveBeenCalled();
   });
 
   it('should fetch and update file state if the file is not modified', async () => {
+    await renderSidebar('reconfigure', 'mockedDTName');
+
     const modifiedFiles: FileState[] = [];
-    mockDigitalTwin.getFileContent = jest
+    mockDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockResolvedValue('fetched content');
 
     await act(async () => {
-      await handleFileClick(
+      await handleReconfigureFileClick(
         'testFile.md',
         mockDigitalTwin,
+        modifiedFiles,
         setFileName,
         setFileContent,
         setFileType,
-        modifiedFiles,
       );
     });
 
-    expect(mockDigitalTwin.getFileContent).toHaveBeenCalledWith('testFile.md');
+    expect(mockDigitalTwin.DTAssets.getFileContent).toHaveBeenCalledWith(
+      'testFile.md',
+    );
     expect(setFileName).toHaveBeenCalledWith('testFile.md');
     expect(setFileContent).toHaveBeenCalledWith('fetched content');
     expect(setFileType).toHaveBeenCalledWith('md');
   });
 
-  it('should set error message if fetching file content fails', async () => {
-    const modifiedFiles: FileState[] = [];
-    mockDigitalTwin.getFileContent = jest.fn().mockResolvedValue(null);
+  it('opens the file name dialog when Add new file button is clicked', async () => {
+    await renderSidebar('create');
 
-    await act(async () => {
-      await handleFileClick(
-        'testFile.md',
-        mockDigitalTwin,
-        setFileName,
-        setFileContent,
-        setFileType,
-        modifiedFiles,
-      );
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('Add new file'));
     });
 
-    expect(mockDigitalTwin.getFileContent).toHaveBeenCalledWith('testFile.md');
-    expect(setFileContent).toHaveBeenCalledWith(
-      'Error fetching testFile.md content',
+    expect(screen.getByText('Enter the file name')).toBeInTheDocument();
+  });
+
+  it('renders Sidebar with null digitalTwin when tab is create', async () => {
+    (useSelector as unknown as jest.Mock).mockImplementationOnce(
+      (selector: (state: RootState) => unknown) => {
+        if (selector === selectDigitalTwinByName('')) {
+          return null;
+        }
+        if (selector.toString().includes('state.files')) {
+          return [];
+        }
+        return null;
+      },
     );
-  });
 
-  it('calls handleFileClick when a description file is clicked', async () => {
-    await clickFile('Description', 'descriptionFile');
-  });
-
-  it('calls handleFileClick when a config file is clicked', async () => {
-    await clickFile('Configuration', 'configFile');
-  });
-
-  it('calls handleFileClick when a lifecycle file is clicked', async () => {
-    await clickFile('Lifecycle', 'lifecycleFile');
-  });
-
-  it('call setFileContent with error message if file content is null', async () => {
-    mockDigitalTwin.getFileContent = jest.fn().mockResolvedValue(null);
-
-    await act(async () => {
-      await handleFileClick(
-        'testFile.md',
-        mockDigitalTwin,
-        setFileName,
-        setFileContent,
-        setFileType,
-        [],
-      );
-    });
-
-    expect(setFileContent).toHaveBeenCalledWith(
-      'Error fetching testFile.md content',
-    );
+    await renderSidebar('create', '');
   });
 });

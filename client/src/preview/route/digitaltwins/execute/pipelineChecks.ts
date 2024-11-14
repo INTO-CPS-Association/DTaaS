@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import {
   fetchJobLogs,
   updatePipelineStateOnCompletion,

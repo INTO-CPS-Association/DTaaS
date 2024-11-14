@@ -45,11 +45,13 @@ describe('AssetCardExecute Integration Test', () => {
       }),
     );
 
-    render(
-      <Provider store={store}>
-        <AssetCardExecute asset={asset} />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <AssetCardExecute asset={asset} />
+        </Provider>,
+      );
+    });
   });
 
   afterEach(() => {
