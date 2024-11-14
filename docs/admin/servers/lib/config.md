@@ -1,22 +1,27 @@
 # :gear: Configure Library Microservice
 
-The microservices requires config specified in INI format.
+The microservices requires config specified in yaml format.
 The template configuration file is:
 
-```ini
-PORT='4001'
-MODE='local' or 'git'
-LOCAL_PATH='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
+```yaml
+
+GIT_USERX_REPO_URL=''
+GIT_USERX_API_TOKEN='<TOKEN>'
+
+port: '4001'
+mode: 'local' or 'git'
+local-path: '/Users/<Username>/DTaaS/files'
+log-level: 'debug'
+apollo-path: '/lib' or ''
+graphql-playground: 'false' or 'true'
 
 #Only needed if git mode
-GIT_USER1_REPO_URL='<git repo url>'
-GIT_USER1_API_TOKEN='<TOKEN>'
-...
-GIT_USERX_REPO_URL='<git repo url>'
-GIT_USERX_API_TOKEN='<TOKEN>'
+git-repos:
+  - <username>:
+      repo-url: '<git repo url>'
+  ...
+  - <username>:
+      repo-url: '<git repo url>'
 
 ```
 
@@ -26,10 +31,10 @@ by the Library microservice.
 
 The `MODE` variable sets the mode for which and how the files should be served. If `git` mode is chosen, the following is required.
 
-| Variable | Description |
-|----------|-------------|
-| `GIT_USER1_REPO_URL` | URL of the git repository for user 1 |
-| `GIT_USER1_API_TOKEN` | API token for accessing the git repository for user 1 (if not public) |
+| Variable       | Description                                        |
+| -------------- | -------------------------------------------------- |
+| `username`     | Username in which folder the repos will be cloned. |
+| `git repo url` | HTTP URL of the git repository to clone.           |
 
 Replace the default values the appropriate values for your setup.
 
