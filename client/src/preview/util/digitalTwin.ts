@@ -49,7 +49,7 @@ class DigitalTwin {
           await this.DTAssets.getFileContent('description.md');
         this.description = fileContent;
       } catch (_error) {
-        this.description = `There is no description.md file in the ${this.DTName} GitLab folder`;
+        this.description = `There is no description.md file`;
       }
     }
   }
@@ -67,7 +67,7 @@ class DigitalTwin {
           },
         );
       } catch (_error) {
-        this.fullDescription = `There is no README.md file in the ${this.DTName} GitLab folder`;
+        this.fullDescription = `There is no README.md file`;
       }
     } else {
       this.fullDescription = 'Error fetching description, retry.';

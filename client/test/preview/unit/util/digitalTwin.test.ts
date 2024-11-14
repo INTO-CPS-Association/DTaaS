@@ -69,7 +69,7 @@ describe('DigitalTwin', () => {
     await dt.getDescription();
 
     expect(dt.description).toBe(
-      'There is no description.md file in the test-DTName GitLab folder',
+      'There is no description.md file',
     );
   });
 
@@ -111,7 +111,7 @@ describe('DigitalTwin', () => {
     await dt.getFullDescription();
 
     expect(dt.fullDescription).toBe(
-      'There is no README.md file in the test-DTName GitLab folder',
+      'There is no README.md file',
     );
   });
 
