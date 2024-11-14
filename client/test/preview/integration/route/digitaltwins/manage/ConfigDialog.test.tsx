@@ -1,5 +1,5 @@
 import AssetBoard from 'preview/components/asset/AssetBoard';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
@@ -28,7 +28,7 @@ describe('ReconfigureDialog', () => {
 
     dispatchSpy = jest.spyOn(storeConfig, 'dispatch');
 
-    React.act(() => {
+    act(() => {
       render(
         <Provider store={storeConfig}>
           <AssetBoard tab="Manage" />
@@ -46,17 +46,17 @@ describe('ReconfigureDialog', () => {
     const reconfigureButton = screen.getByRole('button', {
       name: /Reconfigure/i,
     });
-    await React.act(async () => {
+    await act(async () => {
       reconfigureButton.click();
     });
 
     const cancelButton = await screen.findByRole('button', { name: /Cancel/i });
-    await React.act(async () => {
+    await act(async () => {
       cancelButton.click();
     });
 
     const noButton = await screen.findByRole('button', { name: /No/i });
-    await React.act(async () => {
+    await act(async () => {
       noButton.click();
     });
 
@@ -70,17 +70,17 @@ describe('ReconfigureDialog', () => {
     const reconfigureButton = screen.getByRole('button', {
       name: /Reconfigure/i,
     });
-    await React.act(async () => {
+    await act(async () => {
       reconfigureButton.click();
     });
 
     const cancelButton = await screen.findByRole('button', { name: /Cancel/i });
-    await React.act(async () => {
+    await act(async () => {
       cancelButton.click();
     });
 
     const yesButton = await screen.findByRole('button', { name: /Yes/i });
-    await React.act(async () => {
+    await act(async () => {
       yesButton.click();
     });
 
@@ -102,24 +102,24 @@ describe('ReconfigureDialog', () => {
       isModified: true,
     };
 
-    React.act(() => {
+    act(() => {
       storeConfig.dispatch(addOrUpdateFile(modifiedFile));
     });
 
     const reconfigureButton = screen.getByRole('button', {
       name: /Reconfigure/i,
     });
-    await React.act(async () => {
+    await act(async () => {
       reconfigureButton.click();
     });
 
     const saveButton = await screen.findByRole('button', { name: /Save/i });
-    await React.act(async () => {
+    await act(async () => {
       saveButton.click();
     });
 
     const yesButton = await screen.findByRole('button', { name: /Yes/i });
-    await React.act(async () => {
+    await act(async () => {
       yesButton.click();
     });
 
@@ -150,7 +150,7 @@ describe('ReconfigureDialog', () => {
       .spyOn(digitalTwin.DTAssets, 'updateFileContent')
       .mockRejectedValue(new Error('Mocked error'));
 
-    await React.act(async () => {
+    await act(async () => {
       await ReconfigureDialog.handleFileUpdate(file, digitalTwin, dispatch);
     });
 

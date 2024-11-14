@@ -72,14 +72,4 @@ describe('fetchAssets', () => {
 
     expect(dispatch).toHaveBeenCalledWith(setAssets([]));
   });
-
-  /*
-  it('should init gitlabinstance and return digital twin', async () => {
-    (mockGitlabInstance.init as jest.Mock).mockResolvedValue({});
-
-    const digitalTwin = await initDigitalTwin('testName');
-
-    expect(digitalTwin).toBe(mockDigitalTwin);
-});
-  */
 });
