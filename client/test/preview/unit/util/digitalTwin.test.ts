@@ -68,9 +68,7 @@ describe('DigitalTwin', () => {
 
     await dt.getDescription();
 
-    expect(dt.description).toBe(
-      'There is no description.md file',
-    );
+    expect(dt.description).toBe('There is no description.md file');
   });
 
   it('should return full description with updated image URLs if projectId exists', async () => {
@@ -110,9 +108,7 @@ describe('DigitalTwin', () => {
 
     await dt.getFullDescription();
 
-    expect(dt.fullDescription).toBe(
-      'There is no README.md file',
-    );
+    expect(dt.fullDescription).toBe('There is no README.md file');
   });
 
   it('should return error message when projectId is missing', async () => {
