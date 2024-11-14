@@ -25,7 +25,11 @@ export default class GitFilesService implements IFilesService {
 
   private cloneRepositories(): Promise<void[]> {
     const userRepoConfigs = this.configService.getGitRepos();
-    
+
+    if (!userRepoConfigs || userRepoConfigs.length === 0) {
+      throw new Error('No git repos found in config');
+    }
+
     const clonePromises = userRepoConfigs.map((repoConf) => {
       const user = Object.keys(repoConf)[0];
       const repoUrl = repoConf[user]['repo-url'];
