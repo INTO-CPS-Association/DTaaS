@@ -19,12 +19,12 @@ export function isValidFileType(
 }
 
 class FileHandler implements IFile {
-  public DTName: string;
+  public name: string;
 
   public gitlabInstance: GitlabInstance;
 
-  constructor(DTName: string, gitlabInstance: GitlabInstance) {
-    this.DTName = DTName;
+  constructor(name: string, gitlabInstance: GitlabInstance) {
+    this.name = name;
     this.gitlabInstance = gitlabInstance;
   }
 
@@ -61,7 +61,7 @@ class FileHandler implements IFile {
       this.gitlabInstance.projectId!,
       digitalTwinPath,
       'main',
-      `Removing ${this.DTName} digital twin`,
+      `Removing ${this.name} digital twin`,
     );
   }
 
@@ -76,9 +76,9 @@ class FileHandler implements IFile {
 
   async getFileNames(fileType: FileType): Promise<string[]> {
     const pathMap = {
-      [FileType.DESCRIPTION]: `digital_twins/${this.DTName}`,
-      [FileType.CONFIGURATION]: `digital_twins/${this.DTName}`,
-      [FileType.LIFECYCLE]: `digital_twins/${this.DTName}/lifecycle`,
+      [FileType.DESCRIPTION]: `digital_twins/${this.name}`,
+      [FileType.CONFIGURATION]: `digital_twins/${this.name}`,
+      [FileType.LIFECYCLE]: `digital_twins/${this.name}/lifecycle`,
     };
 
     try {
@@ -98,6 +98,25 @@ class FileHandler implements IFile {
       return [];
     }
   }
+
+  async getLibraryFileNames(filePath: string): Promise<string[]> {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: filePath,
+            recursive: false,
+          },
+        );
+
+        return response
+          .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
+          .map((file) => file.name);
+      } catch {
+        return [];
+      }
+    }
 }
 
 export default FileHandler;

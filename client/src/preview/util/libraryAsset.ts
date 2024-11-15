@@ -1,6 +1,6 @@
 import { getAuthority } from "util/envUtil";
-import DTAssets from "./DTAssets";
 import GitlabInstance from "./gitlab";
+import LibraryManager from "./libraryManager";
 
 class LibraryAsset {
   public name: string;
@@ -17,7 +17,9 @@ class LibraryAsset {
 
   public fullDescription: string = '';
 
-  public DTAssets: DTAssets
+  public libraryManager: LibraryManager;
+  
+  public configFiles: string[] = [];
 
   constructor(
     name: string,
@@ -31,17 +33,17 @@ class LibraryAsset {
     this.isPrivate = isPrivate;
     this.type = type;
     this.gitlabInstance = gitlabInstance;
-    this.DTAssets = new DTAssets(name, this.gitlabInstance);
+    this.libraryManager = new LibraryManager(name, this.gitlabInstance);
   }
 
   async getDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       try {
         const fileContent =
-          await this.DTAssets.getFileContent('description.md');
+          await this.libraryManager.getFileContent(this.isPrivate, this.path, 'description.md');
         this.description = fileContent;
       } catch (_error) {
-        this.description = `There is no description.md file in the ${this.name} GitLab folder`;
+        this.description = `There is no description.md file`;
       }
     }
   }
@@ -51,7 +53,7 @@ class LibraryAsset {
       const imagesPath = this.path;
       console.log('LibraryAsset.ts: imagesPath:', imagesPath);
       try {
-        const fileContent = await this.DTAssets.getFileContent('README.md');
+        const fileContent = await this.libraryManager.getFileContent(this.isPrivate, this.path, 'README.md');
         this.fullDescription = fileContent.replace(
           /(!\[[^\]]*\])\(([^)]+)\)/g,
           (match, altText, imagePath) => {
@@ -60,11 +62,15 @@ class LibraryAsset {
           },
         );
       } catch (_error) {
-        this.fullDescription = `There is no README.md file in the ${this.name} GitLab folder`;
+        this.fullDescription = `There is no README.md file`;
       }
     } else {
       this.fullDescription = 'Error fetching description, retry.';
     }
+  }
+
+  async getConfigFiles() {
+    this.configFiles = await this.libraryManager.getFileNames(this.isPrivate, this.path);
   }
 }
 
