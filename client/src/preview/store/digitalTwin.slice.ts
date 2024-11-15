@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { JobLog } from 'preview/components/asset/StartStopButton';
 import { RootState } from 'store/store';
 

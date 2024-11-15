@@ -44,14 +44,16 @@ describe('StartStopButton Integration Test', () => {
 
   beforeEach(() => {
     store = createStore();
-    render(
-      <Provider store={store}>
-        <StartStopButton
-          assetName={assetName}
-          setLogButtonDisabled={setLogButtonDisabled}
-        />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <StartStopButton
+            assetName={assetName}
+            setLogButtonDisabled={setLogButtonDisabled}
+          />
+        </Provider>,
+      );
+    });
   });
 
   afterEach(() => {

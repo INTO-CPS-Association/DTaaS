@@ -29,12 +29,17 @@ The installation requirements to run this docker version of the DTaaS are:
     the [client docs](../client/auth.md).
 <!-- markdownlint-enable MD046 -->
 
-## Download a Release
+## Clone Codebase
 
-You can find all releases of the DTaaS software on the
-[GitHub releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
-Download the latest release as a zip file, and extract it to any directory
-on your system.
+If you have not cloned the DTaaS git repository, cloning would be
+the first step.
+In case you already have the codebase, you can skip the cloning step.
+To clone, do:
+
+```bash
+git clone https://github.com/into-cps-association/DTaaS.git
+cd DTaaS/deploy/services/gitlab
+```
 
 In this guide we will assume the contents of the zip file have been extracted
 to the directory: `/home/DTaaS`.

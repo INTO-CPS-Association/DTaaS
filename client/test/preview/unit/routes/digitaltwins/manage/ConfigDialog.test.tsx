@@ -13,6 +13,7 @@ import store, { RootState } from 'store/store';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
+import { selectModifiedFiles } from 'preview/store/file.slice';
 
 jest.mock('preview/store/file.slice', () => ({
   ...jest.requireActual('preview/store/file.slice'),
@@ -34,7 +35,7 @@ jest.mock('preview/route/digitaltwins/editor/Sidebar', () => ({
   default: () => <div>Sidebar</div>,
 }));
 
-jest.mock('preview/util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/digitalTwin', () => ({
   formatName: jest.fn().mockReturnValue('TestDigitalTwin'),
 }));
 
@@ -53,19 +54,27 @@ describe('ReconfigureDialog', () => {
         if (selector === selectDigitalTwinByName('mockedDTName')) {
           return mockDigitalTwin;
         }
-        if (selector.toString().includes('state.files')) {
+        if (selector === selectModifiedFiles) {
           return [
             {
               name: 'description.md',
               content: 'Updated description',
+              isNew: false,
               isModified: true,
             },
             {
               name: 'lifecycle.md',
               content: 'Updated lifecycle',
+              isNew: false,
               isModified: true,
             },
-          ];
+            {
+              name: 'newFile.md',
+              content: 'New file content',
+              isNew: true,
+              isModified: false,
+            },
+          ].filter((file) => !file.isNew);
         }
         return mockDigitalTwin;
       },
@@ -149,10 +158,11 @@ describe('ReconfigureDialog', () => {
     const descriptionFile = {
       name: 'description.md',
       content: 'Updated description',
+      isNew: false,
       isModified: true,
     };
 
-    mockDigitalTwin.updateFileContent = jest
+    mockDigitalTwin.DTAssets.updateFileContent = jest
       .fn()
       .mockResolvedValue(Promise.resolve());
 
@@ -167,7 +177,7 @@ describe('ReconfigureDialog', () => {
     const dispatch = useDispatch();
     const saveButton = screen.getByRole('button', { name: /Save/i });
 
-    mockDigitalTwin.updateFileContent = jest
+    mockDigitalTwin.DTAssets.updateFileContent = jest
       .fn()
       .mockRejectedValueOnce(new Error('Error updating file'));
 
@@ -205,6 +215,18 @@ describe('ReconfigureDialog', () => {
 
     await waitFor(() => {
       expect(handleFileUpdateSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should not return new files from modified files', async () => {
+    const modifiedFiles = useSelector((state: RootState) =>
+      state.files.filter((file) => !file.isNew),
+    );
+
+    await waitFor(() => {
+      expect(modifiedFiles).not.toContainEqual(
+        expect.objectContaining({ name: 'newFile.md' }),
+      );
     });
   });
 });

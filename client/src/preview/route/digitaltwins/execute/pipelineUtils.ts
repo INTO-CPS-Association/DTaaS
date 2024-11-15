@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import DigitalTwin, { formatName } from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
 import {
   setJobLogs,

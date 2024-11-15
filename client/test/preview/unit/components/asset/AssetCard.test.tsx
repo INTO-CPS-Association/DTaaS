@@ -6,7 +6,7 @@ import {
 import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store from 'store/store';
-import { formatName } from 'preview/util/gitlabDigitalTwin';
+import { formatName } from 'preview/util/digitalTwin';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

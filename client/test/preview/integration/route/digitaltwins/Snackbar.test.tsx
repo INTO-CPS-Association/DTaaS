@@ -30,11 +30,13 @@ describe('CustomSnackbar Integration Test', () => {
       }),
     );
 
-    render(
-      <Provider store={store}>
-        <CustomSnackbar />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <CustomSnackbar />
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText('test message')).toBeInTheDocument();
   });
@@ -47,11 +49,13 @@ describe('CustomSnackbar Integration Test', () => {
       }),
     );
 
-    render(
-      <Provider store={store}>
-        <CustomSnackbar />
-      </Provider>,
-    );
+    act(() => {
+      render(
+        <Provider store={store}>
+          <CustomSnackbar />
+        </Provider>,
+      );
+    });
 
     act(() => {
       jest.advanceTimersByTime(6000);

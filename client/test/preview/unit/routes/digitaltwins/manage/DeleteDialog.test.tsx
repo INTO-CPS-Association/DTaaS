@@ -10,7 +10,7 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-jest.mock('preview/util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/digitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
   formatName: jest.fn(),
 }));

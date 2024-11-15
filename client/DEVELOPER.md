@@ -218,5 +218,5 @@ and tested using the following yarn commands.
 ```bash
 yarn test:preview:int
 yarn test:preview:unit
+yarn test:coverage:int-unit
 ```
-

@@ -2,7 +2,7 @@ import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChec
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
-jest.mock('preview/util/gitlabDigitalTwin', () => ({
+jest.mock('preview/util/digitalTwin', () => ({
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
   formatName: jest.fn(),
 }));

@@ -10,12 +10,12 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import snackbarReducer from 'preview/store/snackbar.slice';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 
 const setupStore = () => {
   const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
   const files: FileState[] = [
-    { name: 'Asset 1', content: 'content1', isModified: false },
+    { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
   ];
 
   const store = configureStore({
