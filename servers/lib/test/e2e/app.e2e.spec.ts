@@ -37,9 +37,12 @@ describe('End to End test for the application', () => {
     await app.init(); // Initialize the application
     await app.listen(process.env.PORT);
 
+    // Check if the port is available
     // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 4000));
-  }, 10000);
+    while (!app.getHttpServer().listening) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  }, 15000);
 
   afterAll(async () => {
     await app.close();
