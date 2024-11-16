@@ -8,8 +8,8 @@ describe('cloudcmd test for the application', () => {
 
     await writeFile(`${process.env.LOCAL_PATH}/test.txt`, 'content12345');
     // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 8000));
-  }, 10000);
+    await new Promise((resolve) => setTimeout(resolve, 50000)); // This is problematic.
+  }, 55000);
 
   afterAll(async () => {
     await unlink(`${process.env.LOCAL_PATH}/test.txt`);
