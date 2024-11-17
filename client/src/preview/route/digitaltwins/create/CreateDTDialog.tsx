@@ -191,7 +191,7 @@ const handleConfirm = async (
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
 ) => {
-  if (validateFiles(files, setErrorMessage)) return;
+  if (validateFiles(files, libraryFiles, setErrorMessage)) return;
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
   const result = await digitalTwin.createDT(files);

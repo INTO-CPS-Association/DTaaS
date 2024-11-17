@@ -175,6 +175,51 @@ class DigitalTwin {
     }
   }
 
+  private async prepareAllAssetFiles(
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<Array<{ name: string; content: string; isNew: boolean }>> {
+    const assetFilesToCreate: Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+    }> = [];
+
+    for (const asset of cartAssets) {
+      const assetFiles = await this.DTAssets.getFilesFromAsset(asset.path);
+      for (const assetFile of assetFiles) {
+        const updatedFile = this.getUpdatedLibraryFile(
+          assetFile.name,
+          asset.path,
+          libraryFiles,
+        );
+
+        assetFilesToCreate.push({
+          name: `${asset.name}/${assetFile.name}`,
+          content: updatedFile ? updatedFile.fileContent : assetFile.content,
+          isNew: true,
+        });
+      }
+    }
+
+    return assetFilesToCreate;
+  }
+
+  private getUpdatedLibraryFile(
+    fileName: string,
+    assetPath: string,
+    libraryFiles: LibraryConfigFile[],
+  ): LibraryConfigFile | null {
+    return (
+      libraryFiles.find(
+        (libFile) =>
+          libFile.fileName === fileName &&
+          libFile.assetPath === assetPath &&
+          libFile.isModified,
+      ) || null
+    );
+  }
+
   async delete() {
     if (this.gitlabInstance.projectId) {
       try {
