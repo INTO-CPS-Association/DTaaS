@@ -6,8 +6,8 @@ import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
 import * as RemarkableKatex from 'remarkable-katex';
 import { useSelector } from 'react-redux';
-import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import { selectAssetByPath } from 'preview/store/assets.slice';
+import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 
 interface DetailsDialogProps {
   showDialog: boolean;
@@ -33,9 +33,8 @@ function DetailsDialog({
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
   const libraryAsset = useSelector(selectAssetByPath(path || ''));
 
-
   const asset = library ? libraryAsset : digitalTwin;
-  
+
   const md = new Remarkable({
     html: true,
     typographer: true,
@@ -87,4 +86,3 @@ function DetailsDialog({
 }
 
 export default DetailsDialog;
-

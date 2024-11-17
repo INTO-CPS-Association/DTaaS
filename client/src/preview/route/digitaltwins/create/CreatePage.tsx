@@ -72,6 +72,8 @@ function CreatePage({
   const [fileName, setFileName] = useState('');
   const [fileContent, setFileContent] = useState('');
   const [fileType, setFileType] = useState('');
+  const [isLibraryFile, setIsLibraryFile] = useState(false);
+  const [libraryAssetPath, setLibraryAssetPath] = useState('');
   const [openChangeFileNameDialog, setOpenChangeFileNameDialog] =
     useState(false);
   const [openDeleteFileDialog, setOpenDeleteFileDialog] = useState(false);
@@ -103,6 +105,7 @@ function CreatePage({
           fileName={fileName}
           setOpenDeleteFileDialog={setOpenDeleteFileDialog}
           setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
+          isLibraryFile={isLibraryFile}
         />
         <DigitalTwinNameInput
           value={newDigitalTwinName}
@@ -119,6 +122,10 @@ function CreatePage({
           setFileContent={setFileContent}
           fileType={fileType}
           setFileType={setFileType}
+          isLibraryFile={isLibraryFile}
+          setIsLibraryFile={setIsLibraryFile}
+          libraryAssetPath={libraryAssetPath}
+          setLibraryAssetPath={setLibraryAssetPath}
         />
       </Box>
 

@@ -4,6 +4,7 @@ import { Grid, CircularProgress, Button } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import {
@@ -20,6 +21,8 @@ interface SidebarProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
+  setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
+  setLibraryAssetPath: Dispatch<SetStateAction<string>>;
   tab: string;
 }
 
@@ -28,6 +31,8 @@ const Sidebar = ({
   setFileName,
   setFileContent,
   setFileType,
+  setIsLibraryFile,
+  setLibraryAssetPath,
   tab,
 }: SidebarProps) => {
   const [isLoading, setIsLoading] = useState(!!name);
@@ -39,16 +44,42 @@ const Sidebar = ({
     name ? selectDigitalTwinByName(name)(state) : null,
   );
   const files: FileState[] = useSelector((state: RootState) => state.files);
+
+  const assets = useSelector((state: RootState) => state.cart.assets);
+  const libraryFiles = useSelector(
+    (state: RootState) => state.libraryConfigFiles,
+  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (name && digitalTwin) {
-      const loadData = async () => {
+    const loadFiles = async () => {
+      if (name && digitalTwin) {
         await fetchData(digitalTwin);
-        setIsLoading(false);
-      };
-      loadData();
-    }
+      }
+
+      if (assets.length > 0) {
+        await Promise.all(
+          assets.map(async (asset) => {
+            await asset.getConfigFiles();
+            for (const configFile of asset.configFiles) {
+              dispatch(
+                addOrUpdateLibraryFile({
+                  assetPath: asset.path,
+                  fileName: configFile,
+                  fileContent: '',
+                  isModified: false,
+                }),
+              );
+            }
+          }),
+        );
+      }
+
+      setIsLoading(false);
+    };
+
+    loadFiles();
   }, [name, digitalTwin]);
 
   if (isLoading) {
@@ -154,6 +185,9 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileSection(
               'Configuration',
@@ -165,6 +199,9 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileSection(
               'Lifecycle',
@@ -176,7 +213,26 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
+            {assets.map((asset) => renderFileSection(
+                `${asset.name} configuration`,
+                'config',
+                asset.configFiles,
+                asset,
+                setFileName,
+                setFileContent,
+                setFileType,
+                files,
+                tab,
+                dispatch,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                true,
+                libraryFiles,
+              ))}
           </>
         )}
       </SimpleTreeView>

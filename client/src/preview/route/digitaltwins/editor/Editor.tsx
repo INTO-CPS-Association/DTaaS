@@ -14,6 +14,10 @@ interface EditorProps {
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
   fileType: string;
   setFileType: React.Dispatch<React.SetStateAction<string>>;
+  isLibraryFile: boolean;
+  setIsLibraryFile: React.Dispatch<React.SetStateAction<boolean>>;
+  libraryAssetPath: string;
+  setLibraryAssetPath: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function Editor({
@@ -25,6 +29,10 @@ function Editor({
   setFileContent,
   fileType,
   setFileType,
+  isLibraryFile,
+  setIsLibraryFile,
+  libraryAssetPath,
+  setLibraryAssetPath,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -48,6 +56,8 @@ function Editor({
           setFileName={setFileName}
           setFileContent={setFileContent}
           setFileType={setFileType}
+          setIsLibraryFile={setIsLibraryFile}
+          setLibraryAssetPath={setLibraryAssetPath}
           tab={tab}
         />
 
@@ -86,6 +96,8 @@ function Editor({
                 fileName={fileName}
                 fileContent={fileContent}
                 setFileContent={setFileContent}
+                isLibraryFile={isLibraryFile}
+                libraryAssetPath={libraryAssetPath}
               />
             )}
             {activeTab === 1 && (

@@ -2,12 +2,15 @@ import * as React from 'react';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import { addOrUpdateFile } from '../../../store/file.slice';
 
 interface EditorTabProps {
   tab: string;
   fileName: string;
   fileContent: string;
+  isLibraryFile: boolean;
+  libraryAssetPath: string;
   setFileContent: Dispatch<SetStateAction<string>>;
 }
 
@@ -17,6 +20,8 @@ const handleEditorChange = (
   setEditorValue: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   fileName: string,
+  isLibraryFile: boolean,
+  libraryAssetPath: string,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   const updatedValue = value || '';
@@ -24,14 +29,25 @@ const handleEditorChange = (
   setFileContent(updatedValue);
 
   if (tab === 'create') {
-    dispatch(
-      addOrUpdateFile({
-        name: fileName,
-        content: updatedValue,
-        isNew: true,
-        isModified: true,
-      }),
-    );
+    if (!isLibraryFile) {
+      dispatch(
+        addOrUpdateFile({
+          name: fileName,
+          content: updatedValue,
+          isNew: true,
+          isModified: true,
+        }),
+      );
+    } else {
+      dispatch(
+        addOrUpdateLibraryFile({
+          assetPath: libraryAssetPath,
+          fileName,
+          fileContent: updatedValue,
+          isModified: true,
+        }),
+      );
+    }
   } else {
     dispatch(
       addOrUpdateFile({
@@ -48,6 +64,8 @@ function EditorTab({
   tab,
   fileName,
   fileContent,
+  isLibraryFile,
+  libraryAssetPath,
   setFileContent,
 }: EditorTabProps) {
   const [editorValue, setEditorValue] = useState(fileContent);
@@ -70,6 +88,8 @@ function EditorTab({
             setEditorValue,
             setFileContent,
             fileName,
+            isLibraryFile,
+            libraryAssetPath,
             dispatch,
           )
         }

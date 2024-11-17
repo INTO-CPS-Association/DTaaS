@@ -35,11 +35,17 @@ export const fetchLibraryAssets = async (
         type,
         isPrivate,
       );
-      
+
       for (const subfolder of subfolders) {
         const gitlabInstance = createGitlabInstance();
         await gitlabInstance.init();
-        const libraryAsset = new LibraryAsset(subfolder.name, subfolder.path, isPrivate, type, gitlabInstance);
+        const libraryAsset = new LibraryAsset(
+          subfolder.name,
+          subfolder.path,
+          isPrivate,
+          type,
+          gitlabInstance,
+        );
         await libraryAsset.getDescription();
         dispatch(setAsset(libraryAsset));
       }
@@ -68,7 +74,6 @@ export const fetchDigitalTwins = async (
         const digitalTwin = new DigitalTwin(asset.name, gitlabInstance);
         await digitalTwin.getDescription();
         dispatch(setDigitalTwin({ assetName: asset.name, digitalTwin }));
-        console.log('AssetBoard.tsx: digitalTwin:', digitalTwin);
       });
     }
   } catch (err) {

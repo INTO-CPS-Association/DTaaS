@@ -1,6 +1,6 @@
-import { getAuthority } from "util/envUtil";
-import GitlabInstance from "./gitlab";
-import LibraryManager from "./libraryManager";
+import { getAuthority } from 'util/envUtil';
+import GitlabInstance from './gitlab';
+import LibraryManager from './libraryManager';
 
 class LibraryAsset {
   public name: string;
@@ -10,7 +10,7 @@ class LibraryAsset {
   public type: string;
 
   public isPrivate: boolean;
-  
+
   public gitlabInstance: GitlabInstance;
 
   public description: string = '';
@@ -18,7 +18,7 @@ class LibraryAsset {
   public fullDescription: string = '';
 
   public libraryManager: LibraryManager;
-  
+
   public configFiles: string[] = [];
 
   constructor(
@@ -39,8 +39,11 @@ class LibraryAsset {
   async getDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       try {
-        const fileContent =
-          await this.libraryManager.getFileContent(this.isPrivate, this.path, 'description.md');
+        const fileContent = await this.libraryManager.getFileContent(
+          this.isPrivate,
+          this.path,
+          'description.md',
+        );
         this.description = fileContent;
       } catch (_error) {
         this.description = `There is no description.md file`;
@@ -51,9 +54,12 @@ class LibraryAsset {
   async getFullDescription(): Promise<void> {
     if (this.gitlabInstance.projectId) {
       const imagesPath = this.path;
-      console.log('LibraryAsset.ts: imagesPath:', imagesPath);
       try {
-        const fileContent = await this.libraryManager.getFileContent(this.isPrivate, this.path, 'README.md');
+        const fileContent = await this.libraryManager.getFileContent(
+          this.isPrivate,
+          this.path,
+          'README.md',
+        );
         this.fullDescription = fileContent.replace(
           /(!\[[^\]]*\])\(([^)]+)\)/g,
           (match, altText, imagePath) => {
@@ -70,7 +76,10 @@ class LibraryAsset {
   }
 
   async getConfigFiles() {
-    this.configFiles = await this.libraryManager.getFileNames(this.isPrivate, this.path);
+    this.configFiles = await this.libraryManager.getFileNames(
+      this.isPrivate,
+      this.path,
+    );
   }
 }
 

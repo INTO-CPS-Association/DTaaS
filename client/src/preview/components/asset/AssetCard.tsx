@@ -14,6 +14,7 @@ import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
 import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
@@ -21,7 +22,6 @@ import DetailsButton from './DetailsButton';
 import ReconfigureButton from './ReconfigureButton';
 import DeleteButton from './DeleteButton';
 import AddToCartButton from './AddToCartButton';
-import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface AssetCardProps {
   asset: Asset;
@@ -75,7 +75,7 @@ function CardActionAreaContainer(asset: Asset, library?: boolean) {
 
   const libraryAsset = useSelector(selectAssetByPath(asset.path));
 
-  const selectedAsset = library? libraryAsset : digitalTwin;
+  const selectedAsset = library ? libraryAsset : digitalTwin;
 
   return (
     <Grid container>
@@ -133,11 +133,20 @@ function CardButtonsContainerExecute({
   );
 }
 
-function CardButtonsContainerLibrary({ assetName, assetPath, setShowDetails }: CardButtonsContainerLibraryProps) {
+function CardButtonsContainerLibrary({
+  assetName,
+  assetPath,
+  setShowDetails,
+}: CardButtonsContainerLibraryProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} library={true} assetPath={assetPath}/>
-      <AddToCartButton assetPath={assetPath}/>
+      <DetailsButton
+        assetName={assetName}
+        setShowDetails={setShowDetails}
+        library={true}
+        assetPath={assetPath}
+      />
+      <AddToCartButton assetPath={assetPath} />
     </CardActions>
   );
 }
@@ -237,26 +246,26 @@ function AssetCardLibrary({ asset }: AssetCardProps) {
 
   return (
     <>
-        <AssetCard
-          asset={asset}
-          buttons={
-            <CardButtonsContainerLibrary
-              assetName={asset.name}
-              assetPath={asset.path}
-              setShowDetails={setShowDetails}
-            />
-          }
-          library={true}
-        />
-        <DetailsDialog
-          showDialog={showDetails}
-          setShowDialog={setShowDetails}
-          name={asset.name}
-          library={true}
-          path={asset.path}
-        />
-      </>
-        );
+      <AssetCard
+        asset={asset}
+        buttons={
+          <CardButtonsContainerLibrary
+            assetName={asset.name}
+            assetPath={asset.path}
+            setShowDetails={setShowDetails}
+          />
+        }
+        library={true}
+      />
+      <DetailsDialog
+        showDialog={showDetails}
+        setShowDialog={setShowDetails}
+        name={asset.name}
+        library={true}
+        path={asset.path}
+      />
+    </>
+  );
 }
 
 export { AssetCardManage, AssetCardExecute, AssetCardLibrary };

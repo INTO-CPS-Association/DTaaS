@@ -19,6 +19,8 @@ import {
   validateFiles,
 } from 'preview/util/fileUtils';
 import { initDigitalTwin } from 'preview/util/init';
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import LibraryAsset from 'preview/util/libraryAsset';
 
 interface CreateDTDialogProps {
   open: boolean;
@@ -71,6 +73,8 @@ const resetDialogAndForm = (
 
 const handleConfirm = async (
   files: FileState[],
+  libraryFiles: LibraryConfigFile[],
+  cartAssets: LibraryAsset[],
   setErrorMessage: Dispatch<SetStateAction<string>>,
   newDigitalTwinName: string,
   dispatch: ReturnType<typeof useDispatch>,
@@ -80,10 +84,10 @@ const handleConfirm = async (
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
 ) => {
-  if (validateFiles(files, setErrorMessage)) return;
+  if (validateFiles(files, libraryFiles, setErrorMessage)) return;
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.create(files);
+  const result = await digitalTwin.create(files, cartAssets, libraryFiles);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
@@ -112,6 +116,10 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   setFileType,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
+  const libraryFiles = useSelector(
+    (state: RootState) => state.libraryConfigFiles,
+  );
+  const cartAssets = useSelector((state: RootState) => state.cart.assets);
   const dispatch = useDispatch();
 
   return (
@@ -140,6 +148,8 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
           onClick={() =>
             handleConfirm(
               files,
+              libraryFiles,
+              cartAssets,
               setErrorMessage,
               newDigitalTwinName,
               dispatch,

@@ -7,14 +7,16 @@ function FileActionButtons({
   fileName,
   setOpenDeleteFileDialog,
   setOpenChangeFileNameDialog,
+  isLibraryFile,
 }: {
   fileName: string;
   setOpenDeleteFileDialog: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenChangeFileNameDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  isLibraryFile: boolean;
 }) {
   return (
     <Box sx={{ display: 'flex', gap: 1, paddingLeft: 2, marginTop: 5 }}>
-      {isFileDeletable(fileName) && fileName && (
+      {isFileDeletable(fileName) && fileName && !isLibraryFile && (
         <Button
           variant="contained"
           onClick={() => setOpenDeleteFileDialog(true)}
@@ -22,7 +24,7 @@ function FileActionButtons({
           Delete File
         </Button>
       )}
-      {isFileModifiable(fileName) && fileName && (
+      {isFileModifiable(fileName) && fileName && !isLibraryFile && (
         <Button
           variant="contained"
           onClick={() => setOpenChangeFileNameDialog(true)}

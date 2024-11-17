@@ -32,11 +32,20 @@ function ShoppingCart() {
     >
       <CartList />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: 'auto',
+        }}
+      >
         <Button variant="contained" onClick={() => setOpenDialog(true)}>
           Clear Cart
         </Button>
-        <Button variant="contained" onClick={() => navigate('/preview/digitaltwins')}>
+        <Button
+          variant="contained"
+          onClick={() => navigate('/preview/digitaltwins')}
+        >
           Proceed
         </Button>
       </div>

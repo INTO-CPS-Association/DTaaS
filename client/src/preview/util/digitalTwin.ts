@@ -1,8 +1,10 @@
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import GitlabInstance from './gitlab';
 import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
 import DTAssets, { FileType } from './DTAssets';
+import LibraryAsset from './libraryAsset';
 
 const RUNNER_TAG = 'linux';
 
@@ -123,7 +125,11 @@ class DigitalTwin {
     }
   }
 
-  async create(files: FileState[]): Promise<string> {
+  async create(
+    files: FileState[],
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<string> {
     if (!this.gitlabInstance.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
     }
@@ -132,16 +138,76 @@ class DigitalTwin {
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
 
     try {
+      const assetFilesToCreate = await this.prepareAllAssetFiles(
+        cartAssets,
+        libraryFiles,
+      );
+
       await this.DTAssets.createFiles(
         files,
         mainFolderPath,
         lifecycleFolderPath,
       );
+
+      await this.DTAssets.createFiles(
+        assetFilesToCreate,
+        mainFolderPath,
+        lifecycleFolderPath,
+      );
+
       await this.DTAssets.appendTriggerToPipeline();
+
       return `${this.DTName} digital twin files initialized successfully.`;
     } catch (error) {
-      return `Error initializing ${this.DTName} digital twin files: ${String(error)}`;
+      return `Error initializing ${this.DTName} digital twin files: ${String(
+        error,
+      )}`;
     }
+  }
+
+  private async prepareAllAssetFiles(
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<Array<{ name: string; content: string; isNew: boolean }>> {
+    const assetFilesToCreate: Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+    }> = [];
+
+    for (const asset of cartAssets) {
+      const assetFiles = await this.DTAssets.getFilesFromAsset(asset.path);
+      for (const assetFile of assetFiles) {
+        const updatedFile = this.getUpdatedLibraryFile(
+          assetFile.name,
+          asset.path,
+          libraryFiles,
+        );
+
+        assetFilesToCreate.push({
+          name: `${asset.name}/${assetFile.name}`,
+          content: updatedFile ? updatedFile.fileContent : assetFile.content,
+          isNew: true,
+        });
+      }
+    }
+
+    return assetFilesToCreate;
+  }
+
+  private getUpdatedLibraryFile(
+    fileName: string,
+    assetPath: string,
+    libraryFiles: LibraryConfigFile[],
+  ): LibraryConfigFile | null {
+    return (
+      libraryFiles.find(
+        (libFile) =>
+          libFile.fileName === fileName &&
+          libFile.assetPath === assetPath &&
+          libFile.isModified,
+      ) || null
+    );
   }
 
   async delete() {

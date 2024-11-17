@@ -3,6 +3,7 @@ import {
   FileState,
   renameFile,
 } from 'preview/store/file.slice';
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -24,15 +25,28 @@ export const getExtension = (filename: string): string => {
 
 export const validateFiles = (
   files: FileState[],
+  libraryFiles: LibraryConfigFile[],
   setErrorMessage: Dispatch<SetStateAction<string>>,
 ): boolean => {
   const emptyFiles = files
     .filter((file) => file.isNew && file.content === '')
     .map((file) => file.name);
 
-  if (emptyFiles.length > 0) {
+  const emptyLibraryFiles = libraryFiles.filter(
+    (file) => file.fileContent === '',
+  );
+
+  if (emptyFiles.length > 0 || emptyLibraryFiles.length > 0) {
     setErrorMessage(
-      `The following files have empty content: ${emptyFiles.join(', ')}. Edit them in order to create the new digital twin.`,
+      `The following files have empty content: ${
+        emptyFiles.length > 0 ? emptyFiles.join(', ') : ''
+      }${emptyFiles.length > 0 && emptyLibraryFiles.length > 0 ? ', ' : ''}${
+        emptyLibraryFiles.length > 0
+          ? emptyLibraryFiles
+              .map((file) => `${file.fileName} (${file.assetPath})`)
+              .join(', ')
+          : ''
+      }.\n Edit them in order to create the new digital twin.`,
     );
     return true;
   }

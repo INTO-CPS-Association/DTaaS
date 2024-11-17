@@ -33,16 +33,45 @@ class DTAssets {
   }
 
   async createFiles(
-    files: FileState[],
+    files:
+      | FileState[]
+      | Array<{ name: string; content: string; isNew: boolean }>,
     mainFolderPath: string,
     lifecycleFolderPath: string,
   ): Promise<void> {
     for (const file of files) {
       if (file.isNew) {
-        const filePath = getFilePath(file, mainFolderPath, lifecycleFolderPath);
-        const commitMessage = `Add ${file.name} to ${file.type === 'lifecycle' ? 'lifecycle' : 'digital twin'} folder`;
+        const fileType = (file as FileState).type || 'asset';
+        const filePath =
+          fileType === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
+        const commitMessage = `Add ${file.name} to ${fileType} folder`;
         await this.fileHandler.createFile(file, filePath, commitMessage);
       }
+    }
+  }
+
+  async getFilesFromAsset(assetPath: string) {
+    try {
+      const fileNames = await this.fileHandler.getLibraryFileNames(assetPath);
+
+      const files: Array<{ name: string; content: string }> = [];
+
+      for (const fileName of fileNames) {
+        const fileContent = await this.fileHandler.getFileContent(
+          `${assetPath}/${fileName}`,
+        );
+
+        files.push({
+          name: fileName,
+          content: fileContent,
+        });
+      }
+
+      return files;
+    } catch (error) {
+      throw new Error(
+        `Error fetching files from asset at ${assetPath}: ${error}`,
+      );
     }
   }
 

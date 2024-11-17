@@ -3,10 +3,10 @@ import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import LibraryAsset from 'preview/util/libraryAsset';
+import { selectAssetByPath } from 'preview/store/assets.slice';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
 
 import DigitalTwin from '../../util/digitalTwin';
-import { selectAssetByPath } from 'preview/store/assets.slice';
 
 interface DialogButtonProps {
   assetName: string;
@@ -61,4 +61,3 @@ function DetailsButton({
 }
 
 export default DetailsButton;
-

@@ -1,4 +1,4 @@
-import GitlabInstance from "preview/util/gitlab";
+import GitlabInstance from 'preview/util/gitlab';
 
 export interface Asset {
   name: string;

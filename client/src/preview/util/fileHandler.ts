@@ -29,7 +29,7 @@ class FileHandler implements IFile {
   }
 
   async createFile(
-    file: FileState,
+    file: FileState | { name: string; content: string; isNew: boolean },
     filePath: string,
     commitMessage: string,
   ): Promise<void> {
@@ -110,13 +110,32 @@ class FileHandler implements IFile {
           },
         );
 
-        return response
-          .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
-          .map((file) => file.name);
-      } catch {
-        return [];
-      }
+      return response
+        .filter((file) => file.type === 'blob')
+        .map((file) => file.name);
+    } catch {
+      return [];
     }
+  }
+
+  async getLibraryConfigFileNames(filePath: string): Promise<string[]> {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          this.gitlabInstance.projectId!,
+          {
+            path: filePath,
+            recursive: false,
+          },
+        );
+
+      return response
+        .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
+        .map((file) => file.name);
+    } catch {
+      return [];
+    }
+  }
 }
 
 export default FileHandler;

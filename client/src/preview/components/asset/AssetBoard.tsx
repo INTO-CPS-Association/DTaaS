@@ -47,7 +47,9 @@ const AssetGridItem: React.FC<{
 );
 
 const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
-  const assets = useSelector(selectAssetsByTypeAndPrivacy('Digital Twins', true));
+  const assets = useSelector(
+    selectAssetsByTypeAndPrivacy('Digital Twins', true),
+  );
   const [error, setError] = React.useState<string | null>(null);
   const dispatch = useDispatch();
 
@@ -56,8 +58,6 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
       await fetchDigitalTwins(dispatch, setError);
     };
     fetchData();
-
-    console.log('AssetBoard.tsx: assets:', assets);
   }, [dispatch]);
 
   const handleDelete = (deletedAssetPath: string) => {

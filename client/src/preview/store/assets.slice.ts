@@ -18,7 +18,9 @@ const assetsSlice = createSlice({
       state.items = action.payload;
     },
     setAsset: (state, action: PayloadAction<LibraryAsset>) => {
-      const existingAsset = state.items.find(asset => asset.path === action.payload.path);
+      const existingAsset = state.items.find(
+        (asset) => asset.path === action.payload.path,
+      );
       if (!existingAsset) {
         state.items.push(action.payload);
       }

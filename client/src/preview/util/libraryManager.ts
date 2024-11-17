@@ -32,18 +32,22 @@ class LibraryManager {
     this.fileHandler = new FileHandler(assetName, gitlabInstance);
   }
 
-  async getFileContent(isPrivate: boolean, path: string, fileName: string): Promise<string> {
-    const filePath = isPrivate? `${path}/${fileName}` : `common/${path}/${fileName}`;
+  async getFileContent(
+    isPrivate: boolean,
+    path: string,
+    fileName: string,
+  ): Promise<string> {
+    const filePath = isPrivate
+      ? `${path}/${fileName}`
+      : `common/${path}/${fileName}`;
 
-    console.log(filePath)
     const fileContent = await this.fileHandler.getFileContent(filePath);
-    console.log('fileContent', fileContent);
     return fileContent;
   }
 
   async getFileNames(isPrivate: boolean, path: string): Promise<string[]> {
-    const filePath = isPrivate? `${path}` : `common/${path}`;
-    return await this.fileHandler.getLibraryFileNames(filePath);
+    const filePath = isPrivate ? `${path}` : `common/${path}`;
+    return await this.fileHandler.getLibraryConfigFileNames(filePath);
   }
 }
 
