@@ -44,19 +44,32 @@ const handleEditorChange = (
           assetPath: libraryAssetPath,
           fileName,
           fileContent: updatedValue,
+          isNew: true,
           isModified: true,
         }),
       );
     }
   } else {
-    dispatch(
-      addOrUpdateFile({
-        name: fileName,
-        content: updatedValue,
-        isNew: false,
-        isModified: true,
-      }),
-    );
+    if (!isLibraryFile && libraryAssetPath === '') {
+      dispatch(
+        addOrUpdateFile({
+          name: fileName,
+          content: updatedValue,
+          isNew: false,
+          isModified: true,
+        }),
+      );
+    } else {
+      dispatch(
+        addOrUpdateLibraryFile({
+          assetPath: libraryAssetPath,
+          fileName,
+          fileContent: updatedValue,
+          isNew: false,
+          isModified: true,
+        }),
+      );
+    }
   }
 };
 

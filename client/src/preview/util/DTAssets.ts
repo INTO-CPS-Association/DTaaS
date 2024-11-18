@@ -54,7 +54,7 @@ class DTAssets {
     try {
       const fileNames = await this.fileHandler.getLibraryFileNames(assetPath);
 
-      const files: Array<{ name: string; content: string }> = [];
+      const files: Array<{ name: string; content: string; path: string }> = [];
 
       for (const fileName of fileNames) {
         const fileContent = await this.fileHandler.getFileContent(
@@ -64,6 +64,7 @@ class DTAssets {
         files.push({
           name: fileName,
           content: fileContent,
+          path: assetPath,
         });
       }
 
@@ -85,6 +86,17 @@ class DTAssets {
       ? `digital_twins/${this.DTName}/${fileName}`
       : `digital_twins/${this.DTName}/lifecycle/${fileName}`;
 
+    const commitMessage = `Update ${fileName} content`;
+
+    await this.fileHandler.updateFile(filePath, fileContent, commitMessage);
+  }
+
+  async updateLibraryFileContent(
+    fileName: string,
+    fileContent: string,
+    assetPath: string,
+  ): Promise<void> {
+    const filePath = `${assetPath}/${fileName}`;
     const commitMessage = `Update ${fileName} content`;
 
     await this.fileHandler.updateFile(filePath, fileContent, commitMessage);
@@ -174,8 +186,21 @@ ${triggerKey}:
     return fileContent;
   }
 
+  async getLibraryFileContent(assetPath: string, fileName: string): Promise<string> {
+    const filePath = `${assetPath}/${fileName}`;
+    return this.fileHandler.getFileContent(filePath);
+  }
+
   async getFileNames(fileType: FileType): Promise<string[]> {
     return this.fileHandler.getFileNames(fileType);
+  }
+
+  async getLibraryConfigFileNames(filePath: string): Promise<string[]> {
+    return this.fileHandler.getLibraryConfigFileNames(filePath);
+  }
+
+  async getFolders(path: string): Promise<string[]> {
+    return this.fileHandler.getFolders(this.gitlabInstance.projectId!, path);
   }
 }
 

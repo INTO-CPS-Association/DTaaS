@@ -5,6 +5,7 @@ export interface LibraryConfigFile {
   assetPath: string;
   fileName: string;
   fileContent: string;
+  isNew: boolean;
   isModified: boolean;
 }
 
@@ -18,37 +19,63 @@ const libraryFilesSlice = createSlice({
       state,
       action: PayloadAction<LibraryConfigFile>,
     ) => {
-      const { assetPath, fileName, fileContent, ...rest } = action.payload;
-
-      if (!fileName) return;
-
+      const { fileName, assetPath, isNew, ...rest } = action.payload;
+    
+      if (!fileName || !assetPath) return;
+    
       const index = state.findIndex(
-        (file) => file.fileName === fileName && file.assetPath === assetPath,
+        (file) =>
+          file.fileName === fileName &&
+          file.assetPath === assetPath &&
+          file.isNew === isNew,
       );
-
+    
       if (index >= 0) {
         state[index] = {
           ...state[index],
           ...rest,
-          fileContent,
           isModified: true,
+          isNew,
         };
       } else {
-        state.push({ assetPath, fileName, fileContent, isModified: false });
+        state.push({
+          fileName,
+          assetPath,
+          ...rest,
+          isModified: false,
+          isNew,
+        });
       }
     },
 
     removeAllFiles: (state) => {
       state.splice(0, state.length);
     },
+
+    removeAllModifiedLibraryFiles: (state) => {
+      const filesToSave = state.filter(
+        (file) => file.isModified && !file.isNew,
+      );
+      filesToSave.forEach((file) => {
+        const index = state.findIndex(
+          (f) => f.fileName === file.fileName && !f.isNew,
+        );
+        if (index >= 0) {
+          state.splice(index, 1);
+        }
+      });
+    },
   },
 });
 
-export const selectModifiedFiles = createSelector(
-  (state: RootState) => state.files,
-  (files) => files.filter((file) => file.isModified),
+export const selectModifiedLibraryFiles = createSelector(
+  (state: RootState) => state.libraryConfigFiles,
+  (files) => files.filter((file) => !file.isNew),
 );
 
-export const { addOrUpdateLibraryFile, removeAllFiles } =
-  libraryFilesSlice.actions;
+export const {
+  addOrUpdateLibraryFile,
+  removeAllFiles,
+  removeAllModifiedLibraryFiles,
+} = libraryFilesSlice.actions;
 export default libraryFilesSlice.reducer;

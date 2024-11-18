@@ -136,6 +136,26 @@ class FileHandler implements IFile {
       return [];
     }
   }
+
+  async getFolders(projectId: number, path: string): Promise<string[]> {
+    try {
+      const response =
+        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
+          projectId,
+          { path, recursive: false },
+        );
+
+      return response
+        .filter((item: { type: string }) => item.type === 'tree')
+        .map((folder: { path: string }) => folder.path);
+    } catch (error) {
+      console.error(
+        `Error retrieving folders for path "${path}" in project ${projectId}:`,
+        error,
+      );
+      return [];
+    }
+  }
 }
 
 export default FileHandler;

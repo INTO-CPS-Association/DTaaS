@@ -38,6 +38,8 @@ class DigitalTwin {
 
   public lifecycleFiles: string[] = [];
 
+  public assetFiles: { assetPath: string; fileNames: string[] }[] = [];
+
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
     this.gitlabInstance = gitlabInstance;
@@ -235,6 +237,40 @@ class DigitalTwin {
 
   async getLifecycleFiles() {
     this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
+  }
+
+  async getAssetFiles(): Promise<{ assetPath: string; fileNames: string[] }[]> {
+    const mainFolderPath = `digital_twins/${this.DTName}`;
+    const excludeFolder = 'lifecycle';
+    const result: { assetPath: string; fileNames: string[] }[] = [];
+
+    try {
+      const folders = await this.DTAssets.getFolders(mainFolderPath);
+
+      const validFolders = folders.filter(
+        (folder) => !folder.includes(excludeFolder),
+      );
+
+      for (const folder of validFolders) {
+        const fileNames = await this.DTAssets.getLibraryConfigFileNames(folder);
+
+        const libraryAsset = {
+          assetPath: folder,
+          fileNames,
+        };
+
+        result.push(libraryAsset);
+      }
+
+      this.assetFiles = result;
+    } catch (error) {
+      console.error(
+        `Error retrieving asset files from Digital Twin ${this.DTName}:`,
+        error,
+      );
+    }
+
+    return result;
   }
 }
 

@@ -15,6 +15,21 @@ import {
   renderFileTreeItems,
 } from './sidebarFunctions';
 import SidebarDialog from './SidebarDialog';
+import LibraryAsset from 'preview/util/libraryAsset';
+
+export const groupedFiles = (assetFiles: LibraryAsset[]) => {
+  return assetFiles.reduce(
+    (acc, file) => {
+      const { path } = file;
+      if (!acc[path]) {
+        acc[path] = [];
+      }
+      acc[path].push(file);
+      return acc;
+    },
+    {} as Record<string, LibraryAsset[]>,
+  );
+};
 
 interface SidebarProps {
   name?: string;
@@ -58,24 +73,26 @@ const Sidebar = ({
         await fetchData(digitalTwin);
       }
 
-      if (assets.length > 0) {
-        await Promise.all(
-          assets.map(async (asset) => {
-            await asset.getConfigFiles();
-            for (const configFile of asset.configFiles) {
-              dispatch(
-                addOrUpdateLibraryFile({
-                  assetPath: asset.path,
-                  fileName: configFile,
-                  fileContent: '',
-                  isModified: false,
-                }),
-              );
-            }
-          }),
-        );
+      if (tab === 'create') {
+        if (assets.length > 0) {
+          await Promise.all(
+            assets.map(async (asset) => {
+              await asset.getConfigFiles();
+              for (const configFile of asset.configFiles) {
+                dispatch(
+                  addOrUpdateLibraryFile({
+                    assetPath: asset.path,
+                    fileName: configFile,
+                    fileContent: '',
+                    isNew: true,
+                    isModified: false,
+                  }),
+                );
+              }
+            }),
+          );
+        }
       }
-
       setIsLoading(false);
     };
 
@@ -151,6 +168,9 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileTreeItems(
               'Configuration',
@@ -161,6 +181,9 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileTreeItems(
               'Lifecycle',
@@ -171,6 +194,27 @@ const Sidebar = ({
               setFileType,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
+            )}
+            {digitalTwin!.assetFiles.map((assetFolder) =>
+              renderFileTreeItems(
+                `${assetFolder.assetPath} configuration`,
+                assetFolder.fileNames,
+                digitalTwin!,
+                setFileName,
+                setFileContent,
+                setFileType,
+                files,
+                tab,
+                dispatch,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                true,
+                libraryFiles,
+                assetFolder.assetPath,
+              ),
             )}
           </>
         ) : (
@@ -217,7 +261,8 @@ const Sidebar = ({
               setIsLibraryFile,
               setLibraryAssetPath,
             )}
-            {assets.map((asset) => renderFileSection(
+            {assets.map((asset) =>
+              renderFileSection(
                 `${asset.name} configuration`,
                 'config',
                 asset.configFiles,
@@ -232,7 +277,8 @@ const Sidebar = ({
                 setLibraryAssetPath,
                 true,
                 libraryFiles,
-              ))}
+              ),
+            )}
           </>
         )}
       </SimpleTreeView>
