@@ -1,28 +1,28 @@
 import {
-    combineReducers,
-    configureStore,
-    getDefaultMiddleware,
-  } from '@reduxjs/toolkit';
-  import { fireEvent, render, screen, act } from '@testing-library/react';
-  import { AssetCardExecute } from 'preview/components/asset/AssetCard';
-  import * as React from 'react';
-  import { Provider } from 'react-redux';
-  import assetsReducer, { setAssets } from 'preview/store/assets.slice';
-  import digitalTwinReducer, {
-    setDigitalTwin,
-  } from 'preview/store/digitalTwin.slice';
-  import snackbarSlice from 'preview/store/snackbar.slice';
-  import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
-  
-  const store = configureStore({
-    reducer: combineReducers({
-      assets: assetsReducer,
-      digitalTwin: digitalTwinReducer,
-      snackbar: snackbarSlice,
-    }),
-    middleware: getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from '@reduxjs/toolkit';
+import { fireEvent, render, screen, act } from '@testing-library/react';
+import { AssetCardExecute } from 'preview/components/asset/AssetCard';
+import * as React from 'react';
+import { Provider } from 'react-redux';
+import assetsReducer, { setAssets } from 'preview/store/assets.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
+import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+
+const store = configureStore({
+  reducer: combineReducers({
+    assets: assetsReducer,
+    digitalTwin: digitalTwinReducer,
+    snackbar: snackbarSlice,
+  }),
+  middleware: getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 
 describe('AssetCardExecute Integration Test', () => {

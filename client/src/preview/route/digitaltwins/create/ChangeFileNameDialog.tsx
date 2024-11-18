@@ -44,12 +44,6 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
     setModifiedFileName(fileName);
   };
 
-  const handleCloseChangeFileNameDialog = () => {
-    onClose();
-    setErrorChangeMessage('');
-    setModifiedFileName(fileName);
-  };
-
   return (
     <Dialog open={open} onClose={setOpenChangeFileNameDialog}>
       <DialogTitle>Change the file name</DialogTitle>

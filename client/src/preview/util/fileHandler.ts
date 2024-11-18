@@ -18,21 +18,6 @@ export function isValidFileType(
   return typeChecks[fileType];
 }
 
-export function isValidFileType(
-  item: { type: string; name: string; path: string },
-  fileType: FileType,
-): boolean {
-  const typeChecks = {
-    [FileType.DESCRIPTION]: item.type === 'blob' && item.name.endsWith('.md'),
-    [FileType.CONFIGURATION]:
-      item.type === 'blob' && /\.(json|yml|yaml)$/.test(item.name),
-    [FileType.LIFECYCLE]:
-      item.type === 'blob' && item.path.includes('/lifecycle/'),
-  };
-
-  return typeChecks[fileType];
-}
-
 class FileHandler implements IFile {
   public name: string;
 
