@@ -47,7 +47,9 @@ class LibraryManager {
 
   async getFileNames(isPrivate: boolean, path: string): Promise<string[]> {
     const filePath = isPrivate ? `${path}` : `common/${path}`;
-    return await this.fileHandler.getLibraryConfigFileNames(filePath);
+    const fileNames =
+      await this.fileHandler.getLibraryConfigFileNames(filePath);
+    return fileNames;
   }
 }
 

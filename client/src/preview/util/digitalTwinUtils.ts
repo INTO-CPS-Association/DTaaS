@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
@@ -30,4 +31,19 @@ export function logError(
     runnerTag: RUNNER_TAG,
   });
   digitalTwin.lastExecutionStatus = 'error';
+}
+
+export function getUpdatedLibraryFile(
+  fileName: string,
+  assetPath: string,
+  libraryFiles: LibraryConfigFile[],
+): LibraryConfigFile | null {
+  return (
+    libraryFiles.find(
+      (libFile) =>
+        libFile.fileName === fileName &&
+        libFile.assetPath === assetPath &&
+        libFile.isModified,
+    ) || null
+  );
 }

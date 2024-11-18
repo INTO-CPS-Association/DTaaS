@@ -10,16 +10,20 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import useCart from 'preview/store/CartAccess';
+import { removeAllFiles } from 'preview/store/libraryConfigFiles.slice';
+import { useDispatch } from 'react-redux';
 import CartList from './CartList';
 
 function ShoppingCart() {
   const { actions } = useCart();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
+  const dispatch = useDispatch();
 
   const handleClearCart = () => {
     actions.clear();
     setOpenDialog(false);
+    dispatch(removeAllFiles());
   };
 
   return (

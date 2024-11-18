@@ -36,7 +36,7 @@ export const handleFileClick = (
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
   dispatch?: ReturnType<typeof useDispatch>,
-  library? : boolean,
+  library?: boolean,
   libraryFiles?: LibraryConfigFile[],
   assetPath?: string,
 ) => {
@@ -64,7 +64,7 @@ export const handleFileClick = (
       setIsLibraryFile,
       setLibraryAssetPath,
       dispatch || undefined,
-      library? library : undefined,
+      library || undefined,
       libraryFiles || undefined,
       assetPath || undefined,
     );
@@ -108,7 +108,7 @@ export const renderFileTreeItems = (
             setIsLibraryFile,
             setLibraryAssetPath,
             dispatch,
-            library? library : undefined,
+            library || undefined,
             libraryFiles || undefined,
             assetPath || undefined,
           )
@@ -159,8 +159,8 @@ export const renderFileSection = (
             setIsLibraryFile,
             setLibraryAssetPath,
             dispatch,
-            library ? library : undefined,
-            fileLibrary? fileLibrary : undefined,
+            library || undefined,
+            fileLibrary || undefined,
           )
         }
       />
@@ -233,12 +233,12 @@ export const handleReconfigureFileClick = async (
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
   dispatch?: ReturnType<typeof useDispatch>,
-  library? : boolean,
+  library?: boolean,
   libraryFiles?: LibraryConfigFile[],
   assetPath?: string,
 ) => {
   if (asset instanceof DigitalTwin || asset === null) {
-    if(library === undefined) {
+    if (library === undefined) {
       const modifiedFile = files.find(
         (file) => file.name === fileName && file.isModified && !file.isNew,
       );
@@ -263,7 +263,8 @@ export const handleReconfigureFileClick = async (
       setLibraryAssetPath('');
     } else {
       const modifiedLibraryFile = libraryFiles!.find(
-        (file) => file.fileName === fileName && file.assetPath === assetPath);
+        (file) => file.fileName === fileName && file.assetPath === assetPath,
+      );
       if (modifiedLibraryFile?.isModified) {
         updateFileState(
           modifiedLibraryFile.fileName,
@@ -281,8 +282,11 @@ export const handleReconfigureFileClick = async (
           setFileType,
           library,
           assetPath,
-        )
-        const fileContent = await asset!.DTAssets.getLibraryFileContent(assetPath!, fileName);
+        );
+        const fileContent = await asset!.DTAssets.getLibraryFileContent(
+          assetPath!,
+          fileName,
+        );
         dispatch!(
           addOrUpdateLibraryFile({
             assetPath: assetPath!,
@@ -310,8 +314,11 @@ export const fetchAndSetFileContent = async (
 ) => {
   try {
     let fileContent;
-    if(library) {
-      fileContent = await digitalTwin!.DTAssets.getLibraryFileContent(assetPath!, fileName);
+    if (library) {
+      fileContent = await digitalTwin!.DTAssets.getLibraryFileContent(
+        assetPath!,
+        fileName,
+      );
     } else {
       fileContent = await digitalTwin!.DTAssets.getFileContent(fileName);
     }
@@ -352,7 +359,7 @@ export const fetchAndSetFileLibraryContent = async (
         assetPath: libraryAsset!.path,
         fileName,
         fileContent,
-        isNew: isNew,
+        isNew,
         isModified: false,
       }),
     );

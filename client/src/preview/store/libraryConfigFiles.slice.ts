@@ -20,16 +20,16 @@ const libraryFilesSlice = createSlice({
       action: PayloadAction<LibraryConfigFile>,
     ) => {
       const { fileName, assetPath, isNew, ...rest } = action.payload;
-    
+
       if (!fileName || !assetPath) return;
-    
+
       const index = state.findIndex(
         (file) =>
           file.fileName === fileName &&
           file.assetPath === assetPath &&
           file.isNew === isNew,
       );
-    
+
       if (index >= 0) {
         state[index] = {
           ...state[index],

@@ -186,7 +186,10 @@ ${triggerKey}:
     return fileContent;
   }
 
-  async getLibraryFileContent(assetPath: string, fileName: string): Promise<string> {
+  async getLibraryFileContent(
+    assetPath: string,
+    fileName: string,
+  ): Promise<string> {
     const filePath = `${assetPath}/${fileName}`;
     return this.fileHandler.getFileContent(filePath);
   }

@@ -13,6 +13,11 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  LibraryConfigFile,
+  removeAllModifiedLibraryFiles,
+  selectModifiedLibraryFiles,
+} from 'preview/store/libraryConfigFiles.slice';
+import {
   FileState,
   removeAllModifiedFiles,
   selectModifiedFiles,
@@ -24,11 +29,6 @@ import {
 import { showSnackbar } from '../../../store/snackbar.slice';
 import DigitalTwin, { formatName } from '../../../util/digitalTwin';
 import Editor from '../editor/Editor';
-import {
-  LibraryConfigFile,
-  removeAllModifiedLibraryFiles,
-  selectModifiedLibraryFiles,
-} from 'preview/store/libraryConfigFiles.slice';
 
 interface ReconfigureDialogProps {
   showDialog: boolean;
@@ -132,7 +132,7 @@ export const saveChanges = async (
   }
 
   for (const file of modifiedLibraryFiles) {
-    await handleFileUpdate(file, digitalTwin, dispatch, file.assetPath);
+    await handleFileUpdate(file, digitalTwin, dispatch);
   }
 
   showSuccessSnackbar(dispatch, name);
@@ -144,7 +144,6 @@ export const handleFileUpdate = async (
   file: FileState | LibraryConfigFile,
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,
-  assetPath?: string,
 ) => {
   try {
     if ('assetPath' in file) {
@@ -245,7 +244,7 @@ const ReconfigureMainDialog = ({
         setFileContent={setFileContent}
         fileType={fileType}
         setFileType={setFileType}
-        isLibraryFile={false}
+        isLibraryFile={isLibraryFile}
         setIsLibraryFile={setIsLibraryFile}
         libraryAssetPath={libraryAssetPath}
         setLibraryAssetPath={setLibraryAssetPath}

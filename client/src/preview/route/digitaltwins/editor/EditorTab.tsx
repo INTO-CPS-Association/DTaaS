@@ -49,27 +49,25 @@ const handleEditorChange = (
         }),
       );
     }
+  } else if (!isLibraryFile && libraryAssetPath === '') {
+    dispatch(
+      addOrUpdateFile({
+        name: fileName,
+        content: updatedValue,
+        isNew: false,
+        isModified: true,
+      }),
+    );
   } else {
-    if (!isLibraryFile && libraryAssetPath === '') {
-      dispatch(
-        addOrUpdateFile({
-          name: fileName,
-          content: updatedValue,
-          isNew: false,
-          isModified: true,
-        }),
-      );
-    } else {
-      dispatch(
-        addOrUpdateLibraryFile({
-          assetPath: libraryAssetPath,
-          fileName,
-          fileContent: updatedValue,
-          isNew: false,
-          isModified: true,
-        }),
-      );
-    }
+    dispatch(
+      addOrUpdateLibraryFile({
+        assetPath: libraryAssetPath,
+        fileName,
+        fileContent: updatedValue,
+        isNew: false,
+        isModified: true,
+      }),
+    );
   }
 };
 

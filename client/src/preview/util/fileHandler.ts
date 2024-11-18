@@ -148,11 +148,7 @@ class FileHandler implements IFile {
       return response
         .filter((item: { type: string }) => item.type === 'tree')
         .map((folder: { path: string }) => folder.path);
-    } catch (error) {
-      console.error(
-        `Error retrieving folders for path "${path}" in project ${projectId}:`,
-        error,
-      );
+    } catch (_error) {
       return [];
     }
   }

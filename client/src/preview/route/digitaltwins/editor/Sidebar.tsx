@@ -5,6 +5,7 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
+import LibraryAsset from 'preview/util/libraryAsset';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import {
@@ -15,10 +16,9 @@ import {
   renderFileTreeItems,
 } from './sidebarFunctions';
 import SidebarDialog from './SidebarDialog';
-import LibraryAsset from 'preview/util/libraryAsset';
 
-export const groupedFiles = (assetFiles: LibraryAsset[]) => {
-  return assetFiles.reduce(
+export const groupedFiles = (assetFiles: LibraryAsset[]) =>
+  assetFiles.reduce(
     (acc, file) => {
       const { path } = file;
       if (!acc[path]) {
@@ -29,7 +29,6 @@ export const groupedFiles = (assetFiles: LibraryAsset[]) => {
     },
     {} as Record<string, LibraryAsset[]>,
   );
-};
 
 interface SidebarProps {
   name?: string;
@@ -78,7 +77,7 @@ const Sidebar = ({
           await Promise.all(
             assets.map(async (asset) => {
               await asset.getConfigFiles();
-              for (const configFile of asset.configFiles) {
+              asset.configFiles.forEach((configFile) => {
                 dispatch(
                   addOrUpdateLibraryFile({
                     assetPath: asset.path,
@@ -88,7 +87,7 @@ const Sidebar = ({
                     isModified: false,
                   }),
                 );
-              }
+              });
             }),
           );
         }

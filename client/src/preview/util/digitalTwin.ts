@@ -1,8 +1,16 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import GitlabInstance from './gitlab';
-import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
+import {
+  isValidInstance,
+  logError,
+  logSuccess,
+  getUpdatedLibraryFile,
+} from './digitalTwinUtils';
 import DTAssets, { FileType } from './DTAssets';
 import LibraryAsset from './libraryAsset';
 
@@ -167,51 +175,6 @@ class DigitalTwin {
     }
   }
 
-  private async prepareAllAssetFiles(
-    cartAssets: LibraryAsset[],
-    libraryFiles: LibraryConfigFile[],
-  ): Promise<Array<{ name: string; content: string; isNew: boolean }>> {
-    const assetFilesToCreate: Array<{
-      name: string;
-      content: string;
-      isNew: boolean;
-    }> = [];
-
-    for (const asset of cartAssets) {
-      const assetFiles = await this.DTAssets.getFilesFromAsset(asset.path);
-      for (const assetFile of assetFiles) {
-        const updatedFile = this.getUpdatedLibraryFile(
-          assetFile.name,
-          asset.path,
-          libraryFiles,
-        );
-
-        assetFilesToCreate.push({
-          name: `${asset.name}/${assetFile.name}`,
-          content: updatedFile ? updatedFile.fileContent : assetFile.content,
-          isNew: true,
-        });
-      }
-    }
-
-    return assetFilesToCreate;
-  }
-
-  private getUpdatedLibraryFile(
-    fileName: string,
-    assetPath: string,
-    libraryFiles: LibraryConfigFile[],
-  ): LibraryConfigFile | null {
-    return (
-      libraryFiles.find(
-        (libFile) =>
-          libFile.fileName === fileName &&
-          libFile.assetPath === assetPath &&
-          libFile.isModified,
-      ) || null
-    );
-  }
-
   async delete() {
     if (this.gitlabInstance.projectId) {
       try {
@@ -239,6 +202,36 @@ class DigitalTwin {
     this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
   }
 
+  async prepareAllAssetFiles(
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<Array<{ name: string; content: string; isNew: boolean }>> {
+    const assetFilesToCreate: Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+    }> = [];
+
+    for (const asset of cartAssets) {
+      const assetFiles = await this.DTAssets.getFilesFromAsset(asset.path);
+      for (const assetFile of assetFiles) {
+        const updatedFile = getUpdatedLibraryFile(
+          assetFile.name,
+          asset.path,
+          libraryFiles,
+        );
+
+        assetFilesToCreate.push({
+          name: `${asset.name}/${assetFile.name}`,
+          content: updatedFile ? updatedFile.fileContent : assetFile.content,
+          isNew: true,
+        });
+      }
+    }
+
+    return assetFilesToCreate;
+  }
+
   async getAssetFiles(): Promise<{ assetPath: string; fileNames: string[] }[]> {
     const mainFolderPath = `digital_twins/${this.DTName}`;
     const excludeFolder = 'lifecycle';
@@ -263,13 +256,9 @@ class DigitalTwin {
       }
 
       this.assetFiles = result;
-    } catch (error) {
-      console.error(
-        `Error retrieving asset files from Digital Twin ${this.DTName}:`,
-        error,
-      );
+    } catch (_error) {
+      return [];
     }
-
     return result;
   }
 }
