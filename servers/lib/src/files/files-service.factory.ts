@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { IFilesService } from './interfaces/files.service.interface.js';
-import Config from 'src/config/config.service.js';
+import { IConfig } from 'src/config/config.interface.js';
 
 @Injectable()
 export default class FilesServiceFactory {
   static async create(
-    configService: Config,
+    configService: IConfig,
     fileServices: IFilesService[],
   ): Promise<IFilesService> {
     const mode = configService.getMode();

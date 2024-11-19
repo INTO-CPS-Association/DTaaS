@@ -3,9 +3,10 @@ import * as yaml from 'js-yaml';
 import { Injectable, Logger } from '@nestjs/common';
 import {ConfigValues, GitRepo } from './config.model.js';
 import resolveFile from './util.js';
+import { IConfig } from './config.interface.js';
 
 @Injectable()
-export default class Config {
+export default class Config implements IConfig {
   private configValues: ConfigValues;
   private logger: Logger;
 

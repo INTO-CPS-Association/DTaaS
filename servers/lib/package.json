@@ -24,14 +24,14 @@
     "syntax": "eslint . --fix",
     "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
     "posttest": "npx rimraf ../../files/user2/tools/README.md",
-    "test:all": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage",
-    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
+    "test:all": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest --testPathIgnorePatterns=cloudcmd --coverage",
+    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest --config ./test/jest-e2e.json --coverage",
     "test:http": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test",
     "test:http-nocov": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd  --coverage=false && pm2 delete libms-test",
     "test:http-github": "jest test/cloudcmd --coverage --coverageThreshold=\"{}\"",
-    "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest ../test/integration --coverage",
-    "test:nocov": "yarn test:http-nocov && npx cross-env LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage=false",
-    "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest ../test/unit --coverage"
+    "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest ../test/integration --coverage",
+    "test:nocov": "yarn test:http-nocov && npx cross-env LIBMS_CONFIG_PATH=test/libms.test.yaml jest --testPathIgnorePatterns=cloudcmd --coverage=false",
+    "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest ../test/unit --coverage"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {

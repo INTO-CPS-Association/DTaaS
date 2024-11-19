@@ -1,13 +1,14 @@
 import { Global, Module } from '@nestjs/common';
-import Config from './config.service.js';
 import * as nestConfig from '@nestjs/config';
+import Config from './config.service.js';
+import { CONFIG_SERVICE } from './config.interface.js';
 
 @Global()
 @Module({
   imports: [nestConfig.ConfigModule.forRoot({ isGlobal: true })],
   providers: [
     {
-      provide: Config,
+      provide: CONFIG_SERVICE,
       useFactory: async (envConfigservice: nestConfig.ConfigService) => {
         const confPath = envConfigservice.get<string>('LIBMS_CONFIG_PATH');
         const config = new Config();
@@ -17,6 +18,6 @@ import * as nestConfig from '@nestjs/config';
       inject: [nestConfig.ConfigService],
     },
   ],
-  exports: [Config],
+  exports: [CONFIG_SERVICE],
 })
 export class ConfigModule {}

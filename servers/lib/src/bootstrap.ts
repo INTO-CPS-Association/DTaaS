@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import AppModule from './app.module.js';
 import cloudCMD from './cloudcmd/cloudcmd.js';
-import Config from './config/config.service.js';
 import { Logger } from '@nestjs/common';
+import { CONFIG_SERVICE, IConfig } from './config/config.interface.js';
 
 type BootstrapOptions = {
   config?: string;
@@ -24,7 +24,7 @@ export default async function bootstrap(options?: BootstrapOptions) {
   process.env.LIBMS_CONFIG_PATH = options.config;
 
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(Config);
+  const configService = app.get(CONFIG_SERVICE) as IConfig;
   const port = configService.getPort();
   const localPath = configService.getLocalPath();
   const mode = configService.getMode();

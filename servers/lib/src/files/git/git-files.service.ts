@@ -7,6 +7,8 @@ import * as fs from 'fs';
 import * as http from 'isomorphic-git/http/node/index.cjs';
 import LocalFilesService from '../local/local-files.service.js';
 import Config from '../../config/config.service.js';
+import { CONFIG_SERVICE } from '../../config/config.interface.js';
+import path from 'path';
 
 @Injectable()
 export default class GitFilesService implements IFilesService {
@@ -14,7 +16,7 @@ export default class GitFilesService implements IFilesService {
   private readonly logger: Logger;
   @Inject(LocalFilesService) private localFilesService: LocalFilesService;
 
-  constructor(private configService: Config) {
+  constructor(@Inject(CONFIG_SERVICE) private configService: Config) {
     this.dataPath = this.configService.getLocalPath();
     this.logger = new Logger(GitFilesService.name);
   }
@@ -39,6 +41,7 @@ export default class GitFilesService implements IFilesService {
           fs,
           http,
           dir: this.dataPath + `/${user}`,
+          gitdir: path.join(this.dataPath,'gitdir',user,'.git'),
           url: repoUrl.includes('.git') ? repoUrl : repoUrl + '.git',
           ref: 'main',
           singleBranch: true,

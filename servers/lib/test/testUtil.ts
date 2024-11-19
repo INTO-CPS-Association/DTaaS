@@ -1,5 +1,9 @@
 import * as dotenv from 'dotenv';
+import { IConfig } from 'src/config/config.interface';
 import { setTimeout } from 'timers/promises';
+import { jest } from '@jest/globals';
+import { GitRepo } from 'src/config/config.model';
+import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 
 dotenv.config({ path: '.env' });
 
@@ -55,24 +59,26 @@ export function sleep(ms) {
 
 export class MockConfigService {
   // eslint-disable-next-line class-methods-use-this
-  getMode(key: string): string {
-    switch (key) {
-      case 'LOCAL_PATH':
-        return process.env.LOCAL_PATH;
-      case 'MODE':
-        if (process.env.MODE === 'local') {
-          return 'local';
-        }
-        if (process.env.MODE === 'git') {
-          return 'git';
-        }
-        return 'unknown';
 
-      default:
-        return undefined;
-    }
+  getMode(): string {
+    return '';
+  }
+
+  getLocalPath(): string {
+    return 'test/data';
   }
 }
+
+export const jestMockConfigService = (): IConfig => ({
+  getMode: jest.fn<() => string>().mockReturnValue(CONFIG_MODE.LOCAL),
+  getLocalPath: jest.fn<() => string>().mockReturnValue('test/data'),
+  getApolloPath: jest.fn<() => string>(),
+  getGitRepos: jest.fn<() => { [key: string]: GitRepo }[]>(),
+  getGraphqlPlayground: jest.fn<() => string>(),
+  getLogLevel: jest.fn<() => string>(),
+  getPort: jest.fn<() => number>(),
+  loadConfig: jest.fn<() => Promise<void>>(),
+});
 
 export const mockReadFileResponseData = {
   project: {

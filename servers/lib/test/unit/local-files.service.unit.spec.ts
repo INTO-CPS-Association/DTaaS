@@ -1,6 +1,5 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
 import LocalFilesService from '../../src/files/local/local-files.service';
@@ -13,6 +12,7 @@ import {
   testFileName,
 } from '../testUtil';
 import { Dirent } from 'fs';
+import { CONFIG_SERVICE } from 'src/config/config.interface';
 
 jest.mock('fs', () => ({
   promises: {
@@ -30,7 +30,7 @@ describe('LocalFilesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LocalFilesService,
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: CONFIG_SERVICE, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -47,7 +47,7 @@ describe('LocalFilesService', () => {
 
   it('should list directory', async () => {
     const fullPath = join(
-      mockConfigService.getMode('LOCAL_PATH'),
+      mockConfigService.getLocalPath(),
       pathToTestDirectory,
     );
 
@@ -85,7 +85,7 @@ describe('LocalFilesService', () => {
 
   it('should read file', async () => {
     const fullPath = join(
-      mockConfigService.getMode('LOCAL_PATH'),
+      mockConfigService.getLocalPath(),
       pathToTestFileContent,
     );
 

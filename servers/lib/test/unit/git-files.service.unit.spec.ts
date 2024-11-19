@@ -1,16 +1,16 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import LocalFileService from 'src/files/local/local-files.service';
 import { Project } from 'src/types';
 import {
-  MockConfigService,
+  jestMockConfigService,
   testDirectory,
   testFileContent,
 } from 'test/testUtil';
 import GitFilesService from 'src/files/git/git-files.service';
 import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 import { IFilesService } from 'src/files/interfaces/files.service.interface';
+import { CONFIG_SERVICE } from 'src/config/config.interface';
 
 jest.mock('fs', () => ({
   promises: {
@@ -22,7 +22,7 @@ jest.mock('fs', () => ({
 
 describe('GitFilesService', () => {
   let service: GitFilesService;
-  const mockConfigService = new MockConfigService();
+  const mockConfigService = jestMockConfigService();
   const mockLocalFilesService: IFilesService = {
     listDirectory: jest
       .fn<() => Promise<Project>>()
@@ -38,7 +38,7 @@ describe('GitFilesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GitFilesService,
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: CONFIG_SERVICE, useValue: mockConfigService },
         { provide: LocalFileService, useValue: mockLocalFilesService },
       ],
     }).compile();
