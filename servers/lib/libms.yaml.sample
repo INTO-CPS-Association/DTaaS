@@ -1,6 +1,6 @@
 port: '4001'
 mode: 'git'
-local-path: '..\\..\\files\\test'
+local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
 graphql-playground: 'true'

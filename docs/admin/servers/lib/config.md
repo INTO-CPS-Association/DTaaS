@@ -5,9 +5,6 @@ The template configuration file is:
 
 ```yaml
 
-GIT_USERX_REPO_URL=''
-GIT_USERX_API_TOKEN='<TOKEN>'
-
 port: '4001'
 mode: 'local' or 'git'
 local-path: '/Users/<Username>/DTaaS/files'
@@ -31,10 +28,10 @@ by the Library microservice.
 
 The `MODE` variable sets the mode for which and how the files should be served. If `git` mode is chosen, the following is required.
 
-| Variable       | Description                                        |
-| -------------- | -------------------------------------------------- |
-| `username`     | Username in which folder the repos will be cloned. |
-| `git repo url` | HTTP URL of the git repository to clone.           |
+| Variable       | Description                                                                            |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `username`     | Username in which folder the repos will be cloned.                                     |
+| `git repo url` | HTTP URL of the git repository to clone. Optional to add `.git` to the end of the URL. |
 
 Replace the default values the appropriate values for your setup.
 
