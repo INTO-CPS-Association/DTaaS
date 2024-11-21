@@ -8,6 +8,7 @@ import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
+import VerifyConfig from './route/auth/VerifyConfig';
 
 export const routes = [
   {
@@ -15,6 +16,14 @@ export const routes = [
     element: (
       <LayoutPublic>
         <SignIn />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'verify',
+    element: (
+      <LayoutPublic containerMaxWidth="md">
+        <VerifyConfig />
       </LayoutPublic>
     ),
   },
