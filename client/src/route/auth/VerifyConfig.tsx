@@ -8,25 +8,66 @@ const EnvironmentEnum = z.enum(['dev', 'local', 'prod', 'test']);
 const PathString = z.string();
 const ScopesString = z.literal('openid profile read_user read_repository api');
 
-async function urlRespondsWithOK(url: string): Promise<string> {
-  // localhost is usually run insecurely so we let it pass
-  const insecurePattern = /^http:\/\//;
-  if (insecurePattern.test(url)) {
-    return url;
-  }
-  const cleanURL = url.replace(/^https?:\/\/(www.)?/, '').split('/')[0];
+type reachableUrlType = Promise<{
+  url: string;
+  status: number | undefined;
+  error: string | undefined;
+}>;
+async function urlIsReachable(url: string): reachableUrlType {
   try {
-    const response = await fetch(cleanURL, { redirect: 'follow' });
-    if (response.ok) {
-      return cleanURL;
+    const response = await fetch(url, { method: 'HEAD' });
+
+    if (response.ok || response.status === 302) {
+      return { url, status: response.status, error: undefined };
     }
-    throw new Error(`${cleanURL} responded with ${response.status}`);
-  } catch (error) {
-    throw new Error(
-      `Error: Could not fetch ${cleanURL}. ${(error as Error).message}`,
-    );
+    return {
+      url,
+      status: response.status,
+      error: `$Unexpected response code ${response.status} from ${url}.`,
+    };
+  } catch {
+    try {
+      const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+      if (response.type === 'opaque') {
+        return { url, status: response.status, error: undefined };
+      }
+      return {
+        url,
+        status: response.status,
+        error: `$Unexpected response code ${response.status} from ${url}.`,
+      };
+    } catch (error) {
+      return {
+        url,
+        status: undefined,
+        error: `$An error occured when fetching ${url}. ${error}`,
+      };
+    }
   }
 }
+
+/* 
+async function urlIsReachable(url: string): Promise<string> {
+    const cleanURL = url.replace(/^https:\/\/(www.)?/, '').split('/')[0];
+    try {
+        console.log(`Checking ${url}`);
+        const response = await fetch(cleanURL);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        if (response.ok || response.redirected) {
+            console.log(`Checking succeeded for ${url}`);
+            return cleanURL;
+        }
+        console.log(`Checking failed for ${url} code: ${response.status}`);
+        throw new Error(`${cleanURL} responded with ${response.status}`);
+    } catch (error) {
+        console.log(`Checking failed for ${url}.`);
+        throw new Error(
+            `Error: Could not fetch ${cleanURL}. ${(error as Error).message}`,
+        );
+    }
+} */
 
 const VerifyConfig = () => {
   const [validationResults, setValidationResults] = React.useState<{
@@ -37,60 +78,49 @@ const VerifyConfig = () => {
   React.useEffect(() => {
     const checkValidations = async () => {
       const results: { [key: string]: boolean } = {};
-      try {
-        results.environment = EnvironmentEnum.safeParse(
-          window.env.REACT_APP_ENVIRONMENT,
-        ).success;
-        results.url = await urlRespondsWithOK(window.env.REACT_APP_URL)
-          .then(() => true)
-          .catch(() => false);
-        results.url_basename = PathString.safeParse(
-          window.env.REACT_APP_URL_BASENAME,
-        ).success;
-        results.url_dtlink = PathString.safeParse(
-          window.env.REACT_APP_URL_DTLINK,
-        ).success;
-        results.url_liblink = PathString.safeParse(
-          window.env.REACT_APP_URL_LIBLINK,
-        ).success;
-        results.workbenchlink_vncdesktop = PathString.safeParse(
-          window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP,
-        ).success;
-        results.workbenchlink_vscode = PathString.safeParse(
-          window.env.REACT_APP_WORKBENCHLINK_VSCODE,
-        ).success;
-        results.workbenchlink_jupyterlab = PathString.safeParse(
-          window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB,
-        ).success;
-        results.workbenchlink_jupyternotebook = PathString.safeParse(
-          window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
-        ).success;
-        results.client_id = PathString.safeParse(
-          window.env.REACT_APP_CLIENT_ID,
-        ).success;
-        results.auth_authority = await urlRespondsWithOK(
-          window.env.REACT_APP_AUTH_AUTHORITY,
-        )
-          .then(() => true)
-          .catch(() => false);
-        results.redirect_uri = await urlRespondsWithOK(
-          window.env.REACT_APP_REDIRECT_URI,
-        )
-          .then(() => true)
-          .catch(() => false);
-        results.logout_redirect_uri = await urlRespondsWithOK(
-          window.env.REACT_APP_LOGOUT_REDIRECT_URI,
-        )
-          .then(() => true)
-          .catch(() => false);
-        results.gitlab_scopes = ScopesString.safeParse(
-          window.env.REACT_APP_GITLAB_SCOPES,
-        ).success;
-
-        setValidationResults(results);
-      } catch (error) {
-        throw new Error(error);
-      }
+      results.environment = EnvironmentEnum.safeParse(
+        window.env.REACT_APP_ENVIRONMENT,
+      ).success;
+      results.url = await urlIsReachable(window.env.REACT_APP_URL).then(
+        (response) => !response.error,
+      );
+      results.url_basename = PathString.safeParse(
+        window.env.REACT_APP_URL_BASENAME,
+      ).success;
+      results.url_dtlink = PathString.safeParse(
+        window.env.REACT_APP_URL_DTLINK,
+      ).success;
+      results.url_liblink = PathString.safeParse(
+        window.env.REACT_APP_URL_LIBLINK,
+      ).success;
+      results.workbenchlink_vncdesktop = PathString.safeParse(
+        window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP,
+      ).success;
+      results.workbenchlink_vscode = PathString.safeParse(
+        window.env.REACT_APP_WORKBENCHLINK_VSCODE,
+      ).success;
+      results.workbenchlink_jupyterlab = PathString.safeParse(
+        window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB,
+      ).success;
+      results.workbenchlink_jupyternotebook = PathString.safeParse(
+        window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
+      ).success;
+      results.client_id = PathString.safeParse(
+        window.env.REACT_APP_CLIENT_ID,
+      ).success;
+      results.auth_authority = await urlIsReachable(
+        window.env.REACT_APP_AUTH_AUTHORITY,
+      ).then((response) => !response.error);
+      results.redirect_uri = await urlIsReachable(
+        window.env.REACT_APP_REDIRECT_URI,
+      ).then((response) => !response.error);
+      results.logout_redirect_uri = await urlIsReachable(
+        window.env.REACT_APP_LOGOUT_REDIRECT_URI,
+      ).then((response) => !response.error);
+      results.gitlab_scopes = ScopesString.safeParse(
+        window.env.REACT_APP_GITLAB_SCOPES,
+      ).success;
+      setValidationResults(results);
     };
 
     checkValidations();
