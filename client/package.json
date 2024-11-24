@@ -114,7 +114,7 @@
     "jest-environment-jsdom": "29.7.0",
     "jest-watch-typeahead": "^2.2.2",
     "monocart-coverage-reports": "2.11.1",
-    "playwright": "1.48.1",
+    "playwright": "1.49.0",
     "prettier": "3.3.3",
     "shx": "0.3.4",
     "ts-jest": "29.2.5"
