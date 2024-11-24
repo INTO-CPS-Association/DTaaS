@@ -177,6 +177,7 @@ function CreatePage({
         setNewDigitalTwinName={setNewDigitalTwinName}
         errorMessage={errorMessage}
         setErrorMessage={setErrorMessage}
+        isPrivate={isPrivate}
       />
       <CustomSnackbar />
     </>

@@ -38,13 +38,21 @@ class DTAssets {
       | Array<{ name: string; content: string; isNew: boolean }>,
     mainFolderPath: string,
     lifecycleFolderPath: string,
+    isPrivate: boolean,
   ): Promise<void> {
     for (const file of files) {
+      const fileType = (file as FileState).type || 'asset';
+
       if (file.isNew) {
-        const fileType = (file as FileState).type || 'asset';
         const filePath =
           fileType === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
         const commitMessage = `Add ${file.name} to ${fileType} folder`;
+        await this.fileHandler.createFile(file, filePath, commitMessage);
+      }
+
+      if(isPrivate === false) {
+        const filePath = fileType === 'lifecycle' ? `common/${lifecycleFolderPath}` : `common/${mainFolderPath}`;
+        const commitMessage = `Add ${file.name} to ${fileType} common folder`;
         await this.fileHandler.createFile(file, filePath, commitMessage);
       }
     }
@@ -172,6 +180,11 @@ ${triggerKey}:
   async delete(): Promise<void> {
     await this.removeTriggerFromPipeline();
     await this.fileHandler.deleteDT(`digital_twins/${this.DTName}`);
+
+    const libraryDTs = await this.fileHandler.getFolders(`common/digital_twins`);
+    if (libraryDTs.includes(`common/digital_twins/${this.DTName}`)) {
+      await this.fileHandler.deleteDT(`common/digital_twins/${this.DTName}`);
+    }
   }
 
   async getFileContent(fileName: string): Promise<string> {
@@ -203,7 +216,7 @@ ${triggerKey}:
   }
 
   async getFolders(path: string): Promise<string[]> {
-    return this.fileHandler.getFolders(this.gitlabInstance.projectId!, path);
+    return this.fileHandler.getFolders(path);
   }
 }
 

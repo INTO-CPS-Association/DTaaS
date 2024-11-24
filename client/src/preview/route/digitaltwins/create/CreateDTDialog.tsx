@@ -37,6 +37,7 @@ interface CreateDTDialogProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
+  isPrivate: boolean;
 }
 
 const handleError = (
@@ -90,6 +91,7 @@ const handleConfirm = async (
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
+  isPrivate: boolean,
 ) => {
   setIsLoading(true);
 
@@ -99,7 +101,7 @@ const handleConfirm = async (
   }
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.create(files, cartAssets, libraryFiles);
+  const result = await digitalTwin.create(files, cartAssets, libraryFiles, isPrivate);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
@@ -127,6 +129,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   setFileName,
   setFileContent,
   setFileType,
+  isPrivate,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const libraryFiles = useSelector(
@@ -152,18 +155,20 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() =>
-            resetDialogAndForm(
-              setOpenCreateDTDialog,
-              setFileName,
-              setFileContent,
-              setFileType,
-            )
-          }
-        >
-          Cancel
-        </Button>
+        {!isLoading && (
+          <Button
+            onClick={() =>
+              resetDialogAndForm(
+                setOpenCreateDTDialog,
+                setFileName,
+                setFileContent,
+                setFileType,
+              )
+            }
+          >
+            Cancel
+          </Button>
+          )}
         <Button
           onClick={() =>
             handleConfirm(
@@ -179,6 +184,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
               setFileType,
               setNewDigitalTwinName,
               setIsLoading,
+              isPrivate,
             )
           }
           disabled={isLoading}

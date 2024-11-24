@@ -137,11 +137,11 @@ class FileHandler implements IFile {
     }
   }
 
-  async getFolders(projectId: number, path: string): Promise<string[]> {
+  async getFolders(path: string): Promise<string[]> {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          projectId,
+          this.gitlabInstance.projectId!,
           { path, recursive: false },
         );
 
