@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Grid, CircularProgress } from '@mui/material';
+import { Grid, CircularProgress, Box } from '@mui/material';
 import { AssetCardLibrary } from 'preview/components/asset/AssetCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAssetsByTypeAndPrivacy } from 'preview/store/assets.slice';
 import { fetchLibraryAssets } from 'preview/util/init';
+import { Filter } from 'preview/components/asset/Filter';
+import { useState } from 'react';
 
 const outerGridContainerProps = {
   container: true,
@@ -19,8 +21,9 @@ function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
   const assets = useSelector(
     selectAssetsByTypeAndPrivacy(props.pathToAssets, props.privateRepo),
   );
-  const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [filter, setFilter] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -36,6 +39,10 @@ function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
     };
     fetchData();
   }, [dispatch, props.pathToAssets, props.privateRepo]);
+
+  const filteredAssets = assets.filter((asset) =>
+    asset.name.toLowerCase().includes(filter.toLowerCase()),
+  );
 
   if (loading) {
     return (
@@ -61,13 +68,26 @@ function AssetLibrary(props: { pathToAssets: string; privateRepo: boolean }) {
   }
 
   return (
-    <Grid {...outerGridContainerProps}>
-      {assets.map((asset, i) => (
-        <Grid key={i} item xs={12} sm={6} md={4} lg={3} sx={{ minWidth: 250 }}>
-          <AssetCardLibrary asset={asset} />
-        </Grid>
-      ))}
-    </Grid>
+    <>
+      <Box sx={{ mb: 2 }}>
+        <Filter value={filter} onChange={setFilter} />
+      </Box>
+      <Grid {...outerGridContainerProps}>
+        {filteredAssets.map((asset, i) => (
+          <Grid
+            key={i}
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            sx={{ minWidth: 250 }}
+          >
+            <AssetCardLibrary asset={asset} />
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 }
 

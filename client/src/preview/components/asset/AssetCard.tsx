@@ -70,7 +70,7 @@ const Description = styled(Typography)`
 
 function CardActionAreaContainer(asset: Asset, library?: boolean) {
   const digitalTwin = useSelector(
-    (state: RootState) => state.digitalTwin[asset.name],
+    (state: RootState) => state.digitalTwin.digitalTwin[asset.name],
   );
 
   const libraryAsset = useSelector(selectAssetByPath(asset.path));

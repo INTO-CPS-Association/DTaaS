@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Tooltip } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
@@ -53,14 +53,22 @@ function ActionButtons({
       <Button variant="outlined" onClick={onCancel}>
         Cancel
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onSave}
-        disabled={isSaveDisabled}
+
+      <Tooltip
+        title={isSaveDisabled ? 'Add a Digital Twin name to enable saving' : ''}
+        arrow
       >
-        Save
-      </Button>
+        <span>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onSave}
+            disabled={isSaveDisabled}
+          >
+            Save
+          </Button>
+        </span>
+      </Tooltip>
     </Box>
   );
 }

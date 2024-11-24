@@ -1,18 +1,23 @@
 import * as React from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,
   DialogActions,
   DialogContent,
   Typography,
   Button,
+  CircularProgress,
+  Box,
 } from '@mui/material';
 import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { showSnackbar } from 'preview/store/snackbar.slice';
-import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
+import {
+  setDigitalTwin,
+  setShouldFetchDigitalTwins,
+} from 'preview/store/digitalTwin.slice';
 import {
   addDefaultFiles,
   defaultFiles,
@@ -54,6 +59,7 @@ const handleSuccess = (
     }),
   );
   dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+  dispatch(setShouldFetchDigitalTwins(true));
   dispatch(removeAllCreationFiles());
 
   addDefaultFiles(defaultFiles, files, dispatch);
@@ -83,8 +89,14 @@ const handleConfirm = async (
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
-  if (validateFiles(files, libraryFiles, setErrorMessage)) return;
+  setIsLoading(true);
+
+  if (validateFiles(files, libraryFiles, setErrorMessage)) {
+    setIsLoading(false);
+    return;
+  }
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
   const result = await digitalTwin.create(files, cartAssets, libraryFiles);
@@ -102,6 +114,7 @@ const handleConfirm = async (
     setFileType,
   );
   setNewDigitalTwinName('');
+  setIsLoading(false);
 };
 
 const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
@@ -122,6 +135,8 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   const cartAssets = useSelector((state: RootState) => state.cart.assets);
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <Dialog open={open} onClose={setOpenCreateDTDialog}>
       <DialogContent>
@@ -130,6 +145,11 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
           <strong>{newDigitalTwinName}</strong> digital twin?
         </Typography>
         <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
+        {isLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+            <CircularProgress />
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -158,10 +178,12 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
               setFileContent,
               setFileType,
               setNewDigitalTwinName,
+              setIsLoading,
             )
           }
+          disabled={isLoading}
         >
-          Confirm
+          {isLoading ? 'Creating...' : 'Confirm'}
         </Button>
       </DialogActions>
     </Dialog>
