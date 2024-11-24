@@ -9,7 +9,7 @@ interface FilterProps {
   onChange: (value: string) => void;
 }
 
-export const Filter: React.FC<FilterProps> = ({
+const Filter: React.FC<FilterProps> = ({
   placeholder = 'Search by name',
   value,
   onChange,
@@ -36,3 +36,5 @@ export const Filter: React.FC<FilterProps> = ({
     </Box>
   );
 };
+
+export default Filter;

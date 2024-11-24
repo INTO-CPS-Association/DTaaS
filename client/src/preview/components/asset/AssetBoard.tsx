@@ -8,7 +8,7 @@ import {
 import { fetchDigitalTwins } from 'preview/util/init';
 import { setShouldFetchDigitalTwins } from 'preview/store/digitalTwin.slice';
 import { RootState } from 'store/store';
-import { Filter } from './Filter';
+import Filter from './Filter';
 import { Asset } from './Asset';
 import { AssetCardExecute, AssetCardManage } from './AssetCard';
 

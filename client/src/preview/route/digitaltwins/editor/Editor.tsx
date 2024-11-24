@@ -18,6 +18,8 @@ interface EditorProps {
   setIsLibraryFile: React.Dispatch<React.SetStateAction<boolean>>;
   libraryAssetPath: string;
   setLibraryAssetPath: React.Dispatch<React.SetStateAction<string>>;
+  setOpenDeleteFileDialog?: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenChangeFileNameDialog?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function Editor({
@@ -33,6 +35,8 @@ function Editor({
   setIsLibraryFile,
   libraryAssetPath,
   setLibraryAssetPath,
+  setOpenDeleteFileDialog,
+  setOpenChangeFileNameDialog,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -59,6 +63,14 @@ function Editor({
           setIsLibraryFile={setIsLibraryFile}
           setLibraryAssetPath={setLibraryAssetPath}
           tab={tab}
+          fileName={fileName}
+          isLibraryFile={isLibraryFile}
+          setOpenDeleteFileDialog={
+            setOpenDeleteFileDialog || undefined
+          }
+          setOpenChangeFileNameDialog={
+            setOpenChangeFileNameDialog || undefined
+          }
         />
 
         <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>

@@ -4,7 +4,7 @@ import { Box, Button, TextField, Tooltip } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
-import FileActionButtons from './FileActionButtons';
+import PrivacySelector from './PrivacySelector';
 
 interface CreatePageProps {
   newDigitalTwinName: string;
@@ -19,11 +19,11 @@ function DigitalTwinNameInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <Box sx={{ display: 'flex', width: '35%', marginTop: 5 }}>
+    <Box sx={{ display: 'flex', width: '35%', marginTop: 1 }}>
       <TextField
         fullWidth
         variant="outlined"
-        label="Digital twin name"
+        label="Insert digital twin name"
         value={value}
         onChange={onChange}
       />
@@ -46,8 +46,14 @@ function ActionButtons({
         display: 'flex',
         justifyContent: 'flex-end',
         width: '100%',
-        marginBottom: 2,
         gap: 1,
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        backgroundColor: 'white',
+        padding: 2,
+        boxShadow: '0 -2px 5px rgba(0,0,0,0.1)',
+        zIndex: 10,
       }}
     >
       <Button variant="outlined" onClick={onCancel}>
@@ -88,6 +94,7 @@ function CreatePage({
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
   const [openCreateDTDialog, setOpenCreateDTDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const confirmCancel = () => {
     setOpenConfirmDeleteDialog(true);
@@ -103,22 +110,30 @@ function CreatePage({
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           width: '100%',
-          margintTop: 5,
+          marginTop: 1,
         }}
       >
-        <FileActionButtons
-          fileName={fileName}
-          setOpenDeleteFileDialog={setOpenDeleteFileDialog}
-          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
-          isLibraryFile={isLibraryFile}
-        />
         <DigitalTwinNameInput
           value={newDigitalTwinName}
           onChange={(e) => setNewDigitalTwinName(e.target.value)}
         />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            width: '150px',
+          }}
+        >
+          <PrivacySelector
+            isPrivate={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+          />
+        </Box>
       </Box>
 
       <Box sx={{ width: '100%', marginTop: -2 }}>
@@ -134,6 +149,8 @@ function CreatePage({
           setIsLibraryFile={setIsLibraryFile}
           libraryAssetPath={libraryAssetPath}
           setLibraryAssetPath={setLibraryAssetPath}
+          setOpenDeleteFileDialog={setOpenDeleteFileDialog}
+          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
         />
       </Box>
 

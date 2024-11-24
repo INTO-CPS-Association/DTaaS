@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Grid, CircularProgress, Button } from '@mui/material';
+import { Grid, CircularProgress, Button, Box } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
@@ -16,6 +16,7 @@ import {
   renderFileTreeItems,
 } from './sidebarFunctions';
 import SidebarDialog from './SidebarDialog';
+import FileActionButtons from '../create/FileActionButtons';
 
 export const groupedFiles = (assetFiles: LibraryAsset[]) =>
   assetFiles.reduce(
@@ -38,6 +39,10 @@ interface SidebarProps {
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
   setLibraryAssetPath: Dispatch<SetStateAction<string>>;
   tab: string;
+  fileName: string;
+  isLibraryFile: boolean;
+  setOpenDeleteFileDialog?: Dispatch<SetStateAction<boolean>>;
+  setOpenChangeFileNameDialog?: Dispatch<SetStateAction<boolean>>;
 }
 
 const Sidebar = ({
@@ -48,6 +53,10 @@ const Sidebar = ({
   setIsLibraryFile,
   setLibraryAssetPath,
   tab,
+  fileName,
+  isLibraryFile,
+  setOpenDeleteFileDialog,
+  setOpenChangeFileNameDialog,
 }: SidebarProps) => {
   const [isLoading, setIsLoading] = useState(!!name);
   const [newFileName, setNewFileName] = useState('');
@@ -135,15 +144,25 @@ const Sidebar = ({
       }}
     >
       {tab === 'create' && (
-        <Button
-          variant="contained"
-          onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
-          sx={{ marginBottom: 2 }}
-        >
-          Add new file
-        </Button>
-      )}
+        <Box>
+          <Button
+            variant="contained"
+            onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
+            sx={{ width: '100%', marginBottom: -1 }}
+          >
+            Add new file
+          </Button>
 
+          <Box sx={{ marginBottom: 2 }}>
+            <FileActionButtons
+              fileName={fileName}
+              setOpenDeleteFileDialog={setOpenDeleteFileDialog!}
+              setOpenChangeFileNameDialog={setOpenChangeFileNameDialog!}
+              isLibraryFile={isLibraryFile}
+            />
+          </Box>
+        </Box>
+      )}
       <SidebarDialog
         isOpen={isFileNameDialogOpen}
         newFileName={newFileName}
