@@ -37,9 +37,7 @@ class LibraryManager {
     path: string,
     fileName: string,
   ): Promise<string> {
-    const filePath = isPrivate
-      ? `${path}/${fileName}`
-      : `common/${path}/${fileName}`;
+    const filePath = `${path}/${fileName}`;
 
     const fileContent = await this.fileHandler.getFileContent(filePath);
     return fileContent;

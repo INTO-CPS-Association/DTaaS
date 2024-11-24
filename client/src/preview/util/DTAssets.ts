@@ -50,8 +50,11 @@ class DTAssets {
         await this.fileHandler.createFile(file, filePath, commitMessage);
       }
 
-      if(isPrivate === false) {
-        const filePath = fileType === 'lifecycle' ? `common/${lifecycleFolderPath}` : `common/${mainFolderPath}`;
+      if (isPrivate === false) {
+        const filePath =
+          fileType === 'lifecycle'
+            ? `common/${lifecycleFolderPath}`
+            : `common/${mainFolderPath}`;
         const commitMessage = `Add ${file.name} to ${fileType} common folder`;
         await this.fileHandler.createFile(file, filePath, commitMessage);
       }
@@ -181,7 +184,8 @@ ${triggerKey}:
     await this.removeTriggerFromPipeline();
     await this.fileHandler.deleteDT(`digital_twins/${this.DTName}`);
 
-    const libraryDTs = await this.fileHandler.getFolders(`common/digital_twins`);
+    const libraryDTs =
+      await this.fileHandler.getFolders(`common/digital_twins`);
     if (libraryDTs.includes(`common/digital_twins/${this.DTName}`)) {
       await this.fileHandler.deleteDT(`common/digital_twins/${this.DTName}`);
     }

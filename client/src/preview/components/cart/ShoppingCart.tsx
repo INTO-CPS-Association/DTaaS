@@ -28,19 +28,33 @@ function ShoppingCart() {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="space-between"
-      minHeight="170px"
-      padding="10px"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '230px',
+        padding: '10px',
+        overflow: 'hidden',
+      }}
     >
-      <CartList />
+      <Box
+        sx={{
+          flex: '1 1 auto',
+          overflowY: 'auto',
+          marginBottom: '10px',
+        }}
+      >
+        <CartList />
+      </Box>
 
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginTop: 'auto',
+          flexShrink: 0,
+          position: 'sticky',
+          bottom: 0,
+          background: 'white',
+          padding: '5px 0',
         }}
       >
         <Button variant="contained" onClick={() => setOpenDialog(true)}>
@@ -52,7 +66,7 @@ function ShoppingCart() {
         >
           Proceed
         </Button>
-      </div>
+      </Box>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirm Clear Cart</DialogTitle>

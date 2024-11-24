@@ -38,6 +38,7 @@ export function createCombinedTabs() {
               minWidth: '20rem',
               textAlign: 'center',
               paddingTop: '2rem',
+              height: '300px',
             }}
           >
             <Typography variant="h5">Shopping Cart</Typography>

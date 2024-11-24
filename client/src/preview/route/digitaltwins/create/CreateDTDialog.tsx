@@ -101,7 +101,12 @@ const handleConfirm = async (
   }
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.create(files, cartAssets, libraryFiles, isPrivate);
+  const result = await digitalTwin.create(
+    files,
+    cartAssets,
+    libraryFiles,
+    isPrivate,
+  );
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
@@ -168,7 +173,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
           >
             Cancel
           </Button>
-          )}
+        )}
         <Button
           onClick={() =>
             handleConfirm(

@@ -61,7 +61,9 @@ function ActionButtons({
       </Button>
 
       <Tooltip
-        title={isSaveDisabled ? 'Add a Digital Twin name to enable saving' : ''}
+        title={
+          isSaveDisabled ? 'Add the digital twin name to enable saving' : ''
+        }
         arrow
       >
         <span>

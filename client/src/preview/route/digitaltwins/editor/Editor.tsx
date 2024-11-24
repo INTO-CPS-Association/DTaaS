@@ -65,12 +65,8 @@ function Editor({
           tab={tab}
           fileName={fileName}
           isLibraryFile={isLibraryFile}
-          setOpenDeleteFileDialog={
-            setOpenDeleteFileDialog || undefined
-          }
-          setOpenChangeFileNameDialog={
-            setOpenChangeFileNameDialog || undefined
-          }
+          setOpenDeleteFileDialog={setOpenDeleteFileDialog || undefined}
+          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog || undefined}
         />
 
         <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
