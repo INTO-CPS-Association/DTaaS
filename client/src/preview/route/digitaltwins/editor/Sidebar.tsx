@@ -5,31 +5,14 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
-import LibraryAsset from 'preview/util/libraryAsset';
+import { getFilteredFileNames } from 'preview/util/fileUtils';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
-import {
-  fetchData,
-  getFilteredFileNames,
-  handleAddFileClick,
-  renderFileSection,
-  renderFileTreeItems,
-} from './sidebarFunctions';
+import { fetchData } from './sidebarFetchers';
+import { handleAddFileClick } from './sidebarFunctions';
+import { renderFileTreeItems, renderFileSection } from './sidebarRendering';
 import SidebarDialog from './SidebarDialog';
 import FileActionButtons from '../create/FileActionButtons';
-
-export const groupedFiles = (assetFiles: LibraryAsset[]) =>
-  assetFiles.reduce(
-    (acc, file) => {
-      const { path } = file;
-      if (!acc[path]) {
-        acc[path] = [];
-      }
-      acc[path].push(file);
-      return acc;
-    },
-    {} as Record<string, LibraryAsset[]>,
-  );
 
 interface SidebarProps {
   name?: string;

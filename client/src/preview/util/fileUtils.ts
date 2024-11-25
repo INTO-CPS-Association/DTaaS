@@ -106,3 +106,30 @@ export const handleChangeFileName = (
 
   setOpenChangeFileNameDialog(false);
 };
+
+export const getFileTypeFromExtension = (fileName: string): string => {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+  if (extension === 'md') return 'description';
+  if (extension === 'json' || extension === 'yaml' || extension === 'yml')
+    return 'config';
+  return 'lifecycle';
+};
+
+export const getFilteredFileNames = (type: string, files: FileState[]) =>
+  files
+    .filter(
+      (file) => file.isNew && getFileTypeFromExtension(file.name) === type,
+    )
+    .map((file) => file.name);
+
+export const updateFileState = (
+  fileName: string,
+  fileContent: string,
+  setFileName: Dispatch<SetStateAction<string>>,
+  setFileContent: Dispatch<SetStateAction<string>>,
+  setFileType: Dispatch<SetStateAction<string>>,
+) => {
+  setFileName(fileName);
+  setFileContent(fileContent);
+  setFileType(fileName.split('.').pop()!);
+};
