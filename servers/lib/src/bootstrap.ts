@@ -13,15 +13,8 @@ type BootstrapOptions = {
 export default async function bootstrap(options?: BootstrapOptions) {
   const logger = new Logger(bootstrap.name);
 
-  if (options.config === undefined) {
-    this.logger.error('No configuration file was provided');
-    if (options.runHelp) {
-      options.runHelp();
-    } else {
-      process.exit(1);
-    }
-  }
-  process.env.LIBMS_CONFIG_PATH = options.config;
+  if (process.env.LIBMS_CONFIG_PATH == null)
+    process.env.LIBMS_CONFIG_PATH = options.config ?? 'libms.yaml';
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(CONFIG_SERVICE) as IConfig;

@@ -16,9 +16,15 @@ export default class Config implements IConfig {
 
   async loadConfig(configPath: string): Promise<void> {
     if (configPath !== undefined) {
-      this.configValues = yaml.load(
-        readFileSync(resolveFile(configPath), 'utf8'),
-      ) as ConfigValues;
+      try {
+        const configFile = readFileSync(resolveFile(configPath), 'utf8');
+        this.configValues = yaml.load(
+          configFile
+        ) as ConfigValues;
+      } catch (e) {
+        this.logger.error('Error loading config file', e);
+        process.exit(1);
+      }
     }
      this.logger.log('Config loaded', this.configValues);
    
