@@ -58,10 +58,10 @@ jobs:
 
       - name: Update configuration
         env:
-          LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
-          sed -i 's/port: '\''[0-9]*'\''/port: '\''${{env.HTTP_PORT}}'\''/' ${{env.LIBMS_CONFIG_PATH}}
-          sed -i 's|local-path: .*$|local-path: '\''${{env.LOCAL_PATH}}'\''|' ${{env.LIBMS_CONFIG_PATH}}}
+          node test/update-config.js  
 
       - name: Start http mode
         env: 
