@@ -1,11 +1,9 @@
-import * as dotenv from 'dotenv';
 import { IConfig } from 'src/config/config.interface';
 import { setTimeout } from 'timers/promises';
 import { jest } from '@jest/globals';
 import { GitRepo } from 'src/config/config.model';
 import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 
-dotenv.config({ path: '.env' });
 
 // actual data for integration and e2e tests
 export const readFileActualContent = ['content123'];

@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import FilesResolver from '../../src/files/files.resolver';
 import LocalFilesService from '../../src/files/local/local-files.service';
 import {
+  jestMockConfigService,
   pathToTestDirectory,
   pathToTestFileContent,
   testDirectory,
@@ -11,25 +12,14 @@ import {
 import GitFilesService from '../../src/files/git/git-files.service';
 import { FILE_SERVICE } from '../../src/files/interfaces/files.service.interface';
 import FilesServiceFactory from '../../src/files/files-service.factory';
-import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 import { CONFIG_SERVICE, IConfig } from 'src/config/config.interface';
-import { GitRepo } from 'src/config/config.model';
 
 describe('Integration tests for FilesResolver', () => {
   let filesResolver: FilesResolver;
   let mockConfigService: IConfig;
 
   beforeEach(async () => {
-    mockConfigService = {
-      getMode: jest.fn<() => string>().mockReturnValue(CONFIG_MODE.LOCAL),
-      getLocalPath: jest.fn<() => string>().mockReturnValue('test/data'),
-      getApolloPath: jest.fn<() => string>(),
-      getGitRepos: jest.fn<() => { [key: string]: GitRepo }[]>(),
-      getGraphqlPlayground: jest.fn<() => string>(),
-      getLogLevel: jest.fn<() => string>(),
-      getPort: jest.fn<() => number>(),
-      loadConfig: jest.fn<() => Promise<void>>(),
-    };
+    mockConfigService = jestMockConfigService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

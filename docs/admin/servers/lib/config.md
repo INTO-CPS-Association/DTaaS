@@ -35,7 +35,7 @@ The `MODE` variable sets the mode for which and how the files should be served. 
 
 Replace the default values the appropriate values for your setup.
 
-The config is saved `.env` file by convention. The **libms** looks for
-`.env` file in the working directory from which it is run.
+The **libms** looks for
+`libms.yaml` file in the working directory from which it is run.
 If you want to run **libms** without explicitly specifying the configuration
-file, run
+file, run with `-c <path-to-file>`.
