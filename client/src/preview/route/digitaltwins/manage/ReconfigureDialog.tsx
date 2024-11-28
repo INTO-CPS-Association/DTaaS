@@ -12,14 +12,17 @@ import {
   AlertColor,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
-import { FileState, saveAllFiles } from '../../../store/file.slice';
+import {
+  FileState,
+  removeAllModifiedFiles,
+  selectModifiedFiles,
+} from '../../../store/file.slice';
 import {
   selectDigitalTwinByName,
   updateDescription,
 } from '../../../store/digitalTwin.slice';
 import { showSnackbar } from '../../../store/snackbar.slice';
-import DigitalTwin, { formatName } from '../../../util/gitlabDigitalTwin';
+import DigitalTwin, { formatName } from '../../../util/digitalTwin';
 import Editor from '../editor/Editor';
 
 interface ReconfigureDialogProps {
@@ -39,10 +42,13 @@ function ReconfigureDialog({
   setShowDialog,
   name,
 }: ReconfigureDialogProps) {
+  const [fileName, setFileName] = useState<string>('');
+  const [fileContent, setFileContent] = useState<string>('');
+  const [fileType, setFileType] = useState<string>('');
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
-  const modifiedFiles = useSelector((state: RootState) => state.files);
+  const modifiedFiles = useSelector(selectModifiedFiles);
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);
@@ -57,6 +63,7 @@ function ReconfigureDialog({
   };
 
   const handleConfirmCancel = () => {
+    dispatch(removeAllModifiedFiles());
     setOpenCancelDialog(false);
     setShowDialog(false);
   };
@@ -69,6 +76,12 @@ function ReconfigureDialog({
         name={name}
         handleCancel={handleCancel}
         handleSave={handleSave}
+        fileName={fileName}
+        setFileName={setFileName}
+        fileContent={fileContent}
+        setFileContent={setFileContent}
+        fileType={fileType}
+        setFileType={setFileType}
       />
 
       <ConfirmationDialog
@@ -99,7 +112,7 @@ export const saveChanges = async (
   }
 
   showSuccessSnackbar(dispatch, name);
-  dispatch(saveAllFiles());
+  dispatch(removeAllModifiedFiles());
 };
 
 export const handleFileUpdate = async (
@@ -108,7 +121,7 @@ export const handleFileUpdate = async (
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   try {
-    await digitalTwin.updateFileContent(file.name, file.content);
+    await digitalTwin.DTAssets.updateFileContent(file.name, file.content);
 
     if (file.name === 'description.md') {
       dispatch(
@@ -146,12 +159,24 @@ const ReconfigureMainDialog = ({
   name,
   handleCancel,
   handleSave,
+  fileName,
+  setFileName,
+  fileContent,
+  setFileContent,
+  fileType,
+  setFileType,
 }: {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
   handleCancel: () => void;
   handleSave: () => void;
+  fileName: string;
+  setFileName: Dispatch<SetStateAction<string>>;
+  fileContent: string;
+  setFileContent: Dispatch<SetStateAction<string>>;
+  fileType: string;
+  setFileType: Dispatch<SetStateAction<string>>;
 }) => (
   <Dialog
     open={showDialog}
@@ -168,7 +193,16 @@ const ReconfigureMainDialog = ({
       Reconfigure <strong>{formatName(name)}</strong>
     </DialogTitle>
     <DialogContent>
-      <Editor DTName={name} />
+      <Editor
+        DTName={name}
+        tab={'reconfigure'}
+        fileName={fileName}
+        setFileName={setFileName}
+        fileContent={fileContent}
+        setFileContent={setFileContent}
+        fileType={fileType}
+        setFileType={setFileType}
+      />
     </DialogContent>
     <DialogActions>
       <Button color="primary" onClick={handleCancel}>

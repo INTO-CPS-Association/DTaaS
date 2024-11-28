@@ -65,13 +65,12 @@ based on these services.
 
 The development priorities for the DTaaS software development team are:
 
+* DevOps from React frontend website
+* Upgrade software stack of user workspaces
+* Increased automation of installation procedures
 * [DT Runner](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/execution/runner)
   (API Interface to DT)
-* DevOps from React frontend website
-* Increased automation of installation procedures
-* Upgrade software stack of user workspaces
 * DT Configuration DSL ín the form of YAML schema
-* UI for DT creation
 
 Your contributions are highly welcome.
 

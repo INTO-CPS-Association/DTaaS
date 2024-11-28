@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
-import DigitalTwin from '../../util/gitlabDigitalTwin';
+import DigitalTwin from '../../util/digitalTwin';
 
 interface DialogButtonProps {
   assetName: string;

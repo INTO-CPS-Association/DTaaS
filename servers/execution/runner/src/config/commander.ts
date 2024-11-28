@@ -4,7 +4,8 @@ import { readFileSync } from 'fs';
 import Keyv from 'keyv';
 import resolveFile from './util.js';
 
-const PACKAGE_VERSION: string = '0.2.0';
+const PACKAGE_VERSION: string = '0.3.2';
+const DEFAULT_CONFIG_FILENAME = 'runner.yaml';
 
 export function createCommand(name: string): [Command, Keyv] {
   return [new Command(name), new Keyv()];
@@ -20,7 +21,7 @@ export default async function CLI(
     .option(
       '-c --config <string>',
       'runner config file specified in yaml format',
-      'runner.yaml',
+      DEFAULT_CONFIG_FILENAME,
     )
     .helpOption('-h --help', 'display help')
     .showHelpAfterError()

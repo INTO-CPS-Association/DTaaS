@@ -1,11 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import DigitalTwin from 'preview/util/gitlabDigitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
 import { Provider } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import setupStore from './utils';
 
 jest.useFakeTimers();
+
+jest.mock('preview/util/init', () => ({
+  fetchAssets: jest.fn(),
+}));
 
 describe('DeleteDialog', () => {
   let storeDelete: ReturnType<typeof setupStore>;
@@ -16,7 +20,7 @@ describe('DeleteDialog', () => {
     React.act(() => {
       render(
         <Provider store={storeDelete}>
-          <AssetBoard tab="Manage" error={null} />
+          <AssetBoard tab="Manage" />
         </Provider>,
       );
     });

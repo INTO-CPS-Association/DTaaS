@@ -15,6 +15,7 @@ Install the package with the following commands
 
 ```bash
 sudo npm install -g @into-cps-association/libms
+sudo npm install -g pm2
 ```
 
 The package on [npmjs](https://registry.npmjs.org) is published

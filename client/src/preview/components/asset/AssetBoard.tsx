@@ -3,8 +3,9 @@ import { Grid } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { deleteAsset } from 'preview/store/assets.slice';
-import { AssetCardExecute, AssetCardManage } from './AssetCard';
+import { fetchAssets } from 'preview/util/init';
 import { Asset } from './Asset';
+import { AssetCardExecute, AssetCardManage } from './AssetCard';
 
 const outerGridContainerProps = {
   container: true,
@@ -19,7 +20,6 @@ const outerGridContainerProps = {
 
 interface AssetBoardProps {
   tab: string;
-  error: string | null;
 }
 
 const AssetGridItem: React.FC<{
@@ -44,9 +44,17 @@ const AssetGridItem: React.FC<{
   </Grid>
 );
 
-const AssetBoard: React.FC<AssetBoardProps> = ({ tab, error }) => {
+const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
   const assets = useSelector((state: RootState) => state.assets.items);
+  const [error, setError] = React.useState<string | null>(null);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      await fetchAssets(dispatch, setError);
+    };
+    fetchData();
+  }, [dispatch]);
 
   const handleDelete = (deletedAssetPath: string) => {
     dispatch(deleteAsset(deletedAssetPath));

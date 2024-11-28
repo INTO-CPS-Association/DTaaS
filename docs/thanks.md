@@ -39,6 +39,9 @@ Valdemar Tang
 | Incubator with NuRV Runtime Monitor | Alberto Bonizzi and Morten Haahr Kristensen |
 | Incubator with NuRV Runtime Monitor Service | Valdemar Tang |
 | Water Tank Fault Injection with NuRV Runtime Monitor | Alberto Bonizzi |
+| Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen |
+| Incubator with NuRV Runtime Monitor FMU as Service | Valdemar Tang and Morten Haahr Kristensen |
+| Incubator with NuRV Runtime Monitor as Service | Morten Haahr Kristensen and Valdemar Tang |
 
 ## Documentation
 

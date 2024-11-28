@@ -60,16 +60,20 @@ We can now use the OAuth tokens generated on the GitLab instance to enable
 authorization.
 
 If the DTaaS application is hosted at <https://localhost>, then configure
+the following files:
 
-Configure the following files:
+1. **DTaaS Client Authorization** token in
+   _deploy/config/client/env.local.js_.
+1. _deploy/docker/.env.local_ Add localpath and username.
 
-1. **DTaaS Client Authorization** token:
-   1. _deploy/config/client/env.local.js_ - for <https://localhost>
-      installation
-   1. _deploy/config/client/env.js_ -  for <https://foo.com>
-      installation
-1. _deploy/docker/.env.server_ - Add the client ID and client secret from the
-   **DTaaS Server Authorization** token (**not required for localhost setup**)
+If the DTaaS application is hosted at <https://localhost>, then configure
+the following files:
+
+1. **DTaaS Client Authorization** token in
+   _deploy/config/client/env.js_.
+1. _deploy/docker/.env.server_ - Add  localpath and username,
+   OAuth client ID and client secret from the
+   **DTaaS Server Authorization** token
 
 ## Restart Services
 

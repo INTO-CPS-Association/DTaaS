@@ -1,5 +1,6 @@
 #!/usr/bin/node
 /* Install the optional platform services for DTaaS */
+/* eslint-disable no-console */
 import {$} from 'execa';
 import chalk from 'chalk';
 import fs from 'fs';

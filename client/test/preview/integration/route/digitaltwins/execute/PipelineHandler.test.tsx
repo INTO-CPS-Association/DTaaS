@@ -1,9 +1,22 @@
 import * as PipelineHandlers from 'preview/route/digitaltwins/execute/pipelineHandler';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
-import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
-import { SnackbarState } from 'preview/store/snackbar.slice';
-import { formatName } from 'preview/util/gitlabDigitalTwin';
-import { previewStore as store } from 'test/preview/integration/integration.testUtil';
+import { configureStore } from '@reduxjs/toolkit';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
+import snackbarSlice, { SnackbarState } from 'preview/store/snackbar.slice';
+import { formatName } from 'preview/util/digitalTwin';
+
+const store = configureStore({
+  reducer: {
+    digitalTwin: digitalTwinReducer,
+    snackbar: snackbarSlice,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
 
 describe('PipelineHandler Integration Tests', () => {
   const digitalTwin = mockDigitalTwin;
