@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import LibraryAsset from 'preview/util/libraryAsset';
 import { selectAssetByPath } from 'preview/store/assets.slice';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
-
 import DigitalTwin from '../../util/digitalTwin';
 
 interface DialogButtonProps {

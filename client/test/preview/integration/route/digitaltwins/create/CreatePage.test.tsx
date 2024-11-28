@@ -44,13 +44,7 @@ describe('CreatePage', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
-  /*
-    it('renders CreatePage', () => {
-        expect(screen.getByText('Please select a file to edit')).toBeInTheDocument();
-    });
-    */
-
+  
   it('handles cancel when clicking on cancel button and confirm', () => {
     act(() => {
       screen.getByText('Cancel').click();

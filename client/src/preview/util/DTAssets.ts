@@ -86,7 +86,7 @@ class DTAssets {
       );
     }
   }
-
+  
   async updateFileContent(
     fileName: string,
     fileContent: string,

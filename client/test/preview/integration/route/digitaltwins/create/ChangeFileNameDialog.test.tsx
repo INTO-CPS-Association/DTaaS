@@ -1,10 +1,15 @@
 import * as React from 'react';
 import ChangeFileNameDialog from 'preview/route/digitaltwins/create/ChangeFileNameDialog';
 import { Provider } from 'react-redux';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import fileSlice from 'preview/store/file.slice';
-import { act } from 'react';
 
 const store = configureStore({
   reducer: combineReducers({
