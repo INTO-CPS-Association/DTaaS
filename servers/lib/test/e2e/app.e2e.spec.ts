@@ -17,14 +17,11 @@ import {
   expectedFileContentResponse,
   expectedListDirectoryResponse,
 } from '../testUtil';
+import { CONFIG_SERVICE, IConfig } from 'src/config/config.interface';
+import Config from 'src/config/config.service';
 
-const client = new ApolloClient({
-  link: new HttpLink({
-    uri: `http://localhost:${process.env.PORT}${process.env.APOLLO_PATH}`,
-    fetch,
-  }),
-  cache: new InMemoryCache({ addTypename: false }),
-});
+let client;
+let configService: IConfig;
 
 describe('End to End test for the application', () => {
   let app: INestApplication;
@@ -33,9 +30,17 @@ describe('End to End test for the application', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+    configService = moduleFixture.get<Config>(CONFIG_SERVICE)
     app = moduleFixture.createNestApplication();
+    client = new ApolloClient({
+      link: new HttpLink({
+        uri: `http://localhost:${configService.getPort()}${configService.getApolloPath()}`,
+        fetch,
+      }),
+      cache: new InMemoryCache({ addTypename: false }),
+    })
     await app.init(); // Initialize the application
-    await app.listen(process.env.PORT);
+    await app.listen(configService.getPort());
 
     // Check if the port is available
      
@@ -52,8 +57,8 @@ describe('End to End test for the application', () => {
     query: string,
     expectedResponse: unknown,
   ): Promise<void> {
-    const response = await request(`http://localhost:${process.env.PORT}`)
-      .post(process.env.APOLLO_PATH)
+    const response = await request(`http://localhost:${configService.getPort()}`)
+      .post(configService.getApolloPath())
       .send({ query });
     expect(response.body).toEqual(expectedResponse);
   }
