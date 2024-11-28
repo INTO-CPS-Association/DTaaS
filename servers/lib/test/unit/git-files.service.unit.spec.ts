@@ -77,6 +77,6 @@ describe('GitFilesService', () => {
     await service.readFile('/some/path/file.txt');
 
     // Assert
-    expect(mockReadFile).toBeCalledTimes(1);
+    expect(mockReadFile).toHaveBeenCalledTimes(1);
   });
 });

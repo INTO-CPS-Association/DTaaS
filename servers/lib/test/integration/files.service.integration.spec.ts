@@ -64,9 +64,9 @@ describe('Integration tests for FilesResolver', () => {
 
   const modes = ['local'];
 
-  // eslint-disable-next-line no-restricted-syntax
+   
   for (const mode of modes) {
-    // eslint-disable-next-line no-loop-func
+     
     describe(`when MODE is ${mode}`, () => {
       beforeEach(() => {
         jest.spyOn(mockConfigService, 'getMode').mockImplementation(() => mode);

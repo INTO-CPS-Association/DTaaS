@@ -58,7 +58,7 @@ export function sleep(ms) {
 }
 
 export class MockConfigService {
-  // eslint-disable-next-line class-methods-use-this
+   
 
   getMode(): string {
     return '';
