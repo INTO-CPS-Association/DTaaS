@@ -5,7 +5,7 @@ import * as path from 'path';
 // Load environment variables
 const env = process.env;
 
-const yamlFilePath = path.join(__dirname, process.env.LIBMS_CONFIG_PATH || 'libms.test.yaml');
+const yamlFilePath = path.join(process.env.LIBMS_CONFIG_PATH || 'test/libms.test.yaml');
 const fileContents = fs.readFileSync(yamlFilePath, 'utf8');
 const config = yaml.load(fileContents);
 
