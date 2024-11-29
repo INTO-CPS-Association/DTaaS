@@ -144,7 +144,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
-  
+
   return (
     <Dialog open={open} onClose={setOpenCreateDTDialog}>
       <DialogContent>

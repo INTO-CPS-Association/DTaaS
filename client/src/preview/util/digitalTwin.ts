@@ -204,7 +204,7 @@ class DigitalTwin {
   async getLifecycleFiles() {
     this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
   }
-  
+
   async prepareAllAssetFiles(
     cartAssets: LibraryAsset[],
     libraryFiles: LibraryConfigFile[],

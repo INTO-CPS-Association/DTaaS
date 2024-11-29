@@ -44,7 +44,7 @@ describe('CreatePage', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  
+
   it('handles cancel when clicking on cancel button and confirm', () => {
     act(() => {
       screen.getByText('Cancel').click();

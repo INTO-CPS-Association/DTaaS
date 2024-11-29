@@ -46,7 +46,7 @@ describe('ReconfigureDialog', () => {
     const reconfigureButton = screen.getByRole('button', {
       name: /Reconfigure/i,
     });
-    
+
     await act(async () => {
       reconfigureButton.click();
     });
