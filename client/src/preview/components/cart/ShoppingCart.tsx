@@ -58,7 +58,7 @@ function ShoppingCart() {
         }}
       >
         <Button variant="contained" onClick={() => setOpenDialog(true)}>
-          Clear Cart
+          Clear
         </Button>
         <Button
           variant="contained"
@@ -69,10 +69,10 @@ function ShoppingCart() {
       </Box>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Confirm Clear Cart</DialogTitle>
+        <DialogTitle>Confirm Clear</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to clear the cart?
+            Are you sure you want to clear?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

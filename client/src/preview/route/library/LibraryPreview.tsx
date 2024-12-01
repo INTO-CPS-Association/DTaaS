@@ -41,7 +41,7 @@ export function createCombinedTabs() {
               height: '300px',
             }}
           >
-            <Typography variant="h5">Shopping Cart</Typography>
+            <Typography variant="h5">Selection</Typography>
             <ShoppingCart />
           </Paper>
         </div>
