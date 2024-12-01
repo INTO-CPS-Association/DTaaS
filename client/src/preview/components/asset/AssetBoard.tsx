@@ -77,7 +77,7 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
     } else {
       setLoading(false);
     }
-  }, [dispatch]);
+  }, [dispatch, shouldFetchDigitalTwins]);
 
   const handleDelete = (deletedAssetPath: string) => {
     dispatch(deleteAsset(deletedAssetPath));

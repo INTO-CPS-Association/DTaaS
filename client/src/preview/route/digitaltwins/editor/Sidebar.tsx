@@ -88,7 +88,7 @@ const Sidebar = ({
     };
 
     loadFiles();
-  }, [name, digitalTwin]);
+  }, [name, digitalTwin, assets, dispatch, tab]);
 
   if (isLoading) {
     return (
