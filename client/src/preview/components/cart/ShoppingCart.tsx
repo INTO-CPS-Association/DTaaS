@@ -71,9 +71,7 @@ function ShoppingCart() {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirm Clear</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to clear?
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to clear?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="primary">

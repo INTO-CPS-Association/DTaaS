@@ -52,7 +52,6 @@ export const fetchLibraryAssets = async (
           return libraryAsset;
         }),
       );
-
       assets.forEach((asset) => dispatch(setAsset(asset)));
     } else {
       dispatch(setAssets([]));

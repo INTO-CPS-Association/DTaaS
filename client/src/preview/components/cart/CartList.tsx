@@ -14,7 +14,11 @@ function CartList() {
 }
 
 function CartItemRender(props: { asset: LibraryAsset }) {
-  return <li>{props.asset.path}</li>;
+  const displayPath = props.asset.isPrivate
+    ? props.asset.path
+    : `common/${props.asset.path}`;
+
+  return <li>{displayPath}</li>;
 }
 
 export default CartList;

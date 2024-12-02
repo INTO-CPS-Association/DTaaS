@@ -14,12 +14,24 @@ const cartSlice = createSlice({
   initialState: initState,
   reducers: {
     addToCart: (state, action: PayloadAction<LibraryAsset>) => {
-      if (!state.assets.find((asset) => asset.path === action.payload.path)) {
+      if (
+        !state.assets.find(
+          (asset) =>
+            asset.path === action.payload.path &&
+            asset.isPrivate === action.payload.isPrivate,
+        )
+      ) {
         state.assets.push(action.payload);
       }
     },
     removeFromCart: (state, action: PayloadAction<LibraryAsset>) => {
-      state.assets = state.assets.filter((a) => a.path !== action.payload.path);
+      state.assets = state.assets.filter(
+        (a) =>
+          !(
+            a.path === action.payload.path &&
+            a.isPrivate === action.payload.isPrivate
+          ),
+      );
     },
     clearCart: (state) => {
       state.assets = [];

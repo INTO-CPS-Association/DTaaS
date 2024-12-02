@@ -3,6 +3,8 @@ import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
 import { FileType } from './DTAssets';
 
+const COMMON_LIBRARY_PROJECT_ID = 3;
+
 export function isValidFileType(
   item: { type: string; name: string; path: string },
   fileType: FileType,
@@ -65,9 +67,12 @@ class FileHandler implements IFile {
     );
   }
 
-  async getFileContent(filePath: string): Promise<string> {
+  async getFileContent(filePath: string, isPrivate?: boolean): Promise<string> {
+    const projectToUse = !isPrivate
+      ? COMMON_LIBRARY_PROJECT_ID
+      : this.gitlabInstance.projectId;
     const response = await this.gitlabInstance.api.RepositoryFiles.show(
-      this.gitlabInstance.projectId!,
+      projectToUse!,
       filePath,
       'main',
     );

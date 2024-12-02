@@ -3,18 +3,22 @@ import { Button } from '@mui/material';
 import LibraryAsset from 'preview/util/libraryAsset';
 import useCart from 'preview/store/CartAccess';
 import { useSelector } from 'react-redux';
-import { selectAssetByPath } from 'preview/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from 'preview/store/assets.slice';
 
 interface AddToCartButtonProps {
   assetPath: string;
+  assetPrivacy: boolean;
 }
 
-function AddToCartButton({ assetPath }: AddToCartButtonProps) {
+function AddToCartButton({ assetPath, assetPrivacy }: AddToCartButtonProps) {
   const { state: cartState, actions } = useCart();
-  const asset = useSelector(selectAssetByPath(assetPath)) as LibraryAsset;
+  const asset = useSelector(
+    selectAssetByPathAndPrivacy(assetPath, assetPrivacy),
+  ) as LibraryAsset;
 
   const isInCart = cartState.assets.some(
-    (item: LibraryAsset) => item.path === asset.path,
+    (item: LibraryAsset) =>
+      item.path === asset.path && item.isPrivate === asset.isPrivate,
   );
 
   const handleAddToCart = async () => {

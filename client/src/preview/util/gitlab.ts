@@ -3,6 +3,7 @@ import { Asset } from '../components/asset/Asset';
 
 const GROUP_NAME = 'DTaaS';
 const DT_DIRECTORY = 'digital_twins';
+const COMMON_LIBRARY_PROJECT_ID = 3;
 
 export function mapStringToAssetPath(type: string): string | undefined {
   switch (type) {
@@ -111,16 +112,16 @@ class GitlabInstance {
       throw new Error(`Invalid asset type: ${type}`);
     }
 
-    const basePath = isPrivate ? mappedPath : `common/${mappedPath}`;
+    const projectToUse = isPrivate ? projectId : COMMON_LIBRARY_PROJECT_ID;
 
-    const files = await this.api.Repositories.allRepositoryTrees(projectId, {
-      path: basePath,
+    const files = await this.api.Repositories.allRepositoryTrees(projectToUse, {
+      path: mappedPath,
       recursive: false,
     });
 
     const subfolders: Asset[] = await Promise.all(
       files
-        .filter((file) => file.type === 'tree' && file.path !== basePath)
+        .filter((file) => file.type === 'tree' && file.path !== mappedPath)
         .map(async (file) => ({
           name: file.name,
           path: file.path,

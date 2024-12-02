@@ -19,7 +19,9 @@ const assetsSlice = createSlice({
     },
     setAsset: (state, action: PayloadAction<LibraryAsset>) => {
       const existingAsset = state.items.find(
-        (asset) => asset.path === action.payload.path,
+        (asset) =>
+          asset.path === action.payload.path &&
+          asset.isPrivate === action.payload.isPrivate,
       );
       if (!existingAsset) {
         state.items.push(action.payload);
@@ -27,7 +29,7 @@ const assetsSlice = createSlice({
     },
     deleteAsset: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(
-        (asset) => asset.path !== action.payload,
+        (asset) => asset.path !== action.payload && asset.isPrivate === true,
       );
     },
   },
@@ -40,8 +42,11 @@ export const selectAssetsByTypeAndPrivacy =
       (asset) => asset.type === type && asset.isPrivate === isPrivate,
     );
 
-export const selectAssetByPath = (path: string) => (state: RootState) =>
-  state.assets.items.find((asset) => asset.path === path);
+export const selectAssetByPathAndPrivacy =
+  (path: string, isPrivate: boolean) => (state: RootState) =>
+    state.assets.items.find(
+      (asset) => asset.path === path && asset.isPrivate === isPrivate,
+    );
 
 export const { setAssets, setAsset, deleteAsset } = assetsSlice.actions;
 

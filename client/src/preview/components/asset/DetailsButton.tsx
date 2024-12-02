@@ -3,12 +3,13 @@ import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import LibraryAsset from 'preview/util/libraryAsset';
-import { selectAssetByPath } from 'preview/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from 'preview/store/assets.slice';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
 import DigitalTwin from '../../util/digitalTwin';
 
 interface DialogButtonProps {
   assetName: string;
+  assetPrivacy: boolean;
   setShowDetails: Dispatch<SetStateAction<boolean>>;
   library?: boolean;
   assetPath?: string;
@@ -32,12 +33,15 @@ export const handleToggleDetailsLibraryDialog = async (
 
 function DetailsButton({
   assetName,
+  assetPrivacy,
   setShowDetails,
   library,
   assetPath,
 }: DialogButtonProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(assetName));
-  const libraryAsset = useSelector(selectAssetByPath(assetPath || ''));
+  const libraryAsset = useSelector(
+    selectAssetByPathAndPrivacy(assetPath || '', assetPrivacy),
+  );
 
   const asset = library ? libraryAsset : digitalTwin;
 

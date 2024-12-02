@@ -14,7 +14,7 @@ import LogDialog from 'preview/route/digitaltwins/execute/LogDialog';
 import DetailsDialog from 'preview/route/digitaltwins/manage/DetailsDialog';
 import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
-import { selectAssetByPath } from 'preview/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from 'preview/store/assets.slice';
 import StartStopButton from './StartStopButton';
 import LogButton from './LogButton';
 import { Asset } from './Asset';
@@ -37,6 +37,7 @@ interface AssetCardManageProps {
 
 interface CardButtonsContainerManageProps {
   assetName: string;
+  assetPrivacy: boolean;
   setShowDetails: Dispatch<SetStateAction<boolean>>;
   setShowReconfigure: Dispatch<SetStateAction<boolean>>;
   setShowDelete: Dispatch<SetStateAction<boolean>>;
@@ -50,6 +51,7 @@ interface CardButtonsContainerExecuteProps {
 interface CardButtonsContainerLibraryProps {
   assetName: string;
   assetPath: string;
+  assetPrivacy: boolean;
   setShowDetails: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -73,7 +75,9 @@ function CardActionAreaContainer(asset: Asset, library?: boolean) {
     (state: RootState) => state.digitalTwin.digitalTwin[asset.name],
   );
 
-  const libraryAsset = useSelector(selectAssetByPath(asset.path));
+  const libraryAsset = useSelector(
+    selectAssetByPathAndPrivacy(asset.path, asset.isPrivate),
+  );
 
   const selectedAsset = library ? libraryAsset : digitalTwin;
 
@@ -101,13 +105,18 @@ function CardActionAreaContainer(asset: Asset, library?: boolean) {
 
 function CardButtonsContainerManage({
   assetName,
+  assetPrivacy,
   setShowDetails,
   setShowReconfigure,
   setShowDelete,
 }: CardButtonsContainerManageProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
-      <DetailsButton assetName={assetName} setShowDetails={setShowDetails} />
+      <DetailsButton
+        assetName={assetName}
+        setShowDetails={setShowDetails}
+        assetPrivacy={assetPrivacy}
+      />
       <ReconfigureButton setShowReconfigure={setShowReconfigure} />
       <DeleteButton setShowDelete={setShowDelete} />
     </CardActions>
@@ -136,17 +145,19 @@ function CardButtonsContainerExecute({
 function CardButtonsContainerLibrary({
   assetName,
   assetPath,
+  assetPrivacy,
   setShowDetails,
 }: CardButtonsContainerLibraryProps) {
   return (
     <CardActions style={{ justifyContent: 'flex-end' }}>
       <DetailsButton
         assetName={assetName}
+        assetPrivacy={assetPrivacy}
         setShowDetails={setShowDetails}
         library={true}
         assetPath={assetPath}
       />
-      <AddToCartButton assetPath={assetPath} />
+      <AddToCartButton assetPath={assetPath} assetPrivacy={assetPrivacy} />
     </CardActions>
   );
 }
@@ -184,6 +195,7 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
           buttons={
             <CardButtonsContainerManage
               assetName={asset.name}
+              assetPrivacy={asset.isPrivate}
               setShowDelete={setShowDeleteLog}
               setShowDetails={setShowDetailsLog}
               setShowReconfigure={setShowReconfigure}
@@ -195,6 +207,7 @@ function AssetCardManage({ asset, onDelete }: AssetCardManageProps) {
           showDialog={showDetailsLog}
           setShowDialog={setShowDetailsLog}
           name={asset.name}
+          isPrivate={asset.isPrivate}
         />
         <ReconfigureDialog
           showDialog={showReconfigure}
@@ -252,6 +265,7 @@ function AssetCardLibrary({ asset }: AssetCardProps) {
           <CardButtonsContainerLibrary
             assetName={asset.name}
             assetPath={asset.path}
+            assetPrivacy={asset.isPrivate}
             setShowDetails={setShowDetails}
           />
         }
@@ -263,6 +277,7 @@ function AssetCardLibrary({ asset }: AssetCardProps) {
         name={asset.name}
         library={true}
         path={asset.path}
+        isPrivate={asset.isPrivate}
       />
     </>
   );
