@@ -28,7 +28,10 @@ export const testDirectory = {
 };
 export const testFileName = 'README.md';
 export const fstestFileContent = 'content123';
+export const largeTestFileName = 'large_file.md';
+export const largeFstestFileContent = 'a'.repeat(500 * 1000);
 export const pathToTestFileContent = 'user2/tools/README.md';
+export const pathToLargeTestFileContent = 'user2/tools/large_file.md';
 export const testFileArray = [
   'data',
   'digital_twins',
