@@ -32,10 +32,7 @@ describe('Integration tests for FilesResolver', () => {
             gitFilesService: GitFilesService,
           ) => {
             const fileServices = [localFilesService, gitFilesService];
-            return FilesServiceFactory.create(
-              configService,
-              fileServices,
-            );
+            return FilesServiceFactory.create(configService, fileServices);
           },
           inject: [CONFIG_SERVICE, LocalFilesService, GitFilesService],
         },
