@@ -4,7 +4,6 @@ import { jest } from '@jest/globals';
 import { GitRepo } from 'src/config/config.model';
 import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 
-
 // actual data for integration and e2e tests
 export const readFileActualContent = ['content123'];
 
@@ -59,8 +58,6 @@ export function sleep(ms) {
 }
 
 export class MockConfigService {
-   
-
   getMode(): string {
     return '';
   }

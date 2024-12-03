@@ -17,11 +17,14 @@ describe('FilesServiceFactory', () => {
 
   beforeEach(async () => {
     configService = jestMockConfigService();
-    gitFilesService = { getMode: jest.fn<() => CONFIG_MODE>().mockReturnValue(CONFIG_MODE.GIT), init: jest.fn<() => Promise<void>>() } as unknown as IFilesService;
+    gitFilesService = {
+      getMode: jest.fn<() => CONFIG_MODE>().mockReturnValue(CONFIG_MODE.GIT),
+      init: jest.fn<() => Promise<void>>(),
+    } as unknown as IFilesService;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        {provide: GitFilesService, useValue: gitFilesService},
+        { provide: GitFilesService, useValue: gitFilesService },
         {
           provide: CONFIG_SERVICE,
           useValue: configService,
@@ -52,6 +55,8 @@ describe('FilesServiceFactory', () => {
   it('should throw an error when MODE is invalid', async () => {
     const invalidMode = 'invalid';
     jest.spyOn(configService, 'getMode').mockReturnValue(invalidMode);
-    await expect(FilesServiceFactory.create(configService, fileServices)).rejects.toThrow(`Invalid MODE: ${invalidMode}`);
+    await expect(
+      FilesServiceFactory.create(configService, fileServices),
+    ).rejects.toThrow(`Invalid MODE: ${invalidMode}`);
   });
 });

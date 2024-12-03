@@ -7,7 +7,7 @@ describe('cloudcmd test for the application', () => {
     config();
 
     await writeFile(`${process.env.LOCAL_PATH}/test.txt`, 'content12345');
-     
+
     await new Promise((resolve) => setTimeout(resolve, 50000)); // This is problematic.
   }, 55000);
 

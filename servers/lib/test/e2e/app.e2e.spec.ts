@@ -30,7 +30,7 @@ describe('End to End test for the application', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-    configService = moduleFixture.get<Config>(CONFIG_SERVICE)
+    configService = moduleFixture.get<Config>(CONFIG_SERVICE);
     app = moduleFixture.createNestApplication();
     client = new ApolloClient({
       link: new HttpLink({
@@ -38,12 +38,12 @@ describe('End to End test for the application', () => {
         fetch,
       }),
       cache: new InMemoryCache({ addTypename: false }),
-    })
+    });
     await app.init(); // Initialize the application
     await app.listen(configService.getPort());
 
     // Check if the port is available
-     
+
     while (!app.getHttpServer().listening) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
@@ -57,7 +57,9 @@ describe('End to End test for the application', () => {
     query: string,
     expectedResponse: unknown,
   ): Promise<void> {
-    const response = await request(`http://localhost:${configService.getPort()}`)
+    const response = await request(
+      `http://localhost:${configService.getPort()}`,
+    )
       .post(configService.getApolloPath())
       .send({ query });
     expect(response.body).toEqual(expectedResponse);

@@ -54,9 +54,7 @@ describe('Integration tests for FilesResolver', () => {
 
   const modes = ['local'];
 
-   
   for (const mode of modes) {
-     
     describe(`when MODE is ${mode}`, () => {
       beforeEach(() => {
         jest.spyOn(mockConfigService, 'getMode').mockImplementation(() => mode);

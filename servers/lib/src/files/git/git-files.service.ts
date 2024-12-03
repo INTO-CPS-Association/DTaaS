@@ -41,7 +41,7 @@ export default class GitFilesService implements IFilesService {
           fs,
           http,
           dir: this.dataPath + `/${user}`,
-          gitdir: path.join(this.dataPath,'gitdir',user,'.git'),
+          gitdir: path.join(this.dataPath, 'gitdir', user, '.git'),
           url: repoUrl.includes('.git') ? repoUrl : repoUrl + '.git',
           singleBranch: true,
           depth: 1,
