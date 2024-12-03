@@ -1,7 +1,8 @@
-import * as dotenv from 'dotenv';
+import { IConfig } from 'src/config/config.interface';
 import { setTimeout } from 'timers/promises';
-
-dotenv.config({ path: '.env' });
+import { jest } from '@jest/globals';
+import { GitRepo } from 'src/config/config.model';
+import { CONFIG_MODE } from 'src/enums/config-mode.enum';
 
 // actual data for integration and e2e tests
 export const readFileActualContent = ['content123'];
@@ -26,7 +27,10 @@ export const testDirectory = {
 };
 export const testFileName = 'README.md';
 export const fstestFileContent = 'content123';
+export const largeTestFileName = 'large_file.md';
+export const largeFstestFileContent = 'a'.repeat(500 * 1000);
 export const pathToTestFileContent = 'user2/tools/README.md';
+export const pathToLargeTestFileContent = 'user2/tools/large_file.md';
 export const testFileArray = [
   'data',
   'digital_twins',
@@ -54,22 +58,25 @@ export function sleep(ms) {
 }
 
 export class MockConfigService {
-  // eslint-disable-next-line class-methods-use-this
-  get(key: string): string {
-    switch (key) {
-      case 'LOCAL_PATH':
-        return process.env.LOCAL_PATH;
-      case 'MODE':
-        if (process.env.MODE === 'local') {
-          return 'local';
-        }
-        return 'unknown';
+  getMode(): string {
+    return '';
+  }
 
-      default:
-        return undefined;
-    }
+  getLocalPath(): string {
+    return 'test/data';
   }
 }
+
+export const jestMockConfigService = (): IConfig => ({
+  getMode: jest.fn<() => string>().mockReturnValue(CONFIG_MODE.LOCAL),
+  getLocalPath: jest.fn<() => string>().mockReturnValue('test/data'),
+  getApolloPath: jest.fn<() => string>(),
+  getGitRepos: jest.fn<() => { [key: string]: GitRepo }[]>(),
+  getGraphqlPlayground: jest.fn<() => string>(),
+  getLogLevel: jest.fn<() => string>(),
+  getPort: jest.fn<() => number>(),
+  loadConfig: jest.fn<() => Promise<void>>(),
+});
 
 export const mockReadFileResponseData = {
   project: {

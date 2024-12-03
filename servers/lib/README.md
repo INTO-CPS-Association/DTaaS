@@ -53,6 +53,14 @@ LOCAL_PATH ='/Users/<Username>/DTaaS/files'
 LOG_LEVEL='debug'
 APOLLO_PATH='/lib' or ''
 GRAPHQL_PLAYGROUND='false' or 'true'
+
+#Only needed if git mode
+GIT_USER1_REPO_URL='<git repo url>'
+GIT_USER1_API_TOKEN='<TOKEN>'
+...
+GIT_USERX_REPO_URL='<git repo url>'
+GIT_USERX_API_TOKEN='<TOKEN>'
+
 ```
 
 The `LOCAL_PATH` variable is the absolute filepath to the

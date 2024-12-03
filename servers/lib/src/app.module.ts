@@ -1,22 +1,21 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
 import FilesModule from './files/files.module.js';
+import { ConfigModule } from './config/config.module.js';
+import { CONFIG_SERVICE, IConfig } from './config/config.interface.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule,
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: IConfig) => ({
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-        path: configService.get<string>('APOLLO_PATH'),
+        path: configService.getApolloPath(),
       }),
-      inject: [ConfigService],
+      inject: [CONFIG_SERVICE],
     }),
     FilesModule,
   ],
