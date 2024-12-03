@@ -4,10 +4,10 @@ import { IConfig } from 'src/config/config.interface.js';
 
 @Injectable()
 export default class FilesServiceFactory {
-  static async create(
+  static create(
     configService: IConfig,
     fileServices: IFilesService[],
-  ): Promise<IFilesService> {
+  ): IFilesService {
     const mode = configService.getMode();
     const service = fileServices.find((s) => s.getMode() == mode);
 

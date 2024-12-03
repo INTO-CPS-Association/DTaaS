@@ -14,13 +14,13 @@ import { CONFIG_SERVICE, IConfig } from '../config/config.interface.js';
     FilesResolver,
     {
       provide: FILE_SERVICE,
-      useFactory: async (
+      useFactory: (
         configService: IConfig,
         localFilesService: LocalFilesService,
         gitFilesService: GitFilesService,
       ) => {
         const fileServices = [localFilesService, gitFilesService];
-        return await FilesServiceFactory.create(configService, fileServices);
+        return FilesServiceFactory.create(configService, fileServices);
       },
       inject: [CONFIG_SERVICE, LocalFilesService, GitFilesService],
     },

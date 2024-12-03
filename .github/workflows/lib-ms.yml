@@ -28,6 +28,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: DO NOT PUSH THIS
+        run: |
+          npm install -g yarn
 
       - name: Setup node
         uses: actions/setup-node@v4
