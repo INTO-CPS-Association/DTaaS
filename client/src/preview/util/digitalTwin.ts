@@ -251,43 +251,43 @@ class DigitalTwin {
     const mainFolderPath = `digital_twins/${this.DTName}`;
     const excludeFolder = 'lifecycle';
     const result: { assetPath: string; fileNames: string[] }[] = [];
-  
+
     try {
       const folders = await this.DTAssets.getFolders(mainFolderPath);
-  
+
       const validFolders = folders.filter(
         (folder) => !folder.includes(excludeFolder),
       );
-  
+
       for (const folder of validFolders) {
         if (folder.endsWith('/common')) {
           const subFolders = await this.DTAssets.getFolders(folder);
           for (const subFolder of subFolders) {
-            const fileNames = await this.DTAssets.getLibraryConfigFileNames(
-              subFolder,
-            );
-  
+            const fileNames =
+              await this.DTAssets.getLibraryConfigFileNames(subFolder);
+
             result.push({
               assetPath: subFolder,
               fileNames,
             });
           }
         } else {
-          const fileNames = await this.DTAssets.getLibraryConfigFileNames(folder);
-  
+          const fileNames =
+            await this.DTAssets.getLibraryConfigFileNames(folder);
+
           result.push({
             assetPath: folder,
             fileNames,
           });
         }
       }
-  
+
       this.assetFiles = result;
     } catch (_error) {
       return [];
     }
     return result;
   }
-}  
+}
 
 export default DigitalTwin;

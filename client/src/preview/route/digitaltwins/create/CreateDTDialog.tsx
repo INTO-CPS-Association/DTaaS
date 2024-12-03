@@ -26,6 +26,7 @@ import {
 import { initDigitalTwin } from 'preview/util/init';
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import LibraryAsset from 'preview/util/libraryAsset';
+import useCart from 'preview/store/CartAccess';
 
 interface CreateDTDialogProps {
   open: boolean;
@@ -92,6 +93,7 @@ const handleConfirm = async (
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
   isPrivate: boolean,
+  actions: ReturnType<typeof useCart>['actions'],
 ) => {
   setIsLoading(true);
 
@@ -121,6 +123,7 @@ const handleConfirm = async (
     setFileType,
   );
   setNewDigitalTwinName('');
+  actions.clear();
   setIsLoading(false);
 };
 
@@ -142,6 +145,8 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   );
   const cartAssets = useSelector((state: RootState) => state.cart.assets);
   const dispatch = useDispatch();
+
+  const { actions } = useCart();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -190,6 +195,7 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
               setNewDigitalTwinName,
               setIsLoading,
               isPrivate,
+              actions,
             )
           }
           disabled={isLoading}

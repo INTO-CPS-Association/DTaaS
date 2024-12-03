@@ -72,9 +72,10 @@ class FileHandler implements IFile {
   }
 
   async getFileContent(filePath: string, isPrivate?: boolean): Promise<string> {
-    const projectToUse = isPrivate === false
-      ? COMMON_LIBRARY_PROJECT_ID
-      : this.gitlabInstance.projectId;
+    const projectToUse =
+      isPrivate === false
+        ? COMMON_LIBRARY_PROJECT_ID
+        : this.gitlabInstance.projectId;
     const response = await this.gitlabInstance.api.RepositoryFiles.show(
       projectToUse!,
       filePath,
@@ -140,9 +141,9 @@ class FileHandler implements IFile {
     const projectToUse = isPrivate
       ? this.gitlabInstance.projectId
       : COMMON_LIBRARY_PROJECT_ID;
-  
+
     const shouldBeRecursive = filePath.includes('common/');
-  
+
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
@@ -152,7 +153,7 @@ class FileHandler implements IFile {
             recursive: shouldBeRecursive,
           },
         );
-  
+
       return response
         .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
         .map((file) => file.name);
@@ -168,7 +169,7 @@ class FileHandler implements IFile {
           this.gitlabInstance.projectId!,
           { path, recursive: false },
         );
-  
+
       return response
         .filter((item: { type: string }) => item.type === 'tree')
         .map((folder: { path: string }) => folder.path);

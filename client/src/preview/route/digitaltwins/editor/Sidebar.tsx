@@ -57,7 +57,7 @@ const Sidebar = ({
   const libraryFiles = useSelector(
     (state: RootState) => state.libraryConfigFiles,
   );
-  
+
   const dispatch = useDispatch();
 
   useEffect(() => {

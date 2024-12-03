@@ -96,29 +96,29 @@ export const renderFileSection = (
   return (
     <TreeItem itemId={`${baseLabel}-${label}`} label={label}>
       {filesToRender.map((item) => (
-          <TreeItem
-            key={item}
-            itemId={`${baseLabel}-${item}`}
-            label={item}
-            onClick={() =>
-              handleFileClick(
-                item,
-                asset!,
-                setFileName,
-                setFileContent,
-                setFileType,
-                setFilePrivacy,
-                files,
-                tab,
-                setIsLibraryFile,
-                setLibraryAssetPath,
-                dispatch,
-                library || undefined,
-                fileLibrary || undefined,
-              )
-            }
-          />
-        ))}
+        <TreeItem
+          key={item}
+          itemId={`${baseLabel}-${item}`}
+          label={item}
+          onClick={() =>
+            handleFileClick(
+              item,
+              asset!,
+              setFileName,
+              setFileContent,
+              setFileType,
+              setFilePrivacy,
+              files,
+              tab,
+              setIsLibraryFile,
+              setLibraryAssetPath,
+              dispatch,
+              library || undefined,
+              fileLibrary || undefined,
+            )
+          }
+        />
+      ))}
     </TreeItem>
   );
 };
