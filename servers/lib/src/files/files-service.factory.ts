@@ -14,7 +14,7 @@ export default class FilesServiceFactory {
     if (service == undefined) {
       throw new Error(`Invalid MODE: ${mode}`);
     } else {
-      await service.init();
+      service.init();
     }
     return service;
   }

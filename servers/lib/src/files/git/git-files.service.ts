@@ -21,8 +21,8 @@ export default class GitFilesService implements IFilesService {
     this.logger = new Logger(GitFilesService.name);
   }
 
-  async init(): Promise<void> {
-    await this.cloneRepositories();
+  init(): Promise<any> {
+    return this.cloneRepositories();
   }
 
   private cloneRepositories(): Promise<void[]> {

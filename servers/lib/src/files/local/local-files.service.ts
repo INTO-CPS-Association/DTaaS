@@ -15,7 +15,7 @@ export default class LocalFilesService implements IFilesService {
     this.dataPath = this.configService.getLocalPath();
   }
   
-  init(): Promise<void> {
+  init(): Promise<any> {
     return Promise.resolve();
   }
 
