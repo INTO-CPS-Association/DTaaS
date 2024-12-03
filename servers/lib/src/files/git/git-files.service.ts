@@ -56,7 +56,6 @@ export default class GitFilesService implements IFilesService {
   }
 
   listDirectory(path: string): Promise<Project> {
-    console.log('listDirectory', path);
     return this.localFilesService.listDirectory(path);
   }
 
