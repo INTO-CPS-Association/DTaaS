@@ -36,6 +36,7 @@ export function logError(
 export function getUpdatedLibraryFile(
   fileName: string,
   assetPath: string,
+  isPrivate: boolean,
   libraryFiles: LibraryConfigFile[],
 ): LibraryConfigFile | null {
   return (
@@ -43,6 +44,7 @@ export function getUpdatedLibraryFile(
       (libFile) =>
         libFile.fileName === fileName &&
         libFile.assetPath === assetPath &&
+        libFile.isPrivate === isPrivate &&
         libFile.isModified,
     ) || null
   );

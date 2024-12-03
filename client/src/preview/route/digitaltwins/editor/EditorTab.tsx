@@ -9,6 +9,7 @@ interface EditorTabProps {
   tab: string;
   fileName: string;
   fileContent: string;
+  filePrivacy: string;
   isLibraryFile: boolean;
   libraryAssetPath: string;
   setFileContent: Dispatch<SetStateAction<string>>;
@@ -20,6 +21,7 @@ const handleEditorChange = (
   setEditorValue: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   fileName: string,
+  filePrivacy: string,
   isLibraryFile: boolean,
   libraryAssetPath: string,
   dispatch: ReturnType<typeof useDispatch>,
@@ -27,6 +29,8 @@ const handleEditorChange = (
   const updatedValue = value || '';
   setEditorValue(updatedValue);
   setFileContent(updatedValue);
+
+  const isPrivate = filePrivacy === 'private';
 
   if (tab === 'create') {
     if (!isLibraryFile) {
@@ -46,6 +50,7 @@ const handleEditorChange = (
           fileContent: updatedValue,
           isNew: true,
           isModified: true,
+          isPrivate,
         }),
       );
     }
@@ -66,6 +71,7 @@ const handleEditorChange = (
         fileContent: updatedValue,
         isNew: false,
         isModified: true,
+        isPrivate: true,
       }),
     );
   }
@@ -75,6 +81,7 @@ function EditorTab({
   tab,
   fileName,
   fileContent,
+  filePrivacy,
   isLibraryFile,
   libraryAssetPath,
   setFileContent,
@@ -99,6 +106,7 @@ function EditorTab({
             setEditorValue,
             setFileContent,
             fileName,
+            filePrivacy,
             isLibraryFile,
             libraryAssetPath,
             dispatch,

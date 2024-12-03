@@ -35,7 +35,12 @@ class DTAssets {
   async createFiles(
     files:
       | FileState[]
-      | Array<{ name: string; content: string; isNew: boolean }>,
+      | Array<{
+          name: string;
+          content: string;
+          isNew: boolean;
+          isFromCommonLibrary: boolean;
+        }>,
     mainFolderPath: string,
     lifecycleFolderPath: string,
     isPrivate: boolean,
@@ -44,38 +49,62 @@ class DTAssets {
       const fileType = (file as FileState).type || 'asset';
 
       if (file.isNew) {
+        const mainFolderPathUpdated = file.isFromCommonLibrary
+          ? `${mainFolderPath}/common`
+          : mainFolderPath;
+        const lifecycleFolderPathUpdated = file.isFromCommonLibrary
+          ? `${mainFolderPathUpdated}/lifecycle`
+          : lifecycleFolderPath;
         const filePath =
-          fileType === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
+          fileType === 'lifecycle'
+            ? lifecycleFolderPathUpdated
+            : mainFolderPathUpdated;
         const commitMessage = `Add ${file.name} to ${fileType} folder`;
         await this.fileHandler.createFile(file, filePath, commitMessage);
       }
 
       if (isPrivate === false) {
+        const mainFolderPathUpdated = file.isFromCommonLibrary
+          ? `${mainFolderPath}/common`
+          : mainFolderPath;
+        const lifecycleFolderPathUpdated = file.isFromCommonLibrary
+          ? `${mainFolderPathUpdated}/lifecycle`
+          : lifecycleFolderPath;
         const filePath =
           fileType === 'lifecycle'
-            ? `common/${lifecycleFolderPath}`
-            : `common/${mainFolderPath}`;
-        const commitMessage = `Add ${file.name} to ${fileType} common folder`;
-        await this.fileHandler.createFile(file, filePath, commitMessage);
+            ? lifecycleFolderPathUpdated
+            : mainFolderPathUpdated;
+        const commitMessage = `Add ${file.name} to ${fileType} common project`;
+        await this.fileHandler.createFile(file, filePath, commitMessage, true);
       }
     }
   }
 
-  async getFilesFromAsset(assetPath: string) {
+  async getFilesFromAsset(assetPath: string, isPrivate: boolean) {
     try {
-      const fileNames = await this.fileHandler.getLibraryFileNames(assetPath);
+      const fileNames = await this.fileHandler.getLibraryFileNames(
+        assetPath,
+        isPrivate,
+      );
 
-      const files: Array<{ name: string; content: string; path: string }> = [];
+      const files: Array<{
+        name: string;
+        content: string;
+        path: string;
+        isPrivate: boolean;
+      }> = [];
 
       for (const fileName of fileNames) {
         const fileContent = await this.fileHandler.getFileContent(
           `${assetPath}/${fileName}`,
+          isPrivate,
         );
 
         files.push({
           name: fileName,
           content: fileContent,
           path: assetPath,
+          isPrivate,
         });
       }
 
@@ -216,7 +245,7 @@ ${triggerKey}:
   }
 
   async getLibraryConfigFileNames(filePath: string): Promise<string[]> {
-    return this.fileHandler.getLibraryConfigFileNames(filePath);
+    return this.fileHandler.getLibraryConfigFileNames(filePath, true);
   }
 
   async getFolders(path: string): Promise<string[]> {

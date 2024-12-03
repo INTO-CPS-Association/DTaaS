@@ -128,8 +128,11 @@ export const updateFileState = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
+  isPrivate?: boolean,
 ) => {
   setFileName(fileName);
   setFileContent(fileContent);
   setFileType(fileName.split('.').pop()!);
+  setFilePrivacy(isPrivate === undefined || isPrivate ? 'private' : 'common');
 };

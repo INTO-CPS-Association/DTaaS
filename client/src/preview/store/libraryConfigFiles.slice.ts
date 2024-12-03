@@ -7,6 +7,7 @@ export interface LibraryConfigFile {
   fileContent: string;
   isNew: boolean;
   isModified: boolean;
+  isPrivate: boolean;
 }
 
 const initialState: LibraryConfigFile[] = [];
@@ -19,7 +20,7 @@ const libraryFilesSlice = createSlice({
       state,
       action: PayloadAction<LibraryConfigFile>,
     ) => {
-      const { fileName, assetPath, isNew, ...rest } = action.payload;
+      const { fileName, assetPath, isNew, isPrivate, ...rest } = action.payload;
 
       if (!fileName || !assetPath) return;
 
@@ -27,7 +28,8 @@ const libraryFilesSlice = createSlice({
         (file) =>
           file.fileName === fileName &&
           file.assetPath === assetPath &&
-          file.isNew === isNew,
+          file.isNew === isNew &&
+          file.isPrivate === isPrivate,
       );
 
       if (index >= 0) {
@@ -44,6 +46,7 @@ const libraryFilesSlice = createSlice({
           ...rest,
           isModified: false,
           isNew,
+          isPrivate,
         });
       }
     },

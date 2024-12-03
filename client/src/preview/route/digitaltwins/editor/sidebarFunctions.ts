@@ -22,6 +22,7 @@ export const handleFileClick = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   files: FileState[],
   tab: string,
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
@@ -39,6 +40,7 @@ export const handleFileClick = (
       setFileName,
       setFileContent,
       setFileType,
+      setFilePrivacy,
       setIsLibraryFile,
       setLibraryAssetPath,
       dispatch || undefined,
@@ -52,6 +54,7 @@ export const handleFileClick = (
       setFileName,
       setFileContent,
       setFileType,
+      setFilePrivacy,
       setIsLibraryFile,
       setLibraryAssetPath,
       dispatch || undefined,
@@ -69,6 +72,7 @@ export const handleCreateFileClick = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
   dispatch?: ReturnType<typeof useDispatch>,
@@ -83,13 +87,17 @@ export const handleCreateFileClick = (
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
       );
       setIsLibraryFile(false);
       setLibraryAssetPath('');
     }
   } else {
     const libraryFile = libraryFiles!.find(
-      (file) => file.fileName === fileName && file.assetPath === asset!.path,
+      (file) =>
+        file.fileName === fileName &&
+        file.assetPath === asset!.path &&
+        file.isPrivate === asset!.isPrivate,
     );
     if (libraryFile?.isModified) {
       updateFileState(
@@ -98,6 +106,8 @@ export const handleCreateFileClick = (
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
+        asset.isPrivate,
       );
       setIsLibraryFile(true);
       setLibraryAssetPath(libraryFile.assetPath);
@@ -108,6 +118,7 @@ export const handleCreateFileClick = (
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
         true,
         setIsLibraryFile,
         setLibraryAssetPath,
@@ -124,6 +135,7 @@ export const handleReconfigureFileClick = async (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
   dispatch?: ReturnType<typeof useDispatch>,
@@ -143,6 +155,7 @@ export const handleReconfigureFileClick = async (
           setFileName,
           setFileContent,
           setFileType,
+          setFileType,
         );
       } else {
         fetchAndSetFileContent(
@@ -151,6 +164,7 @@ export const handleReconfigureFileClick = async (
           setFileName,
           setFileContent,
           setFileType,
+          setFilePrivacy,
         );
       }
       setIsLibraryFile(false);
@@ -166,6 +180,7 @@ export const handleReconfigureFileClick = async (
           setFileName,
           setFileContent,
           setFileType,
+          setFilePrivacy,
         );
       } else {
         fetchAndSetFileContent(
@@ -174,6 +189,7 @@ export const handleReconfigureFileClick = async (
           setFileName,
           setFileContent,
           setFileType,
+          setFilePrivacy,
           library,
           assetPath,
         );
@@ -188,6 +204,7 @@ export const handleReconfigureFileClick = async (
             fileContent,
             isNew: false,
             isModified: false,
+            isPrivate: true,
           }),
         );
       }

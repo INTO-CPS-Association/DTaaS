@@ -34,9 +34,13 @@ class FileHandler implements IFile {
     file: FileState | { name: string; content: string; isNew: boolean },
     filePath: string,
     commitMessage: string,
+    commonProject?: boolean,
   ): Promise<void> {
+    const projectToUse = commonProject
+      ? COMMON_LIBRARY_PROJECT_ID
+      : this.gitlabInstance.projectId;
     await this.gitlabInstance.api.RepositoryFiles.create(
-      this.gitlabInstance.projectId!,
+      projectToUse!,
       `${filePath}/${file.name}`,
       'main',
       file.content,
@@ -104,11 +108,17 @@ class FileHandler implements IFile {
     }
   }
 
-  async getLibraryFileNames(filePath: string): Promise<string[]> {
+  async getLibraryFileNames(
+    filePath: string,
+    isPrivate: boolean,
+  ): Promise<string[]> {
+    const projectToUse = isPrivate
+      ? this.gitlabInstance.projectId
+      : COMMON_LIBRARY_PROJECT_ID;
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
+          projectToUse!,
           {
             path: filePath,
             recursive: false,
@@ -123,11 +133,17 @@ class FileHandler implements IFile {
     }
   }
 
-  async getLibraryConfigFileNames(filePath: string): Promise<string[]> {
+  async getLibraryConfigFileNames(
+    filePath: string,
+    isPrivate: boolean,
+  ): Promise<string[]> {
+    const projectToUse = isPrivate
+      ? this.gitlabInstance.projectId
+      : COMMON_LIBRARY_PROJECT_ID;
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
+          projectToUse!,
           {
             path: filePath,
             recursive: false,

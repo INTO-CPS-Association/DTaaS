@@ -18,6 +18,7 @@ export const fetchAndSetFileContent = async (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   library?: boolean,
   assetPath?: string,
 ) => {
@@ -38,6 +39,7 @@ export const fetchAndSetFileContent = async (
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
       );
     }
   } catch {
@@ -51,6 +53,7 @@ export const fetchAndSetFileLibraryContent = async (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   isNew: boolean,
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>,
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
@@ -70,6 +73,7 @@ export const fetchAndSetFileLibraryContent = async (
         fileContent,
         isNew,
         isModified: false,
+        isPrivate: libraryAsset!.isPrivate,
       }),
     );
     if (fileContent) {
@@ -79,6 +83,7 @@ export const fetchAndSetFileLibraryContent = async (
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
       );
     }
     setIsLibraryFile(true);

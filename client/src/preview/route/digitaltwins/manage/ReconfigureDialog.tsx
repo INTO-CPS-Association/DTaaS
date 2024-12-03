@@ -50,6 +50,7 @@ function ReconfigureDialog({
   const [fileName, setFileName] = useState<string>('');
   const [fileContent, setFileContent] = useState<string>('');
   const [fileType, setFileType] = useState<string>('');
+  const [filePrivacy, setFilePrivacy] = useState<string>('');
   const [isLibraryFile, setIsLibraryFile] = useState<boolean>(false);
   const [libraryAssetPath, setLibraryAssetPath] = useState<string>('');
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
@@ -97,6 +98,8 @@ function ReconfigureDialog({
         setFileContent={setFileContent}
         fileType={fileType}
         setFileType={setFileType}
+        filePrivacy={filePrivacy}
+        setFilePrivacy={setFilePrivacy}
         isLibraryFile={isLibraryFile}
         setIsLibraryFile={setIsLibraryFile}
         libraryAssetPath={libraryAssetPath}
@@ -199,6 +202,8 @@ const ReconfigureMainDialog = ({
   setFileContent,
   fileType,
   setFileType,
+  filePrivacy,
+  setFilePrivacy,
   isLibraryFile,
   setIsLibraryFile,
   libraryAssetPath,
@@ -215,6 +220,8 @@ const ReconfigureMainDialog = ({
   setFileContent: Dispatch<SetStateAction<string>>;
   fileType: string;
   setFileType: Dispatch<SetStateAction<string>>;
+  filePrivacy: string;
+  setFilePrivacy: Dispatch<SetStateAction<string>>;
   isLibraryFile: boolean;
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
   libraryAssetPath: string;
@@ -244,6 +251,8 @@ const ReconfigureMainDialog = ({
         setFileContent={setFileContent}
         fileType={fileType}
         setFileType={setFileType}
+        filePrivacy={filePrivacy}
+        setFilePrivacy={setFilePrivacy}
         isLibraryFile={isLibraryFile}
         setIsLibraryFile={setIsLibraryFile}
         libraryAssetPath={libraryAssetPath}

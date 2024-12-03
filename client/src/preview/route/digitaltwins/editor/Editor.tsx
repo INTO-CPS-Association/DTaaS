@@ -14,6 +14,8 @@ interface EditorProps {
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
   fileType: string;
   setFileType: React.Dispatch<React.SetStateAction<string>>;
+  filePrivacy: string;
+  setFilePrivacy: React.Dispatch<React.SetStateAction<string>>;
   isLibraryFile: boolean;
   setIsLibraryFile: React.Dispatch<React.SetStateAction<boolean>>;
   libraryAssetPath: string;
@@ -31,6 +33,8 @@ function Editor({
   setFileContent,
   fileType,
   setFileType,
+  filePrivacy,
+  setFilePrivacy,
   isLibraryFile,
   setIsLibraryFile,
   libraryAssetPath,
@@ -60,6 +64,7 @@ function Editor({
           setFileName={setFileName}
           setFileContent={setFileContent}
           setFileType={setFileType}
+          setFilePrivacy={setFilePrivacy}
           setIsLibraryFile={setIsLibraryFile}
           setLibraryAssetPath={setLibraryAssetPath}
           tab={tab}
@@ -103,6 +108,7 @@ function Editor({
                 tab={tab}
                 fileName={fileName}
                 fileContent={fileContent}
+                filePrivacy={filePrivacy}
                 setFileContent={setFileContent}
                 isLibraryFile={isLibraryFile}
                 libraryAssetPath={libraryAssetPath}

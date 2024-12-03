@@ -88,6 +88,7 @@ function CreatePage({
   const [fileName, setFileName] = useState('');
   const [fileContent, setFileContent] = useState('');
   const [fileType, setFileType] = useState('');
+  const [filePrivacy, setFilePrivacy] = useState('');
   const [isLibraryFile, setIsLibraryFile] = useState(false);
   const [libraryAssetPath, setLibraryAssetPath] = useState('');
   const [openChangeFileNameDialog, setOpenChangeFileNameDialog] =
@@ -145,6 +146,8 @@ function CreatePage({
           setFileName={setFileName}
           fileContent={fileContent}
           setFileContent={setFileContent}
+          filePrivacy={filePrivacy}
+          setFilePrivacy={setFilePrivacy}
           fileType={fileType}
           setFileType={setFileType}
           isLibraryFile={isLibraryFile}

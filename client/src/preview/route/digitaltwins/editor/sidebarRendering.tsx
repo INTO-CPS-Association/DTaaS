@@ -15,6 +15,7 @@ export const renderFileTreeItems = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   files: FileState[],
   tab: string,
   dispatch: ReturnType<typeof useDispatch>,
@@ -23,37 +24,52 @@ export const renderFileTreeItems = (
   library?: boolean,
   libraryFiles?: LibraryConfigFile[],
   assetPath?: string,
-) => (
-  <TreeItem
-    itemId={`${label.toLowerCase()}-${label}`}
-    label={label as TreeItemProps['label']}
-  >
-    {filesToRender.map((item) => (
-      <TreeItem
-        key={item}
-        itemId={`${label.toLowerCase()}-${item}`}
-        label={item}
-        onClick={() =>
-          handleFileClick(
-            item,
-            asset!,
-            setFileName,
-            setFileContent,
-            setFileType,
-            files,
-            tab,
-            setIsLibraryFile,
-            setLibraryAssetPath,
-            dispatch,
-            library || undefined,
-            libraryFiles || undefined,
-            assetPath || undefined,
-          )
-        }
-      />
-    ))}
-  </TreeItem>
-);
+) => {
+  const baseLabel =
+    asset instanceof LibraryAsset && !asset.isPrivate
+      ? `common/${label.toLowerCase()}`
+      : label.toLowerCase();
+
+  return (
+    <TreeItem
+      itemId={`${baseLabel}-${label}`}
+      label={label as TreeItemProps['label']}
+    >
+      {filesToRender.map((item) => {
+        const itemLabel =
+          asset instanceof LibraryAsset && !asset.isPrivate
+            ? `common/${item}`
+            : item;
+
+        return (
+          <TreeItem
+            key={item}
+            itemId={`${baseLabel}-${item}`}
+            label={itemLabel}
+            onClick={() =>
+              handleFileClick(
+                item,
+                asset!,
+                setFileName,
+                setFileContent,
+                setFileType,
+                setFilePrivacy,
+                files,
+                tab,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                dispatch,
+                library || undefined,
+                libraryFiles || undefined,
+                assetPath || undefined,
+              )
+            }
+          />
+        );
+      })}
+    </TreeItem>
+  );
+};
 
 export const renderFileSection = (
   label: string,
@@ -63,6 +79,7 @@ export const renderFileSection = (
   setFileName: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
+  setFilePrivacy: Dispatch<SetStateAction<string>>,
   files: FileState[],
   tab: string,
   dispatch: ReturnType<typeof useDispatch>,
@@ -70,30 +87,38 @@ export const renderFileSection = (
   setLibraryAssetPath: Dispatch<SetStateAction<string>>,
   library?: boolean,
   fileLibrary?: LibraryConfigFile[],
-) => (
-  <TreeItem itemId={`${label.toLowerCase()}-${label}`} label={label}>
-    {filesToRender.map((item) => (
-      <TreeItem
-        key={item}
-        itemId={`${label.toLowerCase()}-${item}`}
-        label={item}
-        onClick={() =>
-          handleFileClick(
-            item,
-            asset!,
-            setFileName,
-            setFileContent,
-            setFileType,
-            files,
-            tab,
-            setIsLibraryFile,
-            setLibraryAssetPath,
-            dispatch,
-            library || undefined,
-            fileLibrary || undefined,
-          )
-        }
-      />
-    ))}
-  </TreeItem>
-);
+) => {
+  const baseLabel =
+    asset instanceof LibraryAsset && !asset.isPrivate
+      ? `common/${label.toLowerCase()}`
+      : label.toLowerCase();
+
+  return (
+    <TreeItem itemId={`${baseLabel}-${label}`} label={label}>
+      {filesToRender.map((item) => (
+          <TreeItem
+            key={item}
+            itemId={`${baseLabel}-${item}`}
+            label={item}
+            onClick={() =>
+              handleFileClick(
+                item,
+                asset!,
+                setFileName,
+                setFileContent,
+                setFileType,
+                setFilePrivacy,
+                files,
+                tab,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                dispatch,
+                library || undefined,
+                fileLibrary || undefined,
+              )
+            }
+          />
+        ))}
+    </TreeItem>
+  );
+};

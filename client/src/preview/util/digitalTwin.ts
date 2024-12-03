@@ -208,19 +208,31 @@ class DigitalTwin {
   async prepareAllAssetFiles(
     cartAssets: LibraryAsset[],
     libraryFiles: LibraryConfigFile[],
-  ): Promise<Array<{ name: string; content: string; isNew: boolean }>> {
+  ): Promise<
+    Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+      isFromCommonLibrary: boolean;
+    }>
+  > {
     const assetFilesToCreate: Array<{
       name: string;
       content: string;
       isNew: boolean;
+      isFromCommonLibrary: boolean;
     }> = [];
 
     for (const asset of cartAssets) {
-      const assetFiles = await this.DTAssets.getFilesFromAsset(asset.path);
+      const assetFiles = await this.DTAssets.getFilesFromAsset(
+        asset.path,
+        asset.isPrivate,
+      );
       for (const assetFile of assetFiles) {
         const updatedFile = getUpdatedLibraryFile(
           assetFile.name,
           asset.path,
+          asset.isPrivate,
           libraryFiles,
         );
 
@@ -228,10 +240,10 @@ class DigitalTwin {
           name: `${asset.name}/${assetFile.name}`,
           content: updatedFile ? updatedFile.fileContent : assetFile.content,
           isNew: true,
+          isFromCommonLibrary: !asset.isPrivate,
         });
       }
     }
-
     return assetFilesToCreate;
   }
 

@@ -19,6 +19,7 @@ interface SidebarProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
+  setFilePrivacy: Dispatch<SetStateAction<string>>;
   setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
   setLibraryAssetPath: Dispatch<SetStateAction<string>>;
   tab: string;
@@ -33,6 +34,7 @@ const Sidebar = ({
   setFileName,
   setFileContent,
   setFileType,
+  setFilePrivacy,
   setIsLibraryFile,
   setLibraryAssetPath,
   tab,
@@ -55,7 +57,7 @@ const Sidebar = ({
   const libraryFiles = useSelector(
     (state: RootState) => state.libraryConfigFiles,
   );
-
+  
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -77,6 +79,7 @@ const Sidebar = ({
                     fileContent: '',
                     isNew: true,
                     isModified: false,
+                    isPrivate: asset.isPrivate,
                   }),
                 );
               });
@@ -167,6 +170,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -180,6 +184,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -193,6 +198,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -207,6 +213,7 @@ const Sidebar = ({
                 setFileName,
                 setFileContent,
                 setFileType,
+                setFilePrivacy,
                 files,
                 tab,
                 dispatch,
@@ -228,6 +235,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -242,6 +250,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -256,6 +265,7 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
               dispatch,
@@ -264,13 +274,16 @@ const Sidebar = ({
             )}
             {assets.map((asset) =>
               renderFileSection(
-                `${asset.name} configuration`,
+                asset.isPrivate
+                  ? `${asset.name} configuration`
+                  : `common/${asset.name} configuration`,
                 'config',
                 asset.configFiles,
                 asset,
                 setFileName,
                 setFileContent,
                 setFileType,
+                setFilePrivacy,
                 files,
                 tab,
                 dispatch,
