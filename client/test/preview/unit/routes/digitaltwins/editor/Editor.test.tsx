@@ -29,6 +29,12 @@ describe('Editor', () => {
         setFileContent={jest.fn()}
         fileType={'fileType'}
         setFileType={jest.fn()}
+        filePrivacy={'private'}
+        setFilePrivacy={jest.fn()}
+        isLibraryFile={false}
+        setIsLibraryFile={jest.fn()}
+        libraryAssetPath={''}
+        setLibraryAssetPath={jest.fn()}
       />,
     );
   });

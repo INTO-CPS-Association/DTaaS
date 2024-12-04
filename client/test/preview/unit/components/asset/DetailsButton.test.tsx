@@ -14,11 +14,12 @@ jest.mock('react-redux', () => ({
 describe('DetailsButton', () => {
   const renderDetailsButton = (
     assetName: string,
+    assetPrivacy: boolean, 
     setShowDetails: Dispatch<React.SetStateAction<boolean>>,
   ) =>
     render(
       <Provider store={store}>
-        <DetailsButton assetName={assetName} setShowDetails={setShowDetails} />
+        <DetailsButton assetName={assetName} assetPrivacy={assetPrivacy} setShowDetails={setShowDetails}/>
       </Provider>,
     );
 
@@ -27,7 +28,7 @@ describe('DetailsButton', () => {
   });
 
   it('renders the Details button', () => {
-    renderDetailsButton('AssetName', jest.fn());
+    renderDetailsButton('AssetName', true, jest.fn());
     expect(
       screen.getByRole('button', { name: /Details/i }),
     ).toBeInTheDocument();
@@ -42,7 +43,7 @@ describe('DetailsButton', () => {
       getFullDescription: jest.fn().mockResolvedValue('Mocked description'),
     });
 
-    renderDetailsButton('AssetName', mockSetShowDetails);
+    renderDetailsButton('AssetName', true, mockSetShowDetails);
 
     const detailsButton = screen.getByRole('button', { name: /Details/i });
     fireEvent.click(detailsButton);

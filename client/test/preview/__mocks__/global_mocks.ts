@@ -3,6 +3,7 @@ import GitlabInstance from 'preview/util/gitlab';
 import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
 import DTAssets from 'preview/util/DTAssets';
+import LibraryManager from 'preview/util/libraryManager';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
@@ -62,13 +63,13 @@ export const mockGitlabInstance: GitlabInstance = {
     requesterFn: jest.fn(),
   }),
   logs: [],
-  subfolders: [],
   projectId: 1,
   triggerToken: 'mock trigger token',
   init: jest.fn(),
   getProjectId: jest.fn(),
   getTriggerToken: jest.fn(),
   getDTSubfolders: jest.fn(),
+  getLibrarySubfolders: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
   getJobTrace: jest.fn(),
@@ -76,13 +77,16 @@ export const mockGitlabInstance: GitlabInstance = {
 };
 
 export const mockFileHandler: FileHandler = {
-  DTName: 'mockedDTName',
+  name: 'mockedName',
   gitlabInstance: mockGitlabInstance,
   createFile: jest.fn(),
   updateFile: jest.fn(),
   deleteDT: jest.fn(),
   getFileContent: jest.fn(),
   getFileNames: jest.fn(),
+  getLibraryFileNames: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
 };
 
 export const mockDTAssets: DTAssets = {
@@ -90,10 +94,23 @@ export const mockDTAssets: DTAssets = {
   gitlabInstance: mockGitlabInstance,
   fileHandler: mockFileHandler,
   createFiles: jest.fn(),
+  getFilesFromAsset: jest.fn(),
   updateFileContent: jest.fn(),
+  updateLibraryFileContent: jest.fn(),
   appendTriggerToPipeline: jest.fn(),
   removeTriggerFromPipeline: jest.fn(),
   delete: jest.fn(),
+  getFileContent: jest.fn(),
+  getLibraryFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
+};
+
+export const mockLibraryManager: LibraryManager = {
+  assetName: 'mockedAssetName',
+  gitlabInstance: mockGitlabInstance,
+  fileHandler: mockFileHandler,
   getFileContent: jest.fn(),
   getFileNames: jest.fn(),
 };
@@ -110,20 +127,39 @@ export const mockDigitalTwin: DigitalTwin = {
   pipelineLoading: false,
   pipelineCompleted: false,
   descriptionFiles: ['descriptionFile'],
-  lifecycleFiles: ['lifecycleFile'],
   configFiles: ['configFile'],
+  lifecycleFiles: ['lifecycleFile'],
+  assetFiles: [{ assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] }],
 
   getDescription: jest.fn(),
   getFullDescription: jest.fn(),
-  execute: jest.fn(),
   triggerPipeline: jest.fn(),
+  execute: jest.fn(),
   stop: jest.fn(),
   create: jest.fn().mockResolvedValue('Success'),
   delete: jest.fn(),
   getDescriptionFiles: jest.fn().mockResolvedValue(['descriptionFile']),
   getLifecycleFiles: jest.fn().mockResolvedValue(['lifecycleFile']),
   getConfigFiles: jest.fn().mockResolvedValue(['configFile']),
+  prepareAllAssetFiles: jest.fn(),
+  getAssetFiles: jest.fn(),
 } as unknown as DigitalTwin;
+
+export const mockLibraryAsset = {
+  name: 'asset1',
+  path: 'path',
+  type: 'functions',
+  isPrivate: true,
+  gitlabInstance: mockGitlabInstance,
+  description: 'description',
+  fullDescription: 'fullDescription',
+  libraryManager: mockLibraryManager,
+  configFiles: [],
+
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  getConfigFiles: jest.fn(),
+};
 
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),

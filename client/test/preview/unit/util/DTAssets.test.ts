@@ -41,7 +41,7 @@ describe('DTAssets', () => {
         content: 'content',
         isNew: true,
         isModified: false,
-        type: 'description',
+        type: 'digital twin',
       },
       {
         name: 'file2',
@@ -53,8 +53,9 @@ describe('DTAssets', () => {
     ];
     const mainFolderPath = 'path/to/main';
     const lifecycleFolderPath = 'path/to/lifecycle';
+    const isPrivate = false;
 
-    await dtAssets.createFiles(fileState, mainFolderPath, lifecycleFolderPath);
+    await dtAssets.createFiles(fileState, mainFolderPath, lifecycleFolderPath, isPrivate);
 
     expect(dtAssets.fileHandler.createFile).toHaveBeenCalledWith(
       fileState[0],

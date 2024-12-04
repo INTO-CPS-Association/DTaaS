@@ -268,7 +268,7 @@ describe('DigitalTwin', () => {
   });
 
   it('should create digital twin with files', async () => {
-    const result = await dt.create(files);
+    const result = await dt.create(files, [], [], true);
 
     expect(result).toBe(
       'test-DTName digital twin files initialized successfully.',
@@ -280,7 +280,7 @@ describe('DigitalTwin', () => {
       new Error('Create failed'),
     );
 
-    const result = await dt.create(files);
+    const result = await dt.create(files, [], [], true);
 
     expect(result).toBe(
       'Error initializing test-DTName digital twin files: Error: Create failed',
@@ -290,7 +290,7 @@ describe('DigitalTwin', () => {
   it('should return error message when projectId is missing during creation', async () => {
     dt.gitlabInstance.projectId = null;
 
-    const result = await dt.create(files);
+    const result = await dt.create(files, [], [], true);
 
     expect(result).toBe(
       'Error creating test-DTName digital twin: no project id',

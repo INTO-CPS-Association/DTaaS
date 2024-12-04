@@ -1,6 +1,9 @@
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import * as fileUtils from 'preview/util/fileUtils';
 
 describe('FileUtils', () => {
+  const libraryFiles: LibraryConfigFile[] = [];
+
   it('should return true if some files are empty', () => {
     const files = [
       { name: 'file1', content: '', isNew: true, isModified: false },
@@ -9,11 +12,11 @@ describe('FileUtils', () => {
 
     const setErrorMessage = jest.fn();
 
-    const result = fileUtils.validateFiles(files, setErrorMessage);
+    const result = fileUtils.validateFiles(files, libraryFiles, setErrorMessage);
 
     expect(result).toBe(true);
     expect(setErrorMessage).toHaveBeenCalledWith(
-      'The following files have empty content: file1. Edit them in order to create the new digital twin.',
+      'The following files have empty content: file1.\n Edit them in order to create the new digital twin.',
     );
   });
 
@@ -25,7 +28,7 @@ describe('FileUtils', () => {
 
     const setErrorMessage = jest.fn();
 
-    const result = fileUtils.validateFiles(files, setErrorMessage);
+    const result = fileUtils.validateFiles(files, libraryFiles, setErrorMessage);
 
     expect(result).toBe(false);
     expect(setErrorMessage).not.toHaveBeenCalled();

@@ -6,15 +6,12 @@ import assetsSlice, {
 } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
-  setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
   updateDescription,
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
-import { JobLog } from 'preview/components/asset/StartStopButton';
-import { Asset } from 'preview/components/asset/Asset';
 import snackbarSlice, {
   hideSnackbar,
   showSnackbar,
@@ -28,11 +25,13 @@ import fileSlice, {
   removeAllModifiedFiles,
   renameFile,
 } from 'preview/store/file.slice';
+import LibraryAsset from 'preview/util/libraryAsset';
+import { mockLibraryAsset } from '../__mocks__/global_mocks';
 
 describe('reducers', () => {
   let initialState: {
     assets: {
-      items: Asset[];
+      items: LibraryAsset[];
     };
     digitalTwin: {
       [key: string]: DigitalTwin;
@@ -64,11 +63,7 @@ describe('reducers', () => {
   });
 
   describe('assets reducer', () => {
-    const asset1 = {
-      name: 'asset1',
-      description: 'description',
-      path: 'path',
-    };
+    const asset1 = mockLibraryAsset;
 
     it('should handle setAssets', () => {
       const newState = assetsSlice(initialState.assets, setAssets([asset1]));
@@ -87,60 +82,89 @@ describe('reducers', () => {
   describe('digitalTwin reducer', () => {
     const digitalTwin = new DigitalTwin(
       'asset1',
-      new GitlabInstance('user1', 'authority', 'token1'),
+      new GitlabInstance('user1', 'authority', 'token1')
     );
-
-    it('digitalTwinReducer should return the initial digitalTwin state when an unknown action type is passed with an undefined state', () => {
-      expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(
-        initialState.digitalTwin,
-      );
+  
+    const initialState = {
+      digitalTwin: {},
+      shouldFetchDigitalTwins: true,
+    };
+  
+    it('should return the initial state when an unknown action is passed with an undefined state', () => {
+      expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(initialState);
     });
-
+  
     it('should handle setDigitalTwin', () => {
       const newState = digitalTwinReducer(
-        initialState.digitalTwin,
-        setDigitalTwin({ assetName: 'asset1', digitalTwin }),
+        initialState,
+        setDigitalTwin({ assetName: 'asset1', digitalTwin })
       );
-      expect(newState.asset1).toEqual(digitalTwin);
+      expect(newState.digitalTwin.asset1).toEqual(digitalTwin);
     });
-
-    it('should handle setJobLogs', () => {
-      const jobLogs: JobLog[] = [{ jobName: 'job1', log: 'log' }];
-      digitalTwin.jobLogs = jobLogs;
-      initialState.digitalTwin.asset1 = digitalTwin;
-      const newState = digitalTwinReducer(
-        initialState.digitalTwin,
-        setJobLogs({ assetName: 'asset1', jobLogs }),
-      );
-      expect(newState.asset1.jobLogs).toEqual(jobLogs);
-    });
-
+  
     it('should handle setPipelineCompleted', () => {
-      initialState.digitalTwin.asset1 = digitalTwin;
-      const newState = digitalTwinReducer(
-        initialState.digitalTwin,
-        setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true }),
+      const updatedDigitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1')
       );
-      expect(newState.asset1.pipelineCompleted).toBe(true);
+      updatedDigitalTwin.pipelineCompleted = false; // Imposta lo stato iniziale
+    
+      const updatedState = {
+        digitalTwin: {
+          asset1: updatedDigitalTwin,
+        },
+        shouldFetchDigitalTwins: true,
+      };
+    
+      const newState = digitalTwinReducer(
+        updatedState,
+        setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true })
+      );
+    
+      expect(newState.digitalTwin.asset1.pipelineCompleted).toBe(true);
     });
-
+    
+  
     it('should handle setPipelineLoading', () => {
-      initialState.digitalTwin.asset1 = digitalTwin;
-      const newState = digitalTwinReducer(
-        initialState.digitalTwin,
-        setPipelineLoading({ assetName: 'asset1', pipelineLoading: true }),
+      const updatedDigitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1')
       );
-      expect(newState.asset1.pipelineLoading).toBe(true);
+      updatedDigitalTwin.pipelineLoading = false; // Stato iniziale
+    
+      const updatedState = {
+        ...initialState,
+        digitalTwin: { asset1: updatedDigitalTwin },
+      };
+    
+      const newState = digitalTwinReducer(
+        updatedState,
+        setPipelineLoading({ assetName: 'asset1', pipelineLoading: true })
+      );
+    
+      expect(newState.digitalTwin.asset1.pipelineLoading).toBe(true);
     });
-
+    
     it('should handle updateDescription', () => {
-      initialState.digitalTwin.asset1 = digitalTwin;
-      const description = 'new description';
-      const newState = digitalTwinReducer(
-        initialState.digitalTwin,
-        updateDescription({ assetName: 'asset1', description }),
+      const updatedDigitalTwin = new DigitalTwin(
+        'asset1',
+        new GitlabInstance('user1', 'authority', 'token1')
       );
-      expect(newState.asset1.description).toBe(description);
+      updatedDigitalTwin.description = ''; // Stato iniziale
+    
+      const updatedState = {
+        ...initialState,
+        digitalTwin: { asset1: updatedDigitalTwin },
+      };
+    
+      const description = 'new description';
+    
+      const newState = digitalTwinReducer(
+        updatedState,
+        updateDescription({ assetName: 'asset1', description })
+      );
+    
+      expect(newState.digitalTwin.asset1.description).toBe(description);
     });
   });
 

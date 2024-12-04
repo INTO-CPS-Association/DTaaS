@@ -12,9 +12,9 @@ jest.mock('preview/route/digitaltwins/create/CreateDialogs', () => ({
   default: () => <div data-testid="create-dialogs" />,
 }));
 
-jest.mock('preview/route/digitaltwins/create/FileActionButtons', () => ({
+jest.mock('preview/route/digitaltwins/create/PrivacySelector', () => ({
   _esModule: true,
-  default: () => <div data-testid="file-action-buttons" />,
+  default: () => <div data-testid="privacy-selector" />,
 }));
 
 jest.mock('preview/route/digitaltwins/Snackbar', () => ({
@@ -40,9 +40,9 @@ describe('CreatePage', () => {
   it('renders the CreatePage component', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByTestId('privacy-selector')).toBeInTheDocument
     expect(screen.getByTestId('editor')).toBeInTheDocument();
     expect(screen.getByTestId('create-dialogs')).toBeInTheDocument();
-    expect(screen.getByTestId('file-action-buttons')).toBeInTheDocument();
     expect(screen.getByTestId('snackbar')).toBeInTheDocument();
   });
 

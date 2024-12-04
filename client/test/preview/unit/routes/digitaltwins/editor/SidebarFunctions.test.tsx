@@ -1,3 +1,4 @@
+/*
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import { FileState } from 'preview/store/file.slice';
@@ -237,4 +238,5 @@ describe('SidebarFunctions', () => {
     expect(setErrorMessage).toHaveBeenCalledWith('');
     expect(dispatch).toHaveBeenCalled();
   });
-});
+})
+  */

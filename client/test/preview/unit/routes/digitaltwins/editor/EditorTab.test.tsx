@@ -25,10 +25,13 @@ describe('EditorTab', () => {
     waitFor(async () => {
       render(
         <EditorTab
+          tab={'reconfigure'}
           fileName="fileName"
           fileContent="fileContent"
+          filePrivacy="private"
+          isLibraryFile={false}
+          libraryAssetPath=""
           setFileContent={mockSetFileContent}
-          tab={'reconfigure'}
         />,
       );
 
@@ -43,10 +46,13 @@ describe('EditorTab', () => {
     waitFor(async () => {
       render(
         <EditorTab
+          tab={'reconfigure'}
           fileName="fileName"
           fileContent="fileContent"
+          filePrivacy="private"
+          isLibraryFile={false}
+          libraryAssetPath=""
           setFileContent={mockSetFileContent}
-          tab={'reconfigure'}
         />,
       );
 
