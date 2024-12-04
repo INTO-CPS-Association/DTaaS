@@ -146,9 +146,9 @@ export const mockDigitalTwin: DigitalTwin = {
 } as unknown as DigitalTwin;
 
 export const mockLibraryAsset = {
-  name: 'asset1',
+  name: 'Asset 1',
   path: 'path',
-  type: 'functions',
+  type: 'Digital Twins',
   isPrivate: true,
   gitlabInstance: mockGitlabInstance,
   description: 'description',

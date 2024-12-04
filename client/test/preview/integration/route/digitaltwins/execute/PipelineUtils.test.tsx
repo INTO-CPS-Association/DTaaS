@@ -42,7 +42,7 @@ describe('PipelineUtils', () => {
       store.dispatch,
     );
 
-    const state = store.getState().digitalTwin;
+    const state = store.getState().digitalTwin.digitalTwin;
     expect(state.mockedDTName.jobLogs).toEqual([
       { jobName: 'job1', log: 'log1' },
     ]);

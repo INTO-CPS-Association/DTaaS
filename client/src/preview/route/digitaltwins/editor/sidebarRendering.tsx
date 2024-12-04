@@ -35,7 +35,7 @@ export const renderFileTreeItems = (
       itemId={`${baseLabel}-${label}`}
       label={label as TreeItemProps['label']}
     >
-      {filesToRender.map((item) => {
+      {filesToRender.map((item, index) => {
         const itemLabel =
           asset instanceof LibraryAsset && !asset.isPrivate
             ? `common/${item}`
@@ -43,7 +43,7 @@ export const renderFileTreeItems = (
 
         return (
           <TreeItem
-            key={item}
+            key={item + index}
             itemId={`${baseLabel}-${item}`}
             label={itemLabel}
             onClick={() =>
@@ -95,9 +95,9 @@ export const renderFileSection = (
 
   return (
     <TreeItem itemId={`${baseLabel}-${label}`} label={label}>
-      {filesToRender.map((item) => (
+      {filesToRender.map((item, index) => (
         <TreeItem
-          key={item}
+          key={item + index}
           itemId={`${baseLabel}-${item}`}
           label={item}
           onClick={() =>

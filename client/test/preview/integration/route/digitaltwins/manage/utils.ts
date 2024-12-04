@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { Asset } from 'preview/components/asset/Asset';
 import fileSlice, {
   FileState,
   addOrUpdateFile,
@@ -9,11 +8,12 @@ import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarReducer from 'preview/store/snackbar.slice';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockGitlabInstance, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
+import LibraryAsset from 'preview/util/libraryAsset';
 
 const setupStore = () => {
-  const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
+  const preSetItems: LibraryAsset[] = [mockLibraryAsset];
   const files: FileState[] = [
     { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
   ];

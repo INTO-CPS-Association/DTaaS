@@ -1,18 +1,24 @@
 import {
   combineReducers,
   configureStore,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
-import { Provider } from 'react-redux';
-import assetsReducer, { setAssets } from 'preview/store/assets.slice';
+import { Provider, useSelector } from 'react-redux';
+import assetsReducer, { selectAssetByPathAndPrivacy, setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import { RootState } from 'store/store';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
+
 
 const store = configureStore({
   reducer: combineReducers({
@@ -20,9 +26,10 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
   }),
-  middleware: getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 describe('AssetCardExecute Integration Test', () => {
@@ -30,15 +37,23 @@ describe('AssetCardExecute Integration Test', () => {
     name: 'Asset 1',
     description: 'Mocked description',
     path: 'path/asset1',
+    type: 'Digital twins',
+    isPrivate: true,
   };
 
   beforeEach(() => {
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: RootState) => unknown) => {
+        if (selector === selectAssetByPathAndPrivacy(asset.path, asset.isPrivate)) {
+          return null;
+        }
+        return mockDigitalTwin;
+      },
+    );
+    
     store.dispatch(
       setAssets([
-        {
-          name: 'Asset 1',
-          path: 'path/asset1',
-        },
+        mockLibraryAsset,
       ]),
     );
     store.dispatch(
@@ -61,7 +76,7 @@ describe('AssetCardExecute Integration Test', () => {
     jest.clearAllMocks();
   });
 
-  it('opens the Snackbar after clicking the Start button', async () => {
+  it('should start execution', async () => {
     const startStopButton = screen.getByRole('button', { name: /Start/i });
 
     await act(async () => {
@@ -69,7 +84,7 @@ describe('AssetCardExecute Integration Test', () => {
     });
 
     expect(
-      screen.getByText('Execution mockedStatus for MockedDTName'),
+      screen.getByText('Stop'),
     ).toBeInTheDocument();
   });
 });

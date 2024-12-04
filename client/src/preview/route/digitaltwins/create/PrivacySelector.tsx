@@ -1,5 +1,5 @@
 import { Box, FormControlLabel, Switch } from '@mui/material';
-import React from 'react';
+import * as React from 'react';
 
 function PrivacySelector({
   isPrivate,

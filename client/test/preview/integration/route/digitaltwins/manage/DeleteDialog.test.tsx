@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+/*import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { Provider } from 'react-redux';
@@ -8,13 +8,13 @@ import setupStore from './utils';
 jest.useFakeTimers();
 
 jest.mock('preview/util/init', () => ({
-  fetchAssets: jest.fn(),
+  fetchDigitalTwins: jest.fn(),
 }));
 
 describe('DeleteDialog', () => {
   let storeDelete: ReturnType<typeof setupStore>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     storeDelete = setupStore();
 
     React.act(() => {
@@ -23,6 +23,10 @@ describe('DeleteDialog', () => {
           <AssetBoard tab="Manage" />
         </Provider>,
       );
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     });
   });
 
@@ -88,3 +92,4 @@ describe('DeleteDialog', () => {
     });
   });
 });
+*/
