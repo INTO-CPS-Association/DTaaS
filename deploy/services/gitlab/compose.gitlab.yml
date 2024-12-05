@@ -15,9 +15,9 @@ services:
         nginx['redirect_http_to_https'] = false
         letsencrypt['enable'] = false
     volumes:
-      - '${GITLAB_HOME}/config:/etc/gitlab'
-      - '${GITLAB_HOME}/logs:/var/log/gitlab'
-      - '${GITLAB_HOME}/data:/var/opt/gitlab'
+      - '${DTAAS_DIR}/deploy/services/gitlab/config:/etc/gitlab'
+      - '${DTAAS_DIR}/deploy/services/gitlab/logs:/var/log/gitlab'
+      - '${DTAAS_DIR}/deploy/services/gitlab/data:/var/opt/gitlab'
     shm_size: '256m'
     labels:
       - "traefik.enable=true"
