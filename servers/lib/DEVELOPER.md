@@ -1,5 +1,14 @@
 # Developer Instructions
 
+## Prerequisites
+
+The **pm2** package needs to be available for tests.
+You can install the same by executing
+
+```bash
+npm install -g pm2
+```
+
 ## :gear: Configure
 
 This microservice needs library assets and configuration
@@ -26,34 +35,7 @@ yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 ```
 
 **NOTE:** The integration, end-to-end and http tests require a valid
-`.env` file. Here is a sample file.
-
-```ini
-PORT='4001'
-MODE='local'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='true'
-```
-
-Here is another with `git` mode.
-
-```ini
-PORT='4001'
-MODE='git'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib'
-GRAPHQL_PLAYGROUND='true'
-
-GIT_USER1_REPO_URL='<git repo url>'
-GIT_USER1_API_TOKEN='<TOKEN>'
-...
-GIT_USERX_REPO_URL='<git repo url>'
-GIT_USERX_API_TOKEN='<TOKEN>'
-```
-
+configuration. This configuration is already set in `libms.test.yaml` file.
 
 ## Service Endpoint
 
@@ -99,7 +81,7 @@ for more information publishing docker images.
 The default registry for npm packages is [npmjs](https://registry.npmjs.org).
 
 ```bash
-sudo npm install -g @into-cps-association/libms
+npm install -g @into-cps-association/libms
 ```
 
 The steps for publishing the package to npmjs are listed in

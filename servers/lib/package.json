@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/libms",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -65,7 +65,7 @@
     "@nestjs/testing": "^10.4.4",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.13",
-    "@types/node": "22.7.0",
+    "@types/node": "22.10.1",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
