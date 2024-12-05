@@ -1,8 +1,11 @@
 services:
   gitlab-runner:
     container_name: gitlab-runner
-    image: gitlab/gitlab-runner:latest
+    # Runner image version is independent of the gitlab-ce image version
+    image: gitlab/gitlab-runner:alpine-v17.5.3
     volumes:
-      - "./gitlab-runner:/etc/gitlab-runner:z"
+      - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # For https://localhost or a self-signed cert with your server
+      - "${DTAAS_DIR}/deploy/docker/certs/${SERVER_DNS}/fullchain.pem:/etc/gitlab-runner/certs/${SERVER_DNS}.crt:ro"
     network_mode: host
