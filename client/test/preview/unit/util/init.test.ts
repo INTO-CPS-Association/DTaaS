@@ -1,9 +1,12 @@
 import { fetchLibraryAssets } from 'preview/util/init';
-import { mockGitlabInstance, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/libraryAsset', () => ({
-    default: jest.fn().mockImplementation(() => mockLibraryAsset),
-  }));
+  default: jest.fn().mockImplementation(() => mockLibraryAsset),
+}));
 
 jest.mock('preview/util/gitlab', () => {
   const mockSimpleGitlabInstance = {

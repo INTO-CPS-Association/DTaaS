@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import EditorTab, { handleEditorChange } from 'preview/route/digitaltwins/editor/EditorTab';
+import EditorTab, {
+  handleEditorChange,
+} from 'preview/route/digitaltwins/editor/EditorTab';
 import { addOrUpdateFile } from 'preview/store/file.slice';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 

@@ -71,6 +71,7 @@
     "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
+    "jest-fetch-mock": "^3.0.3",
     "katex": "^0.16.11",
     "markdown-it-katex": "^2.0.3",
     "oidc-client-ts": "^3.0.1",

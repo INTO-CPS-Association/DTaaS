@@ -11,9 +11,13 @@ jest.mock('preview/store/CartAccess', () => ({
   default: jest.fn(),
 }));
 
-jest.mock('preview/components/cart/CartList', () => function MockCartList() {
-    return <div data-testid="cart-list"></div>;
-  });
+jest.mock(
+  'preview/components/cart/CartList',
+  () =>
+    function MockCartList() {
+      return <div data-testid="cart-list"></div>;
+    },
+);
 
 describe('ShoppingCart', () => {
   const addMock = jest.fn();

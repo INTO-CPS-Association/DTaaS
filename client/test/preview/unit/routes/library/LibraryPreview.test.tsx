@@ -21,7 +21,9 @@ jest.mock('preview/components/asset/AssetLibrary');
 
 jest.mock('preview/components/cart/ShoppingCart');
 
-jest.mock('components/tab/TabComponent', () => jest.fn(() => <div data-testid="tab-component"></div>));
+jest.mock('components/tab/TabComponent', () =>
+  jest.fn(() => <div data-testid="tab-component"></div>),
+);
 
 jest.mock('page/Layout', () => jest.fn(() => <div data-testid="layout"></div>));
 
