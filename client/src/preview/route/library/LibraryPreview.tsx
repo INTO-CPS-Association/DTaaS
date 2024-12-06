@@ -2,9 +2,7 @@ import * as React from 'react';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { Paper, Typography } from '@mui/material';
-import { useAuth } from 'react-oidc-context';
 import ShoppingCart from 'preview/components/cart/ShoppingCart';
-import { useGetAndSetUsername } from 'util/auth/Authentication';
 import AssetLibrary from 'preview/components/asset/AssetLibrary';
 import { assetType, scope } from './LibraryTabDataPreview';
 
@@ -51,10 +49,6 @@ export function createCombinedTabs() {
 }
 
 function LibraryContent() {
-  const auth = useAuth();
-  const getAndSetUsername = useGetAndSetUsername();
-  getAndSetUsername(auth);
-
   const tabsData = createTabs();
   const combinedData = createCombinedTabs();
 
