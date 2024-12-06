@@ -58,7 +58,7 @@ scripts.
 1. Install Ruby from
    [official Ruby website](https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe)
    and follow all the defaults during the installation.
-
+   
 #### Run Scripts
 
 Then, open powershell with **administrative** priviledges and run the
