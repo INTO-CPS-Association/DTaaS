@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useDispatch, useSelector } from 'react-redux';
 import useCart from 'preview/store/CartAccess';
 import * as cart from 'preview/store/cart.slice';

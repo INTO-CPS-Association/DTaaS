@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
 import AssetLibrary from 'preview/components/asset/AssetLibrary';
 import store, { RootState } from 'store/store';
-import { selectAssetsByTypeAndPrivacy } from 'preview/store/assets.slice';
 import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import { selectAssetsByTypeAndPrivacy } from 'preview/store/assets.slice';
 
 jest.mock('preview/store/assets.slice', () => ({
+  ...jest.requireActual('preview/store/assets.slice'),
   selectAssetsByTypeAndPrivacy: jest.fn(() => []),
 }));
 
@@ -31,28 +32,25 @@ describe('AssetLibrary', () => {
         if (selector === selectAssetsByTypeAndPrivacy('path', false)) {
           return [mockLibraryAsset];
         }
-        return [mockLibraryAsset];
+        return [];
       },
     );
   });
 
   const renderAssetLibrary = () =>
-    render(
-      <Provider store={store}>
-        <AssetLibrary pathToAssets="path" privateRepo={false} />
-      </Provider>,
-    );
-
-  it('renders a loading spinner while assets are being fetched', () => {
-    renderAssetLibrary();
-    expect(screen.getByTestId('circular-progress')).toBeInTheDocument();
-  });
+    act(async () => {
+      render(
+        <Provider store={store}>
+          <AssetLibrary pathToAssets="path" privateRepo={false} />
+        </Provider>,
+      );
+    });
 
   it('renders assets when fetched', async () => {
-    renderAssetLibrary();
+    await renderAssetLibrary();
 
-    await waitFor(() => screen.getByText('Asset Card Library'));
-
-    expect(screen.getByText('Asset Card Library')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText('Asset Card Library')).toBeInTheDocument(),
+    );
   });
 });

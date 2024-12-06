@@ -162,7 +162,7 @@ const Sidebar = ({
 
       <SimpleTreeView>
         {name ? (
-          <>
+          <React.Fragment key="reconfigure-page">
             {renderFileTreeItems(
               'Description',
               digitalTwin!.descriptionFiles,
@@ -224,9 +224,9 @@ const Sidebar = ({
                 assetFolder.assetPath,
               ),
             )}
-          </>
+          </React.Fragment>
         ) : (
-          <>
+          <React.Fragment key="create-page">
             {renderFileSection(
               'Description',
               'description',
@@ -293,7 +293,7 @@ const Sidebar = ({
                 libraryFiles,
               ),
             )}
-          </>
+          </React.Fragment>
         )}
       </SimpleTreeView>
     </Grid>

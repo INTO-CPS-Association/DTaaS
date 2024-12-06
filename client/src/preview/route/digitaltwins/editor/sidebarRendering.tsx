@@ -32,6 +32,7 @@ export const renderFileTreeItems = (
 
   return (
     <TreeItem
+      key={`${baseLabel}-${label}`}
       itemId={`${baseLabel}-${label}`}
       label={label as TreeItemProps['label']}
     >
@@ -43,7 +44,7 @@ export const renderFileTreeItems = (
 
         return (
           <TreeItem
-            key={item + index}
+            key={`${baseLabel}-${item}-${index}`}
             itemId={`${baseLabel}-${item}`}
             label={itemLabel}
             onClick={() =>
@@ -94,10 +95,14 @@ export const renderFileSection = (
       : label.toLowerCase();
 
   return (
-    <TreeItem itemId={`${baseLabel}-${label}`} label={label}>
+    <TreeItem
+      key={`${baseLabel}-${label}`}
+      itemId={`${baseLabel}-${label}`}
+      label={label}
+    >
       {filesToRender.map((item, index) => (
         <TreeItem
-          key={item + index}
+          key={`${baseLabel}-${item}-${index}`}
           itemId={`${baseLabel}-${item}`}
           label={item}
           onClick={() =>
