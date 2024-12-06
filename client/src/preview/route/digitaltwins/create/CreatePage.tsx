@@ -4,7 +4,6 @@ import { Box, Button, TextField, Tooltip } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
-import PrivacySelector from './PrivacySelector';
 
 interface CreatePageProps {
   newDigitalTwinName: string;
@@ -97,7 +96,6 @@ function CreatePage({
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
   const [openCreateDTDialog, setOpenCreateDTDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
 
   const confirmCancel = () => {
     setOpenConfirmDeleteDialog(true);
@@ -131,12 +129,7 @@ function CreatePage({
             height: '100%',
             width: '150px',
           }}
-        >
-          <PrivacySelector
-            isPrivate={isPrivate}
-            onChange={(e) => setIsPrivate(e.target.checked)}
-          />
-        </Box>
+        ></Box>
       </Box>
 
       <Box sx={{ width: '100%', marginTop: -2 }}>
@@ -182,7 +175,6 @@ function CreatePage({
         setNewDigitalTwinName={setNewDigitalTwinName}
         errorMessage={errorMessage}
         setErrorMessage={setErrorMessage}
-        isPrivate={isPrivate}
       />
       <CustomSnackbar />
     </>

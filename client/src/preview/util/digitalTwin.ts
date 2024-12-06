@@ -139,7 +139,6 @@ class DigitalTwin {
     files: FileState[],
     cartAssets: LibraryAsset[],
     libraryFiles: LibraryConfigFile[],
-    isPrivate: boolean,
   ): Promise<string> {
     if (!this.gitlabInstance.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
@@ -158,14 +157,12 @@ class DigitalTwin {
         files,
         mainFolderPath,
         lifecycleFolderPath,
-        isPrivate,
       );
 
       await this.DTAssets.createFiles(
         assetFilesToCreate,
         mainFolderPath,
         lifecycleFolderPath,
-        isPrivate,
       );
 
       await this.DTAssets.appendTriggerToPipeline();

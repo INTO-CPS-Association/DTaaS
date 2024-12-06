@@ -38,7 +38,6 @@ interface CreateDTDialogProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
-  isPrivate: boolean;
 }
 
 const handleError = (
@@ -92,7 +91,6 @@ const handleConfirm = async (
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>,
-  isPrivate: boolean,
   actions: ReturnType<typeof useCart>['actions'],
 ) => {
   setIsLoading(true);
@@ -103,12 +101,7 @@ const handleConfirm = async (
   }
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.create(
-    files,
-    cartAssets,
-    libraryFiles,
-    isPrivate,
-  );
+  const result = await digitalTwin.create(files, cartAssets, libraryFiles);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
@@ -137,7 +130,6 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   setFileName,
   setFileContent,
   setFileType,
-  isPrivate,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
   const libraryFiles = useSelector(
@@ -194,7 +186,6 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
               setFileType,
               setNewDigitalTwinName,
               setIsLoading,
-              isPrivate,
               actions,
             )
           }

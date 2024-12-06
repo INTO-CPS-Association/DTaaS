@@ -22,7 +22,6 @@ interface CreateDialogsProps {
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>;
   errorMessage: string;
   setErrorMessage: Dispatch<SetStateAction<string>>;
-  isPrivate: boolean;
 }
 
 const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
@@ -53,7 +52,6 @@ const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
       setFileName={props.setFileName}
       setFileContent={props.setFileContent}
       setFileType={props.setFileType}
-      isPrivate={props.isPrivate}
     />
 
     <ConfirmDeleteDialog

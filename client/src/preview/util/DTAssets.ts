@@ -43,7 +43,6 @@ class DTAssets {
         }>,
     mainFolderPath: string,
     lifecycleFolderPath: string,
-    isPrivate: boolean,
   ): Promise<void> {
     for (const file of files) {
       const fileType = (file as FileState).type || 'asset';
@@ -61,21 +60,6 @@ class DTAssets {
             : mainFolderPathUpdated;
         const commitMessage = `Add ${file.name} to ${fileType} folder`;
         await this.fileHandler.createFile(file, filePath, commitMessage);
-      }
-
-      if (isPrivate === false) {
-        const mainFolderPathUpdated = file.isFromCommonLibrary
-          ? `${mainFolderPath}/common`
-          : mainFolderPath;
-        const lifecycleFolderPathUpdated = file.isFromCommonLibrary
-          ? `${mainFolderPathUpdated}/lifecycle`
-          : lifecycleFolderPath;
-        const filePath =
-          fileType === 'lifecycle'
-            ? lifecycleFolderPathUpdated
-            : mainFolderPathUpdated;
-        const commitMessage = `Add ${file.name} to ${fileType} common project`;
-        await this.fileHandler.createFile(file, filePath, commitMessage, true);
       }
     }
   }

@@ -51,7 +51,6 @@ describe('CreateDTDialog - handleConfirm function', () => {
             setFileName={setFileName}
             setFileContent={setFileContent}
             setFileType={setFileType}
-            isPrivate={false}
           />
         </Provider>,
       );

@@ -64,7 +64,6 @@ describe('CreateDTDialog', () => {
           setFileName={setFileName}
           setFileContent={setFileContent}
           setFileType={setFileType}
-          isPrivate={false}
         />
       </Provider>,
     );

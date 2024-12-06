@@ -12,11 +12,6 @@ jest.mock('preview/route/digitaltwins/create/CreateDialogs', () => ({
   default: () => <div data-testid="create-dialogs" />,
 }));
 
-jest.mock('preview/route/digitaltwins/create/PrivacySelector', () => ({
-  _esModule: true,
-  default: () => <div data-testid="privacy-selector" />,
-}));
-
 jest.mock('preview/route/digitaltwins/Snackbar', () => ({
   _esModule: true,
   default: () => <div data-testid="snackbar" />,
@@ -40,10 +35,9 @@ describe('CreatePage', () => {
   it('renders the CreatePage component', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
-    expect(screen.getByTestId('privacy-selector')).toBeInTheDocument(); // Aggiunte parentesi
-    expect(screen.getByTestId('editor')).toBeInTheDocument(); // Aggiunte parentesi
-    expect(screen.getByTestId('create-dialogs')).toBeInTheDocument(); // Aggiunte parentesi
-    expect(screen.getByTestId('snackbar')).toBeInTheDocument(); // Aggiunte parentesi
+    expect(screen.getByTestId('editor')).toBeInTheDocument();
+    expect(screen.getByTestId('create-dialogs')).toBeInTheDocument();
+    expect(screen.getByTestId('snackbar')).toBeInTheDocument();
   });
 
   it('handles confirm cancel', () => {
