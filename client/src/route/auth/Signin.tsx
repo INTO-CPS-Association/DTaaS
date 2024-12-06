@@ -11,6 +11,70 @@ import VerifyConfig, {
   validationType,
 } from './VerifyConfig';
 
+const loadingComponent = (
+  <Box
+    sx={{
+      marginTop: 8,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    }}
+  >
+    Verifying configuration
+    <CircularProgress />
+  </Box>
+);
+
+const signInComponent = (startAuthProcess: () => void) => (
+  <Box
+    sx={{
+      marginTop: 8,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    }}
+  >
+    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      <LockOutlinedIcon />
+    </Avatar>
+    <Button
+      onClick={startAuthProcess}
+      variant="contained"
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '10px 20px',
+        backgroundColor: '#fc6d27',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        textTransform: 'none',
+        '&:hover': {
+          backgroundColor: '#fc6d27',
+          textDecoration: 'none',
+        },
+      }}
+      startIcon={
+        <img
+          src={
+            'https://gitlab.com/gitlab-com/gitlab-artwork/-/raw/master/logo/logo-square.png'
+          }
+          alt="GitLab logo"
+          style={{
+            height: '20px',
+            marginRight: '10px',
+          }}
+        />
+      }
+    >
+      Sign In with GitLab
+    </Button>
+  </Box>
+);
+
 function SignIn() {
   const auth = useAuth();
   const [validationResults, setValidationResults] = useState<{
@@ -23,11 +87,10 @@ function SignIn() {
     'redirect_uri',
     'logout_redirect_uri',
   ];
-  const verifyConfig = VerifyConfig({
+  const verifyConfigComponent = VerifyConfig({
     keys: configsToVerify,
     title: 'Config validation failed',
   });
-
   React.useEffect(() => {
     const fetchValidationResults = async () => {
       const results = await getValidationResults();
@@ -41,80 +104,18 @@ function SignIn() {
     auth.signinRedirect();
   };
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        Verifying configuration
-        <CircularProgress />
-      </Box>
-    );
-  }
-  if (
+  let displayedComponent: React.ReactNode = loadingComponent;
+  const configHasKeyErrors =
+    !isLoading &&
     configsToVerify.reduce(
       (accumulator, currentValue) =>
         accumulator || validationResults[currentValue].error !== undefined,
       false,
-    )
-  ) {
-    return verifyConfig;
-  }
-
-  return (
-    <Box
-      sx={{
-        marginTop: 8,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Button
-        onClick={startAuthProcess}
-        variant="contained"
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          padding: '10px 20px',
-          backgroundColor: '#fc6d27',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          textDecoration: 'none',
-          textTransform: 'none',
-          '&:hover': {
-            backgroundColor: '#fc6d27',
-            textDecoration: 'none',
-          },
-        }}
-        startIcon={
-          <img
-            src={
-              'https://gitlab.com/gitlab-com/gitlab-artwork/-/raw/master/logo/logo-square.png'
-            }
-            alt="GitLab logo"
-            style={{
-              height: '20px',
-              marginRight: '10px',
-            }}
-          />
-        }
-      >
-        Sign In with GitLab
-      </Button>
-    </Box>
-  );
+    );
+  displayedComponent = configHasKeyErrors
+    ? verifyConfigComponent
+    : signInComponent(startAuthProcess);
+  return displayedComponent;
 }
 
 export default SignIn;
