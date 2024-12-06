@@ -105,16 +105,16 @@ function SignIn() {
   };
 
   let displayedComponent: React.ReactNode = loadingComponent;
-  const configHasKeyErrors =
-    !isLoading &&
-    configsToVerify.reduce(
+  if (!isLoading) {
+    const configHasKeyErrors = configsToVerify.reduce(
       (accumulator, currentValue) =>
         accumulator || validationResults[currentValue].error !== undefined,
       false,
     );
-  displayedComponent = configHasKeyErrors
-    ? verifyConfigComponent
-    : signInComponent(startAuthProcess);
+    displayedComponent = configHasKeyErrors
+      ? verifyConfigComponent
+      : signInComponent(startAuthProcess);
+  }
   return displayedComponent;
 }
 

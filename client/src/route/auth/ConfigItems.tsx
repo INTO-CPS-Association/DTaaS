@@ -48,22 +48,20 @@ export const ConfigItem: React.FC<{
   label: string;
   value: string;
   validation?: validationType;
-}> = React.memo(
-  ({ label, value, validation = { error: 'Validating unavailable' } }) => (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        margin: '5px 0',
-      }}
-    >
-      {getConfigIcon(validation, label)}
-      <div>
-        <strong>{label}:</strong> {value}
-      </div>
+}> = ({ label, value, validation = { error: 'Validating unavailable' } }) => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      margin: '5px 0',
+    }}
+  >
+    {getConfigIcon(validation, label)}
+    <div>
+      <strong>{label}:</strong> {value}
     </div>
-  ),
+  </div>
 );
 ConfigItem.displayName = 'ConfigItem';
 
