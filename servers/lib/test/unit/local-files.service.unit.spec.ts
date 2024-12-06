@@ -1,6 +1,5 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
 import LocalFilesService from '../../src/files/local/local-files.service';
@@ -8,11 +7,15 @@ import {
   fstestFileContent,
   pathToTestDirectory,
   pathToTestFileContent,
-  testFileArray,
-  MockConfigService,
   testFileName,
+  pathToLargeTestFileContent,
+  largeFstestFileContent,
+  largeTestFileName,
+  jestMockConfigService,
+  testFileArray,
 } from '../testUtil';
 import { Dirent } from 'fs';
+import { CONFIG_SERVICE } from 'src/config/config.interface';
 
 jest.mock('fs', () => ({
   promises: {
@@ -24,13 +27,14 @@ jest.mock('fs', () => ({
 
 describe('LocalFilesService', () => {
   let service: LocalFilesService;
-  const mockConfigService = new MockConfigService();
+  let mockConfigService;
 
   beforeEach(async () => {
+    mockConfigService = jestMockConfigService();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LocalFilesService,
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: CONFIG_SERVICE, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -47,7 +51,7 @@ describe('LocalFilesService', () => {
 
   it('should list directory', async () => {
     const fullPath = join(
-      mockConfigService.get('LOCAL_PATH'),
+      mockConfigService.getLocalPath(),
       pathToTestDirectory,
     );
 
@@ -83,28 +87,40 @@ describe('LocalFilesService', () => {
     expect(fs.promises.lstat).toHaveBeenCalledTimes(testFileArray.length);
   });
 
-  it('should read file', async () => {
-    const fullPath = join(
-      mockConfigService.get('LOCAL_PATH'),
-      pathToTestFileContent,
-    );
+  const readTestFile = [
+    {
+      name: largeTestFileName,
+      filePath: pathToLargeTestFileContent,
+      expectedContent: largeFstestFileContent,
+    },
+    {
+      name: testFileName,
+      filePath: pathToTestFileContent,
+      expectedContent: fstestFileContent,
+    },
+  ];
 
-    jest.spyOn(fs.promises, 'readFile').mockResolvedValue(fstestFileContent);
+  readTestFile.forEach(({ name, filePath, expectedContent }) => {
+    it(`should read file ${name}`, async () => {
+      const fullPath = join(mockConfigService.getLocalPath(), filePath);
 
-    const result = await service.readFile(pathToTestFileContent);
-    expect(result).toEqual({
-      repository: {
-        blobs: {
-          nodes: [
-            {
-              name: testFileName,
-              rawBlob: fstestFileContent,
-              rawTextBlob: fstestFileContent,
-            },
-          ],
+      jest.spyOn(fs.promises, 'readFile').mockResolvedValue(expectedContent);
+
+      const result = await service.readFile(filePath);
+      expect(result).toEqual({
+        repository: {
+          blobs: {
+            nodes: [
+              {
+                name: name,
+                rawBlob: expectedContent,
+                rawTextBlob: expectedContent,
+              },
+            ],
+          },
         },
-      },
+      });
+      expect(fs.promises.readFile).toHaveBeenCalledWith(fullPath, 'utf8');
     });
-    expect(fs.promises.readFile).toHaveBeenCalledWith(fullPath, 'utf8');
   });
 });

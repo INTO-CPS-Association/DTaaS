@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/libms",
-  "version": "0.4.7",
+  "version": "0.5.2",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -24,14 +24,14 @@
     "syntax": "eslint . --fix",
     "pretest": "npx shx cp test/data/user2/tools/README.md ../../files/user2/tools/README.md",
     "posttest": "npx rimraf ../../files/user2/tools/README.md",
-    "test:all": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage",
-    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest --config ./test/jest-e2e.json --coverage",
+    "test:all": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest --testPathIgnorePatterns=cloudcmd --coverage",
+    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest --config ./test/jest-e2e.json --coverage",
     "test:http": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd --coverage --coverageThreshold=\"{}\" && pm2 delete libms-test",
     "test:http-nocov": "yarn build && pm2 start -f --name libms-test dist/src/main.js -- -c .env -H ./config/http.json && jest test/cloudcmd  --coverage=false && pm2 delete libms-test",
     "test:http-github": "jest test/cloudcmd --coverage --coverageThreshold=\"{}\"",
-    "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest ../test/integration --coverage",
-    "test:nocov": "yarn test:http-nocov && npx cross-env LOCAL_PATH=test/data jest --testPathIgnorePatterns=cloudcmd --coverage=false",
-    "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LOCAL_PATH=test/data jest ../test/unit --coverage"
+    "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest ../test/integration --coverage",
+    "test:nocov": "yarn test:http-nocov && npx cross-env LIBMS_CONFIG_PATH=test/libms.test.yaml jest --testPathIgnorePatterns=cloudcmd --coverage=false",
+    "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules LIBMS_CONFIG_PATH=test/libms.test.yaml jest ../test/unit --coverage"
   },
   "bin": "./dist/src/main.js",
   "dependencies": {
@@ -47,8 +47,10 @@
     "cloudcmd": "^18.1.0",
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",
-    "globals": "^15.9.0",
+    "globals": "^15.11.0",
     "graphql": "^16.9.0",
+    "isomorphic-git": "^1.27.1",
+    "js-yaml": "^4.1.0",
     "mock-fs": "^5.3.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
@@ -56,17 +58,17 @@
     "type-graphql": "^2.0.0-rc.2"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.1.1",
+    "@eslint/compat": "^1.2.2",
     "@eslint/eslintrc": "^3.1.0",
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.4",
     "@nestjs/testing": "^10.4.4",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.13",
-    "@types/node": "22.7.0",
+    "@types/node": "22.10.1",
     "@types/supertest": "^6.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
     "cross-fetch": "^4.0.0",
     "eslint": "^9.11.1",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -82,6 +84,7 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3",
+    "@types/js-yaml": "^4.0.9"
   }
 }
