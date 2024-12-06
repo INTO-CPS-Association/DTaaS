@@ -29,7 +29,6 @@ export const fetchLibraryAssets = async (
 ) => {
   try {
     await initialGitlabInstance.init();
-    console.log(initialGitlabInstance.projectId);
     if (initialGitlabInstance.projectId) {
       const subfolders = await initialGitlabInstance.getLibrarySubfolders(
         initialGitlabInstance.projectId,
@@ -52,7 +51,6 @@ export const fetchLibraryAssets = async (
           return libraryAsset;
         }),
       );
-      console.log(assets);
       assets.forEach((asset) => dispatch(setAsset(asset)));
     } else {
       dispatch(setAssets([]));

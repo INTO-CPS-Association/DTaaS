@@ -55,7 +55,12 @@ describe('DTAssets', () => {
     const lifecycleFolderPath = 'path/to/lifecycle';
     const isPrivate = false;
 
-    await dtAssets.createFiles(fileState, mainFolderPath, lifecycleFolderPath, isPrivate);
+    await dtAssets.createFiles(
+      fileState,
+      mainFolderPath,
+      lifecycleFolderPath,
+      isPrivate,
+    );
 
     expect(dtAssets.fileHandler.createFile).toHaveBeenCalledWith(
       fileState[0],

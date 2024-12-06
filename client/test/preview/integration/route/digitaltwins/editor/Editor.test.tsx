@@ -12,7 +12,10 @@ import fileSlice, {
 } from 'preview/store/file.slice';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
-import { mockGitlabInstance, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import LibraryAsset from 'preview/util/libraryAsset';
 import cartSlice, { addToCart } from 'preview/store/cart.slice';

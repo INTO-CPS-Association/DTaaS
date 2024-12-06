@@ -56,6 +56,7 @@
     "@mui/material": "^6.1.1",
     "@mui/x-tree-view": "^7.19.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/remarkable": "^2.0.8",
     "@types/styled-components": "^5.1.32",

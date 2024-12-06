@@ -26,7 +26,17 @@ import fileSlice, {
   renameFile,
 } from 'preview/store/file.slice';
 import LibraryAsset from 'preview/util/libraryAsset';
-import { mockLibraryAsset } from '../__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import cartSlice, {
+  addToCart,
+  clearCart,
+  removeFromCart,
+} from 'preview/store/cart.slice';
+import libraryFilesSlice, {
+  LibraryConfigFile,
+  addOrUpdateLibraryFile,
+  removeAllModifiedLibraryFiles,
+} from 'preview/store/libraryConfigFiles.slice';
 
 describe('reducers', () => {
   let initialState: {
@@ -47,6 +57,15 @@ describe('reducers', () => {
       isNew: boolean;
       isModified: boolean;
     }[];
+    cart: {
+      assets: LibraryAsset[];
+    };
+    libraryConfigFiles: {
+      name: string;
+      content: string;
+      isNew: boolean;
+      isModified: boolean;
+    }[];
   };
 
   beforeEach(() => {
@@ -59,6 +78,8 @@ describe('reducers', () => {
         severity: 'info',
       },
       files: [],
+      cart: { assets: [] },
+      libraryConfigFiles: [],
     };
   });
 
@@ -82,88 +103,89 @@ describe('reducers', () => {
   describe('digitalTwin reducer', () => {
     const digitalTwin = new DigitalTwin(
       'asset1',
-      new GitlabInstance('user1', 'authority', 'token1')
+      new GitlabInstance('user1', 'authority', 'token1'),
     );
-  
+
     const initialState = {
       digitalTwin: {},
       shouldFetchDigitalTwins: true,
     };
-  
+
     it('should return the initial state when an unknown action is passed with an undefined state', () => {
-      expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(initialState);
+      expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(
+        initialState,
+      );
     });
-  
+
     it('should handle setDigitalTwin', () => {
       const newState = digitalTwinReducer(
         initialState,
-        setDigitalTwin({ assetName: 'asset1', digitalTwin })
+        setDigitalTwin({ assetName: 'asset1', digitalTwin }),
       );
       expect(newState.digitalTwin.asset1).toEqual(digitalTwin);
     });
-  
+
     it('should handle setPipelineCompleted', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1')
+        new GitlabInstance('user1', 'authority', 'token1'),
       );
-      updatedDigitalTwin.pipelineCompleted = false; // Imposta lo stato iniziale
-    
+      updatedDigitalTwin.pipelineCompleted = false;
+
       const updatedState = {
         digitalTwin: {
           asset1: updatedDigitalTwin,
         },
         shouldFetchDigitalTwins: true,
       };
-    
+
       const newState = digitalTwinReducer(
         updatedState,
-        setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true })
+        setPipelineCompleted({ assetName: 'asset1', pipelineCompleted: true }),
       );
-    
+
       expect(newState.digitalTwin.asset1.pipelineCompleted).toBe(true);
     });
-    
-  
+
     it('should handle setPipelineLoading', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1')
+        new GitlabInstance('user1', 'authority', 'token1'),
       );
-      updatedDigitalTwin.pipelineLoading = false; // Stato iniziale
-    
+      updatedDigitalTwin.pipelineLoading = false;
+
       const updatedState = {
         ...initialState,
         digitalTwin: { asset1: updatedDigitalTwin },
       };
-    
+
       const newState = digitalTwinReducer(
         updatedState,
-        setPipelineLoading({ assetName: 'asset1', pipelineLoading: true })
+        setPipelineLoading({ assetName: 'asset1', pipelineLoading: true }),
       );
-    
+
       expect(newState.digitalTwin.asset1.pipelineLoading).toBe(true);
     });
-    
+
     it('should handle updateDescription', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1')
+        new GitlabInstance('user1', 'authority', 'token1'),
       );
-      updatedDigitalTwin.description = ''; // Stato iniziale
-    
+      updatedDigitalTwin.description = '';
+
       const updatedState = {
         ...initialState,
         digitalTwin: { asset1: updatedDigitalTwin },
       };
-    
+
       const description = 'new description';
-    
+
       const newState = digitalTwinReducer(
         updatedState,
-        updateDescription({ assetName: 'asset1', description })
+        updateDescription({ assetName: 'asset1', description }),
       );
-    
+
       expect(newState.digitalTwin.asset1.description).toBe(description);
     });
   });
@@ -320,6 +342,122 @@ describe('reducers', () => {
       const initialState = [file1, file2];
       const newState = fileSlice(initialState, removeAllFiles());
       expect(newState).toEqual([]);
+    });
+  });
+
+  describe('cart reducer', () => {
+    const asset1 = mockLibraryAsset;
+    const asset2 = { ...mockLibraryAsset, path: 'path2' };
+
+    it('should handle addToCart', () => {
+      const newState = cartSlice(initialState.cart, addToCart(asset1));
+      expect(newState.assets).toEqual([asset1]);
+    });
+
+    it('should not add duplicate assets to cart', () => {
+      initialState.cart.assets = [asset1];
+      const newState = cartSlice(initialState.cart, addToCart(asset1));
+      expect(newState.assets).toEqual([asset1]);
+    });
+
+    it('should handle removeFromCart', () => {
+      initialState.cart.assets = [asset1, asset2];
+      const newState = cartSlice(initialState.cart, removeFromCart(asset1));
+      expect(newState.assets).toEqual([asset2]);
+    });
+
+    it('should handle clearCart', () => {
+      initialState.cart.assets = [asset1, asset2];
+      const newState = cartSlice(initialState.cart, clearCart());
+      expect(newState.assets).toEqual([]);
+    });
+  });
+
+  describe('libraryFilesSlice', () => {
+    const initialState: LibraryConfigFile[] = [];
+
+    it('should handle initial state', () => {
+      expect(libraryFilesSlice(undefined, { type: 'unknown' })).toEqual(
+        initialState,
+      );
+    });
+
+    it('should handle addOrUpdateLibraryFile', () => {
+      const newFile: LibraryConfigFile = {
+        assetPath: 'path1',
+        fileName: 'file1',
+        fileContent: 'content1',
+        isNew: true,
+        isModified: false,
+        isPrivate: false,
+      };
+
+      const updatedFile: LibraryConfigFile = {
+        ...newFile,
+        fileContent: 'updated content',
+        isModified: true,
+      };
+
+      let state = libraryFilesSlice(
+        initialState,
+        addOrUpdateLibraryFile(newFile),
+      );
+      expect(state).toEqual([newFile]);
+
+      state = libraryFilesSlice(state, addOrUpdateLibraryFile(updatedFile));
+      expect(state).toEqual([updatedFile]);
+    });
+
+    it.skip('should handle removeAllFiles', () => {
+      const stateWithFiles: LibraryConfigFile[] = [
+        {
+          assetPath: 'path1',
+          fileName: 'file1',
+          fileContent: 'content1',
+          isNew: true,
+          isModified: false,
+          isPrivate: false,
+        },
+      ];
+
+      const state = libraryFilesSlice(stateWithFiles, removeAllFiles());
+      expect(state).toEqual([]);
+    });
+
+    it('should handle removeAllModifiedLibraryFiles', () => {
+      const stateWithFiles: LibraryConfigFile[] = [
+        {
+          assetPath: 'path1',
+          fileName: 'file1',
+          fileContent: 'content1',
+          isNew: false,
+          isModified: true,
+          isPrivate: false,
+        },
+        {
+          assetPath: 'path2',
+          fileName: 'file2',
+          fileContent: 'content2',
+          isNew: true,
+          isModified: false,
+          isPrivate: false,
+        },
+      ];
+
+      const state = libraryFilesSlice(
+        stateWithFiles,
+        removeAllModifiedLibraryFiles(),
+      );
+      expect(state).toEqual([
+        {
+          assetPath: 'path2',
+          fileName: 'file2',
+          fileContent: 'content2',
+          isNew: true,
+          isModified: false,
+          isPrivate: false,
+        },
+      ]);
     });
   });
 });

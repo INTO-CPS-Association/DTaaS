@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import EditorTab from 'preview/route/digitaltwins/editor/EditorTab';
+import EditorTab, { handleEditorChange } from 'preview/route/digitaltwins/editor/EditorTab';
 import { addOrUpdateFile } from 'preview/store/file.slice';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 
 jest.mock('preview/store/file.slice', () => ({
   addOrUpdateFile: jest.fn(),
@@ -42,37 +43,103 @@ describe('EditorTab', () => {
     });
   });
 
-  it('calls handleEditorChange via onChange correctly', async () => {
-    waitFor(async () => {
-      render(
-        <EditorTab
-          tab={'reconfigure'}
-          fileName="fileName"
-          fileContent="fileContent"
-          filePrivacy="private"
-          isLibraryFile={false}
-          libraryAssetPath=""
-          setFileContent={mockSetFileContent}
-        />,
-      );
+  it('calls handleEditorChange via onChange correctly - create tab', async () => {
+    await handleEditorChange(
+      'create',
+      'new content',
+      jest.fn(),
+      mockSetFileContent,
+      'fileName',
+      'private',
+      false,
+      '',
+      mockDispatch,
+    );
 
-      const newValue = 'New content';
+    expect(mockSetFileContent).toHaveBeenCalledWith('new content');
+    expect(mockDispatch).toHaveBeenCalledWith(
+      addOrUpdateFile({
+        name: 'fileName',
+        content: 'new content',
+        isNew: true,
+        isModified: true,
+      }),
+    );
+  });
 
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: newValue },
-      });
+  it('calls handleEditorChange via onChange correctly - create tab and libraryFile', async () => {
+    await handleEditorChange(
+      'create',
+      'new content',
+      jest.fn(),
+      mockSetFileContent,
+      'fileName',
+      'private',
+      true,
+      'path',
+      mockDispatch,
+    );
 
-      await waitFor(() => {
-        expect(mockSetFileContent).toHaveBeenCalledWith(newValue);
-        expect(mockDispatch).toHaveBeenCalledWith(
-          addOrUpdateFile({
-            name: 'fileName',
-            content: newValue,
-            isNew: false,
-            isModified: true,
-          }),
-        );
-      });
-    });
+    expect(mockSetFileContent).toHaveBeenCalledWith('new content');
+    expect(mockDispatch).toHaveBeenCalledWith(
+      addOrUpdateLibraryFile({
+        assetPath: 'path',
+        fileName: 'fileName',
+        fileContent: 'new content',
+        isNew: true,
+        isModified: true,
+        isPrivate: true,
+      }),
+    );
+  });
+
+  it('calls handleEditorChange via onChange correctly - reconfigure tab', async () => {
+    await handleEditorChange(
+      'reconfigure',
+      'new content',
+      jest.fn(),
+      mockSetFileContent,
+      'fileName',
+      'private',
+      false,
+      '',
+      mockDispatch,
+    );
+
+    expect(mockSetFileContent).toHaveBeenCalledWith('new content');
+    expect(mockDispatch).toHaveBeenCalledWith(
+      addOrUpdateFile({
+        name: 'fileName',
+        content: 'new content',
+        isNew: true,
+        isModified: true,
+      }),
+    );
+  });
+
+  it('calls handleEditorChange via onChange correctly - reconfigure tab and libraryFile', async () => {
+    await handleEditorChange(
+      'reconfigure',
+      'new content',
+      jest.fn(),
+      mockSetFileContent,
+      'fileName',
+      'private',
+      true,
+      'path',
+      mockDispatch,
+    );
+
+    expect(mockSetFileContent).toHaveBeenCalledWith('new content');
+    expect(mockDispatch).toHaveBeenCalledWith(
+      addOrUpdateLibraryFile({
+        assetPath: 'path',
+        fileName: 'fileName',
+        fileContent: 'new content',
+        isNew: false,
+        isModified: true,
+        isPrivate: true,
+      }),
+    );
   });
 });

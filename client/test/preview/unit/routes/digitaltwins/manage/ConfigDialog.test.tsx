@@ -89,7 +89,6 @@ describe('ReconfigureDialog', () => {
         }
         return mockDigitalTwin;
       },
-
     );
 
     render(

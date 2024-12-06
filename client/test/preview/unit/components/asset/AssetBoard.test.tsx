@@ -38,7 +38,13 @@ describe('AssetBoard', () => {
     );
 
     const mockAssets = [
-      { name: 'Asset 1', description: 'Test Asset', path: 'path1', type: 'Digital Twins', isPrivate: true },
+      {
+        name: 'Asset 1',
+        description: 'Test Asset',
+        path: 'path1',
+        type: 'Digital Twins',
+        isPrivate: true,
+      },
     ];
 
     (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
@@ -74,18 +80,4 @@ describe('AssetBoard', () => {
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
   });
-
-  /*it('shows error message when error is set', () => {
-    const realUseState = React.useState;
-
-    const stubInitialState: unknown = ['Error message'];
-    jest
-      .spyOn(React, 'useState')
-      .mockImplementationOnce(() => realUseState(stubInitialState));
-
-    renderAssetBoard('Manage');
-
-    expect(screen.getByText('Error message')).toBeInTheDocument();
-  });
-  */
 });

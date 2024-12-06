@@ -1,24 +1,26 @@
-import {
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
-import assetsReducer, { selectAssetByPathAndPrivacy, setAssets } from 'preview/store/assets.slice';
+import assetsReducer, {
+  selectAssetByPathAndPrivacy,
+  setAssets,
+} from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockDigitalTwin, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { RootState } from 'store/store';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
 }));
-
 
 const store = configureStore({
   reducer: combineReducers({
@@ -44,18 +46,16 @@ describe('AssetCardExecute Integration Test', () => {
   beforeEach(() => {
     (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {
-        if (selector === selectAssetByPathAndPrivacy(asset.path, asset.isPrivate)) {
+        if (
+          selector === selectAssetByPathAndPrivacy(asset.path, asset.isPrivate)
+        ) {
           return null;
         }
         return mockDigitalTwin;
       },
     );
-    
-    store.dispatch(
-      setAssets([
-        mockLibraryAsset,
-      ]),
-    );
+
+    store.dispatch(setAssets([mockLibraryAsset]));
     store.dispatch(
       setDigitalTwin({
         assetName: 'Asset 1',
@@ -83,8 +83,6 @@ describe('AssetCardExecute Integration Test', () => {
       fireEvent.click(startStopButton);
     });
 
-    expect(
-      screen.getByText('Stop'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Stop')).toBeInTheDocument();
   });
 });

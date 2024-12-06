@@ -1,15 +1,16 @@
-import {
-  render,
-  waitFor,
-  screen,
-  act,
-} from '@testing-library/react';
+import { render, waitFor, screen, act } from '@testing-library/react';
 import Sidebar from 'preview/route/digitaltwins/editor/Sidebar';
-import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
+import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store, { RootState } from 'store/store';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
+import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
+import * as ReactRedux from 'react-redux';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -47,18 +48,19 @@ describe('Sidebar', () => {
     });
   };
 
-  beforeEach(async () => {
+  beforeEach(() => {
     (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {
-        if (selector === selectDigitalTwinByName('mockedDTName')) {
-          return mockDigitalTwin;
-        }
         if (selector.toString().includes('state.files')) {
           return [];
+        }
+        if (selector.toString().includes('state.cart.assets')) {
+          return [mockLibraryAsset];
         }
         return mockDigitalTwin;
       },
     );
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -75,100 +77,66 @@ describe('Sidebar', () => {
     });
   });
 
-  /*it('should update file state if the file is modified', async () => {
-    await renderSidebar('reconfigure', 'mockedDTName');
-  
-    const modifiedFiles: FileState[] = [
-      {
-        name: 'testFile.md',
-        content: 'modified content',
-        isNew: false,
-        isModified: true,
-      },
-    ];
-  
-    // Mock della funzione fetchAndSetFileContent per evitare chiamate reali
-    //jest.spyOn(fetchAndSetFileContent, 'mockImplementation').mockResolvedValue(undefined);
-  
-    // Chiamata alla funzione handleReconfigureFileClick
-    await act(async () => {
-      await handleReconfigureFileClick(
-        'testFile.md',
-        mockDigitalTwin,
-        modifiedFiles,
-        setFileName,
-        setFileContent,
-        setFileType,
-        setFilePrivacy,
-        setIsLibraryFile,
-        setLibraryAssetPath,
-      );
-    });
-  
-    // Verifica che le funzioni siano state chiamate correttamente
-    expect(setFileName).toHaveBeenCalledWith('testFile.md');
-    expect(setFileContent).toHaveBeenCalledWith('modified content');
-    expect(setFileType).toHaveBeenCalledWith('md');
-    
-    // Verifica che getFileContent non sia stata chiamata, dato che il file è già modificato
-    expect(mockDigitalTwin.DTAssets.getFileContent).not.toHaveBeenCalled();
-  });
-  
-
-  it('should fetch and update file state if the file is not modified', async () => {
-    await renderSidebar('reconfigure', 'mockedDTName');
-
-    const modifiedFiles: FileState[] = [];
-    mockDigitalTwin.DTAssets.getFileContent = jest
-      .fn()
-      .mockResolvedValue('fetched content');
-
-    await act(async () => {
-      await handleReconfigureFileClick(
-        'testFile.md',
-        mockDigitalTwin,
-        modifiedFiles,
-        setFileName,
-        setFileContent,
-        setFileType,
-        setFilePrivacy,
-        setIsLibraryFile, 
-        setLibraryAssetPath,
-      );
-    });
-
-    expect(mockDigitalTwin.DTAssets.getFileContent).toHaveBeenCalledWith(
-      'testFile.md',
+  it('should call handleAddFileClick when Add new file button is clicked', async () => {
+    const handleAddFileClickSpy = jest.spyOn(
+      SidebarFunctions,
+      'handleAddFileClick',
     );
-    expect(setFileName).toHaveBeenCalledWith('testFile.md');
-    expect(setFileContent).toHaveBeenCalledWith('fetched content');
-    expect(setFileType).toHaveBeenCalledWith('md');
+
+    await renderSidebar('create', 'mockedDTName');
+
+    await waitFor(() => {
+      const addFileButton = screen.getByText('Add new file');
+      addFileButton.click();
+    });
+
+    expect(handleAddFileClickSpy).toHaveBeenCalled();
   });
 
-  it('opens the file name dialog when Add new file button is clicked', async () => {
+  it('should render file sections', async () => {
+    await renderSidebar('reconfigure', 'differentDTName');
+
+    await waitFor(() => {
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Configuration')).toBeInTheDocument();
+      expect(screen.getByText('assetPath configuration')).toBeInTheDocument();
+    });
+  });
+
+  it.skip('renders loading spinner during loadFiles execution', async () => {
+    const fetchDataSpy = jest.spyOn(SidebarFetchers, 'fetchData');
+
+    renderSidebar('reconfigure', 'mockedDTName');
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetchDataSpy).toHaveBeenCalledWith(mockDigitalTwin);
+    });
+
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
+
+  it('handles assets in create mode', async () => {
+    const addOrUpdateLibraryFileSpy = jest.spyOn(ReactRedux, 'useDispatch');
+
     await renderSidebar('create');
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('Add new file'));
+      expect(addOrUpdateLibraryFileSpy).toHaveBeenCalled();
+      mockLibraryAsset.configFiles.forEach((file) => {
+        expect(addOrUpdateLibraryFileSpy).toHaveBeenCalledWith(
+          addOrUpdateLibraryFile({
+            assetPath: mockLibraryAsset.path,
+            fileName: file,
+            fileContent: '',
+            isNew: true,
+            isModified: false,
+            isPrivate: mockLibraryAsset.isPrivate,
+          }),
+        );
+      });
     });
-
-    expect(screen.getByText('Enter the file name')).toBeInTheDocument();
   });
-
-  it('renders Sidebar with null digitalTwin when tab is create', async () => {
-    (useSelector as unknown as jest.Mock).mockImplementationOnce(
-      (selector: (state: RootState) => unknown) => {
-        if (selector === selectDigitalTwinByName('')) {
-          return null;
-        }
-        if (selector.toString().includes('state.files')) {
-          return [];
-        }
-        return null;
-      },
-    );
-
-    await renderSidebar('create', '');
-  });
-  */
 });

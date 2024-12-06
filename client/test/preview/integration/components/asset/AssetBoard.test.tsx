@@ -4,10 +4,19 @@ import { Provider } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
-import digitalTwinReducer, { setDigitalTwin, setShouldFetchDigitalTwins } from 'preview/store/digitalTwin.slice';
+import digitalTwinReducer, {
+  setDigitalTwin,
+  setShouldFetchDigitalTwins,
+} from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockGitlabInstance, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
-import fileSlice, { FileState, addOrUpdateFile } from 'preview/store/file.slice';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
+import fileSlice, {
+  FileState,
+  addOrUpdateFile,
+} from 'preview/store/file.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import LibraryAsset from 'preview/util/libraryAsset';
 import libraryConfigFilesSlice from 'preview/store/libraryConfigFiles.slice';
@@ -126,25 +135,4 @@ describe('AssetBoard Integration Tests', () => {
       expect(screen.queryByText('Asset 1')).not.toBeInTheDocument();
     });
   });
-
-  /*it('shows an error message', async () => {
-    const error = 'An error occurred';
-
-    (fetchDigitalTwins as jest.Mock).mockImplementation(error);
-
-    act(() => {
-      render(
-        <Provider store={store}>
-          <AssetBoard tab="Manage" />
-        </Provider>,
-      );
-    });
-
-    // Ensure the error message is displayed
-    await waitFor(() => {
-      expect(screen.getByText(/error/i)).toBeInTheDocument(); // "error" è case-insensitive
-    });
-    
-  });
-  */
-}); // Extend the timeout to allow more time for state updates
+});

@@ -14,12 +14,16 @@ jest.mock('react-redux', () => ({
 describe('DetailsButton', () => {
   const renderDetailsButton = (
     assetName: string,
-    assetPrivacy: boolean, 
+    assetPrivacy: boolean,
     setShowDetails: Dispatch<React.SetStateAction<boolean>>,
   ) =>
     render(
       <Provider store={store}>
-        <DetailsButton assetName={assetName} assetPrivacy={assetPrivacy} setShowDetails={setShowDetails}/>
+        <DetailsButton
+          assetName={assetName}
+          assetPrivacy={assetPrivacy}
+          setShowDetails={setShowDetails}
+        />
       </Provider>,
     );
 

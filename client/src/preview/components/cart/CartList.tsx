@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import useCart from 'preview/store/CartAccess';
 import LibraryAsset from 'preview/util/libraryAsset';
 

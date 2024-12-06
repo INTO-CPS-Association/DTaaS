@@ -129,7 +129,9 @@ export const mockDigitalTwin: DigitalTwin = {
   descriptionFiles: ['descriptionFile'],
   configFiles: ['configFile'],
   lifecycleFiles: ['lifecycleFile'],
-  assetFiles: [{ assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] }],
+  assetFiles: [
+    { assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] },
+  ],
 
   getDescription: jest.fn(),
   getFullDescription: jest.fn(),

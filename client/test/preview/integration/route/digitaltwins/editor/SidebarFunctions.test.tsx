@@ -1,4 +1,4 @@
-/*import { handleFileClick } from "preview/route/digitaltwins/editor/sidebarFunctions";
+/* import { handleFileClick } from "preview/route/digitaltwins/editor/sidebarFunctions";
 import { FileState } from "preview/store/file.slice";
 
 describe('SidebarFunctions', () => {

@@ -1,4 +1,4 @@
-/*import { render, screen, waitFor } from '@testing-library/react';
+/* import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { Provider } from 'react-redux';

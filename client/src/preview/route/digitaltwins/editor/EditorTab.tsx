@@ -15,7 +15,7 @@ interface EditorTabProps {
   setFileContent: Dispatch<SetStateAction<string>>;
 }
 
-const handleEditorChange = (
+export const handleEditorChange = (
   tab: string,
   value: string | undefined,
   setEditorValue: Dispatch<SetStateAction<string>>,

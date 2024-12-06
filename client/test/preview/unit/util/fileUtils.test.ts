@@ -12,7 +12,11 @@ describe('FileUtils', () => {
 
     const setErrorMessage = jest.fn();
 
-    const result = fileUtils.validateFiles(files, libraryFiles, setErrorMessage);
+    const result = fileUtils.validateFiles(
+      files,
+      libraryFiles,
+      setErrorMessage,
+    );
 
     expect(result).toBe(true);
     expect(setErrorMessage).toHaveBeenCalledWith(
@@ -28,7 +32,11 @@ describe('FileUtils', () => {
 
     const setErrorMessage = jest.fn();
 
-    const result = fileUtils.validateFiles(files, libraryFiles, setErrorMessage);
+    const result = fileUtils.validateFiles(
+      files,
+      libraryFiles,
+      setErrorMessage,
+    );
 
     expect(result).toBe(false);
     expect(setErrorMessage).not.toHaveBeenCalled();

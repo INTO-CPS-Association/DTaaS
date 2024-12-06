@@ -13,7 +13,10 @@ import {
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
-import { mockGitlabInstance, mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import cartSlice, { addToCart } from 'preview/store/cart.slice';
@@ -142,7 +145,7 @@ describe('Sidebar', () => {
             setIsLibraryFile={setIsLibraryFileMock}
             setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'reconfigure'}
-            fileName='file1.md'
+            fileName="file1.md"
             isLibraryFile={false}
           />
         </Provider>,
@@ -170,7 +173,7 @@ describe('Sidebar', () => {
             setIsLibraryFile={setIsLibraryFileMock}
             setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
-            fileName='file1.md'
+            fileName="file1.md"
             isLibraryFile={false}
           />
         </Provider>,
@@ -200,7 +203,7 @@ describe('Sidebar', () => {
             setIsLibraryFile={setIsLibraryFileMock}
             setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
-            fileName='file1.md'
+            fileName="file1.md"
             isLibraryFile={false}
           />
         </Provider>,
@@ -230,7 +233,7 @@ describe('Sidebar', () => {
             setIsLibraryFile={setIsLibraryFileMock}
             setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
-            fileName='file1.md'
+            fileName="file1.md"
             isLibraryFile={false}
           />
         </Provider>,

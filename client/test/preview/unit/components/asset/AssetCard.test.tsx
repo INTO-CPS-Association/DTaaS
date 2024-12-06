@@ -1,5 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { AssetCardManage, AssetCardExecute } from 'preview/components/asset/AssetCard';
+import {
+  AssetCardManage,
+  AssetCardExecute,
+} from 'preview/components/asset/AssetCard';
 import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store from 'store/store';
@@ -61,13 +64,15 @@ const setupMockStore = (assetDescription: string, twinDescription: string) => {
       },
     },
   };
-  (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation((selector) =>
-    selector(state),
+  (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+    (selector) => selector(state),
   );
 };
 
-
-const renderComponent = (Component: React.JSXElementConstructor<any>, props = {}) => {
+const renderComponent = <T extends object>(
+  Component: React.JSXElementConstructor<T>,
+  props: T,
+) => {
   render(
     <Provider store={store}>
       <Component {...props} />

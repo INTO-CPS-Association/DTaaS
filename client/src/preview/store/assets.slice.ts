@@ -36,10 +36,17 @@ const assetsSlice = createSlice({
   },
 });
 
-export const selectAssetsByTypeAndPrivacy = (type: string, isPrivate: boolean) => createSelector(
-  (state: RootState) => state.assets.items,
-  (items: LibraryAsset[]) => items.filter(item => item.type === type && item.isPrivate === isPrivate)
-);
+export const selectAssetsByTypeAndPrivacy = (
+  type: string,
+  isPrivate: boolean,
+) =>
+  createSelector(
+    (state: RootState) => state.assets.items,
+    (items: LibraryAsset[]) =>
+      items.filter(
+        (item) => item.type === type && item.isPrivate === isPrivate,
+      ),
+  );
 
 export const selectAssetByPathAndPrivacy =
   (path: string, isPrivate: boolean) => (state: RootState) =>

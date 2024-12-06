@@ -40,10 +40,10 @@ describe('CreatePage', () => {
   it('renders the CreatePage component', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
-    expect(screen.getByTestId('privacy-selector')).toBeInTheDocument
-    expect(screen.getByTestId('editor')).toBeInTheDocument();
-    expect(screen.getByTestId('create-dialogs')).toBeInTheDocument();
-    expect(screen.getByTestId('snackbar')).toBeInTheDocument();
+    expect(screen.getByTestId('privacy-selector')).toBeInTheDocument(); // Aggiunte parentesi
+    expect(screen.getByTestId('editor')).toBeInTheDocument(); // Aggiunte parentesi
+    expect(screen.getByTestId('create-dialogs')).toBeInTheDocument(); // Aggiunte parentesi
+    expect(screen.getByTestId('snackbar')).toBeInTheDocument(); // Aggiunte parentesi
   });
 
   it('handles confirm cancel', () => {
