@@ -8,7 +8,6 @@ import {
   mockDigitalTwin,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
-import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import * as ReactRedux from 'react-redux';
 
@@ -102,20 +101,6 @@ describe('Sidebar', () => {
       expect(screen.getByText('Configuration')).toBeInTheDocument();
       expect(screen.getByText('assetPath configuration')).toBeInTheDocument();
     });
-  });
-
-  it.skip('renders loading spinner during loadFiles execution', async () => {
-    const fetchDataSpy = jest.spyOn(SidebarFetchers, 'fetchData');
-
-    renderSidebar('reconfigure', 'mockedDTName');
-
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(fetchDataSpy).toHaveBeenCalledWith(mockDigitalTwin);
-    });
-
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('handles assets in create mode', async () => {

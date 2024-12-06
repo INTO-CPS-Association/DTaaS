@@ -2,10 +2,7 @@ import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunc
 import { FileState } from 'preview/store/file.slice';
 import * as FileUtils from 'preview/util/fileUtils';
 import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
-import {
-  mockDigitalTwin,
-  mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileUtils');
 jest.mock('preview/route/digitaltwins/editor/sidebarFetchers');
@@ -235,84 +232,6 @@ describe('SidebarFunctions', () => {
       setFilePrivacy,
       setIsLibraryFile,
       setLibraryAssetPath,
-    );
-
-    expect(fetchAndSetFileContentSpy).toHaveBeenCalled();
-  });
-
-  it.skip('should call updateFileState if modified library file is found - reconfigure tab', async () => {
-    const testFiles: FileState[] = [
-      { name: 'file1.md', content: 'content', isNew: true, isModified: false },
-    ];
-
-    const testLibraryConfigFiles = [
-      {
-        assetPath: 'path',
-        fileName: 'file1.md',
-        fileContent: 'content',
-        isNew: false,
-        isModified: true,
-        isPrivate: true,
-      },
-    ];
-
-    const updateFileStateSpy = jest
-      .spyOn(FileUtils, 'updateFileState')
-      .mockImplementation(jest.fn());
-
-    await SidebarFunctions.handleReconfigureFileClick(
-      'file1.md',
-      mockDigitalTwin,
-      testFiles,
-      setFileName,
-      setFileContent,
-      setFileType,
-      setFilePrivacy,
-      setIsLibraryFile,
-      setLibraryAssetPath,
-      jest.fn(),
-      true,
-      testLibraryConfigFiles,
-      'path',
-    );
-
-    expect(updateFileStateSpy).toHaveBeenCalled();
-  });
-
-  it.skip('should call fetchAndSetFileLibraryContent if new library file is found - reconfigure tab', async () => {
-    const testFiles: FileState[] = [
-      { name: 'file1.md', content: 'content', isNew: true, isModified: false },
-    ];
-
-    const testLibraryConfigFiles = [
-      {
-        assetPath: 'path',
-        fileName: 'file1.md',
-        fileContent: 'content',
-        isNew: true,
-        isModified: false,
-        isPrivate: true,
-      },
-    ];
-
-    const fetchAndSetFileContentSpy = jest
-      .spyOn(SidebarFetchers, 'fetchAndSetFileContent')
-      .mockImplementation(jest.fn());
-
-    await SidebarFunctions.handleReconfigureFileClick(
-      'file1.md',
-      mockDigitalTwin,
-      testFiles,
-      setFileName,
-      setFileContent,
-      setFileType,
-      setFilePrivacy,
-      setIsLibraryFile,
-      setLibraryAssetPath,
-      jest.fn(),
-      true,
-      testLibraryConfigFiles,
-      'path',
     );
 
     expect(fetchAndSetFileContentSpy).toHaveBeenCalled();

@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
 import {
-  handleFileClick,
   handleCreateFileClick,
   handleReconfigureFileClick,
   handleAddFileClick,
@@ -30,36 +29,6 @@ describe('sidebarFunctions integration tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  test.skip('handleFileClick with tab "create"', () => {
-    const setFileName = jest.fn();
-    const setFileContent = jest.fn();
-    const setFileType = jest.fn();
-    const setFilePrivacy = jest.fn();
-    const setIsLibraryFile = jest.fn();
-    const setLibraryAssetPath = jest.fn();
-    const files: FileState[] = [
-      { name: 'testFile', isNew: true, content: 'content', isModified: false },
-    ];
-
-    handleFileClick(
-      'testFile',
-      null,
-      setFileName,
-      setFileContent,
-      setFileType,
-      setFilePrivacy,
-      files,
-      'create',
-      setIsLibraryFile,
-      setLibraryAssetPath,
-    );
-
-    expect(setFileName).toHaveBeenCalled();
-    expect(setFileContent).toHaveBeenCalled();
-    expect(setFileType).toHaveBeenCalled();
-    expect(setFilePrivacy).toHaveBeenCalled();
   });
 
   test('handleCreateFileClick with DigitalTwin asset', () => {

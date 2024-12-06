@@ -408,22 +408,6 @@ describe('reducers', () => {
       expect(state).toEqual([updatedFile]);
     });
 
-    it.skip('should handle removeAllFiles', () => {
-      const stateWithFiles: LibraryConfigFile[] = [
-        {
-          assetPath: 'path1',
-          fileName: 'file1',
-          fileContent: 'content1',
-          isNew: true,
-          isModified: false,
-          isPrivate: false,
-        },
-      ];
-
-      const state = libraryFilesSlice(stateWithFiles, removeAllFiles());
-      expect(state).toEqual([]);
-    });
-
     it('should handle removeAllModifiedLibraryFiles', () => {
       const stateWithFiles: LibraryConfigFile[] = [
         {
