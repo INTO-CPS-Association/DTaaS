@@ -7,4 +7,5 @@ export interface IFilesService {
   listDirectory(path: string): Promise<Project>;
   readFile(path: string): Promise<Project>;
   getMode(): CONFIG_MODE;
+  init(): Promise<any>;
 }

@@ -1,0 +1,6 @@
+port: '4001'
+local-path: 'test/data'
+mode: 'local'
+log-level: 'debug'
+apollo-path: '/lib'
+graphql-playground: 'true'

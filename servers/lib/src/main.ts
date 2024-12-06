@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import bootstrap from './bootstrap.js';
 
-type ProgramOptions = {
+export type ProgramOptions = {
   config?: string;
   http?: string;
 };

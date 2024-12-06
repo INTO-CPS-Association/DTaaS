@@ -1,19 +1,28 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { ConfigService } from '@nestjs/config';
 import { Project } from 'src/types.js';
 import { IFilesService } from '../interfaces/files.service.interface.js';
 import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
+import Config from '../../config/config.service.js';
+import { CONFIG_SERVICE } from '../../config/config.interface.js';
 
 @Injectable()
 export default class LocalFilesService implements IFilesService {
   private readonly dataPath: string;
 
-  constructor(private configService: ConfigService) {
-    this.dataPath = this.configService.get('LOCAL_PATH');
-
+  constructor(@Inject(CONFIG_SERVICE) private configService: Config) {
+    this.dataPath = this.configService.getLocalPath();
   }
+
+  init(): Promise<any> {
+    return Promise.resolve();
+  }
+
   getMode(): CONFIG_MODE {
     return CONFIG_MODE.LOCAL;
   }

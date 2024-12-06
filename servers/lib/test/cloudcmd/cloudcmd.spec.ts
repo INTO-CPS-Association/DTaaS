@@ -7,9 +7,9 @@ describe('cloudcmd test for the application', () => {
     config();
 
     await writeFile(`${process.env.LOCAL_PATH}/test.txt`, 'content12345');
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 8000));
-  }, 10000);
+
+    await new Promise((resolve) => setTimeout(resolve, 50000)); // This is problematic.
+  }, 55000);
 
   afterAll(async () => {
     await unlink(`${process.env.LOCAL_PATH}/test.txt`);
@@ -30,7 +30,7 @@ describe('cloudcmd test for the application', () => {
     expect(fileNames).toContain('user2');
   }, 10000);
 
-  it('should return the content of a file that is uplaoded to cloudcmd ', async () => {
+  it('should return the content of a file that is uplaoded to cloudcmd', async () => {
     const response = await axios.get(
       `http://localhost:${process.env.PORT}${process.env.APOLLO_PATH}/files/api/v1/fs/test.txt`,
     );

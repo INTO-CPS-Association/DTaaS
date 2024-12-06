@@ -1,10 +1,11 @@
 # Overview
 
-The **lib microservice** is a simplified file manager providing graphQL API.
-It has two features:
+The **lib microservice** is a simplified file manager which serves files
+from local file system or public git repositories. It is possible to
 
-* provide a listing of directory contents.
-* transfer a file to user.
+* Upload and download files from web browser
+* Query available files and download them using GraphQL API
+* Clone public git repositories and serve them as local files
 
 ## :arrow_down: Install
 
@@ -14,13 +15,8 @@ The default registry for npm packages is [npmjs](https://registry.npmjs.org).
 Install the package with the following commands
 
 ```bash
-sudo npm install -g @into-cps-association/libms
+npm install -g @into-cps-association/libms
 ```
-
-The package on [npmjs](https://registry.npmjs.org) is published
-less frequently than the one on Github NPM Registry. But
-the package on npmjs is more stable version of libms and should
-be used for production purposes.
 
 ### Github NPM Registry
 
@@ -30,8 +26,8 @@ The package is also available in Github
 Set the registry and install the package with the following commands
 
 ```bash
-sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
-sudo npm install -g @into-cps-association/libms
+npm config set @into-cps-association:registry https://npm.pkg.github.com
+npm install -g @into-cps-association/libms
 ```
 
 The _npm install_ command asks for username and password. The username is
@@ -45,21 +41,61 @@ needs to have _read:packages_ scope.
 The microservices requires config specified in INI format.
 The template configuration file is:
 
-```ini
-PORT='4001'
-MODE='local' or 'gitlab'
-LOCAL_PATH ='/Users/<Username>/DTaaS/files'
-LOG_LEVEL='debug'
-APOLLO_PATH='/lib' or ''
-GRAPHQL_PLAYGROUND='false' or 'true'
+```yaml
+port: '4001'
+mode: 'git' # either git or local
+local-path: 'files'
+log-level: 'debug'
+apollo-path: '/lib'
+graphql-playground: 'true'
+
+git-repos:
+  - user-1: 
+      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
+  - user-2: 
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common: 
+      repo-url: 'https://gitlab.com/dtaas/common'
 ```
 
-The `LOCAL_PATH` variable is the absolute filepath to the
+The `local-path` variable is the relative filepath to the
 location of the local directory which will be served to users
 by the Library microservice.
 
 Replace the default values the appropriate values for your setup.
-Please save this config in a file.
+Please save this config in a file as a yaml file, for example as `libms.yaml`.
+
+### Operation Modes
+
+The mode indicates the backend storage for the files.
+There are two possible modes - `local` and `git`.
+The files available in the `local-path` are served to users in `local` mode.
+In the `git` mode, the remote git repos are cloned and they are
+served to users as local files.
+
+#### git mode
+
+A fragment of the config for `git` mode is:
+
+```yaml
+...
+git-repos:
+  - user-1: 
+      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
+  - user-2: 
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common: 
+      repo-url: 'https://gitlab.com/dtaas/common'
+```
+
+Here, `user-1`, `user-2` and `common` are the local directories into which
+the remote git repositories get cloned. The name of the repository need not
+match with the local directory name. For example, the above configuration
+enables library microservice to clone
+`https://github.com/isomorphic-git/lightning-fs` repository into
+`user-1` directory. Any git server accessible over
+HTTP(S) protocol is supported.
+The `.git` suffix is optional.
 
 ## :rocket: Use
 
@@ -73,7 +109,7 @@ The lib microservice is a file server. It supports file transfer
 over GraphQL and HTTP protocols.
 
 Options:
-  -c, --config <file>  provide the config file (default .env)
+  -c, --config <file>  provide the config file (default libms.yaml)
   -H, --http <file>    enable the HTTP server with the specified config
   -h, --help           display help for libms
 ```
@@ -82,9 +118,9 @@ Both the options are not mandatory.
 
 ### Configuration file
 
-The config is saved `.env` file by convention. If `-c` is not specified
+The config is saved `libms.yaml` file by convention. If `-c` is not specified
 The **libms** looks for
-`.env` file in the working directory from which it is run.
+`libms.yaml` file in the working directory from which it is run.
 If you want to run **libms** without explicitly specifying the configuration
 file, run
 
@@ -99,11 +135,11 @@ libms -c FILE-PATH
 libms --config FILE-PATH
 ```
 
-If the environment file is named something other than `.env`,
-for example as `config/.env.default`, you can run
+If the environment file is named something other than `libms.yaml`,
+for example as `config/libms.yaml.default`, you can run
 
 ```sh
-libms -c "config/.env.default"
+libms -c "config/libms.yaml.default"
 ```
 
 You can press `Ctl+C` to halt the application.
@@ -142,6 +178,7 @@ libms --http FILE-PATH
   "confirmCopy": true,
   "confirmMove": true,
   "showConfig": false,
+  "showDotFiles": false,
   "showFileName": true,
   "contact": false,
   "configDialog": false,

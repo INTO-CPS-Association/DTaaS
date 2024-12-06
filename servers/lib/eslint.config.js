@@ -21,6 +21,11 @@ export default [
   },
   prettier,
   {
+    ignores: [
+      'test/update-config.js', // Add the file you want to ignore
+    ],
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.jest,

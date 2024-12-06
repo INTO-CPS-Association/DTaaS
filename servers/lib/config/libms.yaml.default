@@ -1,0 +1,12 @@
+port: '4001'
+mode: 'git'
+local-path: '..\..\files'
+log-level: 'debug'
+apollo-path: '/lib'
+graphql-playground: 'true'
+
+git-repos:
+  - user-1: 
+      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
+  - user-2: 
+      repo-url: 'https://github.com/isomorphic-git/lightning-fs'

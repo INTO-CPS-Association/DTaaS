@@ -11,6 +11,8 @@ on:
 
 env:
   NODE_VERSION: 20
+  HTTP_PORT: 4002
+  LIBMS_CONFIG_PATH: test/libms.test.yaml
 
 jobs:
   test-lib-ms:
@@ -50,23 +52,20 @@ jobs:
           yarn build
 
       - name: Run all tests
-        env:
-          PORT: 4001
-          LOCAL_PATH: ${{ github.workspace }}/files
-          MODE: local
-          LOG_LEVEL: debug
-          APOLLO_PATH: /lib
         run: |
           yarn build
           yarn test:all
 
-      - name: Start http mode
+      - name: Update configuration
         env:
-          PORT: 4003
-          LOCAL_PATH: ${{ github.workspace }}/files
-          MODE: local
-          LOG_LEVEL: debug
-          APOLLO_PATH: /lib
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_PORT: ${{ env.HTTP_PORT }}
+        run: |
+          node test/update-config.js  
+
+      - name: Start http mode
+        env: 
+          LIBMS_CONFIG_PATH: ${{env.LIBMS_CONFIG_PATH}}
         run: |
           yarn build
           yarn start:pm2
@@ -74,7 +73,7 @@ jobs:
       - name: Check server is running (Windows)
         if: runner.os == 'Windows'
         env:
-          PORT: 4003
+          PORT: ${{ env.HTTP_PORT }}
         uses: nick-fields/retry@v3
         with:
           timeout_seconds: 10
@@ -84,7 +83,7 @@ jobs:
       - name: Check server is running (Linux)
         if: runner.os != 'Windows'
         env:
-          PORT: 4003
+          PORT: ${{ env.HTTP_PORT }}
         uses: nick-fields/retry@v3
         with:
           timeout_seconds: 10
@@ -93,7 +92,7 @@ jobs:
 
       - name: Run http test
         env:
-          PORT: 4003
+          PORT: ${{ env.HTTP_PORT }}
           LOCAL_PATH: ${{ github.workspace }}/files
           MODE: local
           LOG_LEVEL: debug
