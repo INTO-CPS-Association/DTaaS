@@ -18,7 +18,14 @@ function DigitalTwinNameInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <Box sx={{ display: 'flex', width: '35%', marginTop: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        width: '35%',
+        marginTop: 1,
+        justifyContent: 'flex-end',
+      }}
+    >
       <TextField
         fullWidth
         variant="outlined"
@@ -121,15 +128,6 @@ function CreatePage({
           value={newDigitalTwinName}
           onChange={(e) => setNewDigitalTwinName(e.target.value)}
         />
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            width: '150px',
-          }}
-        ></Box>
       </Box>
 
       <Box sx={{ width: '100%', marginTop: -2 }}>

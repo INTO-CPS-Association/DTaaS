@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+
 import { FileState } from 'preview/store/file.slice';
 import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
@@ -18,6 +21,11 @@ export function isValidFileType(
   };
 
   return typeChecks[fileType];
+}
+
+export function isImageFile(fileName: string): boolean {
+  const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg'];
+  return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext));
 }
 
 class FileHandler implements IFile {
@@ -76,6 +84,7 @@ class FileHandler implements IFile {
       isPrivate === false
         ? COMMON_LIBRARY_PROJECT_ID
         : this.gitlabInstance.projectId;
+
     const response = await this.gitlabInstance.api.RepositoryFiles.show(
       projectToUse!,
       filePath,
@@ -116,6 +125,7 @@ class FileHandler implements IFile {
     const projectToUse = isPrivate
       ? this.gitlabInstance.projectId
       : COMMON_LIBRARY_PROJECT_ID;
+
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
@@ -126,9 +136,22 @@ class FileHandler implements IFile {
           },
         );
 
-      return response
-        .filter((file) => file.type === 'blob')
-        .map((file) => file.name);
+      const fileNames: string[] = [];
+      for (const file of response) {
+        if (file.type === 'tree') {
+          const nestedFiles = await this.getLibraryFileNames(
+            `${filePath}/${file.name}`,
+            isPrivate,
+          );
+          fileNames.push(
+            ...nestedFiles.map((nestedFile) => `${file.name}/${nestedFile}`),
+          );
+        } else if (!isImageFile(file.name) && !file.name.endsWith('.fmu')) {
+          fileNames.push(file.name);
+        }
+      }
+
+      return fileNames;
     } catch {
       return [];
     }

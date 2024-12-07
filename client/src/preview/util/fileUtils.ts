@@ -33,7 +33,7 @@ export const validateFiles = (
     .map((file) => file.name);
 
   const emptyLibraryFiles = libraryFiles.filter(
-    (file) => file.fileContent === '',
+    (file) => file.isNew && file.isModified && file.fileContent === '',
   );
 
   if (emptyFiles.length > 0 || emptyLibraryFiles.length > 0) {
