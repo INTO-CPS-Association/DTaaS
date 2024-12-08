@@ -12,12 +12,14 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
 import fileSlice from 'preview/store/file.slice';
+import cartSlice from 'preview/store/cart.slice';
 
 const store = configureStore({
   reducer: combineReducers({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
     files: fileSlice,
+    cart: cartSlice,
   }),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -14,6 +14,7 @@ import { showSnackbar } from 'preview/store/snackbar.slice';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';
 import { selectModifiedFiles } from 'preview/store/file.slice';
+import { selectModifiedLibraryFiles } from 'preview/store/libraryConfigFiles.slice';
 
 jest.mock('preview/store/file.slice', () => ({
   ...jest.requireActual('preview/store/file.slice'),
@@ -75,6 +76,16 @@ describe('ReconfigureDialog', () => {
               isModified: false,
             },
           ].filter((file) => !file.isNew);
+        }
+        if (selector === selectModifiedLibraryFiles) {
+          return [
+            {
+              name: 'libraryFile.md',
+              content: 'Updated library file',
+              isNew: false,
+              isModified: true,
+            },
+          ];
         }
         return mockDigitalTwin;
       },
@@ -214,7 +225,7 @@ describe('ReconfigureDialog', () => {
     });
 
     await waitFor(() => {
-      expect(handleFileUpdateSpy).toHaveBeenCalledTimes(2);
+      expect(handleFileUpdateSpy).toHaveBeenCalledTimes(3);
     });
   });
 

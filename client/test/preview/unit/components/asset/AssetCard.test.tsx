@@ -42,61 +42,67 @@ const asset = {
   name: 'asset',
   description: 'Asset description',
   path: 'path',
+  type: 'Digital twins',
+  isPrivate: true,
 };
 
-describe('AssetCardManage', () => {
+const setupMockStore = (assetDescription: string, twinDescription: string) => {
+  const state = {
+    assets: {
+      items: [
+        {
+          name: 'asset',
+          path: 'path',
+          isPrivate: true,
+          description: assetDescription,
+        },
+      ],
+    },
+    digitalTwin: {
+      digitalTwin: {
+        asset: { description: twinDescription },
+      },
+    },
+  };
+  (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+    (selector) => selector(state),
+  );
+};
+
+const renderComponent = <T extends object>(
+  Component: React.JSXElementConstructor<T>,
+  props: T,
+) => {
+  render(
+    <Provider store={store}>
+      <Component {...props} />
+    </Provider>,
+  );
+};
+
+describe('AssetCard', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders AssetCardManage with digital twin description', () => {
-    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
-      (selector) =>
-        selector({
-          digitalTwin: {
-            [asset.name]: { description: 'Digital Twin description' },
-          },
-        }),
-    );
-
-    render(
-      <Provider store={store}>
-        <AssetCardManage asset={asset} onDelete={() => {}} />
-      </Provider>,
-    );
+    setupMockStore('Asset description', 'Digital Twin description');
+    renderComponent(AssetCardManage, { asset, onDelete: jest.fn() });
 
     expect(screen.getByText(formatName(asset.name))).toBeInTheDocument();
-    expect(screen.getByText('Digital Twin description')).toBeInTheDocument();
+    expect(screen.getByText('Asset description')).toBeInTheDocument();
     expect(screen.getByTestId('custom-snackbar')).toBeInTheDocument();
     expect(screen.getByTestId('details-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('reconfigure-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
   });
-});
-
-describe('AssetCardExecute', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
   it('renders AssetCardExecute with digital twin description', () => {
-    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
-      (selector) =>
-        selector({
-          digitalTwin: {
-            [asset.name]: { description: 'Digital Twin description' },
-          },
-        }),
-    );
-
-    render(
-      <Provider store={store}>
-        <AssetCardExecute asset={asset} />
-      </Provider>,
-    );
+    setupMockStore('Asset description', 'Digital Twin description');
+    renderComponent(AssetCardExecute, { asset });
 
     expect(screen.getByText(formatName(asset.name))).toBeInTheDocument();
-    expect(screen.getByText('Digital Twin description')).toBeInTheDocument();
+    expect(screen.getByText('Asset description')).toBeInTheDocument();
     expect(screen.getByTestId('custom-snackbar')).toBeInTheDocument();
     expect(screen.getByTestId('log-dialog')).toBeInTheDocument();
   });

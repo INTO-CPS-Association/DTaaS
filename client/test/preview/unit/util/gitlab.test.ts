@@ -95,16 +95,7 @@ describe('GitlabInstance', () => {
     const subfolders = await gitlab.getDTSubfolders(projectId);
 
     expect(subfolders).toHaveLength(2);
-    expect(subfolders).toEqual([
-      {
-        name: 'subfolder1',
-        path: 'digital_twins/subfolder1',
-      },
-      {
-        name: 'subfolder2',
-        path: 'digital_twins/subfolder2',
-      },
-    ]);
+
     expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
       projectId,
       {

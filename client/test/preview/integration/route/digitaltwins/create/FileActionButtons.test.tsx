@@ -14,6 +14,7 @@ describe('FileActionButtons', () => {
           fileName="testName"
           setOpenDeleteFileDialog={setOpenDeleteFileDialog}
           setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
+          isLibraryFile={false}
         />,
       );
     });
@@ -34,7 +35,7 @@ describe('FileActionButtons', () => {
 
   it('handles click on change file name button', () => {
     const changeFileNameButton = screen.getByRole('button', {
-      name: /Change file name/i,
+      name: /Rename File/i,
     });
     act(() => {
       changeFileNameButton.click();

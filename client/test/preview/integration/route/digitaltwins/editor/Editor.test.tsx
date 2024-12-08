@@ -10,11 +10,15 @@ import fileSlice, {
   FileState,
   addOrUpdateFile,
 } from 'preview/store/file.slice';
-import { Asset } from 'preview/components/asset/Asset';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
+import LibraryAsset from 'preview/util/libraryAsset';
+import cartSlice, { addToCart } from 'preview/store/cart.slice';
 
 describe('Editor', () => {
   const fileName = 'file1.md';
@@ -23,8 +27,11 @@ describe('Editor', () => {
   const setFileName = jest.fn();
   const setFileContent = jest.fn();
   const setFileType = jest.fn();
+  const setFilePrivacy = jest.fn();
+  const setIsLibraryFile = jest.fn();
+  const setLibraryAssetPath = jest.fn();
 
-  const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
+  const preSetItems: LibraryAsset[] = [mockLibraryAsset];
   const files = [
     { name: 'file1.md', content: 'content1', isNew: false, isModified: false },
   ];
@@ -34,6 +41,7 @@ describe('Editor', () => {
       assets: assetsReducer,
       digitalTwin: digitalTwinReducer,
       files: fileSlice,
+      cart: cartSlice,
     }),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -47,6 +55,7 @@ describe('Editor', () => {
   digitalTwinInstance.lifecycleFiles = ['lifecycle1.txt', 'lifecycle2.txt'];
 
   const setupTest = async () => {
+    store.dispatch(addToCart(mockLibraryAsset));
     store.dispatch(setAssets(preSetItems));
     await act(async () => {
       store.dispatch(
@@ -85,6 +94,12 @@ describe('Editor', () => {
               setFileContent={setFileContent}
               fileType={fileType}
               setFileType={setFileType}
+              filePrivacy={'private'}
+              setFilePrivacy={setFilePrivacy}
+              isLibraryFile={false}
+              setIsLibraryFile={setIsLibraryFile}
+              libraryAssetPath={''}
+              setLibraryAssetPath={setLibraryAssetPath}
             />
           </Provider>,
         );
@@ -132,8 +147,11 @@ describe('Editor', () => {
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
         modifiedFiles,
         'reconfigure',
+        setIsLibraryFile,
+        setLibraryAssetPath,
       );
     });
 
@@ -159,8 +177,11 @@ describe('Editor', () => {
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
         modifiedFiles,
         'reconfigure',
+        setIsLibraryFile,
+        setLibraryAssetPath,
       );
     });
 
@@ -186,8 +207,11 @@ describe('Editor', () => {
         setFileName,
         setFileContent,
         setFileType,
+        setFilePrivacy,
         modifiedFiles,
         'reconfigure',
+        setIsLibraryFile,
+        setLibraryAssetPath,
       );
     });
 

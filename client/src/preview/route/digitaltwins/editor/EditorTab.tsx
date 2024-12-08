@@ -2,43 +2,76 @@ import * as React from 'react';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import { addOrUpdateFile } from '../../../store/file.slice';
 
 interface EditorTabProps {
   tab: string;
   fileName: string;
   fileContent: string;
+  filePrivacy: string;
+  isLibraryFile: boolean;
+  libraryAssetPath: string;
   setFileContent: Dispatch<SetStateAction<string>>;
 }
 
-const handleEditorChange = (
+export const handleEditorChange = (
   tab: string,
   value: string | undefined,
   setEditorValue: Dispatch<SetStateAction<string>>,
   setFileContent: Dispatch<SetStateAction<string>>,
   fileName: string,
+  filePrivacy: string,
+  isLibraryFile: boolean,
+  libraryAssetPath: string,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   const updatedValue = value || '';
   setEditorValue(updatedValue);
   setFileContent(updatedValue);
 
+  const isPrivate = filePrivacy === 'private';
+
   if (tab === 'create') {
-    dispatch(
-      addOrUpdateFile({
-        name: fileName,
-        content: updatedValue,
-        isNew: true,
-        isModified: true,
-      }),
-    );
-  } else {
+    if (!isLibraryFile) {
+      dispatch(
+        addOrUpdateFile({
+          name: fileName,
+          content: updatedValue,
+          isNew: true,
+          isModified: true,
+        }),
+      );
+    } else {
+      dispatch(
+        addOrUpdateLibraryFile({
+          assetPath: libraryAssetPath,
+          fileName,
+          fileContent: updatedValue,
+          isNew: true,
+          isModified: true,
+          isPrivate,
+        }),
+      );
+    }
+  } else if (!isLibraryFile && libraryAssetPath === '') {
     dispatch(
       addOrUpdateFile({
         name: fileName,
         content: updatedValue,
         isNew: false,
         isModified: true,
+      }),
+    );
+  } else {
+    dispatch(
+      addOrUpdateLibraryFile({
+        assetPath: libraryAssetPath,
+        fileName,
+        fileContent: updatedValue,
+        isNew: false,
+        isModified: true,
+        isPrivate: true,
       }),
     );
   }
@@ -48,6 +81,9 @@ function EditorTab({
   tab,
   fileName,
   fileContent,
+  filePrivacy,
+  isLibraryFile,
+  libraryAssetPath,
   setFileContent,
 }: EditorTabProps) {
   const [editorValue, setEditorValue] = useState(fileContent);
@@ -70,6 +106,9 @@ function EditorTab({
             setEditorValue,
             setFileContent,
             fileName,
+            filePrivacy,
+            isLibraryFile,
+            libraryAssetPath,
             dispatch,
           )
         }

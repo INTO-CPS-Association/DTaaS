@@ -11,12 +11,13 @@ describe('FileActionButtons', () => {
         fileName="file"
         setOpenDeleteFileDialog={setOpenDeleteFileDialog}
         setOpenChangeFileNameDialog={jest.fn()}
+        isLibraryFile={false}
       />,
     );
   });
   it('should render FileActionButtons', () => {
     expect(screen.getByText('Delete File')).toBeInTheDocument();
-    expect(screen.getByText('Change File Name')).toBeInTheDocument();
+    expect(screen.getByText('Rename File')).toBeInTheDocument();
   });
 
   it('handles click on delete file button', () => {
@@ -25,7 +26,7 @@ describe('FileActionButtons', () => {
   });
 
   it('handles click on change file name button', () => {
-    screen.getByText('Change File Name').click();
+    screen.getByText('Rename File').click();
     expect(setOpenDeleteFileDialog).not.toBeCalled();
   });
 });

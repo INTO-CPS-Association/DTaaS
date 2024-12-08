@@ -2,6 +2,7 @@ import * as React from 'react';
 import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
+import LibraryPreview from 'preview/route/library/LibraryPreview';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
@@ -54,6 +55,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <DigitalTwinsPreview />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'preview/library',
+    element: (
+      <PrivateRoute>
+        <LibraryPreview />
       </PrivateRoute>
     ),
   },

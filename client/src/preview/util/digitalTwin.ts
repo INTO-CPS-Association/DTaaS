@@ -1,8 +1,18 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import GitlabInstance from './gitlab';
-import { isValidInstance, logError, logSuccess } from './digitalTwinUtils';
+import {
+  isValidInstance,
+  logError,
+  logSuccess,
+  getUpdatedLibraryFile,
+} from './digitalTwinUtils';
 import DTAssets, { FileType } from './DTAssets';
+import LibraryAsset from './libraryAsset';
 
 const RUNNER_TAG = 'linux';
 
@@ -35,6 +45,8 @@ class DigitalTwin {
   public configFiles: string[] = [];
 
   public lifecycleFiles: string[] = [];
+
+  public assetFiles: { assetPath: string; fileNames: string[] }[] = [];
 
   constructor(DTName: string, gitlabInstance: GitlabInstance) {
     this.DTName = DTName;
@@ -123,7 +135,11 @@ class DigitalTwin {
     }
   }
 
-  async create(files: FileState[]): Promise<string> {
+  async create(
+    files: FileState[],
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<string> {
     if (!this.gitlabInstance.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
     }
@@ -132,15 +148,30 @@ class DigitalTwin {
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
 
     try {
+      const assetFilesToCreate = await this.prepareAllAssetFiles(
+        cartAssets,
+        libraryFiles,
+      );
+
       await this.DTAssets.createFiles(
         files,
         mainFolderPath,
         lifecycleFolderPath,
       );
+
+      await this.DTAssets.createFiles(
+        assetFilesToCreate,
+        mainFolderPath,
+        lifecycleFolderPath,
+      );
+
       await this.DTAssets.appendTriggerToPipeline();
+
       return `${this.DTName} digital twin files initialized successfully.`;
     } catch (error) {
-      return `Error initializing ${this.DTName} digital twin files: ${String(error)}`;
+      return `Error initializing ${this.DTName} digital twin files: ${String(
+        error,
+      )}`;
     }
   }
 
@@ -169,6 +200,90 @@ class DigitalTwin {
 
   async getLifecycleFiles() {
     this.lifecycleFiles = await this.DTAssets.getFileNames(FileType.LIFECYCLE);
+  }
+
+  async prepareAllAssetFiles(
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  ): Promise<
+    Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+      isFromCommonLibrary: boolean;
+    }>
+  > {
+    const assetFilesToCreate: Array<{
+      name: string;
+      content: string;
+      isNew: boolean;
+      isFromCommonLibrary: boolean;
+    }> = [];
+
+    for (const asset of cartAssets) {
+      const assetFiles = await this.DTAssets.getFilesFromAsset(
+        asset.path,
+        asset.isPrivate,
+      );
+      for (const assetFile of assetFiles) {
+        const updatedFile = getUpdatedLibraryFile(
+          assetFile.name,
+          asset.path,
+          asset.isPrivate,
+          libraryFiles,
+        );
+
+        assetFilesToCreate.push({
+          name: `${asset.name}/${assetFile.name}`,
+          content: updatedFile ? updatedFile.fileContent : assetFile.content,
+          isNew: true,
+          isFromCommonLibrary: !asset.isPrivate,
+        });
+      }
+    }
+    return assetFilesToCreate;
+  }
+
+  async getAssetFiles(): Promise<{ assetPath: string; fileNames: string[] }[]> {
+    const mainFolderPath = `digital_twins/${this.DTName}`;
+    const excludeFolder = 'lifecycle';
+    const result: { assetPath: string; fileNames: string[] }[] = [];
+
+    try {
+      const folders = await this.DTAssets.getFolders(mainFolderPath);
+
+      const validFolders = folders.filter(
+        (folder) => !folder.includes(excludeFolder),
+      );
+
+      for (const folder of validFolders) {
+        if (folder.endsWith('/common')) {
+          const subFolders = await this.DTAssets.getFolders(folder);
+          for (const subFolder of subFolders) {
+            const fileNames =
+              await this.DTAssets.getLibraryConfigFileNames(subFolder);
+
+            result.push({
+              assetPath: subFolder,
+              fileNames,
+            });
+          }
+        } else {
+          const fileNames =
+            await this.DTAssets.getLibraryConfigFileNames(folder);
+
+          result.push({
+            assetPath: folder,
+            fileNames,
+          });
+        }
+      }
+
+      this.assetFiles = result;
+    } catch (_error) {
+      return [];
+    }
+    return result;
   }
 }
 

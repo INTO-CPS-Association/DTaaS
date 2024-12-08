@@ -47,6 +47,7 @@ describe('CreateDialogs', () => {
     setNewDigitalTwinName: mockSetNewDigitalTwinName,
     errorMessage: '',
     setErrorMessage: mockSetErrorMessage,
+    isPrivate: true,
   };
 
   beforeEach(() => {

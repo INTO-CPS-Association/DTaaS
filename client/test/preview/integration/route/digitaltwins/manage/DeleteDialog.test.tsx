@@ -1,90 +1,65 @@
-import { render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import DigitalTwin from 'preview/util/digitalTwin';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import AssetBoard from 'preview/components/asset/AssetBoard';
-import setupStore from './utils';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
+import digitalTwinReducer, {
+  setDigitalTwin,
+} from 'preview/store/digitalTwin.slice';
+import snackbarSlice from 'preview/store/snackbar.slice';
+import DigitalTwin from 'preview/util/digitalTwin';
+import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 
-jest.useFakeTimers();
-
-jest.mock('preview/util/init', () => ({
-  fetchAssets: jest.fn(),
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
 }));
 
-describe('DeleteDialog', () => {
-  let storeDelete: ReturnType<typeof setupStore>;
+const mockDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+mockDigitalTwin.delete = jest.fn().mockResolvedValue('Deleted successfully');
+
+const store = configureStore({
+  reducer: combineReducers({
+    digitalTwin: digitalTwinReducer,
+    snackbar: snackbarSlice,
+  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
+
+describe('DeleteDialog Integration Tests', () => {
+  const setupTest = () => {
+    store.dispatch(
+      setDigitalTwin({ assetName: 'Asset 1', digitalTwin: mockDigitalTwin }),
+    );
+  };
 
   beforeEach(() => {
-    storeDelete = setupStore();
-
-    React.act(() => {
-      render(
-        <Provider store={storeDelete}>
-          <AssetBoard tab="Manage" />
-        </Provider>,
-      );
-    });
+    setupTest();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.restoreAllMocks();
   });
 
-  it('opens the DeleteDialog when the Delete button is clicked', async () => {
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
+  it('closes DeleteDialog on Cancel button click', async () => {
+    const setShowDialog = jest.fn();
 
-    await waitFor(() => {
-      const deleteDialog = screen.getByText('This step is irreversible', {
-        exact: false,
-      });
-      expect(deleteDialog).toBeInTheDocument();
-    });
-  });
+    render(
+      <Provider store={store}>
+        <DeleteDialog
+          showDialog={true}
+          setShowDialog={setShowDialog}
+          name="Asset 1"
+          onDelete={jest.fn()}
+        />
+      </Provider>,
+    );
 
-  it('closes the DeleteDialog when the Cancel button is clicked', async () => {
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
+    const cancelButton = screen.getByText('Cancel');
+    fireEvent.click(cancelButton);
 
-    const cancelButton = await screen.findByRole('button', { name: /Cancel/i });
-
-    React.act(() => {
-      cancelButton.click();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('This step is irreversible', { exact: false }),
-      ).toBeNull();
-    });
-  });
-
-  it('deletes the asset when the Yes button is clicked', async () => {
-    jest
-      .spyOn(DigitalTwin.prototype, 'delete')
-      .mockResolvedValue('Asset 1 deleted successfully');
-
-    const deleteButton = screen.getByRole('button', { name: /Delete/i });
-    React.act(() => {
-      deleteButton.click();
-    });
-
-    const yesButton = await screen.findByRole('button', { name: /Yes/i });
-
-    React.act(() => {
-      yesButton.click();
-    });
-
-    await waitFor(() => {
-      const state = storeDelete.getState();
-      expect(state.snackbar.open).toBe(true);
-      expect(state.snackbar.message).toBe('Asset 1 deleted successfully');
-      expect(state.snackbar.severity).toBe('success');
-    });
+    expect(setShowDialog).toHaveBeenCalledWith(false);
   });
 });

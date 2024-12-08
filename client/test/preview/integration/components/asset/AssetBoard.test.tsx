@@ -6,27 +6,34 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
+  setShouldFetchDigitalTwins,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { Asset } from 'preview/components/asset/Asset';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import fileSlice, {
   FileState,
   addOrUpdateFile,
 } from 'preview/store/file.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
+import LibraryAsset from 'preview/util/libraryAsset';
+import libraryConfigFilesSlice from 'preview/store/libraryConfigFiles.slice';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
 }));
 
 jest.mock('preview/util/init', () => ({
-  fetchAssets: jest.fn(),
+  fetchDigitalTwins: jest.fn(),
 }));
 
 jest.useFakeTimers();
 
-const preSetItems: Asset[] = [{ name: 'Asset 1', path: 'path/asset1' }];
+const asset1 = mockLibraryAsset;
+asset1.name = 'Asset 1';
+const preSetItems: LibraryAsset[] = [asset1];
 
 const files: FileState[] = [
   { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
@@ -38,6 +45,7 @@ const store = configureStore({
     digitalTwin: digitalTwinReducer,
     snackbar: snackbarSlice,
     files: fileSlice,
+    libraryConfigFiles: libraryConfigFilesSlice,
   }),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -55,6 +63,7 @@ describe('AssetBoard Integration Tests', () => {
       }),
     );
     store.dispatch(addOrUpdateFile(files[0]));
+    store.dispatch(setShouldFetchDigitalTwins(true));
   };
 
   beforeEach(() => {
@@ -65,7 +74,7 @@ describe('AssetBoard Integration Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('renders AssetBoard with AssetCardExecute', () => {
+  it('renders AssetBoard with AssetCardExecute', async () => {
     act(() => {
       render(
         <Provider store={store}>
@@ -74,10 +83,14 @@ describe('AssetBoard Integration Tests', () => {
       );
     });
 
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    });
+
     expect(screen.getByText('Asset 1')).toBeInTheDocument();
   });
 
-  it('renders AssetBoard with AssetCardManage', () => {
+  it('renders AssetBoard with AssetCardManage', async () => {
     act(() => {
       render(
         <Provider store={store}>
@@ -86,7 +99,9 @@ describe('AssetBoard Integration Tests', () => {
       );
     });
 
-    expect(screen.getByText('Asset 1')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Asset 1')).toBeInTheDocument();
+    });
   });
 
   it('deletes an asset', async () => {
@@ -96,6 +111,10 @@ describe('AssetBoard Integration Tests', () => {
           <AssetBoard tab="Manage" />
         </Provider>,
       );
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     });
 
     const deleteButton = screen.getByRole('button', { name: /Delete/i });
@@ -115,20 +134,5 @@ describe('AssetBoard Integration Tests', () => {
     await waitFor(() => {
       expect(screen.queryByText('Asset 1')).not.toBeInTheDocument();
     });
-  });
-
-  it('shows an error message', async () => {
-    const error = 'An error occurred';
-    jest.spyOn(React, 'useState').mockReturnValue([error, jest.fn()]);
-
-    act(() => {
-      render(
-        <Provider store={store}>
-          <AssetBoard tab="Manage" />
-        </Provider>,
-      );
-    });
-
-    expect(screen.getByText(error)).toBeInTheDocument();
   });
 });

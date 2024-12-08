@@ -12,11 +12,6 @@ jest.mock('preview/route/digitaltwins/create/CreateDialogs', () => ({
   default: () => <div data-testid="create-dialogs" />,
 }));
 
-jest.mock('preview/route/digitaltwins/create/FileActionButtons', () => ({
-  _esModule: true,
-  default: () => <div data-testid="file-action-buttons" />,
-}));
-
 jest.mock('preview/route/digitaltwins/Snackbar', () => ({
   _esModule: true,
   default: () => <div data-testid="snackbar" />,
@@ -42,7 +37,6 @@ describe('CreatePage', () => {
     expect(screen.getByText('Save')).toBeInTheDocument();
     expect(screen.getByTestId('editor')).toBeInTheDocument();
     expect(screen.getByTestId('create-dialogs')).toBeInTheDocument();
-    expect(screen.getByTestId('file-action-buttons')).toBeInTheDocument();
     expect(screen.getByTestId('snackbar')).toBeInTheDocument();
   });
 

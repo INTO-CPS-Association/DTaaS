@@ -7,6 +7,7 @@ export interface FileState {
   isNew: boolean;
   isModified: boolean;
   type?: string;
+  isFromCommonLibrary?: boolean;
 }
 
 const initialState: FileState[] = [];
