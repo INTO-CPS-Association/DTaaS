@@ -1,0 +1,15 @@
+# Environment variables taken from deploy/docker/.env.local
+
+services:
+  gitlab-runner:
+    container_name: gitlab-runner
+    # Runner image version is independent of the gitlab-ce image version
+    image: gitlab/gitlab-runner:alpine-v17.5.3
+    volumes:
+      - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # Maps the self-signed certificate for localhost to the container
+      - "${DTAAS_DIR}/deploy/docker/certs/localhost/fullchain.pem:/etc/gitlab-runner/certs/localhost.crt:ro"
+
+    # To make https://localhost accessible from the container
+    network_mode: host
