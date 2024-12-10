@@ -1,5 +1,5 @@
 port: '4001'
-mode: 'git'
+mode: 'local'
 local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
@@ -7,6 +7,4 @@ graphql-playground: 'true'
 
 git-repos:
   - user-1: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
-  - user-2: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
+      repo-url: 'https://github.com/INTO-CPS-Association/DTaaS.git'

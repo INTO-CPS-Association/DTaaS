@@ -38,7 +38,7 @@ needs to have _read:packages_ scope.
 
 ## :gear: Configure
 
-The microservices requires config specified in INI format.
+The microservices requires config specified in yaml format.
 The template configuration file is:
 
 ```yaml
