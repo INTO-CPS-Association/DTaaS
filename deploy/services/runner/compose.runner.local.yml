@@ -1,3 +1,5 @@
+# Environment variables taken from deploy/docker/.env.local
+
 services:
   gitlab-runner:
     container_name: gitlab-runner
@@ -6,6 +8,8 @@ services:
     volumes:
       - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      # For https://localhost or a self-signed cert with your server
-      - "${DTAAS_DIR}/deploy/docker/certs/${SERVER_DNS}/fullchain.pem:/etc/gitlab-runner/certs/${SERVER_DNS}.crt:ro"
+      # Maps the self-signed certificate for localhost to the container
+      - "${DTAAS_DIR}/deploy/docker/certs/localhost/fullchain.pem:/etc/gitlab-runner/certs/localhost.crt:ro"
+
+    # To make https://localhost accessible from the container
     network_mode: host

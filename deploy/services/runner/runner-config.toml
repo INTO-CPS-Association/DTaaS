@@ -1,7 +1,7 @@
 [[runners]]
-  name = "dtaas-runner-0"
-  url = "https://foo.com/gitlab/"
-  token = "xxx"
+  name = "dtaas-runner-1"
+  url = "https://foo.com/gitlab/" # Edit this
+  token = "xxx" # Edit this
   executor = "docker"
   [runners.docker]
     tls_verify = false
@@ -10,4 +10,4 @@
     disable_entrypoint_overwrite = false
     oom_kill_disable = false
     volumes = ["/cache"]
-    network_mode = "host"
+    network_mode = "host" # Disable this in secure contexts
