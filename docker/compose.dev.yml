@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files:/dtaas/libms/files
-      - ${LIB_CONFIG}:/dtaas/libms/config/.env.default
+      - ${LIB_CONFIG}:/dtaas/libms/config/libms.dev.yaml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.libms.entryPoints=web"
