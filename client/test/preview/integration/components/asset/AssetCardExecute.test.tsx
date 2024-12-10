@@ -2,13 +2,25 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
 import * as React from 'react';
-import { Provider } from 'react-redux';
-import assetsReducer, { setAssets } from 'preview/store/assets.slice';
+import { Provider, useSelector } from 'react-redux';
+import assetsReducer, {
+  selectAssetByPathAndPrivacy,
+  setAssets,
+} from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
+import { RootState } from 'store/store';
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
 
 const store = configureStore({
   reducer: combineReducers({
@@ -27,17 +39,23 @@ describe('AssetCardExecute Integration Test', () => {
     name: 'Asset 1',
     description: 'Mocked description',
     path: 'path/asset1',
+    type: 'Digital twins',
+    isPrivate: true,
   };
 
   beforeEach(() => {
-    store.dispatch(
-      setAssets([
-        {
-          name: 'Asset 1',
-          path: 'path/asset1',
-        },
-      ]),
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: RootState) => unknown) => {
+        if (
+          selector === selectAssetByPathAndPrivacy(asset.path, asset.isPrivate)
+        ) {
+          return null;
+        }
+        return mockDigitalTwin;
+      },
     );
+
+    store.dispatch(setAssets([mockLibraryAsset]));
     store.dispatch(
       setDigitalTwin({
         assetName: 'Asset 1',
@@ -58,15 +76,13 @@ describe('AssetCardExecute Integration Test', () => {
     jest.clearAllMocks();
   });
 
-  it('opens the Snackbar after clicking the Start button', async () => {
+  it('should start execution', async () => {
     const startStopButton = screen.getByRole('button', { name: /Start/i });
 
     await act(async () => {
       fireEvent.click(startStopButton);
     });
 
-    expect(
-      screen.getByText('Execution mockedStatus for MockedDTName'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Stop')).toBeInTheDocument();
   });
 });

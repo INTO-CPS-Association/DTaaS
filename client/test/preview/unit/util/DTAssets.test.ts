@@ -41,7 +41,7 @@ describe('DTAssets', () => {
         content: 'content',
         isNew: true,
         isModified: false,
-        type: 'description',
+        type: 'digital twin',
       },
       {
         name: 'file2',

@@ -6,12 +6,16 @@ import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
 import * as RemarkableKatex from 'remarkable-katex';
 import { useSelector } from 'react-redux';
+import { selectAssetByPathAndPrivacy } from 'preview/store/assets.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 
 interface DetailsDialogProps {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   name: string;
+  isPrivate: boolean;
+  library?: boolean;
+  path?: string;
 }
 
 const handleCloseDetailsDialog = (
@@ -24,8 +28,16 @@ function DetailsDialog({
   showDialog,
   setShowDialog,
   name,
+  isPrivate,
+  library,
+  path,
 }: DetailsDialogProps) {
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
+  const libraryAsset = useSelector(
+    selectAssetByPathAndPrivacy(path || '', isPrivate),
+  );
+
+  const asset = library ? libraryAsset : digitalTwin;
 
   const md = new Remarkable({
     html: true,
@@ -37,7 +49,7 @@ function DetailsDialog({
       <DialogContent dividers>
         <div
           dangerouslySetInnerHTML={{
-            __html: md.render(digitalTwin.fullDescription),
+            __html: md.render(asset!.fullDescription),
           }}
           style={{
             maxWidth: '100%',

@@ -13,14 +13,21 @@ import {
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import {
+  mockGitlabInstance,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
+import cartSlice, { addToCart } from 'preview/store/cart.slice';
 
 describe('Sidebar', () => {
   const setFileNameMock = jest.fn();
   const setFileContentMock = jest.fn();
   const setFileTypeMock = jest.fn();
+  const setFilePrivacyMock = jest.fn();
+  const setIsLibraryFileMock = jest.fn();
+  const setLibraryAssetPathMock = jest.fn();
 
   let store: ReturnType<typeof createStore>;
   let digitalTwin: DigitalTwin;
@@ -99,6 +106,7 @@ describe('Sidebar', () => {
   beforeEach(async () => {
     store = configureStore({
       reducer: combineReducers({
+        cart: cartSlice,
         digitalTwin: digitalTwinReducer,
         files: fileSlice,
       }),
@@ -107,6 +115,8 @@ describe('Sidebar', () => {
           serializableCheck: false,
         }),
     });
+
+    store.dispatch(addToCart(mockLibraryAsset));
 
     const files = [
       { name: 'Asset 1', content: 'content1', isNew: false, isModified: false },
@@ -131,7 +141,12 @@ describe('Sidebar', () => {
             setFileName={setFileNameMock}
             setFileContent={setFileContentMock}
             setFileType={setFileTypeMock}
+            setFilePrivacy={setFilePrivacyMock}
+            setIsLibraryFile={setIsLibraryFileMock}
+            setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'reconfigure'}
+            fileName="file1.md"
+            isLibraryFile={false}
           />
         </Provider>,
       );
@@ -154,7 +169,12 @@ describe('Sidebar', () => {
             setFileName={setFileNameMock}
             setFileContent={setFileContentMock}
             setFileType={setFileTypeMock}
+            setFilePrivacy={setFilePrivacyMock}
+            setIsLibraryFile={setIsLibraryFileMock}
+            setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
+            fileName="file1.md"
+            isLibraryFile={false}
           />
         </Provider>,
       );
@@ -179,7 +199,12 @@ describe('Sidebar', () => {
             setFileName={setFileNameMock}
             setFileContent={setFileContentMock}
             setFileType={setFileTypeMock}
+            setFilePrivacy={setFilePrivacyMock}
+            setIsLibraryFile={setIsLibraryFileMock}
+            setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
+            fileName="file1.md"
+            isLibraryFile={false}
           />
         </Provider>,
       );
@@ -204,7 +229,12 @@ describe('Sidebar', () => {
             setFileName={setFileNameMock}
             setFileContent={setFileContentMock}
             setFileType={setFileTypeMock}
+            setFilePrivacy={setFilePrivacyMock}
+            setIsLibraryFile={setIsLibraryFileMock}
+            setLibraryAssetPath={setLibraryAssetPathMock}
             tab={'create'}
+            fileName="file1.md"
+            isLibraryFile={false}
           />
         </Provider>,
       );

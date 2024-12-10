@@ -1,26 +1,32 @@
 import * as React from 'react';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Grid, CircularProgress, Button } from '@mui/material';
+import { Grid, CircularProgress, Button, Box } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
+import { getFilteredFileNames } from 'preview/util/fileUtils';
 import { FileState } from '../../../store/file.slice';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
-import {
-  fetchData,
-  getFilteredFileNames,
-  handleAddFileClick,
-  renderFileSection,
-  renderFileTreeItems,
-} from './sidebarFunctions';
+import { fetchData } from './sidebarFetchers';
+import { handleAddFileClick } from './sidebarFunctions';
+import { renderFileTreeItems, renderFileSection } from './sidebarRendering';
 import SidebarDialog from './SidebarDialog';
+import FileActionButtons from '../create/FileActionButtons';
 
 interface SidebarProps {
   name?: string;
   setFileName: Dispatch<SetStateAction<string>>;
   setFileContent: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
+  setFilePrivacy: Dispatch<SetStateAction<string>>;
+  setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
+  setLibraryAssetPath: Dispatch<SetStateAction<string>>;
   tab: string;
+  fileName: string;
+  isLibraryFile: boolean;
+  setOpenDeleteFileDialog?: Dispatch<SetStateAction<boolean>>;
+  setOpenChangeFileNameDialog?: Dispatch<SetStateAction<boolean>>;
 }
 
 const Sidebar = ({
@@ -28,7 +34,14 @@ const Sidebar = ({
   setFileName,
   setFileContent,
   setFileType,
+  setFilePrivacy,
+  setIsLibraryFile,
+  setLibraryAssetPath,
   tab,
+  fileName,
+  isLibraryFile,
+  setOpenDeleteFileDialog,
+  setOpenChangeFileNameDialog,
 }: SidebarProps) => {
   const [isLoading, setIsLoading] = useState(!!name);
   const [newFileName, setNewFileName] = useState('');
@@ -39,17 +52,46 @@ const Sidebar = ({
     name ? selectDigitalTwinByName(name)(state) : null,
   );
   const files: FileState[] = useSelector((state: RootState) => state.files);
+
+  const assets = useSelector((state: RootState) => state.cart.assets);
+  const libraryFiles = useSelector(
+    (state: RootState) => state.libraryConfigFiles,
+  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (name && digitalTwin) {
-      const loadData = async () => {
+    const loadFiles = async () => {
+      if (name && digitalTwin) {
         await fetchData(digitalTwin);
-        setIsLoading(false);
-      };
-      loadData();
-    }
-  }, [name, digitalTwin]);
+      }
+
+      if (tab === 'create') {
+        if (assets.length > 0) {
+          await Promise.all(
+            assets.map(async (asset) => {
+              await asset.getConfigFiles();
+              asset.configFiles.forEach((configFile) => {
+                dispatch(
+                  addOrUpdateLibraryFile({
+                    assetPath: asset.path,
+                    fileName: configFile,
+                    fileContent: '',
+                    isNew: true,
+                    isModified: false,
+                    isPrivate: asset.isPrivate,
+                  }),
+                );
+              });
+            }),
+          );
+        }
+      }
+      setIsLoading(false);
+    };
+
+    loadFiles();
+  }, [name, digitalTwin, assets, dispatch, tab]);
 
   if (isLoading) {
     return (
@@ -88,15 +130,25 @@ const Sidebar = ({
       }}
     >
       {tab === 'create' && (
-        <Button
-          variant="contained"
-          onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
-          sx={{ marginBottom: 2 }}
-        >
-          Add new file
-        </Button>
-      )}
+        <Box>
+          <Button
+            variant="contained"
+            onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
+            sx={{ width: '100%', marginBottom: -1 }}
+          >
+            Add new file
+          </Button>
 
+          <Box sx={{ marginBottom: 2 }}>
+            <FileActionButtons
+              fileName={fileName}
+              setOpenDeleteFileDialog={setOpenDeleteFileDialog!}
+              setOpenChangeFileNameDialog={setOpenChangeFileNameDialog!}
+              isLibraryFile={isLibraryFile}
+            />
+          </Box>
+        </Box>
+      )}
       <SidebarDialog
         isOpen={isFileNameDialogOpen}
         newFileName={newFileName}
@@ -110,7 +162,7 @@ const Sidebar = ({
 
       <SimpleTreeView>
         {name ? (
-          <>
+          <React.Fragment key="reconfigure-page">
             {renderFileTreeItems(
               'Description',
               digitalTwin!.descriptionFiles,
@@ -118,8 +170,12 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileTreeItems(
               'Configuration',
@@ -128,8 +184,12 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileTreeItems(
               'Lifecycle',
@@ -138,12 +198,35 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
-          </>
+            {digitalTwin!.assetFiles.map((assetFolder) =>
+              renderFileTreeItems(
+                `${assetFolder.assetPath} configuration`,
+                assetFolder.fileNames,
+                digitalTwin!,
+                setFileName,
+                setFileContent,
+                setFileType,
+                setFilePrivacy,
+                files,
+                tab,
+                dispatch,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                true,
+                libraryFiles,
+                assetFolder.assetPath,
+              ),
+            )}
+          </React.Fragment>
         ) : (
-          <>
+          <React.Fragment key="create-page">
             {renderFileSection(
               'Description',
               'description',
@@ -152,8 +235,12 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileSection(
               'Configuration',
@@ -163,8 +250,12 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
             {renderFileSection(
               'Lifecycle',
@@ -174,10 +265,35 @@ const Sidebar = ({
               setFileName,
               setFileContent,
               setFileType,
+              setFilePrivacy,
               files,
               tab,
+              dispatch,
+              setIsLibraryFile,
+              setLibraryAssetPath,
             )}
-          </>
+            {assets.map((asset) =>
+              renderFileSection(
+                asset.isPrivate
+                  ? `${asset.name} configuration`
+                  : `common/${asset.name} configuration`,
+                'config',
+                asset.configFiles,
+                asset,
+                setFileName,
+                setFileContent,
+                setFileType,
+                setFilePrivacy,
+                files,
+                tab,
+                dispatch,
+                setIsLibraryFile,
+                setLibraryAssetPath,
+                true,
+                libraryFiles,
+              ),
+            )}
+          </React.Fragment>
         )}
       </SimpleTreeView>
     </Grid>

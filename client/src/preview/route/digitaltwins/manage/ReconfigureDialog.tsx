@@ -13,6 +13,11 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  LibraryConfigFile,
+  removeAllModifiedLibraryFiles,
+  selectModifiedLibraryFiles,
+} from 'preview/store/libraryConfigFiles.slice';
+import {
   FileState,
   removeAllModifiedFiles,
   selectModifiedFiles,
@@ -45,10 +50,14 @@ function ReconfigureDialog({
   const [fileName, setFileName] = useState<string>('');
   const [fileContent, setFileContent] = useState<string>('');
   const [fileType, setFileType] = useState<string>('');
+  const [filePrivacy, setFilePrivacy] = useState<string>('');
+  const [isLibraryFile, setIsLibraryFile] = useState<boolean>(false);
+  const [libraryAssetPath, setLibraryAssetPath] = useState<string>('');
   const [openSaveDialog, setOpenSaveDialog] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const digitalTwin = useSelector(selectDigitalTwinByName(name));
   const modifiedFiles = useSelector(selectModifiedFiles);
+  const modifiedLibraryFiles = useSelector(selectModifiedLibraryFiles);
   const dispatch = useDispatch();
 
   const handleSave = () => setOpenSaveDialog(true);
@@ -57,13 +66,20 @@ function ReconfigureDialog({
   const handleCloseCancelDialog = () => setOpenCancelDialog(false);
 
   const handleConfirmSave = async () => {
-    await saveChanges(modifiedFiles, digitalTwin, dispatch, name);
+    await saveChanges(
+      modifiedFiles,
+      modifiedLibraryFiles,
+      digitalTwin,
+      dispatch,
+      name,
+    );
     setOpenSaveDialog(false);
     setShowDialog(false);
   };
 
   const handleConfirmCancel = () => {
     dispatch(removeAllModifiedFiles());
+    dispatch(removeAllModifiedLibraryFiles());
     setOpenCancelDialog(false);
     setShowDialog(false);
   };
@@ -82,6 +98,12 @@ function ReconfigureDialog({
         setFileContent={setFileContent}
         fileType={fileType}
         setFileType={setFileType}
+        filePrivacy={filePrivacy}
+        setFilePrivacy={setFilePrivacy}
+        isLibraryFile={isLibraryFile}
+        setIsLibraryFile={setIsLibraryFile}
+        libraryAssetPath={libraryAssetPath}
+        setLibraryAssetPath={setLibraryAssetPath}
       />
 
       <ConfirmationDialog
@@ -103,6 +125,7 @@ function ReconfigureDialog({
 
 export const saveChanges = async (
   modifiedFiles: FileState[],
+  modifiedLibraryFiles: LibraryConfigFile[],
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,
   name: string,
@@ -111,30 +134,44 @@ export const saveChanges = async (
     await handleFileUpdate(file, digitalTwin, dispatch);
   }
 
+  for (const file of modifiedLibraryFiles) {
+    await handleFileUpdate(file, digitalTwin, dispatch);
+  }
+
   showSuccessSnackbar(dispatch, name);
   dispatch(removeAllModifiedFiles());
+  dispatch(removeAllModifiedLibraryFiles());
 };
 
 export const handleFileUpdate = async (
-  file: FileState,
+  file: FileState | LibraryConfigFile,
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
   try {
-    await digitalTwin.DTAssets.updateFileContent(file.name, file.content);
-
-    if (file.name === 'description.md') {
-      dispatch(
-        updateDescription({
-          assetName: digitalTwin.DTName,
-          description: file.content,
-        }),
+    if ('assetPath' in file) {
+      await digitalTwin.DTAssets.updateLibraryFileContent(
+        file.fileName,
+        file.fileContent,
+        file.assetPath,
       );
+    } else {
+      await digitalTwin.DTAssets.updateFileContent(file.name, file.content);
+
+      if (file.name === 'description.md') {
+        dispatch(
+          updateDescription({
+            assetName: digitalTwin.DTName,
+            description: file.content,
+          }),
+        );
+      }
     }
   } catch (error) {
+    const fileName = 'assetPath' in file ? file.fileName : file.name;
     dispatch(
       showSnackbar({
-        message: `Error updating file ${file.name}: ${error}`,
+        message: `Error updating file ${fileName}: ${error}`,
         severity: 'error',
       }),
     );
@@ -165,6 +202,12 @@ const ReconfigureMainDialog = ({
   setFileContent,
   fileType,
   setFileType,
+  filePrivacy,
+  setFilePrivacy,
+  isLibraryFile,
+  setIsLibraryFile,
+  libraryAssetPath,
+  setLibraryAssetPath,
 }: {
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
@@ -177,6 +220,12 @@ const ReconfigureMainDialog = ({
   setFileContent: Dispatch<SetStateAction<string>>;
   fileType: string;
   setFileType: Dispatch<SetStateAction<string>>;
+  filePrivacy: string;
+  setFilePrivacy: Dispatch<SetStateAction<string>>;
+  isLibraryFile: boolean;
+  setIsLibraryFile: Dispatch<SetStateAction<boolean>>;
+  libraryAssetPath: string;
+  setLibraryAssetPath: Dispatch<SetStateAction<string>>;
 }) => (
   <Dialog
     open={showDialog}
@@ -202,6 +251,12 @@ const ReconfigureMainDialog = ({
         setFileContent={setFileContent}
         fileType={fileType}
         setFileType={setFileType}
+        filePrivacy={filePrivacy}
+        setFilePrivacy={setFilePrivacy}
+        isLibraryFile={isLibraryFile}
+        setIsLibraryFile={setIsLibraryFile}
+        libraryAssetPath={libraryAssetPath}
+        setLibraryAssetPath={setLibraryAssetPath}
       />
     </DialogContent>
     <DialogActions>

@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Tooltip } from '@mui/material';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
 import CreateDialogs from './CreateDialogs';
 import CustomSnackbar from '../Snackbar';
-import FileActionButtons from './FileActionButtons';
 
 interface CreatePageProps {
   newDigitalTwinName: string;
@@ -19,11 +18,18 @@ function DigitalTwinNameInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <Box sx={{ display: 'flex', width: '35%', marginTop: 5 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        width: '35%',
+        marginTop: 1,
+        justifyContent: 'flex-end',
+      }}
+    >
       <TextField
         fullWidth
         variant="outlined"
-        label="Digital twin name"
+        label="Insert digital twin name"
         value={value}
         onChange={onChange}
       />
@@ -46,21 +52,37 @@ function ActionButtons({
         display: 'flex',
         justifyContent: 'flex-end',
         width: '100%',
-        marginBottom: 2,
         gap: 1,
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        backgroundColor: 'white',
+        padding: 2,
+        boxShadow: '0 -2px 5px rgba(0,0,0,0.1)',
+        zIndex: 10,
       }}
     >
       <Button variant="outlined" onClick={onCancel}>
         Cancel
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onSave}
-        disabled={isSaveDisabled}
+
+      <Tooltip
+        title={
+          isSaveDisabled ? 'Add the digital twin name to enable saving' : ''
+        }
+        arrow
       >
-        Save
-      </Button>
+        <span>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onSave}
+            disabled={isSaveDisabled}
+          >
+            Save
+          </Button>
+        </span>
+      </Tooltip>
     </Box>
   );
 }
@@ -72,6 +94,9 @@ function CreatePage({
   const [fileName, setFileName] = useState('');
   const [fileContent, setFileContent] = useState('');
   const [fileType, setFileType] = useState('');
+  const [filePrivacy, setFilePrivacy] = useState('');
+  const [isLibraryFile, setIsLibraryFile] = useState(false);
+  const [libraryAssetPath, setLibraryAssetPath] = useState('');
   const [openChangeFileNameDialog, setOpenChangeFileNameDialog] =
     useState(false);
   const [openDeleteFileDialog, setOpenDeleteFileDialog] = useState(false);
@@ -93,17 +118,12 @@ function CreatePage({
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           width: '100%',
-          margintTop: 5,
+          marginTop: 1,
         }}
       >
-        <FileActionButtons
-          fileName={fileName}
-          setOpenDeleteFileDialog={setOpenDeleteFileDialog}
-          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
-        />
         <DigitalTwinNameInput
           value={newDigitalTwinName}
           onChange={(e) => setNewDigitalTwinName(e.target.value)}
@@ -117,8 +137,16 @@ function CreatePage({
           setFileName={setFileName}
           fileContent={fileContent}
           setFileContent={setFileContent}
+          filePrivacy={filePrivacy}
+          setFilePrivacy={setFilePrivacy}
           fileType={fileType}
           setFileType={setFileType}
+          isLibraryFile={isLibraryFile}
+          setIsLibraryFile={setIsLibraryFile}
+          libraryAssetPath={libraryAssetPath}
+          setLibraryAssetPath={setLibraryAssetPath}
+          setOpenDeleteFileDialog={setOpenDeleteFileDialog}
+          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog}
         />
       </Box>
 

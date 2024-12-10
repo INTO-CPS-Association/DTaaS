@@ -1,24 +1,32 @@
 import * as React from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,
   DialogActions,
   DialogContent,
   Typography,
   Button,
+  CircularProgress,
+  Box,
 } from '@mui/material';
 import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { showSnackbar } from 'preview/store/snackbar.slice';
-import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
+import {
+  setDigitalTwin,
+  setShouldFetchDigitalTwins,
+} from 'preview/store/digitalTwin.slice';
 import {
   addDefaultFiles,
   defaultFiles,
   validateFiles,
 } from 'preview/util/fileUtils';
 import { initDigitalTwin } from 'preview/util/init';
+import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import LibraryAsset from 'preview/util/libraryAsset';
+import useCart from 'preview/store/CartAccess';
 
 interface CreateDTDialogProps {
   open: boolean;
@@ -52,6 +60,7 @@ const handleSuccess = (
     }),
   );
   dispatch(setDigitalTwin({ assetName: newDigitalTwinName, digitalTwin }));
+  dispatch(setShouldFetchDigitalTwins(true));
   dispatch(removeAllCreationFiles());
 
   addDefaultFiles(defaultFiles, files, dispatch);
@@ -71,6 +80,8 @@ const resetDialogAndForm = (
 
 const handleConfirm = async (
   files: FileState[],
+  libraryFiles: LibraryConfigFile[],
+  cartAssets: LibraryAsset[],
   setErrorMessage: Dispatch<SetStateAction<string>>,
   newDigitalTwinName: string,
   dispatch: ReturnType<typeof useDispatch>,
@@ -79,11 +90,18 @@ const handleConfirm = async (
   setFileContent: Dispatch<SetStateAction<string>>,
   setFileType: Dispatch<SetStateAction<string>>,
   setNewDigitalTwinName: Dispatch<SetStateAction<string>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
+  actions: ReturnType<typeof useCart>['actions'],
 ) => {
-  if (validateFiles(files, setErrorMessage)) return;
+  setIsLoading(true);
+
+  if (validateFiles(files, libraryFiles, setErrorMessage)) {
+    setIsLoading(false);
+    return;
+  }
 
   const digitalTwin = await initDigitalTwin(newDigitalTwinName);
-  const result = await digitalTwin.create(files);
+  const result = await digitalTwin.create(files, cartAssets, libraryFiles);
 
   if (result.startsWith('Error')) {
     handleError(result, dispatch);
@@ -98,6 +116,8 @@ const handleConfirm = async (
     setFileType,
   );
   setNewDigitalTwinName('');
+  actions.clear();
+  setIsLoading(false);
 };
 
 const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
@@ -112,7 +132,15 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
   setFileType,
 }) => {
   const files: FileState[] = useSelector((state: RootState) => state.files);
+  const libraryFiles = useSelector(
+    (state: RootState) => state.libraryConfigFiles,
+  );
+  const cartAssets = useSelector((state: RootState) => state.cart.assets);
   const dispatch = useDispatch();
+
+  const { actions } = useCart();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <Dialog open={open} onClose={setOpenCreateDTDialog}>
@@ -122,24 +150,33 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
           <strong>{newDigitalTwinName}</strong> digital twin?
         </Typography>
         <Typography style={{ color: 'red' }}>{errorMessage}</Typography>
+        {isLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+            <CircularProgress />
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() =>
-            resetDialogAndForm(
-              setOpenCreateDTDialog,
-              setFileName,
-              setFileContent,
-              setFileType,
-            )
-          }
-        >
-          Cancel
-        </Button>
+        {!isLoading && (
+          <Button
+            onClick={() =>
+              resetDialogAndForm(
+                setOpenCreateDTDialog,
+                setFileName,
+                setFileContent,
+                setFileType,
+              )
+            }
+          >
+            Cancel
+          </Button>
+        )}
         <Button
           onClick={() =>
             handleConfirm(
               files,
+              libraryFiles,
+              cartAssets,
               setErrorMessage,
               newDigitalTwinName,
               dispatch,
@@ -148,10 +185,13 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
               setFileContent,
               setFileType,
               setNewDigitalTwinName,
+              setIsLoading,
+              actions,
             )
           }
+          disabled={isLoading}
         >
-          Confirm
+          {isLoading ? 'Creating...' : 'Confirm'}
         </Button>
       </DialogActions>
     </Dialog>

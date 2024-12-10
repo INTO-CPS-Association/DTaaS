@@ -14,6 +14,14 @@ interface EditorProps {
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
   fileType: string;
   setFileType: React.Dispatch<React.SetStateAction<string>>;
+  filePrivacy: string;
+  setFilePrivacy: React.Dispatch<React.SetStateAction<string>>;
+  isLibraryFile: boolean;
+  setIsLibraryFile: React.Dispatch<React.SetStateAction<boolean>>;
+  libraryAssetPath: string;
+  setLibraryAssetPath: React.Dispatch<React.SetStateAction<string>>;
+  setOpenDeleteFileDialog?: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenChangeFileNameDialog?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function Editor({
@@ -25,6 +33,14 @@ function Editor({
   setFileContent,
   fileType,
   setFileType,
+  filePrivacy,
+  setFilePrivacy,
+  isLibraryFile,
+  setIsLibraryFile,
+  libraryAssetPath,
+  setLibraryAssetPath,
+  setOpenDeleteFileDialog,
+  setOpenChangeFileNameDialog,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -48,7 +64,14 @@ function Editor({
           setFileName={setFileName}
           setFileContent={setFileContent}
           setFileType={setFileType}
+          setFilePrivacy={setFilePrivacy}
+          setIsLibraryFile={setIsLibraryFile}
+          setLibraryAssetPath={setLibraryAssetPath}
           tab={tab}
+          fileName={fileName}
+          isLibraryFile={isLibraryFile}
+          setOpenDeleteFileDialog={setOpenDeleteFileDialog || undefined}
+          setOpenChangeFileNameDialog={setOpenChangeFileNameDialog || undefined}
         />
 
         <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
@@ -85,7 +108,10 @@ function Editor({
                 tab={tab}
                 fileName={fileName}
                 fileContent={fileContent}
+                filePrivacy={filePrivacy}
                 setFileContent={setFileContent}
+                isLibraryFile={isLibraryFile}
+                libraryAssetPath={libraryAssetPath}
               />
             )}
             {activeTab === 1 && (

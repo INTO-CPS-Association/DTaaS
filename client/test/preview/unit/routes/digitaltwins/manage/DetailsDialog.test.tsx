@@ -20,6 +20,7 @@ describe('DetailsDialog', () => {
         showDialog={true}
         setShowDialog={setShowDialog}
         name="name"
+        isPrivate={true}
       />,
     );
 
@@ -32,6 +33,7 @@ describe('DetailsDialog', () => {
         showDialog={true}
         setShowDialog={setShowDialog}
         name="name"
+        isPrivate={true}
       />,
     );
 
