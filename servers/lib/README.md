@@ -43,19 +43,19 @@ The template configuration file is:
 
 ```yaml
 port: '4001'
-mode: 'git' # either git or local
-local-path: 'files'
+mode: 'local'    #git or local
+local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
 graphql-playground: 'true'
 
-git-repos:
-  - user-1: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
-  - user-2: 
+git-repos:   #only used in git mode
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
       repo-url: 'https://gitlab.com/dtaas/user2.git'
   - common: 
-      repo-url: 'https://gitlab.com/dtaas/common'
+      repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
 The `local-path` variable is the relative filepath to the
@@ -80,12 +80,12 @@ A fragment of the config for `git` mode is:
 ```yaml
 ...
 git-repos:
-  - user-1: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
-  - user-2: 
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
       repo-url: 'https://gitlab.com/dtaas/user2.git'
   - common: 
-      repo-url: 'https://gitlab.com/dtaas/common'
+      repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
 Here, `user-1`, `user-2` and `common` are the local directories into which

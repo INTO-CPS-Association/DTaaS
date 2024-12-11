@@ -118,6 +118,8 @@ The microservices require configuration and the docker version
 of the microservices uses the configuration
 file available in `config/libms.dev.yaml`.
 
+For more see [configuration documentation](./README.md#gear-configure).
+
 ### Use
 
 The commands to start and stop the appliation are:
