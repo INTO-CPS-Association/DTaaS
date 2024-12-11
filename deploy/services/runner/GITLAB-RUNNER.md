@@ -23,13 +23,11 @@ In either case, follow the steps as outlined below.
 First, we will obtain the token necessary to register the runner for the GitLab
 instance.
 
-1. Navigate to the _DTaaS_ group in your instance and select the project
-   named after your GitLab username.
-1. In the project menu, go to `Settings` and select `CI/CD`.
-1. Expand the **Runners** section and click on _New project runner_.
-1. Under **Platforms**, select the Linux operating system.
-1. Under **Tags**, add a `linux` tag.
-1. Click on _Create runner_. A runner authentication token will be generated,
+1. On the __Admin__ dashboard, navigate to __CI / CD > Runners__.
+1. Select __New instance runner__.
+1. Under __Platform__, select the Linux operating system.
+1. Under __Tags__, add a `linux` tag.
+1. Select __Create runner__. A runner authentication token will be generated,
    be sure to save it somewhere.
 
 You should see the following screen:
@@ -91,13 +89,12 @@ container respectively, depending on your installation scenario:
    ```
 
 Once the container starts, the runner within it will run automatically. You can
-tell if the runner is correctly configured by opening your project on the
-GitLab instance, and navigating to `Settings > CI/CD > Runners` to see
-something like this:
+tell if the runner is correctly configured by navigating to
+`CI/CD > Runners` on your Admin dashboard and seeing something like this:
 
-![Status indicator under Assigned Project Runners](./runner-activation.png)
+![Status indicator under Admin Area > Runners](./runner-activation.png)
 
-You will now have a GitLab runner ready to accept jobs for the **DTaaS** group.
+You will now have a GitLab runner ready to accept jobs for the GitLab instance.
 
 ## Resource Allocation
 
