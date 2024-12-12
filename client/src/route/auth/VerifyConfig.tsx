@@ -20,7 +20,11 @@ async function opaqueRequest(url: string): Promise<validationType> {
     error: undefined,
   };
   try {
-    await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    await fetch(url, {
+      method: 'HEAD',
+      mode: 'no-cors',
+      signal: AbortSignal.timeout(1000),
+    });
     urlValidation.status = 0;
   } catch (error) {
     urlValidation.error = `An error occurred when fetching ${url}: ${error}`;
@@ -34,7 +38,10 @@ async function corsRequest(url: string): Promise<validationType> {
     status: undefined,
     error: undefined,
   };
-  const response = await fetch(url, { method: 'HEAD' });
+  const response = await fetch(url, {
+    method: 'HEAD',
+    signal: AbortSignal.timeout(1000),
+  });
   const responseIsAcceptable = response.ok || response.status === 302;
   if (!responseIsAcceptable) {
     urlValidation.error = `Unexpected response code ${response.status} from ${url}.`;
@@ -71,37 +78,55 @@ const parseField = (
 export const getValidationResults = async (): Promise<{
   [key: string]: validationType;
 }> => {
-  const results: { [key: string]: validationType } = {
-    environment: parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
-    url: await urlIsReachable(window.env.REACT_APP_URL),
-    url_basename: parseField(PathString, window.env.REACT_APP_URL_BASENAME),
-    url_dtlink: parseField(PathString, window.env.REACT_APP_URL_DTLINK),
-    url_liblink: parseField(PathString, window.env.REACT_APP_URL_LIBLINK),
-    workbenchlink_vncdesktop: parseField(
-      PathString,
-      window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP,
+  const verifications = {
+    environment: Promise.resolve(
+      parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
     ),
-    workbenchlink_vscode: parseField(
-      PathString,
-      window.env.REACT_APP_WORKBENCHLINK_VSCODE,
+    url: urlIsReachable(window.env.REACT_APP_URL),
+    url_basename: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_URL_BASENAME),
     ),
-    workbenchlink_jupyterlab: parseField(
-      PathString,
-      window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB,
+    url_dtlink: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_URL_DTLINK),
     ),
-    workbenchlink_jupyternotebook: parseField(
-      PathString,
-      window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
+    url_liblink: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_URL_LIBLINK),
     ),
-    client_id: parseField(PathString, window.env.REACT_APP_CLIENT_ID),
-    auth_authority: await urlIsReachable(window.env.REACT_APP_AUTH_AUTHORITY),
-    redirect_uri: await urlIsReachable(window.env.REACT_APP_REDIRECT_URI),
-    logout_redirect_uri: await urlIsReachable(
+    workbenchlink_vncdesktop: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP),
+    ),
+    workbenchlink_vscode: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_WORKBENCHLINK_VSCODE),
+    ),
+    workbenchlink_jupyterlab: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB),
+    ),
+    workbenchlink_jupyternotebook: Promise.resolve(
+      parseField(
+        PathString,
+        window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
+      ),
+    ),
+    client_id: Promise.resolve(
+      parseField(PathString, window.env.REACT_APP_CLIENT_ID),
+    ),
+    auth_authority: urlIsReachable(window.env.REACT_APP_AUTH_AUTHORITY),
+    redirect_uri: urlIsReachable(window.env.REACT_APP_REDIRECT_URI),
+    logout_redirect_uri: urlIsReachable(
       window.env.REACT_APP_LOGOUT_REDIRECT_URI,
     ),
-    gitlab_scopes: parseField(ScopesString, window.env.REACT_APP_GITLAB_SCOPES),
+    gitlab_scopes: Promise.resolve(
+      parseField(ScopesString, window.env.REACT_APP_GITLAB_SCOPES),
+    ),
   };
-  return results;
+
+  const results = await Promise.all(
+    Object.entries(verifications).map(async ([key, task]) => ({
+      [key]: await task,
+    })),
+  );
+
+  return results.reduce((acc, result) => ({ ...acc, ...result }), {});
 };
 
 const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
