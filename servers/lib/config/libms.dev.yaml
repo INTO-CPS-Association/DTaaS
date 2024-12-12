@@ -1,6 +1,6 @@
 port: '4001'
 mode: 'local'    #git or local
-local-path: '..\..\files'
+local-path: '/dtaas/libms/files'
 log-level: 'debug'
 apollo-path: '/lib'
 graphql-playground: 'true'

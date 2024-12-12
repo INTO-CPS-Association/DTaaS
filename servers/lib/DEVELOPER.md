@@ -119,6 +119,10 @@ of the microservices uses the configuration
 file available in `config/libms.dev.yaml`.
 
 For more see [configuration documentation](./README.md#gear-configure).
+The `config/libms.dev.yaml` file is used for configuration of the container.
+
+A new directory named `files` is created in `servers/lib` directory and
+files are saved and served from the `files` directory.
 
 ### Use
 
