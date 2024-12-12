@@ -1,6 +1,14 @@
 port: '4001'
-mode: 'local'
-local-path: '/dtaas/libms/files'
+mode: 'local'    #git or local
+local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
 graphql-playground: 'true'
+
+git-repos:   #only used in git mode
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common: 
+      repo-url: 'https://gitlab.com/dtaas/common.git'
