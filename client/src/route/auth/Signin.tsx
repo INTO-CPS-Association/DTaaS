@@ -4,14 +4,20 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useAuth } from 'react-oidc-context';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import VerifyConfig, {
   getValidationResults,
   validationType,
 } from './VerifyConfig';
 
-const loadingComponent = (
+const verifyConfigComponent = (configsToVerify: string[]): React.ReactNode =>
+  VerifyConfig({
+    keys: configsToVerify,
+    title: 'Config validation failed',
+  });
+
+const loadingComponent = (): React.ReactNode => (
   <Box
     sx={{
       marginTop: 8,
@@ -25,7 +31,7 @@ const loadingComponent = (
   </Box>
 );
 
-const signInComponent = (startAuthProcess: () => void) => (
+const signInComponent = (startAuthProcess: () => void): React.ReactNode => (
   <Box
     sx={{
       marginTop: 8,
@@ -81,17 +87,15 @@ function SignIn() {
     [key: string]: validationType;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
+
   const configsToVerify = [
     'url',
     'auth_authority',
     'redirect_uri',
     'logout_redirect_uri',
   ];
-  const verifyConfigComponent = VerifyConfig({
-    keys: configsToVerify,
-    title: 'Config validation failed',
-  });
-  React.useEffect(() => {
+
+  useEffect(() => {
     const fetchValidationResults = async () => {
       const results = await getValidationResults();
       setValidationResults(results);
@@ -104,17 +108,23 @@ function SignIn() {
     auth.signinRedirect();
   };
 
-  let displayedComponent: React.ReactNode = loadingComponent;
+  const loading = loadingComponent();
+  const signin = signInComponent(startAuthProcess);
+  const verifyConfig = verifyConfigComponent(configsToVerify);
+
+  let displayedComponent = loading;
+  const hasConfigErrors = configsToVerify.some(
+    (key) => validationResults[key]?.error !== undefined,
+  );
+
   if (!isLoading) {
-    const configHasKeyErrors = configsToVerify.reduce(
-      (accumulator, currentValue) =>
-        accumulator || validationResults[currentValue].error !== undefined,
-      false,
-    );
-    displayedComponent = configHasKeyErrors
-      ? verifyConfigComponent
-      : signInComponent(startAuthProcess);
+    // Show signin if config is ready and good, otherwise show problems
+    displayedComponent = signin;
+    if (hasConfigErrors) {
+      displayedComponent = verifyConfig;
+    }
   }
+
   return displayedComponent;
 }
 
