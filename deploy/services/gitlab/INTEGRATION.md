@@ -66,7 +66,7 @@ the following files:
    _deploy/config/client/env.local.js_.
 1. _deploy/docker/.env.local_ Add localpath and username.
 
-If the DTaaS application is hosted at <https://localhost>, then configure
+If the DTaaS application is hosted at <https://foo.com/>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in
