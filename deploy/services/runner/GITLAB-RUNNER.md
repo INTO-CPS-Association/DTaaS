@@ -10,13 +10,14 @@ This document outlines the steps needed to create a Docker container named
 the execution of Digital Twins. There are two installation scenarios:
 
 1. Localhost Installation - You are using the integrated runner locally with
-   a GitLab server hosted at `https://localhost/gitlab`.
+   a GitLab instance hosted at `https://localhost/gitlab`.
 2. Server Installation - You are using the integrated runner with a GitLab
    instance hosted on a production server. This server may be a remote server
    and not necessarily your own, and may have TLS enabled with a self-signed
    certificate.
 
-In either case, follow the steps as outlined below.
+Following the steps below sets up the integrated runner which can be used to
+execute digital twins from the Digital Twins Preview Page.
 
 ## Obtaining A Registration Token
 
@@ -42,7 +43,8 @@ configurations settings:
 1. Localhost Installation - uses `deploy/docker/.env.local`
 1. Server Installation - uses `deploy/docker/.env.server`
 
-Ensure these files are properly set up.
+It is assumed you have set these up as part of the installation of the overall
+DTaaS software. If not, ensure these are properly set up.
 
 We need to register the runner with the GitLab instance so that they may
 communicate with each other. In this directory, the file `runner-config.toml`
