@@ -88,12 +88,12 @@ git-repos:
       repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
-Here, `user-1`, `user-2` and `common` are the local directories into which
+Here, `user1`, `user2` and `common` are the local directories into which
 the remote git repositories get cloned. The name of the repository need not
 match with the local directory name. For example, the above configuration
 enables library microservice to clone
-`https://github.com/isomorphic-git/lightning-fs` repository into
-`user-1` directory. Any git server accessible over
+`https://gitlab.com/dtaas/user1.git` repository into
+`user1` directory. Any git server accessible over
 HTTP(S) protocol is supported.
 The `.git` suffix is optional.
 

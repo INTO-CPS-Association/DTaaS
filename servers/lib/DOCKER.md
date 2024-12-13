@@ -1,10 +1,11 @@
 # Overview
 
-The **libms microservice** is a simplified file manager providing graphQL API.
-It has two features:
+The **lib microservice** is a simplified file manager which serves files
+from local file system or public git repositories. It is possible to
 
-* provide a listing of directory contents.
-* transfer a file to user.
+* Upload and download files from web browser
+* Query available files and download them using GraphQL API
+* Clone public git repositories and serve them as local files
 
 ## Use in Docker Environment
 
@@ -19,12 +20,13 @@ services:
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
+      - ./libms.yaml:/dtaas/libms/libms.yaml
       - ./files:/dtaas/libms/files
     ports:
       - "4001:4001"
 ```
 
-### Create Files Directory
+### Create Files Directory (optional)
 
 The **libms microservice** serves files available from
 `files` directory.
@@ -46,6 +48,71 @@ files/
 
 Please create this `files` directory
 in the same file system location as that of the `compose.lib.yml` file.
+
+:label: The directory structure is optional if you are using
+libms as a standalone service.
+
+## :gear: Configure
+
+The microservices requires config specified in `libms.yaml` file.
+The template configuration file is:
+
+```yaml
+port: '4001'
+mode: 'local'    #git or local
+local-path: 'files'
+log-level: 'debug'
+apollo-path: '/lib'
+graphql-playground: 'true'
+
+git-repos:   #only used in git mode
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common: 
+      repo-url: 'https://gitlab.com/dtaas/common.git'
+```
+
+The `local-path` variable is the relative filepath to the
+location of the local directory which will be served to users
+by the Library microservice.
+
+Replace the default values the appropriate values for your setup.
+Please save this config in `libms.yaml`.
+
+### Operation Modes
+
+The mode indicates the backend storage for the files.
+There are two possible modes - `local` and `git`.
+The files available in the `local-path` are served to users in `local` mode.
+In the `git` mode, the remote git repos are cloned and they are
+served to users as local files. Only public git repositories
+are supported at present.
+
+#### git mode
+
+A fragment of the config for `git` mode is:
+
+```yaml
+...
+git-repos:
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common: 
+      repo-url: 'https://gitlab.com/dtaas/common.git'
+```
+
+Here, `user1`, `user2` and `common` are the local directories into which
+the remote git repositories get cloned. The name of the repository need not
+match with the local directory name. For example, the above configuration
+enables library microservice to clone
+`https://gitlab.com/dtaas/user1.git` repository into
+`user1` directory. Any git server accessible over
+HTTP(S) protocol is supported.
+The `.git` suffix is optional.
 
 ### Run
 
