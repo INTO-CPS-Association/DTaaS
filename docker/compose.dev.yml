@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files:/dtaas/libms/files
-      - ${LIB_CONFIG}:/dtaas/libms/config/.env.default
+      - ${DTAAS_DIR}/servers/lib/config/libms.dev.yaml:/dtaas/libms/config/libms.yaml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.libms.entryPoints=web"
@@ -90,7 +90,7 @@ services:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
-      - ${OAUTH_CONF_FILEPATH}:/conf
+      - ${DTAAS_DIR}/docker/conf.dev:/conf
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize

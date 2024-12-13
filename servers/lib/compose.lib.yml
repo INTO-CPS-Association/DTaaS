@@ -3,6 +3,7 @@ services:
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
+      - ./config/libms.dev.yaml:/dtaas/libms/libms.yaml
       - ./files:/dtaas/libms/files
     ports:
       - "4001:4001"

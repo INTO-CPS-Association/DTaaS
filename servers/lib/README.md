@@ -38,24 +38,24 @@ needs to have _read:packages_ scope.
 
 ## :gear: Configure
 
-The microservices requires config specified in INI format.
+The microservices requires config specified in yaml format.
 The template configuration file is:
 
 ```yaml
 port: '4001'
-mode: 'git' # either git or local
-local-path: 'files'
+mode: 'local'    #git or local
+local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
 graphql-playground: 'true'
 
-git-repos:
-  - user-1: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
-  - user-2: 
+git-repos:   #only used in git mode
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
       repo-url: 'https://gitlab.com/dtaas/user2.git'
   - common: 
-      repo-url: 'https://gitlab.com/dtaas/common'
+      repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
 The `local-path` variable is the relative filepath to the
@@ -80,20 +80,20 @@ A fragment of the config for `git` mode is:
 ```yaml
 ...
 git-repos:
-  - user-1: 
-      repo-url: 'https://github.com/isomorphic-git/lightning-fs'
-  - user-2: 
+  - user1: 
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2: 
       repo-url: 'https://gitlab.com/dtaas/user2.git'
   - common: 
-      repo-url: 'https://gitlab.com/dtaas/common'
+      repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
-Here, `user-1`, `user-2` and `common` are the local directories into which
+Here, `user1`, `user2` and `common` are the local directories into which
 the remote git repositories get cloned. The name of the repository need not
 match with the local directory name. For example, the above configuration
 enables library microservice to clone
-`https://github.com/isomorphic-git/lightning-fs` repository into
-`user-1` directory. Any git server accessible over
+`https://gitlab.com/dtaas/user1.git` repository into
+`user1` directory. Any git server accessible over
 HTTP(S) protocol is supported.
 The `.git` suffix is optional.
 

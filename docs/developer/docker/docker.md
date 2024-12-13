@@ -63,7 +63,7 @@ The configuration files to be updated are:
 1. **client/config/local.js**
    please see [client config](../../admin/client/config.md) for help
    with updating this config file
-1. **servers/lib/config/.env.default**
+1. **servers/lib/config/libms.dev.yaml**
    please see [lib config](../../admin/servers/lib/docker.md) for help
    with updating this config file
 

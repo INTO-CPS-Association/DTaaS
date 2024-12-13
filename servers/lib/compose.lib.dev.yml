@@ -4,6 +4,7 @@ services:
       context: ../../
       dockerfile: ./docker/libms.dockerfile
     volumes:
-      - ${LOCAL_PATH}:/dtaas/libms/files
+      - ./files:/dtaas/libms/files
+      - ./config/libms.dev.yaml:/dtaas/libms/libms.yaml
     ports:
-      - ${PORT}:4001
+      - 4001:4001

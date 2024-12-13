@@ -1,4 +1,4 @@
-FROM node:20.10.0-slim
+FROM node:22.12.0-slim
 
 #! docker should be run from the root directory of the project
 
@@ -9,7 +9,7 @@ WORKDIR /dtaas/libms
 ARG VERSION="latest"
 RUN npm i -g @into-cps-association/libms@${VERSION}
 
-COPY ./deploy/config/lib.env .env
+COPY ./deploy/config/libms.yaml libms.yaml
 COPY ./servers/lib/config/http.json .
 
 # Define the command to run your app

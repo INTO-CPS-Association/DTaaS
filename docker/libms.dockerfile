@@ -1,4 +1,4 @@
-FROM node:20.10.0-slim as build
+FROM node:22.12.0-slim as build
 
 #! docker should be run from the root directory of the project
 
@@ -15,13 +15,14 @@ RUN yarn install --immutable --immutable-cache --check-cache
 RUN yarn build
 
 
-FROM node:20.10.0-slim
+FROM node:22.12.0-slim
 COPY --from=build /dtaas/libms/dist /dtaas/libms/dist
 COPY --from=build /dtaas/libms/node_modules /dtaas/libms/node_modules
 COPY --from=build /dtaas/libms/package.json /dtaas/libms/package.json
 COPY --from=build /dtaas/libms/config /dtaas/libms/config
 
 WORKDIR /dtaas/libms
+COPY ./deploy/config/libms.yaml libms.yaml
 
 # Define the command to run your app
-CMD ["yarn", "start", "--config", "config/.env.default", "-H", "config/http.json"]
+CMD ["yarn", "start", "--config", "libms.yaml", "-H", "config/http.json"]

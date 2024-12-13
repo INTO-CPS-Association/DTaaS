@@ -116,17 +116,13 @@ running the following commands.
 
 The microservices require configuration and the docker version
 of the microservices uses the configuration
-file available in `config/.env.default`.
+file available in `config/libms.dev.yaml`.
 
-Please add a `.env` file with the environment variables for
-the docker compose file to use.
-e.g.
+For more see [configuration documentation](./README.md#gear-configure).
+The `config/libms.dev.yaml` file is used for configuration of the container.
 
-```sh
-PORT='4001'
-MODE='local'
-LOCAL_PATH='..\..\files'
-```
+A new directory named `files` is created in `servers/lib` directory and
+files are saved and served from the `files` directory.
 
 ### Use
 
@@ -140,7 +136,7 @@ docker compose -f compose.lib.dev.yml up -d
 
 This command brings up the lib docker container and makes
 the website available at <http://localhost:4001>.
-The `config/.env.default` file is used as the microservice configuration.
+The `config/libms.dev.yaml` file is used as the microservice configuration.
 If the configuration values are changed, please restart the container.
 
 ```bash
