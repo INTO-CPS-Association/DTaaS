@@ -138,6 +138,6 @@ for further help.
 ## Pending Tasks
 
 This README helps with installation of Gitlab along side DTaaS application.
-But the OAuth2 integration between Gitlab and DTaaS will still be still pending.
-Follow the [integration guide](integration.md) and
-[runner setup](runner.md) to setup the Gitlab integration.
+But the OAuth2 integration between Gitlab and DTaaS will still be pending.
+Follow the [integration guide](integration.md) and the
+[runner setup guide](runner.md) to setup the Gitlab integration.

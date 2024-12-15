@@ -14,6 +14,16 @@ the execution of Digital Twins. There are two installation scenarios:
 Following the steps below sets up the integrated runner which can be used to
 execute digital twins from the Digital Twins Preview Page.
 
+## Prerequisites
+
+A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
+For an explanation of how to set up a GitLab instance that integrates with a
+DTaaS application, refer to [our GitLab instance document](./index.md)
+and [our GitLab integration guide](./integration.md).
+
+The rest of this document assumes you have a running DTaaS application with a
+GitLab instance running.
+
 ## Runner Scopes
 
 A GitLab Runner can be configured for three different scopes:
@@ -24,7 +34,7 @@ A GitLab Runner can be configured for three different scopes:
 | Group Runner    | Available to all projects and subgroups in a group. |
 | Project Runner  | Associated with one specific project. |
 
-We suggest creating instance runners as they are the most straightforward, but
+We suggest creating __instance runners__ as they are the most straightforward, but
 any type will work. More about these three types can be found on
 [the official GitLab documentation page](https://docs.gitlab.com/ee/ci/runners/runners_scope.html).
 
@@ -61,8 +71,8 @@ configurations settings:
 1. __Localhost Installation__ - uses `deploy/docker/.env.local`
 1. __Server Installation__ - uses `deploy/docker/.env.server`
 
-It is assumed you have set these up as part of the installation of the overall
-DTaaS software. If not, ensure these are properly set up.
+These files are integral to running the DTaaS application, so it will be
+assumed that you have already configured these.
 
 We need to register the runner with the GitLab instance so that they may
 communicate with each other. `deploy/services/runner/runner-config.toml`
