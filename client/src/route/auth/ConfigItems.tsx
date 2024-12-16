@@ -17,7 +17,7 @@ export const getConfigIcon = (
   validation: validationType,
   label: string,
 ): JSX.Element => {
-  let icon = <ErrorOutlineIcon color="error" />;
+  let icon = <ErrorOutlineIcon color="error" data-testid="error-icon" />;
   let toolTipTitle = `${label} threw the following error: ${validation.error}`;
   const configHasStatus = validation.status !== undefined;
   const configHasError = validation.error !== undefined;
@@ -31,9 +31,9 @@ export const getConfigIcon = (
         validation.status! === 302);
     icon =
       validationStatusIsOK || !configHasStatus ? (
-        <CheckCircleIcon color="success" />
+        <CheckCircleIcon color="success" data-testid="success-icon" />
       ) : (
-        <ErrorOutlineIcon color="warning" />
+        <ErrorOutlineIcon color="warning" data-testid="warning-icon" />
       );
     toolTipTitle =
       validationStatusIsOK || !configHasStatus
@@ -56,9 +56,10 @@ export const ConfigItem: React.FC<{
       gap: '10px',
       margin: '5px 0',
     }}
+    className="Config-item"
   >
     {getConfigIcon(validation, label)}
-    <div>
+    <div id="config-text">
       <strong>{label}:</strong> {value}
     </div>
   </div>
