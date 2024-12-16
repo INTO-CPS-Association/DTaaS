@@ -1,7 +1,7 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Tooltip } from '@mui/material';
-import React from 'react';
+import * as React from 'react';
 import { validationType } from './VerifyConfig';
 
 const ConfigIcon = (toolTipTitle: string, icon: JSX.Element): JSX.Element => (
@@ -48,7 +48,7 @@ export const ConfigItem: React.FC<{
   label: string;
   value: string;
   validation?: validationType;
-}> = ({ label, value, validation = { error: 'Validating unavailable' } }) => (
+}> = ({ label, value, validation = { error: 'Validation unavailable' } }) => (
   <div
     style={{
       display: 'flex',
@@ -65,61 +65,20 @@ export const ConfigItem: React.FC<{
 );
 ConfigItem.displayName = 'ConfigItem';
 
-export const windowEnvironmentVariables: { value: string; key: string }[] = [
-  {
-    value: window.env.REACT_APP_ENVIRONMENT,
-    key: 'environment',
-  },
-  {
-    value: window.env.REACT_APP_URL,
-    key: 'url',
-  },
-  {
-    value: window.env.REACT_APP_URL_BASENAME,
-    key: 'url_basename',
-  },
-  {
-    value: window.env.REACT_APP_URL_DTLINK,
-    key: 'url_dtlink',
-  },
-  {
-    value: window.env.REACT_APP_URL_LIBLINK,
-    key: 'url_liblink',
-  },
-  {
-    value: window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP,
-    key: 'workbenchlink_vncdesktop',
-  },
-  {
-    value: window.env.REACT_APP_WORKBENCHLINK_VSCODE,
-    key: 'workbenchlink_vscode',
-  },
-  {
-    value: window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB,
-    key: 'workbenchlink_jupyterlab',
-  },
-  {
-    value: window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
-    key: 'workbenchlink_jupyternotebook',
-  },
-  {
-    value: window.env.REACT_APP_CLIENT_ID,
-    key: 'client_id',
-  },
-  {
-    value: window.env.REACT_APP_AUTH_AUTHORITY,
-    key: 'auth_authority',
-  },
-  {
-    value: window.env.REACT_APP_REDIRECT_URI,
-    key: 'redirect_uri',
-  },
-  {
-    value: window.env.REACT_APP_LOGOUT_REDIRECT_URI,
-    key: 'logout_redirect_uri',
-  },
-  {
-    value: window.env.REACT_APP_GITLAB_SCOPES,
-    key: 'gitlab_scopes',
-  },
-];
+export const windowEnvironmentVariables: Record<string, string> = {
+  environment: window.env.REACT_APP_ENVIRONMENT,
+  url: window.env.REACT_APP_URL,
+  url_basename: window.env.REACT_APP_URL_BASENAME,
+  url_dtlink: window.env.REACT_APP_URL_DTLINK,
+  url_liblink: window.env.REACT_APP_URL_LIBLINK,
+  workbenchlink_vncdesktop: window.env.REACT_APP_WORKBENCHLINK_VNCDESKTOP,
+  workbenchlink_vscode: window.env.REACT_APP_WORKBENCHLINK_VSCODE,
+  workbenchlink_jupyterlab: window.env.REACT_APP_WORKBENCHLINK_JUPYTERLAB,
+  workbenchlink_jupyternotebook:
+    window.env.REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK,
+  client_id: window.env.REACT_APP_CLIENT_ID,
+  auth_authority: window.env.REACT_APP_AUTH_AUTHORITY,
+  redirect_uri: window.env.REACT_APP_REDIRECT_URI,
+  logout_redirect_uri: window.env.REACT_APP_LOGOUT_REDIRECT_URI,
+  gitlab_scopes: window.env.REACT_APP_GITLAB_SCOPES,
+};

@@ -1,11 +1,22 @@
 import * as React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SignIn from 'route/auth/Signin';
 import { useAuth } from 'react-oidc-context';
+import { getValidationResults } from 'route/auth/VerifyConfig';
 
 jest.unmock('route/auth/Signin');
 jest.mock('react-oidc-context');
+jest.mock('route/auth/VerifyConfig', () => ({
+  ...jest.requireActual('route/auth/VerifyConfig'),
+  getValidationResults: jest.fn(),
+}));
 
 describe('SignIn', () => {
   const signinRedirect = jest.fn();
@@ -20,25 +31,89 @@ describe('SignIn', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the SignIn button', () => {
-    render(
-      <MemoryRouter>
-        <SignIn />
-      </MemoryRouter>,
-    );
+  it('renders config loading', async () => {
+    // Create a promise that won't resolve immediately to simulate loading state
+    let resolveValidation: (value: any) => void;
+    const validationPromise = new Promise((resolve) => {
+      resolveValidation = resolve;
+    });
 
+    (getValidationResults as jest.Mock).mockReturnValue(validationPromise);
+
+    const renderResult = await act(async () => render(
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>,
+      ));
+
+    expect(
+      renderResult.getByText('Verifying configuration'),
+    ).toBeInTheDocument();
+    expect(renderResult.getByRole('progressbar')).toBeInTheDocument();
+
+    // Resolve the promise to allow the component to complete loading
+    await act(async () => {
+      resolveValidation({ config: 'loading' });
+    });
+  });
+
+  it('renders the SignIn button', async () => {
+    (getValidationResults as jest.Mock).mockReturnValue(
+      Promise.resolve({ button: 'test' }),
+    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>,
+      );
+    });
+    await waitFor(() =>
+      screen.getByRole('button', { name: /Sign In With GitLab/i }),
+    );
     expect(
       screen.getByRole('button', { name: /Sign In With GitLab/i }),
     ).toBeInTheDocument();
   });
 
-  it('handles button click', () => {
-    render(
-      <MemoryRouter>
-        <SignIn />
-      </MemoryRouter>,
-    );
+  it('renders the config problems', async () => {
+    const res = {
+      url: {
+        error:
+          'An error occurred when fetching https://example.com: ReferenceError: fetch is not defined',
+        status: undefined,
+        value: 'https://example.com',
+      },
+    };
+    (getValidationResults as jest.Mock).mockReturnValue(Promise.resolve(res));
 
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Config validation failed/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles button click', async () => {
+    (getValidationResults as jest.Mock).mockReturnValue(
+      Promise.resolve({ button: 'click' }),
+    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>,
+      );
+    });
+    await waitFor(() =>
+      screen.getByRole('button', { name: /Sign In With GitLab/i }),
+    );
     const signInButton = screen.getByRole('button', {
       name: /Sign In With GitLab/i,
     });

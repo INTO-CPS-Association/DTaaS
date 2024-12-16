@@ -75,10 +75,12 @@ const parseField = (
     : { value: undefined, error: result.error?.message };
 };
 
-export const getValidationResults = async (): Promise<{
+export const getValidationResults = async (
+  keysToValidate: string[],
+): Promise<{
   [key: string]: validationType;
 }> => {
-  const verifications = {
+  const allVerifications = {
     environment: Promise.resolve(
       parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
     ),
@@ -120,6 +122,18 @@ export const getValidationResults = async (): Promise<{
     ),
   };
 
+  const verifications =
+    keysToValidate.length === 0
+      ? allVerifications
+      : Object.fromEntries(
+          keysToValidate
+            .filter((key) => key in allVerifications)
+            .map((key) => [
+              key,
+              allVerifications[key as keyof typeof allVerifications],
+            ]),
+        );
+
   const results = await Promise.all(
     Object.entries(verifications).map(async ([key, task]) => ({
       [key]: await task,
@@ -139,15 +153,25 @@ const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
 
   React.useEffect(() => {
     const fetchValidations = async () => {
-      const results = await getValidationResults();
+      const results = await getValidationResults(keys);
       setValidationResults(results);
     };
     fetchValidations();
   }, []);
 
-  const displayedConfigs = windowEnvironmentVariables.filter(
-    (configItem) => keys.length === 0 || keys.includes(configItem.key),
-  );
+  const displayedConfigs: Record<string, string> =
+    keys.length === 0
+      ? windowEnvironmentVariables
+      : Object.fromEntries(
+          keys
+            .filter((key) => key in windowEnvironmentVariables)
+            .map((key) => [
+              key,
+              windowEnvironmentVariables[
+                key as keyof typeof windowEnvironmentVariables
+              ] as string,
+            ]),
+        );
   return (
     <Paper
       sx={{
@@ -160,7 +184,7 @@ const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
     >
       <Typography variant="h4">{title}</Typography>
       <div>
-        {displayedConfigs.map(({ value, key }) => (
+        {Object.entries(displayedConfigs).map(([key, value]) => (
           <ConfigItem
             key={key}
             label={key.toUpperCase().split('_').join(' ')}
