@@ -99,6 +99,9 @@ has the following template:
 1. If you are following the server installation scenario, remove the line
    `network_mode = "host"`.
 
+A list of advanced configuration options is provided on the
+[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+
 ## Start the GitLab Runner
 
 You may use the following commands to start and stop the `gitlab-runner`
@@ -126,11 +129,22 @@ you created the runner. For example, an Instance Runner would look like this:
 
 You will now have a GitLab runner ready to accept jobs for the GitLab instance.
 
-## Resource Allocation
+## Advanced: Runner Executor
 
-By default, the runner executor will pick up as many jobs as it can (limited
-by the number of threads on the machine). To limit the number of jobs that may
-be run concurrently, you can set the `limit` variable in `config.toml`.
+The term `runner` could refer one of two things:
 
-A list of advanced configuration options is provided on the
-[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+1. The `gitlab-runner` Container
+   This is the Docker container that is created when you execute the commands
+   given above. It is based on the `gitlab/gitlab-runner:alpine` image, and is
+   used to spawn one or more _executors_ that actually execute the CI/CD jobs.
+
+   These executors are spawned using a packaged version of Docker within the
+   `gitlab-runner` image.
+1. The Runner Executor
+   These are agents spawned by the `gitlab-runner` container, not as children
+   but as __siblings__ of the container. These runner executors will not show up
+   on running commands such as `docker ps`, but you can check their status by
+   running `gitlab-runner status` inside the `gitlab-runner` container.
+
+Keeping this distinction in mind is important, as the GitLab documentation
+sometimes uses them interchangeably.
