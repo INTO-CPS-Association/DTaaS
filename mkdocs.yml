@@ -96,6 +96,7 @@ nav:
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md
+      - DevOps Framework: developer/devops.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 
