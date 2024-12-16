@@ -183,7 +183,7 @@ const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
       }}
     >
       <Typography variant="h4">{title}</Typography>
-      <div>
+      <div id="config-items">
         {Object.entries(displayedConfigs).map(([key, value]) => (
           <ConfigItem
             key={key}
