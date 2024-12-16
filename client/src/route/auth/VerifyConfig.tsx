@@ -157,7 +157,7 @@ const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
       setValidationResults(results);
     };
     fetchValidations();
-  }, []);
+  }, [windowEnvironmentVariables]);
 
   const displayedConfigs: Record<string, string> =
     keys.length === 0
