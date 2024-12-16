@@ -97,7 +97,7 @@ function SignIn() {
 
   useEffect(() => {
     const fetchValidationResults = async () => {
-      const results = await getValidationResults();
+      const results = await getValidationResults(configsToVerify);
       setValidationResults(results);
       setIsLoading(false);
     };
