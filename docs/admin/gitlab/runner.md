@@ -99,6 +99,9 @@ has the following template:
 1. If you are following the server installation scenario, remove the line
    `network_mode = "host"`.
 
+A list of advanced configuration options is provided on the
+[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+
 ## Start the GitLab Runner
 
 You may use the following commands to start and stop the `gitlab-runner`
@@ -138,12 +141,3 @@ description of your choice.
 
 You can now use the Digital Twins Preview Page to manage and execute your
 digital twins.
-
-## Resource Allocation
-
-By default, the runner executor will pick up as many jobs as it can (limited
-by the number of threads on the machine). To limit the number of jobs that may
-be run concurrently, you can set the `limit` variable in `config.toml`.
-
-A list of advanced configuration options is provided on the
-[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
