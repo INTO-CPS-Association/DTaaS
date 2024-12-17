@@ -157,7 +157,8 @@ const VerifyConfig: React.FC<{ keys?: string[]; title?: string }> = ({
       setValidationResults(results);
     };
     fetchValidations();
-  }, [windowEnvironmentVariables]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const displayedConfigs: Record<string, string> =
     keys.length === 0
