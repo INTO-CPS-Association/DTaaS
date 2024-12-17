@@ -96,7 +96,11 @@ nav:
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md
-      - DevOps Framework: developer/devops.md
+      - DevOps Framework:
+        - Overview: developer/devops/overview.md
+        - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
+        - Triggering Pipelines via API: developer/devops/api.md
+        - Implemented Classes: developer/devops/implemented-classes.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 
