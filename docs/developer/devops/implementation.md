@@ -76,7 +76,7 @@ the ability to monitor performance.
 
 The `descriptionFiles`, `lifecycleFiles` and `configFiles` attributes are used
 to keep track of the files within the corresponding GitLab folder of the
-DT, thus enabling the read and modify features.  
+DT, thus enabling the read and modify features.<br>
 The create() method enables the creation of a DT and saves all its files
 in the user’s corresponding GitLab folder. Additionally, if the DT is
 configured as _common_, it is also added to GitLab’s shared folder,

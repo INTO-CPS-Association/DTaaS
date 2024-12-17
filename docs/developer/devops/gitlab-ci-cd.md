@@ -8,7 +8,7 @@ found in
 [GitLab's documentation on CI/CD Pipelines](https://docs.gitlab.com/ee/ci/pipelines/).
 
 Additionally, we use GitLab as an OAuth service provider, which enables users to
-securely access the DTaaS website.  
+securely access the DTaaS website.<br>
 Each user is allocated a personal folder on the GitLab platform, which is
 organized in subfolders to facilitate the management of their DTs assets.
 A user's personal folder has the following structure:
@@ -68,7 +68,7 @@ trigger_mass-spring-damper:
   stage: triggers
   trigger:
     include: digital_twins/mass-spring-damper/.gitlab-ci.yml
-  rules: 
+  rules:
     - if: '$DTName == "mass-spring-damper"'
       when: always
   variables:
