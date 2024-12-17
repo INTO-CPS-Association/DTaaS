@@ -34,9 +34,9 @@ function SignIn() {
     fetchValidationResults();
   });
 
-  const startAuthProcess = () => {
-    auth.signinRedirect();
-  };
+    const startAuthProcess = () => {
+        auth.signinRedirect();
+    };
 
   const loading = loadingComponent();
   const signin = signInComponent(startAuthProcess);
