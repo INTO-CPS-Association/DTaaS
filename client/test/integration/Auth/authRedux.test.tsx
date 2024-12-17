@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { createStore } from 'redux';
-import { screen } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
 import { mockUser } from 'test/__mocks__/global_mocks';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import { getValidationResults } from 'route/auth/VerifyConfig';
 
 jest.mock('util/auth/Authentication', () => ({
   useGetAndSetUsername: () => jest.fn(),
@@ -28,8 +29,11 @@ type AuthState = {
   isAuthenticated: boolean;
 };
 
-const setupTest = (authState: AuthState) => {
+const setupTest = async (authState: AuthState) => {
   (useAuth as jest.Mock).mockReturnValue({ ...authState, user: mockUser });
+  (getValidationResults as jest.Mock).mockReturnValue(
+    Promise.resolve({ configField: 'test' }),
+  );
 
   if (authState.isAuthenticated) {
     store.dispatch({
@@ -40,12 +44,14 @@ const setupTest = (authState: AuthState) => {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
   }
 
-  renderWithRouter(
-    <PrivateRoute>
-      <Library />
-    </PrivateRoute>,
-    { route: '/private', store },
-  );
+  await act(async () => {
+    renderWithRouter(
+      <PrivateRoute>
+        <Library />
+      </PrivateRoute>,
+      { route: '/private', store },
+    );
+  });
 };
 
 describe('Redux and Authentication integration test', () => {
@@ -63,8 +69,8 @@ describe('Redux and Authentication integration test', () => {
     };
   });
 
-  it('renders undefined username when not authenticated', () => {
-    setupTest({
+  it('renders undefined username when not authenticated', async () => {
+    await setupTest({
       isAuthenticated: false,
     });
 
@@ -75,8 +81,8 @@ describe('Redux and Authentication integration test', () => {
     expect(store.getState().userName).toBe(undefined);
   });
 
-  it('renders the correct username when authenticated', () => {
-    setupTest({
+  it('renders the correct username when authenticated', async () => {
+    await setupTest({
       isAuthenticated: true,
     });
 
@@ -84,14 +90,14 @@ describe('Redux and Authentication integration test', () => {
     expect(store.getState().userName).toBe('username');
   });
 
-  it('renders undefined username after ending authentication', () => {
-    setupTest({
+  it('renders undefined username after ending authentication', async () => {
+    await setupTest({
       isAuthenticated: true,
     });
     expect(screen.getByText('Functions')).toBeInTheDocument();
     expect(store.getState().userName).toBe('username');
 
-    setupTest({
+    await setupTest({
       isAuthenticated: false,
     });
     expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();

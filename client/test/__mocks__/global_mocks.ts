@@ -59,3 +59,8 @@ jest.mock('util/envUtil', () => ({
     { key: '3', link: 'link3' },
   ],
 }));
+
+jest.mock('route/auth/VerifyConfig', () => ({
+  ...jest.requireActual('route/auth/VerifyConfig'),
+  getValidationResults: jest.fn(),
+}));

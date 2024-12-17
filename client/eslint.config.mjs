@@ -1,6 +1,7 @@
 import jsxA11Y from "eslint-plugin-jsx-a11y";
 import react from "eslint-plugin-react";
 import jest from "eslint-plugin-jest";
+import reactHooks from "eslint-plugin-react-hooks";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
@@ -40,8 +41,9 @@ export default [{
     plugins: {
         "jsx-a11y": jsxA11Y,
         react,
+        "react-hooks": reactHooks,
         jest,
-        "@typescript-eslint": typescriptEslint,
+        "@typescript-eslint": typescriptEslint
     },
 
     languageOptions: {
@@ -86,7 +88,7 @@ export default [{
         "@typescript-eslint/no-unused-vars": [
             "error",
             {
-              "caughtErrorsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_",
             }
         ],
         "no-console": "error",

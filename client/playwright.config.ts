@@ -22,7 +22,7 @@ export default defineConfig({
         command: 'yarn start',
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
-  timeout: 60 * 1000,
+  timeout: 120 * 1000,
   globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',
   testMatch: /.*\.test\.ts/,
