@@ -60,7 +60,7 @@ jest.mock('util/envUtil', () => ({
   ],
 }));
 
-jest.mock('route/auth/VerifyConfig', () => ({
-  ...jest.requireActual('route/auth/VerifyConfig'),
+jest.mock('util/config', () => ({
+  ...jest.requireActual('util/config'),
   getValidationResults: jest.fn(),
 }));

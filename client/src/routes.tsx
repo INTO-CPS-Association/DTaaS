@@ -3,12 +3,12 @@ import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import LibraryPreview from 'preview/route/library/LibraryPreview';
+import VerifyConfig from 'util/config';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
-import VerifyConfig from './route/auth/VerifyConfig';
 
 export const routes = [
   {
