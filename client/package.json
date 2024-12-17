@@ -29,7 +29,7 @@
         "start": "serve -s build -l 4000",
         "stop": "npx kill-port 4000",
         "syntax": "npx eslint . --fix",
-        "test:all": "yarn test:unit && yarn test:int && yarn test:e2e",
+        "test:all": "yarn test:unit && yarn test:int && yarn test:e2e && yarn test:preview:unit && yarn test:preview:int",
         "test:e2e:ext": "cross-env ext=true yarn test:e2e",
         "test:e2e": "yarn config:test && playwright test -c ./playwright.config.ts",
         "test:coverage:int-unit": "npx istanbul-combine -d coverage/all -r lcov -r json -r text coverage/unit/coverage-final.json coverage/int/coverage-final.json coverage/preview/unit/coverage-final.json coverage/preview/int/coverage-final.json",
