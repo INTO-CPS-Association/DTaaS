@@ -100,7 +100,7 @@ nav:
         - Overview: developer/devops/overview.md
         - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
         - Triggering Pipelines via API: developer/devops/api.md
-        - Implemented Classes: developer/devops/implemented-classes.md
+        - Implemented Classes: developer/devops/implementation.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 
