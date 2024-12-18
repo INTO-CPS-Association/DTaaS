@@ -6,12 +6,10 @@ project client. The code was designed to facilitate efficient API calls through
 the use of Gitbeaker as a wrapper, as this approach simplifies interactions
 with GitLab’s REST API and reduces the complexity of the project code.
 
-After testing the correctness of the API by implementing a `GitlabDriver`
-class, the APIs were integrated into the front-end. The latter was done by
-wiring up API endpoints to the front-end components, ensuring a seamless data
-flow. Unit and integration testing was done to ensure the coverage of all
-functional requirements and solve all problems regarding data consistency,
-performance, or user experience.
+The APIs have been integrated into the front-end by wiring up API endpoints to
+front-end components, ensuring a seamless data flow. Unit and integration
+testing was done to ensure the coverage of all functional requirements and solve
+all problems regarding data consistency, performance, or user experience.
 
 ## GitlabInstance
 
