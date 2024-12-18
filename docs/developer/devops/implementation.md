@@ -11,6 +11,60 @@ front-end components, ensuring a seamless data flow. Unit and integration
 testing was done to ensure the coverage of all functional requirements and solve
 all problems regarding data consistency, performance, or user experience.
 
+Given below is our implementation of these classes in TypeScript:
+
+```typescript
+class GitlabInstance {
+  async init();
+  async getProjectId();
+  async getTriggerToken(projectId: number);
+  async getDTSubfolders(projectId: number);
+  async getLibrarySubfolders(
+    projectId: number,
+    type: string,
+    isPrivate: boolean,
+  );
+  executionLogs();
+  async getPipelineJobs(
+    projectId: number,
+    pipelineId: number,
+  );
+  async getJobTrace(projectId: number, jobId: number);
+  async getPipelineStatus(
+    projectId: number,
+    pipelineId: number,
+  );
+}
+
+class DigitalTwin {
+  async getDescription();
+  async getFullDescription();
+  private async triggerPipeline();
+  async execute();
+  async stop(projectId: number, pipeline: string);
+  async create(
+    files: FileState[],
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  );
+  async delete();
+  async getDescriptionFiles();
+  async getConfigFiles();
+  async getLifecycleFiles();
+  async prepareAllAssetFiles(
+    cartAssets: LibraryAsset[],
+    libraryFiles: LibraryConfigFile[],
+  );
+  async getAssetFiles();
+}
+
+class LibraryAsset {
+  async getDescription();
+  async getFullDescription();
+  async getConfigFiles();
+}
+```
+
 ## GitlabInstance
 
 The `GitlabInstance` class was created in order to manage the APIs and
