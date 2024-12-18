@@ -107,6 +107,9 @@ A list of advanced configuration options is provided on the
 You may use the following commands to start and stop the `gitlab-runner`
 container respectively, depending on your installation scenario:
 
+1. Go to the DTaaS home directory (`DTaaS_DIR`) and execute one of
+   the following commands.
+
 1. Localhost Installation
 
     ```bash

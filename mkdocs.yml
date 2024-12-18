@@ -29,6 +29,7 @@ nav:
           - DevOps Preview:
               - Digital Twin Structure: user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md
+      - Gitlab Tutorial: user/gitlab/tutorial.md
       - Runner: user/servers/execution/runner/README.md
       - Examples:
           - Overview: user/examples/index.md

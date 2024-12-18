@@ -26,7 +26,7 @@ environment.
 
 ### DevContainers
 
-There is a [devcontainer configuration](.devcontainer/devcontainer.json)
+There is a devcontainer configuration (`.devcontainer/devcontainer.json`)
 for the project. Please use it to get a dockerized development environment.
 DevContainer is the easiest way to get started.
 
@@ -35,7 +35,7 @@ DevContainer is the easiest way to get started.
 The code base has been developed for most part on
 Ubuntu/Linux Operating System.Thus certain parts of the code base might
 have bugs when run on Windows. At the moment, only
-[runner](./servers/execution/runner/DEVELOPER.md) has problems running
+[runner](../user/servers/execution/runner/README.md) has problems running
 on non-Linux OS.
 
 The development environment can be installed by using the following

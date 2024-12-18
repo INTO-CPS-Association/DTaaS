@@ -66,8 +66,7 @@ should be available at <https://foo.com/gitlab>.
 
 **NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
 requires the DTaaS server to be running before you start it. You may refer to secure
-installation scenarios
-(../overview.md) for the same.
+[installation scenarios](../overview.md) for the same.
 
 The commands to start and stop the instance are:
 

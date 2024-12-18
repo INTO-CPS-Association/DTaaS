@@ -48,18 +48,19 @@ looks like this:
 
 ```text
 hello_world/
-├── lifecycle/
+├── lifecycle/ (at least one lifecycle script)
 │   ├── clean
 │   ├── create
 │   ├── execute
 │   └── terminate
-├── .gitlab-ci.yml
-└── description.md
+├── .gitlab-ci.yml (Gitlab DevOps config for executing lifecycle scripts)
+└── description.md (optional but is recommended)
+└── README.md (optional but is recommended)
 ```
 
-The `lifecycle` directory contains four files - `clean`, `create`, `execute`
-and `terminate`, which are executable scripts. The `hello-world` example uses
-simple [BASH scripts](https://www.gnu.org/software/bash/).
+The `lifecycle` directory here contains four files - `clean`, `create`,
+`execute` and `terminate`, which are simple
+[BASH scripts](https://www.gnu.org/software/bash/).
 These correspond to stages in a digital twin's lifecycle.
 Further explanation of digital twin is available on
 [lifecycle stages](../lifecycle.md).
