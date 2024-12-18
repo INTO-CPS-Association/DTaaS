@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import * as React from 'react';
 import { Paper, Typography } from '@mui/material';
-import { ConfigItem } from 'route/auth/ConfigItems';
+import { ConfigItem } from 'route/config/ConfigItems';
 
 const EnvironmentEnum = z.enum(['dev', 'local', 'prod', 'test']);
 const PathString = z.string();

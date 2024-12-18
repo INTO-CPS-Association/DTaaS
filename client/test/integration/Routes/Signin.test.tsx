@@ -1,6 +1,6 @@
 import { screen, act } from '@testing-library/react';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
-import { getValidationResults } from 'util/config'; // Globally mocked
+import { getValidationResults } from 'route/config/Verify'; // Globally mocked
 import { testPublicLayout } from './routes.testUtil';
 
 const setup = () => setupIntegrationTest('/');

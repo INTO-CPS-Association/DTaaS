@@ -6,7 +6,7 @@ import { useAuth } from 'react-oidc-context';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
-import VerifyConfig, { getValidationResults, validationType } from 'util/config';
+import VerifyConfig, { getValidationResults, validationType } from 'route/config/Verify';
 
 function SignIn() {
     const auth = useAuth();
@@ -57,8 +57,8 @@ function SignIn() {
 
 const verifyConfigComponent = (configsToVerify: string[]): React.ReactNode =>
     VerifyConfig({
-        keys: configsToVerify,
-        title: 'Config validation failed',
+        keys: ['none'],
+        title: 'Invalid Application Configuration.\nPlease contact the administrator of your DTaaS installation.',
     });
 
 const loadingComponent = (): React.ReactNode => (

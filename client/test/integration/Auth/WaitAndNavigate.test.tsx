@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react';
-import { getValidationResults } from 'util/config'; // Globally mocked
+import { getValidationResults } from 'route/config/Verify'; // Globally mocked
 import { mockAuthState } from 'test/__mocks__/global_mocks';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 
