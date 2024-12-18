@@ -2,7 +2,7 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import links from './Links'; // Extension is required with Playwright import
+import links from './Links';
 
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
