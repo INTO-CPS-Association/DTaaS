@@ -102,3 +102,9 @@ related to a specific library asset.
 It is similar to the DigitalTwin class, but contains only the methods required
 to display files. This focused design reflects its limited scope and ensures
 simplicity and clarity for use cases involving the library.
+
+---
+
+Ref: Vanessa Scherma, Design and implementation of an integrated DevOps
+framework for Digital Twins as a Service software platform,
+Master's Degree Thesis, Politecnico Di Torino, 2024.
