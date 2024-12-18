@@ -168,3 +168,9 @@ clean_mass-spring-damper:
     tags:
         - $RunnerTag
 ```
+
+---
+
+Ref: Vanessa Scherma, Design and implementation of an integrated DevOps
+framework for Digital Twins as a Service software platform,
+Master's Degree Thesis, Politecnico Di Torino, 2024.

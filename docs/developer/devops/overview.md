@@ -86,3 +86,9 @@ process with GitLab.
 It automatically handles errors in HTTP requests (and provides meaningful error
 messages that help diagnose and resolve problems) and is fully compatible with
 all of GitLab's REST APIs.
+
+---
+
+Ref: Vanessa Scherma, Design and implementation of an integrated DevOps
+framework for Digital Twins as a Service software platform,
+Master's Degree Thesis, Politecnico Di Torino, 2024.

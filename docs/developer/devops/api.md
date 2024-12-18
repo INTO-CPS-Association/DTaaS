@@ -22,3 +22,9 @@ will be executed in the `main` branch:
       --form "variables[RunnerTag]=<runner_tag>" \
       "https://maestro.cps.digit.au.dk/gitlab/api/v4/projects/<project_id>/trigger/pipeline"
 ```
+
+---
+
+Ref: Vanessa Scherma, Design and implementation of an integrated DevOps
+framework for Digital Twins as a Service software platform,
+Master's Degree Thesis, Politecnico Di Torino, 2024.
