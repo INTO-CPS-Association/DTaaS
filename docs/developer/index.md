@@ -4,7 +4,7 @@ Welcome to the Digital Twin as a Service (DTaaS) contributing guide
 
 Thank you for investing your time in contributing to our project!
 
-Read our [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community
+Read our [Code of Conduct](conduct.md) to keep our community
 approachable and respectable.
 
 In this guide you will get an overview of the contribution workflow

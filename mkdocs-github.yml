@@ -26,7 +26,9 @@ nav:
       - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-          - DevOps Preview: user/digital-twins/devops.md
+          - DevOps Preview:
+              - Digital Twin Structure: user/digital-twins/devops/file-structure.md
+              - User Interface: user/digital-twins/devops/ui.md
       - Runner: user/servers/execution/runner/README.md
       - Examples:
           - Overview: user/examples/index.md
@@ -85,6 +87,7 @@ nav:
   - FAQ: FAQ.md
   - Developer:
       - Developer Guide: developer/index.md
+      - Code of Conduct: developer/conduct.md
       - GitHub Actions: developer/github-actions.md
       - System:
         - Architecture: developer/system/architecture.md
