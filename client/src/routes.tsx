@@ -11,70 +11,70 @@ import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
 
 export const routes = [
-    {
-        path: '/',
-        element: (
-            <LayoutPublic>
-                <SignIn />
-            </LayoutPublic>
-        ),
-    },
-    {
-        path: 'verify',
-        element: (
-            <LayoutPublic containerMaxWidth="md">
-                <VerifyConfig />
-            </LayoutPublic>
-        ),
-    },
-    {
-        path: 'library',
-        element: (
-            <PrivateRoute>
-                <Library />
-            </PrivateRoute>
-        ),
-    },
-    {
-        path: 'digitaltwins',
-        element: (
-            <PrivateRoute>
-                <DigitalTwins />
-            </PrivateRoute>
-        ),
-    },
-    {
-        path: 'account',
-        element: (
-            <PrivateRoute>
-                <Account />
-            </PrivateRoute>
-        ),
-    },
-    {
-        path: 'workbench',
-        element: (
-            <PrivateRoute>
-                <WorkBench />
-            </PrivateRoute>
-        ),
-    },
-    {
-        path: 'preview/digitaltwins',
-        element: (
-            <PrivateRoute>
-                <DigitalTwinsPreview />
-            </PrivateRoute>
-        ),
-    },
-    {
-        path: 'preview/library',
-        element: (
-            <PrivateRoute>
-                <LibraryPreview />
-            </PrivateRoute>
-        ),
-    },
+  {
+    path: '/',
+    element: (
+      <LayoutPublic>
+        <SignIn />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'verify',
+    element: (
+      <LayoutPublic containerMaxWidth="md">
+        <VerifyConfig />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'library',
+    element: (
+      <PrivateRoute>
+        <Library />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'digitaltwins',
+    element: (
+      <PrivateRoute>
+        <DigitalTwins />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'account',
+    element: (
+      <PrivateRoute>
+        <Account />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'workbench',
+    element: (
+      <PrivateRoute>
+        <WorkBench />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'preview/digitaltwins',
+    element: (
+      <PrivateRoute>
+        <DigitalTwinsPreview />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'preview/library',
+    element: (
+      <PrivateRoute>
+        <LibraryPreview />
+      </PrivateRoute>
+    ),
+  },
 ];
 
 export default routes;
