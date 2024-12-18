@@ -6,6 +6,9 @@ pipeline initiates the execution of another pipeline within the same project,
 the latter of which is known as the child pipeline. More about pipelines can be
 found in
 [GitLab's documentation on CI/CD Pipelines](https://docs.gitlab.com/ee/ci/pipelines/).
+<br>
+We use this GitLab parent-child pipeline setup to trigger execution of digital
+twins stored in a user's GitLab repository.
 
 Additionally, we use GitLab as an OAuth service provider, which enables users to
 securely access the DTaaS website.<br>
