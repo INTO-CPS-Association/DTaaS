@@ -6,7 +6,7 @@ the execution of Digital Twins. There are two installation scenarios:
 
 1. __Localhost Installation__ - You are using the integrated runner locally with
    a GitLab instance hosted at `https://localhost/gitlab`.
-2. __Server Installation__ - You are using the integrated runner with a GitLab
+1. __Server Installation__ - You are using the integrated runner with a GitLab
    instance hosted on a production server. This server may be a remote server
    and not necessarily your own, and may have TLS enabled with a self-signed
    certificate.
