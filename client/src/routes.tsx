@@ -3,6 +3,7 @@ import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import LibraryPreview from 'preview/route/library/LibraryPreview';
+import VerifyConfig from 'route/config/Verify';
 import Library from './route/library/Library';
 import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
@@ -15,6 +16,14 @@ export const routes = [
     element: (
       <LayoutPublic>
         <SignIn />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'verify',
+    element: (
+      <LayoutPublic containerMaxWidth="md">
+        <VerifyConfig />
       </LayoutPublic>
     ),
   },

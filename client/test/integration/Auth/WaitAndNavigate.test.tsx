@@ -1,4 +1,5 @@
 import { act, screen } from '@testing-library/react';
+import { getValidationResults } from 'route/config/Verify'; // Globally mocked
 import { mockAuthState } from 'test/__mocks__/global_mocks';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 
@@ -16,6 +17,7 @@ Object.defineProperty(window, 'location', {
 
 describe('WaitAndNavigate', () => {
   beforeEach(async () => {
+    (getValidationResults as jest.Mock).mockReturnValue(Promise.resolve({}));
     await setup();
   });
 
