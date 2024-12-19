@@ -15,6 +15,7 @@
   "confirmCopy": true,
   "confirmMove": true,
   "showConfig": false,
+  "showDotFiles": false,
   "showFileName": true,
   "contact": false,
   "configDialog": false,
