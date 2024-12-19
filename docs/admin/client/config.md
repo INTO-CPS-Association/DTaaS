@@ -15,7 +15,6 @@ This page describes various configuration options for react website.
       REACT_APP_WORKBENCHLINK_JUPYTERLAB: "Endpoint for the Jupyter Lab link",
       REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK:
         "Endpoint for the Jupyter Notebook link",
-      REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: "Endpoint fot the Library page preview",
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: "Endpoint for the Digital Twins page preview",
       REACT_APP_CLIENT_ID: 'AppID genereated by the gitlab OAuth provider',
       REACT_APP_AUTH_AUTHORITY: 'URL of the private gitlab instance',
@@ -37,7 +36,6 @@ This page describes various configuration options for react website.
       REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
       REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
       REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-      REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
       REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
       REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
@@ -61,7 +59,6 @@ This page describes various configuration options for react website.
       REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
       REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
       REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-      REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
       REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
       REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',

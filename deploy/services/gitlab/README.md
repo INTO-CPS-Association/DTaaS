@@ -29,7 +29,7 @@ Edit the `.env` file available in this directory to contain the following variab
 
 | Variable    | Example Value                                | Explanation                                                                                                                  |
 | :---------- | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| GITLAB_HOME | '/home/Desktop/DTaaS/deploy/services/gitlab' | Full path to the DTaaS gitlab directory. This is an absolute path with no trailing slash.                                    |
+| DTAAS_DIR | '/Users/<username>/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash.                                    |
 | SERVER_DNS  | either `foo.com` or `localhost`                               | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
 
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which
@@ -114,5 +114,7 @@ for further help.
 ## Pending Tasks
 
 This README helps with installation of Gitlab along side DTaaS application.
-But the OAuth2 integration between Gitlab and DTaaS will still be still pending.
-Follow the [INTEGRATION](./INTEGRATION.md) guide to setup the Gitlab integration.
+But the OAuth2 integration between Gitlab and DTaaS will still be pending.
+Follow the [integration guide](./INTEGRATION.md) and
+[runner setup guide](../runner/GITLAB-RUNNER.md) to setup the Gitlab
+integration.

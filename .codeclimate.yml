@@ -47,3 +47,8 @@ exclude_patterns:
   - "client/config/"
   - "deploy/config/client/env*.js"
   - "files/"
+  - "CODE_OF_CONDUCT.md"
+  - "CONTRIBUTING.md"
+  - "LICENSE.md"
+  - ".github/ISSUE_TEMPLATE/"
+  - "docs/developer/conduct.md"
