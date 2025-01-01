@@ -1,0 +1,13 @@
+# Environment variables taken from deploy/docker/.env.server
+
+services:
+  gitlab-runner:
+    container_name: gitlab-runner
+    # Runner image version is independent of the gitlab-ce image version
+    image: gitlab/gitlab-runner:alpine-v17.5.3
+    volumes:
+      - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # Maps the self-signed certificate for your server to the container
+      # Remove this if you are not using a self-signed certificate
+      - "${DTAAS_DIR}/deploy/docker/certs/${SERVER_DNS}/fullchain.pem:/etc/gitlab-runner/certs/${SERVER_DNS}.crt:ro"
