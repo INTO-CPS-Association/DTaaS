@@ -2,7 +2,8 @@ import test from 'test/e2e/setup/fixtures';
 import { expect } from '@playwright/test';
 
 test('Developer config is visible', async ({ page }) => {
-  await page.goto('./config/verify');
+  await page.goto('./config/developer');
+  await expect(page.getByText('Verifying configuration')).toBeVisible();
 
   await page.waitForSelector('[data-testid="success-icon"]', {
     timeout: 12000,
@@ -27,4 +28,10 @@ test('Developer config is visible', async ({ page }) => {
   ).toBeVisible();
 
   await expect(page.getByTestId('error-icon')).toBeHidden();
+});
+
+test('User config is visible', async ({ page }) => {
+  await page.goto('./config/user');
+  await expect(page.getByText('Verifying configuration')).toBeVisible();
+  await page.waitForURL('/', { timeout: 12000 });
 });

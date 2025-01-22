@@ -3,7 +3,7 @@ import { Remarkable } from 'remarkable';
 import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
 import * as RemarkableKatex from 'remarkable-katex';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+/* import SyntaxHighlighter from 'react-syntax-highlighter'; */
 
 interface PreviewProps {
   fileContent: string;
@@ -62,13 +62,14 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
     );
   }
 
-  if (fileType === 'json') {
-    return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
-  }
-  if (fileType === 'yaml' || fileType === 'yml') {
-    return <SyntaxHighlighter language="yaml">{fileContent}</SyntaxHighlighter>;
-  }
-  return <SyntaxHighlighter language="bash">{fileContent}</SyntaxHighlighter>;
+  /*   if (fileType === 'json') {
+        return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
+      }
+      if (fileType === 'yaml' || fileType === 'yml') {
+        return <SyntaxHighlighter language="yaml">{fileContent}</SyntaxHighlighter>;
+      }
+      return <SyntaxHighlighter language="bash">{fileContent}</SyntaxHighlighter>; */
+  return null;
 }
 
 export default PreviewTab;

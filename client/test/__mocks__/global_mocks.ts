@@ -28,6 +28,12 @@ export const mockUser: mockUserType = {
   },
 };
 
+export const mockFetch = jest.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({ data: 'success' }),
+});
+
 export type mockAuthStateType = {
   user?: mockUserType | null;
   isLoading: boolean;

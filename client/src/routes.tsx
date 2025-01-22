@@ -14,13 +14,13 @@ export const routes = [
   {
     path: '/',
     element: (
-      <LayoutPublic containerMaxWidth="md">
-        <Config role="user" />
+      <LayoutPublic>
+        <SignIn />
       </LayoutPublic>
     ),
   },
   {
-    path: 'config/verify',
+    path: 'config/developer',
     element: (
       <LayoutPublic containerMaxWidth="md">
         <Config role="developer" />
@@ -28,10 +28,10 @@ export const routes = [
     ),
   },
   {
-    path: 'signin',
+    path: 'config/user',
     element: (
-      <LayoutPublic>
-        <SignIn />
+      <LayoutPublic containerMaxWidth="md">
+        <Config role="user" />
       </LayoutPublic>
     ),
   },

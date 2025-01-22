@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { validationType } from 'util/configUtil';
+import { ValidationType } from 'util/configUtil';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
@@ -24,7 +24,7 @@ interface ValidationIconConfig {
 }
 
 const getValidationIconConfig = (
-  validation: validationType,
+  validation: ValidationType,
   label: string,
 ): ValidationIconConfig => {
   const { value, status, error } = validation;
@@ -50,7 +50,7 @@ const getValidationIconConfig = (
 };
 
 export const getConfigIcon = (
-  validation: validationType,
+  validation: ValidationType,
   label: string,
 ): JSX.Element => {
   const { icon, hoverTip } = getValidationIconConfig(validation, label);
@@ -60,7 +60,7 @@ export const getConfigIcon = (
 export const ConfigItem: React.FC<{
   label: string;
   value: string;
-  validation: validationType;
+  validation: ValidationType;
 }> = ({ label, value, validation = { error: 'Validation unavailable' } }) => (
   <div
     style={{

@@ -1,13 +1,10 @@
 import { screen } from '@testing-library/react';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
+import { mockFetch } from 'test/__mocks__/global_mocks';
 import { testPublicLayout } from './routes.testUtil';
 
 // Bypass the config verification
-global.fetch = jest.fn().mockResolvedValue({
-  ok: true,
-  status: 200,
-  json: async () => ({ data: 'success' }),
-});
+global.fetch = mockFetch;
 
 Object.defineProperty(AbortSignal, 'timeout', {
   value: jest.fn(),

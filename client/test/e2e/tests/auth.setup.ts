@@ -12,7 +12,6 @@ const testPassword = process.env.REACT_APP_TEST_PASSWORD ?? '';
 setup('authenticate', async ({ page }) => {
   // Perform authentication steps for authentication process.
   await page.goto('./');
-  await expect(page.getByText('Verifying configuration')).toBeVisible();
   await page
     .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
     .click({ timeout: 15000 });

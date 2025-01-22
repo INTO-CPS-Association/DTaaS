@@ -3,17 +3,14 @@ import { screen, waitFor } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import { mockFetch } from 'test/__mocks__/global_mocks';
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
 // Bypass the config verification
-global.fetch = jest.fn().mockResolvedValue({
-  ok: true,
-  status: 200,
-  json: async () => ({ data: 'success' }),
-});
+global.fetch = mockFetch;
 
 Object.defineProperty(AbortSignal, 'timeout', {
   value: jest.fn(),

@@ -75,7 +75,7 @@ describe('configUtil', () => {
 
   describe('getValidationResults', () => {
     test('getValidationResults object includes all keys of window.env', async () => {
-      const results = await getValidationResults([]);
+      const results = await getValidationResults();
       const resultKeys = Object.keys(results);
       const envKeys = Object.keys(window.env);
 
@@ -88,7 +88,7 @@ describe('configUtil', () => {
     test('getValidationResult AUTH_AUTHORITY has error if it fails reachability', async () => {
       window.env.REACT_APP_AUTH_AUTHORITY = 'https://foo.bar';
       global.fetch = jest.fn().mockRejectedValue(networkError);
-      const results = await getValidationResults([]);
+      const results = await getValidationResults();
       expect(results.REACT_APP_AUTH_AUTHORITY.error).toBeDefined();
       expect(results.REACT_APP_AUTH_AUTHORITY.status).toBeUndefined();
       expect(results.REACT_APP_AUTH_AUTHORITY.value).toBeUndefined();
@@ -96,14 +96,14 @@ describe('configUtil', () => {
 
     test('getValidationResult ENVIRONMENT has error if it fails parse', async () => {
       window.env.REACT_APP_ENVIRONMENT = 'foo';
-      const results = await getValidationResults([]);
+      const results = await getValidationResults();
       expect(results.REACT_APP_ENVIRONMENT.error).toBeDefined();
       expect(results.REACT_APP_ENVIRONMENT.status).toBeUndefined();
       expect(results.REACT_APP_ENVIRONMENT.value).toBeUndefined();
     });
 
     test('getValidationResult CLIENT_ID has value if it succeeds parse', async () => {
-      const results = await getValidationResults([]);
+      const results = await getValidationResults();
       expect(results.REACT_APP_CLIENT_ID.error).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.status).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('abc123');

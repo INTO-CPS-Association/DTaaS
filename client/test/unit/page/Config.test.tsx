@@ -73,10 +73,10 @@ describe('Config', () => {
       name: /Inspect configuration/i,
     });
     expect(linkToDeveloperConfig).toBeInTheDocument();
-    expect(linkToDeveloperConfig).toHaveAttribute('href', './config/verify');
+    expect(linkToDeveloperConfig).toHaveAttribute('href', './developer');
   });
 
-  test('redirects to /signin', async () => {
+  test('redirects to /', async () => {
     render(
       <MemoryRouter>
         <Config role="user" />
@@ -87,7 +87,7 @@ describe('Config', () => {
     expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/signin');
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 });
