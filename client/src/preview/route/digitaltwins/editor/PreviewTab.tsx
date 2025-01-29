@@ -6,38 +6,38 @@ import * as RemarkableKatex from 'remarkable-katex';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 interface PreviewProps {
-    fileContent: string;
-    fileType: string;
+  fileContent: string;
+  fileType: string;
 }
 
 function PreviewTab({ fileContent, fileType }: PreviewProps) {
-    if (fileType === 'md') {
-        const md = new Remarkable({
-            html: true,
-            typographer: true,
-        }).use(RemarkableKatex);
+  if (fileType === 'md') {
+    const md = new Remarkable({
+      html: true,
+      typographer: true,
+    }).use(RemarkableKatex);
 
-        const renderedMarkdown = md.render(fileContent);
+    const renderedMarkdown = md.render(fileContent);
 
-        return (
-            <div
-                style={{
-                    width: '100%',
-                    overflowWrap: 'break-word',
-                    wordWrap: 'break-word',
-                    whiteSpace: 'normal',
-                    overflow: 'hidden',
-                }}
-            >
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: renderedMarkdown,
-                    }}
-                    style={{
-                        maxWidth: '100%',
-                    }}
-                />
-                <style>{`
+    return (
+      <div
+        style={{
+          width: '100%',
+          overflowWrap: 'break-word',
+          wordWrap: 'break-word',
+          whiteSpace: 'normal',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          dangerouslySetInnerHTML={{
+            __html: renderedMarkdown,
+          }}
+          style={{
+            maxWidth: '100%',
+          }}
+        />
+        <style>{`
           img {
             max-width: 100%;
             height: auto;
@@ -58,18 +58,17 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
             background-color: #f0f0f0;
           }
         `}</style>
-            </div>
-        );
-    }
+      </div>
+    );
+  }
 
-    if (fileType === 'json') {
-        return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
-    }
-    if (fileType === 'yaml' || fileType === 'yml') {
-        return <SyntaxHighlighter language="yaml">{fileContent}</SyntaxHighlighter>;
-    }
-    return <SyntaxHighlighter language="bash">{fileContent}</SyntaxHighlighter>;
-    return null;
+  if (fileType === 'json') {
+    return <SyntaxHighlighter language="json">{fileContent}</SyntaxHighlighter>;
+  }
+  if (fileType === 'yaml' || fileType === 'yml') {
+    return <SyntaxHighlighter language="yaml">{fileContent}</SyntaxHighlighter>;
+  }
+  return <SyntaxHighlighter language="bash">{fileContent}</SyntaxHighlighter>;
 }
 
 export default PreviewTab;

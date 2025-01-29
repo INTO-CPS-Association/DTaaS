@@ -61,19 +61,19 @@ const userConfigTitle: JSX.Element = (
 );
 
 const UserConfig = (): JSX.Element => (
-    <Paper
-      sx={{
-        ...paperStyle,
-        width: 'min(60vw, 390px)',
-        aspectRatio: '2 / 1',
-        overflow: 'hidden',
-      }}
-    >
-      <Typography variant="h4" sx={typographyStyle}>
-        {userConfigTitle}
-      </Typography>
-    </Paper>
-  );
+  <Paper
+    sx={{
+      ...paperStyle,
+      width: 'min(60vw, 390px)',
+      aspectRatio: '2 / 1',
+      overflow: 'hidden',
+    }}
+  >
+    <Typography variant="h4" sx={typographyStyle}>
+      {userConfigTitle}
+    </Typography>
+  </Paper>
+);
 
 const useValidationResults = () => {
   const [validationResults, setValidationResults] = useState<{
@@ -100,7 +100,8 @@ const useValidationResults = () => {
 
 const useConfigErrors = (validationResults: {
   [key: string]: ValidationType;
-}) => Object.keys(window.env).some(
+}) =>
+  Object.keys(window.env).some(
     (key) => key !== undefined && validationResults[key]?.error !== undefined,
   );
 

@@ -100,6 +100,7 @@ export default [{
         "import/no-unresolved": "off",
         "import/extensions": "off",
         "no-use-before-define": "off",
+        "no-unreachable": "error",
     },
 }, {
     files: ["**/*.ts", "**/*.tsx"],

@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { wait } from 'util/auth/Authentication';
 
 export type ValidationType = {
-    value?: string;
-    status?: number;
-    error?: string;
+  value?: string;
+  status?: number;
+  error?: string;
 };
 
 const EnvironmentEnum = z.enum(['dev', 'local', 'prod', 'test']);
@@ -12,165 +12,155 @@ const PathString = z.string();
 const ScopesString = z.literal('openid profile read_user read_repository api');
 
 const pathKeys = [
-    'REACT_APP_URL_BASENAME',
-    'REACT_APP_URL_DTLINK',
-    'REACT_APP_URL_LIBLINK',
-    'REACT_APP_WORKBENCHLINK_VNCDESKTOP',
-    'REACT_APP_WORKBENCHLINK_VSCODE',
-    'REACT_APP_WORKBENCHLINK_JUPYTERLAB',
-    'REACT_APP_WORKBENCHLINK_JUPYTERLAB',
-    'REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK',
-    'REACT_APP_CLIENT_ID',
-    'REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW',
-    'REACT_APP_WORKBENCHLINK_DT_PREVIEW',
+  'REACT_APP_URL_BASENAME',
+  'REACT_APP_URL_DTLINK',
+  'REACT_APP_URL_LIBLINK',
+  'REACT_APP_WORKBENCHLINK_VNCDESKTOP',
+  'REACT_APP_WORKBENCHLINK_VSCODE',
+  'REACT_APP_WORKBENCHLINK_JUPYTERLAB',
+  'REACT_APP_WORKBENCHLINK_JUPYTERLAB',
+  'REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK',
+  'REACT_APP_CLIENT_ID',
+  'REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW',
+  'REACT_APP_WORKBENCHLINK_DT_PREVIEW',
 ];
 
 const urlKeys = [
-    'REACT_APP_URL',
-    'REACT_APP_REDIRECT_URI',
-    'REACT_APP_LOGOUT_REDIRECT_URI',
-    'REACT_APP_AUTH_AUTHORITY',
+  'REACT_APP_URL',
+  'REACT_APP_REDIRECT_URI',
+  'REACT_APP_LOGOUT_REDIRECT_URI',
+  'REACT_APP_AUTH_AUTHORITY',
 ];
 
 function getValidationPromises(): Record<string, Promise<ValidationType>> {
-    const isDocker = process.env.REACT_APP_IS_DOCKER === 'true';
-    return {
-        REACT_APP_ENVIRONMENT: Promise.resolve(
-            parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
-        ),
-        REACT_APP_GITLAB_SCOPES: Promise.resolve(
-            parseField(ScopesString, window.env.REACT_APP_GITLAB_SCOPES),
-        ),
-        ...Object.fromEntries(
-            pathKeys.map((key) => [
-                key,
-                parseField(PathString, window.env[key] ?? ''),
-            ]),
-        ),
-        ...Object.fromEntries(
-            urlKeys.map((key) => {
-                const url = window.env[key] ?? '';
-                if (isDocker) {
-                    window.env[key] = url.replace(
-                        /https?:\/\/localhost(:\d*)?/i,
-                        'http://host.docker.internal:80',
-                    );
-                }
-                return [key, urlIsReachable(window.env[key] ?? '')];
-            }),
-        ),
-    };
+  return {
+    REACT_APP_ENVIRONMENT: Promise.resolve(
+      parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
+    ),
+    REACT_APP_GITLAB_SCOPES: Promise.resolve(
+      parseField(ScopesString, window.env.REACT_APP_GITLAB_SCOPES),
+    ),
+    ...Object.fromEntries(
+      pathKeys.map((key) => [
+        key,
+        parseField(PathString, window.env[key] ?? ''),
+      ]),
+    ),
+    ...Object.fromEntries(
+      urlKeys.map((key) => [key, urlIsReachable(window.env[key] ?? '')]),
+    ),
+  };
 }
 
 export const getValidationResults = async (): Promise<{
-    [key: string]: ValidationType;
+  [key: string]: ValidationType;
 }> => {
-    const validationPromises: Record<
-        string,
-        Promise<ValidationType>
-    > = getValidationPromises();
+  const validationPromises: Record<
+    string,
+    Promise<ValidationType>
+  > = getValidationPromises();
 
-    return (
-        await Promise.all(
-            Object.entries(validationPromises).map(async ([key, task]) => ({
-                [key]: await task,
-            })),
-        )
-    ).reduce((acc, result) => ({ ...acc, ...result }), {});
+  return (
+    await Promise.all(
+      Object.entries(validationPromises).map(async ([key, task]) => ({
+        [key]: await task,
+      })),
+    )
+  ).reduce((acc, result) => ({ ...acc, ...result }), {});
 };
 
 export async function retryFetch(
-    url: string,
-    options: RequestInit = {},
-    retries = 2,
+  url: string,
+  options: RequestInit = {},
+  retries = 2,
 ): Promise<Response> {
-    try {
-        return await fetch(url, options);
-    } catch (error) {
-        if (retries <= 0) {
-            return Promise.reject(error);
-        }
-        await wait(1000);
-        return retryFetch(url, options, retries - 1);
+  try {
+    return await fetch(url, options);
+  } catch (error) {
+    if (retries <= 0) {
+      return Promise.reject(error);
     }
+    await wait(1000);
+    return retryFetch(url, options, retries - 1);
+  }
 }
 
 async function corsRequest(url: string): Promise<ValidationType | null> {
-    const urlValidation: ValidationType = {
-        value: undefined,
-        status: undefined,
-        error: undefined,
-    };
-    try {
-        const response = await retryFetch(url, {
-            method: 'GET',
-            signal: AbortSignal.timeout(2000),
-            headers: {
-                Accept: '*/*',
-                Origin: window.location.origin,
-            },
-            redirect: 'manual',
-        });
-        const responseIsAcceptable = response.ok || response.redirected;
-        if (responseIsAcceptable) {
-            urlValidation.value = url;
-            urlValidation.status = response.status;
-        }
-    } catch (_error) {
-        return null;
+  const urlValidation: ValidationType = {
+    value: undefined,
+    status: undefined,
+    error: undefined,
+  };
+  try {
+    const response = await retryFetch(url, {
+      method: 'GET',
+      signal: AbortSignal.timeout(2000),
+      headers: {
+        Accept: '*/*',
+        Origin: window.location.origin,
+      },
+      redirect: 'manual',
+    });
+    const responseIsAcceptable = response.ok || response.redirected;
+    if (responseIsAcceptable) {
+      urlValidation.value = url;
+      urlValidation.status = response.status;
     }
-    return urlValidation;
+  } catch (_error) {
+    return null;
+  }
+  return urlValidation;
 }
 
 async function opaqueRequest(url: string): Promise<ValidationType | null> {
-    const urlValidation: ValidationType = {
-        value: undefined,
-        status: undefined,
-        error: undefined,
-    };
-    try {
-        await retryFetch(url, {
-            method: 'GET',
-            mode: 'no-cors',
-            signal: AbortSignal.timeout(2000),
-        });
-        urlValidation.value = url;
-        urlValidation.status = 0;
-    } catch (_error) {
-        return null;
-    }
-    return urlValidation;
+  const urlValidation: ValidationType = {
+    value: undefined,
+    status: undefined,
+    error: undefined,
+  };
+  try {
+    await retryFetch(url, {
+      method: 'GET',
+      mode: 'no-cors',
+      signal: AbortSignal.timeout(2000),
+    });
+    urlValidation.value = url;
+    urlValidation.status = 0;
+  } catch (_error) {
+    return null;
+  }
+  return urlValidation;
 }
 
 export async function urlIsReachable(url: string): Promise<ValidationType> {
-    let reachability: ValidationType = {
-        value: undefined,
-        status: undefined,
-        error: `Failed to fetch ${url} after multiple attempts.`,
-    };
-    const corsResponse = await corsRequest(url);
-    if (corsResponse) {
-        reachability = corsResponse;
-    } else {
-        const opaqueResponse = await opaqueRequest(url);
-        if (opaqueResponse) {
-            reachability = opaqueResponse;
-        }
+  let reachability: ValidationType = {
+    value: undefined,
+    status: undefined,
+    error: `Failed to fetch ${url} after multiple attempts.`,
+  };
+  const corsResponse = await corsRequest(url);
+  if (corsResponse) {
+    reachability = corsResponse;
+  } else {
+    const opaqueResponse = await opaqueRequest(url);
+    if (opaqueResponse) {
+      reachability = opaqueResponse;
     }
-    return reachability;
+  }
+  return reachability;
 }
 
 const parseField = (
-    parser: {
-        safeParse: (value: string) => {
-            success: boolean;
-            error?: { message?: string };
-        };
-    },
-    value: string,
+  parser: {
+    safeParse: (value: string) => {
+      success: boolean;
+      error?: { message?: string };
+    };
+  },
+  value: string,
 ): ValidationType => {
-    const result = parser.safeParse(value);
-    return result.success
-        ? { error: undefined, value, status: undefined }
-        : { error: result.error?.message, status: undefined, value: undefined };
+  const result = parser.safeParse(value);
+  return result.success
+    ? { error: undefined, value, status: undefined }
+    : { error: result.error?.message, status: undefined, value: undefined };
 };
