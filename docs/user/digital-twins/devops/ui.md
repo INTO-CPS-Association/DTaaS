@@ -15,14 +15,14 @@ in the DTaaS.
 
 This feature requires specific installation setup.
 
-1. [Integrated gitlab installation](../../admin/gitlab/integration.md)
+1. [Integrated gitlab installation](../../../admin/gitlab/integration.md)
 1. A valid gitlab repository for the logged in user. Please see
    an [example repository](https://gitlab.com/dtaas/user1). You can clone
    this repository and customize to your needs.
-1. [A linked Gitlab Runner](../../admin/gitlab/runner.md)
+1. [A linked Gitlab Runner](../../../admin/gitlab/runner.md)
    to the user gitlab repository.
 
-## Manage
+## Manage Tab
 
 ![Manage Digital Twin Preview Page](dt_manage.png)
 
@@ -34,7 +34,7 @@ The manage tab allows for different operations on a digital twin:
 
 A digital twin placed in the DTaaS has a certain recommended
 structure. Please see the
-[assets pag](../servers/lib/assets.md) for an explanation
+[assets pag](../../servers/lib/assets.md) for an explanation
 and
 [this example](https://github.com/INTO-CPS-Association/DTaaS-examples/tree/main/digital_twins/mass-spring-damper).
 
@@ -53,7 +53,7 @@ correspond to three categories.
 
 ![Digital Twin Reconfigure](dt_manage_reconfigure.png)
 
-## Execute
+## Execute Tab
 
 ![Digital Twin Execute](dt_execute_running.png)
 

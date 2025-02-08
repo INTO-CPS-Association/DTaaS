@@ -103,7 +103,7 @@ docker compose -f compose.local.yml --env-file .env.local down
 To restart only a specific container, for example `client``
 
 ```bash
-docker compose -f compose.local.yml --env-file .env up -d --force-recreate client
+docker compose -f compose.local.yml --env-file .env.local up -d --force-recreate client
 ```
 
 ## Use
