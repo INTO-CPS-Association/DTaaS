@@ -1,0 +1,19 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: node:14
+  script:
+    # Change directory to where the package.json is located.
+    - cd servers/lib
+
+    # Replace the placeholder token in the configuration file.
+    # Make sure the placeholder in libms.dev.yaml is exactly "YOUR_HTTP_TOKEN_HERE"
+    - sed -i "s/HTTP_TOKEN/${GITHUB_ACCESS_TOKEN}/g" config/libms.dev.yaml
+
+    # Install Node dependencies.
+    - npm install
+
+    # Run your tests.
+    - npm test
