@@ -8,7 +8,7 @@ graphql-playground: "true"
 git-repos: #only used in git mode
         - user1:
                   repo-url: "https://github.com/UselessDross/dtaasAttempt2.git" # Is this supposd to be the private repo?
-                  http-token: TEST_GIT_TOKEN # line added 2025-02-07 by Bachelor student.
+                  http-token: "${TEST_GIT_TOKEN}" # line added 2025-02-07 by Bachelor student.
         - user2:
                   repo-url: "https://gitlab.com/dtaas/user2.git"
         - common:
