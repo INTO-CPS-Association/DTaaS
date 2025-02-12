@@ -1,13 +1,9 @@
 port: "4001"
-mode: "local" #git or local
-local-path: "/dtaas/libms/files"
+mode: "git" #git or local
+local-path: "C:/Education/Bachelor/BachelorWorkRepo/DTaaS/files"
 log-level: "debug"
 apollo-path: "/lib"
 graphql-playground: "true"
-
-git-options:
-        force: false
-        skip-existing: true
 
 git-repos: #only used in git mode
         - user1:
