@@ -5,7 +5,7 @@ import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
-import { mockFetch, mockUser } from 'test/__mocks__/global_mocks';
+import { mockUser } from 'test/__mocks__/global_mocks';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
 
 jest.mock('util/auth/Authentication', () => ({
@@ -23,7 +23,11 @@ jest.mock('page/Menu', () => ({
 }));
 
 // Bypass the config verification
-global.fetch = mockFetch;
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({ data: 'success' }),
+});
 
 Object.defineProperty(AbortSignal, 'timeout', {
   value: jest.fn(),

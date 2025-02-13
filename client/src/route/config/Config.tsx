@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { getValidationResults, ValidationType } from 'util/configUtil';
 import { Paper, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { ConfigItem, loadingComponent } from './ConfigItems';
 
 const paperStyle = {
@@ -49,7 +48,7 @@ const DeveloperConfig = (validationResults: {
   </Paper>
 );
 
-const userConfigTitle: JSX.Element = (
+const userConfigInvalidText: JSX.Element = (
   <>
     Invalid Application Configuration. Please contact the administrator of your
     DTaaS installation.
@@ -60,20 +59,32 @@ const userConfigTitle: JSX.Element = (
   </>
 );
 
-const UserConfig = (): JSX.Element => (
-  <Paper
-    sx={{
-      ...paperStyle,
-      width: 'min(60vw, 390px)',
-      aspectRatio: '2 / 1',
-      overflow: 'hidden',
-    }}
-  >
-    <Typography variant="h4" sx={typographyStyle}>
-      {userConfigTitle}
-    </Typography>
-  </Paper>
+const userConfigValidText: JSX.Element = (
+  <>
+    <p>Configuration appears to be valid.</p>
+    <a href="/">Return to login</a>
+  </>
 );
+
+const UserConfig = (validationResults: {
+  [key: string]: ValidationType;
+}): JSX.Element => {
+  const hasConfigErrors = useConfigErrors(validationResults);
+  return (
+    <Paper
+      sx={{
+        ...paperStyle,
+        width: 'min(60vw, 390px)',
+        aspectRatio: '2 / 1',
+        overflow: 'hidden',
+      }}
+    >
+      <Typography variant="h4" sx={typographyStyle}>
+        {hasConfigErrors ? userConfigInvalidText : userConfigValidText}
+      </Typography>
+    </Paper>
+  );
+};
 
 const useValidationResults = () => {
   const [validationResults, setValidationResults] = useState<{
@@ -106,27 +117,14 @@ const useConfigErrors = (validationResults: {
   );
 
 const Config = (props: { role: string }) => {
-  const navigate = useNavigate();
   const { validationResults, isLoading } = useValidationResults();
-  const hasConfigErrors = useConfigErrors(validationResults);
-
   const configVerification =
-    props.role === 'user' ? UserConfig() : DeveloperConfig(validationResults);
-
-  const shouldRedirect =
-    !isLoading && props.role === 'user' && !hasConfigErrors;
-  useEffect(() => {
-    if (shouldRedirect) {
-      navigate('/');
-    }
-  }, [shouldRedirect, navigate]);
+    props.role === 'user'
+      ? UserConfig(validationResults)
+      : DeveloperConfig(validationResults);
 
   if (isLoading) {
     return loadingComponent();
-  }
-
-  if (shouldRedirect) {
-    return null;
   }
 
   return configVerification;

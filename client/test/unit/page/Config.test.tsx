@@ -53,7 +53,7 @@ describe('Config', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders UserConfig correctly', async () => {
+  test('renders invalid UserConfig correctly', async () => {
     // Invalidate one config field to show user config
     window.env.REACT_APP_GITLAB_SCOPES = 'invalid';
     render(
@@ -76,7 +76,7 @@ describe('Config', () => {
     expect(linkToDeveloperConfig).toHaveAttribute('href', './developer');
   });
 
-  test('redirects to /', async () => {
+  test('renders valid UserConfig correctly', async () => {
     render(
       <MemoryRouter>
         <Config role="user" />
@@ -85,9 +85,15 @@ describe('Config', () => {
 
     expect(screen.getByText(/Verifying configuration/i)).toBeInTheDocument();
     expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Configuration appears to be valid./i),
+      ).toBeInTheDocument(),
+    );
+    const linkToDeveloperConfig = screen.getByRole('link', {
+      name: /Return to login/i,
     });
+    expect(linkToDeveloperConfig).toBeInTheDocument();
+    expect(linkToDeveloperConfig).toHaveAttribute('href', '/');
   });
 });

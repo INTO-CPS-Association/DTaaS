@@ -33,5 +33,7 @@ test('Developer config is visible', async ({ page }) => {
 test('User config is visible', async ({ page }) => {
   await page.goto('./config/user');
   await expect(page.getByText('Verifying configuration')).toBeVisible();
-  await page.waitForURL('/', { timeout: 12000 });
+  await expect(
+    page.getByText('Configuration appears to be valid.'),
+  ).toBeVisible({ timeout: 12000 });
 });
