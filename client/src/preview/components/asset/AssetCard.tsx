@@ -5,7 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { AlertColor, CardActions, Grid } from '@mui/material';
 import styled from '@emotion/styled';
-import { formatName } from 'preview/util/digitalTwin';
+import { formatName } from 'gitlab/constants';
 import CustomSnackbar from 'preview/route/digitaltwins/Snackbar';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'preview/store/digitalTwin.slice';

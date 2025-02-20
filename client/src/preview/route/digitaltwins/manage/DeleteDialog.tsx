@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
-import DigitalTwin, { formatName } from '../../../util/digitalTwin';
+import DigitalTwin from '../../../util/digitalTwin';
+import { formatName } from 'gitlab/constants';
 import { showSnackbar } from '../../../store/snackbar.slice';
 
 interface DeleteDialogProps {

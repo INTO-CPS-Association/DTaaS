@@ -13,11 +13,7 @@ import {
 } from './digitalTwinUtils';
 import DTAssets, { FileType } from './DTAssets';
 import LibraryAsset from './libraryAsset';
-
-const RUNNER_TAG = 'linux';
-
-export const formatName = (name: string) =>
-  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
+import {RUNNER_TAG} from 'C:/Users/malik/Desktop/work/DTaaS/client/src/gitlab/constants';
 
 class DigitalTwin {
   public DTName: string;

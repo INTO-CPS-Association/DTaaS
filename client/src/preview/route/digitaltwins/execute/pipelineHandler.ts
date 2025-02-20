@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
+import DigitalTwin from 'preview/util/digitalTwin';
+import { formatName } from 'gitlab/constants';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 import {
