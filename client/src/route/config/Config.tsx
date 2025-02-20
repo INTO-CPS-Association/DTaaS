@@ -111,22 +111,29 @@ const useValidationResults = () => {
 
 const useConfigErrors = (validationResults: {
   [key: string]: ValidationType;
-}) =>
-  Object.keys(window.env).some(
-    (key) => key !== undefined && validationResults[key]?.error !== undefined,
+}) => {
+  return React.useMemo(() => 
+    Object.keys(window.env || {}).some(
+      (key) => key !== undefined && validationResults[key]?.error !== undefined
+    ),
+    [validationResults]
   );
+};
 
 const Config = (props: { role: string }) => {
   const { validationResults, isLoading } = useValidationResults();
-  const configVerification =
+  
+  const configVerification = React.useMemo(() => 
     props.role === 'user'
       ? UserConfig(validationResults)
-      : DeveloperConfig(validationResults);
-
+      : DeveloperConfig(validationResults),
+    [validationResults]
+  );
+  
   if (isLoading) {
     return loadingComponent();
   }
-
+  
   return configVerification;
 };
 
