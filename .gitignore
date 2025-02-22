@@ -166,6 +166,9 @@ runner.yml
 # command scripts for runner
 servers/execution/runner/lifecycle*
 
+# Python virtual-env
+dtaas-venv/
+
 # certs
 *.pem
 

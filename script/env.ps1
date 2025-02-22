@@ -21,9 +21,6 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
     [Environment]::SetEnvironmentVariable("Path", "$env:Path;$(Get-Command python3 | Select-Object -ExpandProperty Directory)", [EnvironmentVariableTarget]::Machine)
 }
 
-# Install mkdocs
-pip install mkdocs
-
 # Install Ruby: https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-devkit-3.1.2-1-x64.exe
 choco install -y ruby
 
@@ -36,8 +33,17 @@ if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarg
 # Install markdownlint
 gem install mdl
 
+python -m venv ./dtaas-venv
+./dtaas-venv/Scripts/Activate
+
+# Install mkdocs
+pip install mkdocs
+
 # Install mkdocs plugins
 pip install mkdocs-material python-markdown-math mkdocs-open-in-new-tab mkdocs-with-pdf qrcode
+
+# Deativate venv for python
+deactivate
 
 # Ensure Python scripts directory is added to PATH (for pip)
 if (-not ([Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) -like "*Python3*")) {
