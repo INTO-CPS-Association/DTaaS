@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/libms",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -14,7 +14,6 @@
   "type": "module",
   "main": "dist/src/main.js",
   "scripts": {
-    "lint": "eslint . ",
     "build": "tsc",
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",

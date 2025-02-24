@@ -1,19 +1,17 @@
 port: "4001"
-mode: "local" #git or local
-local-path: "/dtaas/libms/files"
+mode: "git" #git or local
+local-path: "C:/Education/Bachelor/BachelorWorkRepo/DTaaS/files"
 log-level: "debug"
 apollo-path: "/lib"
 graphql-playground: "true"
 
-git-options:
-        force: false
-        skip-existing: true
-
 git-repos: #only used in git mode
         - user1:
-                  repo-url: "https://github.com/UselessDross/dtaasAttempt2.git" # Is this supposd to be the private repo?
-                  http-token: "${TEST_GIT_TOKEN}" # line added 2025-02-07 by Bachelor student.
+                  repo-url: "https://gitlab.com/dtaas/user1.git"
+                  http-token: "xxxx"
         - user2:
                   repo-url: "https://gitlab.com/dtaas/user2.git"
+                  http-token: "xxxx"
         - common:
                   repo-url: "https://gitlab.com/dtaas/common.git"
+                  http-token: "xxxx"

@@ -1,0 +1,3 @@
+#!/bin/bash
+rm -rf debug.log target
+rm -rf "output"
