@@ -5,7 +5,7 @@ log-level: "debug"
 apollo-path: "/lib"
 graphql-playground: "true"
 
-git-repos: #only used in git mode
+git-repos: #only used in git mod
         - user1:
                   repo-url: "https://gitlab.com/dtaas/user1.git"
                   http-token: "xxxx"
