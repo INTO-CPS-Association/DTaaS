@@ -30,6 +30,12 @@ There is a devcontainer configuration (`.devcontainer/devcontainer.json`)
 for the project. Please use it to get a dockerized development environment.
 DevContainer is the easiest way to get started.
 
+### DevContainers
+
+There is a devcontainer configuration (`.devcontainer/devcontainer.json`)
+for the project. Please use it to get a dockerized development environment.
+DevContainer is the easiest way to get started.
+
 ### Ubuntu/Linux
 
 The code base has been developed for most part on
@@ -92,14 +98,51 @@ Then, open powershell with **administrative** priviledges and run the
 following commands in the given order:
 
 ```bash
-powershell -F script/base.ps1
-powershell -F script/env.ps1
-powershell -F script/docker.ps1
+powershell -executionpolicy bypass -F script/base.ps1
+powershell -executionpolicy bypass -F script/env.ps1
+powershell -executionpolicy bypass -F script/docker.ps1
 ```
 
 :warning: The docker images are large and are likely to consume
 about 5GB of bandwidth and 15GB of space.
 You will have to download the docker images on a really good network.
+
+<!--
+TODO insert when githooks works
+
+### git hooks
+
+The git-hooks will ensure that your commits are formatted
+correctly and that the tests pass before you
+push the commits to remote repositories.
+
+The project uses pre-commit for managing git hooks. Install git hooks using
+
+```bash
+pre-commit install
+```
+
+The git hooks run during pre-commit (`git commit`) and
+pre-push (`git push`) stages. No special flags and options are
+needed to run these git hooks.
+
+You can also run the git-hooks manually before committing or pushing
+by using the run commands below. The autoupdate command will set the
+revisions of the git repos used in the .pre-commit-config.yaml up to date.
+
+```bash
+pre-commit run --hook-stage pre-commit # runs format and syntax checks
+pre-commit run --hook-stage pre-push   # runs test
+pre-commit autoupdate                  # update hooks to latests versions
+```
+
+Be aware that the some tests may take a long time to run.
+If you want to skip the tests or formatting,
+you can use the `--no-verify` flag
+on `git commit` or `git push`. Please use this
+option with care.
+
+-->
 
 ## :building_construction: Development Workflow
 
@@ -113,10 +156,11 @@ a development workflow is in place. Each developer should follow these steps:
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
-1. Install git-hooks for the project.
+1. nvm use 22 (if nvm or node isn't installed)
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
+1. Active the Python Virtual Enviornment by calling (`./dtaas-venv/bin/activate`)
 1. Work in your fork and open a PR from your working
    branch to your `feature/distributed-demo` branch.
    The PR will run all the github actions, code climate and codecov checks.
