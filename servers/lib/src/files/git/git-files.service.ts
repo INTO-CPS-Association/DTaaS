@@ -35,8 +35,10 @@ export default class GitFilesService implements IFilesService {
 
 
   private async cloneRepositories(): Promise<void[]> {
-    const userRepoConfigs = this.configService.getGitRepos();
-    if (!userRepoConfigs || userRepoConfigs.length === 0) { throw new Error('No git repos found in config'); }
+    const userRepoConfigs = this.configService.getGitRepos() ?? [];
+    if (userRepoConfigs.length === 0) {
+      throw new Error('No git repos found in config');
+    }
 
     return Promise.all(
       userRepoConfigs.map(async (repoConf) => {
@@ -46,7 +48,6 @@ export default class GitFilesService implements IFilesService {
         const httpToken = repoConfig['http-token'];
         const cloneDir: string = path.join(this.dataPath, user);
         const gitDir: string = path.join(this.dataPath, 'gitdir', user);
-        const UnauthMsg: string = `Authentication failed for ${repoUrl}. This repository require a valid personal access token. Please provide one  in your configuration.`;
 
 
 
@@ -64,10 +65,21 @@ export default class GitFilesService implements IFilesService {
           _logger.LogMsg(`Successfully cloned ${repoUrl}`)
 
 
-        } catch (error: any) {
-          if (error.message && error.message.includes("401 Unauthorized")) { _logger.ErrorMsg(UnauthMsg); }
-          else { this.logger.debug(error.stack); }
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            // Now TypeScript knows 'err.message' exists
+            if (err.message.includes('401 Unauthorized')) {
+              // handle
+            } else {
+              this.logger.debug(err.stack);
+
+            }
+          } else {
+            // err is not an Error, handle differently or ignore
+            this.logger.error('Unknown error occurred', err);
+          }
         }
+
       })
     );
   }

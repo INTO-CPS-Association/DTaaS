@@ -1,19 +1,19 @@
 
 import { describe, it, beforeAll, afterAll, expect } from '@jest/globals';
 import GitFilesService from '../../src/files/git/git-files.service';
-import { GitRepo, ConfigValues } from 'src/config/config.model';
+import { GitRepo } from 'src/config/config.model';
 import { Test, TestingModule } from '@nestjs/testing';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as os from 'os';
-
-
+import { ConsoleLogger } from '../../src/util/logger';
+const logger = new ConsoleLogger();
 
 class DummyConfigService {
-    private config: any;
-    constructor(configData: ConfigValues) { this.config = configData; }
+    private config: GitRepo;
+    constructor(configData: GitRepo) { this.config = configData; }
     getLocalPath(): string { return this.config['local-path']; }
     getGitRepos(): GitRepo[] { return this.config['git-repos']; }
     isDryRun(): boolean { return false; }
@@ -23,9 +23,8 @@ class DummyConfigService {
 describe('GitFilesService Integration Test (NestJS style)', () => {
     let testingModule: TestingModule;
     let gitFilesService: GitFilesService;
-
     let tempDir: string;
-    let configData: ConfigValues;
+
 
     // Utility to locate the current file and directory
     const __filename = fileURLToPath(import.meta.url);
@@ -34,12 +33,12 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
     beforeAll(async () => {
         // 1. Create a temp directory
         tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'libms-test-'));
-        console.log(`Temporary directory for test: ${tempDir}`);
+        logger.LogMsg(`Temporary directory for test: ${tempDir}`);
 
         // 2. Load and parse your YAML config
         const configFilePath = path.join(__dirname, '../../config/libms.dev.yaml');
         const fileContents = await fs.readFile(configFilePath, 'utf8');
-        configData = yaml.load(fileContents) as ConfigValues;
+        let configData: GitRepo = yaml.load(fileContents) as GitRepo;
 
         // 3. Override the local path with the temp dir
         configData['local-path'] = tempDir;
@@ -57,7 +56,7 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
                     // Provide a mock localFilesService if GitFilesService depends on it
                     provide: 'LocalFilesService',
                     useValue: {
-                        listDirectory: async (_p: string) => ({}),
+                        listDirectory: async (_p: string) => { return {}; },
                         readFile: async (_p: string) => ({}),
                     },
                 },
@@ -71,7 +70,7 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
     afterAll(async () => {
         // Clean up temp directory
         await fs.rm(tempDir, { recursive: true, force: true });
-        console.log(`Test finished. Removed temporary directory: ${tempDir}`);
+        logger.LogMsg(`Test finished. Removed temporary directory: ${tempDir}`);
     });
 
     it('should clone all configured repositories into the temporary directory', async () => {
