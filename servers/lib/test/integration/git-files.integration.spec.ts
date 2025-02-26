@@ -37,7 +37,7 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
         console.log(`Temporary directory for test: ${tempDir}`);
 
         // 2. Load and parse your YAML config
-        const configFilePath = path.join(__dirname, '../../libms.yaml');
+        const configFilePath = path.join(__dirname, '../../config/libms.dev.yaml');
         const fileContents = await fs.readFile(configFilePath, 'utf8');
         configData = yaml.load(fileContents) as ConfigValues;
 
