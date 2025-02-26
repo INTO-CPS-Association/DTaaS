@@ -9,6 +9,27 @@ import {
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 
+const cleanLogContent = (input: string): string => {
+  if (!input) return '';
+  
+  let cleaned = input.replace(
+    // eslint-disable-next-line no-control-regex
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    ''
+  );
+  cleaned = cleaned.split('\n').map(line => {
+    if (line.includes('section_start:')) {
+      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/, '');
+    }
+    if (line.includes('section_end:')) {
+      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/, '');
+    }
+    return line;
+  }).join('\n');
+  
+  return cleaned;
+};
+
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
   dispatch: ReturnType<typeof useDispatch>,
@@ -100,27 +121,17 @@ export const fetchJobLogs = async (
     pipelineId,
   );
   const logPromises = jobs.map(async (job) => {
-    const log = await gitlabInstance.getJobTrace(
+    let logContent = await gitlabInstance.getJobTrace(
       gitlabInstance.projectId!,
       job.id,
     );
-    if (typeof log === 'string') {
-      log
-        .replace(
-          // TODO: Fix ansi character stripping
-          // eslint-disable-next-line no-control-regex
-          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-          '',
-        )
-        .split('\n')
-        .map((line: string) =>
-          line
-            .replace(/section_start:\d+:[^A-Z]*/, '')
-            .replace(/section_end:\d+:[^A-Z]*/, ''),
-        )
-        .join('\n');
+    
+    if (typeof logContent === 'string') {
+      logContent = cleanLogContent(logContent);
     }
-    return { jobName: job.name, log };
+    
+    return { jobName: job.name, log: logContent };
   });
+  
   return (await Promise.all(logPromises)).reverse();
 };
