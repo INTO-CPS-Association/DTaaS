@@ -10,4 +10,5 @@ export type ConfigValues = {
 
 export type GitRepo = {
   'repo-url': string;
+  'http-token': string;
 };
