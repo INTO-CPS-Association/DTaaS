@@ -1,0 +1,10 @@
+services:
+  libms:
+    build:
+      context: ../../
+      dockerfile: ./docker/libms.dockerfile
+    volumes:
+      - ./files:/dtaas/libms/files
+      - ./config/libms.dev.yaml:/dtaas/libms/libms.yaml
+    ports:
+      - 4001:4001
