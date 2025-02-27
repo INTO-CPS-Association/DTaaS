@@ -10,8 +10,8 @@ git-repos:
       repo-url: 'https://gitlab.com/dtaas/user1.git'
       http-token: 'xxxx'
   - user2:
-    repo-url: 'https://gitlab.com/dtaas/user2.git'
-    http-token: 'xxxx'
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+      http-token: 'xxxx'
   - common:
-    repo-url: 'https://gitlab.com/dtaas/common.git'
-    http-token: 'xxxx'
+      repo-url: 'https://gitlab.com/dtaas/common.git'
+      http-token: 'xxxx'
