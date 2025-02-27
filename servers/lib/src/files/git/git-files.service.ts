@@ -18,21 +18,20 @@ export default class GitFilesService implements IFilesService {
   private readonly logger: Logger;
   @Inject(LocalFilesService) private localFilesService: LocalFilesService;
 
-
   constructor(@Inject(CONFIG_SERVICE) private configService: Config) {
     this.dataPath = this.configService.getLocalPath();
     this.logger = new Logger(GitFilesService.name);
   }
 
+  init(): Promise<any> {
+    return this.cloneRepositories();
+  }
 
-
-  init(): Promise<any> { return this.cloneRepositories(); }
-
-
-
-  private buildAuthUrl(repoUrl_: string, httpToken_?: string): string { return httpToken_ ? `https://${httpToken_}@${repoUrl_.replace('https://', '')}` : repoUrl_; }
-
-
+  private buildAuthUrl(repoUrl_: string, httpToken_?: string): string {
+    return httpToken_
+      ? `https://${httpToken_}@${repoUrl_.replace('https://', '')}`
+      : repoUrl_;
+  }
 
   private async cloneRepositories(): Promise<void[]> {
     const userRepoConfigs = this.configService.getGitRepos() ?? [];
@@ -49,10 +48,10 @@ export default class GitFilesService implements IFilesService {
         const cloneDir: string = path.join(this.dataPath, user);
         const gitDir: string = path.join(this.dataPath, 'gitdir', user);
 
-
-
         try {
-          _logger.LogMsg(`Beginning cloning ${repoUrl} into working directory: ${cloneDir} ...`)
+          _logger.LogMsg(
+            `Beginning cloning ${repoUrl} into working directory: ${cloneDir} ...`,
+          );
           await git.clone({
             fs,
             http,
@@ -62,9 +61,7 @@ export default class GitFilesService implements IFilesService {
             singleBranch: true,
             depth: 1,
           });
-          _logger.LogMsg(`Successfully cloned ${repoUrl}`)
-
-
+          _logger.LogMsg(`Successfully cloned ${repoUrl}`);
         } catch (err: unknown) {
           if (err instanceof Error) {
             // Now TypeScript knows 'err.message' exists
@@ -72,20 +69,23 @@ export default class GitFilesService implements IFilesService {
               // handle
             } else {
               this.logger.debug(err.stack);
-
             }
           } else {
             // err is not an Error, handle differently or ignore
             this.logger.error('Unknown error occurred', err);
           }
         }
-
-      })
+      }),
     );
   }
 
-  getMode(): CONFIG_MODE { return CONFIG_MODE.GIT; }
-  listDirectory(path: string): Promise<Project> { return this.localFilesService.listDirectory(path); }
-  readFile(path: string): Promise<Project> { return this.localFilesService.readFile(path); }
-
+  getMode(): CONFIG_MODE {
+    return CONFIG_MODE.GIT;
+  }
+  listDirectory(path: string): Promise<Project> {
+    return this.localFilesService.listDirectory(path);
+  }
+  readFile(path: string): Promise<Project> {
+    return this.localFilesService.readFile(path);
+  }
 }

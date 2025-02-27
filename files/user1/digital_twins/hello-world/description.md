@@ -1,1 +1,0 @@
-The hello world digital twin (DT) is a simple demonstrative model designed to introduce the basic concepts of a DT.

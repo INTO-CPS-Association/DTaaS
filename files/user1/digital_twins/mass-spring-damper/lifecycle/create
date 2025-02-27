@@ -1,8 +1,0 @@
-#!/bin/bash
-
-apt update
-apt install sudo
-
-printf "install dependencies and create configuration \n\n"
-sudo apt-get update
-sudo apt-get install -y openjdk-17-jre

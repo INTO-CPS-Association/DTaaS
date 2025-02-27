@@ -1,9 +1,0 @@
-#!/bin/bash
-
-apt-get update
-apt-get install -y default-jdk
-
-java -jar maestro-2.3.0-jar-with-dependencies.jar\
-  import -output output\
-  --dump-intermediate sg1 cosim.json time.json\
-  -i -vi FMI2 output-dir>debug.log 2>&1

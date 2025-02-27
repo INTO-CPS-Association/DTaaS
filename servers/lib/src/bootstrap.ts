@@ -14,7 +14,8 @@ export default async function bootstrap(options?: BootstrapOptions) {
   const logger = new Logger(bootstrap.name);
 
   if (process.env.LIBMS_CONFIG_PATH == null)
-    process.env.LIBMS_CONFIG_PATH = options.config ?? '../lib/config/libms.dev.yaml';
+    process.env.LIBMS_CONFIG_PATH =
+      options.config ?? '../lib/config/libms.dev.yaml';
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(CONFIG_SERVICE) as IConfig;
