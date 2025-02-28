@@ -22,7 +22,7 @@
     "config:local": "npx shx cp config/local.js public/env.js && npx shx cp config/local.js build/env.js",
     "config:prod": "npx shx cp config/prod.js public/env.js && npx shx cp config/prod.js build/env.js",
     "config:test": "npx shx cp config/test.js public/env.js && npx shx cp config/test.js build/env.js",
-    "develop": "PORT=4000 npx react-scripts start",
+    "develop": "npx react-scripts start",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.{ts,tsx,css,scss}\"",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
     "start": "serve -s build -l 4000",
@@ -93,7 +93,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "serve": "^14.2.1",
     "styled-components": "^6.1.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
     "@babel/core": "7.25.8",
