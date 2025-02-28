@@ -9,20 +9,25 @@ import {
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 
-const cleanLogContent = (input: string): string => {
+export const cleanLogContent = (input: string | null | undefined): string => {
   if (!input) return '';
   
   let cleaned = input.replace(
+    // eslint-disable-next-line no-control-regex
+    /\u001b\[[0-9;]*[mK]/g, 
+    ''
+  );
+  cleaned = cleaned.replace(
     // eslint-disable-next-line no-control-regex
     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
     ''
   );
   cleaned = cleaned.split('\n').map(line => {
     if (line.includes('section_start:')) {
-      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/, '');
+      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/, '').trim();
     }
     if (line.includes('section_end:')) {
-      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/, '');
+      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/, '').trim();
     }
     return line;
   }).join('\n');
@@ -125,7 +130,7 @@ export const fetchJobLogs = async (
       gitlabInstance.projectId!,
       job.id,
     );
-    
+  
     if (typeof logContent === 'string') {
       logContent = cleanLogContent(logContent);
     }

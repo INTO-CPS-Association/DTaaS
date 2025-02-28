@@ -1,5 +1,6 @@
 import { JobSchema } from '@gitbeaker/rest';
 import {
+  cleanLogContent,
   fetchJobLogs,
   startPipeline,
   updatePipelineStateOnCompletion,
@@ -103,5 +104,37 @@ describe('PipelineUtils', () => {
 
     mockGetPipelineJobs.mockRestore();
     mockGetJobTrace.mockRestore();
+  });
+
+  // Tests for cleanLogContent function
+  describe('cleanLogContent', () => {
+    it('should remove ANSI escape sequences', () => {
+      const input = '\u001b[32mSuccess\u001b[0m';
+      const expected = 'Success';
+      expect(cleanLogContent(input)).toBe(expected);
+    });
+
+    it('should remove GitLab section markers', () => {
+      const input = 'section_start:1234:build_step\nBuilding project\nsection_end:1234:build_step';
+      const expected = '\nBuilding project\n';
+      expect(cleanLogContent(input)).toBe(expected);
+    });
+
+    it('should handle empty or invalid input', () => {
+      expect(cleanLogContent('')).toBe('');
+      expect(cleanLogContent(null)).toBe('');
+      expect(cleanLogContent(undefined)).toBe('');
+    });
+
+    it('should preserve regular log content', () => {
+      const input = 'Running with gitlab-runner 17.9.0\nCloning repository\nBuilding project';
+      expect(cleanLogContent(input)).toBe(input);
+    });
+
+    it('should handle logs with complex ANSI color codes', () => {
+      const input = '\u001b[38;5;196mError\u001b[0m: \u001b[38;5;33mBuild failed\u001b[0m';
+      const expected = 'Error: Build failed';
+      expect(cleanLogContent(input)).toBe(expected);
+    });
   });
 });
