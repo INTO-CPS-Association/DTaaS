@@ -9,7 +9,9 @@ import { ConsoleLogger } from '../../util/logger.js';
 import { Project } from 'src/types.js';
 import * as git from 'isomorphic-git';
 import * as fs from 'fs';
-import path from 'path';
+import * as path from 'path';
+import { GitRepo } from 'src/config/config.model.js';
+
 const _logger = new ConsoleLogger();
 
 @Injectable()
@@ -44,9 +46,9 @@ export default class GitFilesService implements IFilesService {
     return Promise.all(
       userRepoConfigs.map(async (repoConf) => {
         const user: string = Object.keys(repoConf)[0];
-        const repoConfig = repoConf[user];
-        const repoUrl = repoConfig['repo-url'];
-        const httpToken = repoConfig['http-token'];
+        const repoConfig: GitRepo = repoConf[user];
+        const repoUrl: string = repoConfig['repo-url'];
+        const httpToken: string = repoConfig['http-token'];
         const cloneDir: string = path.join(this.dataPath);
         const gitDir: string = path.join(this.dataPath, 'gitdir');
 
