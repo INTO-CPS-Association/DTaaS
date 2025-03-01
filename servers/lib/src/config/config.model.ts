@@ -10,5 +10,5 @@
 
 export type GitRepo = {
   'repo-url': string;
-  'http-token': string;
+  'http-token'?: string;
 };
