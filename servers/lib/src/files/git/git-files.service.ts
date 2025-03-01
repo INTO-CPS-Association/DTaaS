@@ -40,14 +40,15 @@ export default class GitFilesService implements IFilesService {
       throw new Error('No git repos found in config');
     }
 
+
     return Promise.all(
       userRepoConfigs.map(async (repoConf) => {
         const user: string = Object.keys(repoConf)[0];
         const repoConfig = repoConf[user];
         const repoUrl = repoConfig['repo-url'];
         const httpToken = repoConfig['http-token'];
-        const cloneDir: string = path.join(this.dataPath, user);
-        const gitDir: string = path.join(this.dataPath, 'gitdir', user);
+        const cloneDir: string = path.join(this.dataPath);
+        const gitDir: string = path.join(this.dataPath, 'gitdir');
 
 
 
@@ -67,17 +68,9 @@ export default class GitFilesService implements IFilesService {
 
         } catch (err: unknown) {
           if (err instanceof Error) {
-            // Now TypeScript knows 'err.message' exists
-            if (err.message.includes('401 Unauthorized')) {
-              // handle
-            } else {
-              this.logger.debug(err.stack);
-
-            }
-          } else {
-            // err is not an Error, handle differently or ignore
-            this.logger.error('Unknown error occurred', err);
+            if (err.message.includes('401 Unauthorized')) { } else { this.logger.debug(err.stack); }
           }
+          else { this.logger.error('Unknown error occurred', err); }
         }
 
       })
