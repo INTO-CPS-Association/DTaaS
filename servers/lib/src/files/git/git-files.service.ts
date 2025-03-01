@@ -29,7 +29,7 @@ export default class GitFilesService implements IFilesService {
 
 
   private async cloneRepositories(): Promise<void[]> {
-    const userRepoConfigs: Array<{ [key: string]: GitRepo }> = this.configService.getGitRepos() ?? [];
+    const userRepoConfigs = this.configService.getGitRepos() ?? [];
     if (userRepoConfigs.length === 0) {
       throw new Error('No git repos found in config');
     }
@@ -72,7 +72,7 @@ export default class GitFilesService implements IFilesService {
   }
 
   private buildAuthUrl(repoUrl_: string, httpToken_?: string): string { return httpToken_ ? `https://${httpToken_}@${repoUrl_.replace('https://', '')}` : repoUrl_; }
-  init(): Promise<void[]> { return this.cloneRepositories(); }
+  init(): Promise<any> { return this.cloneRepositories(); }
   getMode(): CONFIG_MODE { return CONFIG_MODE.GIT; }
   listDirectory(path: string): Promise<Project> { return this.localFilesService.listDirectory(path); }
   readFile(path: string): Promise<Project> { return this.localFilesService.readFile(path); }
