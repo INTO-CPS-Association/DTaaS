@@ -1,4 +1,3 @@
-
 import { describe, it, beforeAll, afterAll, expect } from '@jest/globals';
 import GitFilesService from '../../src/files/git/git-files.service';
 import { GitRepo } from 'src/config/config.model';
@@ -9,7 +8,6 @@ import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as os from 'os';
 import { ConsoleLogger } from '../../src/util/logger';
-const logger = new ConsoleLogger();
 
 class DummyConfigService {
     private config: GitRepo;
@@ -19,12 +17,10 @@ class DummyConfigService {
     isDryRun(): boolean { return false; }
 }
 
-
 describe('GitFilesService Integration Test (NestJS style)', () => {
     let testingModule: TestingModule;
     let gitFilesService: GitFilesService;
     let tempDir: string;
-
 
     // Utility to locate the current file and directory
     const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +29,7 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
     beforeAll(async () => {
         // 1. Create a temp directory
         tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'libms-test-'));
+        const logger = new ConsoleLogger();
         logger.LogMsg(`Temporary directory for test: ${tempDir}`);
 
         // 2. Load and parse your YAML config
@@ -60,6 +57,9 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
                         readFile: async (_p: string) => ({}),
                     },
                 },
+
+                ConsoleLogger, //2025-03-03: added with the intent of implementing the 
+                //                           the supposed custom logger;
             ],
         }).compile();
 
@@ -70,6 +70,8 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
     afterAll(async () => {
         // Clean up temp directory
         await fs.rm(tempDir, { recursive: true, force: true });
+        const logger = new ConsoleLogger(); //2025-03-03: added with the intent of implementing the 
+        //                                                the supposed custom logger;
         logger.LogMsg(`Test finished. Removed temporary directory: ${tempDir}`);
     });
 
