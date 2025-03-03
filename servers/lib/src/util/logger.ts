@@ -3,14 +3,12 @@ import { IConsoleLogger } from "./Interfaces/IConsoleLogger";
 import { ColorUtility } from "./ColorUtility.js";
 //=removed=
 //Ensure the ConsoleLogger class is properly set up as a NestJS service.
-const LINE_LENGTH: number = 50 as const;
-const INDENT_SPACES: string = "              " as const; //14 spaces
+const LINE_LENGTH: number = 50;
+const INDENT_SPACES: string = "              "; //14 spaces
 
 @Injectable()
 export class ConsoleLogger extends Logger implements IConsoleLogger {
-    constructor() {
-        super();
-    }
+    // constructor() { super(); }
 
     ErrorMsg(message: string, maxLineLength: number = LINE_LENGTH): void {
         this.printWrappedMessage(message, maxLineLength, ColorUtility.FG_RED, "∙X∙ ERR ∙X∙:");
