@@ -1,13 +1,13 @@
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { Injectable, Logger } from '@nestjs/common';
-import { GitRepo } from './config.model.js';
+import { ConfigValues, GitRepo } from './config.model.js';
 import resolveFile from './util.js';
 import { IConfig } from './config.interface.js';
 
 @Injectable()
 export default class Config implements IConfig {
-  private configValues: GitRepo;
+  private configValues: ConfigValues;
   private logger: Logger;
 
   constructor() {
@@ -18,7 +18,7 @@ export default class Config implements IConfig {
     if (configPath !== undefined) {
       try {
         const configFile = readFileSync(resolveFile(configPath), 'utf8');
-        this.configValues = yaml.load(configFile) as GitRepo;
+        this.configValues = yaml.load(configFile) as ConfigValues;
       } catch (e) {
         this.logger.error('Error loading config file', e);
         process.exit(1);

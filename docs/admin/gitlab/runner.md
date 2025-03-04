@@ -1,146 +1,74 @@
-# GitLab Runner Integration
+# Gitlab Runner Integration
 
-This document outlines the steps needed to create a Docker container named
-`gitlab-runner` which will contain a single runner that will be responsible for
-the execution of Digital Twins. There are two installation scenarios:
+To properly use the __Digital Twins Preview Page__, you need to
+configure at least one project runner in your GitLab profile.
+The first step is to configure the CI/CD pipeline in gitlab project.
+The second step is to install the runner and integrate it
+with the selected gitlab project.
 
-1. __Localhost Installation__ - You are using the integrated runner locally with
-   a GitLab instance hosted at `https://localhost/gitlab`.
-1. __Server Installation__ - You are using the integrated runner with a GitLab
-   instance hosted on a production server. This server may be a remote server
-   and not necessarily your own, and may have TLS enabled with a self-signed
-   certificate.
+## Configure Gitlab Project
 
-Following the steps below sets up the integrated runner which can be used to
-execute digital twins from the Digital Twins Preview Page.
+Follow the steps below:
 
-## Prerequisites
+1. Navigate to the _DTaaS_ group and select the project named after your
+   GitLab username.
+1. In the project menu, go to Settings and select CI/CD.
+1. Expand the __Runners__ section and click on _New project runner_. Follow the
+   configuration instructions carefully:
+   - Add __linux__ as a tag during configuration.
+   - Click on _Create runner_. A runner authentication token is generated.
+     This token will be used later for registering a runner.
 
-A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
-For an explanation of how to set up a GitLab instance that integrates with a
-DTaaS application, refer to [our GitLab instance document](./index.md)
-and [our GitLab integration guide](./integration.md).
+## Runner
 
-The rest of this document assumes you have a running DTaaS application with a
-GitLab instance running.
+### Install Runner
 
-## Runner Scopes
+A detailed guide on installation of
+[gitlab runners](https://docs.gitlab.com/runner/install/)
+on Linux OS is available on
+[gitlab website](https://docs.gitlab.com/runner/install/linux-repository.html).
+Remember to use `linux` as tag for the runner.
 
-A GitLab Runner can be configured for three different scopes:
+### Register Runner
 
-| Runner Scope    | Description |
-|-----------------|-------------|
-| Instance Runner | Available to all groups and projects in a GitLab instance. |
-| Group Runner    | Available to all projects and subgroups in a group. |
-| Project Runner  | Associated with one specific project. |
+Please see this [gitlab guide](https://docs.gitlab.com/runner/register/)
+on registering a runner.
 
-We suggest creating __instance runners__ as they are the most straightforward, but
-any type will work. More about these three types can be found on
-[the official GitLab documentation page](https://docs.gitlab.com/ee/ci/runners/runners_scope.html).
+Remember to choose _docker_ as executor and _ruby:2.7_ as
+the default docker image.
 
-## Obtaining A Registration Token
-
-First, we will obtain the token necessary to register the runner for the GitLab
-instance. Open your GitLab instance (remote or local) and depending on your
-choice of runner scope, follow the steps given below:
-
-| Runner Scope    | Steps |
-|-----------------|-------|
-| Instance Runner |1. On the __Admin__ dashboard, navigate to __CI/CD > Runners__.<br>2. Select __New instance runner__.|
-| Group Runner    |1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__.|
-| Project Runner  |1. On the __DTaaS__ group page, select the project named after your GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.|
-
-For any scope you have chosen, you will be directed to a page to create a
-runner:
-
-1. Under __Platform__, select the Linux operating system.
-1. Under __Tags__, add a `linux` tag.
-1. Select __Create runner__.
-
-You should then see the following screen:
-
-![Runner Registration Screen](./runner-registration.png)
-
-Be sure to save the generated runner authentication token.
-
-## Configuring the Runner
-
-Depending on your installation scenario, the runner setup reads certain
-configurations settings:
-
-1. __Localhost Installation__ - uses `deploy/docker/.env.local`
-1. __Server Installation__ - uses `deploy/docker/.env.server`
-
-These files are integral to running the DTaaS application, so it will be
-assumed that you have already configured these.
-
-We need to register the runner with the GitLab instance so that they may
-communicate with each other. `deploy/services/runner/runner-config.toml`
-has the following template:
-
-```toml
-[[runners]]
-  name = "dtaas-runner-1"
-  url = "https://foo.com/gitlab/" # Edit this
-  token = "xxx" # Edit this
-  executor = "docker"
-  [runners.docker]
-    tls_verify = false
-    image = "ruby:2.7"
-    privileged = false
-    disable_entrypoint_overwrite = false
-    oom_kill_disable = false
-    volumes = ["/cache"]
-    network_mode = "host" # Disable this in secure contexts
+```bash
+$sudo gitlab-runner register  --url https://gitlab.foo.com \
+  --token xxxxx
 ```
 
-1. Set the `url` variable to the URL of your GitLab instance.
-1. Set the `token` variable to the runner registration token you obtained earlier.
-1. If you are following the server installation scenario, remove the line
-   `network_mode = "host"`.
+Or, you can also register the runner in non-interactive mode by running
 
-A list of advanced configuration options is provided on the
-[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+```bash
+$sudo gitlab-runner register \
+  --non-interactive \
+  --url "https://gitlab.foo.com/" \
+  --token "xxxx" \
+  --executor "docker" \
+  --docker-image ruby:2.7 \
+  --description "docker-runner"
+```
 
-## Start the GitLab Runner
+### Start Runner
 
-You may use the following commands to start and stop the `gitlab-runner`
-container respectively, depending on your installation scenario:
+You can manually verify that the runner is available to pick up jobs by running
+the following command:
 
-1. Go to the DTaaS home directory (`DTaaS_DIR`) and execute one of
-   the following commands.
+```bash
+$sudo gitlab-runner run
+```
 
-1. Localhost Installation
-
-    ```bash
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local up -d
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local down
-    ```
-
-1. Server Installation
-
-    ```bash
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server up -d
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server down
-    ```
-
-Once the container starts, the runner within it will run automatically. You can
-tell if the runner is up and running by navigating to the page where
-you created the runner. For example, an Instance Runner would look like this:
-
-![Status indicator under Admin Area > Runners](./runner-activation.png)
-
-You will now have a GitLab runner ready to accept jobs for the GitLab instance.
+It can also be used to reactivate offline runners during subsequent sessions.
 
 ## Pipeline Trigger Token
 
-The Digital Twins Preview Page uses the GitLab API which requires a
-[Pipeline Trigger Token](https://docs.gitlab.com/ee/api/pipeline_triggers.html).
-Go to your project in the __DTaaS__ group and navigate to
-__Settings > CI/CD > Pipeline trigger tokens__. Add a new token with any
-description of your choice.
-
-![Creating a Pipeline Trigger Token](./pipeline-token.PNG)
-
-You can now use the Digital Twins Preview Page to manage and execute your
-digital twins.
+You also need to create a
+[pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html).
+This token is required to trigger pipelines by using the API.
+You can create this token in your GitLab project's CI/CD settings under
+the *Pipeline trigger tokens* section.

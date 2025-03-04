@@ -26,10 +26,7 @@ nav:
       - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-          - DevOps Preview:
-              - Digital Twin Structure: user/digital-twins/devops/file-structure.md
-              - User Interface: user/digital-twins/devops/ui.md
-      - Gitlab Tutorial: user/gitlab/tutorial.md
+          - DevOps Preview: user/digital-twins/devops.md
       - Runner: user/servers/execution/runner/README.md
       - Examples:
           - Overview: user/examples/index.md
@@ -88,7 +85,6 @@ nav:
   - FAQ: FAQ.md
   - Developer:
       - Developer Guide: developer/index.md
-      - Code of Conduct: developer/conduct.md
       - GitHub Actions: developer/github-actions.md
       - System:
         - Architecture: developer/system/architecture.md
@@ -100,11 +96,6 @@ nav:
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md
-      - DevOps Framework:
-        - Overview: developer/devops/overview.md
-        - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
-        - Triggering Pipelines via API: developer/devops/api.md
-        - Implemented Classes: developer/devops/implementation.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License: 

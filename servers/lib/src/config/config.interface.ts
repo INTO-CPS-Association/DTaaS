@@ -11,5 +11,4 @@ export interface IConfig {
   getLogLevel(): string;
   getGraphqlPlayground(): string;
   getGitRepos(): { [key: string]: GitRepo }[];
-
 }
