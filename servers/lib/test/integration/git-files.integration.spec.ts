@@ -35,33 +35,41 @@ describe('GitFilesService Integration Test (NestJS style)', () => {
         // 2. Load and parse your YAML config
         const configFilePath = path.join(__dirname, '../../config/libms.dev.yaml');
         const fileContents = await fs.readFile(configFilePath, 'utf8');
-        let configData: GitRepo = yaml.load(fileContents) as GitRepo;
+        let configData: GitRepo;
+        try {
+            configData = yaml.load(fileContents) as GitRepo;
+        } catch (err) {
+            throw new Error('Failed to load YAML config');
+        }
 
         // 3. Override the local path with the temp dir
         configData['local-path'] = tempDir;
 
         // 4. Create the Nest testing module
-        testingModule = await Test.createTestingModule({
-            providers: [
-                GitFilesService,
-                {
-                    // Provide the dummy config service as a stand-in for the real one
-                    provide: 'CONFIG_SERVICE', // or the token your real service uses
-                    useValue: new DummyConfigService(configData),
-                },
-                {
-                    // Provide a mock localFilesService if GitFilesService depends on it
-                    provide: 'LocalFilesService',
-                    useValue: {
-                        listDirectory: async (_p: string) => { return {}; },
-                        readFile: async (_p: string) => ({}),
+        try {
+            testingModule = await Test.createTestingModule({
+                providers: [
+                    GitFilesService,
+                    {
+                        // Provide the dummy config service as a stand-in for the real one
+                        provide: 'CONFIG_SERVICE', // or the token your real service uses
+                        useValue: new DummyConfigService(configData),
                     },
-                },
-
-                ConsoleLogger, //2025-03-03: added with the intent of implementing the 
-                //                           the supposed custom logger;
-            ],
-        }).compile();
+                    {
+                        // Provide a mock localFilesService if GitFilesService depends on it
+                        provide: 'LocalFilesService',
+                        useValue: {
+                            listDirectory: async () => { return {}; },
+                            readFile: async () => ({}),
+                        },
+                    },
+                    ConsoleLogger, //2025-03-03: added with the intent of implementing the 
+                    //                           the supposed custom logger;
+                ],
+            }).compile();
+        } catch (err) {
+            throw new Error('Failed to create testing module');
+        }
 
         // 5. Retrieve the service from the testing module
         gitFilesService = testingModule.get<GitFilesService>(GitFilesService);
