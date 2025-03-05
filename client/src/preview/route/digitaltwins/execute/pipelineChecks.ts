@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin from 'preview/util/digitalTwin';
-import {formatName} from 'gitlab/constants';
+import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import {
   fetchJobLogs,
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { showSnackbar } from 'preview/store/snackbar.slice';
+import { MAX_EXECUTION_TIME } from 'gitlab/constants';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -15,7 +15,6 @@ interface PipelineStatusParams {
   dispatch: ReturnType<typeof useDispatch>;
 }
 
-const MAX_EXECUTION_TIME = 10 * 60 * 1000;
 export const delay = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);

@@ -1,6 +1,5 @@
 import GitlabInstance from 'preview/util/gitlab';
-import DigitalTwin from 'preview/util/digitalTwin';
-import { formatName } from 'gitlab/constants';
+import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
 
 const mockApi = {

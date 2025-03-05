@@ -5,7 +5,7 @@ import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice, { SnackbarState } from 'preview/store/snackbar.slice';
-import { formatName } from 'gitlab/constants';
+import { formatName } from 'preview/util/digitalTwin';
 
 const store = configureStore({
   reducer: {

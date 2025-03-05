@@ -1,6 +1,10 @@
 import { Camelize, Gitlab, JobSchema } from '@gitbeaker/rest';
+import {
+  GROUP_NAME,
+  DT_DIRECTORY,
+  COMMON_LIBRARY_PROJECT_ID,
+} from 'gitlab/constants';
 import { Asset } from '../components/asset/Asset';
-import { GROUP_NAME, DT_DIRECTORY, COMMON_LIBRARY_PROJECT_ID } from 'gitlab/constants';
 
 export function mapStringToAssetPath(type: string): string | undefined {
   switch (type) {
