@@ -18,8 +18,8 @@ execute digital twins from the Digital Twins Preview Page.
 
 A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
 For an explanation of how to set up a GitLab instance that integrates with a
-DTaaS application, refer to [our GitLab instance document](./index.md)
-and [our GitLab integration guide](./integration.md).
+DTaaS application, refer to [our GitLab instance document](../gitlab/README.md)
+and [our GitLab integration guide](../gitlab/INTEGRATION.md).
 
 The rest of this document assumes you have a running DTaaS application with a
 GitLab instance running.
@@ -107,9 +107,6 @@ A list of advanced configuration options is provided on the
 You may use the following commands to start and stop the `gitlab-runner`
 container respectively, depending on your installation scenario:
 
-1. Go to the DTaaS home directory (`DTaaS_DIR`) and execute one of
-   the following commands.
-
 1. Localhost Installation
 
     ```bash
@@ -132,15 +129,22 @@ you created the runner. For example, an Instance Runner would look like this:
 
 You will now have a GitLab runner ready to accept jobs for the GitLab instance.
 
-## Pipeline Trigger Token
+## Advanced: Runner Executor
 
-The Digital Twins Preview Page uses the GitLab API which requires a
-[Pipeline Trigger Token](https://docs.gitlab.com/ee/api/pipeline_triggers.html).
-Go to your project in the __DTaaS__ group and navigate to
-__Settings > CI/CD > Pipeline trigger tokens__. Add a new token with any
-description of your choice.
+The term `runner` could refer one of two things:
 
-![Creating a Pipeline Trigger Token](./pipeline-token.PNG)
+1. The `gitlab-runner` Container
+   This is the Docker container that is created when you execute the commands
+   given above. It is based on the `gitlab/gitlab-runner:alpine` image, and is
+   used to spawn one or more _executors_ that actually execute the CI/CD jobs.
 
-You can now use the Digital Twins Preview Page to manage and execute your
-digital twins.
+   These executors are spawned using a packaged version of Docker within the
+   `gitlab-runner` image.
+1. The Runner Executor
+   These are agents spawned by the `gitlab-runner` container, not as children
+   but as __siblings__ of the container. These runner executors will not show up
+   on running commands such as `docker ps`, but you can check their status by
+   running `gitlab-runner status` inside the `gitlab-runner` container.
+
+Keeping this distinction in mind is important, as the GitLab documentation
+sometimes uses them interchangeably.

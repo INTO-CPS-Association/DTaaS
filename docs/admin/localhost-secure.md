@@ -124,7 +124,10 @@ The frontend website requires OAuth2 application registration on the integrated 
 The details of Oauth2 app for the frontend website are in
 [client docs](client/auth.md).
 
-This application needs to be created on gitlab running at <https://localhost/gitlab>.
+The default OAuth client application provided in `env.local.js` works.
+However, if you intend to run an
+[integrated gitlab instance](gitlab/index.md), then
+this application needs to be created on gitlab running at <https://localhost/gitlab>.
 
 Remember to use <https://localhost/Library> as the Callback URL (`REACT_APP_REDIRECT_URI`).
 

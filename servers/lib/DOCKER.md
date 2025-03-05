@@ -66,11 +66,11 @@ apollo-path: '/lib'
 graphql-playground: 'true'
 
 git-repos:   #only used in git mode
-  - user1: 
+  - user1:
       repo-url: 'https://gitlab.com/dtaas/user1.git'
-  - user2: 
+  - user2:
       repo-url: 'https://gitlab.com/dtaas/user2.git'
-  - common: 
+  - common:
       repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
@@ -97,11 +97,11 @@ A fragment of the config for `git` mode is:
 ```yaml
 ...
 git-repos:
-  - user1: 
+  - user1:
       repo-url: 'https://gitlab.com/dtaas/user1.git'
-  - user2: 
+  - user2:
       repo-url: 'https://gitlab.com/dtaas/user2.git'
-  - common: 
+  - common:
       repo-url: 'https://gitlab.com/dtaas/common.git'
 ```
 
