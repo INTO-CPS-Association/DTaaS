@@ -66,8 +66,7 @@ should be available at <https://foo.com/gitlab>.
 
 **NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
 requires the DTaaS server to be running before you start it. You may refer to secure
-installation scenarios
-(../overview.md) for the same.
+[installation scenarios](../overview.md) for the same.
 
 The commands to start and stop the instance are:
 
@@ -138,6 +137,6 @@ for further help.
 ## Pending Tasks
 
 This README helps with installation of Gitlab along side DTaaS application.
-But the OAuth2 integration between Gitlab and DTaaS will still be still pending.
-Follow the [integration guide](integration.md) and
-[runner setup](runner.md) to setup the Gitlab integration.
+But the OAuth2 integration between Gitlab and DTaaS will still be pending.
+Follow the [integration guide](integration.md) and the
+[runner setup guide](runner.md) to setup the Gitlab integration.

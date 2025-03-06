@@ -28,6 +28,10 @@ if (-not (Get-Command docker-desktop -ErrorAction SilentlyContinue)) {
     # https://docs.docker.com/engine/install/ubuntu/
     choco install -y docker-desktop
 
+    $dockerDesktopPath = Join-Path $env:ProgramFiles "Docker\Docker\resources\cli-plugins"
+    # Ensure docker-desktop is in the system path
+    [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$dockerDesktopPath", [EnvironmentVariableTarget]::Machine)
+
     # Check if docker group exists, if not, create it
     $dockerGroup = 'docker'
     if (-not (Get-LocalGroup -Name $dockerGroup -ErrorAction SilentlyContinue)) {
@@ -61,20 +65,21 @@ if (-not (Get-Command docker-desktop -ErrorAction SilentlyContinue)) {
 
     # Enable Docker service
     Set-Service -Name "com.docker.service" -StartupType Automatic
-
-    # Install docker-compose from https://docs.docker.com/compose/install/other/
-    $url = "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-windows-x86_64.exe"
-    $outputPath = Join-Path $env:ProgramFiles "Docker\docker-compose.exe"
-    Invoke-WebRequest -Uri $url -OutFile $outputPath
-    # Ensure docker-compose is in the system path
-    [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$outputPath", [EnvironmentVariableTarget]::Machine)
 }
 
 # Check if Node.js is already installed
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     # Install Node.js environment if not already installed
-    choco install -y nodejs-lts
+    choco install -y nvm
+    $nvmInstallPath = Join-Path "C:\ProgramData" "nvm"
+    [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$nvmInstallPath", [EnvironmentVariableTarget]::Machine)
+    Write-Host "installing nvm"
 }
+
+# Install node
+nvm install 22
+nvm use 22
+
 
 # Install Yarn
 choco install -y yarn
