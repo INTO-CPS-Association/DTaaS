@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 
 import { FileState } from 'preview/store/file.slice';
-import { COMMON_LIBRARY_PROJECT_ID } from 'gitlab/constants';
+import { COMMON_LIBRARY_PROJECT_ID } from 'model/backend/gitlab/constants';
 import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
 import { FileType } from './DTAssets';

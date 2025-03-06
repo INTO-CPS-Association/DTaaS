@@ -4,7 +4,7 @@
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
-import { RUNNER_TAG } from 'gitlab/constants';
+import { RUNNER_TAG } from 'model/backend/gitlab/constants';
 import GitlabInstance from './gitlab';
 import {
   isValidInstance,

@@ -3,7 +3,7 @@ import {
   GROUP_NAME,
   DT_DIRECTORY,
   COMMON_LIBRARY_PROJECT_ID,
-} from 'gitlab/constants';
+} from 'model/backend/gitlab/constants';
 import { Asset } from '../components/asset/Asset';
 
 export function mapStringToAssetPath(type: string): string | undefined {
