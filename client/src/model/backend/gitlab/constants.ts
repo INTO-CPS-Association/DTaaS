@@ -5,6 +5,6 @@ export const COMMON_LIBRARY_PROJECT_ID = 3;
 // digitalTwin.ts
 
 export const RUNNER_TAG = 'linux';
-// pipeline.ts
 
+// pipeline.ts
 export const MAX_EXECUTION_TIME = 10 * 60 * 1000;
