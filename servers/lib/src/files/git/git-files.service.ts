@@ -34,8 +34,8 @@ export default class GitFilesService implements IFilesService {
       userRepoConfigs.map(async (repoConf) => {
         const user: string = Object.keys(repoConf)[0];
         // Ensure repoConf[user] is defined before accessing its properties
-        // if (!repoConf[user]) { throw new Error(`No repo configuration found for user: ${user}`); }
-        const repoConfig: GitRepo = repoConf[user];
+        const repoConfig: GitRepo | undefined = repoConf[user];
+
         const repoUrl: string = repoConfig['repo-url'];
         const httpToken: string = repoConfig['http-token'];
         const cloneDir: string = path.join(this.dataPath);

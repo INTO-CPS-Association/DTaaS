@@ -9,6 +9,7 @@
 // };
 
 export type GitRepo = {
+  'UserName': string;
   'repo-url': string;
   'http-token'?: string;
 };
