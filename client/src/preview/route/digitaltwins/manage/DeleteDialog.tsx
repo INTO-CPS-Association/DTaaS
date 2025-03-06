@@ -8,9 +8,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { formatName } from 'preview/util/digitalTwin';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
-import DigitalTwin from '../../../util/digitalTwin';
+import DigitalTwin, {formatName} from '../../../util/digitalTwin';
 import { showSnackbar } from '../../../store/snackbar.slice';
 
 interface DeleteDialogProps {

@@ -17,7 +17,6 @@ import {
   removeAllModifiedLibraryFiles,
   selectModifiedLibraryFiles,
 } from 'preview/store/libraryConfigFiles.slice';
-import { formatName } from 'preview/util/digitalTwin';
 import {
   FileState,
   removeAllModifiedFiles,
@@ -28,7 +27,7 @@ import {
   updateDescription,
 } from '../../../store/digitalTwin.slice';
 import { showSnackbar } from '../../../store/snackbar.slice';
-import DigitalTwin from '../../../util/digitalTwin';
+import DigitalTwin, { formatName } from '../../../util/digitalTwin';
 import Editor from '../editor/Editor';
 
 interface ReconfigureDialogProps {
