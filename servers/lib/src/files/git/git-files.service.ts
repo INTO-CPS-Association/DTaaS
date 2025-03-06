@@ -23,19 +23,21 @@ export default class GitFilesService implements IFilesService {
     this.logger = new ConsoleLogger(GitFilesService.name);
   }
 
-  private async cloneRepositories(): Promise<void[]> {
+  private async cloneRepositories(): Promise<void> {
     const userRepoConfigs = this.configService.getGitRepos();
     // Ensure userRepoConfigs is not null or undefined
     if (!userRepoConfigs || userRepoConfigs.length === 0) {
       throw new Error('No git repos found in config');
     }
 
-    return Promise.all(
+    await Promise.all(
       userRepoConfigs.map(async (repoConf) => {
         const user: string = Object.keys(repoConf)[0];
         // Ensure repoConf[user] is defined before accessing its properties
         const repoConfig: GitRepo | undefined = repoConf[user];
-
+        if (!repoConfig) {
+          throw new Error(`No repo configuration found for user: ${user}`);
+        }
         const repoUrl: string = repoConfig['repo-url'];
         const httpToken: string = repoConfig['http-token'];
         const cloneDir: string = path.join(this.dataPath);
@@ -78,7 +80,7 @@ export default class GitFilesService implements IFilesService {
     return httpToken ? `https://${httpToken}@${repoUrl.replace('https://', '')}` : repoUrl;
   }
 
-  init(): Promise<void[]> {
+  init(): Promise<void> {
     return this.cloneRepositories();
   }
 
