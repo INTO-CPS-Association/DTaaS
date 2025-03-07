@@ -117,10 +117,15 @@ export const updatePipelineStateOnStop = (
   );
 };
 
+interface JobLogResult {
+  jobName: string;
+  log: string;
+}
+
 export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
-): Promise<Array<{ jobName: string; log: string }>> => {
+): Promise<JobLogResult[]> => {
   try {
     if (!gitlabInstance.projectId) {
       return [];
@@ -138,10 +143,8 @@ export const fetchJobLogs = async (
         if (!job || typeof job.id === 'undefined') {
           return { jobName: 'Unknown', log: 'Job ID not available' };
         }
-        
-        const jobName = job.name || 'Unknown';
-        
-        let logContent: string = '';
+        const jobName = typeof job.name === 'string' ? job.name : 'Unknown';
+        let logContent = '';
 
         try {
           const trace = await gitlabInstance.getJobTrace(
@@ -158,7 +161,12 @@ export const fetchJobLogs = async (
         
         return { jobName, log: logContent };
       } catch (_jobError) {
-        return { jobName: job?.name || 'Unknown', log: 'Error processing job log' };
+        return { 
+          jobName: typeof job === 'object' && job !== null && typeof job.name === 'string' 
+            ? job.name 
+            : 'Unknown', 
+          log: 'Error processing job log' 
+        };
       }
     });
     
