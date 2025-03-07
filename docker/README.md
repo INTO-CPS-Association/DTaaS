@@ -7,12 +7,22 @@ use them for development purposes.
 This readme will explain the building and use of different docker files
 for development purposes.
 
+## Design
+
+The docker compose environment creates the following development scenario.
+
+![developer](developer-docker.png)
+
 ## Folder Structure
 
 There are two dockerfiles for building the containers:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
+- **client.built.dockerfile**: Dockerfile for copying
+  an already built client application into docker image.
+  This dockerfile copies `client/build` directory and serves it from
+  inside the docker container.
 - **libms.dockerfile**: Dockerfile for building the library
   microservice container from source code.
 - **libms.npm.dockerfile**: Dockerfile for building the library
@@ -73,6 +83,11 @@ The configuration files to be updated are:
 *note*: username(s) in `.env`, must be equal traefic used in `conf.dev` for `onlyu*`.
 
 ## Development Environment
+
+:warning: There is a problem compiling client (`yarn build`) inside
+docker container. Hence, it is required to copy the built
+files into the docker container. The docker compose build
+command fails if `client/build` directory does not exist.
 
 The development environment requires docker images to be built
 become the docker compose application can be brought up.
@@ -143,7 +158,7 @@ A brief explanation of the packages is given below.
 ### React Website
 
 ```sh
-docker build -t intocps/dtaas-web:latest -f ./docker/client.dockerfile .
+docker build -t intocps/dtaas-web:latest -f ./docker/client.built.dockerfile .
 docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
 docker push intocps/dtaas-web:latest
 docker push intocps/dtaas-web:<version>
