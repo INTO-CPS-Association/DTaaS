@@ -120,23 +120,50 @@ export const updatePipelineStateOnStop = (
 export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
-) => {
-  const jobs = await gitlabInstance.getPipelineJobs(
-    gitlabInstance.projectId!,
-    pipelineId,
-  );
-  const logPromises = jobs.map(async (job) => {
-    let logContent = await gitlabInstance.getJobTrace(
-      gitlabInstance.projectId!,
-      job.id,
-    );
-  
-    if (typeof logContent === 'string') {
-      logContent = cleanLogContent(logContent);
+): Promise<Array<{ jobName: string; log: string }>> => {
+  try {
+    if (!gitlabInstance.projectId) {
+      return [];
     }
     
-    return { jobName: job.name, log: logContent };
-  });
-  
-  return (await Promise.all(logPromises)).reverse();
+    const {projectId} = gitlabInstance; 
+    
+    const jobs = await gitlabInstance.getPipelineJobs(
+      projectId,
+      pipelineId,
+    );
+    
+    const logPromises = jobs.map(async (job) => {
+      try {
+        if (!job || typeof job.id === 'undefined') {
+          return { jobName: 'Unknown', log: 'Job ID not available' };
+        }
+        
+        const jobName = job.name || 'Unknown';
+        
+        let logContent: string = '';
+
+        try {
+          const trace = await gitlabInstance.getJobTrace(
+            projectId,
+            job.id,
+          );
+          
+          if (typeof trace === 'string') {
+            logContent = cleanLogContent(trace);
+          }
+        } catch (_traceError) {
+          logContent = 'Error fetching log content';
+        }
+        
+        return { jobName, log: logContent };
+      } catch (_jobError) {
+        return { jobName: job?.name || 'Unknown', log: 'Error processing job log' };
+      }
+    });
+    
+    return (await Promise.all(logPromises)).reverse();
+  } catch (_error) {
+    return [];
+  }
 };
