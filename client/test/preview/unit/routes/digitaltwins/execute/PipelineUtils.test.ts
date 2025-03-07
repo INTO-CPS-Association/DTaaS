@@ -78,20 +78,21 @@ describe('PipelineUtils', () => {
   });
 
   it('fetches job logs', async () => {
+    const mockJob = {
+      id: 1,
+      name: 'job1',
+      status: 'success',
+      stage: 'build',
+    } as JobSchema;
+
+    // Use safe mocking pattern with explicit types
     const mockGetPipelineJobs = jest
       .spyOn(gitlabInstance, 'getPipelineJobs')
-      .mockResolvedValue([
-        {
-          id: 1,
-          name: 'job1',
-          status: 'success',
-          stage: 'build',
-        } as unknown as JobSchema,
-      ]);
+      .mockImplementation(() => Promise.resolve([mockJob]));
 
     const mockGetJobTrace = jest
       .spyOn(gitlabInstance, 'getJobTrace')
-      .mockResolvedValue('log1');
+      .mockImplementation(() => Promise.resolve('log1'));
 
     const result = await fetchJobLogs(gitlabInstance, pipelineId);
 

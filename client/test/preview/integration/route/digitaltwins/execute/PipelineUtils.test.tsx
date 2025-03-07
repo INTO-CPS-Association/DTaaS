@@ -15,6 +15,7 @@ describe('PipelineUtils', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks(); 
     jest.clearAllMocks();
   });
 
@@ -51,20 +52,20 @@ describe('PipelineUtils', () => {
   });
 
   it('fetches job logs', async () => {
+    const mockJob: Partial<JobSchema> = {
+      id: 1,
+      name: 'job1',
+      status: 'success',
+      stage: 'build',
+    };
+
     const mockGetPipelineJobs = jest
       .spyOn(gitlabInstance, 'getPipelineJobs')
-      .mockResolvedValue([
-        {
-          id: 1,
-          name: 'job1',
-          status: 'success',
-          stage: 'build',
-        } as unknown as JobSchema,
-      ]);
+      .mockImplementation(() => Promise.resolve([mockJob as JobSchema]));
 
     const mockGetJobTrace = jest
       .spyOn(gitlabInstance, 'getJobTrace')
-      .mockResolvedValue('log1');
+      .mockImplementation(() => Promise.resolve('log1'));
 
     const result = await PipelineUtils.fetchJobLogs(gitlabInstance, 1);
 
@@ -74,8 +75,58 @@ describe('PipelineUtils', () => {
     );
     expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
     expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
+  });
 
-    mockGetPipelineJobs.mockRestore();
-    mockGetJobTrace.mockRestore();
+  // Test integration with fetchJobLogs
+  it('properly cleans logs when fetched from GitLab', async () => {
+    const rawLog = '\u001b[32mRunning job\u001b[0m\nsection_start:1234:setup\nSetting up environment\nsection_end:1234:setup';
+    
+    const mockJob: Partial<JobSchema> = {
+      id: 123,
+      name: 'test-job',
+      status: 'success',
+      stage: 'test',
+    };
+    
+    jest
+      .spyOn(gitlabInstance, 'getPipelineJobs')
+      .mockImplementation(() => Promise.resolve([mockJob as JobSchema]));
+    
+    jest
+      .spyOn(gitlabInstance, 'getJobTrace')
+      .mockImplementation(() => Promise.resolve(rawLog));
+    
+    const logs = await PipelineUtils.fetchJobLogs(gitlabInstance, 456);
+    
+    expect(logs).toHaveLength(1);
+    expect(logs[0].jobName).toBe('test-job');
+    expect(logs[0].log).toBe('Running job\n\nSetting up environment\n');
+  });
+
+  it('handles realistic GitLab CI logs', () => {
+    const realWorldLog = `Running with gitlab-runner 15.6.0
+section_start:1678901234:prepare_environment
+Preparing environment
+section_end:1678901234:prepare_environment
+section_start:1678901235:get_sources
+Getting source from Git repository
+\u001b[32mFetching changes...\u001b[0m
+section_end:1678901235:get_sources
+section_start:1678901236:build
+Building project...
+\u001b[33mWarning: Deprecated feature used\u001b[0m
+\u001b[32mBuild completed successfully\u001b[0m
+section_end:1678901236:build`;
+    
+    const cleaned = PipelineUtils.cleanLogContent(realWorldLog);
+    
+    expect(cleaned).not.toContain('\u001b');
+    expect(cleaned).not.toContain('section_start');
+    expect(cleaned).not.toContain('section_end');
+    expect(cleaned).toContain('Preparing environment');
+    expect(cleaned).toContain('Getting source from Git repository');
+    expect(cleaned).toContain('Fetching changes');
+    expect(cleaned).toContain('Warning: Deprecated feature used');
+    expect(cleaned).toContain('Build completed successfully');
   });
 });
