@@ -8,7 +8,7 @@
 //   'git-repos': { [key: string]: GitRepo }[];
 // };
 
-export type GitRepo = {
+export interface GitRepo {
   'repo-url': string;
   'http-token'?: string;
-};
+}
