@@ -117,39 +117,24 @@ export const updatePipelineStateOnStop = (
     }),
   );
 };
-
 interface JobLogResult {
   jobName: string;
   log: string;
 }
 
-// Type for JobSchema from GitLab API that can be either standard or camelized format
 type GitlabJob = JobSchema | Camelize<JobSchema>;
 
-/**
- * Extract job name from a GitLab job object with proper type checking
- * @param job The GitLab job object
- * @returns The job name or 'Unknown' if not available
- */
 const extractJobName = (job: GitlabJob | null | undefined): string => {
   if (!job) return 'Unknown';
   
   return typeof job.name === 'string' ? job.name : 'Unknown';
 };
 
-/**
- * Process a single job to retrieve its log
- * @param job The GitLab job object
- * @param projectId The GitLab project ID
- * @param gitlabInstance The GitLab instance
- * @returns A promise resolving to JobLogResult
- */
 const processJob = async (
   job: GitlabJob | null | undefined,
   projectId: number,
   gitlabInstance: GitlabInstance
 ): Promise<JobLogResult> => {
-  // Handle missing or invalid job
   if (!job || typeof job.id === 'undefined') {
     return { jobName: 'Unknown', log: 'Job ID not available' };
   }
@@ -157,7 +142,6 @@ const processJob = async (
   const jobName = extractJobName(job);
   
   try {
-    // Get job trace
     const trace = await gitlabInstance.getJobTrace(projectId, job.id);
     const logContent = typeof trace === 'string' ? cleanLogContent(trace) : 'Error fetching log content';
     return { jobName, log: logContent };
@@ -171,23 +155,19 @@ export const fetchJobLogs = async (
   pipelineId: number,
 ): Promise<JobLogResult[]> => {
   try {
-    // Validate required parameters
     if (!gitlabInstance.projectId) {
       return [];
     }
     
     const { projectId } = gitlabInstance;
-    
-    // Get all jobs for the pipeline
+  
     const jobs = await gitlabInstance.getPipelineJobs(
       projectId,
       pipelineId,
     );
     
-    // Process each job in parallel
     const jobLogPromises = (jobs || []).map(job => processJob(job, projectId, gitlabInstance));
     
-    // Reverse the results to show in chronological order
     return (await Promise.all(jobLogPromises)).reverse();
   } catch (_error) {
     return [];
