@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import { Camelize, JobSchema } from '@gitbeaker/rest';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
 import {
@@ -122,55 +123,72 @@ interface JobLogResult {
   log: string;
 }
 
+// Type for JobSchema from GitLab API that can be either standard or camelized format
+type GitlabJob = JobSchema | Camelize<JobSchema>;
+
+/**
+ * Extract job name from a GitLab job object with proper type checking
+ * @param job The GitLab job object
+ * @returns The job name or 'Unknown' if not available
+ */
+const extractJobName = (job: GitlabJob | null | undefined): string => {
+  if (!job) return 'Unknown';
+  
+  return typeof job.name === 'string' ? job.name : 'Unknown';
+};
+
+/**
+ * Process a single job to retrieve its log
+ * @param job The GitLab job object
+ * @param projectId The GitLab project ID
+ * @param gitlabInstance The GitLab instance
+ * @returns A promise resolving to JobLogResult
+ */
+const processJob = async (
+  job: GitlabJob | null | undefined,
+  projectId: number,
+  gitlabInstance: GitlabInstance
+): Promise<JobLogResult> => {
+  // Handle missing or invalid job
+  if (!job || typeof job.id === 'undefined') {
+    return { jobName: 'Unknown', log: 'Job ID not available' };
+  }
+  
+  const jobName = extractJobName(job);
+  
+  try {
+    // Get job trace
+    const trace = await gitlabInstance.getJobTrace(projectId, job.id);
+    const logContent = typeof trace === 'string' ? cleanLogContent(trace) : 'Error fetching log content';
+    return { jobName, log: logContent };
+  } catch (_traceError) {
+    return { jobName, log: 'Error fetching log content' };
+  }
+};
+
 export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
 ): Promise<JobLogResult[]> => {
   try {
+    // Validate required parameters
     if (!gitlabInstance.projectId) {
       return [];
     }
     
-    const {projectId} = gitlabInstance; 
+    const { projectId } = gitlabInstance;
     
+    // Get all jobs for the pipeline
     const jobs = await gitlabInstance.getPipelineJobs(
       projectId,
       pipelineId,
     );
     
-    const logPromises = jobs.map(async (job) => {
-      try {
-        if (!job || typeof job.id === 'undefined') {
-          return { jobName: 'Unknown', log: 'Job ID not available' };
-        }
-        const jobName = typeof job.name === 'string' ? job.name : 'Unknown';
-        let logContent = '';
-
-        try {
-          const trace = await gitlabInstance.getJobTrace(
-            projectId,
-            job.id,
-          );
-          
-          if (typeof trace === 'string') {
-            logContent = cleanLogContent(trace);
-          }
-        } catch (_traceError) {
-          logContent = 'Error fetching log content';
-        }
-        
-        return { jobName, log: logContent };
-      } catch (_jobError) {
-        return { 
-          jobName: typeof job === 'object' && job !== null && typeof job.name === 'string' 
-            ? job.name 
-            : 'Unknown', 
-          log: 'Error processing job log' 
-        };
-      }
-    });
+    // Process each job in parallel
+    const jobLogPromises = (jobs || []).map(job => processJob(job, projectId, gitlabInstance));
     
-    return (await Promise.all(logPromises)).reverse();
+    // Reverse the results to show in chronological order
+    return (await Promise.all(jobLogPromises)).reverse();
   } catch (_error) {
     return [];
   }
