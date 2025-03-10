@@ -1,39 +1,42 @@
-import { JobSchema } from '@gitbeaker/rest';
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
+import { Camelize, JobSchema } from '@gitbeaker/rest';
+import DigitalTwin from 'preview/util/digitalTwin';
+
+type MockJobType = JobSchema | Camelize<JobSchema>;
 
 describe('PipelineUtils', () => {
-  const digitalTwin = mockDigitalTwin;
-  digitalTwin.lastExecutionStatus = 'success';
-
-  const { gitlabInstance } = digitalTwin;
-
+  let digitalTwin: DigitalTwin;
+  
   beforeEach(() => {
+    digitalTwin = new DigitalTwin('mockedDTName', mockGitlabInstance);
     store.dispatch(setDigitalTwin({ assetName: 'mockedDTName', digitalTwin }));
+    
+    digitalTwin.execute = jest.fn().mockImplementation(async () => {
+      digitalTwin.lastExecutionStatus = 'success';
+      return Promise.resolve();
+    });
   });
-
+  
   afterEach(() => {
     jest.restoreAllMocks(); 
     jest.clearAllMocks();
   });
-
+  
   it('starts pipeline and handle success', async () => {
     await PipelineUtils.startPipeline(digitalTwin, store.dispatch, jest.fn());
-
     const snackbarState = store.getState().snackbar;
-
     const expectedSnackbarState = {
       open: true,
       message:
         'Execution started successfully for MockedDTName. Wait until completion for the logs...',
       severity: 'success',
     };
-
     expect(snackbarState).toEqual(expectedSnackbarState);
   });
-
+  
   it('updates pipeline state on completion', async () => {
     await PipelineUtils.updatePipelineStateOnCompletion(
       digitalTwin,
@@ -42,7 +45,6 @@ describe('PipelineUtils', () => {
       jest.fn(),
       store.dispatch,
     );
-
     const state = store.getState().digitalTwin.digitalTwin;
     expect(state.mockedDTName.jobLogs).toEqual([
       { jobName: 'job1', log: 'log1' },
@@ -50,59 +52,47 @@ describe('PipelineUtils', () => {
     expect(state.mockedDTName.pipelineCompleted).toBe(true);
     expect(state.mockedDTName.pipelineLoading).toBe(false);
   });
-
+  
   it('fetches job logs', async () => {
-    const mockJob: Partial<JobSchema> = {
-      id: 1,
-      name: 'job1',
-      status: 'success',
-      stage: 'build',
-    };
-
-    const mockGetPipelineJobs = jest
-      .spyOn(gitlabInstance, 'getPipelineJobs')
-      .mockImplementation(() => Promise.resolve([mockJob as JobSchema]));
-
-    const mockGetJobTrace = jest
-      .spyOn(gitlabInstance, 'getJobTrace')
-      .mockImplementation(() => Promise.resolve('log1'));
-
-    const result = await PipelineUtils.fetchJobLogs(gitlabInstance, 1);
-
-    expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-      gitlabInstance.projectId,
+    // Using type casting to satisfy the JobSchema type
+    const mockJob = { id: 1, name: 'job1' } as MockJobType;
+    
+    // Using existing mock and just spying on its methods
+    const getPipelineJobsMock = jest.spyOn(mockGitlabInstance, 'getPipelineJobs');
+    getPipelineJobsMock.mockResolvedValue([mockJob]);
+    
+    const getJobTraceMock = jest.spyOn(mockGitlabInstance, 'getJobTrace');
+    getJobTraceMock.mockResolvedValue('log1');
+    
+    const result = await PipelineUtils.fetchJobLogs(mockGitlabInstance, 1);
+    
+    expect(getPipelineJobsMock).toHaveBeenCalledWith(
+      mockGitlabInstance.projectId,
       1,
     );
-    expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
+    expect(getJobTraceMock).toHaveBeenCalledWith(mockGitlabInstance.projectId, 1);
     expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
   });
-
+  
   // Test integration with fetchJobLogs
   it('properly cleans logs when fetched from GitLab', async () => {
     const rawLog = '\u001b[32mRunning job\u001b[0m\nsection_start:1234:setup\nSetting up environment\nsection_end:1234:setup';
     
-    const mockJob: Partial<JobSchema> = {
-      id: 123,
-      name: 'test-job',
-      status: 'success',
-      stage: 'test',
-    };
+    const mockJob = { id: 123, name: 'test-job' } as MockJobType;
     
-    jest
-      .spyOn(gitlabInstance, 'getPipelineJobs')
-      .mockImplementation(() => Promise.resolve([mockJob as JobSchema]));
+    const getPipelineJobsMock = jest.spyOn(mockGitlabInstance, 'getPipelineJobs');
+    getPipelineJobsMock.mockResolvedValue([mockJob]);
     
-    jest
-      .spyOn(gitlabInstance, 'getJobTrace')
-      .mockImplementation(() => Promise.resolve(rawLog));
+    const getJobTraceMock = jest.spyOn(mockGitlabInstance, 'getJobTrace');
+    getJobTraceMock.mockResolvedValue(rawLog);
     
-    const logs = await PipelineUtils.fetchJobLogs(gitlabInstance, 456);
+    const logs = await PipelineUtils.fetchJobLogs(mockGitlabInstance, 456);
     
     expect(logs).toHaveLength(1);
     expect(logs[0].jobName).toBe('test-job');
     expect(logs[0].log).toBe('Running job\n\nSetting up environment\n');
   });
-
+  
   it('handles realistic GitLab CI logs', () => {
     const realWorldLog = `Running with gitlab-runner 15.6.0
 section_start:1678901234:prepare_environment
