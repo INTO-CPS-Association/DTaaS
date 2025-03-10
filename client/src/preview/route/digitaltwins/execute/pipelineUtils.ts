@@ -25,10 +25,10 @@ export const cleanLogContent = (input: string | null | undefined): string => {
   );
   cleaned = cleaned.split('\n').map(line => {
     if (line.includes('section_start:')) {
-      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/, '').trim();
+      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/g, '').trim();
     }
     if (line.includes('section_end:')) {
-      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/, '').trim();
+      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/g, '').trim();
     }
     return line;
   }).join('\n');

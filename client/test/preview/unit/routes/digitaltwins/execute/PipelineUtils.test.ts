@@ -1,4 +1,3 @@
-import { JobSchema } from '@gitbeaker/rest';
 import {
   cleanLogContent,
   fetchJobLogs,
@@ -6,6 +5,9 @@ import {
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { Camelize, JobSchema } from '@gitbeaker/rest';
+
+type MockJobType = JobSchema | Camelize<JobSchema>;
 
 describe('PipelineUtils', () => {
   const digitalTwin = mockDigitalTwin;
@@ -37,8 +39,6 @@ describe('PipelineUtils', () => {
       }),
     );
     expect(setLogButtonDisabled).toHaveBeenCalledWith(true);
-
-    execute.mockRestore();
   });
 
   it('starts pipeline and handles failed', async () => {
@@ -59,8 +59,6 @@ describe('PipelineUtils', () => {
       }),
     );
     expect(setLogButtonDisabled).toHaveBeenCalledWith(true);
-
-    execute.mockRestore();
   });
 
   it('updates pipeline state on completion', async () => {
@@ -78,33 +76,22 @@ describe('PipelineUtils', () => {
   });
 
   it('fetches job logs', async () => {
-    const mockJob = {
-      id: 1,
-      name: 'job1',
-      status: 'success',
-      stage: 'build',
-    } as JobSchema;
+    const mockJob = { id: 1, name: 'job1' } as MockJobType;
 
-    // Use safe mocking pattern with explicit types
-    const mockGetPipelineJobs = jest
-      .spyOn(gitlabInstance, 'getPipelineJobs')
-      .mockImplementation(() => Promise.resolve([mockJob]));
+    const getPipelineJobsMock = jest.spyOn(gitlabInstance, 'getPipelineJobs');
+    getPipelineJobsMock.mockResolvedValue([mockJob]);
 
-    const mockGetJobTrace = jest
-      .spyOn(gitlabInstance, 'getJobTrace')
-      .mockImplementation(() => Promise.resolve('log1'));
+    const getJobTraceMock = jest.spyOn(gitlabInstance, 'getJobTrace');
+    getJobTraceMock.mockResolvedValue('log1');
 
     const result = await fetchJobLogs(gitlabInstance, pipelineId);
 
-    expect(mockGetPipelineJobs).toHaveBeenCalledWith(
+    expect(getPipelineJobsMock).toHaveBeenCalledWith(
       gitlabInstance.projectId,
       pipelineId,
     );
-    expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
+    expect(getJobTraceMock).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
     expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
-
-    mockGetPipelineJobs.mockRestore();
-    mockGetJobTrace.mockRestore();
   });
 
   // Tests for cleanLogContent function
