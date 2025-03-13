@@ -54,7 +54,9 @@ describe('PrivateRoute', () => {
     });
 
     await waitFor(
-      () => { expect(screen.getByText('Signin')).toBeInTheDocument(); },
+      () => {
+        expect(screen.getByText('Signin')).toBeInTheDocument();
+      },
       {
         timeout: 60000,
       },

@@ -41,9 +41,9 @@ describe('Config', () => {
 
     expect(screen.getByText(/Verifying configuration/i)).toBeInTheDocument();
     expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
-    await waitFor(() =>
-      { expect(screen.getByText(/Config verification/i)).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText(/Config verification/i)).toBeInTheDocument();
+    });
     expect(screen.getByText(/REACT_APP_URL_BASENAME/i)).toBeInTheDocument();
     expect(
       screen.getByText(/REACT_APP_WORKBENCHLINK_JUPYTERLAB/i),

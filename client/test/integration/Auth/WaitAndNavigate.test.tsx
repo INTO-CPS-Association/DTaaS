@@ -39,8 +39,8 @@ describe('WaitAndNavigate', () => {
       jest.advanceTimersByTime(5000);
     });
 
-    await waitFor(() =>
-      { expect(screen.getByText(/Sign In with GitLab/i)).toBeVisible(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText(/Sign In with GitLab/i)).toBeVisible();
+    });
   });
 });
