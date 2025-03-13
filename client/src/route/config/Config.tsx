@@ -98,7 +98,7 @@ const useValidationResults = () => {
         const results = await getValidationResults();
         setValidationResults(results);
       } catch (_error) {
-        throw new Error ('Failed to fetch validation results');
+        throw new Error('Failed to fetch validation results');
       } finally {
         setIsLoading(false);
       }
@@ -113,26 +113,26 @@ const useValidationResults = () => {
 
 const useConfigErrors = (validationResults: {
   [key: string]: ValidationType;
-}) => {
-    return Object.keys(window.env).some(
-      (key) => validationResults[key]?.error !== undefined
-    )
- } ;
+}) =>
+  Object.keys(window.env).some(
+    (key) => validationResults[key]?.error !== undefined,
+  );
 
 const Config = (props: { role: string }) => {
   const { validationResults, isLoading } = useValidationResults();
-  
-  const configVerification = React.useMemo(() => 
-    props.role === 'user'
-      ? UserConfig(validationResults)
-      : DeveloperConfig(validationResults),
-    [validationResults, props.role]
+
+  const configVerification = React.useMemo(
+    () =>
+      props.role === 'user'
+        ? UserConfig(validationResults)
+        : DeveloperConfig(validationResults),
+    [validationResults, props.role],
   );
-  
+
   if (isLoading) {
     return loadingComponent();
   }
-  
+
   return configVerification;
 };
 

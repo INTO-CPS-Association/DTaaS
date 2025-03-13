@@ -1,15 +1,22 @@
 import { z } from 'zod';
 import { wait } from 'util/auth/Authentication';
 
-export type ValidationType = {
+export interface ValidationType {
   value?: string;
   status?: number;
   error?: string;
-};
+}
 
-const EnvironmentEnum = z.enum(['dev', 'local', 'prod', 'test']);
-const PathString = z.string();
-const ScopesString = z.literal('openid profile read_user read_repository api');
+const EnvironmentEnum: z.ZodEnum<['dev', 'local', 'prod', 'test']> = z.enum([
+  'dev',
+  'local',
+  'prod',
+  'test',
+]);
+const PathString: z.ZodString = z.string();
+const ScopesString: z.ZodLiteral<string> = z.literal(
+  'openid profile read_user read_repository api',
+);
 
 const pathKeys = [
   'REACT_APP_URL_BASENAME',

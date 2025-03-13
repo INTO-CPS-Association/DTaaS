@@ -2,6 +2,7 @@ import {
   retryFetch,
   getValidationResults,
   urlIsReachable,
+  ValidationType,
 } from 'util/configUtil';
 
 jest.deepUnmock('util/configUtil');
@@ -27,21 +28,20 @@ describe('configUtil', () => {
   const mockResponse = {
     ok: true,
     status: 200,
-    json: async () => ({ data: 'success' }),
-  };
+    json: (): Promise<{ data: string }> => Promise.resolve({ data: 'success' }),
+  } as Response;
 
   describe('retryFetch', () => {
     test('retryFetch returns a valid response', async () => {
       global.fetch = jest.fn().mockResolvedValue(mockResponse);
-      const response = await retryFetch('https://foo.bar', {
+      const response: Response = await retryFetch('https://foo.bar', {
         method: 'HEAD',
         signal: AbortSignal.timeout(1000),
       });
-
       expect(response.ok).toBe(true);
       expect(response.status).toBe(200);
 
-      const jsonResult = await response.json();
+      const jsonResult: { data: string } = await response.json();
       expect(jsonResult).toEqual({ data: 'success' });
     });
 
@@ -52,7 +52,7 @@ describe('configUtil', () => {
         .mockRejectedValueOnce(networkError)
         .mockResolvedValueOnce(mockResponse);
 
-      const response = await retryFetch(
+      const response: Response = await retryFetch(
         'http://foo.foo',
         {
           method: 'HEAD',
@@ -68,19 +68,24 @@ describe('configUtil', () => {
     test('retryFetch retries until failing', async () => {
       global.fetch = jest.fn().mockRejectedValue(networkError);
 
-      await expect(retryFetch('https://bar.com')).rejects.toThrow(networkError);
+      const fetchPromise: Promise<Response> = retryFetch('https://bar.com');
+      await expect(fetchPromise).rejects.toThrow(networkError);
       expect(global.fetch).toHaveBeenCalledTimes(3);
     });
   });
 
   describe('getValidationResults', () => {
     test('getValidationResults object includes all keys of window.env', async () => {
-      const results = await getValidationResults();
-      const resultKeys = Object.keys(results);
-      const envKeys = Object.keys(window.env);
+      const results: ValidationType = await getValidationResults();
+      const resultKeys: string[] = Object.keys(results);
+      const envKeys: string[] = Object.keys(window.env);
 
-      const missingKeys = envKeys.filter((key) => !resultKeys.includes(key));
-      const unexpectedKeys = resultKeys.filter((key) => !envKeys.includes(key));
+      const missingKeys: string[] = envKeys.filter(
+        (key) => !resultKeys.includes(key),
+      );
+      const unexpectedKeys: string[] = resultKeys.filter(
+        (key) => !envKeys.includes(key),
+      );
 
       expect(missingKeys).toEqual([]);
       expect(unexpectedKeys).toEqual([]);
@@ -88,7 +93,8 @@ describe('configUtil', () => {
     test('getValidationResult AUTH_AUTHORITY has error if it fails reachability', async () => {
       window.env.REACT_APP_AUTH_AUTHORITY = 'https://foo.bar';
       global.fetch = jest.fn().mockRejectedValue(networkError);
-      const results = await getValidationResults();
+      const results: { [key: string]: ValidationType } =
+        await getValidationResults();
       expect(results.REACT_APP_AUTH_AUTHORITY.error).toBeDefined();
       expect(results.REACT_APP_AUTH_AUTHORITY.status).toBeUndefined();
       expect(results.REACT_APP_AUTH_AUTHORITY.value).toBeUndefined();
@@ -96,14 +102,16 @@ describe('configUtil', () => {
 
     test('getValidationResult ENVIRONMENT has error if it fails parse', async () => {
       window.env.REACT_APP_ENVIRONMENT = 'foo';
-      const results = await getValidationResults();
+      const results: { [key: string]: ValidationType } =
+        await getValidationResults();
       expect(results.REACT_APP_ENVIRONMENT.error).toBeDefined();
       expect(results.REACT_APP_ENVIRONMENT.status).toBeUndefined();
       expect(results.REACT_APP_ENVIRONMENT.value).toBeUndefined();
     });
 
     test('getValidationResult CLIENT_ID has value if it succeeds parse', async () => {
-      const results = await getValidationResults();
+      const results: { [key: string]: ValidationType } =
+        await getValidationResults();
       expect(results.REACT_APP_CLIENT_ID.error).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.status).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('abc123');
@@ -113,7 +121,7 @@ describe('configUtil', () => {
   describe('urlIsReachable', () => {
     test('urlIsReachable object has value if it succeeds', async () => {
       global.fetch = jest.fn().mockResolvedValue(mockResponse);
-      const result = await urlIsReachable('https://foo.bar');
+      const result: ValidationType = await urlIsReachable('https://foo.bar');
       expect(result.error).toBeUndefined();
       expect(result.status).toBe(200);
       expect(result.value).toEqual('https://foo.bar');
@@ -121,7 +129,7 @@ describe('configUtil', () => {
 
     test('urlIsReachable object has error if it fails', async () => {
       global.fetch = jest.fn().mockRejectedValue(networkError);
-      const result = await urlIsReachable('https://foo.bar');
+      const result: ValidationType = await urlIsReachable('https://foo.bar');
       expect(result.error).toBeDefined();
       expect(result.status).toBeUndefined();
       expect(result.value).toBeUndefined();
