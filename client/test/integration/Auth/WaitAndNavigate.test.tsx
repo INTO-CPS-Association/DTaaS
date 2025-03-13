@@ -40,7 +40,7 @@ describe('WaitAndNavigate', () => {
     });
 
     await waitFor(() =>
-      expect(screen.getByText(/Sign In with GitLab/i)).toBeVisible(),
+      { expect(screen.getByText(/Sign In with GitLab/i)).toBeVisible(); },
     );
   });
 });

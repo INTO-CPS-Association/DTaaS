@@ -104,7 +104,7 @@ const useValidationResults = () => {
       }
     };
 
-    fetchValidationResults();
+    void fetchValidationResults();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.env]);
 

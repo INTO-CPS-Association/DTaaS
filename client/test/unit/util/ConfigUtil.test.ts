@@ -93,7 +93,7 @@ describe('configUtil', () => {
     test('getValidationResult AUTH_AUTHORITY has error if it fails reachability', async () => {
       window.env.REACT_APP_AUTH_AUTHORITY = 'https://foo.bar';
       global.fetch = jest.fn().mockRejectedValue(networkError);
-      const results: { [key: string]: ValidationType } =
+      const results: Record<string, ValidationType> =
         await getValidationResults();
       expect(results.REACT_APP_AUTH_AUTHORITY.error).toBeDefined();
       expect(results.REACT_APP_AUTH_AUTHORITY.status).toBeUndefined();
