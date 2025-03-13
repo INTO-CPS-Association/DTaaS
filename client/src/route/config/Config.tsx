@@ -19,9 +19,7 @@ const typographyStyle = {
   padding: 'clamp(0, 4vw, 5%)',
 };
 
-const DeveloperConfig = (validationResults: {
-  [key: string]: ValidationType;
-}): JSX.Element => (
+const DeveloperConfig = (validationResults: Record<string, ValidationType>): JSX.Element => (
   <Paper
     sx={{
       ...paperStyle,
@@ -66,9 +64,7 @@ const userConfigValidText: JSX.Element = (
   </>
 );
 
-const UserConfig = (validationResults: {
-  [key: string]: ValidationType;
-}): JSX.Element => {
+const UserConfig = (validationResults: Record<string, ValidationType>): JSX.Element => {
   const hasConfigErrors = useConfigErrors(validationResults);
   return (
     <Paper
@@ -87,9 +83,7 @@ const UserConfig = (validationResults: {
 };
 
 const useValidationResults = () => {
-  const [validationResults, setValidationResults] = useState<{
-    [key: string]: ValidationType;
-  }>({});
+  const [validationResults, setValidationResults] = useState<Record<string, ValidationType>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -113,9 +107,7 @@ const useValidationResults = () => {
   return { validationResults, isLoading };
 };
 
-const useConfigErrors = (validationResults: {
-  [key: string]: ValidationType;
-}) =>
+const useConfigErrors = (validationResults: Record<string, ValidationType>) =>
   Object.keys(window.env).some(
     (key) => validationResults[key]?.error !== undefined,
   );
