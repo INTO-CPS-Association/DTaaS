@@ -19,7 +19,9 @@ const typographyStyle = {
   padding: 'clamp(0, 4vw, 5%)',
 };
 
-const DeveloperConfig = (validationResults: Record<string, ValidationType>): JSX.Element => (
+const DeveloperConfig = (
+  validationResults: Record<string, ValidationType>,
+): JSX.Element => (
   <Paper
     sx={{
       ...paperStyle,
@@ -64,7 +66,9 @@ const userConfigValidText: JSX.Element = (
   </>
 );
 
-const UserConfig = (validationResults: Record<string, ValidationType>): JSX.Element => {
+const UserConfig = (
+  validationResults: Record<string, ValidationType>,
+): JSX.Element => {
   const hasConfigErrors = useConfigErrors(validationResults);
   return (
     <Paper
@@ -83,7 +87,9 @@ const UserConfig = (validationResults: Record<string, ValidationType>): JSX.Elem
 };
 
 const useValidationResults = () => {
-  const [validationResults, setValidationResults] = useState<Record<string, ValidationType>>({});
+  const [validationResults, setValidationResults] = useState<
+    Record<string, ValidationType>
+  >({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -98,7 +104,7 @@ const useValidationResults = () => {
       }
     };
 
-    fetchValidationResults().catch((error) => {
+    fetchValidationResults().catch((error: unknown) => {
       throw new Error(`Failed to fetch validation results: ${error}`);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
