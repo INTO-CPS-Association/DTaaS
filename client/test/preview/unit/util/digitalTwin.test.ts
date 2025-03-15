@@ -1,6 +1,7 @@
 import GitlabInstance from 'preview/util/gitlab';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
+import { RUNNER_TAG } from 'model/backend/gitlab/constants';
 
 const mockApi = {
   RepositoryFiles: {
@@ -135,7 +136,7 @@ describe('DigitalTwin', () => {
       1,
       'main',
       'test-token',
-      { variables: { DTName: 'test-DTName', RunnerTag: 'linux' } },
+      { variables: { DTName: 'test-DTName', RunnerTag: RUNNER_TAG } },
     );
   });
 
@@ -155,12 +156,12 @@ describe('DigitalTwin', () => {
   });
 
   it('should log success and update status', () => {
-    dtUtils.logSuccess(dt, 'linux');
+    dtUtils.logSuccess(dt, RUNNER_TAG);
 
     expect(dt.gitlabInstance.logs).toContainEqual({
       status: 'success',
       DTName: 'test-DTName',
-      runnerTag: 'linux',
+      runnerTag: RUNNER_TAG,
     });
     expect(dt.lastExecutionStatus).toBe('success');
   });
