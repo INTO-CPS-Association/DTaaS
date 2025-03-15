@@ -59,14 +59,22 @@ function getValidationPromises(): Record<string, Promise<ValidationType>> {
   };
 }
 
-export const getValidationResults = async (): Promise<{ [key: string]: ValidationType }> => {
-    const validationPromises: Record<string, Promise<ValidationType>> = getValidationPromises();
-    const entries = Object.entries(validationPromises);
-    const resolvedEntries = await Promise.all(
-      entries.map(async ([key, promise]) => [key, await promise] as [string, ValidationType])
-    );
-    return Object.fromEntries(resolvedEntries) as { [key: string]: ValidationType };
-  };
+export const getValidationResults = async (): Promise<
+  Record<string, ValidationType>
+> => {
+  const validationPromises: Record<
+    string,
+    Promise<ValidationType>
+  > = getValidationPromises();
+  const entries = Object.entries(validationPromises);
+  const resolvedEntries = await Promise.all(
+    entries.map(
+      async ([key, promise]) =>
+        [key, await promise] as [string, ValidationType],
+    ),
+  );
+  return Object.fromEntries(resolvedEntries) as Record<string, ValidationType>;
+};
 
 export async function retryFetch(
   url: string,

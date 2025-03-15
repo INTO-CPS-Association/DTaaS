@@ -64,11 +64,11 @@ describe('Config', () => {
 
     expect(screen.getByText(/Verifying configuration/i)).toBeInTheDocument();
     expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         screen.getByText(/Invalid Application Configuration/i),
-      ).toBeInTheDocument(),
-    );
+      ).toBeInTheDocument();
+    });
     const linkToDeveloperConfig = screen.getByRole('link', {
       name: /Inspect configuration/i,
     });
@@ -85,11 +85,11 @@ describe('Config', () => {
 
     expect(screen.getByText(/Verifying configuration/i)).toBeInTheDocument();
     expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         screen.getByText(/Configuration appears to be valid./i),
-      ).toBeInTheDocument(),
-    );
+      ).toBeInTheDocument();
+    });
     const linkToDeveloperConfig = screen.getByRole('link', {
       name: /Return to login/i,
     });

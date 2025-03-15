@@ -114,9 +114,10 @@ const useValidationResults = () => {
 };
 
 const useConfigErrors = (validationResults: Record<string, ValidationType>) =>
-  Object.keys(window.env).some(
-    (key) => validationResults[key]?.error !== undefined,
-  );
+    Object.keys(window.env).some((key) => {
+      const result = validationResults[key];
+      return result && 'error' in result && result.error !== undefined;
+    });
 
 const Config = (props: { role: string }) => {
   const { validationResults, isLoading } = useValidationResults();
