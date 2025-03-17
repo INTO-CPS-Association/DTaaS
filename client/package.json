@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",

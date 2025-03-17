@@ -9,6 +9,12 @@ services:
       - "--entrypoints.web.forwardedHeaders.insecure=true"
       - "--entrypoints.web.proxyProtocol.insecure=true"
       - "--log.level=DEBUG"
+    labels:
+      - "traefik.http.middlewares.cors.headers.accessControlAllowOriginList=http://localhost,http://host.docker.internal"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowMethods=GET,OPTIONS"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowCredentials=true"
+      - "traefik.http.routers.myservice.rule=Host(`myservice.localhost`)"
+      - "traefik.http.services.myservice.loadbalancer.server.port=80"
     ports:
       - "80:80"
     volumes:
@@ -20,7 +26,7 @@ services:
   client:
     build: 
       context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/client.dockerfile
+      dockerfile: ${DTAAS_DIR}/docker/client.built.dockerfile
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
