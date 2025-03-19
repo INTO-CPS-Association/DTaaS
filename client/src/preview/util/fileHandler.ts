@@ -2,11 +2,10 @@
 /* eslint-disable no-await-in-loop */
 
 import { FileState } from 'preview/store/file.slice';
+import { COMMON_LIBRARY_PROJECT_ID } from 'model/backend/gitlab/constants';
 import GitlabInstance from './gitlab';
 import { IFile } from './ifile';
 import { FileType } from './DTAssets';
-
-const COMMON_LIBRARY_PROJECT_ID = 3;
 
 export function isValidFileType(
   item: { type: string; name: string; path: string },

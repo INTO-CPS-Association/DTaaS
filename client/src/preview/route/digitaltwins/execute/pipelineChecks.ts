@@ -6,6 +6,7 @@ import {
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { showSnackbar } from 'preview/store/snackbar.slice';
+import { MAX_EXECUTION_TIME } from 'model/backend/gitlab/constants';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -14,7 +15,6 @@ interface PipelineStatusParams {
   dispatch: ReturnType<typeof useDispatch>;
 }
 
-const MAX_EXECUTION_TIME = 10 * 60 * 1000;
 export const delay = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);

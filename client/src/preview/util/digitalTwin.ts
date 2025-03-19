@@ -4,6 +4,7 @@
 import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import { RUNNER_TAG } from 'model/backend/gitlab/constants';
 import GitlabInstance from './gitlab';
 import {
   isValidInstance,
@@ -13,8 +14,6 @@ import {
 } from './digitalTwinUtils';
 import DTAssets, { FileType } from './DTAssets';
 import LibraryAsset from './libraryAsset';
-
-const RUNNER_TAG = 'linux';
 
 export const formatName = (name: string) =>
   name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
