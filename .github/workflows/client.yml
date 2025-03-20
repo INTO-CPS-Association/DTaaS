@@ -53,9 +53,11 @@ jobs:
           yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: client/coverage/clover.xml
+          files: client/coverage/all/coverage-final.json
           flags: client-unit-integration-tests 
         
       - name: Run e2e tests

@@ -105,7 +105,9 @@ jobs:
           yarn stop:pm2
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
