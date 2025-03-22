@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup node for building the React client website
-        if: ${{ inputs.image-name }} == 'dtaas-web'
+        if: ${{ inputs.image-name == 'dtaas-web' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -44,7 +44,7 @@ jobs:
           cache-dependency-path: "**/yarn.lock"
 
       - name: Build react client website
-        if: ${{ inputs.image-name }} == 'dtaas-web'
+        if: ${{ inputs.image-name == 'dtaas-web' }}
         run: |
           cd client/
           yarn install --network-timeout 1000000
