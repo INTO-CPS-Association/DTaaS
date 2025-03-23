@@ -7,9 +7,6 @@ services:
     command: mongod --config /etc/mongod.conf
     ports:
       - '${MONGODB_PORT}:27017'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_INITDB_ROOT_USERNAME}'
-      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_INITDB_ROOT_PASSWORD}'
     volumes:
       - './data/mongodb:/data/db'
       - './config/mongod.conf.secure:/etc/mongod.conf'
