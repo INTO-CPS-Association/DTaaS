@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: 'mongo:8.0.3'
+    container_name: mongodb
+    restart: always
+    command: mongod --config /etc/mongod.conf
+    ports:
+      - '${MONGODB_PORT}:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_PASSWORD}'
+    volumes:
+      - './data/mongodb:/data/db'
+      - './config/mongod.conf:/etc/mongod.conf'
+      - './certs/combined.pem:/etc/ssl/cert.pem'
+    shm_size: '256m'
+    networks:
+      - platform-services
+
+networks:
+  platform-services:
+    name: dtaas-platform-services

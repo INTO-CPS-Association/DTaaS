@@ -136,7 +136,7 @@ await $$`sudo chown root:mosquitto /etc/mosquitto/passwd`;
 await $$`sudo chmod 660 /etc/mosquitto/passwd`;
 
 log(chalk.blue("Set MQTT listening port configuration"));
-await $$`sudo cp mqtt-default.conf /etc/mosquitto/conf.d/default.conf`;
+await $$`sudo cp config/mqtt-default.conf /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chmod 664 /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo chown root:mosquitto /etc/mosquitto/conf.d/default.conf`;
 await $$`sudo systemctl restart mosquitto`;
