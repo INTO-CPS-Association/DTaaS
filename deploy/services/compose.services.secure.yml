@@ -1,3 +1,7 @@
+env_file:
+  - path: ./config/services.env
+    required: true # default
+
 services:
   mongodb:
     image: 'mongo:8.0.3'
@@ -7,12 +11,12 @@ services:
     ports:
       - '${MONGODB_PORT}:27017'
     environment:
-      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_USERNAME}'
-      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_PASSWORD}'
+      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_ROOT_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_ROOT_PASSWORD}'
     volumes:
       - './data/mongodb:/data/db'
-      - './config/mongod.conf:/etc/mongod.conf'
-      - './certs/combined.pem:/etc/ssl/cert.pem'
+      - './config/mongod.conf.secure:/etc/mongod.conf'
+      - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem'
     shm_size: '256m'
     networks:
       - platform-services
