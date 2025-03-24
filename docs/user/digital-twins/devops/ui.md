@@ -61,4 +61,5 @@ The execute tabs shows the possibility of executing multiple digital twins.
 Once an execution of digital twin is complete, you can see the execution
 log as well.
 
-![Digital Twin Execution Log](dt_execute_log.png)
+![Digital Twin Execution](https://github.com/user-attachments/assets/66b18f03-0cdf-4146-a429-b721d1ac3b66)
+
