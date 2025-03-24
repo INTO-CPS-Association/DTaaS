@@ -19,10 +19,10 @@ export async function testPublicLayout() {
 
 export async function testDrawer() {
   expect(screen.getByTestId(/ChevronLeftIcon/)).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Library/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^Library$/ })).toBeInTheDocument();
   expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: /Digital Twins/ }),
+    screen.getByRole('link', { name: /^Digital Twins$/ }),
   ).toBeInTheDocument();
   expect(screen.getByTestId(/PeopleIcon/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
@@ -99,7 +99,7 @@ async function itOpensAndClosesTheSettingsMenu() {
 async function itOpensAndClosesTheDrawer() {
   // Drawer is collapsed
   const drawerInnerDiv = closestDiv(
-    screen.getByRole('link', { name: /Library/ }),
+    screen.getByRole('link', { name: /^Library$/ }),
   );
   expect(drawerInnerDiv).toHaveStyle('width:calc(56px + 1px);');
   // Open-drawer-button is visible

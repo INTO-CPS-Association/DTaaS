@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   act,
+  cleanup,
   createEvent,
   fireEvent,
   getDefaultNormalizer,
@@ -51,7 +52,6 @@ const RouterComponent: React.FC<RouterComponentProps> = ({ ui, route }) => (
           key={`route-${routeElement.path.slice(1, -1)}`}
         />
       ))}
-      ;
     </Routes>
   </MemoryRouter>
 );
@@ -69,6 +69,10 @@ export function InitRouteTests(component: React.ReactElement) {
     await act(async () => {
       render(component);
     });
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders', () => {

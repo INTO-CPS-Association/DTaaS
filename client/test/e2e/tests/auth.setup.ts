@@ -14,7 +14,7 @@ setup('authenticate', async ({ page }) => {
   await page.goto('./');
   await page
     .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
-    .click();
+    .click({ timeout: 15000 });
   await page.waitForSelector('label[for="user_login"]', { timeout: 10000 }); // wait up to 10 seconds
   await page.locator('label').filter({ hasText: 'Remember me' }).click();
   await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.

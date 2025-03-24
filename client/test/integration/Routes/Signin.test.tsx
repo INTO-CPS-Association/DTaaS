@@ -2,6 +2,18 @@ import { screen } from '@testing-library/react';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 import { testPublicLayout } from './routes.testUtil';
 
+// Bypass the config verification
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({ data: 'success' }),
+});
+
+Object.defineProperty(AbortSignal, 'timeout', {
+  value: jest.fn(),
+  writable: false,
+});
+
 const setup = () => setupIntegrationTest('/');
 
 describe('Signin', () => {
