@@ -2,10 +2,8 @@ import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
-import { Camelize, JobSchema } from '@gitbeaker/rest';
+import { JobSchema } from '@gitbeaker/rest';
 import DigitalTwin from 'preview/util/digitalTwin';
-
-type MockJobType = JobSchema | Camelize<JobSchema>;
 
 describe('PipelineUtils', () => {
   let digitalTwin: DigitalTwin;
@@ -54,12 +52,10 @@ describe('PipelineUtils', () => {
   });
   
   it('fetches job logs', async () => {
-    // Using type casting to satisfy the JobSchema type
-    const mockJob = { id: 1, name: 'job1' } as MockJobType;
+    const mockJob: Partial<JobSchema> = { id: 1, name: 'job1' };
     
-    // Using existing mock and just spying on its methods
     const getPipelineJobsMock = jest.spyOn(mockGitlabInstance, 'getPipelineJobs');
-    getPipelineJobsMock.mockResolvedValue([mockJob]);
+    getPipelineJobsMock.mockResolvedValue([mockJob as JobSchema]);
     
     const getJobTraceMock = jest.spyOn(mockGitlabInstance, 'getJobTrace');
     getJobTraceMock.mockResolvedValue('log1');
@@ -78,10 +74,10 @@ describe('PipelineUtils', () => {
   it('properly cleans logs when fetched from GitLab', async () => {
     const rawLog = '\u001b[32mRunning job\u001b[0m\nsection_start:1234:setup\nSetting up environment\nsection_end:1234:setup';
     
-    const mockJob = { id: 123, name: 'test-job' } as MockJobType;
+    const mockJob: Partial<JobSchema> = { id: 123, name: 'test-job' };
     
     const getPipelineJobsMock = jest.spyOn(mockGitlabInstance, 'getPipelineJobs');
-    getPipelineJobsMock.mockResolvedValue([mockJob]);
+    getPipelineJobsMock.mockResolvedValue([mockJob as JobSchema]);
     
     const getJobTraceMock = jest.spyOn(mockGitlabInstance, 'getJobTrace');
     getJobTraceMock.mockResolvedValue(rawLog);
@@ -90,7 +86,7 @@ describe('PipelineUtils', () => {
     
     expect(logs).toHaveLength(1);
     expect(logs[0].jobName).toBe('test-job');
-    expect(logs[0].log).toBe('Running job\n\nSetting up environment\n');
+    expect(logs[0].log).toBe('Running job\nSetting up environment');
   });
   
   it('handles realistic GitLab CI logs', () => {

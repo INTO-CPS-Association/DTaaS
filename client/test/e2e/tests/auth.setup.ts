@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { expect } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import setup from 'test/e2e/setup/fixtures';
 
-dotenv.config({ path: './test/.env' });
+// Use absolute path for reliable environment variable loading
+const envPath = path.join(process.cwd(), 'client/test/.env');
+dotenv.config({ path: envPath });
 
 const authFile = 'playwright/.auth/user.json';
 const testUsername = process.env.REACT_APP_TEST_USERNAME ?? '';
@@ -24,7 +27,6 @@ setup('authenticate', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();
-
   const storage = await page.context().storageState();
   storage.cookies = storage.cookies.map((cookie) => {
     if (cookie.name === 'preferred_language') {

@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from 'react';
-import { Camelize, JobSchema } from '@gitbeaker/rest';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
 import {
@@ -11,8 +10,7 @@ import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'preview/store/snackbar.slice';
 
 export const cleanLogContent = (input: string | null | undefined): string => {
-  if (!input) return '';
-  
+  if (!input) return '';  
   let cleaned = input.replace(
     // eslint-disable-next-line no-control-regex
     /\u001b\[[0-9;]*[mK]/g, 
@@ -23,18 +21,22 @@ export const cleanLogContent = (input: string | null | undefined): string => {
     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
     ''
   );
-  cleaned = cleaned.split('\n').map(line => {
-    if (line.includes('section_start:')) {
-      return line.replace(/section_start:[0-9]+:[a-zA-Z0-9_]+/g, '').trim();
-    }
-    if (line.includes('section_end:')) {
-      return line.replace(/section_end:[0-9]+:[a-zA-Z0-9_]+/g, '').trim();
-    }
-    return line;
-  }).join('\n');
   
-  return cleaned;
-};
+  const lines = cleaned.split('\n');
+  const cleanedLines = lines.map(line => {
+    if (line.match(/^section_(start|end):[0-9]+:[a-zA-Z0-9_-]+$/)) {
+      return '';
+    }
+    
+    return line
+      .replace(/section_start:[0-9]+:[a-zA-Z0-9_-]+/g, '')
+      .replace(/section_end:[0-9]+:[a-zA-Z0-9_-]+/g, '')
+      .trim();
+  });
+  return cleanedLines
+    .filter(line => line.length > 0)
+    .join('\n');
+}
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
@@ -117,59 +119,47 @@ export const updatePipelineStateOnStop = (
     }),
   );
 };
-interface JobLogResult {
-  jobName: string;
-  log: string;
-}
-
-type GitlabJob = JobSchema | Camelize<JobSchema>;
-
-const extractJobName = (job: GitlabJob | null | undefined): string => {
-  if (!job) return 'Unknown';
-  
-  return typeof job.name === 'string' ? job.name : 'Unknown';
-};
-
-const processJob = async (
-  job: GitlabJob | null | undefined,
-  projectId: number,
-  gitlabInstance: GitlabInstance
-): Promise<JobLogResult> => {
-  if (!job || typeof job.id === 'undefined') {
-    return { jobName: 'Unknown', log: 'Job ID not available' };
-  }
-  
-  const jobName = extractJobName(job);
-  
-  try {
-    const trace = await gitlabInstance.getJobTrace(projectId, job.id);
-    const logContent = typeof trace === 'string' ? cleanLogContent(trace) : 'Error fetching log content';
-    return { jobName, log: logContent };
-  } catch (_traceError) {
-    return { jobName, log: 'Error fetching log content' };
-  }
-};
 
 export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
-): Promise<JobLogResult[]> => {
-  try {
-    if (!gitlabInstance.projectId) {
-      return [];
-    }
-    
-    const { projectId } = gitlabInstance;
-  
-    const jobs = await gitlabInstance.getPipelineJobs(
-      projectId,
-      pipelineId,
-    );
-    
-    const jobLogPromises = (jobs || []).map(job => processJob(job, projectId, gitlabInstance));
-    
-    return (await Promise.all(jobLogPromises)).reverse();
-  } catch (_error) {
+): Promise<Array<{ jobName: string; log: string }>> => {
+  const {projectId} = gitlabInstance;
+  if (!projectId) {
     return [];
   }
+  
+  const jobs = await gitlabInstance.getPipelineJobs(
+    projectId,
+    pipelineId,
+  );
+  
+  const logPromises = jobs.map(async (job) => {
+    if (!job || typeof job.id === 'undefined') {
+      return { jobName: 'Unknown', log: 'Job ID not available' };
+    }
+    
+    try {
+      const logContent = await gitlabInstance.getJobTrace(
+        projectId,
+        job.id,
+      );
+      
+      let cleanedLog = '';
+      if (typeof logContent === 'string') {
+        cleanedLog = cleanLogContent(logContent);
+      }
+      
+      return { 
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown', 
+        log: cleanedLog 
+      };
+    } catch (_e) {
+      return { 
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown', 
+        log: 'Error fetching log content' 
+      };
+    }
+  });
+  return (await Promise.all(logPromises)).reverse();
 };
