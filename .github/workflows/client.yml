@@ -114,7 +114,7 @@ jobs:
     with: 
       image-name: dtaas-web
       version: ${{ needs.get_version.outputs.version }}
-      dockerfile: client.dockerfile
+      dockerfile: client.built.dockerfile
     secrets: inherit
 
   publish-docker-image-dockerhub:
@@ -128,7 +128,7 @@ jobs:
     with: 
       image-name: dtaas-web
       version: ${{ needs.get_version.outputs.version }}
-      dockerfile: client.dockerfile
+      dockerfile: client.built.dockerfile
       readme-file: client/DOCKER.md
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

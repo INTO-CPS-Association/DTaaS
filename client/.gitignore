@@ -1,2 +1,4 @@
 playwright/.auth/
 test-results/
+node_modules/
+coverage/
