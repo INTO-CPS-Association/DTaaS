@@ -1,7 +1,7 @@
 # Reference: https://docs.gitlab.com/ee/install/docker/installation.html
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:16.4.1-ce.0'
+    image: 'gitlab/gitlab-ce:17.9.2-ce.0'
     container_name: gitlab
     restart: always
     hostname: ${SERVER_DNS}

@@ -1,27 +1,27 @@
 kind: deployment
 services:
-    rabbitmq:
-        username: "dtaas"
-        password: "dtaas"
-        vhost: "/"
-        ports:
-            main: 5672
-            management: 15672
-    grafana:
-        hostname: "localhost" #change to URL
-        username: "admin" #do not change
-        password: "dtaas"
-        port: 3000
     influxdb:
         username: "dtaas"
         password: "dtaas1357"   # need to have letters and numbers
         datapath: "/home/vagrant/DTaaS/deploy/services/influx" #no spaces in the path
         port: 8086
-    mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
-        username: "dtaas"
-        password: "dtaas"
     mongodb:
         username: "dtaas"
         password: "dtaas"
-        port: 27017
+        port: 8087
         datapath: "/home/vagrant/DTaaS/deploy/services/mongodb" #no spaces in the path
+    grafana:
+        hostname: "localhost" #change to URL
+        username: "admin" #do not change
+        password: "dtaas"
+        port: 8088
+    rabbitmq:
+        username: "dtaas"
+        password: "dtaas"
+        vhost: "/"
+        ports:
+            main: 8089
+            management: 8090
+    mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
+        username: "dtaas"
+        password: "dtaas"

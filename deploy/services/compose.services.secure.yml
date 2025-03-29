@@ -48,6 +48,29 @@ services:
     networks:
       - platform-services
 
+  influxdb:
+    image: 'influxdb:2.7'
+    container_name: influxdb
+    restart: always
+    #user: '${USERID}:${GROUPID}'
+    ports:
+      - '${INFLUXDB_PORT}:8086'
+    volumes:
+      - './data/influxdb/data:/var/lib/influxdb2'
+      - './config/influxdb:/etc/influxdb2'
+      - './data/influxdb/data:/var/lib/influxdb2'
+      - './certs/${HOSTNAME}:/etc/ssl'
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: '${INFLUXDB_ADMIN_USERNAME}'
+      DOCKER_INFLUXDB_INIT_PASSWORD: '${INFLUXDB_ADMIN_PASSWORD}'
+      DOCKER_INFLUXDB_INIT_ORG: '${INFLUXDB_ORG}'
+      DOCKER_INFLUXDB_INIT_BUCKET: '${INFLUXDB_BUCKET}'
+      INFLUXD_TLS_CERT: /etc/ssl/fullchain.pem
+      INFLUXD_TLS_KEY: /etc/ssl/privkey-influxdb.pem
+    networks:
+      - platform-services
+
 networks:
   platform-services:
     name: dtaas-platform-services
