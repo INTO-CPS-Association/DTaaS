@@ -5,23 +5,27 @@ services:
         password: "dtaas"
         vhost: "/"
         ports:
-            main: 5672
-            management: 15672
+            main: 8089
+            management: 8090
+            #main: 5672
+            #management: 15672
     grafana:
-        hostname: "localhost"
-        username: "admin"   # do not change
+        hostname: "localhost" #change to URL
+        username: "admin" #do not change
         password: "dtaas"
-        port: 3000
+        port: 8088
+        #port: 3000
     influxdb:
         username: "dtaas"
         password: "dtaas1357"   # need to have letters and numbers
         datapath: "/home/vagrant/DTaaS/deploy/services/influx" #no spaces in the path
-        port: 80
+        port: 8086
     mqtt:  # usernames and passwords are in deploy/config/services/mqtt/config/password
         username: "dtaas"
         password: "dtaas"
     mongodb:
         username: "dtaas"
         password: "dtaas"
-        port: 27017
+        port: 8087
+        #port: 27017
         datapath: "/home/vagrant/DTaaS/deploy/services/mongodb" #no spaces in the path
