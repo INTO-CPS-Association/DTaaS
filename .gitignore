@@ -179,7 +179,7 @@ deploy/services/gitlab/config/
 
 # config files
 services.env
-services.insecure.yml
+credentials.csv
 deploy/services/certs/*
 !deploy/services/certs/services.foo.com
 

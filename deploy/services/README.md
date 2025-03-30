@@ -101,3 +101,37 @@ The firewall and network access settings of corporate / cloud network
 need to be configured to allow external access to the services.
 Otherwise the users of DTaaS will not be able to utilize these
 services from their user workspaces.
+
+## New User Accounts
+
+There are ready to use scripts for adding accounts in **InfluxDB** and
+**RabbitMQ** services.
+
+Copy the user accounts template and add user account credentials.
+
+```bash
+cp config/credentials.csv.template config/credentials.csv
+# edit credentials.csv file
+```
+
+Use the following commands to add new users to **InfluxDB** service.
+
+```bash
+# on host machine
+docker cp script/influxdb.py influxdb:/influxdb.py
+docker cp config/credentials.csv influxdb:/credentials.csv
+docker exec -it influxdb bash
+# inside docker container
+python3 influxdb.py
+```
+
+Use the following commands to add new users to **RabbitMQ** service.
+
+```bash
+# on host machine
+docker cp script/rabbitmq.py rabbitmq:/rabbitmq.py
+docker cp config/credentials.csv rabbitmq:/credentials.csv
+docker exec -it rabbitmq bash
+# inside docker container
+python3 influxdb.py
+```
