@@ -1,5 +1,24 @@
 
 services:
+  rabbitmq:
+    image: rabbitmq:4.0.7-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_PORT}:5671"              # RabbitMQ SSL port
+      - '${RABBITMQ_MANAGEMENT_PORT}:15671'  # RabbitMQ management plugin port
+      - '${RABBITMQ_MQTT_PORT}:8883'         # RabbitMQ MQTT plugin port
+    environment:
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_ADMIN_USERNAME}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'
+    volumes:
+      - './data/rabbitmq:/var/lib/rabbitmq'
+      - './certs/${HOSTNAME}:/etc/rabbitmq/certs'
+      - './config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf'
+      - './config/rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins'
+    networks:
+      - platform-services
+
   mongodb:
     image: 'mongo:8.0.3'
     container_name: mongodb
@@ -11,6 +30,9 @@ services:
       - './data/mongodb:/data/db'
       - './config/mongod.conf.secure:/etc/mongod.conf'
       - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_ADMIN_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_ADMIN_PASSWORD}'
     shm_size: '256m'
     networks:
       - platform-services
