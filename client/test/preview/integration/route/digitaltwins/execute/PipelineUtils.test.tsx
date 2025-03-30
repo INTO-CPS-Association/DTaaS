@@ -1,4 +1,5 @@
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
+import cleanLog from 'model/backend/gitlab/cleanLog';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
@@ -104,7 +105,7 @@ Building project...
 \u001b[32mBuild completed successfully\u001b[0m
 section_end:1678901236:build`;
     
-    const cleaned = PipelineUtils.cleanLogContent(realWorldLog);
+    const cleaned = cleanLog(realWorldLog);
     
     expect(cleaned).not.toContain('\u001b');
     expect(cleaned).not.toContain('section_start');

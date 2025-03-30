@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
-import cleanLogContent from 'model/backend/gitlab/cleanLogContent';
+import cleanLog from 'model/backend/gitlab/cleanLog';
 import {
   setJobLogs,
   setPipelineCompleted,
@@ -112,19 +112,20 @@ export const fetchJobLogs = async (
     }
     
     try {
-      const logContent = await gitlabInstance.getJobTrace(
+      let log = await gitlabInstance.getJobTrace(
         projectId,
         job.id,
       );
       
-      let cleanedLog = '';
-      if (typeof logContent === 'string') {
-        cleanedLog = cleanLogContent(logContent);
+      if (typeof log === 'string') {
+        log = cleanLog(log);
+      } else {
+        log = '';
       }
       
       return { 
         jobName: typeof job.name === 'string' ? job.name : 'Unknown', 
-        log: cleanedLog 
+        log 
       };
     } catch (_e) {
       return { 
