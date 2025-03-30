@@ -2,27 +2,83 @@
 
 It is recommended to install certain third-party software for use
 by digital twins running inside the DTaaS software.
+_These services can only be installed in secure (TLS) mode._
 
-The installation scripts in this directory install:
+The following services can be installed:
 
 * **Influx** time-series database and dashboard service
 * **Grafana** visualization and dashboard service
 * **RabbitMQ** AMQP broker and its' management interface
-* Eclipse Mosquitto **MQTT** broker
+  The **MQTT plugin** of this broker has been enabled.
+  So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
 
-## Configure and Install
+## Directory Structure
 
-The first step in installation is to specify the config of the services.
-There are two configuration files. The **services.yml** contains most
-of configuration settings. The **mqtt-default.conf** file contains
-the MQTT listening port. Update these two config files before proceeding
-with the installation of the services.
+* **config** is used for storing the service configuration
+* **data** is used by the services for storing data
+* **certs** is used for storing the TLS certificates needed by the services.
 
-```bash
-yarn install
-node services.js
-```
+## Installation steps
+
+Please follow the steps outlined here for installtion.
+The `services.foo.com` website hostname is used for illustration.
+Please replace the same with your server's hostname.
+
+* Obtain the TLS certificates from letsencrypt and copy them.
+
+  ```bash
+  cp -R /etc/letsencrypt/archive/foo.com certs/.
+  mv certs/foo.com/privkey1.pem certs/foo.com/privkey.pem
+  mv certs/foo.com/fullchain1.pem certs/foo.com/fullchain.pem
+  ```
+
+* Combine and adjust permissions of certificates for MongoDB user
+  in docker container.
+
+  ```bash
+  cat certs/foo.com/privkey.pem certs/foo.com/fullchain.pem > \
+    certs/foo.com/combined.pem
+  chmod 600 certs/foo.com/combined.pem
+  chown 999:999 certs/foo.com/combined.pem
+  ```
+
+* Adjust permissions of certificates for InfluxDB user in docker container.
+
+  ```bash
+  cp certs/foo.com/privkey.pem certs/foo.com/privkey-influxdb.pem
+  chown 1000:1000 certs/foo.com/privkey-influxdb.pem
+  ```
+
+* Adjust permissions of certificates for RabbitMQ user in docker container.
+  
+  ```bash
+  cp certs/foo.com/privkey.pem certs/foo.com/privkey-rabbitmq.pem
+  chown 999 certs/foo.com/privkey-rabbitmq.pem
+  ```
+
+* Notedown your userid and groupid on Linux systems.
+  
+  ```bash
+  $id -u #outputs userid
+  $id -g #outputs groupid
+  ```
+
+* Use configuration template and create service configuration.
+  Remember to update the services.env file with the appropriate values.
+
+  ```bash
+  cp config/services.env.template config/services.env
+  ```
+
+* Start or stop services.
+  
+  ```bash
+  docker compose -f compose.services.secure.yml \
+    --env-file config/services.env up -d
+  docker compose -f compose.services.secure.yml \
+    --env-file config/services.env down
+  ```
 
 ## Use
 
@@ -31,13 +87,17 @@ at the following ports / URLs.
 
 | service | external url |
 |:---|:---|
-| Influx | services.foo.com |
-| Grafana | services.foo.com:3000 |
-| RabbitMQ Broker | services.foo.com:5672 |
-| RabbitMQ Broker Management Website | services.foo.com:15672 |
-| MQTT Broker | services.foo.com:1883 |
-| MongoDB database | services.foo.com:27017 |
+| RabbitMQ Broker | services.foo.com:8083 |
+| RabbitMQ Broker Management Website | services.foo.com:8084 |
+| MQTT Broker | services.foo.com:8085 |
+| Influx | services.foo.com:8086 |
+| MongoDB database | services.foo.com:8087 |
+| Grafana | services.foo.com:8088 |
 
-The firewall and network access settings of corporate / cloud network need to be
-configured to allow external access to the services. Otherwise the users of DTaaS
-will not be able to utilize these services from their user workspaces.
+Please note that the TCP ports used by the services can be changed
+by updating the `config/service.env` file.
+
+The firewall and network access settings of corporate / cloud network
+need to be configured to allow external access to the services.
+Otherwise the users of DTaaS will not be able to utilize these
+services from their user workspaces.

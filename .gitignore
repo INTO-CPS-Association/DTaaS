@@ -181,5 +181,5 @@ deploy/services/gitlab/config/
 services.env
 services.insecure.yml
 deploy/services/certs/*
-!deploy/services/certs/foo.com
+!deploy/services/certs/services.foo.com
 
