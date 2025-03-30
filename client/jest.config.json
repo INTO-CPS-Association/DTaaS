@@ -4,21 +4,11 @@
   "transform": {
     "^.+\\.tsx?$": "ts-jest"
   },
-  "transformIgnorePatterns": [
-    "/node_modules/(?![d3-shape|recharts]).+\\.js$"
-  ],
+  "transformIgnorePatterns": ["/node_modules/(?![d3-shape|recharts]).+\\.js$"],
   "collectCoverage": true,
-  "coverageReporters": [
-    "text",
-    "cobertura",
-    "clover",
-    "lcov",
-    "json"
-  ],
+  "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
   "testTimeout": 15000,
-  "collectCoverageFrom": [
-    "src/**/*.{ts,tsx}"
-  ],
+  "collectCoverageFrom": ["src/**/*.{ts,tsx}"],
   "coveragePathIgnorePatterns": [
     "node_modules",
     "build",
@@ -27,11 +17,7 @@
     "src/store/store.ts",
     "src/preview/util/gitlabDriver.ts"
   ],
-  "modulePathIgnorePatterns": [
-    "test/e2e",
-    "mocks",
-    "config"
-  ],
+  "modulePathIgnorePatterns": ["test/e2e", "mocks", "config"],
   "coverageDirectory": "<rootDir>/coverage/",
   "globals": {
     "window.ENV.SERVER_HOSTNAME": "localhost",
@@ -39,9 +25,7 @@
   },
   "verbose": true,
   "testRegex": "/test/.*\\.test.tsx?$",
-  "modulePaths": [
-    "<rootDir>/src/"
-  ],
+  "modulePaths": ["<rootDir>/src/"],
   "moduleNameMapper": {
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/preview/__mocks__/styleMock.ts"

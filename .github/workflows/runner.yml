@@ -46,7 +46,9 @@ jobs:
           yarn test
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner

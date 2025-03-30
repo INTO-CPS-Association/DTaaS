@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createStore } from 'redux';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import Library from 'route/library/Library';
@@ -21,6 +21,18 @@ jest.mock('page/Menu', () => ({
   __esModule: true,
   default: () => <div data-testid="menu" />,
 }));
+
+// Bypass the config verification
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({ data: 'success' }),
+});
+
+Object.defineProperty(AbortSignal, 'timeout', {
+  value: jest.fn(),
+  writable: false,
+});
 
 const store = createStore(authReducer);
 
@@ -63,12 +75,14 @@ describe('Redux and Authentication integration test', () => {
     };
   });
 
-  it('renders undefined username when not authenticated', () => {
+  it('renders undefined username when not authenticated', async () => {
     setupTest({
       isAuthenticated: false,
     });
 
-    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Sign In with GitLab/i)).toBeInTheDocument();
+    });
     expect(authReducer(undefined, { type: 'unknown' })).toEqual(
       initialState.auth,
     );
@@ -84,7 +98,7 @@ describe('Redux and Authentication integration test', () => {
     expect(store.getState().userName).toBe('username');
   });
 
-  it('renders undefined username after ending authentication', () => {
+  it('renders undefined username after ending authentication', async () => {
     setupTest({
       isAuthenticated: true,
     });
@@ -94,7 +108,9 @@ describe('Redux and Authentication integration test', () => {
     setupTest({
       isAuthenticated: false,
     });
-    expect(screen.getByText('Sign In with GitLab')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Sign In with GitLab/i)).toBeInTheDocument();
+    });
     expect(store.getState().userName).toBe(undefined);
   });
 });

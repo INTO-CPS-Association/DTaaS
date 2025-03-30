@@ -8,6 +8,7 @@ import DigitalTwins from './route/digitaltwins/DigitalTwins';
 import DigitalTwinsPreview from './preview/route/digitaltwins/DigitalTwinsPreview';
 import SignIn from './route/auth/Signin';
 import Account from './route/auth/Account';
+import Config from './route/config/Config';
 
 export const routes = [
   {
@@ -15,6 +16,22 @@ export const routes = [
     element: (
       <LayoutPublic>
         <SignIn />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'config/developer',
+    element: (
+      <LayoutPublic containerMaxWidth="md">
+        <Config role="developer" />
+      </LayoutPublic>
+    ),
+  },
+  {
+    path: 'config/user',
+    element: (
+      <LayoutPublic containerMaxWidth="md">
+        <Config role="user" />
       </LayoutPublic>
     ),
   },

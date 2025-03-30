@@ -45,10 +45,6 @@ async function performSignOutFlow(auth: AuthContextProps, appURL: string) {
   await fetch(`${cleanURL(appURL)}/_oauth/logout`, {
     signal: AbortSignal.timeout(30000),
   });
-
-  setTimeout(() => {
-    window.location.reload();
-  }, 3000);
 }
 
 export function useSignOut() {
@@ -66,7 +62,7 @@ export function useSignOut() {
   return signOut;
 }
 
-export function wait(milliseconds: number): Promise<void> {
+export async function wait(milliseconds: number): Promise<void> {
   return new Promise<void>((resolve) => {
     const onTimeout = () => {
       resolve();

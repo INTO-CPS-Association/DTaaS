@@ -5,10 +5,7 @@
     "sourceMap": true, //generate .map files
     "target": "es6", //target es6
     "jsx": "react", //use react
-    "types": [
-      "react",
-      "node"
-    ], //use react and node types
+    "types": ["react", "node"], //use react and node types
     "module": "esnext", //use esnext modules
     "moduleResolution": "node", //use node module resolution strategy node
     "experimentalDecorators": true, //allow experimental decorators for es7
@@ -21,9 +18,7 @@
     "outDir": "dist", //output directory
     "baseUrl": "src", //base url for imports
     "paths": {
-      "test/*": [
-        "../test/*"
-      ]
+      "test/*": ["../test/*"]
     },
     "typeRoots": [
       "node_modules/@types" //use node_modules/@types for type definitions
@@ -31,9 +26,5 @@
     "strictNullChecks": true, //enable strict null checks
     "resolveJsonModule": true //allow to import JSON files directly
   },
-  "exclude": [
-    "**/node_modules/*",
-    "babel.config.cjs",
-    "dist"
-  ]
+  "exclude": ["**/node_modules/*", "babel.config.cjs", "dist"]
 }

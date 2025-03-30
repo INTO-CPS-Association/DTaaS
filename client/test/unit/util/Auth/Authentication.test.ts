@@ -143,14 +143,6 @@ describe('useSignOut', () => {
     );
   });
 
-  it('reloads the page', async () => {
-    const auth = useAuth();
-    const signOut = useSignOut();
-    await signOut(auth);
-    jest.advanceTimersByTime(3000);
-    expect(window.location.reload).toHaveBeenCalled();
-  });
-
   it('clears sessionStorage', async () => {
     const auth = useAuth();
     const signOut = useSignOut();
