@@ -1,0 +1,25 @@
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.0.7-management
+    container_name: rabbitmq
+    restart: always
+    user: '${USERID}:${GROUPID}'
+    ports:
+      - "${RABBITMQ_PORT}:5671"              # RabbitMQ SSL port
+      - '${RABBITMQ_MANAGEMENT_PORT}:15671'  # RabbitMQ management plugin port
+      - '${RABBITMQ_MQTT_PORT}:8883'         # RabbitMQ MQTT plugin port
+    environment:
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_ADMIN_USERNAME}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'
+    volumes:
+      - './data/rabbitmq:/var/lib/rabbitmq'
+      - './certs/${HOSTNAME}:/etc/rabbitmq/certs'
+      - './config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf'
+      - './config/rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins'
+    networks:
+      - platform-services
+
+networks:
+  platform-services:
+    name: dtaas-platform-services
