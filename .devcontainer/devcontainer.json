@@ -1,109 +1,14 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Digital Twin as a Service",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:22-bullseye",
-	
-	"hostRequirements": {
-		"cpus": 4,
-		"memory": "8gb",
-		"storage": "32gb"
-	},
-	
-	"features": {
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"version": "latest",
-			"installZsh": true,
-			"configureZshAsDefaultShell": true,
-			"installOhMyZsh": true,
-			"installOhMyZshConfig": true,
-			"username": "devcontainer",
-			"userUid": "1001",
-			"userGid": "automatic"
-		},
-		"ghcr.io/devcontainers/features/git:1": {
-			"version": "os-provided"
-		},
-		"ghcr.io/devcontainers-extra/features/typescript:2": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers-extra/features/npm-package:1": {
-			"package": "madge"
-		},
-		"ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
-			"version": "latest",
-			"clean_ppas": true,
-			"preserve_apt_list": true,
-			"packages": "curl graphviz htop net-tools"
-		},
-		"ghcr.io/devcontainers-extra/features/nestjs-cli:2": {
-			"version": "latest"
-		}
-	},
-	
-	"containerEnv": {
-		"NODE_ENV": "development",
-		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"DEVCONTAINER_VOLUME_NAME": "${localWorkspaceFolderBasename}-node_modules"
-	},
-	
-	"mounts": [
-		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
-	],
-	
+	"name": "DTaaS Development",
+	"workspaceFolder": "/workspaces/DTaaS",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "dtaas",
 	"customizations": {
 		"vscode": {
-			"extensions": [
-				"AlexShen.classdiagram-ts",
-				"christian-kohler.npm-intellisense",
-				"DavidAnson.vscode-markdownlin",
-				"eamodio.gitlens",
-				"redhat.vscode-yaml",
-				"VisualStudioExptTeam.vscodeintellicode",
-				"vscode-icons-team.vscode-icons",
-				"donjayamanne.githistory",
-				"mhutchie.git-graph",
-				"humao.rest-client",
-				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode"
-			],
 			"settings": {
-				"editor.tabSize": 2,
-				"terminal.integrated.defaultProfile.linux": "zsh",
-				"terminal.integrated.profiles.linux": {
-					"bash": {
-						"path": "bash",
-						"icon": "terminal-bash"
-					},
-					"zsh": {
-						"path": "zsh"
-					},
-					"tmux": {
-						"path": "tmux",
-						"icon": "terminal-tmux"
-					},
-					"pwsh": {
-						"path": "pwsh",
-						"icon": "terminal-powershell"
-					}
-				}
+				"terminal.integrated.defaultProfile.linux": "zsh"
 			}
 		}
 	},
-	
-	"forwardPorts": [
-		4000,		//react client
-		4001,		// lib microservice
-		5000,		// DT runner
-		8000		// mkdocs
-	],
-	
-	// Add commands to configure yarn and fix node_modules permissions
-	"postCreateCommand": "npm config set cache /tmp/.npm --global && yarn config set cache-folder /tmp/.yarn-cache",
-	
-	// Fix permissions for node_modules volume and configure yarn/npm for the current user
-	"postStartCommand": "sudo chown -R $(id -u):$(id -g) ${containerWorkspaceFolder}/client/node_modules && mkdir -p ~/.npm && npm config set prefix ~/.npm && echo 'export PATH=\"$HOME/.npm/bin:$PATH\"' >> ~/.zshrc && echo 'export PATH=\"$HOME/.npm/bin:$PATH\"' >> ~/.bashrc"
+	"remoteUser": "node"
 }
-// Execute after login:
-//	source /usr/share/powerline/bindings/zsh/powerline.zsh

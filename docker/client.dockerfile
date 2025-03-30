@@ -22,6 +22,9 @@ COPY client/ ./
 # Configure TypeScript for faster compilation
 RUN echo '{"compilerOptions": {"skipLibCheck": true}}' > ./tsconfig.dev.json
 
+# Install missing dependencies required for build
+RUN yarn add --dev @babel/plugin-proposal-private-property-in-object @types/react-dom
+
 # Build the React app
 RUN yarn build
 

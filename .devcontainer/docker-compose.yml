@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  dtaas:
+    build: 
+      context: dtaas
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspaces/DTaaS:cached
+      - dtaas-node-modules:/workspaces/DTaaS/client/node_modules
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - NODE_OPTIONS=--max-old-space-size=4096
+    # Forward the ports we need
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+      - "5000:5000"
+      - "8000:8000"
+  
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspaces/DTaaS:cached
+      - client-node-modules:/workspaces/DTaaS/client/node_modules
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - NODE_OPTIONS=--max-old-space-size=4096
+    # Forward only the ports needed for client development
+    ports:
+      - "4000:4000"
+
+volumes:
+  dtaas-node-modules:
+  client-node-modules:
