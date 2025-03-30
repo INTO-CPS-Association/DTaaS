@@ -18,6 +18,7 @@ The following services can be installed:
 * **config** is used for storing the service configuration
 * **data** is used by the services for storing data
 * **certs** is used for storing the TLS certificates needed by the services.
+* **script** contains scripts for creating user accounts
 
 ## Installation steps
 
@@ -28,33 +29,34 @@ Please replace the same with your server's hostname.
 * Obtain the TLS certificates from letsencrypt and copy them.
 
   ```bash
-  cp -R /etc/letsencrypt/archive/foo.com certs/.
-  mv certs/foo.com/privkey1.pem certs/foo.com/privkey.pem
-  mv certs/foo.com/fullchain1.pem certs/foo.com/fullchain.pem
+  cp -R /etc/letsencrypt/archive/services.foo.com certs/.
+  mv certs/services.foo.com/privkey1.pem certs/services.foo.com/privkey.pem
+  mv certs/services.foo.com/fullchain1.pem certs/services.foo.com/fullchain.pem
   ```
 
 * Combine and adjust permissions of certificates for MongoDB user
   in docker container.
 
   ```bash
-  cat certs/foo.com/privkey.pem certs/foo.com/fullchain.pem > \
-    certs/foo.com/combined.pem
-  chmod 600 certs/foo.com/combined.pem
-  chown 999:999 certs/foo.com/combined.pem
+  cat certs/services.foo.com/privkey.pem \
+    certs/services.foo.com/fullchain.pem > certs/foo.com/combined.pem
+  chmod 600 certs/services.foo.com/combined.pem
+  chown 999:999 certs/services.foo.com/combined.pem
   ```
 
 * Adjust permissions of certificates for InfluxDB user in docker container.
 
   ```bash
-  cp certs/foo.com/privkey.pem certs/foo.com/privkey-influxdb.pem
-  chown 1000:1000 certs/foo.com/privkey-influxdb.pem
+  cp certs/services.foo.com/privkey.pem \
+    certs/services.foo.com/privkey-influxdb.pem
+  chown 1000:1000 certs/services.foo.com/privkey-influxdb.pem
   ```
 
 * Adjust permissions of certificates for RabbitMQ user in docker container.
   
   ```bash
-  cp certs/foo.com/privkey.pem certs/foo.com/privkey-rabbitmq.pem
-  chown 999 certs/foo.com/privkey-rabbitmq.pem
+  cp certs/services.foo.com/privkey.pem certs/services.foo.com/privkey-rabbitmq.pem
+  chown 999 certs/services.foo.com/privkey-rabbitmq.pem
   ```
 
 * Notedown your userid and groupid on Linux systems.
@@ -95,7 +97,7 @@ at the following ports / URLs.
 | Grafana | services.foo.com:8088 |
 
 Please note that the TCP ports used by the services can be changed
-by updating the `config/service.env` file.
+by updating the `config/service.env` file and rerunning the docker commands.
 
 The firewall and network access settings of corporate / cloud network
 need to be configured to allow external access to the services.
@@ -133,5 +135,5 @@ docker cp script/rabbitmq.py rabbitmq:/rabbitmq.py
 docker cp config/credentials.csv rabbitmq:/credentials.csv
 docker exec -it rabbitmq bash
 # inside docker container
-python3 influxdb.py
+python3 rabbitmq.py
 ```
