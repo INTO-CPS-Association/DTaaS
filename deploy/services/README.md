@@ -22,7 +22,7 @@ The following services can be installed:
 
 ## Installation steps
 
-Please follow the steps outlined here for installtion.
+Please follow the steps outlined here for installation.
 The `services.foo.com` website hostname is used for illustration.
 Please replace the same with your server's hostname.
 
@@ -59,7 +59,7 @@ Please replace the same with your server's hostname.
   chown 999 certs/services.foo.com/privkey-rabbitmq.pem
   ```
 
-* Notedown your userid and groupid on Linux systems.
+* Note down your userid and groupid on Linux systems.
   
   ```bash
   $id -u #outputs userid
