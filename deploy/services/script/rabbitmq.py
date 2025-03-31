@@ -28,6 +28,9 @@ def create_accounts(filename: str) -> None:
             execute_shell_command(['rabbitmqctl set_permissions -p'
                 + ' ' + vhost + ' ' + credential['username'] + ' '
                 + '".*" ".*" ".*"'])
+            execute_shell_command(['rabbitmqctl set_permissions -p'
+                + ' ' + '/' + ' ' + credential['username'] + ' '
+                + '".*" ".*" ".*"'])
     return None
 
 if __name__ == "__main__":
