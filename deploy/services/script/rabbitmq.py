@@ -1,6 +1,5 @@
 #!/bin/python3
 import csv
-from pprint import pprint
 import subprocess
 
 def execute_shell_command(command: str, verbose:bool = True) -> str:
@@ -10,27 +9,27 @@ def execute_shell_command(command: str, verbose:bool = True) -> str:
         print("Output:", result.stdout)
     if result.returncode != 0:
         print("Error:", result.stderr)
-        return None
+        return ''
     else:
         return result.stdout
 
 def create_accounts(filename: str) -> None:
-    with open(filename, mode='r', newline='') as credsFile:
-        credsDict = {}
-        credentials = csv.DictReader(credsFile, delimiter=',')
+    with open(filename, mode='r', newline='') as creds_file:
+        creds_dict = {}
+        credentials = csv.DictReader(creds_file, delimiter=',')
         for credential in credentials:
-            credsDict[credential['username']] = credential['password']
+            creds_dict[credential['username']] = credential['password']
             vhost = credential['username']
 
-            execute_shell_command(['rabbitmqctl add_user'+ ' '
-                + credential['username'] + ' ' + credential['password']])
-            execute_shell_command(['rabbitmqctl add_vhost ' + vhost])
-            execute_shell_command(['rabbitmqctl set_permissions -p'
+            execute_shell_command('rabbitmqctl add_user'+ ' '
+                + credential['username'] + ' ' + credential['password'])
+            execute_shell_command('rabbitmqctl add_vhost ' + vhost)
+            execute_shell_command('rabbitmqctl set_permissions -p'
                 + ' ' + vhost + ' ' + credential['username'] + ' '
-                + '".*" ".*" ".*"'])
-            execute_shell_command(['rabbitmqctl set_permissions -p'
+                + '".*" ".*" ".*"')
+            execute_shell_command('rabbitmqctl set_permissions -p'
                 + ' ' + '/' + ' ' + credential['username'] + ' '
-                + '".*" ".*" ".*"'])
+                + '".*" ".*" ".*"')
     return None
 
 if __name__ == "__main__":
