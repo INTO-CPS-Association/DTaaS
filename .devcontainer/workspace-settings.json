@@ -10,9 +10,6 @@
   "editor.tabSize": 2,
   "files.eol": "\n",
   "typescript.tsdk": "client/node_modules/typescript/lib",
-  "files.watcherExclude": {
-    "**/node_modules/**": false
-  },
   "remote.WSL.fileWatcher.polling": true,
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "relative"

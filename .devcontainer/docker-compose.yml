@@ -1,26 +1,20 @@
 version: "3.8"
 
 services:
-  dtaas:
+  dtaas: # This container has extra dev tools (Python, Ruby etc)
     build:
-      context: dtaas
+      context: dtaas 
       dockerfile: Dockerfile
       args:
         - NODE_USER=node
     volumes:
       - ..:/workspaces/DTaaS:cached
-      - dtaas-node-modules:/workspaces/DTaaS/client/node_modules
+      - client-node-modules:/workspaces/DTaaS/client/node_modules
     environment:
       - NODE_ENV=development
       - NODE_OPTIONS=--max-old-space-size=4096
-    entrypoint: ["/bin/bash", "-c", 'exec "$@"']
-    command:
-      [
-        "/bin/bash",
-        "-c",
-        'chown -R node:node /workspaces/DTaaS/client/node_modules && exec "$@"',
-      ]
-    ports:
+    command: sleep infinity
+    ports: 
       - "4000:4000"
       - "4001:4001"
       - "5000:5000"
@@ -28,9 +22,9 @@ services:
     user: node
     init: true
 
-  client:
+  client: # This container is for the client app
     build:
-      context: client
+      context: client 
       dockerfile: Dockerfile
       args:
         - NODE_USER=node
@@ -47,16 +41,9 @@ services:
       - BROWSER=none
       - TSC_COMPILE_ON_ERROR=true
       - ESLINT_NO_DEV_ERRORS=true
-    entrypoint: ["/bin/bash", "-c", 'exec "$@"']
-    command:
-      [
-        "/bin/bash",
-        "-c",
-        'chown -R node:node /workspaces/DTaaS/client/node_modules && exec "$@"',
-      ]
+    command: sleep infinity 
     ports:
-      - "4000:4000"
-      - "35729:35729"
+      - "4000:4000" # Client dev server
     user: node
     init: true
     ulimits:
@@ -65,7 +52,5 @@ services:
         hard: 65536
 
 volumes:
-  dtaas-node-modules:
-    name: dtaas-node-modules
   client-node-modules:
-    name: client-node-modules
+    name: client-node-modules 

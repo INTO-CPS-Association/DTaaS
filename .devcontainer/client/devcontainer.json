@@ -22,7 +22,8 @@
       "installOhMyZshConfig": true,
       "username": "node",
       "userUid": "automatic",
-      "userGid": "automatic"
+      "userGid": "automatic",
+      "upgradePackages": true
     },
     "ghcr.io/devcontainers/features/git:1": {
       "version": "os-provided"
@@ -35,7 +36,7 @@
   },
 
   "mounts": [
-    "source=${localWorkspaceFolderBasename}-client-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume,consistency=delegated"
+    "source=client-node-modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
   ],
 
   "customizations": {
@@ -59,9 +60,11 @@
     }
   },
 
-  "forwardPorts": [4000, 35729, 3000],
+  "forwardPorts": [
+    4000 // Client dev server
+  ],
 
-  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node /workspaces/DTaaS/client/node_modules",
+  "postCreateCommand": "sudo chown -R node:node /workspaces/DTaaS/client/node_modules",
 
   "workspaceFolder": "/workspaces/DTaaS",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",

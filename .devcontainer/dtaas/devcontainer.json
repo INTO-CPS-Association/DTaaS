@@ -1,19 +1,19 @@
 {
-  "name": "Digital Twin as a Service",
-  "build": { 
+  "name": "DTaaS Client Dev (Extra Tools)",
+  "build": {
     "dockerfile": "Dockerfile",
     "context": ".",
     "args": {
       "NODE_USER": "node"
     }
   },
-  
+
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb",
     "storage": "32gb"
   },
-  
+
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
@@ -22,22 +22,23 @@
       "installOhMyZshConfig": true,
       "username": "node",
       "userUid": "automatic",
-      "userGid": "automatic"
+      "userGid": "automatic",
+      "upgradePackages": true
     },
     "ghcr.io/devcontainers/features/git:1": {
       "version": "os-provided"
     },
     "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
-      "plugins": "npm zsh-autosuggestions",
+      "plugins": "ssh-agent npm zsh-autosuggestions",
       "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
       "username": "node"
     }
   },
-  
+
   "mounts": [
-    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume,consistency=delegated"
+    "source=client-node-modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
   ],
-  
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -54,20 +55,31 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "johnpapa.vscode-peacock",
-        "SimonSiefke.svg-preview"
+        "SimonSiefke.svg-preview",
+        // Add extensions relevant to the extra tools if needed (e.g., Python, MkDocs)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "mkdirdocs.mkd-docs",
+        "ms-python.python",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "zsh"
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "peacock.color": "#5f18a4"
       }
     }
   },
-  
+
   "forwardPorts": [4000, 4001, 5000, 8000],
-  
-  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node /workspaces/DTaaS/client/node_modules",
+
+  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node ${containerWorkspaceFolder}/client/node_modules",
 
   "workspaceFolder": "/workspaces/DTaaS",
-  
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
+
   "remoteUser": "node",
   "updateRemoteUserUID": true
 }
