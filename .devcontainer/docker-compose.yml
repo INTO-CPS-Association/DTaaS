@@ -1,8 +1,8 @@
-version: '3.8'
+version: "3.8"
 
 services:
   dtaas:
-    build: 
+    build:
       context: dtaas
       dockerfile: Dockerfile
       args:
@@ -13,9 +13,13 @@ services:
     environment:
       - NODE_ENV=development
       - NODE_OPTIONS=--max-old-space-size=4096
-      - INIT_VOLUME=true
-    entrypoint: sh -c "if [ \"$$INIT_VOLUME\" = \"true\" ]; then mkdir -p /workspaces/DTaaS/client/node_modules && chown -R node:node /workspaces/DTaaS/client/node_modules; fi; exec \"$$@\"" 
-    command: sleep infinity
+    entrypoint: ["/bin/bash", "-c", 'exec "$@"']
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        'chown -R node:node /workspaces/DTaaS/client/node_modules && exec "$@"',
+      ]
     ports:
       - "4000:4000"
       - "4001:4001"
@@ -23,7 +27,7 @@ services:
       - "8000:8000"
     user: node
     init: true
-  
+
   client:
     build:
       context: client
@@ -43,9 +47,13 @@ services:
       - BROWSER=none
       - TSC_COMPILE_ON_ERROR=true
       - ESLINT_NO_DEV_ERRORS=true
-      - INIT_VOLUME=true
-    entrypoint: sh -c "if [ \"$$INIT_VOLUME\" = \"true\" ]; then mkdir -p /workspaces/DTaaS/client/node_modules && chown -R node:node /workspaces/DTaaS/client/node_modules; fi; exec \"$$@\"" 
-    command: sleep infinity
+    entrypoint: ["/bin/bash", "-c", 'exec "$@"']
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        'chown -R node:node /workspaces/DTaaS/client/node_modules && exec "$@"',
+      ]
     ports:
       - "4000:4000"
       - "35729:35729"

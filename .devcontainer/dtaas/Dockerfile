@@ -35,6 +35,10 @@ RUN mkdir -p /home/${NODE_USER}/.npm /home/${NODE_USER}/.cache /home/${NODE_USER
     && chown -R ${NODE_USER}:${NODE_USER} /home/${NODE_USER}/.npm /home/${NODE_USER}/.cache /home/${NODE_USER}/.local \
     && npm config --global set prefix /home/${NODE_USER}/.npm
 
+# Ensure proper permissions for node_modules directory
+RUN mkdir -p /workspaces/DTaaS/client/node_modules \
+    && chown -R ${NODE_USER}:${NODE_USER} /workspaces/DTaaS/client/node_modules
+
 # Set environment variables
 ENV NODE_ENV=development \
     NODE_OPTIONS="--max-old-space-size=4096"

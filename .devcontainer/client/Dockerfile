@@ -25,6 +25,10 @@ RUN mkdir -p /home/${NODE_USER}/.npm /home/${NODE_USER}/.cache \
     && chown -R ${NODE_USER}:${NODE_USER} /home/${NODE_USER}/.npm /home/${NODE_USER}/.cache \
     && npm config --global set prefix /home/${NODE_USER}/.npm
 
+# Ensure proper permissions for node_modules directory
+RUN mkdir -p /workspaces/DTaaS/client/node_modules \
+    && chown -R ${NODE_USER}:${NODE_USER} /workspaces/DTaaS/client/node_modules
+
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set save-exact true && \
     npm config set fund false

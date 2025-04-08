@@ -7,20 +7,20 @@
       "NODE_USER": "node"
     }
   },
-  
+
   "hostRequirements": {
     "cpus": 2,
     "memory": "4gb",
     "storage": "16gb"
   },
-  
+
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
       "configureZshAsDefaultShell": true,
       "installOhMyZsh": true,
       "installOhMyZshConfig": true,
-      "username": "node", 
+      "username": "node",
       "userUid": "automatic",
       "userGid": "automatic"
     },
@@ -33,11 +33,11 @@
       "username": "node"
     }
   },
-  
+
   "mounts": [
     "source=${localWorkspaceFolderBasename}-client-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume,consistency=delegated"
   ],
-  
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -58,14 +58,14 @@
       }
     }
   },
-  
+
   "forwardPorts": [4000, 35729, 3000],
-  
-  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json",
-  
+
+  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node /workspaces/DTaaS/client/node_modules",
+
   "workspaceFolder": "/workspaces/DTaaS",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
-  
+
   "remoteUser": "node",
   "updateRemoteUserUID": true
 }
