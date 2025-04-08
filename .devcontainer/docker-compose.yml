@@ -5,35 +5,59 @@ services:
     build: 
       context: dtaas
       dockerfile: Dockerfile
+      args:
+        - NODE_USER=node
     volumes:
       - ..:/workspaces/DTaaS:cached
       - dtaas-node-modules:/workspaces/DTaaS/client/node_modules
-    command: sleep infinity
     environment:
       - NODE_ENV=development
       - NODE_OPTIONS=--max-old-space-size=4096
-    # Forward the ports we need
+      - INIT_VOLUME=true
+    entrypoint: sh -c "if [ \"$$INIT_VOLUME\" = \"true\" ]; then mkdir -p /workspaces/DTaaS/client/node_modules && chown -R node:node /workspaces/DTaaS/client/node_modules; fi; exec \"$$@\"" 
+    command: sleep infinity
     ports:
       - "4000:4000"
       - "4001:4001"
       - "5000:5000"
       - "8000:8000"
+    user: node
+    init: true
   
   client:
     build:
       context: client
       dockerfile: Dockerfile
+      args:
+        - NODE_USER=node
     volumes:
       - ..:/workspaces/DTaaS:cached
       - client-node-modules:/workspaces/DTaaS/client/node_modules
-    command: sleep infinity
     environment:
       - NODE_ENV=development
       - NODE_OPTIONS=--max-old-space-size=4096
-    # Forward only the ports needed for client development
+      - FAST_REFRESH=true
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+      - WATCHPACK_POLLING=true
+      - BROWSER=none
+      - TSC_COMPILE_ON_ERROR=true
+      - ESLINT_NO_DEV_ERRORS=true
+      - INIT_VOLUME=true
+    entrypoint: sh -c "if [ \"$$INIT_VOLUME\" = \"true\" ]; then mkdir -p /workspaces/DTaaS/client/node_modules && chown -R node:node /workspaces/DTaaS/client/node_modules; fi; exec \"$$@\"" 
+    command: sleep infinity
     ports:
       - "4000:4000"
+      - "35729:35729"
+    user: node
+    init: true
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
 
 volumes:
   dtaas-node-modules:
+    name: dtaas-node-modules
   client-node-modules:
+    name: client-node-modules

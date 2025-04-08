@@ -1,81 +1,71 @@
 {
-	"name": "DTaaS Client Development",
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:22-bullseye",
-	
-	"hostRequirements": {
-		"cpus": 2,
-		"memory": "4gb",
-		"storage": "16gb"
-	},
-	
-	"features": {
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"version": "latest",
-			"installZsh": true,
-			"configureZshAsDefaultShell": true,
-			"installOhMyZsh": true,
-			"installOhMyZshConfig": true,
-			"username": "devcontainer",
-			"userUid": "1001",
-			"userGid": "automatic"
-		},
-		"ghcr.io/devcontainers/features/git:1": {
-			"version": "os-provided"
-		},
-		"ghcr.io/devcontainers-extra/features/typescript:2": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers-extra/features/npm-package:1": {
-			"package": "madge"
-		},
-		"ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
-			"version": "latest",
-			"plugins": "ssh-agent npm zsh-autosuggestions",
-			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
-			"username": "node"
-		}
-	},
-	
-	"containerEnv": {
-		"NODE_ENV": "development",
-		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"DEVCONTAINER_VOLUME_NAME": "${localWorkspaceFolderBasename}-client-node_modules",
-		"FAST_REFRESH": "true",
-		"CHOKIDAR_USEPOLLING": "true",
-		"WDS_SOCKET_PORT": "0"
-	},
-	
-	"mounts": [
-		"source=${localWorkspaceFolderBasename}-client-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
-	],
-	
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"AlexShen.classdiagram-ts",
-				"christian-kohler.npm-intellisense",
-				"DavidAnson.vscode-markdownlin",
-				"eamodio.gitlens",
-				"redhat.vscode-yaml",
-				"VisualStudioExptTeam.vscodeintellicode",
-				"vscode-icons-team.vscode-icons",
-				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode",
-				"SimonSiefke.svg-preview"
-			],
-			"settings": {
-				"editor.tabSize": 2,
-				"terminal.integrated.defaultProfile.linux": "zsh"
-			}
-		}
-	},
-	
-	"forwardPorts": [4000],
-	
-	"postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache",
-	
-	"workspaceFolder": "/workspaces/DTaaS",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
-	
-	"postStartCommand": "sudo chown -R $(id -u):$(id -g) ${containerWorkspaceFolder}/client/node_modules && mkdir -p ~/.npm && npm config set prefix ~/.npm"
+  "name": "DTaaS Client Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "NODE_USER": "node"
+    }
+  },
+  
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "16gb"
+  },
+  
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "installOhMyZshConfig": true,
+      "username": "node", 
+      "userUid": "automatic",
+      "userGid": "automatic"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "os-provided"
+    },
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+      "plugins": "npm zsh-autosuggestions",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
+      "username": "node"
+    }
+  },
+  
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-client-node_modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume,consistency=delegated"
+  ],
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "AlexShen.classdiagram-ts",
+        "christian-kohler.npm-intellisense",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "redhat.vscode-yaml",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "vscode-icons-team.vscode-icons",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "SimonSiefke.svg-preview",
+        "ms-vscode.vscode-js-profile-table"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+  
+  "forwardPorts": [4000, 35729, 3000],
+  
+  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json",
+  
+  "workspaceFolder": "/workspaces/DTaaS",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
+  
+  "remoteUser": "node",
+  "updateRemoteUserUID": true
 }

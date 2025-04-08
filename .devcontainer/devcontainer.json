@@ -1,14 +1,15 @@
 {
-	"name": "DTaaS Development",
-	"workspaceFolder": "/workspaces/DTaaS",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "dtaas",
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"terminal.integrated.defaultProfile.linux": "zsh"
-			}
-		}
-	},
-	"remoteUser": "node"
+  "name": "DTaaS Development",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dtaas",
+  "workspaceFolder": "/workspaces/DTaaS",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+  "remoteUser": "node",
+  "updateRemoteUserUID": true
 }
