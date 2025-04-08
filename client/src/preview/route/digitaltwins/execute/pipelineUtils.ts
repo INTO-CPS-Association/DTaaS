@@ -96,41 +96,35 @@ export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
 ): Promise<Array<{ jobName: string; log: string }>> => {
-  const {projectId} = gitlabInstance;
+  const { projectId } = gitlabInstance;
   if (!projectId) {
     return [];
   }
-  
-  const jobs = await gitlabInstance.getPipelineJobs(
-    projectId,
-    pipelineId,
-  );
-  
+
+  const jobs = await gitlabInstance.getPipelineJobs(projectId, pipelineId);
+
   const logPromises = jobs.map(async (job) => {
     if (!job || typeof job.id === 'undefined') {
       return { jobName: 'Unknown', log: 'Job ID not available' };
     }
-    
+
     try {
-      let log = await gitlabInstance.getJobTrace(
-        projectId,
-        job.id,
-      );
-      
+      let log = await gitlabInstance.getJobTrace(projectId, job.id);
+
       if (typeof log === 'string') {
         log = cleanLog(log);
       } else {
         log = '';
       }
-      
-      return { 
-        jobName: typeof job.name === 'string' ? job.name : 'Unknown', 
-        log 
+
+      return {
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
+        log,
       };
     } catch (_e) {
-      return { 
-        jobName: typeof job.name === 'string' ? job.name : 'Unknown', 
-        log: 'Error fetching log content' 
+      return {
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
+        log: 'Error fetching log content',
       };
     }
   });
