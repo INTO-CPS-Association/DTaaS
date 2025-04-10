@@ -75,8 +75,8 @@
 
   "forwardPorts": [4000, 4001, 5000, 8000],
 
-  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && cp client/.npmrc ~/.npmrc && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node ${containerWorkspaceFolder}/client/node_modules",
-
+  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node ${containerWorkspaceFolder}/client/node_modules",
+  
   "workspaceFolder": "/workspaces/DTaaS",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
 

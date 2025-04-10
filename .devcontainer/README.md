@@ -36,22 +36,10 @@ Complete development environment with tools for both frontend and backend develo
 
 ## How to Use
 
-### Option 1: VS Code DevContainers
+### VS Code DevContainers
 
 1. Open the DTaaS project in VS Code
 2. When prompted to "Reopen in Container", click "Reopen in Container" (uses the full DTaaS environment by default)
 3. To switch environments:
    - Press F1 and run "Remote-Containers: Open Folder in Container..."
    - Select the DTaaS folder and choose either the client or dtaas configuration
-
-
-### Option 2: Docker Compose
-
-You can also manually start the development environment using Docker Compose:
-
-```bash
-cd /path/to/DTaaS/.devcontainer
-docker-compose up -d client  # For client-only development
-# OR
-docker-compose up -d dtaas   # For full-stack development
-```
