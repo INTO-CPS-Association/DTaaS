@@ -1,50 +1,28 @@
-# Dockerfile for DTaaS Client
-FROM node:22-bullseye-slim AS build
+#! docker should be run from the root directory of the project
+FROM node:20.10.0-slim as build
 
-# Set environment variables for better performance
-ENV NODE_ENV=production
-ENV NPM_CONFIG_LOGLEVEL=error
-ENV YARN_CACHE_FOLDER=/tmp/.yarn-cache
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /dtaas/client
 
-# First copy only package.json and yarn.lock to leverage Docker layer caching
-COPY client/package.json client/yarn.lock ./
+# Copy package.json and package-lock.json to the working directory
+COPY ./client/package.json ./
 
-# Install dependencies with performance flags
-RUN yarn install --frozen-lockfile --network-timeout 600000
+# Install dependencies
+RUN yarn install --immutable --immutable-cache --check-cache
 
-# Now copy the rest of the code
-COPY client/ ./
-
-# Configure TypeScript for faster compilation
-RUN echo '{"compilerOptions": {"skipLibCheck": true}}' > ./tsconfig.dev.json
-
-# Install missing dependencies required for build
-RUN yarn add --dev @babel/plugin-proposal-private-property-in-object @types/react-dom
+# Copy the rest of the application code to the working directory
+COPY ./client/ .
 
 # Build the React app
 RUN yarn build
 
-# Production stage
-FROM node:22-bullseye-slim AS production
 
-# Set production environment
-ENV NODE_ENV=production
-
+FROM node:20.10.0-slim
 # Copy the build output to serve
 COPY --from=build /dtaas/client/build /dtaas/client/build
 COPY --from=build /dtaas/client/package.json /dtaas/client/package.json
 
 WORKDIR /dtaas/client
-
-# Install serve globally
 RUN npm i -g serve
-
-# Expose port 4000 (the port used by client service)
-EXPOSE 4000
-
-# Define the command to run the app
+# Define the command to run your app
 CMD ["yarn", "start"]
