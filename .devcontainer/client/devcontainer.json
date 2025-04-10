@@ -1,0 +1,74 @@
+{
+  "name": "DTaaS Client Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "NODE_USER": "node"
+    }
+  },
+
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "16gb"
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "installOhMyZshConfig": true,
+      "username": "node",
+      "userUid": "automatic",
+      "userGid": "automatic",
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "os-provided"
+    },
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+      "plugins": "npm zsh-autosuggestions",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
+      "username": "node"
+    }
+  },
+
+  "mounts": [
+    "source=client-node-modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "AlexShen.classdiagram-ts",
+        "christian-kohler.npm-intellisense",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "redhat.vscode-yaml",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "vscode-icons-team.vscode-icons",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "SimonSiefke.svg-preview",
+        "ms-vscode.vscode-js-profile-table"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  "forwardPorts": [
+    4000 // Client dev server
+  ],
+
+  "postCreateCommand": "sudo chown -R node:node /workspaces/DTaaS/client/node_modules",
+
+  "workspaceFolder": "/workspaces/DTaaS",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
+
+  "remoteUser": "node",
+  "updateRemoteUserUID": true
+}

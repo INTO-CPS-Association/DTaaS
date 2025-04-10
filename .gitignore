@@ -176,3 +176,10 @@ dtaas-venv/
 deploy/services/gitlab/logs/
 deploy/services/gitlab/data/
 deploy/services/gitlab/config/
+
+# config files
+services.env
+credentials.csv
+deploy/services/certs/*
+!deploy/services/certs/services.foo.com
+

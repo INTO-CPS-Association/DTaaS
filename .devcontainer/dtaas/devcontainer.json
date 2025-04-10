@@ -1,0 +1,85 @@
+{
+  "name": "DTaaS Client Dev (Extra Tools)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "NODE_USER": "node"
+    }
+  },
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "installOhMyZshConfig": true,
+      "username": "node",
+      "userUid": "automatic",
+      "userGid": "automatic",
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "os-provided"
+    },
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+      "plugins": "ssh-agent npm zsh-autosuggestions",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions",
+      "username": "node"
+    }
+  },
+
+  "mounts": [
+    "source=client-node-modules,target=${containerWorkspaceFolder}/client/node_modules,type=volume"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "AlexShen.classdiagram-ts",
+        "christian-kohler.npm-intellisense",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "redhat.vscode-yaml",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "vscode-icons-team.vscode-icons",
+        "donjayamanne.githistory",
+        "mhutchie.git-graph",
+        "humao.rest-client",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "johnpapa.vscode-peacock",
+        "SimonSiefke.svg-preview",
+        // Add extensions relevant to the extra tools if needed (e.g., Python, MkDocs)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "mkdirdocs.mkd-docs",
+        "ms-python.python",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "peacock.color": "#5f18a4"
+      }
+    }
+  },
+
+  "forwardPorts": [4000, 4001, 5000, 8000],
+
+  "postCreateCommand": "npm config set cache /tmp/.npm && yarn config set cache-folder /tmp/.yarn-cache && mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json && sudo chown -R node:node ${containerWorkspaceFolder}/client/node_modules",
+  
+  "workspaceFolder": "/workspaces/DTaaS",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DTaaS,type=bind,consistency=cached",
+
+  "remoteUser": "node",
+  "updateRemoteUserUID": true
+}
