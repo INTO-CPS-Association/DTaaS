@@ -56,8 +56,8 @@ test.describe('Digital Twin Execution Log Cleaning', () => {
     if (logContent) {
       // eslint-disable-next-line no-control-regex
       expect(logContent).not.toMatch(/\u001b\[[0-9;]*[mK]/);
-      // eslint-disable-next-line no-control-regex
       expect(logContent).not.toMatch(
+      // eslint-disable-next-line no-control-regex
         /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/,
       );
 
