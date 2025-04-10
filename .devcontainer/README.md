@@ -12,8 +12,6 @@ This directory contains configurations for a multi-container development environ
 ├── dtaas/              # Full DTaaS development environment
 │   ├── devcontainer.json  # Configuration for full stack development
 │   └── Dockerfile         # Full stack development container setup
-├── devcontainer.json   # Main configuration (points to docker-compose)
-├── docker-compose.yml  # Docker Compose for orchestrating environments
 └── README.md           # This file
 ```
 
