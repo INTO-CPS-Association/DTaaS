@@ -15,14 +15,26 @@ yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
 yarn graph      # generate dependency graphs in the code
+
 yarn build      #build the react app into build/ directory
-yarn develop    #start the development server without building. Great for live edits.
+yarn build:fast     #build the react app without source maps
+                    #  source maps are not needed for production environment
+yarn build:prod     #build the react app without source maps and eslint plugin
+                    #  both are not needed for production environment
+
+yarn analyze    #shows the source map to help identify under utilized packages
 
 #Required: Choose one config for application (mandatory)
 yarn config:local
 yarn config:dev
 yarn config:prod
 yarn config:test
+
+# develop commands require a configuration
+# remember to run one of the yarn config sub-commands
+yarn develop    #start the development server without
+                #building. Great for live edits.
+yarn develop:fast    #start development server without eslint checks
 
 yarn start       #start the application
 yarn clean       #clean the directory of temporary files
