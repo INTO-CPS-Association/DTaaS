@@ -123,7 +123,7 @@ describe('DigitalTwin', () => {
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
       mockResponse,
     );
-    (mockGitlabInstance.getProjectId as jest.Mock).mockResolvedValue(1);
+    (mockGitlabInstance.getProjectIds as jest.Mock).mockResolvedValue(1);
     (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(
       'test-token',
     );

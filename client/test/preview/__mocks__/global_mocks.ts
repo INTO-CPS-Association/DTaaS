@@ -56,7 +56,7 @@ export type mockGitlabInstanceType = {
 };
 
 export const mockGitlabInstance: GitlabInstance = {
-  username: 'mockedUsername',
+  projectName: 'mockedUsername',
   api: new Gitlab({
     host: 'mockedHost',
     token: 'mockedToken',
@@ -66,7 +66,7 @@ export const mockGitlabInstance: GitlabInstance = {
   projectId: 1,
   triggerToken: 'mock trigger token',
   init: jest.fn(),
-  getProjectId: jest.fn(),
+  getProjectIds: jest.fn(),
   getTriggerToken: jest.fn(),
   getDTSubfolders: jest.fn(),
   getLibrarySubfolders: jest.fn(),
