@@ -7,23 +7,6 @@ import {
 } from 'model/backend/gitlab/constants';
 import { Asset } from 'preview/components/asset/Asset';
 
-export function mapStringToAssetPath(type: string): AssetTypes | undefined {
-  switch (type) {
-    case 'Functions':
-      return AssetTypes.FUNCTIONS;
-    case 'Models':
-      return AssetTypes.MODELS;
-    case 'Tools':
-      return AssetTypes.TOOLS;
-    case 'Data':
-      return AssetTypes.DATA;
-    case 'Digital Twins':
-      return AssetTypes.DIGITAL_TWINS;
-    default:
-      return undefined;
-  }
-}
-
 interface LogEntry {
   status: string;
   DTName: string;
@@ -67,13 +50,16 @@ abstract class GitlabInstanceInterface {
 
     const group = await this.api.Groups.show(GROUP_NAME);
     const projects = await this.api.Groups.allProjects(group.id);
-    const project = projects.find((proj) => proj.name === this.projectName) || null;
-    const commonProject = projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) || null;
+    const project =
+      projects.find((proj) => proj.name === this.projectName) || null;
+    const commonProject =
+      projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) ||
+      null;
 
     if (project) {
       projectId = project.id;
     }
-    
+
     if (commonProject) {
       commonProjectId = commonProject.id;
     }
@@ -103,7 +89,7 @@ abstract class GitlabInstanceInterface {
         .map(async (file) => ({
           name: file.name,
           path: file.path,
-          type: AssetTypes.DIGITAL_TWIN,
+          type: AssetTypes['Digital twin' as keyof typeof AssetTypes],
           isPrivate: true,
         })),
     );
@@ -115,15 +101,12 @@ abstract class GitlabInstanceInterface {
     type: string,
     isPrivate: boolean,
   ): Promise<Asset[]> {
-    const mappedPath = mapStringToAssetPath(type);
-    if (!mappedPath) {
-      throw new Error(`Invalid asset type: ${type}`);
-    }
     const projectToUse = isPrivate ? projectId : this.commonProjectId;
     if (projectToUse === null) {
       throw new Error('Project ID not found');
     }
 
+    const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
     const files = await this.api.Repositories.allRepositoryTrees(projectToUse, {
       path: mappedPath,
       recursive: false,

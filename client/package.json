@@ -41,7 +41,7 @@
     "test:int": "jest -c ./jest.config.json --coverage --coverageDirectory=coverage/int ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/unit ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
     "test:preview:int": "jest -c ./jest.config.json --coverageDirectory=coverage/preview/int ../test/preview/integration --setupFilesAfterEnv ./test/preview/integration/jest.setup.ts",
-    "test:preview:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/preview/unit ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
+    "test:preview:unit": "jest -c ./jest.config.json --runInBand --coverageDirectory=coverage/preview/unit ../test/preview/unit --setupFilesAfterEnv ./test/preview/unit/jest.setup.ts"
   },
   "eslintConfig": {
     "extends": [

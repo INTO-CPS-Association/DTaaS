@@ -2,16 +2,16 @@
 export const GROUP_NAME = 'DTaaS';
 export const DT_DIRECTORY = 'digital_twins';
 export const COMMON_LIBRARY_PROJECT_ID = 3;
-export const COMMON_LIBRARY_PROJECT_NAME = 'COMMON';
+export const COMMON_LIBRARY_PROJECT_NAME = 'common';
 
 export enum AssetTypes {
-  FUNCTIONS = 'functions',
-  MODELS = 'models',
-  TOOLS = 'tools',
-  DATA = 'data',
-  DIGITAL_TWINS = 'digital_twins',
-  DIGITAL_TWIN = 'digitalTwin',
-};
+  'Functions' = 'functions',
+  'Models' = 'models',
+  'Tools' = 'tools',
+  'Data' = 'data',
+  'Digital Twins' = 'digital_twins',
+  'Digital twin' = 'digitalTwin',
+}
 
 // util/digitalTwin.ts
 export const RUNNER_TAG = 'linux';

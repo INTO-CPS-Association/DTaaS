@@ -64,6 +64,7 @@ export const mockGitlabInstance: GitlabInstance = {
   }),
   logs: [],
   projectId: 1,
+  commonProjectId: 3,
   triggerToken: 'mock trigger token',
   init: jest.fn(),
   getProjectIds: jest.fn(),

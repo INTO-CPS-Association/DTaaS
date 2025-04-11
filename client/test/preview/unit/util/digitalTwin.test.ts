@@ -24,9 +24,10 @@ const mockApi = {
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
   projectId: 1,
+  commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
-  getProjectId: jest.fn(),
+  getProjectIds: jest.fn(),
   getTriggerToken: jest.fn(),
 } as unknown as GitlabInstance;
 
@@ -123,7 +124,7 @@ describe('DigitalTwin', () => {
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
       mockResponse,
     );
-    (mockGitlabInstance.getProjectIds as jest.Mock).mockResolvedValue(1);
+    (mockGitlabInstance.getProjectIds as jest.Mock).mockResolvedValue([1, 2]);
     (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(
       'test-token',
     );

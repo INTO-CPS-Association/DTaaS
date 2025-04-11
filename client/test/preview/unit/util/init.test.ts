@@ -1,3 +1,4 @@
+//import { AssetTypes } from 'model/backend/gitlab/constants';
 import { fetchLibraryAssets } from 'preview/util/init';
 import {
   mockGitlabInstance,
@@ -39,6 +40,7 @@ describe('fetchAssets', () => {
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },
     ]);
 
-    await fetchLibraryAssets(dispatch, setError, 'models', true);
+    const assetType = 'models'; //AssetTypes['models' as keyof typeof AssetTypes];
+    await fetchLibraryAssets(dispatch, setError, assetType, true);
   });
 });
