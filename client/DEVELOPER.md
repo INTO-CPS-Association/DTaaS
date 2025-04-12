@@ -14,13 +14,14 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
-yarn graph      # generate dependency graphs in the code
+yarn graph      # generate dependency graphs in the code (only works on Linux)
 
 yarn build      #build the react app into build/ directory
-yarn build:fast     #build the react app without source maps
-                    #  source maps are not needed for production environment
-yarn build:prod     #build the react app without source maps and eslint plugin
-                    #  both are not needed for production environment
+                  #  create source maps as well
+yarn build:fast   #build the react app without source maps
+                  #  source maps are not needed for production environment
+yarn build:prod   #build the react app without source maps and eslint plugin
+                  #  both are not needed for production environment
 
 yarn analyze    #shows the source map to help identify under utilized packages
 
@@ -31,13 +32,17 @@ yarn config:prod
 yarn config:test
 
 # develop commands require a configuration
-# remember to run one of the yarn config sub-commands
+# remember to run one of the yarn config sub-commands before
+# starting the development mode
 yarn develop    #start the development server without
-                #building. Great for live edits.
+                #  building. Great for live edits.
 yarn develop:fast    #start development server without eslint checks
 
-yarn start       #start the application
-yarn clean       #clean the directory of temporary files
+yarn start       #start the application in the foreground
+yarn stop        #stop the application if running in the background
+
+yarn clean       #clean the directory of temporary files but keep node_modules
+yarn clean:all   #clean the directory of temporary files
 ```
 
 It is also possible to run different types of tests using the yarn
@@ -47,8 +52,14 @@ test commands:
 #Tests require installation of devDependencies
 yarn test:unit  #run unit tests
 yarn test:int   #run integration tests
-yarn test:e2e   #run end-to-end tests
-yarn test:all   #run all tests
+yarn test:preview:unit #run unit tests on preview code (src/preview)
+yarn test:preview:int #run integration tests on preview code (src/preview)
+yarn test:coverage:int-unit #combine coverage from unit and integration tests
+
+yarn test:e2e   #run end-to-end tests by launching application on localhost
+yarn test:e2e:ext  #run end-to-end tests against application
+                   #  running on external server
+yarn test:all   #run all tests including preview tests
 ```
 
 ## Authorization
