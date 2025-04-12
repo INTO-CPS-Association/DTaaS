@@ -75,6 +75,7 @@ export const mockGitlabInstance: GitlabInstance = {
   getPipelineJobs: jest.fn(),
   getJobTrace: jest.fn(),
   getPipelineStatus: jest.fn(),
+  getLogs: jest.fn(),
 };
 
 export const mockFileHandler: FileHandler = {

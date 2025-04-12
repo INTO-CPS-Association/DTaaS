@@ -6,6 +6,7 @@ import DigitalTwin from './digitalTwin';
 import { setAsset, setAssets } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
 import LibraryAsset from './libraryAsset';
+import { AssetTypes } from 'model/backend/gitlab/constants';
 
 const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('username') || '',
@@ -32,7 +33,7 @@ export const fetchLibraryAssets = async (
     if (initialGitlabInstance.projectId) {
       const subfolders = await initialGitlabInstance.getLibrarySubfolders(
         initialGitlabInstance.projectId,
-        type,
+        type as keyof typeof AssetTypes,
         isPrivate,
       );
 

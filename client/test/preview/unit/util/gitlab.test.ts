@@ -131,6 +131,24 @@ describe('GitlabInstance', () => {
     expect(logs[0].runnerTag).toBe('test-runnerTag');
   });
 
+  it('should return execution logs from getLogs', () => {
+    const mockLog = {
+      status: 'canceled' as PipelineStatus,
+      DTName: 'test-DTName-2',
+      runnerTag: 'test-runnerTag-2',
+      error: undefined,
+    };
+
+    gitlab.logs.push(mockLog);
+
+    const logs = gitlab.getLogs();
+
+    expect(logs).toHaveLength(1);
+    expect(logs[0].status).toBe('canceled');
+    expect(logs[0].DTName).toBe('test-DTName-2');
+    expect(logs[0].runnerTag).toBe('test-runnerTag-2');
+  });
+
   it('should fetch pipeline jobs successfully', async () => {
     const projectId = 3;
     const pipelineId = 2;

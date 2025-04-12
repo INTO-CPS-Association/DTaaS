@@ -1,158 +1,48 @@
-import { Camelize, Gitlab, JobSchema } from '@gitbeaker/rest';
-import {
-  GROUP_NAME,
-  DT_DIRECTORY,
-  COMMON_LIBRARY_PROJECT_NAME,
-  AssetTypes,
-} from 'model/backend/gitlab/constants';
+import { Camelize, JobSchema } from '@gitbeaker/rest';
 import { Asset } from 'preview/components/asset/Asset';
+import { AssetTypes } from './constants';
 
 export type PipelineStatus = 'running' | 'pending' | 'success' | 'failed' | 'canceled' | 'skipped' | 'manual';
 
-interface LogEntry {
-  status: PipelineStatus | 'status' | 'error';
+export interface LogEntry {
+  status: PipelineStatus | 'error';
   DTName: string;
   runnerTag: string;
   error?: Error;
 }
 
-abstract class GitlabInstanceInterface {
-  public projectName: string | null;
+interface ProjectProvider {
+  getProjectIds(): Promise<(number | null)[]>;
+  getTriggerToken(projectId: number): Promise<string | null>;
+}
 
-  public api: InstanceType<typeof Gitlab>;
-
-  public logs: LogEntry[];
-
-  public projectId: number | null = null;
-
-  public commonProjectId: number | null = null;
-
-  public triggerToken: string | null = null;
-
-  constructor(username: string, host: string, oauthToken: string) {
-    this.projectName = username;
-    this.api = new Gitlab({
-      host,
-      oauthToken,
-    });
-    this.logs = [];
-  }
-
-  async init() {
-    [this.projectId, this.commonProjectId] = await this.getProjectIds();
-
-    if (this.projectId !== null) {
-      this.triggerToken = await this.getTriggerToken(this.projectId);
-    }
-  }
-
-  async getProjectIds(): Promise<(number | null)[]> {
-    let projectId: number | null = null;
-    let commonProjectId: number | null = null;
-
-    const group = await this.api.Groups.show(GROUP_NAME);
-    const projects = await this.api.Groups.allProjects(group.id);
-    const project =
-      projects.find((proj) => proj.name === this.projectName) || null;
-    const commonProject =
-      projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) ||
-      null;
-
-    if (project) {
-      projectId = project.id;
-    }
-
-    if (commonProject) {
-      commonProjectId = commonProject.id;
-    }
-    return [projectId, commonProjectId];
-  }
-
-  async getTriggerToken(projectId: number): Promise<string | null> {
-    let token: string | null = null;
-
-    const triggers = await this.api.PipelineTriggerTokens.all(projectId);
-
-    if (triggers && triggers.length > 0) {
-      token = triggers[0].token;
-    }
-    return token;
-  }
-
-  async getDTSubfolders(projectId: number): Promise<Asset[]> {
-    const files = await this.api.Repositories.allRepositoryTrees(projectId, {
-      path: DT_DIRECTORY,
-      recursive: false,
-    });
-
-    const subfolders: Asset[] = await Promise.all(
-      files
-        .filter((file) => file.type === 'tree' && file.path !== DT_DIRECTORY)
-        .map(async (file) => ({
-          name: file.name,
-          path: file.path,
-          type: AssetTypes['Digital twin' as keyof typeof AssetTypes],
-          isPrivate: true,
-        })),
-    );
-    return subfolders;
-  }
-
-  async getLibrarySubfolders(
+interface AssetProvider {
+  getDTSubfolders(projectId: number): Promise<Asset[]>;
+  getLibrarySubfolders(
     projectId: number,
-    type: string,
+    type: keyof typeof AssetTypes,
     isPrivate: boolean,
-  ): Promise<Asset[]> {
-    const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
-    if (!mappedPath) {
-      throw new Error(`Invalid asset type: ${type}`);
-    }
-    const projectToUse = isPrivate ? projectId : this.commonProjectId;
-    if (projectToUse === null) {
-      throw new Error('Project ID not found');
-    }
-    const files = await this.api.Repositories.allRepositoryTrees(projectToUse, {
-      path: mappedPath,
-      recursive: false,
-    });
+  ): Promise<Asset[]>;
+}
 
-    const subfolders: Asset[] = await Promise.all(
-      files
-        .filter((file) => file.type === 'tree' && file.path !== mappedPath)
-        .map(async (file) => ({
-          name: file.name,
-          path: file.path,
-          type,
-          isPrivate,
-        })),
-    );
-    return subfolders;
-  }
-
-  executionLogs(): LogEntry[] {
-    return this.logs;
-  }
-
-  async getPipelineJobs(
+interface PipelineProvider {
+  getPipelineStatus(
     projectId: number,
     pipelineId: number,
-  ): Promise<(JobSchema | Camelize<JobSchema>)[]> {
-    const jobs = await this.api.Jobs.all(projectId, { pipelineId });
-    return jobs;
-  }
-
-  async getJobTrace(projectId: number, jobId: number): Promise<string> {
-    const log = await this.api.Jobs.showLog(projectId, jobId);
-    return log;
-  }
-
-  async getPipelineStatus(
+  ): Promise<PipelineStatus>;
+  getPipelineJobs(
     projectId: number,
     pipelineId: number,
-  ): Promise<PipelineStatus> {
-    const pipeline = await this.api.Pipelines.show(projectId, pipelineId);
-    return pipeline.status as PipelineStatus;
-  }
+  ): Promise<(JobSchema | Camelize<JobSchema>)[]>;
+  getJobTrace(projectId: number, jobId: number): Promise<string>;
+}
+
+interface LogProvider {
+  getLogs(): LogEntry[];
+}
+
+export interface GitlabInstanceInterface extends ProjectProvider, AssetProvider, PipelineProvider, LogProvider {
+  init(): Promise<void>;
 }
 
 export default GitlabInstanceInterface;
