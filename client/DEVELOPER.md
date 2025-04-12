@@ -14,7 +14,7 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
-yarn graph      # generate dependency graphs in the code (only works on Linux)
+yarn graph      # generate dependency graphs in the code
 
 yarn build      #build the react app into build/ directory
                   #  create source maps as well
@@ -32,8 +32,7 @@ yarn config:prod
 yarn config:test
 
 # develop commands require a configuration
-# remember to run one of the yarn config sub-commands before
-# starting the development mode
+yarn config:dev
 yarn develop    #start the development server without
                 #  building. Great for live edits.
 yarn develop:fast    #start development server without eslint checks
