@@ -7,8 +7,10 @@ import {
 } from 'model/backend/gitlab/constants';
 import { Asset } from 'preview/components/asset/Asset';
 
+export type PipelineStatus = 'running' | 'pending' | 'success' | 'failed' | 'canceled' | 'skipped' | 'manual';
+
 interface LogEntry {
-  status: string;
+  status: PipelineStatus | 'status' | 'error';
   DTName: string;
   runnerTag: string;
   error?: Error;
@@ -101,12 +103,14 @@ abstract class GitlabInstanceInterface {
     type: string,
     isPrivate: boolean,
   ): Promise<Asset[]> {
+    const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
+    if (!mappedPath) {
+      throw new Error(`Invalid asset type: ${type}`);
+    }
     const projectToUse = isPrivate ? projectId : this.commonProjectId;
     if (projectToUse === null) {
       throw new Error('Project ID not found');
     }
-
-    const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
     const files = await this.api.Repositories.allRepositoryTrees(projectToUse, {
       path: mappedPath,
       recursive: false,
@@ -122,7 +126,6 @@ abstract class GitlabInstanceInterface {
           isPrivate,
         })),
     );
-
     return subfolders;
   }
 
@@ -146,9 +149,9 @@ abstract class GitlabInstanceInterface {
   async getPipelineStatus(
     projectId: number,
     pipelineId: number,
-  ): Promise<string> {
+  ): Promise<PipelineStatus> {
     const pipeline = await this.api.Pipelines.show(projectId, pipelineId);
-    return pipeline.status;
+    return pipeline.status as PipelineStatus;
   }
 }
 

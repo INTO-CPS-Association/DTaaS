@@ -1,7 +1,6 @@
 // util/gitlab.ts
 export const GROUP_NAME = 'DTaaS';
 export const DT_DIRECTORY = 'digital_twins';
-export const COMMON_LIBRARY_PROJECT_ID = 3;
 export const COMMON_LIBRARY_PROJECT_NAME = 'common';
 
 export enum AssetTypes {

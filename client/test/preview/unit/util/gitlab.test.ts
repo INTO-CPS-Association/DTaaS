@@ -3,8 +3,8 @@ import GitlabInstance from 'preview/util/gitlab';
 import {
   GROUP_NAME,
   DT_DIRECTORY,
-  COMMON_LIBRARY_PROJECT_ID,
 } from 'model/backend/gitlab/constants';
+import { PipelineStatus } from 'model/backend/gitlab/gitlab';
 
 jest.mock('@gitbeaker/rest');
 
@@ -46,7 +46,7 @@ describe('GitlabInstance', () => {
 
   it('should initialize with a project ID and trigger token', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
-    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }]);
+    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }, { id: 2, name: 'common' }]);
     mockApi.PipelineTriggerTokens.all.mockResolvedValue([
       { token: 'test-token' },
     ]);
@@ -54,6 +54,7 @@ describe('GitlabInstance', () => {
     await gitlab.init();
 
     expect(gitlab.projectId).toBe(1);
+    expect(gitlab.commonProjectId).toBe(2);
     expect(gitlab.triggerToken).toBe('test-token');
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
@@ -67,6 +68,7 @@ describe('GitlabInstance', () => {
     await gitlab.init();
 
     expect(gitlab.projectId).toBeNull();
+    expect(gitlab.projectId).toBeNull();
     expect(gitlab.triggerToken).toBeNull();
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
@@ -75,12 +77,13 @@ describe('GitlabInstance', () => {
 
   it('should handle no trigger token found', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
-    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }]);
+    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' },{ id: 3, name: 'common' }]);
     mockApi.PipelineTriggerTokens.all.mockResolvedValue([]);
 
     await gitlab.init();
 
     expect(gitlab.projectId).toBe(1);
+    expect(gitlab.commonProjectId).toBe(3);
     expect(gitlab.triggerToken).toBeNull();
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
@@ -88,7 +91,7 @@ describe('GitlabInstance', () => {
   });
 
   it('should fetch DT subfolders successfully', async () => {
-    const projectId = COMMON_LIBRARY_PROJECT_ID;
+    const projectId = 5;
     const files = [
       { name: 'subfolder1', path: 'digital_twins/subfolder1', type: 'tree' },
       { name: 'subfolder2', path: 'digital_twins/subfolder2', type: 'tree' },
@@ -112,7 +115,7 @@ describe('GitlabInstance', () => {
 
   it('should return execution logs', () => {
     const mockLog = {
-      status: 'success',
+      status: 'success' as PipelineStatus,
       DTName: 'test-DTName',
       runnerTag: 'test-runnerTag',
       error: undefined,
@@ -129,7 +132,7 @@ describe('GitlabInstance', () => {
   });
 
   it('should fetch pipeline jobs successfully', async () => {
-    const projectId = COMMON_LIBRARY_PROJECT_ID;
+    const projectId = 3;
     const pipelineId = 2;
     const jobs = [
       { id: 1, name: 'job1' },
@@ -145,7 +148,7 @@ describe('GitlabInstance', () => {
   });
 
   it('should fetch job trace successfully', async () => {
-    const projectId = COMMON_LIBRARY_PROJECT_ID;
+    const projectId = 1;
     const jobId = 2;
     const log = 'Job log content';
 
@@ -158,7 +161,7 @@ describe('GitlabInstance', () => {
   });
 
   it('should fetch pipeline status successfully', async () => {
-    const projectId = COMMON_LIBRARY_PROJECT_ID;
+    const projectId = 6;
     const pipelineId = 2;
     const status = 'success';
 
