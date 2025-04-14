@@ -23,6 +23,7 @@ const mockApi = {
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
   projectId: 1,
+  commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
   getProjectId: jest.fn(),
@@ -46,6 +47,23 @@ describe('FileHandler', () => {
     await fileHandler.createFile(fileState, 'path', 'commit message');
     expect(mockApi.RepositoryFiles.create).toHaveBeenCalledWith(
       1,
+      'path/file',
+      'main',
+      'content',
+      'commit message',
+    );
+  });
+
+  it('should create a common project file', async () => {
+    const fileState = {
+      name: 'file',
+      content: 'content',
+      isNew: true,
+      isModified: false,
+    };
+    await fileHandler.createFile(fileState, 'path', 'commit message', true);
+    expect(mockApi.RepositoryFiles.create).toHaveBeenCalledWith(
+      2,
       'path/file',
       'main',
       'content',
@@ -87,6 +105,19 @@ describe('FileHandler', () => {
     );
   });
 
+  it('should get file content from common project', async () => {
+    jest
+      .spyOn(mockApi.RepositoryFiles, 'show')
+      .mockResolvedValue({ content: btoa('existing content') });
+    const content = await fileHandler.getFileContent('path', false);
+    expect(content).toBe('existing content');
+    expect(mockApi.RepositoryFiles.show).toHaveBeenCalledWith(
+      2,
+      'path',
+      'main',
+    );
+  });
+
   it('should get file names', async () => {
     mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
       { type: 'blob', name: 'file1.md', path: 'digital_twins/DTName/file1.md' },
@@ -99,5 +130,68 @@ describe('FileHandler', () => {
       path: 'digital_twins/DTName',
       recursive: false,
     });
+  });
+
+  it('should get public library file names', async () => {
+    const filePath = 'functions/Functions2';
+    mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
+      {
+        type: 'blob',
+        name: 'function.py',
+        path: 'functions/Function1/function.py',
+      },
+      { type: 'blob', name: 'README.md', path: 'models/Function1/README.md' },
+    ]);
+
+    const fileNames = await fileHandler.getLibraryFileNames(filePath, false);
+    expect(fileNames).toEqual(['function.py', 'README.md']);
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(2, {
+      path: filePath,
+      recursive: false,
+    });
+  });
+
+  it('should get private library file names', async () => {
+    const filePath = 'functions/Functions2';
+    mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
+      {
+        type: 'blob',
+        name: 'function.py',
+        path: 'functions/Function2/function.py',
+      },
+      { type: 'blob', name: 'README.md', path: 'models/Function2/README.md' },
+    ]);
+
+    const fileNames = await fileHandler.getLibraryFileNames(filePath, true);
+    expect(fileNames).toEqual(['function.py', 'README.md']);
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(1, {
+      path: filePath,
+      recursive: false,
+    });
+  });
+
+  it('should get Library config file names', async () => {
+    const filePath = 'common/functions/Functions2';
+    mockApi.Repositories.allRepositoryTrees.mockResolvedValue([
+      {
+        type: 'blob',
+        name: 'config1.json',
+        path: 'common/functions/Functions2/config1.json',
+      },
+      {
+        type: 'blob',
+        name: 'foo.yml',
+        path: 'common/functions/Functions2/foo.yml',
+      },
+    ]);
+    const fileNames = await fileHandler.getLibraryConfigFileNames(
+      filePath,
+      false,
+    );
+    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(2, {
+      path: filePath,
+      recursive: true,
+    });
+    expect(fileNames).toEqual(['config1.json', 'foo.yml']);
   });
 });
