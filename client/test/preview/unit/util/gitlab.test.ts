@@ -1,9 +1,6 @@
 import { Gitlab } from '@gitbeaker/rest';
 import GitlabInstance from 'preview/util/gitlab';
-import {
-  GROUP_NAME,
-  DT_DIRECTORY,
-} from 'model/backend/gitlab/constants';
+import { GROUP_NAME, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import { PipelineStatus } from 'model/backend/gitlab/gitlab';
 
 jest.mock('@gitbeaker/rest');
@@ -46,7 +43,10 @@ describe('GitlabInstance', () => {
 
   it('should initialize with a project ID and trigger token', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
-    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' }, { id: 2, name: 'common' }]);
+    mockApi.Groups.allProjects.mockResolvedValue([
+      { id: 1, name: 'user1' },
+      { id: 2, name: 'common' },
+    ]);
     mockApi.PipelineTriggerTokens.all.mockResolvedValue([
       { token: 'test-token' },
     ]);
@@ -77,7 +77,10 @@ describe('GitlabInstance', () => {
 
   it('should handle no trigger token found', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
-    mockApi.Groups.allProjects.mockResolvedValue([{ id: 1, name: 'user1' },{ id: 3, name: 'common' }]);
+    mockApi.Groups.allProjects.mockResolvedValue([
+      { id: 1, name: 'user1' },
+      { id: 3, name: 'common' },
+    ]);
     mockApi.PipelineTriggerTokens.all.mockResolvedValue([]);
 
     await gitlab.init();

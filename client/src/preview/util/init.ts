@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
+import { AssetTypes } from 'model/backend/gitlab/constants';
 import GitlabInstance from './gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset, setAssets } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
 import LibraryAsset from './libraryAsset';
-import { AssetTypes } from 'model/backend/gitlab/constants';
 
 const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('username') || '',

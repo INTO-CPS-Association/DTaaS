@@ -2,7 +2,14 @@ import { Camelize, JobSchema } from '@gitbeaker/rest';
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes } from './constants';
 
-export type PipelineStatus = 'running' | 'pending' | 'success' | 'failed' | 'canceled' | 'skipped' | 'manual';
+export type PipelineStatus =
+  | 'running'
+  | 'pending'
+  | 'success'
+  | 'failed'
+  | 'canceled'
+  | 'skipped'
+  | 'manual';
 
 export interface LogEntry {
   status: PipelineStatus | 'error';
@@ -41,7 +48,11 @@ interface LogProvider {
   getLogs(): LogEntry[];
 }
 
-export interface GitlabInstanceInterface extends ProjectProvider, AssetProvider, PipelineProvider, LogProvider {
+export interface GitlabInstanceInterface
+  extends ProjectProvider,
+    AssetProvider,
+    PipelineProvider,
+    LogProvider {
   init(): Promise<void>;
 }
 

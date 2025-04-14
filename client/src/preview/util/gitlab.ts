@@ -1,4 +1,7 @@
-import GitlabInstanceInterface, { LogEntry, PipelineStatus } from 'model/backend/gitlab/gitlab';
+import GitlabInstanceInterface, {
+  LogEntry,
+  PipelineStatus,
+} from 'model/backend/gitlab/gitlab';
 import { Camelize, Gitlab, JobSchema } from '@gitbeaker/rest';
 import {
   GROUP_NAME,
