@@ -69,8 +69,6 @@ export const mockGitlabInstance: GitlabInstance = {
   init: jest.fn(),
   getProjectIds: jest.fn(),
   getTriggerToken: jest.fn(),
-  getDTSubfolders: jest.fn(),
-  getLibrarySubfolders: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
   getJobTrace: jest.fn(),

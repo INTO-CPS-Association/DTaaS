@@ -1,4 +1,6 @@
 import { getAuthority } from 'util/envUtil';
+import { AssetTypes } from 'model/backend/gitlab/constants';
+import { Asset } from 'preview/components/asset/Asset';
 import GitlabInstance from './gitlab';
 import LibraryManager from './libraryManager';
 
@@ -81,6 +83,40 @@ class LibraryAsset {
       this.path,
     );
   }
+}
+
+export async function getLibrarySubfolders(
+  projectId: number,
+  type: keyof typeof AssetTypes,
+  isPrivate: boolean,
+  gitlabInstance: GitlabInstance,
+): Promise<Asset[]> {
+  const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
+  if (!mappedPath) {
+    throw new Error(`Invalid asset type: ${type}`);
+  }
+  const projectToUse = isPrivate ? projectId : gitlabInstance.commonProjectId;
+  if (projectToUse === null) {
+    throw new Error('Project ID not found');
+  }
+
+  const { api } = gitlabInstance;
+  const files = await api.Repositories.allRepositoryTrees(projectToUse, {
+    path: mappedPath,
+    recursive: false,
+  });
+
+  const subfolders: Asset[] = await Promise.all(
+    files
+      .filter((file) => file.type === 'tree' && file.path !== mappedPath)
+      .map(async (file) => ({
+        name: file.name,
+        path: file.path,
+        type,
+        isPrivate,
+      })),
+  );
+  return subfolders;
 }
 
 export default LibraryAsset;

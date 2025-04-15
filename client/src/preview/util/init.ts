@@ -6,7 +6,8 @@ import GitlabInstance from './gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset, setAssets } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
-import LibraryAsset from './libraryAsset';
+import LibraryAsset, { getLibrarySubfolders } from './libraryAsset';
+import { getDTSubfolders } from './digitalTwinUtils';
 
 const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('username') || '',
@@ -31,10 +32,11 @@ export const fetchLibraryAssets = async (
   try {
     await initialGitlabInstance.init();
     if (initialGitlabInstance.projectId) {
-      const subfolders = await initialGitlabInstance.getLibrarySubfolders(
+      const subfolders = await getLibrarySubfolders(
         initialGitlabInstance.projectId,
         type as keyof typeof AssetTypes,
         isPrivate,
+        initialGitlabInstance,
       );
 
       const assets = await Promise.all(
@@ -69,8 +71,9 @@ export const fetchDigitalTwins = async (
     await initialGitlabInstance.init();
 
     if (initialGitlabInstance.projectId) {
-      const subfolders = await initialGitlabInstance.getDTSubfolders(
+      const subfolders = await getDTSubfolders(
         initialGitlabInstance.projectId,
+        initialGitlabInstance.api,
       );
 
       await fetchLibraryAssets(dispatch, setError, 'Digital Twins', true);

@@ -1,10 +1,6 @@
 import { Gitlab } from '@gitbeaker/rest';
 import GitlabInstance from 'preview/util/gitlab';
-import {
-  GROUP_NAME,
-  DT_DIRECTORY,
-  AssetTypes,
-} from 'model/backend/gitlab/constants';
+import { GROUP_NAME } from 'model/backend/gitlab/constants';
 import { PipelineStatus } from 'model/backend/gitlab/gitlab';
 
 jest.mock('@gitbeaker/rest');
@@ -95,89 +91,6 @@ describe('GitlabInstance', () => {
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
-  });
-
-  it('should fetch DT subfolders successfully', async () => {
-    const projectId = 5;
-    const files = [
-      { name: 'subfolder1', path: 'digital_twins/subfolder1', type: 'tree' },
-      { name: 'subfolder2', path: 'digital_twins/subfolder2', type: 'tree' },
-      { name: 'file1', path: 'digital_twins/file1', type: 'blob' },
-    ];
-
-    mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
-
-    const subfolders = await gitlab.getDTSubfolders(projectId);
-
-    expect(subfolders).toHaveLength(2);
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
-      projectId,
-      {
-        path: DT_DIRECTORY,
-        recursive: false,
-      },
-    );
-  });
-
-  it('should fetch private library subfolders succesfully', async () => {
-    const projectId = 3;
-    const files = [{ name: 'file', path: 'models/file', type: 'blob' }];
-
-    mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
-
-    const type = 'Models' as keyof typeof AssetTypes;
-    const subfolders = await gitlab.getLibrarySubfolders(projectId, type, true);
-
-    expect(subfolders).toHaveLength(0);
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
-      projectId,
-      {
-        path: AssetTypes[type as keyof typeof AssetTypes],
-        recursive: false,
-      },
-    );
-  });
-
-  it('should fetch common library subfolders succesfully', async () => {
-    gitlab.commonProjectId = 6;
-    const projectId = 5;
-    const files = [
-      { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
-    ];
-
-    mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
-
-    const type = 'Tools' as keyof typeof AssetTypes;
-    const subfolders = await gitlab.getLibrarySubfolders(
-      projectId,
-      type,
-      false,
-    );
-
-    expect(subfolders).toHaveLength(1);
-
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
-      gitlab.commonProjectId,
-      {
-        path: AssetTypes[type as keyof typeof AssetTypes],
-        recursive: false,
-      },
-    );
-  });
-
-  it('should throw error when fetching common library subfolders without common project id', async () => {
-    gitlab.commonProjectId = null;
-    await expect(
-      gitlab.getLibrarySubfolders(1, 'Data' as keyof typeof AssetTypes, false),
-    ).rejects.toThrow('Project ID not found');
-  });
-
-  it('should throw error when fetching invalid library asset type', async () => {
-    await expect(
-      gitlab.getLibrarySubfolders(2, 'Foo' as keyof typeof AssetTypes, false),
-    ).rejects.toThrow('Invalid asset type: Foo');
   });
 
   it('should return execution logs', () => {

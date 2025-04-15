@@ -5,11 +5,8 @@ import GitlabInstanceInterface, {
 import { Camelize, Gitlab, JobSchema } from '@gitbeaker/rest';
 import {
   GROUP_NAME,
-  DT_DIRECTORY,
   COMMON_LIBRARY_PROJECT_NAME,
-  AssetTypes,
 } from 'model/backend/gitlab/constants';
-import { Asset } from 'preview/components/asset/Asset';
 
 class GitlabInstance implements GitlabInstanceInterface {
   public projectName: string | null;
@@ -72,56 +69,6 @@ class GitlabInstance implements GitlabInstanceInterface {
       token = triggers[0].token;
     }
     return token;
-  }
-
-  async getDTSubfolders(projectId: number): Promise<Asset[]> {
-    const files = await this.api.Repositories.allRepositoryTrees(projectId, {
-      path: DT_DIRECTORY,
-      recursive: false,
-    });
-
-    const subfolders: Asset[] = await Promise.all(
-      files
-        .filter((file) => file.type === 'tree' && file.path !== DT_DIRECTORY)
-        .map(async (file) => ({
-          name: file.name,
-          path: file.path,
-          type: AssetTypes['Digital twin' as keyof typeof AssetTypes],
-          isPrivate: true,
-        })),
-    );
-    return subfolders;
-  }
-
-  async getLibrarySubfolders(
-    projectId: number,
-    type: keyof typeof AssetTypes,
-    isPrivate: boolean,
-  ): Promise<Asset[]> {
-    const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
-    if (!mappedPath) {
-      throw new Error(`Invalid asset type: ${type}`);
-    }
-    const projectToUse = isPrivate ? projectId : this.commonProjectId;
-    if (projectToUse === null) {
-      throw new Error('Project ID not found');
-    }
-    const files = await this.api.Repositories.allRepositoryTrees(projectToUse, {
-      path: mappedPath,
-      recursive: false,
-    });
-
-    const subfolders: Asset[] = await Promise.all(
-      files
-        .filter((file) => file.type === 'tree' && file.path !== mappedPath)
-        .map(async (file) => ({
-          name: file.name,
-          path: file.path,
-          type,
-          isPrivate,
-        })),
-    );
-    return subfolders;
   }
 
   executionLogs(): LogEntry[] {

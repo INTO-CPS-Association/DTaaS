@@ -1,6 +1,4 @@
 import { Camelize, JobSchema } from '@gitbeaker/rest';
-import { Asset } from 'preview/components/asset/Asset';
-import { AssetTypes } from './constants';
 
 export type PipelineStatus =
   | 'running'
@@ -23,14 +21,14 @@ interface ProjectProvider {
   getTriggerToken(projectId: number): Promise<string | null>;
 }
 
-interface AssetProvider {
+/* interface AssetProvider {
   getDTSubfolders(projectId: number): Promise<Asset[]>;
   getLibrarySubfolders(
     projectId: number,
     type: keyof typeof AssetTypes,
     isPrivate: boolean,
   ): Promise<Asset[]>;
-}
+} */
 
 interface PipelineProvider {
   getPipelineStatus(
@@ -48,11 +46,13 @@ interface LogProvider {
   getLogs(): LogEntry[];
 }
 
-export interface GitlabInstanceInterface
+interface BackendInterface
   extends ProjectProvider,
-    AssetProvider,
     PipelineProvider,
     LogProvider {
+  init(): Promise<void>;
+}
+export interface GitlabInstanceInterface extends BackendInterface {
   init(): Promise<void>;
 }
 

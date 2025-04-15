@@ -1,11 +1,8 @@
 import { fetchLibraryAssets } from 'preview/util/init';
-import {
-  mockGitlabInstance,
-  mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+import { getLibrarySubfolders } from 'preview/util/libraryAsset';
 
 jest.mock('preview/util/libraryAsset', () => ({
-  default: jest.fn().mockImplementation(() => mockLibraryAsset),
+  getLibrarySubfolders: jest.fn(),
 }));
 
 jest.mock('preview/util/gitlab', () => {
@@ -34,8 +31,7 @@ describe('fetchAssets', () => {
   });
 
   it('should fetch library assets and set them', async () => {
-    (mockGitlabInstance.init as jest.Mock).mockResolvedValue({});
-    (mockGitlabInstance.getLibrarySubfolders as jest.Mock).mockResolvedValue([
+    (getLibrarySubfolders as jest.Mock).mockResolvedValue([
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },
     ]);
 

@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import { Gitlab } from '@gitbeaker/rest';
+import { Asset } from 'preview/components/asset/Asset';
+import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
@@ -48,4 +51,26 @@ export function getUpdatedLibraryFile(
         libFile.isModified,
     ) || null
   );
+}
+
+export async function getDTSubfolders(
+  projectId: number,
+  api: InstanceType<typeof Gitlab>,
+): Promise<Asset[]> {
+  const files = await api.Repositories.allRepositoryTrees(projectId, {
+    path: DT_DIRECTORY,
+    recursive: false,
+  });
+
+  const subfolders: Asset[] = await Promise.all(
+    files
+      .filter((file) => file.type === 'tree' && file.path !== DT_DIRECTORY)
+      .map(async (file) => ({
+        name: file.name,
+        path: file.path,
+        type: AssetTypes['Digital twin' as keyof typeof AssetTypes],
+        isPrivate: true,
+      })),
+  );
+  return subfolders;
 }
