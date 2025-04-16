@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 
 import { FileState } from 'preview/store/file.slice';
-import GitlabInstance from './gitlab';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import { IFile } from './ifile';
 import { FileType } from './DTAssets';
 
@@ -29,9 +29,9 @@ export function isImageFile(fileName: string): boolean {
 class FileHandler implements IFile {
   public name: string;
 
-  public gitlabInstance: GitlabInstance;
+  public gitlabInstance: BackendInterface;
 
-  constructor(name: string, gitlabInstance: GitlabInstance) {
+  constructor(name: string, gitlabInstance: BackendInterface) {
     this.name = name;
     this.gitlabInstance = gitlabInstance;
   }

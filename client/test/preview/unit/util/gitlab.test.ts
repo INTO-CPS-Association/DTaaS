@@ -1,12 +1,14 @@
 import { Gitlab } from '@gitbeaker/rest';
-import GitlabInstance from 'preview/util/gitlab';
+import GitlabInstance, {
+  BackendInterface,
+  PipelineStatus,
+} from 'model/backend/gitlab/gitlab';
 import { GROUP_NAME } from 'model/backend/gitlab/constants';
-import { PipelineStatus } from 'model/backend/gitlab/gitlab';
 
 jest.mock('@gitbeaker/rest');
 
 describe('GitlabInstance', () => {
-  let gitlab: GitlabInstance;
+  let gitlab: BackendInterface;
   const mockApi = {
     Groups: {
       show: jest.fn(),

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
-import GitlabInstance from './gitlab';
+import GitlabInstance, { BackendInterface } from 'model/backend/gitlab/gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset, setAssets } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
@@ -15,7 +15,7 @@ const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('access_token') || '',
 );
 
-function createGitlabInstance(): GitlabInstance {
+function createGitlabInstance(): BackendInterface {
   const username = sessionStorage.getItem('username') || '';
   const authority = getAuthority();
   const accessToken = sessionStorage.getItem('access_token') || '';

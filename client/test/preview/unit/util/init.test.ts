@@ -5,7 +5,7 @@ jest.mock('preview/util/libraryAsset', () => ({
   getLibrarySubfolders: jest.fn(),
 }));
 
-jest.mock('preview/util/gitlab', () => {
+jest.mock('model/backend/gitlab/gitlab', () => {
   const mockSimpleGitlabInstance = {
     init: jest.fn(),
     getLibrarySubfolders: jest.fn(),

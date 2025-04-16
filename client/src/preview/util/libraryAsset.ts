@@ -1,7 +1,7 @@
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
 import { Asset } from 'preview/components/asset/Asset';
-import GitlabInstance from './gitlab';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import LibraryManager from './libraryManager';
 
 class LibraryAsset {
@@ -13,7 +13,7 @@ class LibraryAsset {
 
   public isPrivate: boolean;
 
-  public gitlabInstance: GitlabInstance;
+  public gitlabInstance: BackendInterface;
 
   public description: string = '';
 
@@ -28,7 +28,7 @@ class LibraryAsset {
     path: string,
     isPrivate: boolean,
     type: string,
-    gitlabInstance: GitlabInstance,
+    gitlabInstance: BackendInterface,
   ) {
     this.name = name;
     this.path = path;
@@ -89,7 +89,7 @@ export async function getLibrarySubfolders(
   projectId: number,
   type: keyof typeof AssetTypes,
   isPrivate: boolean,
-  gitlabInstance: GitlabInstance,
+  gitlabInstance: BackendInterface,
 ): Promise<Asset[]> {
   const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
   if (!mappedPath) {

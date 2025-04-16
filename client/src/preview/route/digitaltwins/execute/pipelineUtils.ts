@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
-import GitlabInstance from 'preview/util/gitlab';
 import { fetchJobLogs as fetchJobLogsCore } from 'model/backend/gitlab/execution/logFetching';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import {
   setJobLogs,
   setPipelineCompleted,
@@ -93,7 +93,7 @@ export const updatePipelineStateOnStop = (
 };
 
 export const fetchJobLogs = async (
-  gitlabInstance: GitlabInstance,
+  gitlabInstance: BackendInterface,
   pipelineId: number,
 ): Promise<Array<{ jobName: string; log: string }>> =>
   fetchJobLogsCore(gitlabInstance, pipelineId);

@@ -1,12 +1,12 @@
 import LibraryAsset, { getLibrarySubfolders } from 'preview/util/libraryAsset';
-import GitlabInstance from 'preview/util/gitlab';
+import GitlabInstance, { BackendInterface } from 'model/backend/gitlab/gitlab';
 import LibraryManager from 'preview/util/libraryManager';
 import { AssetTypes } from 'model/backend/gitlab/constants';
 
 jest.mock('preview/util/libraryManager');
 
 describe('LibraryAsset', () => {
-  let gitlabInstance: GitlabInstance;
+  let gitlabInstance: BackendInterface;
   let libraryManager: LibraryManager;
   let libraryAsset: LibraryAsset;
 

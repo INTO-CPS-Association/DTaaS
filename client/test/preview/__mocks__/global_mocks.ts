@@ -1,5 +1,5 @@
 import { Gitlab } from '@gitbeaker/core';
-import GitlabInstance from 'preview/util/gitlab';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
 import DTAssets from 'preview/util/DTAssets';
@@ -55,7 +55,7 @@ export type mockGitlabInstanceType = {
   getPipelineStatus: jest.Mock;
 };
 
-export const mockGitlabInstance: GitlabInstance = {
+export const mockGitlabInstance: BackendInterface = {
   projectName: 'mockedUsername',
   api: new Gitlab({
     host: 'mockedHost',

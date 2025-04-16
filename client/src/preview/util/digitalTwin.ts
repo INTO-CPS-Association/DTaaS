@@ -5,7 +5,7 @@ import { getAuthority } from 'util/envUtil';
 import { FileState } from 'preview/store/file.slice';
 import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import { RUNNER_TAG } from 'model/backend/gitlab/constants';
-import GitlabInstance from './gitlab';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import {
   isValidInstance,
   logError,
@@ -25,7 +25,7 @@ class DigitalTwin {
 
   public fullDescription: string = '';
 
-  public gitlabInstance: GitlabInstance;
+  public gitlabInstance: BackendInterface;
 
   public DTAssets: DTAssets;
 
@@ -47,7 +47,7 @@ class DigitalTwin {
 
   public assetFiles: { assetPath: string; fileNames: string[] }[] = [];
 
-  constructor(DTName: string, gitlabInstance: GitlabInstance) {
+  constructor(DTName: string, gitlabInstance: BackendInterface) {
     this.DTName = DTName;
     this.gitlabInstance = gitlabInstance;
     this.DTAssets = new DTAssets(DTName, this.gitlabInstance);

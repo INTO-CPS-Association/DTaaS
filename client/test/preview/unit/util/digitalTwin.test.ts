@@ -1,4 +1,4 @@
-import GitlabInstance from 'preview/util/gitlab';
+import GitlabInstance from 'model/backend/gitlab/gitlab';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
 import { RUNNER_TAG } from 'model/backend/gitlab/constants';

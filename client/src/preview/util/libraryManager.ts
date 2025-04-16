@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 
 import { FileState } from 'preview/store/file.slice';
-import GitlabInstance from './gitlab';
+import { BackendInterface } from 'model/backend/gitlab/gitlab';
 import FileHandler from './fileHandler';
 
 export enum FileType {
@@ -22,11 +22,11 @@ export function getFilePath(
 class LibraryManager {
   public assetName: string;
 
-  public gitlabInstance: GitlabInstance;
+  public gitlabInstance: BackendInterface;
 
   public fileHandler: FileHandler;
 
-  constructor(assetName: string, gitlabInstance: GitlabInstance) {
+  constructor(assetName: string, gitlabInstance: BackendInterface) {
     this.assetName = assetName;
     this.gitlabInstance = gitlabInstance;
     this.fileHandler = new FileHandler(assetName, gitlabInstance);
