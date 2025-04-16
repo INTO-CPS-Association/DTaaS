@@ -1,5 +1,5 @@
 import { FileState } from 'preview/store/file.slice';
-import { FileType } from './DTAssets';
+import { FileType } from 'preview/util/DTAssets';
 
 export interface IFile {
   createFile(

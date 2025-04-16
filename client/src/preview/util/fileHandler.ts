@@ -3,7 +3,7 @@
 
 import { FileState } from 'preview/store/file.slice';
 import { BackendInterface } from 'model/backend/gitlab/gitlab';
-import { IFile } from './ifile';
+import { IFile } from '../../model/backend/interfaces/ifile';
 import { FileType } from './DTAssets';
 
 export function isValidFileType(
