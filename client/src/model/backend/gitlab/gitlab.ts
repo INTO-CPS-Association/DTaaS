@@ -72,8 +72,8 @@ class GitlabInstance implements GitlabInterface {
 
   public triggerToken: string | null = null;
 
-  constructor(username: string, host: string, oauthToken: string) {
-    this.projectName = username;
+  constructor(projectName: string, host: string, oauthToken: string) {
+    this.projectName = projectName;
     this.api = new Gitlab({
       host,
       oauthToken,

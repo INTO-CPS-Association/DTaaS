@@ -2,26 +2,19 @@ import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
-import GitlabInstance, { BackendInterface } from 'model/backend/gitlab/gitlab';
+import GitlabInstance from 'model/backend/gitlab/gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset, setAssets } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
 import LibraryAsset, { getLibrarySubfolders } from './libraryAsset';
 import { getDTSubfolders } from './digitalTwinUtils';
+import { createGitlabInstance } from './gitlabFactory';
 
 const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('username') || '',
   getAuthority(),
   sessionStorage.getItem('access_token') || '',
 );
-
-function createGitlabInstance(): BackendInterface {
-  const username = sessionStorage.getItem('username') || '';
-  const authority = getAuthority();
-  const accessToken = sessionStorage.getItem('access_token') || '';
-
-  return new GitlabInstance(username, authority, accessToken);
-}
 
 export const fetchLibraryAssets = async (
   dispatch: ReturnType<typeof useDispatch>,
@@ -77,7 +70,6 @@ export const fetchDigitalTwins = async (
       );
 
       await fetchLibraryAssets(dispatch, setError, 'Digital Twins', true);
-
       const digitalTwins = await Promise.all(
         subfolders.map(async (asset) => {
           const gitlabInstance = createGitlabInstance();
@@ -87,7 +79,6 @@ export const fetchDigitalTwins = async (
           return { assetName: asset.name, digitalTwin };
         }),
       );
-
       digitalTwins.forEach(({ assetName, digitalTwin }) =>
         dispatch(setDigitalTwin({ assetName, digitalTwin })),
       );

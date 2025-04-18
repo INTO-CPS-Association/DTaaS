@@ -1,3 +1,14 @@
+/* eslint-disable import/first */
+const getDTSubfolders = jest.fn();
+jest.mock('preview/util/digitalTwinUtils', () => ({
+  getDTSubfolders,
+}));
+
+const DigitalTwin = jest.fn();
+jest.mock('preview/util/digitalTwin', () => ({
+  default: DigitalTwin,
+}));
+
 const mockApi = {
   RepositoryFiles: {
     show: jest.fn(),
@@ -17,7 +28,7 @@ const mockApi = {
 };
 
 const mockGitlab = {
-  init: jest.fn().mockResolvedValue(undefined),
+  init: jest.fn().mockImplementation(() => Promise.resolve()),
   api: mockApi,
   projectId: 1,
   commonProjectId: 2,
@@ -27,17 +38,11 @@ const mockGitlab = {
   getTriggerToken: jest.fn(),
 };
 
-jest.mock('model/backend/gitlab/gitlab', () => {
-  return {
-    default: jest.fn().mockImplementation(() => mockGitlab),
-  };
-});
-
-const getDTSubfolders = jest
-  .fn()
-  .mockResolvedValue([{ name: 'DT1' }, { name: 'DT2' }]);
-jest.mock('preview/util/digitalTwinUtils', () => ({
-  getDTSubfolders,
+jest.mock('model/backend/gitlab/gitlab', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => mockGitlab),
+  initialGitlabInstance: mockGitlab,
+  createGitlabInstance: jest.fn().mockImplementation(() => mockGitlab),
 }));
 
 jest.mock('preview/util/libraryAsset', () => ({
@@ -53,8 +58,13 @@ jest.mock('preview/store/assets.slice', () => ({
   setAssets: jest.fn(),
 }));
 
+const setDigitalTwin = jest.fn();
 jest.mock('preview/store/digitalTwin.slice', () => ({
-  setDigitalTwin: jest.fn(),
+  setDigitalTwin,
+}));
+
+jest.mock('preview/util/gitlabFactory', () => ({
+  createGitlabInstance: () => mockGitlab,
 }));
 
 import { fetchDigitalTwins, fetchLibraryAssets } from 'preview/util/init';
@@ -64,6 +74,14 @@ describe('fetchAssets', () => {
   const dispatch = jest.fn();
   const setError = jest.fn();
 
+  beforeEach(() => {
+    getDTSubfolders.mockResolvedValue([{ name: 'DT1' }, { name: 'DT2' }]);
+    DigitalTwin.mockImplementation(() => ({
+      getDescription: jest.fn().mockResolvedValue('Mock description'),
+    }));
+    setDigitalTwin.mockImplementation(() => {});
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -71,7 +89,6 @@ describe('fetchAssets', () => {
   it('should fetch library assets and set them', async () => {
     const assetType = 'models';
     await fetchLibraryAssets(dispatch, setError, assetType, true);
-
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       assetType,
@@ -90,5 +107,18 @@ describe('fetchAssets', () => {
       true,
       mockGitlab,
     );
+
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    const { calls } = setDigitalTwin.mock;
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls[0][0]).toMatchObject({
+      assetName: 'DT1',
+      digitalTwin: expect.objectContaining(DigitalTwin.prototype),
+    });
+
+    expect(calls[1][0]).toMatchObject({
+      assetName: 'DT2',
+      digitalTwin: expect.objectContaining(DigitalTwin.prototype),
+    });
   });
 });
