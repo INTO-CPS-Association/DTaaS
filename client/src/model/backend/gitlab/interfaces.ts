@@ -46,7 +46,7 @@ export interface BackendInterface
   extends ProjectProvider,
     PipelineProvider,
     LogProvider {
-  projectName: string | null;
+  projectName: string;
   api: InstanceType<typeof Gitlab>;
   logs: LogEntry[];
   projectId: number | null;
@@ -60,7 +60,7 @@ export interface GitlabInterface extends BackendInterface {
 }
 
 class GitlabInstance implements GitlabInterface {
-  public projectName: string | null;
+  public projectName: string;
 
   public api: InstanceType<typeof Gitlab>;
 
