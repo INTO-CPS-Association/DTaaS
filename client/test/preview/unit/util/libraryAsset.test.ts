@@ -1,5 +1,6 @@
 import LibraryAsset, { getLibrarySubfolders } from 'preview/util/libraryAsset';
-import GitlabInstance, {
+import GitlabInstance from 'model/backend/gitlab/gitlab';
+import {
   BackendInterface,
 } from 'model/backend/gitlab/interfaces';
 import LibraryManager from 'preview/util/libraryManager';

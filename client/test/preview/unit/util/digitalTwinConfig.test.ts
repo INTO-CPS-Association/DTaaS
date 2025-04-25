@@ -1,4 +1,4 @@
-import GitlabInstance from 'model/backend/gitlab/interfaces';
+import GitlabInstance from 'model/backend/gitlab/gitlab';
 import DigitalTwin from 'preview/util/digitalTwin';
 
 const mockApi = {

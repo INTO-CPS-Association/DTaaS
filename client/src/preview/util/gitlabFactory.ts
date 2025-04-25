@@ -1,4 +1,5 @@
-import GitlabInstance, {
+import GitlabInstance from 'model/backend/gitlab/gitlab';
+import {
   BackendInterface,
 } from 'model/backend/gitlab/interfaces';
 import { getAuthority } from 'util/envUtil';

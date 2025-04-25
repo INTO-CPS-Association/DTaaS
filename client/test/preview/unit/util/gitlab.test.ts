@@ -1,5 +1,6 @@
 import { Gitlab } from '@gitbeaker/rest';
-import GitlabInstance, {
+import GitlabInstance from 'model/backend/gitlab/gitlab';
+import {
   BackendInterface,
   PipelineStatus,
 } from 'model/backend/gitlab/interfaces';

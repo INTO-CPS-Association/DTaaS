@@ -5,7 +5,7 @@ import {
 import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { JobSchema } from '@gitbeaker/rest';
-import GitlabInstance from 'model/backend/gitlab/interfaces';
+import GitlabInstance from 'model/backend/gitlab/gitlab';
 
 describe('PipelineUtils', () => {
   const digitalTwin = mockDigitalTwin;

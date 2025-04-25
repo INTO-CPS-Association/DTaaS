@@ -1,6 +1,6 @@
 import { FileType } from 'preview/util/DTAssets';
 import FileHandler from 'preview/util/fileHandler';
-import GitlabInstance from 'model/backend/gitlab/interfaces';
+import GitlabInstance from 'model/backend/gitlab/gitlab';
 
 const mockApi = {
   RepositoryFiles: {

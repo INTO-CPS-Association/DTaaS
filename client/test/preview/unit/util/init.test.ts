@@ -38,7 +38,7 @@ const mockGitlab = {
   getTriggerToken: jest.fn(),
 };
 
-jest.mock('model/backend/gitlab/interfaces', () => ({
+jest.mock('model/backend/gitlab/gitlab', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => mockGitlab),
   initialGitlabInstance: mockGitlab,
