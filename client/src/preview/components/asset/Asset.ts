@@ -1,4 +1,4 @@
-import { BackendInterface } from 'model/backend/gitlab/gitlab';
+import { BackendInterface } from 'model/backend/gitlab/interfaces';
 
 export interface Asset {
   name: string;

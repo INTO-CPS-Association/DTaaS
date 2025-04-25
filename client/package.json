@@ -21,7 +21,7 @@
     "build": "npx react-scripts build",
     "build:fast": "cross-env GENERATE_SOURCEMAP=false npx react-scripts build",
     "build:prod": "cross-env GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true npx react-scripts build",
-    "clean": "npx rimraf build/ dist/ coverage/ playwright-report/ test-results/ test.svg src.svg src/util/gitlab.json",
+    "clean": "npx rimraf build/ dist/ coverage/ playwright-report/ test-results/ test.svg src.svg",
     "clean:all": "yarn clean && npx rimraf node_modules/",
     "config:dev": "npx shx cp config/dev.js public/env.js && npx shx cp config/dev.js build/env.js",
     "config:local": "npx shx cp config/local.js public/env.js && npx shx cp config/local.js build/env.js",

@@ -2,7 +2,7 @@ import { Gitlab } from '@gitbeaker/rest';
 import GitlabInstance, {
   BackendInterface,
   PipelineStatus,
-} from 'model/backend/gitlab/gitlab';
+} from 'model/backend/gitlab/interfaces';
 import { GROUP_NAME } from 'model/backend/gitlab/constants';
 
 jest.mock('@gitbeaker/rest');

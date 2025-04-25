@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 
 import { FileState } from 'preview/store/file.slice';
-import { BackendInterface } from 'model/backend/gitlab/gitlab';
+import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import { IFile } from '../../model/backend/interfaces/ifile';
 import { FileType } from './DTAssets';
 

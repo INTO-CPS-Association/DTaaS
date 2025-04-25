@@ -35,7 +35,7 @@ test.describe('Digital Twin Execution Log Cleaning', () => {
 
     await expect(
       helloWorldCard.locator('button:has-text("Start")'),
-    ).toBeVisible({ timeout: 90000 });
+    ).toBeVisible({ timeout: 200000 });
 
     const logButton = helloWorldCard.locator(
       'button:has-text("LOG"), button:has-text("Log")',

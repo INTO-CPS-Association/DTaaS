@@ -9,8 +9,12 @@ const coverageOptions: CoverageReportOptions = {
   // Which files to collect coverage from.
   sourceFilter: (sourceName: string) => {
     const isFromNodeModules = sourceName.search(/node_modules\//) !== -1; // regexp match "node_modules/"
+    const isFromOutEditor = sourceName.search(/out-editor\//) !== -1; // regexp match "out-editor/"
     const isTypeScript = sourceName.search(/\.tsx?$/) !== -1;
     if (isFromNodeModules) {
+      return false;
+    }
+    if (isFromOutEditor) {
       return false;
     }
     if (!isTypeScript) {
@@ -24,6 +28,7 @@ const coverageOptions: CoverageReportOptions = {
     const isFromGitlab = entry.url.search(/gitlab\//) !== -1; // regexp match "gitlab/"
     const isCSS = entry.url.search(/\.css$/) !== -1;
     const isEnv = entry.url.search(/env\.js$/) !== -1;
+    const isOutEditor = entry.url.search(/out-editor\//) !== -1; // regexp match "out-editor/"
     if (isFromGitlab) {
       return false;
     }
@@ -31,6 +36,9 @@ const coverageOptions: CoverageReportOptions = {
       return false;
     }
     if (isEnv) {
+      return false;
+    }
+    if (isOutEditor) {
       return false;
     }
     return true;

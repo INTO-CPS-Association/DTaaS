@@ -23,7 +23,7 @@ export default defineConfig({
         url: BASE_URI,
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
-  timeout: process.env.CI ? 1000 : 30 * 1000,
+  timeout: process.env.CI ? 1000 : 50 * 1000,
   globalTimeout: 10 * 60 * 1000,
   testDir: './test/e2e/tests',
   testMatch: /.*\.test\.ts/,

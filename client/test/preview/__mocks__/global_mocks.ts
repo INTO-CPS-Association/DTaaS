@@ -1,5 +1,5 @@
 import { Gitlab } from '@gitbeaker/core';
-import { BackendInterface } from 'model/backend/gitlab/gitlab';
+import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
 import DTAssets from 'preview/util/DTAssets';
