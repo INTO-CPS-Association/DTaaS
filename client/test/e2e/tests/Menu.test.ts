@@ -2,7 +2,7 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import links from './Links';
+import links, { workbenchLinks } from './Links';
 
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
@@ -33,6 +33,32 @@ test.describe('Menu Links from first page (Layout)', () => {
       await page.locator(`div[role="button"]:has-text("${link.text}")`).click();
       await expect(page).toHaveURL(link.url);
       await expect(page.locator('text=404 Not Found')).not.toBeVisible();
+    }, Promise.resolve());
+  });
+
+  test('Workbench Links are visible', async ({ page }) => {
+    await page.locator(`div[role="button"]:has-text("Workbench")`).click();
+    await expect(page).toHaveURL('./workbench');
+    await workbenchLinks.reduce(async (previousPromise, link) => {
+      await previousPromise;
+      const linkElement = await page.getByRole('link', { name: link.text });
+      await expect(linkElement).toBeVisible();
+    }, Promise.resolve());
+  });
+
+  test('Workbench Links open in new windows', async ({ page }) => {
+    await page.locator(`div[role="button"]:has-text("Workbench")`).click();
+    await expect(page).toHaveURL('./workbench');
+    await workbenchLinks.reduce(async (previousPromise, link) => {
+      await previousPromise;
+      const popupPromise = page.waitForEvent('popup');
+      await page.getByRole('link', { name: link.text }).click();
+      const popup = await popupPromise;
+      await popup.waitForLoadState();
+      const popupUrl = popup.url();
+      expect(popupUrl).toContain(link.url.replace('./', ''));
+      await popup.close();
+      return Promise.resolve();
     }, Promise.resolve());
   });
 });
