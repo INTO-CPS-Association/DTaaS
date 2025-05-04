@@ -50,7 +50,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@eslint/migrate-config": "^1.3.0",
+    "@eslint/migrate-config": "^1.5.0",
     "@fontsource/roboto": "^5.0.8",
     "@gitbeaker/rest": "^40.1.2",
     "@monaco-editor/react": "^4.6.0",
