@@ -90,7 +90,7 @@ export const mockFileHandler: FileHandler = {
 
 export const mockDTAssets: DTAssets = {
   DTName: 'mockedDTName',
-  gitlabInstance: mockGitlabInstance,
+  backend: mockGitlabInstance,
   fileHandler: mockFileHandler,
   createFiles: jest.fn(),
   getFilesFromAsset: jest.fn(),
@@ -118,7 +118,7 @@ export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
   description: 'mockedDescription',
   fullDescription: 'mockedFullDescription',
-  gitlabInstance: mockGitlabInstance,
+  backend: mockGitlabInstance,
   DTAssets: mockDTAssets,
   pipelineId: 1,
   lastExecutionStatus: 'mockedStatus',

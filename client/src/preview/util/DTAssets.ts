@@ -21,13 +21,13 @@ export function getFilePath(
 class DTAssets implements DTAssetsInterface {
   public DTName: string;
 
-  public gitlabInstance: BackendInterface;
+  public backend: BackendInterface;
 
   public fileHandler: FileHandlerInterface;
 
   constructor(DTName: string, gitlabInstance: BackendInterface) {
     this.DTName = DTName;
-    this.gitlabInstance = gitlabInstance;
+    this.backend = gitlabInstance;
     this.fileHandler = new FileHandler(DTName, gitlabInstance);
   }
 

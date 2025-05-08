@@ -53,8 +53,8 @@ export const checkParentPipelineStatus = async ({
 }: PipelineStatusParams & {
   startTime: number;
 }) => {
-  const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
-    digitalTwin.gitlabInstance.projectId!,
+  const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
+    digitalTwin.backend.projectId!,
     digitalTwin.pipelineId!,
   );
 
@@ -68,7 +68,7 @@ export const checkParentPipelineStatus = async ({
     });
   } else if (isFailureStatus(pipelineStatus)) {
     const jobLogs = await fetchJobLogs(
-      digitalTwin.gitlabInstance,
+      digitalTwin.backend,
       digitalTwin.pipelineId!,
     );
     updatePipelineStateOnCompletion(
@@ -105,7 +105,7 @@ export const handlePipelineCompletion = async (
   dispatch: ReturnType<typeof useDispatch>,
   pipelineStatus: 'success' | 'failed',
 ) => {
-  const jobLogs = await fetchJobLogs(digitalTwin.gitlabInstance, pipelineId);
+  const jobLogs = await fetchJobLogs(digitalTwin.backend, pipelineId);
   updatePipelineStateOnCompletion(
     digitalTwin,
     jobLogs,
@@ -133,8 +133,8 @@ export const checkChildPipelineStatus = async ({
   startTime: number;
 }) => {
   const pipelineId = digitalTwin.pipelineId! + 1;
-  const pipelineStatus = await digitalTwin.gitlabInstance.getPipelineStatus(
-    digitalTwin.gitlabInstance.projectId!,
+  const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
+    digitalTwin.backend.projectId!,
     pipelineId,
   );
 

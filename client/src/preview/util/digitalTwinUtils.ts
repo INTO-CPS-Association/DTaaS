@@ -7,14 +7,11 @@ import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
-  return !!(
-    digitalTwin.gitlabInstance.projectId &&
-    digitalTwin.gitlabInstance.triggerToken
-  );
+  return !!(digitalTwin.backend.projectId && digitalTwin.backend.triggerToken);
 }
 
 export function logSuccess(digitalTwin: DigitalTwin, RUNNER_TAG: string): void {
-  digitalTwin.gitlabInstance.logs.push({
+  digitalTwin.backend.logs.push({
     status: 'success',
     DTName: digitalTwin.DTName,
     runnerTag: RUNNER_TAG,
@@ -27,7 +24,7 @@ export function logError(
   RUNNER_TAG: string,
   error: string,
 ): void {
-  digitalTwin.gitlabInstance.logs.push({
+  digitalTwin.backend.logs.push({
     status: 'error',
     error: new Error(error),
     DTName: digitalTwin.DTName,
@@ -68,7 +65,7 @@ export async function getDTSubfolders(
       .map(async (file) => ({
         name: file.name,
         path: file.path,
-        type: AssetTypes['Digital twin' as keyof typeof AssetTypes],
+        type: AssetTypes['Digital Twin' as keyof typeof AssetTypes],
         isPrivate: true,
       })),
   );

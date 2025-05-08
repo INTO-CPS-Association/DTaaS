@@ -79,7 +79,7 @@ describe('PipelineChecks', () => {
     );
 
     jest
-      .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue('success');
     await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
@@ -99,7 +99,7 @@ describe('PipelineChecks', () => {
     );
 
     jest
-      .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue('failed');
     await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
@@ -116,7 +116,7 @@ describe('PipelineChecks', () => {
     const handleTimeout = jest.spyOn(PipelineChecks, 'handleTimeout');
 
     jest
-      .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue('running');
     jest.spyOn(PipelineCore, 'hasTimedOut').mockReturnValue(true);
     await PipelineChecks.checkParentPipelineStatus({
@@ -137,7 +137,7 @@ describe('PipelineChecks', () => {
     delay.mockImplementation(() => Promise.resolve());
 
     jest
-      .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue('running');
     jest
       .spyOn(PipelineCore, 'hasTimedOut')
@@ -187,7 +187,7 @@ describe('PipelineChecks', () => {
     const handleTimeout = jest.spyOn(PipelineChecks, 'handleTimeout');
 
     jest
-      .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue('running');
     jest.spyOn(PipelineCore, 'hasTimedOut').mockReturnValue(true);
 
@@ -201,7 +201,7 @@ describe('PipelineChecks', () => {
     delay.mockImplementation(() => Promise.resolve());
 
     const getPipelineStatusMock = jest.spyOn(
-      digitalTwin.gitlabInstance,
+      digitalTwin.backend,
       'getPipelineStatus',
     );
     getPipelineStatusMock

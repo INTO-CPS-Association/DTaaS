@@ -9,7 +9,7 @@ export enum AssetTypes {
   'Tools' = 'tools',
   'Data' = 'data',
   'Digital Twins' = 'digital_twins',
-  'Digital twin' = 'digitalTwin',
+  'Digital Twin' = 'digital_twin',
 }
 
 // util/digitalTwin.ts

@@ -30,7 +30,7 @@ class DigitalTwin implements DigitalTwinInterface {
 
   public fullDescription: string = '';
 
-  public gitlabInstance: BackendInterface;
+  public backend: BackendInterface;
 
   public DTAssets: DTAssetsInterface;
 
@@ -54,12 +54,12 @@ class DigitalTwin implements DigitalTwinInterface {
 
   constructor(DTName: string, gitlabInstance: BackendInterface) {
     this.DTName = DTName;
-    this.gitlabInstance = gitlabInstance;
-    this.DTAssets = new DTAssets(DTName, this.gitlabInstance);
+    this.backend = gitlabInstance;
+    this.DTAssets = new DTAssets(DTName, this.backend);
   }
 
   async getDescription(): Promise<void> {
-    if (this.gitlabInstance.projectId) {
+    if (this.backend.projectId) {
       try {
         const fileContent =
           await this.DTAssets.getFileContent('description.md');
@@ -71,7 +71,7 @@ class DigitalTwin implements DigitalTwinInterface {
   }
 
   async getFullDescription(): Promise<void> {
-    if (this.gitlabInstance.projectId) {
+    if (this.backend.projectId) {
       const imagesPath = `digital_twins/${this.DTName}/`;
       try {
         const fileContent = await this.DTAssets.getFileContent('README.md');
@@ -92,10 +92,10 @@ class DigitalTwin implements DigitalTwinInterface {
 
   private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
-    return this.gitlabInstance.api.PipelineTriggerTokens.trigger(
-      this.gitlabInstance.projectId!,
+    return this.backend.api.PipelineTriggerTokens.trigger(
+      this.backend.projectId!,
       'main',
-      this.gitlabInstance.triggerToken!,
+      this.backend.triggerToken!,
       { variables },
     );
   }
@@ -121,15 +121,15 @@ class DigitalTwin implements DigitalTwinInterface {
     const pipelineId =
       pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
     try {
-      await this.gitlabInstance.api.Pipelines.cancel(projectId, pipelineId!);
-      this.gitlabInstance.logs.push({
+      await this.backend.api.Pipelines.cancel(projectId, pipelineId!);
+      this.backend.logs.push({
         status: 'canceled',
         DTName: this.DTName,
         runnerTag: RUNNER_TAG,
       });
       this.lastExecutionStatus = 'canceled';
     } catch (error) {
-      this.gitlabInstance.logs.push({
+      this.backend.logs.push({
         status: 'error',
         error: new Error(String(error)),
         DTName: this.DTName,
@@ -144,7 +144,7 @@ class DigitalTwin implements DigitalTwinInterface {
     cartAssets: LibraryAsset[],
     libraryFiles: LibraryConfigFile[],
   ): Promise<string> {
-    if (!this.gitlabInstance.projectId) {
+    if (!this.backend.projectId) {
       return `Error creating ${this.DTName} digital twin: no project id`;
     }
 
@@ -180,7 +180,7 @@ class DigitalTwin implements DigitalTwinInterface {
   }
 
   async delete() {
-    if (this.gitlabInstance.projectId) {
+    if (this.backend.projectId) {
       try {
         await this.DTAssets.delete();
 

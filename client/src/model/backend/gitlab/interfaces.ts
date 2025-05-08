@@ -84,7 +84,7 @@ export interface DigitalTwinInterface
   DTName: string;
   description: string | undefined;
   fullDescription: string;
-  gitlabInstance: BackendInterface;
+  backend: BackendInterface;
   DTAssets: DTAssetsInterface;
   pipelineId: number | null;
   lastExecutionStatus: string | null;
@@ -173,7 +173,7 @@ export interface DTAssetsInterface
     DTAssetsPipelineProvider,
     DTAssetsDeletionProvider {
   DTName: string;
-  gitlabInstance: BackendInterface;
+  backend: BackendInterface;
   fileHandler: FileHandlerInterface;
 }
 
@@ -221,7 +221,7 @@ export interface LibraryAssetFileProvider {
 
 export interface LibraryAssetInterface
   extends LibraryAssetDescriptionProvider,
-  LibraryAssetFileProvider {
+    LibraryAssetFileProvider {
   name: string;
   path: string;
   type: string;

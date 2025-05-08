@@ -136,7 +136,7 @@ describe('DigitalTwin', () => {
   });
 
   it('should log error and return null when triggerToken is missing', async () => {
-    dt.gitlabInstance.triggerToken = null;
+    dt.backend.triggerToken = null;
 
     jest.spyOn(dtUtils, 'isValidInstance').mockReturnValue(false);
 
@@ -152,7 +152,7 @@ describe('DigitalTwin', () => {
   it('should log success and update status', () => {
     dtUtils.logSuccess(dt, RUNNER_TAG);
 
-    expect(dt.gitlabInstance.logs).toContainEqual({
+    expect(dt.backend.logs).toContainEqual({
       status: 'success',
       DTName: 'test-DTName',
       runnerTag: RUNNER_TAG,

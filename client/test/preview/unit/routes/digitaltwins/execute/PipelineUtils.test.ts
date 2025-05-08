@@ -12,7 +12,7 @@ describe('PipelineUtils', () => {
   const dispatch = jest.fn();
   const setLogButtonDisabled = jest.fn();
   const setButtonText = jest.fn();
-  const { gitlabInstance } = digitalTwin;
+  const { backend: backend } = digitalTwin;
   const pipelineId = 1;
 
   afterEach(() => {
@@ -78,25 +78,25 @@ describe('PipelineUtils', () => {
     it('fetches job logs', async () => {
       const mockJob = { id: 1, name: 'job1' } as JobSchema;
 
-      const mockGetPipelineJobs = jest.spyOn(gitlabInstance, 'getPipelineJobs');
+      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
       mockGetPipelineJobs.mockResolvedValue([mockJob]);
 
-      const mockGetJobTrace = jest.spyOn(gitlabInstance, 'getJobTrace');
+      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
       mockGetJobTrace.mockResolvedValue('log1');
 
-      const result = await fetchJobLogs(gitlabInstance, pipelineId);
+      const result = await fetchJobLogs(backend, pipelineId);
 
       expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-        gitlabInstance.projectId,
+        backend.projectId,
         pipelineId,
       );
-      expect(mockGetJobTrace).toHaveBeenCalledWith(gitlabInstance.projectId, 1);
+      expect(mockGetJobTrace).toHaveBeenCalledWith(backend.projectId, 1);
       expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
     });
 
     it('returns empty array if projectId is falsy', async () => {
       const mockGitlabInstance = {
-        ...gitlabInstance,
+        ...backend,
         projectId: undefined,
         getPipelineJobs: jest.fn(),
         getJobTrace: jest.fn(),
@@ -109,13 +109,13 @@ describe('PipelineUtils', () => {
     it('handles error when fetching job trace', async () => {
       const mockJob = { id: 1, name: 'job1' } as JobSchema;
 
-      const mockGetPipelineJobs = jest.spyOn(gitlabInstance, 'getPipelineJobs');
+      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
       mockGetPipelineJobs.mockResolvedValue([mockJob]);
 
-      const mockGetJobTrace = jest.spyOn(gitlabInstance, 'getJobTrace');
+      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
       mockGetJobTrace.mockRejectedValue(new Error('Error fetching trace'));
 
-      const result = await fetchJobLogs(gitlabInstance, pipelineId);
+      const result = await fetchJobLogs(backend, pipelineId);
 
       expect(result).toEqual([
         { jobName: 'job1', log: 'Error fetching log content' },
@@ -125,13 +125,13 @@ describe('PipelineUtils', () => {
     it('handles job with missing name', async () => {
       const mockJob = { id: 1 } as JobSchema;
 
-      const mockGetPipelineJobs = jest.spyOn(gitlabInstance, 'getPipelineJobs');
+      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
       mockGetPipelineJobs.mockResolvedValue([mockJob]);
 
-      const mockGetJobTrace = jest.spyOn(gitlabInstance, 'getJobTrace');
+      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
       mockGetJobTrace.mockResolvedValue('log content');
 
-      const result = await fetchJobLogs(gitlabInstance, pipelineId);
+      const result = await fetchJobLogs(backend, pipelineId);
 
       expect(result).toEqual([{ jobName: 'Unknown', log: 'log content' }]);
     });
@@ -139,13 +139,13 @@ describe('PipelineUtils', () => {
     it('handles non-string log content', async () => {
       const mockJob = { id: 1, name: 'job1' } as JobSchema;
 
-      const mockGetPipelineJobs = jest.spyOn(gitlabInstance, 'getPipelineJobs');
+      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
       mockGetPipelineJobs.mockResolvedValue([mockJob]);
 
-      const mockGetJobTrace = jest.spyOn(gitlabInstance, 'getJobTrace');
+      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
       mockGetJobTrace.mockResolvedValue('');
 
-      const result = await fetchJobLogs(gitlabInstance, pipelineId);
+      const result = await fetchJobLogs(backend, pipelineId);
 
       expect(result).toEqual([{ jobName: 'job1', log: '' }]);
     });
