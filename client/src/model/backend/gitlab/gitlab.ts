@@ -3,18 +3,18 @@ import {
   GROUP_NAME,
   COMMON_LIBRARY_PROJECT_NAME,
 } from 'model/backend/gitlab/constants';
-import { GitlabInterface, LogEntry, PipelineStatus } from './interfaces';
+import { BackendInterface, LogEntry, PipelineStatus } from './interfaces';
 
-class GitlabInstance implements GitlabInterface {
+class GitlabInstance implements BackendInterface {
   public projectName: string;
 
   public api: InstanceType<typeof Gitlab>;
 
   public logs: LogEntry[];
 
-  public projectId: number | null = null;
+  public projectId: number = 0; // Dummy value to enforce type
 
-  public commonProjectId: number | null = null;
+  public commonProjectId: number = 0; // Dummy value to enforce type
 
   public triggerToken: string | null = null;
 
@@ -29,16 +29,10 @@ class GitlabInstance implements GitlabInterface {
 
   async init() {
     [this.projectId, this.commonProjectId] = await this.getProjectIds();
-
-    if (this.projectId !== null) {
-      this.triggerToken = await this.getTriggerToken(this.projectId);
-    }
+    this.triggerToken = await this.getTriggerToken(this.projectId);
   }
 
-  async getProjectIds(): Promise<(number | null)[]> {
-    let projectId: number | null = null;
-    let commonProjectId: number | null = null;
-
+  async getProjectIds(): Promise<number[]> {
     const group = await this.api.Groups.show(GROUP_NAME);
     const projects = await this.api.Groups.allProjects(group.id);
     const project =
@@ -47,14 +41,16 @@ class GitlabInstance implements GitlabInterface {
       projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) ||
       null;
 
-    if (project) {
-      projectId = project.id;
+    if (!project) {
+      throw new Error(`Project ${this.projectName} not found`);
     }
 
-    if (commonProject) {
-      commonProjectId = commonProject.id;
+    if (!commonProject) {
+      throw new Error(
+        `Common project ${COMMON_LIBRARY_PROJECT_NAME} not found`,
+      );
     }
-    return [projectId, commonProjectId];
+    return [project.id, commonProject.id];
   }
 
   async getTriggerToken(projectId: number): Promise<string | null> {
@@ -91,11 +87,6 @@ class GitlabInstance implements GitlabInterface {
   ): Promise<PipelineStatus> {
     const pipeline = await this.api.Pipelines.show(projectId, pipelineId);
     return pipeline.status as PipelineStatus;
-  }
-
-  // This should be deleted as it is already implemented.
-  getLogs(): LogEntry[] {
-    return this.logs;
   }
 }
 

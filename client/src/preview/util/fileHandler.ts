@@ -1,10 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 
-import { FileState } from 'preview/store/file.slice';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
-import { IFile } from '../../model/backend/interfaces/ifile';
-import { FileType } from './DTAssets';
+import {
+  FileState,
+  BackendInterface,
+  FileHandlerInterface,
+} from 'model/backend/gitlab/interfaces';
+// import { IFile } from 'model/backend/interfaces/ifile';
+import { FileType } from 'model/backend/gitlab/constants';
 
 export function isValidFileType(
   item: { type: string; name: string; path: string },
@@ -26,7 +29,7 @@ export function isImageFile(fileName: string): boolean {
   return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext));
 }
 
-class FileHandler implements IFile {
+class FileHandler implements FileHandlerInterface {
   public name: string;
 
   public gitlabInstance: BackendInterface;

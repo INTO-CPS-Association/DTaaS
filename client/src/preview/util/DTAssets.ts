@@ -1,15 +1,14 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 
-import { FileState } from 'preview/store/file.slice';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import {
+  FileState,
+  BackendInterface,
+  DTAssetsInterface,
+  FileHandlerInterface,
+} from 'model/backend/gitlab/interfaces';
 import FileHandler from './fileHandler';
-
-export enum FileType {
-  DESCRIPTION = 'description',
-  CONFIGURATION = 'configuration',
-  LIFECYCLE = 'lifecycle',
-}
+import { FileType } from 'model/backend/gitlab/constants';
 
 export function getFilePath(
   file: FileState,
@@ -19,12 +18,12 @@ export function getFilePath(
   return file.type === 'lifecycle' ? lifecycleFolderPath : mainFolderPath;
 }
 
-class DTAssets {
+class DTAssets implements DTAssetsInterface {
   public DTName: string;
 
   public gitlabInstance: BackendInterface;
 
-  public fileHandler: FileHandler;
+  public fileHandler: FileHandlerInterface;
 
   constructor(DTName: string, gitlabInstance: BackendInterface) {
     this.DTName = DTName;

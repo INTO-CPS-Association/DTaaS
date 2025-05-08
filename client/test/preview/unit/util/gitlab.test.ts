@@ -64,14 +64,14 @@ describe('GitlabInstance', () => {
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
   });
 
-  it('should handle no project ID found', async () => {
+  it('should throw error if no project ID found', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
     mockApi.Groups.allProjects.mockResolvedValue([]);
 
-    await gitlab.init();
+    await expect(gitlab.init()).rejects.toThrow(
+      `Project ${gitlab.projectName} not found`,
+    );
 
-    expect(gitlab.projectId).toBeNull();
-    expect(gitlab.projectId).toBeNull();
     expect(gitlab.triggerToken).toBeNull();
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
@@ -98,24 +98,6 @@ describe('GitlabInstance', () => {
 
   it('should return execution logs', () => {
     const mockLog = {
-      status: 'success' as PipelineStatus,
-      DTName: 'test-DTName',
-      runnerTag: 'test-runnerTag',
-      error: undefined,
-    };
-
-    gitlab.logs.push(mockLog);
-
-    const logs = gitlab.executionLogs();
-
-    expect(logs).toHaveLength(1);
-    expect(logs[0].status).toBe('success');
-    expect(logs[0].DTName).toBe('test-DTName');
-    expect(logs[0].runnerTag).toBe('test-runnerTag');
-  });
-
-  it('should return execution logs from getLogs', () => {
-    const mockLog = {
       status: 'canceled' as PipelineStatus,
       DTName: 'test-DTName-2',
       runnerTag: 'test-runnerTag-2',
@@ -124,7 +106,7 @@ describe('GitlabInstance', () => {
 
     gitlab.logs.push(mockLog);
 
-    const logs = gitlab.getLogs();
+    const logs = gitlab.executionLogs();
 
     expect(logs).toHaveLength(1);
     expect(logs[0].status).toBe('canceled');

@@ -33,10 +33,10 @@ import cartSlice, {
   removeFromCart,
 } from 'preview/store/cart.slice';
 import libraryFilesSlice, {
-  LibraryConfigFile,
   addOrUpdateLibraryFile,
   removeAllModifiedLibraryFiles,
 } from 'preview/store/libraryConfigFiles.slice';
+import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 
 describe('reducers', () => {
   let initialState: {

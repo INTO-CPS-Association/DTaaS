@@ -2,9 +2,8 @@ import LibraryManager, {
   getFilePath,
   FileType,
 } from 'preview/util/libraryManager';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import { BackendInterface, FileState } from 'model/backend/gitlab/interfaces';
 import FileHandler from 'preview/util/fileHandler';
-import { FileState } from 'preview/store/file.slice';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileHandler');

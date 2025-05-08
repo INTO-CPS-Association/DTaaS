@@ -9,7 +9,7 @@ import {
   Button,
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { FileState } from '../../../store/file.slice';
+import { FileState } from 'model/backend/gitlab/interfaces';
 import {
   handleCloseFileNameDialog,
   handleFileSubmit,

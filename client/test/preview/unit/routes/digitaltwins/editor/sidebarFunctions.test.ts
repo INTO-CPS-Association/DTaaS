@@ -1,5 +1,5 @@
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
-import { FileState } from 'preview/store/file.slice';
+import { FileState } from 'model/backend/gitlab/interfaces';
 import * as FileUtils from 'preview/util/fileUtils';
 import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
 import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';

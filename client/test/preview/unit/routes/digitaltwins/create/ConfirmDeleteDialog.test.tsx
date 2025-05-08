@@ -6,7 +6,7 @@ import {
   removeAllCreationFiles,
   addOrUpdateFile,
 } from 'preview/store/file.slice';
-import { defaultFiles } from 'preview/util/fileUtils';
+import { defaultFiles } from 'model/backend/gitlab/constants';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

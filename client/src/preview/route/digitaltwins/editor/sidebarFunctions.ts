@@ -1,12 +1,10 @@
-import { addOrUpdateFile, FileState } from 'preview/store/file.slice';
+import { addOrUpdateFile } from 'preview/store/file.slice';
+import { FileState, LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import LibraryAsset from 'preview/util/libraryAsset';
-import {
-  addOrUpdateLibraryFile,
-  LibraryConfigFile,
-} from 'preview/store/libraryConfigFiles.slice';
+import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import {
   getFileTypeFromExtension,
   updateFileState,

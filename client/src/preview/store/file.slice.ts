@@ -1,14 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { FileState } from 'model/backend/gitlab/interfaces';
 import { RootState } from 'store/store';
-
-export interface FileState {
-  name: string;
-  content: string;
-  isNew: boolean;
-  isModified: boolean;
-  type?: string;
-  isFromCommonLibrary?: boolean;
-}
 
 const initialState: FileState[] = [];
 

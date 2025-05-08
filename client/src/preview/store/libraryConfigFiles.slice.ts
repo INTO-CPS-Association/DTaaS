@@ -1,14 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 import { RootState } from 'store/store';
-
-export interface LibraryConfigFile {
-  assetPath: string;
-  fileName: string;
-  fileContent: string;
-  isNew: boolean;
-  isModified: boolean;
-  isPrivate: boolean;
-}
 
 const initialState: LibraryConfigFile[] = [];
 

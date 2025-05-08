@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 import { Gitlab } from '@gitbeaker/rest';
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';

@@ -9,7 +9,8 @@ import {
   CircularProgress,
   Box,
 } from '@mui/material';
-import { FileState, removeAllCreationFiles } from 'preview/store/file.slice';
+import { removeAllCreationFiles } from 'preview/store/file.slice';
+import { FileState, LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import DigitalTwin from 'preview/util/digitalTwin';
@@ -18,13 +19,9 @@ import {
   setDigitalTwin,
   setShouldFetchDigitalTwins,
 } from 'preview/store/digitalTwin.slice';
-import {
-  addDefaultFiles,
-  defaultFiles,
-  validateFiles,
-} from 'preview/util/fileUtils';
+import { addDefaultFiles, validateFiles } from 'preview/util/fileUtils';
+import { defaultFiles } from 'model/backend/gitlab/constants';
 import { initDigitalTwin } from 'preview/util/init';
-import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
 import LibraryAsset from 'preview/util/libraryAsset';
 import useCart from 'preview/store/CartAccess';
 

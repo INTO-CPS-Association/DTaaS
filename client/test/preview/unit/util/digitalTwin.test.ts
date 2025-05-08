@@ -113,12 +113,6 @@ describe('DigitalTwin', () => {
     expect(dt.fullDescription).toBe('There is no README.md file');
   });
 
-  it('should return error message when projectId is missing', async () => {
-    dt.gitlabInstance.projectId = null;
-    await dt.getFullDescription();
-    expect(dt.fullDescription).toBe('Error fetching description, retry.');
-  });
-
   it('should execute pipeline and return the pipeline ID', async () => {
     const mockResponse = { id: 123 };
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
@@ -141,8 +135,7 @@ describe('DigitalTwin', () => {
     );
   });
 
-  it('should log error and return null when projectId or triggerToken is missing', async () => {
-    dt.gitlabInstance.projectId = null;
+  it('should log error and return null when triggerToken is missing', async () => {
     dt.gitlabInstance.triggerToken = null;
 
     jest.spyOn(dtUtils, 'isValidInstance').mockReturnValue(false);
@@ -259,16 +252,6 @@ describe('DigitalTwin', () => {
     expect(result).toBe('Error deleting test-DTName digital twin');
   });
 
-  it('should return error message when projectId is missing during deletion', async () => {
-    dt.gitlabInstance.projectId = null;
-
-    const result = await dt.delete();
-
-    expect(result).toBe(
-      'Error deleting test-DTName digital twin: no project id',
-    );
-  });
-
   it('should create digital twin with files', async () => {
     const result = await dt.create(files, [], []);
 
@@ -286,16 +269,6 @@ describe('DigitalTwin', () => {
 
     expect(result).toBe(
       'Error initializing test-DTName digital twin files: Error: Create failed',
-    );
-  });
-
-  it('should return error message when projectId is missing during creation', async () => {
-    dt.gitlabInstance.projectId = null;
-
-    const result = await dt.create(files, [], []);
-
-    expect(result).toBe(
-      'Error creating test-DTName digital twin: no project id',
     );
   });
 });

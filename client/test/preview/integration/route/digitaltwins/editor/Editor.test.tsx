@@ -6,10 +6,8 @@ import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
-import fileSlice, {
-  FileState,
-  addOrUpdateFile,
-} from 'preview/store/file.slice';
+import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
+import { FileState } from 'model/backend/gitlab/interfaces';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import {

@@ -1,10 +1,10 @@
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
 import { Asset } from 'preview/components/asset/Asset';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import { BackendInterface, LibraryAssetInterface } from 'model/backend/gitlab/interfaces';
 import LibraryManager from './libraryManager';
 
-class LibraryAsset {
+class LibraryAsset implements LibraryAssetInterface {
   public name: string;
 
   public path: string;

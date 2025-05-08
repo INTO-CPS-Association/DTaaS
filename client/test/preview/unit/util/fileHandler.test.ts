@@ -1,4 +1,4 @@
-import { FileType } from 'preview/util/DTAssets';
+import { FileType } from 'model/backend/gitlab/constants';
 import FileHandler from 'preview/util/fileHandler';
 import GitlabInstance from 'model/backend/gitlab/gitlab';
 

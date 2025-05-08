@@ -30,7 +30,6 @@ describe('LibraryAsset', () => {
       getPipelineJobs: jest.fn(),
       getJobTrace: jest.fn(),
       getPipelineStatus: jest.fn(),
-      getLogs: jest.fn(),
     } as unknown as GitlabInstance;
 
     libraryManager = new LibraryManager('test', gitlabInstance);
@@ -145,18 +144,6 @@ describe('LibraryAsset', () => {
       path: AssetTypes[type as keyof typeof AssetTypes],
       recursive: false,
     });
-  });
-
-  it('should throw error when fetching common library subfolders without common project id', async () => {
-    gitlabInstance.commonProjectId = null;
-    await expect(
-      getLibrarySubfolders(
-        1,
-        'Data' as keyof typeof AssetTypes,
-        false,
-        gitlabInstance,
-      ),
-    ).rejects.toThrow('Project ID not found');
   });
 
   it('should throw error when fetching invalid library asset type', async () => {

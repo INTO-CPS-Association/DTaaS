@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import { getFilteredFileNames } from 'preview/util/fileUtils';
-import { FileState } from '../../../store/file.slice';
+import { FileState } from 'model/backend/gitlab/interfaces';
 import { selectDigitalTwinByName } from '../../../store/digitalTwin.slice';
 import { fetchData } from './sidebarFetchers';
 import { handleAddFileClick } from './sidebarFunctions';

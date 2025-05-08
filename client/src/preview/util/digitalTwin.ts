@@ -2,23 +2,28 @@
 /* eslint-disable no-await-in-loop */
 
 import { getAuthority } from 'util/envUtil';
-import { FileState } from 'preview/store/file.slice';
-import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import {
+  DigitalTwinInterface,
+  FileState,
+  LibraryConfigFile,
+  BackendInterface,
+  DTAssetsInterface,
+} from 'model/backend/gitlab/interfaces';
 import { RUNNER_TAG } from 'model/backend/gitlab/constants';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import {
   isValidInstance,
   logError,
   logSuccess,
   getUpdatedLibraryFile,
 } from './digitalTwinUtils';
-import DTAssets, { FileType } from './DTAssets';
+import DTAssets from './DTAssets';
+import { FileType } from 'model/backend/gitlab/constants';
 import LibraryAsset from './libraryAsset';
 
 export const formatName = (name: string) =>
   name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase());
 
-class DigitalTwin {
+class DigitalTwin implements DigitalTwinInterface {
   public DTName: string;
 
   public description: string | undefined = '';
@@ -27,7 +32,7 @@ class DigitalTwin {
 
   public gitlabInstance: BackendInterface;
 
-  public DTAssets: DTAssets;
+  public DTAssets: DTAssetsInterface;
 
   public pipelineId: number | null = null;
 

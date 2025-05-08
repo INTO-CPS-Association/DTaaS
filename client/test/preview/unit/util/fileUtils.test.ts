@@ -1,4 +1,4 @@
-import { LibraryConfigFile } from 'preview/store/libraryConfigFiles.slice';
+import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
 import * as fileUtils from 'preview/util/fileUtils';
 
 describe('FileUtils', () => {
