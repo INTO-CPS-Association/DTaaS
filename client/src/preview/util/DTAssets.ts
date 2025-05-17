@@ -7,8 +7,8 @@ import {
   DTAssetsInterface,
   FileHandlerInterface,
 } from 'model/backend/gitlab/interfaces';
-import FileHandler from './fileHandler';
 import { FileType } from 'model/backend/gitlab/constants';
+import FileHandler from './fileHandler';
 
 export function getFilePath(
   file: FileState,

@@ -9,7 +9,7 @@ import {
   BackendInterface,
   DTAssetsInterface,
 } from 'model/backend/gitlab/interfaces';
-import { RUNNER_TAG } from 'model/backend/gitlab/constants';
+import { RUNNER_TAG , FileType } from 'model/backend/gitlab/constants';
 import {
   isValidInstance,
   logError,
@@ -17,7 +17,6 @@ import {
   getUpdatedLibraryFile,
 } from './digitalTwinUtils';
 import DTAssets from './DTAssets';
-import { FileType } from 'model/backend/gitlab/constants';
 import LibraryAsset from './libraryAsset';
 
 export const formatName = (name: string) =>

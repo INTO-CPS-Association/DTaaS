@@ -12,7 +12,7 @@ describe('PipelineUtils', () => {
   const dispatch = jest.fn();
   const setLogButtonDisabled = jest.fn();
   const setButtonText = jest.fn();
-  const { backend: backend } = digitalTwin;
+  const { backend } = digitalTwin;
   const pipelineId = 1;
 
   afterEach(() => {
