@@ -9,7 +9,7 @@ import {
   BackendInterface,
   DTAssetsInterface,
 } from 'model/backend/gitlab/interfaces';
-import { RUNNER_TAG , FileType } from 'model/backend/gitlab/constants';
+import { RUNNER_TAG, FileType } from 'model/backend/gitlab/constants';
 import {
   isValidInstance,
   logError,

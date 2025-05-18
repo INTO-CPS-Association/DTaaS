@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -17,7 +17,7 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "analyze": "npx source-map-explorer 'build/static/js/*.js'",
+    "analyze": "yarn build && npx source-map-explorer 'build/static/js/*.js'",
     "build": "npx react-scripts build",
     "build:fast": "cross-env GENERATE_SOURCEMAP=false npx react-scripts build",
     "build:prod": "cross-env GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true npx react-scripts build",

@@ -9,6 +9,7 @@ import { setDigitalTwin } from '../store/digitalTwin.slice';
 import LibraryAsset, { getLibrarySubfolders } from './libraryAsset';
 import { getDTSubfolders } from './digitalTwinUtils';
 import { createGitlabInstance } from './gitlabFactory';
+import LibraryManager from './libraryManager';
 
 const initialGitlabInstance = new GitlabInstance(
   sessionStorage.getItem('username') || '',
@@ -28,7 +29,6 @@ export const fetchLibraryAssets = async (
       const subfolders = await getLibrarySubfolders(
         initialGitlabInstance.projectId,
         type as keyof typeof AssetTypes,
-        isPrivate,
         initialGitlabInstance,
       );
 
@@ -36,12 +36,15 @@ export const fetchLibraryAssets = async (
         subfolders.map(async (subfolder) => {
           const gitlabInstance = createGitlabInstance();
           await gitlabInstance.init();
-          const libraryAsset = new LibraryAsset(
+          const libraryManager = new LibraryManager(
             subfolder.name,
+            gitlabInstance,
+          );
+          const libraryAsset = new LibraryAsset(
+            libraryManager,
             subfolder.path,
             isPrivate,
             type,
-            gitlabInstance,
           );
           await libraryAsset.getDescription();
           return libraryAsset;

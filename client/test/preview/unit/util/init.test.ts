@@ -89,12 +89,7 @@ describe('fetchAssets', () => {
   it('should fetch library assets and set them', async () => {
     const assetType = 'models';
     await fetchLibraryAssets(dispatch, setError, assetType, true);
-    expect(getLibrarySubfolders).toHaveBeenCalledWith(
-      1,
-      assetType,
-      true,
-      mockGitlab,
-    );
+    expect(getLibrarySubfolders).toHaveBeenCalledWith(1, assetType, mockGitlab);
   });
 
   it('should fetch digital twins and set them', async () => {
@@ -104,7 +99,6 @@ describe('fetchAssets', () => {
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       'Digital Twins',
-      true,
       mockGitlab,
     );
 

@@ -33,14 +33,14 @@ describe('LibraryAsset', () => {
     } as unknown as GitlabInstance;
 
     libraryManager = new LibraryManager('test', gitlabInstance);
+    libraryManager.assetName = 'test';
+    libraryManager.gitlabInstance = gitlabInstance;
     libraryAsset = new LibraryAsset(
-      'test',
+      libraryManager,
       'path/to/library',
       true,
       'type',
-      gitlabInstance,
     );
-    libraryAsset.libraryManager = libraryManager;
   });
 
   it('should initialize correctly', () => {
@@ -91,35 +91,8 @@ describe('LibraryAsset', () => {
     expect(libraryAsset.configFiles).toEqual(fileNames);
   });
 
-  it('should fetch private library subfolders succesfully', async () => {
-    const projectId = 3;
-    const files = [{ name: 'file', path: 'models/file', type: 'blob' }];
-
-    (
-      gitlabInstance.api.Repositories.allRepositoryTrees as jest.Mock
-    ).mockResolvedValue(files);
-
-    const type = 'Models' as keyof typeof AssetTypes;
-    const subfolders = await getLibrarySubfolders(
-      projectId,
-      type,
-      true,
-      gitlabInstance,
-    );
-
-    expect(subfolders).toHaveLength(0);
-
-    expect(
-      gitlabInstance.api.Repositories.allRepositoryTrees,
-    ).toHaveBeenCalledWith(projectId, {
-      path: AssetTypes[type as keyof typeof AssetTypes],
-      recursive: false,
-    });
-  });
-
   it('should fetch common library subfolders succesfully', async () => {
     gitlabInstance.commonProjectId = 6;
-    const projectId = 5;
     const files = [
       { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
     ];
@@ -129,12 +102,7 @@ describe('LibraryAsset', () => {
     ).mockResolvedValue(files);
 
     const type = 'Tools' as keyof typeof AssetTypes;
-    const subfolders = await getLibrarySubfolders(
-      projectId,
-      type,
-      false,
-      gitlabInstance,
-    );
+    const subfolders = await getLibrarySubfolders(6, type, gitlabInstance);
 
     expect(subfolders).toHaveLength(1);
 
@@ -148,12 +116,7 @@ describe('LibraryAsset', () => {
 
   it('should throw error when fetching invalid library asset type', async () => {
     await expect(
-      getLibrarySubfolders(
-        2,
-        'Foo' as keyof typeof AssetTypes,
-        false,
-        gitlabInstance,
-      ),
+      getLibrarySubfolders(3, 'Foo' as keyof typeof AssetTypes, gitlabInstance),
     ).rejects.toThrow('Invalid asset type: Foo');
   });
 });

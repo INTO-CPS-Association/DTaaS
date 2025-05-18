@@ -1,13 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 
+import { FileType } from 'model/backend/gitlab/constants';
 import {
   FileState,
   BackendInterface,
   DTAssetsInterface,
   FileHandlerInterface,
 } from 'model/backend/gitlab/interfaces';
-import { FileType } from 'model/backend/gitlab/constants';
 import FileHandler from './fileHandler';
 
 export function getFilePath(

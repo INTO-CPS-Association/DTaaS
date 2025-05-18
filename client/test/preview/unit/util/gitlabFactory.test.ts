@@ -13,8 +13,8 @@ describe('createGitlabInstance', () => {
         },
         clear: () => {
           Object.keys(store).forEach((key) => {
-            delete store[key]
-          })
+            delete store[key];
+          });
         },
       },
       writable: true,

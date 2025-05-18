@@ -27,22 +27,21 @@ class LibraryAsset implements LibraryAssetInterface {
   public configFiles: string[] = [];
 
   constructor(
-    name: string,
+    libraryManager: LibraryManager,
     path: string,
     isPrivate: boolean,
     type: string,
-    gitlabInstance: BackendInterface,
   ) {
-    this.name = name;
     this.path = path;
     this.isPrivate = isPrivate;
     this.type = type;
-    this.gitlabInstance = gitlabInstance;
-    this.libraryManager = new LibraryManager(name, this.gitlabInstance);
+    this.libraryManager = libraryManager;
+    this.name = libraryManager.assetName;
+    this.gitlabInstance = libraryManager.gitlabInstance;
   }
 
   async getDescription(): Promise<void> {
-    if (this.gitlabInstance.projectId) {
+    if (this.gitlabInstance && this.gitlabInstance.projectId) {
       try {
         const fileContent = await this.libraryManager.getFileContent(
           this.isPrivate,
@@ -57,7 +56,7 @@ class LibraryAsset implements LibraryAssetInterface {
   }
 
   async getFullDescription(): Promise<void> {
-    if (this.gitlabInstance.projectId) {
+    if (this.gitlabInstance && this.gitlabInstance.projectId) {
       const imagesPath = this.path;
       try {
         const fileContent = await this.libraryManager.getFileContent(
@@ -91,20 +90,20 @@ class LibraryAsset implements LibraryAssetInterface {
 export async function getLibrarySubfolders(
   projectId: number,
   type: keyof typeof AssetTypes,
-  isPrivate: boolean,
+  // isPrivate: boolean,
   gitlabInstance: BackendInterface,
 ): Promise<Asset[]> {
   const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
   if (!mappedPath) {
     throw new Error(`Invalid asset type: ${type}`);
   }
-  const projectToUse = isPrivate ? projectId : gitlabInstance.commonProjectId;
-  if (projectToUse === null) {
+  if (projectId === null) {
     throw new Error('Project ID not found');
   }
+  const isPrivate = projectId === gitlabInstance.projectId;
 
   const { api } = gitlabInstance;
-  const files = await api.Repositories.allRepositoryTrees(projectToUse, {
+  const files = await api.Repositories.allRepositoryTrees(projectId, {
     path: mappedPath,
     recursive: false,
   });
