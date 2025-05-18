@@ -125,7 +125,7 @@
     "playwright": "1.48.1",
     "prettier": "3.3.3",
     "shx": "0.3.4",
-    "ts-jest": "29.2.5"
+    "ts-jest": "29.3.4"
   },
   "browserslist": {
     "production": [
