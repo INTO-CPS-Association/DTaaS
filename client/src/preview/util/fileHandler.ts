@@ -6,7 +6,6 @@ import {
   BackendInterface,
   FileHandlerInterface,
 } from 'model/backend/gitlab/interfaces';
-// import { IFile } from 'model/backend/interfaces/ifile';
 import { FileType } from 'model/backend/gitlab/constants';
 
 export function isValidFileType(
@@ -49,7 +48,7 @@ class FileHandler implements FileHandlerInterface {
       ? this.gitlabInstance.commonProjectId
       : this.gitlabInstance.projectId;
     await this.gitlabInstance.api.RepositoryFiles.create(
-      projectToUse!,
+      projectToUse,
       `${filePath}/${file.name}`,
       'main',
       file.content,
@@ -63,7 +62,7 @@ class FileHandler implements FileHandlerInterface {
     commitMessage: string,
   ): Promise<void> {
     await this.gitlabInstance.api.RepositoryFiles.edit(
-      this.gitlabInstance.projectId!,
+      this.gitlabInstance.projectId,
       filePath,
       'main',
       updatedContent,
@@ -73,7 +72,7 @@ class FileHandler implements FileHandlerInterface {
 
   async deleteDT(digitalTwinPath: string): Promise<void> {
     await this.gitlabInstance.api.RepositoryFiles.remove(
-      this.gitlabInstance.projectId!,
+      this.gitlabInstance.projectId,
       digitalTwinPath,
       'main',
       `Removing ${this.name} digital twin`,
@@ -87,7 +86,7 @@ class FileHandler implements FileHandlerInterface {
         : this.gitlabInstance.projectId;
 
     const response = await this.gitlabInstance.api.RepositoryFiles.show(
-      projectToUse!,
+      projectToUse,
       filePath,
       'main',
     );
@@ -104,7 +103,7 @@ class FileHandler implements FileHandlerInterface {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
+          this.gitlabInstance.projectId,
           {
             path: pathMap[fileType],
             recursive: fileType === FileType.LIFECYCLE,
@@ -130,7 +129,7 @@ class FileHandler implements FileHandlerInterface {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          projectToUse!,
+          projectToUse,
           {
             path: filePath,
             recursive: false,
@@ -171,7 +170,7 @@ class FileHandler implements FileHandlerInterface {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          projectToUse!,
+          projectToUse,
           {
             path: filePath,
             recursive: shouldBeRecursive,
@@ -190,7 +189,7 @@ class FileHandler implements FileHandlerInterface {
     try {
       const response =
         await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId!,
+          this.gitlabInstance.projectId,
           { path, recursive: false },
         );
 

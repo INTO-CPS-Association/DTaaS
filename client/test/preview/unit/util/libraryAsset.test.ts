@@ -109,7 +109,7 @@ describe('LibraryAsset', () => {
     expect(
       gitlabInstance.api.Repositories.allRepositoryTrees,
     ).toHaveBeenCalledWith(gitlabInstance.commonProjectId, {
-      path: AssetTypes[type as keyof typeof AssetTypes],
+      path: AssetTypes[type],
       recursive: false,
     });
   });

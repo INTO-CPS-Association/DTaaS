@@ -92,7 +92,7 @@ class DigitalTwin implements DigitalTwinInterface {
   private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
     return this.backend.api.PipelineTriggerTokens.trigger(
-      this.backend.projectId!,
+      this.backend.projectId,
       'main',
       this.backend.triggerToken!,
       { variables },

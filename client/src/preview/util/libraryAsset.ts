@@ -90,10 +90,9 @@ class LibraryAsset implements LibraryAssetInterface {
 export async function getLibrarySubfolders(
   projectId: number,
   type: keyof typeof AssetTypes,
-  // isPrivate: boolean,
   gitlabInstance: BackendInterface,
 ): Promise<Asset[]> {
-  const mappedPath = AssetTypes[type as keyof typeof AssetTypes];
+  const mappedPath = AssetTypes[type];
   if (!mappedPath) {
     throw new Error(`Invalid asset type: ${type}`);
   }

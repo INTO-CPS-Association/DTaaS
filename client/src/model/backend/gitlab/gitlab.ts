@@ -36,9 +36,9 @@ class GitlabInstance implements BackendInterface {
     const group = await this.api.Groups.show(GROUP_NAME);
     const projects = await this.api.Groups.allProjects(group.id);
     const project =
-      projects.find((proj) => proj.name === this.projectName) || null;
+      projects.find((proj) => proj.name === this.projectName) ?? null;
     const commonProject =
-      projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) ||
+      projects.find((proj) => proj.name === COMMON_LIBRARY_PROJECT_NAME) ??
       null;
 
     if (!project) {
