@@ -41,7 +41,7 @@ class LibraryAsset implements LibraryAssetInterface {
   }
 
   async getDescription(): Promise<void> {
-    if (this.gitlabInstance && this.gitlabInstance.projectId) {
+    if (this.gitlabInstance?.projectId) {
       try {
         const fileContent = await this.libraryManager.getFileContent(
           this.isPrivate,
@@ -56,7 +56,7 @@ class LibraryAsset implements LibraryAssetInterface {
   }
 
   async getFullDescription(): Promise<void> {
-    if (this.gitlabInstance && this.gitlabInstance.projectId) {
+    if (this.gitlabInstance?.projectId) {
       const imagesPath = this.path;
       try {
         const fileContent = await this.libraryManager.getFileContent(
@@ -96,9 +96,7 @@ export async function getLibrarySubfolders(
   if (!mappedPath) {
     throw new Error(`Invalid asset type: ${type}`);
   }
-  if (projectId === null) {
-    throw new Error('Project ID not found');
-  }
+
   const isPrivate = projectId === gitlabInstance.projectId;
 
   const { api } = gitlabInstance;

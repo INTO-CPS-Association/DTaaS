@@ -180,6 +180,7 @@ jest.mock('util/envUtil', () => ({
   ],
 }));
 
+// TODO: These should match the above values, such as mockAppUrl.
 window.env = {
   ...window.env,
   REACT_APP_ENVIRONMENT: 'test',

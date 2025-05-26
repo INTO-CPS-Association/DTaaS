@@ -4,7 +4,10 @@ import {
   BackendInterface,
   PipelineStatus,
 } from 'model/backend/gitlab/interfaces';
-import { GROUP_NAME } from 'model/backend/gitlab/constants';
+import {
+  COMMON_LIBRARY_PROJECT_NAME,
+  GROUP_NAME,
+} from 'model/backend/gitlab/constants';
 
 jest.mock('@gitbeaker/rest');
 
@@ -64,12 +67,28 @@ describe('GitlabInstance', () => {
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
   });
 
-  it('should throw error if no project ID found', async () => {
+  it('should throw error if project is not found', async () => {
     mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
-    mockApi.Groups.allProjects.mockResolvedValue([]);
+    mockApi.Groups.allProjects.mockResolvedValue([]); // No projects
 
     await expect(gitlab.init()).rejects.toThrow(
       `Project ${gitlab.projectName} not found`,
+    );
+
+    expect(gitlab.triggerToken).toBeNull();
+    expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
+    expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
+    expect(mockApi.PipelineTriggerTokens.all).not.toHaveBeenCalled();
+  });
+
+  it('should throw error if commonProject isnot found', async () => {
+    mockApi.Groups.show.mockResolvedValue({ id: 1, name: GROUP_NAME });
+    mockApi.Groups.allProjects.mockResolvedValue([
+      { id: 1, name: 'user1' }, // No common project
+    ]);
+
+    await expect(gitlab.init()).rejects.toThrow(
+      `Common project ${COMMON_LIBRARY_PROJECT_NAME} not found`,
     );
 
     expect(gitlab.triggerToken).toBeNull();
