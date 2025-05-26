@@ -69,7 +69,7 @@ a development workflow is in place. Each developer should follow these steps:
 
 1. Fork of the main repository into your github account.
 1. Setup
-   [Code Climate](https://docs.codeclimate.com/docs/getting-started-with-code-climate)
+   [Qlty](https://docs.qlty.sh/cloud/quickstart)
    and
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token

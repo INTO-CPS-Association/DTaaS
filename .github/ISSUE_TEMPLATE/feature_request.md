@@ -45,4 +45,4 @@ Checklist:
 
 - [ ] Feature is accessible (provide more detail or more checkpoints here)
 - [ ] Test coverage is improved
-- [ ] No codeclimate issues
+- [ ] No qlty issues
