@@ -20,7 +20,8 @@ export interface LogEntry {
 }
 
 export interface ProjectProvider {
-  getProjectIds(): Promise<(number | null)[]>;
+  getProjectId(): number;
+  getCommonProjectId(): number;
   getTriggerToken(projectId: number): Promise<string | null>;
 }
 
@@ -47,8 +48,8 @@ export interface BackendInterface
   projectName: string;
   api: InstanceType<typeof Gitlab>;
   logs: LogEntry[];
-  projectId: number;
-  commonProjectId: number;
+  // projectId: number;
+  // commonProjectId: number;
   triggerToken: string | null;
   init(): Promise<void>;
 }
@@ -180,7 +181,7 @@ export interface DTAssetsInterface
 // FileHandlerInterface.ts
 export interface FileHandlerInterface extends IFile {
   name: string;
-  gitlabInstance: BackendInterface;
+  backend: BackendInterface;
   getFileNames(fileType: FileType): Promise<string[]>;
   updateFile(
     filePath: string,
@@ -226,7 +227,7 @@ export interface LibraryAssetInterface
   path: string;
   type: string;
   isPrivate: boolean;
-  gitlabInstance: BackendInterface;
+  backend: BackendInterface;
   description: string;
   fullDescription: string;
   libraryManager: LibraryManagerInterface;
@@ -250,6 +251,6 @@ export interface LibraryManagerInterface
   extends FileContentProvider,
     FileNamesProvider {
   assetName: string;
-  gitlabInstance: BackendInterface;
+  backend: BackendInterface;
   fileHandler: FileHandlerInterface;
 }

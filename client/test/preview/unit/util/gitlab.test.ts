@@ -44,7 +44,7 @@ describe('GitlabInstance', () => {
       'https://gitlab.example.com',
       'test_token',
     );
-    gitlab.api = mockApi as unknown as InstanceType<typeof Gitlab>;
+    gitlab.api = mockApi as unknown as InstanceType<typeof Gitlab>; // USED
   });
 
   it('should initialize with a project ID and trigger token', async () => {
@@ -59,9 +59,9 @@ describe('GitlabInstance', () => {
 
     await gitlab.init();
 
-    expect(gitlab.projectId).toBe(1);
-    expect(gitlab.commonProjectId).toBe(2);
-    expect(gitlab.triggerToken).toBe('test-token');
+    expect(gitlab.getProjectId()).toBe(1);
+    expect(gitlab.getCommonProjectId()).toBe(2);
+    expect(gitlab.triggerToken).toBe('test-token'); // USED
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
@@ -75,7 +75,7 @@ describe('GitlabInstance', () => {
       `Project ${gitlab.projectName} not found`,
     );
 
-    expect(gitlab.triggerToken).toBeNull();
+    expect(gitlab.triggerToken).toBeNull(); // USED
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
     expect(mockApi.PipelineTriggerTokens.all).not.toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe('GitlabInstance', () => {
       `Common project ${COMMON_LIBRARY_PROJECT_NAME} not found`,
     );
 
-    expect(gitlab.triggerToken).toBeNull();
+    expect(gitlab.triggerToken).toBeNull(); // USED
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
     expect(mockApi.PipelineTriggerTokens.all).not.toHaveBeenCalled();
@@ -107,9 +107,9 @@ describe('GitlabInstance', () => {
 
     await gitlab.init();
 
-    expect(gitlab.projectId).toBe(1);
-    expect(gitlab.commonProjectId).toBe(3);
-    expect(gitlab.triggerToken).toBeNull();
+    expect(gitlab.getProjectId()).toBe(1);
+    expect(gitlab.getCommonProjectId()).toBe(3);
+    expect(gitlab.triggerToken).toBeNull(); // USED
     expect(mockApi.Groups.show).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.Groups.allProjects).toHaveBeenCalledWith(1);
     expect(mockApi.PipelineTriggerTokens.all).toHaveBeenCalledWith(1);
@@ -123,9 +123,9 @@ describe('GitlabInstance', () => {
       error: undefined,
     };
 
-    gitlab.logs.push(mockLog);
+    gitlab.logs.push(mockLog); // USED
 
-    const logs = gitlab.executionLogs();
+    const logs = gitlab.executionLogs(); // USED
 
     expect(logs).toHaveLength(1);
     expect(logs[0].status).toBe('canceled');
@@ -143,10 +143,10 @@ describe('GitlabInstance', () => {
 
     mockApi.Jobs.all.mockResolvedValue(jobs);
 
-    const result = await gitlab.getPipelineJobs(projectId, pipelineId);
+    const result = await gitlab.getPipelineJobs(projectId, pipelineId); // USED
 
     expect(result).toEqual(jobs);
-    expect(mockApi.Jobs.all).toHaveBeenCalledWith(projectId, { pipelineId });
+    expect(mockApi.Jobs.all).toHaveBeenCalledWith(projectId, { pipelineId }); // USED
   });
 
   it('should fetch job trace successfully', async () => {
@@ -156,7 +156,7 @@ describe('GitlabInstance', () => {
 
     mockApi.Jobs.showLog.mockResolvedValue(log);
 
-    const result = await gitlab.getJobTrace(projectId, jobId);
+    const result = await gitlab.getJobTrace(projectId, jobId); // USED
 
     expect(result).toBe(log);
     expect(mockApi.Jobs.showLog).toHaveBeenCalledWith(projectId, jobId);
@@ -169,7 +169,7 @@ describe('GitlabInstance', () => {
 
     mockApi.Pipelines.show.mockResolvedValue({ status });
 
-    const result = await gitlab.getPipelineStatus(projectId, pipelineId);
+    const result = await gitlab.getPipelineStatus(projectId, pipelineId); // USED
 
     expect(result).toBe(status);
     expect(mockApi.Pipelines.show).toHaveBeenCalledWith(projectId, pipelineId);

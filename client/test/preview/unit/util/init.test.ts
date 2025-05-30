@@ -31,11 +31,13 @@ const mockInit = jest.fn().mockImplementation(() => Promise.resolve());
 const mockGitlab = {
   init: mockInit,
   api: mockApi,
-  projectId: 1,
-  commonProjectId: 2,
+  // projectId: 1,
+  // commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [],
-  getProjectIds: jest.fn(),
+  setProjectIds: jest.fn(),
+  getProjectId: jest.fn().mockReturnValue(1),
+  getCommonProjectId: jest.fn().mockReturnValue(2),
   getTriggerToken: jest.fn(),
 };
 
@@ -74,6 +76,8 @@ describe('fetchAssets', () => {
   const mockGetDescription = jest.fn().mockResolvedValue('Mock description');
 
   beforeEach(() => {
+    mockGitlab.getProjectId = jest.fn().mockReturnValue(1);
+    mockGitlab.getCommonProjectId = jest.fn().mockReturnValue(2);
     getDTSubfolders.mockResolvedValue([{ name: 'DT1' }, { name: 'DT2' }]);
     mockGetLibrarySubfolders.mockResolvedValue([
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },

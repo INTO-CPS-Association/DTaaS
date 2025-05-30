@@ -22,6 +22,11 @@ describe('PipelineHandler Integration Tests', () => {
   const digitalTwin = mockDigitalTwin;
 
   beforeEach(() => {
+    jest.spyOn(mockDigitalTwin.backend, 'getProjectId').mockReturnValue(1);
+    jest
+      .spyOn(mockDigitalTwin.backend, 'getCommonProjectId')
+      .mockReturnValue(2);
+
     store.dispatch(setDigitalTwin({ assetName: 'mockedDTName', digitalTwin }));
   });
 

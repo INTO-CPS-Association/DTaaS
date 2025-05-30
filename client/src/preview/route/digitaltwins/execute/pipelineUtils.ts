@@ -93,7 +93,7 @@ export const updatePipelineStateOnStop = (
 };
 
 export const fetchJobLogs = async (
-  gitlabInstance: BackendInterface,
+  backend: BackendInterface,
   pipelineId: number,
 ): Promise<Array<{ jobName: string; log: string }>> =>
-  fetchJobLogsCore(gitlabInstance, pipelineId);
+  fetchJobLogsCore(backend, pipelineId);

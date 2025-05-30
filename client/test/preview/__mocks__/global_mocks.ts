@@ -63,11 +63,12 @@ export const mockGitlabInstance: BackendInterface = {
     requesterFn: jest.fn(),
   }),
   logs: [],
-  projectId: 1,
-  commonProjectId: 3,
+  // projectId: 1,
+  // commonProjectId: 3,
   triggerToken: 'mock trigger token',
   init: jest.fn(),
-  getProjectIds: jest.fn(),
+  getProjectId: jest.fn().mockReturnValue(1),
+  getCommonProjectId: jest.fn().mockReturnValue(3),
   getTriggerToken: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
@@ -77,7 +78,7 @@ export const mockGitlabInstance: BackendInterface = {
 
 export const mockFileHandler: FileHandler = {
   name: 'mockedName',
-  gitlabInstance: mockGitlabInstance,
+  backend: mockGitlabInstance,
   createFile: jest.fn(),
   updateFile: jest.fn(),
   deleteDT: jest.fn(),
@@ -108,7 +109,7 @@ export const mockDTAssets: DTAssets = {
 
 export const mockLibraryManager: LibraryManager = {
   assetName: 'mockedAssetName',
-  gitlabInstance: mockGitlabInstance,
+  backend: mockGitlabInstance,
   fileHandler: mockFileHandler,
   getFileContent: jest.fn(),
   getFileNames: jest.fn(),
@@ -151,7 +152,7 @@ export const mockLibraryAsset = {
   path: 'path',
   type: 'Digital Twins',
   isPrivate: true,
-  gitlabInstance: mockGitlabInstance,
+  backend: mockGitlabInstance,
   description: 'description',
   fullDescription: 'fullDescription',
   libraryManager: mockLibraryManager,

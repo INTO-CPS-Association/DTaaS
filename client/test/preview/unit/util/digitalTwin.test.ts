@@ -23,12 +23,14 @@ const mockApi = {
 
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
-  projectId: 1,
-  commonProjectId: 2,
+  // projectId: 1,
+  // commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
-  getProjectIds: jest.fn(),
+  setProjectIds: jest.fn(),
   getTriggerToken: jest.fn(),
+  getProjectId: jest.fn().mockReturnValue(1),
+  getCommonProjectId: jest.fn().mockReturnValue(2),
 } as unknown as GitlabInstance;
 
 const files = [
@@ -44,7 +46,8 @@ describe('DigitalTwin', () => {
   let dt: DigitalTwin;
 
   beforeEach(() => {
-    mockGitlabInstance.projectId = 1;
+    mockGitlabInstance.getProjectId = jest.fn().mockReturnValue(1);
+    mockGitlabInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
     dt = new DigitalTwin('test-DTName', mockGitlabInstance);
   });
 
@@ -118,7 +121,6 @@ describe('DigitalTwin', () => {
     (mockApi.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
       mockResponse,
     );
-    (mockGitlabInstance.getProjectIds as jest.Mock).mockResolvedValue([1, 2]);
     (mockGitlabInstance.getTriggerToken as jest.Mock).mockResolvedValue(
       'test-token',
     );

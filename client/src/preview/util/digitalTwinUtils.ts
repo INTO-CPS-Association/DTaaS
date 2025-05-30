@@ -7,7 +7,9 @@ import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
-  return !!(digitalTwin.backend.projectId && digitalTwin.backend.triggerToken);
+  return !!(
+    digitalTwin.backend.getProjectId() && digitalTwin.backend.triggerToken
+  );
 }
 
 export function logSuccess(digitalTwin: DigitalTwin, RUNNER_TAG: string): void {

@@ -51,50 +51,44 @@ class DigitalTwin implements DigitalTwinInterface {
 
   public assetFiles: { assetPath: string; fileNames: string[] }[] = [];
 
-  constructor(DTName: string, gitlabInstance: BackendInterface) {
+  constructor(DTName: string, backend: BackendInterface) {
     this.DTName = DTName;
-    this.backend = gitlabInstance;
+    this.backend = backend;
     this.DTAssets = new DTAssets(DTName, this.backend);
   }
 
   async getDescription(): Promise<void> {
-    if (this.backend.projectId) {
-      try {
-        const fileContent =
-          await this.DTAssets.getFileContent('description.md');
-        this.description = fileContent;
-      } catch (_error) {
-        this.description = `There is no description.md file`;
-      }
+    try {
+      const fileContent = await this.DTAssets.getFileContent('description.md');
+      this.description = fileContent;
+    } catch (_error) {
+      this.description = `There is no description.md file`;
     }
   }
 
   async getFullDescription(): Promise<void> {
-    if (this.backend.projectId) {
-      const imagesPath = `digital_twins/${this.DTName}/`;
-      try {
-        const fileContent = await this.DTAssets.getFileContent('README.md');
-        this.fullDescription = fileContent.replace(
-          /(!\[[^\]]*\])\(([^)]+)\)/g,
-          (match, altText, imagePath) => {
-            const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
-            return `${altText}(${fullUrl})`;
-          },
-        );
-      } catch (_error) {
-        this.fullDescription = `There is no README.md file`;
-      }
-    } else {
-      this.fullDescription = 'Error fetching description, retry.';
+    const imagesPath = `digital_twins/${this.DTName}/`;
+    try {
+      const fileContent = await this.DTAssets.getFileContent('README.md');
+      this.fullDescription = fileContent.replace(
+        /(!\[[^\]]*\])\(([^)]+)\)/g,
+        (match, altText, imagePath) => {
+          const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
+          return `${altText}(${fullUrl})`;
+        },
+      );
+    } catch (_error) {
+      this.fullDescription = `There is no README.md file`;
     }
   }
 
   private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
     return this.backend.api.PipelineTriggerTokens.trigger(
-      this.backend.projectId,
+      // USED
+      this.backend.getProjectId(),
       'main',
-      this.backend.triggerToken!,
+      this.backend.triggerToken!, // USED
       { variables },
     );
   }
@@ -120,8 +114,9 @@ class DigitalTwin implements DigitalTwinInterface {
     const pipelineId =
       pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
     try {
-      await this.backend.api.Pipelines.cancel(projectId, pipelineId!);
+      await this.backend.api.Pipelines.cancel(projectId, pipelineId!); // USED
       this.backend.logs.push({
+        // USED
         status: 'canceled',
         DTName: this.DTName,
         runnerTag: RUNNER_TAG,
@@ -129,6 +124,7 @@ class DigitalTwin implements DigitalTwinInterface {
       this.lastExecutionStatus = 'canceled';
     } catch (error) {
       this.backend.logs.push({
+        // USED
         status: 'error',
         error: new Error(String(error)),
         DTName: this.DTName,
@@ -143,10 +139,6 @@ class DigitalTwin implements DigitalTwinInterface {
     cartAssets: LibraryAsset[],
     libraryFiles: LibraryConfigFile[],
   ): Promise<string> {
-    if (!this.backend.projectId) {
-      return `Error creating ${this.DTName} digital twin: no project id`;
-    }
-
     const mainFolderPath = `digital_twins/${this.DTName}`;
     const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
 
@@ -179,16 +171,13 @@ class DigitalTwin implements DigitalTwinInterface {
   }
 
   async delete() {
-    if (this.backend.projectId) {
-      try {
-        await this.DTAssets.delete();
+    try {
+      await this.DTAssets.delete();
 
-        return `${this.DTName} deleted successfully`;
-      } catch (_error) {
-        return `Error deleting ${this.DTName} digital twin`;
-      }
+      return `${this.DTName} deleted successfully`;
+    } catch (_error) {
+      return `Error deleting ${this.DTName} digital twin`;
     }
-    return `Error deleting ${this.DTName} digital twin: no project id`;
   }
 
   async getDescriptionFiles() {

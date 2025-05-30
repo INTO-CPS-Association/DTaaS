@@ -45,7 +45,7 @@ describe('createGitlabInstance', () => {
     const gitlabInstance: BackendInterface = createGitlabInstance();
 
     expect(gitlabInstance).toBeDefined();
-    expect(gitlabInstance.projectName).toBe(TEST_PROJECT_NAME);
+    expect(gitlabInstance.projectName).toBe(TEST_PROJECT_NAME); // USED
     expect(GitlabMock).toHaveBeenCalledWith({
       host: mockAuthority,
       oauthToken: TEST_TOKEN,

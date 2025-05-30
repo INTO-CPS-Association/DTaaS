@@ -22,11 +22,12 @@ const mockApi = {
 
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
-  projectId: 1,
-  commonProjectId: 2,
+  // projectId: 1,
+  // commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
-  getProjectId: jest.fn(),
+  getProjectId: jest.fn().mockReturnValue(1),
+  getCommonProjectId: jest.fn().mockReturnValue(2),
   getTriggerToken: jest.fn(),
 } as unknown as GitlabInstance;
 
@@ -34,6 +35,8 @@ describe('FileHandler', () => {
   let fileHandler: FileHandler;
 
   beforeEach(() => {
+    mockGitlabInstance.getProjectId = jest.fn().mockReturnValue(1);
+    mockGitlabInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
     fileHandler = new FileHandler('DTName', mockGitlabInstance);
   });
 

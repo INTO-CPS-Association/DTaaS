@@ -1,5 +1,5 @@
 import LibraryAsset, { getLibrarySubfolders } from 'preview/util/libraryAsset';
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+// import GitlabInstance from 'model/backend/gitlab/gitlab';
 import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import LibraryManager from 'preview/util/libraryManager';
 import { AssetTypes } from 'model/backend/gitlab/constants';
@@ -7,12 +7,12 @@ import { AssetTypes } from 'model/backend/gitlab/constants';
 jest.mock('preview/util/libraryManager');
 
 describe('LibraryAsset', () => {
-  let gitlabInstance: BackendInterface;
+  let backend: BackendInterface;
   let libraryManager: LibraryManager;
   let libraryAsset: LibraryAsset;
 
   beforeEach(() => {
-    gitlabInstance = {
+    backend = {
       projectName: 'mockedUsername',
       api: {
         Repositories: {
@@ -20,21 +20,23 @@ describe('LibraryAsset', () => {
         },
       },
       logs: [],
-      projectId: 1,
-      commonProjectId: 3,
+      // projectId: 1,
+      // commonProjectId: 3,
       triggerToken: 'mock trigger token',
       init: jest.fn(),
-      getProjectIds: jest.fn(),
+      setProjectIds: jest.fn(),
+      getProjectId: jest.fn().mockReturnValue(1),
+      getCommonProjectId: jest.fn().mockReturnValue(3),
       getTriggerToken: jest.fn(),
       executionLogs: jest.fn(),
       getPipelineJobs: jest.fn(),
       getJobTrace: jest.fn(),
       getPipelineStatus: jest.fn(),
-    } as unknown as GitlabInstance;
+    } as unknown as BackendInterface;
 
-    libraryManager = new LibraryManager('test', gitlabInstance);
+    libraryManager = new LibraryManager('test', backend);
     libraryManager.assetName = 'test';
-    libraryManager.gitlabInstance = gitlabInstance;
+    libraryManager.backend = backend;
     libraryAsset = new LibraryAsset(
       libraryManager,
       'path/to/library',
@@ -48,7 +50,7 @@ describe('LibraryAsset', () => {
     expect(libraryAsset.path).toBe('path/to/library');
     expect(libraryAsset.isPrivate).toBe(true);
     expect(libraryAsset.type).toBe('type');
-    expect(libraryAsset.gitlabInstance).toBe(gitlabInstance);
+    expect(libraryAsset.backend).toBe(backend);
     expect(libraryAsset.libraryManager).toBe(libraryManager);
   });
 
@@ -92,23 +94,26 @@ describe('LibraryAsset', () => {
   });
 
   it('should fetch common library subfolders succesfully', async () => {
-    gitlabInstance.commonProjectId = 6;
+    // backend.getProjectId = jest.fn().mockReturnValue(6);
     const files = [
       { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
     ];
 
-    (
-      gitlabInstance.api.Repositories.allRepositoryTrees as jest.Mock
-    ).mockResolvedValue(files);
+    (backend.api.Repositories.allRepositoryTrees as jest.Mock) // USED
+      .mockResolvedValue(files);
 
     const type = 'Tools' as keyof typeof AssetTypes;
-    const subfolders = await getLibrarySubfolders(6, type, gitlabInstance);
+    const subfolders = await getLibrarySubfolders(
+      backend.getCommonProjectId(),
+      type,
+      backend,
+    );
 
     expect(subfolders).toHaveLength(1);
 
     expect(
-      gitlabInstance.api.Repositories.allRepositoryTrees,
-    ).toHaveBeenCalledWith(gitlabInstance.commonProjectId, {
+      backend.api.Repositories.allRepositoryTrees, // USED
+    ).toHaveBeenCalledWith(backend.getCommonProjectId(), {
       path: AssetTypes[type],
       recursive: false,
     });
@@ -116,7 +121,7 @@ describe('LibraryAsset', () => {
 
   it('should throw error when fetching invalid library asset type', async () => {
     await expect(
-      getLibrarySubfolders(3, 'Foo' as keyof typeof AssetTypes, gitlabInstance),
+      getLibrarySubfolders(3, 'Foo' as keyof typeof AssetTypes, backend),
     ).rejects.toThrow('Invalid asset type: Foo');
   });
 });

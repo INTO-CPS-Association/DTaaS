@@ -25,10 +25,10 @@ class DTAssets implements DTAssetsInterface {
 
   public fileHandler: FileHandlerInterface;
 
-  constructor(DTName: string, gitlabInstance: BackendInterface) {
+  constructor(DTName: string, backend: BackendInterface) {
     this.DTName = DTName;
-    this.backend = gitlabInstance;
-    this.fileHandler = new FileHandler(DTName, gitlabInstance);
+    this.backend = backend;
+    this.fileHandler = new FileHandler(DTName, backend);
   }
 
   async createFiles(

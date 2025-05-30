@@ -5,7 +5,7 @@ import {
 import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { JobSchema } from '@gitbeaker/rest';
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+import { BackendInterface } from 'model/backend/gitlab/interfaces';
 
 describe('PipelineUtils', () => {
   const digitalTwin = mockDigitalTwin;
@@ -87,22 +87,22 @@ describe('PipelineUtils', () => {
       const result = await fetchJobLogs(backend, pipelineId);
 
       expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-        backend.projectId,
+        backend.getProjectId(),
         pipelineId,
       );
-      expect(mockGetJobTrace).toHaveBeenCalledWith(backend.projectId, 1);
+      expect(mockGetJobTrace).toHaveBeenCalledWith(backend.getProjectId(), 1);
       expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
     });
 
     it('returns empty array if projectId is falsy', async () => {
-      const mockGitlabInstance = {
+      const mockBacakendInstance = {
         ...backend,
         projectId: undefined,
         getPipelineJobs: jest.fn(),
         getJobTrace: jest.fn(),
-      } as unknown as GitlabInstance;
+      } as unknown as BackendInterface;
 
-      const result = await fetchJobLogs(mockGitlabInstance, pipelineId);
+      const result = await fetchJobLogs(mockBacakendInstance, pipelineId);
       expect(result).toEqual([]);
     });
 

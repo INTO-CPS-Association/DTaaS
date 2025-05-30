@@ -53,8 +53,9 @@ export const checkParentPipelineStatus = async ({
 }: PipelineStatusParams & {
   startTime: number;
 }) => {
+  const projectId: number = digitalTwin.backend.getProjectId();
   const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
-    digitalTwin.backend.projectId,
+    projectId,
     digitalTwin.pipelineId!,
   );
 
@@ -133,8 +134,9 @@ export const checkChildPipelineStatus = async ({
   startTime: number;
 }) => {
   const pipelineId = digitalTwin.pipelineId! + 1;
+  const projectId: number = digitalTwin.backend.getProjectId();
   const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
-    digitalTwin.backend.projectId,
+    projectId,
     pipelineId,
   );
 

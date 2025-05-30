@@ -10,20 +10,20 @@ jest.mock('preview/util/fileHandler');
 jest.mock('model/backend/gitlab/interfaces');
 
 describe('LibraryManager', () => {
-  let gitlabInstance: BackendInterface;
+  let backend: BackendInterface;
   let fileHandler: FileHandler;
   let libraryManager: LibraryManager;
 
   beforeEach(() => {
-    gitlabInstance = mockGitlabInstance;
-    fileHandler = new FileHandler('testAsset', gitlabInstance);
-    libraryManager = new LibraryManager('testAsset', gitlabInstance);
+    backend = mockGitlabInstance;
+    fileHandler = new FileHandler('testAsset', backend);
+    libraryManager = new LibraryManager('testAsset', backend);
     libraryManager.fileHandler = fileHandler;
   });
 
   it('should initialize correctly', () => {
     expect(libraryManager.assetName).toBe('testAsset');
-    expect(libraryManager.gitlabInstance).toBe(gitlabInstance);
+    expect(libraryManager.backend).toBe(backend);
     expect(libraryManager.fileHandler).toBe(fileHandler);
   });
 

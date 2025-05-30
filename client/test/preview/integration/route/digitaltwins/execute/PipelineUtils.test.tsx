@@ -68,11 +68,11 @@ describe('PipelineUtils', () => {
     const result = await fetchJobLogs(mockGitlabInstance, 1);
 
     expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-      mockGitlabInstance.projectId,
+      mockGitlabInstance.getProjectId(),
       1,
     );
     expect(mockGetJobTrace).toHaveBeenCalledWith(
-      mockGitlabInstance.projectId,
+      mockGitlabInstance.getProjectId(),
       1,
     );
     expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);

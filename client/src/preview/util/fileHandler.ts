@@ -31,11 +31,11 @@ export function isImageFile(fileName: string): boolean {
 class FileHandler implements FileHandlerInterface {
   public name: string;
 
-  public gitlabInstance: BackendInterface;
+  public backend: BackendInterface;
 
-  constructor(name: string, gitlabInstance: BackendInterface) {
+  constructor(name: string, backend: BackendInterface) {
     this.name = name;
-    this.gitlabInstance = gitlabInstance;
+    this.backend = backend;
   }
 
   async createFile(
@@ -45,9 +45,10 @@ class FileHandler implements FileHandlerInterface {
     commonProject?: boolean,
   ): Promise<void> {
     const projectToUse = commonProject
-      ? this.gitlabInstance.commonProjectId
-      : this.gitlabInstance.projectId;
-    await this.gitlabInstance.api.RepositoryFiles.create(
+      ? this.backend.getCommonProjectId()
+      : this.backend.getProjectId();
+    await this.backend.api.RepositoryFiles.create(
+      // USED
       projectToUse,
       `${filePath}/${file.name}`,
       'main',
@@ -61,8 +62,9 @@ class FileHandler implements FileHandlerInterface {
     updatedContent: string,
     commitMessage: string,
   ): Promise<void> {
-    await this.gitlabInstance.api.RepositoryFiles.edit(
-      this.gitlabInstance.projectId,
+    await this.backend.api.RepositoryFiles.edit(
+      // USED
+      this.backend.getProjectId(),
       filePath,
       'main',
       updatedContent,
@@ -71,8 +73,9 @@ class FileHandler implements FileHandlerInterface {
   }
 
   async deleteDT(digitalTwinPath: string): Promise<void> {
-    await this.gitlabInstance.api.RepositoryFiles.remove(
-      this.gitlabInstance.projectId,
+    await this.backend.api.RepositoryFiles.remove(
+      // USED
+      this.backend.getProjectId(),
       digitalTwinPath,
       'main',
       `Removing ${this.name} digital twin`,
@@ -82,10 +85,11 @@ class FileHandler implements FileHandlerInterface {
   async getFileContent(filePath: string, isPrivate?: boolean): Promise<string> {
     const projectToUse =
       isPrivate === false
-        ? this.gitlabInstance.commonProjectId
-        : this.gitlabInstance.projectId;
+        ? this.backend.getCommonProjectId()
+        : this.backend.getProjectId();
 
-    const response = await this.gitlabInstance.api.RepositoryFiles.show(
+    const response = await this.backend.api.RepositoryFiles.show(
+      // USED
       projectToUse,
       filePath,
       'main',
@@ -101,14 +105,14 @@ class FileHandler implements FileHandlerInterface {
     };
 
     try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId,
-          {
-            path: pathMap[fileType],
-            recursive: fileType === FileType.LIFECYCLE,
-          },
-        );
+      const response = await this.backend.api.Repositories.allRepositoryTrees(
+        // USED
+        this.backend.getProjectId(),
+        {
+          path: pathMap[fileType],
+          recursive: fileType === FileType.LIFECYCLE,
+        },
+      );
 
       return response
         .filter((item) => isValidFileType(item, fileType))
@@ -123,18 +127,18 @@ class FileHandler implements FileHandlerInterface {
     isPrivate: boolean,
   ): Promise<string[]> {
     const projectToUse = isPrivate
-      ? this.gitlabInstance.projectId
-      : this.gitlabInstance.commonProjectId;
+      ? this.backend.getProjectId()
+      : this.backend.getCommonProjectId();
 
     try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          projectToUse,
-          {
-            path: filePath,
-            recursive: false,
-          },
-        );
+      const response = await this.backend.api.Repositories.allRepositoryTrees(
+        // USED
+        projectToUse,
+        {
+          path: filePath,
+          recursive: false,
+        },
+      );
 
       const fileNames: string[] = [];
       for (const file of response) {
@@ -162,20 +166,20 @@ class FileHandler implements FileHandlerInterface {
     isPrivate: boolean,
   ): Promise<string[]> {
     const projectToUse = isPrivate
-      ? this.gitlabInstance.projectId
-      : this.gitlabInstance.commonProjectId;
+      ? this.backend.getProjectId()
+      : this.backend.getCommonProjectId();
 
     const shouldBeRecursive = filePath.includes('common/');
 
     try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          projectToUse,
-          {
-            path: filePath,
-            recursive: shouldBeRecursive,
-          },
-        );
+      const response = await this.backend.api.Repositories.allRepositoryTrees(
+        // USED
+        projectToUse,
+        {
+          path: filePath,
+          recursive: shouldBeRecursive,
+        },
+      );
 
       return response
         .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
@@ -187,11 +191,11 @@ class FileHandler implements FileHandlerInterface {
 
   async getFolders(path: string): Promise<string[]> {
     try {
-      const response =
-        await this.gitlabInstance.api.Repositories.allRepositoryTrees(
-          this.gitlabInstance.projectId,
-          { path, recursive: false },
-        );
+      const response = await this.backend.api.Repositories.allRepositoryTrees(
+        // USED
+        this.backend.getProjectId(),
+        { path, recursive: false },
+      );
 
       return response
         .filter((item: { type: string }) => item.type === 'tree')

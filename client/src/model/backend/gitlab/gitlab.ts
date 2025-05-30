@@ -12,7 +12,7 @@ class GitlabInstance implements BackendInterface {
 
   public logs: LogEntry[];
 
-  public projectId: number = 0; // Dummy value to enforce type
+  private projectId: number = 0; // Dummy value to enforce type
 
   public commonProjectId: number = 0; // Dummy value to enforce type
 
@@ -28,11 +28,11 @@ class GitlabInstance implements BackendInterface {
   }
 
   async init() {
-    [this.projectId, this.commonProjectId] = await this.getProjectIds();
+    await this.setProjectIds();
     this.triggerToken = await this.getTriggerToken(this.projectId);
   }
 
-  async getProjectIds(): Promise<number[]> {
+  private async setProjectIds(): Promise<void> {
     const group = await this.api.Groups.show(GROUP_NAME);
     const projects = await this.api.Groups.allProjects(group.id);
     const project =
@@ -50,7 +50,17 @@ class GitlabInstance implements BackendInterface {
         `Common project ${COMMON_LIBRARY_PROJECT_NAME} not found`,
       );
     }
-    return [project.id, commonProject.id];
+
+    this.projectId = project.id;
+    this.commonProjectId = commonProject.id;
+  }
+
+  public getProjectId(): number {
+    return this.projectId;
+  }
+
+  public getCommonProjectId(): number {
+    return this.commonProjectId;
   }
 
   async getTriggerToken(projectId: number): Promise<string | null> {

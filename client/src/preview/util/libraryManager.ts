@@ -25,14 +25,14 @@ export function getFilePath(
 class LibraryManager implements LibraryManagerInterface {
   public assetName: string;
 
-  public gitlabInstance: BackendInterface;
+  public backend: BackendInterface;
 
   public fileHandler: FileHandler;
 
-  constructor(assetName: string, gitlabInstance: BackendInterface) {
+  constructor(assetName: string, backend: BackendInterface) {
     this.assetName = assetName;
-    this.gitlabInstance = gitlabInstance;
-    this.fileHandler = new FileHandler(assetName, gitlabInstance);
+    this.backend = backend;
+    this.fileHandler = new FileHandler(assetName, backend);
   }
 
   async getFileContent(
