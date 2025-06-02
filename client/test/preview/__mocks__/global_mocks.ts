@@ -63,8 +63,6 @@ export const mockGitlabInstance: BackendInterface = {
     requesterFn: jest.fn(),
   }),
   logs: [],
-  // projectId: 1,
-  // commonProjectId: 3,
   triggerToken: 'mock trigger token',
   init: jest.fn(),
   getProjectId: jest.fn().mockReturnValue(1),

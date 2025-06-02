@@ -20,7 +20,6 @@ const mockApi = {
 
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
-  // projectId: 1,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
   getProjectId: jest.fn().mockReturnValue(1),
@@ -65,7 +64,6 @@ describe('DigitalTwin', () => {
   };
 
   beforeEach(() => {
-    // mockGitlabInstance.projectId = 1;
     mockGitlabInstance.getProjectId = jest.fn().mockReturnValue(1);
     mockGitlabInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
     dt = new DigitalTwin('test-DTName', mockGitlabInstance);

@@ -48,8 +48,6 @@ export interface BackendInterface
   projectName: string;
   api: InstanceType<typeof Gitlab>;
   logs: LogEntry[];
-  // projectId: number;
-  // commonProjectId: number;
   triggerToken: string | null;
   init(): Promise<void>;
 }

@@ -31,8 +31,6 @@ const mockInit = jest.fn().mockImplementation(() => Promise.resolve());
 const mockGitlab = {
   init: mockInit,
   api: mockApi,
-  // projectId: 1,
-  // commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [],
   setProjectIds: jest.fn(),

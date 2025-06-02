@@ -1,5 +1,5 @@
 import LibraryAsset, { getLibrarySubfolders } from 'preview/util/libraryAsset';
-// import GitlabInstance from 'model/backend/gitlab/gitlab';
+//import GitlabInstance from 'model/backend/gitlab/gitlab';
 import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import LibraryManager from 'preview/util/libraryManager';
 import { AssetTypes } from 'model/backend/gitlab/constants';
@@ -20,8 +20,6 @@ describe('LibraryAsset', () => {
         },
       },
       logs: [],
-      // projectId: 1,
-      // commonProjectId: 3,
       triggerToken: 'mock trigger token',
       init: jest.fn(),
       setProjectIds: jest.fn(),
@@ -94,20 +92,16 @@ describe('LibraryAsset', () => {
   });
 
   it('should fetch common library subfolders succesfully', async () => {
-    // backend.getProjectId = jest.fn().mockReturnValue(6);
     const files = [
       { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
     ];
 
-    (backend.api.Repositories.allRepositoryTrees as jest.Mock) // USED
-      .mockResolvedValue(files);
+    (
+      backend.api.Repositories.allRepositoryTrees as jest.Mock // USED
+    ).mockResolvedValue(files);
 
     const type = 'Tools' as keyof typeof AssetTypes;
-    const subfolders = await getLibrarySubfolders(
-      backend.getCommonProjectId(),
-      type,
-      backend,
-    );
+    const subfolders = await getLibrarySubfolders(backend.getCommonProjectId(), type, backend);
 
     expect(subfolders).toHaveLength(1);
 

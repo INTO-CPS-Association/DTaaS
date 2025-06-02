@@ -23,8 +23,6 @@ const mockApi = {
 
 const mockGitlabInstance = {
   api: mockApi as unknown as GitlabInstance['api'],
-  // projectId: 1,
-  // commonProjectId: 2,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
   setProjectIds: jest.fn(),
