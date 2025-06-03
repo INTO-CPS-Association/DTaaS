@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabInstance, { GitlabAPI } from 'model/backend/gitlab/gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset /* setAssets */ } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
@@ -11,10 +11,14 @@ import { getDTSubfolders } from './digitalTwinUtils';
 import { createGitlabInstance } from './gitlabFactory';
 import LibraryManager from './libraryManager';
 
-const initialGitlabInstance = new GitlabInstance(
-  sessionStorage.getItem('username') || '',
+const initialGitlabAPI = new GitlabAPI(
   getAuthority(),
   sessionStorage.getItem('access_token') || '',
+);
+
+const initialGitlabInstance = new GitlabInstance(
+  sessionStorage.getItem('username') || '',
+  initialGitlabAPI,
 );
 
 export const fetchLibraryAssets = async (
@@ -88,11 +92,14 @@ export const fetchDigitalTwins = async (
 export async function initDigitalTwin(
   newDigitalTwinName: string,
 ): Promise<DigitalTwin> {
-  const gitlabInstanceDT = new GitlabInstance(
-    sessionStorage.getItem('username') || '',
+  const digitalTwinBackendAPI = new GitlabAPI(
     getAuthority(),
     sessionStorage.getItem('access_token') || '',
   );
-  await gitlabInstanceDT.init();
-  return new DigitalTwin(newDigitalTwinName, gitlabInstanceDT);
+  const digitalTwinGitlabInstance = new GitlabInstance(
+    sessionStorage.getItem('username') || '',
+    digitalTwinBackendAPI,
+  );
+  await digitalTwinGitlabInstance.init();
+  return new DigitalTwin(newDigitalTwinName, digitalTwinGitlabInstance);
 }

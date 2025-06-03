@@ -1,4 +1,4 @@
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabInstance, { GitlabAPI } from 'model/backend/gitlab/gitlab';
 import { BackendInterface } from 'model/backend/gitlab/interfaces';
 import { getAuthority } from 'util/envUtil';
 
@@ -10,7 +10,8 @@ export const createGitlabInstance = (): BackendInterface => {
   if (projectName == null) {
     throw new Error('Project name is not set in session storage.');
   }
-  return new GitlabInstance(projectName, authority, accessToken);
+  const GitlabAPIInstance = new GitlabAPI(authority, accessToken);
+  return new GitlabInstance(projectName, GitlabAPIInstance);
 };
 
 export default createGitlabInstance;

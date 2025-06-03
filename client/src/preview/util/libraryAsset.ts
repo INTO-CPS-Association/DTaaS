@@ -4,6 +4,7 @@ import { Asset } from 'preview/components/asset/Asset';
 import {
   BackendInterface,
   LibraryAssetInterface,
+  ProjectId,
 } from 'model/backend/gitlab/interfaces';
 import LibraryManager from './libraryManager';
 
@@ -88,7 +89,7 @@ class LibraryAsset implements LibraryAssetInterface {
 }
 
 export async function getLibrarySubfolders(
-  projectId: number,
+  projectId: ProjectId,
   type: keyof typeof AssetTypes,
   backend: BackendInterface,
 ): Promise<Asset[]> {
@@ -100,11 +101,7 @@ export async function getLibrarySubfolders(
   const isPrivate = projectId === backend.getProjectId();
 
   const { api } = backend; // USED
-  const files = await api.Repositories.allRepositoryTrees(projectId, {
-    // USED
-    path: mappedPath,
-    recursive: false,
-  });
+  const files = await api.listRepositoryFiles(projectId, mappedPath);
 
   const subfolders: Asset[] = await Promise.all(
     files

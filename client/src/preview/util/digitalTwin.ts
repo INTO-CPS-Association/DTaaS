@@ -8,6 +8,7 @@ import {
   LibraryConfigFile,
   BackendInterface,
   DTAssetsInterface,
+  ProjectId,
 } from 'model/backend/gitlab/interfaces';
 import { RUNNER_TAG, FileType } from 'model/backend/gitlab/constants';
 import {
@@ -84,13 +85,18 @@ class DigitalTwin implements DigitalTwinInterface {
 
   private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
-    return this.backend.api.PipelineTriggerTokens.trigger(
-      // USED
+    return this.backend.api.startPipeline(
       this.backend.getProjectId(),
       'main',
-      this.backend.triggerToken!, // USED
-      { variables },
+      variables,
     );
+    /*     return this.backend.api.PipelineTriggerTokens.trigger(
+        // USED
+        this.backend.getProjectId(),
+        'main',
+        this.backend.triggerToken!, // USED
+        { variables },
+      ); */
   }
 
   async execute(): Promise<number | null> {
@@ -110,11 +116,12 @@ class DigitalTwin implements DigitalTwinInterface {
     }
   }
 
-  async stop(projectId: number, pipeline: string): Promise<void> {
+  async stop(projectId: ProjectId, pipeline: string): Promise<void> {
     const pipelineId =
       pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
     try {
-      await this.backend.api.Pipelines.cancel(projectId, pipelineId!); // USED
+      await this.backend.api.cancelPipeline(projectId, pipelineId!);
+      //await this.backend.api.Pipelines.cancel(projectId, pipelineId!); // USED
       this.backend.logs.push({
         // USED
         status: 'canceled',

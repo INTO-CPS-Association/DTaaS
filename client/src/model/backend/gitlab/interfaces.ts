@@ -1,9 +1,9 @@
-import { Camelize, JobSchema, Gitlab } from '@gitbeaker/rest';
+// import { Camelize, JobSchema/* , Gitlab  */} from '@gitbeaker/rest';
 import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
 
 // gitlab.ts
-export type PipelineStatus =
+export type GitLabPipelineStatus =
   | 'running'
   | 'pending'
   | 'success'
@@ -12,6 +12,8 @@ export type PipelineStatus =
   | 'skipped'
   | 'manual';
 
+export type PipelineStatus = string | GitLabPipelineStatus;
+
 export interface LogEntry {
   status: PipelineStatus | 'error';
   DTName: string;
@@ -19,22 +21,119 @@ export interface LogEntry {
   error?: Error;
 }
 
+// Minimal backend API return value interfaces
+export interface TriggerToken {
+  token: string;
+}
+
+export interface JobSummary {
+  id: number;
+  name: string;
+  status: string;
+}
+
+export interface Pipeline {
+  id: number;
+  status?: string;
+}
+
+export interface RepositoryFile {
+  content: string;
+}
+
+export interface RepositoryTreeItem {
+  name: string;
+  type: 'blob' | 'tree';
+  path: string;
+}
+
+export interface ProjectSummary {
+  id: number | string;
+  name: string;
+}
+
+export type ProjectId = number | string;
+
+// Interface for interacting with Gitlab-like APIs (Github, Azure DevOps, etc.)
+export interface backendApi {
+  startPipeline(
+    projectId: ProjectId,
+    ref: string,
+    variables?: Record<string, string>,
+  ): Promise<Pipeline>;
+
+  cancelPipeline(projectId: ProjectId, pipelineId: number): Promise<Pipeline>;
+
+  createRepositoryFile(
+    projectId: ProjectId,
+    filePath: string,
+    branch: string,
+    content: string,
+    commitMessage: string,
+  ): Promise<RepositoryFile>;
+
+  editRepositoryFile(
+    projectId: ProjectId,
+    filePath: string,
+    branch: string,
+    content: string,
+    commitMessage: string,
+  ): Promise<RepositoryFile>;
+
+  removeRepositoryFile(
+    projectId: ProjectId,
+    filePath: string,
+    branch: string,
+    commitMessage: string,
+  ): Promise<RepositoryFile>;
+
+  getRepositoryFileContent(
+    projectId: ProjectId,
+    filePath: string,
+    ref: string,
+  ): Promise<RepositoryFile>;
+
+  listRepositoryFiles(
+    projectId: ProjectId,
+    path?: string,
+    ref?: string,
+    recursive?: boolean,
+  ): Promise<RepositoryTreeItem[]>;
+
+  getGroupByName(groupName: string): Promise<ProjectSummary>;
+
+  listGroupProjects(groupId: ProjectId): Promise<ProjectSummary[]>;
+
+  /*   listTriggerTokens(
+    projectId: ProjectId
+  ): Promise<TriggerToken[]>; */
+
+  listPipelineJobs(
+    projectId: ProjectId,
+    pipelineId: number,
+  ): Promise<JobSummary[]>;
+
+  getJobLog(projectId: ProjectId, jobId: number): Promise<string>;
+
+  getPipelineStatus(projectId: ProjectId, pipelineId: number): Promise<string>;
+}
+
 export interface ProjectProvider {
-  getProjectId(): number;
-  getCommonProjectId(): number;
-  getTriggerToken(projectId: number): Promise<string | null>;
+  getProjectId(): ProjectId;
+  getCommonProjectId(): ProjectId;
+  /* getTriggerToken(projectId: number): Promise<string | null>; */
 }
 
 interface PipelineProvider {
   getPipelineStatus(
-    projectId: number,
-    pipelineId: number,
+    projectId: ProjectId,
+    pipelineId: ProjectId,
   ): Promise<PipelineStatus>;
   getPipelineJobs(
-    projectId: number,
+    projectId: ProjectId,
     pipelineId: number,
-  ): Promise<(JobSchema | Camelize<JobSchema>)[]>;
-  getJobTrace(projectId: number, jobId: number): Promise<string>;
+  ): Promise<JobSummary[]>;
+  getJobTrace(projectId: ProjectId, jobId: number): Promise<string>;
 }
 
 interface LogProvider {
@@ -46,16 +145,16 @@ export interface BackendInterface
     PipelineProvider,
     LogProvider {
   projectName: string;
-  api: InstanceType<typeof Gitlab>;
+  api: backendApi;
   logs: LogEntry[];
-  triggerToken: string | null;
+  //triggerToken: string | null;
   init(): Promise<void>;
 }
 
 // digitalTwin.ts
 export interface DigitalTwinLifecycleProvider {
-  execute(): Promise<number | null>;
-  stop(projectId: number, pipeline: string): Promise<void>;
+  execute(): Promise<number | null>; // May need to be ProjectId type
+  stop(projectId: ProjectId, pipeline: string): Promise<void>;
   create(
     files: FileState[],
     cartAssets: LibraryAssetInterface[],

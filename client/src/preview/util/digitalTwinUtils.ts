@@ -1,15 +1,22 @@
 /* eslint-disable no-param-reassign */
 
-import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
-import { Gitlab } from '@gitbeaker/rest';
+import {
+  backendApi,
+  LibraryConfigFile,
+  ProjectId,
+} from 'model/backend/gitlab/interfaces';
+/* import { Gitlab } from '@gitbeaker/rest'; */
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import DigitalTwin from './digitalTwin';
+import { GitlabAPI } from 'model/backend/gitlab/gitlab';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
-  return !!(
-    digitalTwin.backend.getProjectId() && digitalTwin.backend.triggerToken
-  );
+  const { backend } = digitalTwin;
+  const requiresTriggerToken = backend.api instanceof GitlabAPI;
+  const hasTriggerToken =
+    requiresTriggerToken && (backend.api as GitlabAPI).getTriggerToken !== null;
+  return !requiresTriggerToken || hasTriggerToken;
 }
 
 export function logSuccess(digitalTwin: DigitalTwin, RUNNER_TAG: string): void {
@@ -53,14 +60,10 @@ export function getUpdatedLibraryFile(
 }
 
 export async function getDTSubfolders(
-  projectId: number,
-  api: InstanceType<typeof Gitlab>,
+  projectId: ProjectId,
+  api: backendApi,
 ): Promise<Asset[]> {
-  const files = await api.Repositories.allRepositoryTrees(projectId, {
-    path: DT_DIRECTORY,
-    recursive: false,
-  });
-
+  const files = await api.listRepositoryFiles(projectId, DT_DIRECTORY);
   const subfolders: Asset[] = await Promise.all(
     files
       .filter((file) => file.type === 'tree' && file.path !== DT_DIRECTORY)

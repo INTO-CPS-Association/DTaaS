@@ -47,8 +47,7 @@ class FileHandler implements FileHandlerInterface {
     const projectToUse = commonProject
       ? this.backend.getCommonProjectId()
       : this.backend.getProjectId();
-    await this.backend.api.RepositoryFiles.create(
-      // USED
+    await this.backend.api.createRepositoryFile(
       projectToUse,
       `${filePath}/${file.name}`,
       'main',
@@ -62,8 +61,7 @@ class FileHandler implements FileHandlerInterface {
     updatedContent: string,
     commitMessage: string,
   ): Promise<void> {
-    await this.backend.api.RepositoryFiles.edit(
-      // USED
+    await this.backend.api.editRepositoryFile(
       this.backend.getProjectId(),
       filePath,
       'main',
@@ -73,8 +71,7 @@ class FileHandler implements FileHandlerInterface {
   }
 
   async deleteDT(digitalTwinPath: string): Promise<void> {
-    await this.backend.api.RepositoryFiles.remove(
-      // USED
+    await this.backend.api.removeRepositoryFile(
       this.backend.getProjectId(),
       digitalTwinPath,
       'main',
@@ -88,13 +85,12 @@ class FileHandler implements FileHandlerInterface {
         ? this.backend.getCommonProjectId()
         : this.backend.getProjectId();
 
-    const response = await this.backend.api.RepositoryFiles.show(
-      // USED
+    const response = await this.backend.api.getRepositoryFileContent(
       projectToUse,
       filePath,
       'main',
     );
-    return atob(response.content);
+    return response.content;
   }
 
   async getFileNames(fileType: FileType): Promise<string[]> {
@@ -105,13 +101,11 @@ class FileHandler implements FileHandlerInterface {
     };
 
     try {
-      const response = await this.backend.api.Repositories.allRepositoryTrees(
-        // USED
+      const response = await this.backend.api.listRepositoryFiles(
         this.backend.getProjectId(),
-        {
-          path: pathMap[fileType],
-          recursive: fileType === FileType.LIFECYCLE,
-        },
+        pathMap[fileType],
+        undefined,
+        fileType === FileType.LIFECYCLE,
       );
 
       return response
@@ -131,14 +125,20 @@ class FileHandler implements FileHandlerInterface {
       : this.backend.getCommonProjectId();
 
     try {
-      const response = await this.backend.api.Repositories.allRepositoryTrees(
+      const response = await this.backend.api.listRepositoryFiles(
+        projectToUse,
+        filePath,
+        undefined,
+        false,
+      );
+      /*       const response = await this.backend.api.Repositories.allRepositoryTrees(
         // USED
         projectToUse,
         {
           path: filePath,
           recursive: false,
         },
-      );
+      ); */
 
       const fileNames: string[] = [];
       for (const file of response) {
@@ -172,14 +172,20 @@ class FileHandler implements FileHandlerInterface {
     const shouldBeRecursive = filePath.includes('common/');
 
     try {
-      const response = await this.backend.api.Repositories.allRepositoryTrees(
-        // USED
+      const response = await this.backend.api.listRepositoryFiles(
         projectToUse,
-        {
-          path: filePath,
-          recursive: shouldBeRecursive,
-        },
+        filePath,
+        undefined,
+        shouldBeRecursive,
       );
+      // const response = await this.backend.api.Repositories.allRepositoryTrees(
+      //   // USED
+      //   projectToUse,
+      //   {
+      //     path: filePath,
+      //     recursive: shouldBeRecursive,
+      //   },
+      // );
 
       return response
         .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
@@ -191,11 +197,17 @@ class FileHandler implements FileHandlerInterface {
 
   async getFolders(path: string): Promise<string[]> {
     try {
-      const response = await this.backend.api.Repositories.allRepositoryTrees(
-        // USED
+      const response = await this.backend.api.listRepositoryFiles(
         this.backend.getProjectId(),
-        { path, recursive: false },
+        path,
+        undefined,
+        false,
       );
+      // const response = await this.backend.api.Repositories.allRepositoryTrees(
+      //   // USED
+      //   this.backend.getProjectId(),
+      //   { path, recursive: false },
+      // );
 
       return response
         .filter((item: { type: string }) => item.type === 'tree')
