@@ -14,7 +14,7 @@ import {
 import { Provider } from 'react-redux';
 import * as React from 'react';
 import {
-  mockGitlabInstance,
+  mockBackendInstance,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
@@ -33,7 +33,7 @@ describe('Sidebar', () => {
   let digitalTwin: DigitalTwin;
 
   const setupDigitalTwin = (assetName: string) => {
-    digitalTwin = new DigitalTwin(assetName, mockGitlabInstance);
+    digitalTwin = new DigitalTwin(assetName, mockBackendInstance);
     digitalTwin.descriptionFiles = ['file1.md', 'file2.md'];
     digitalTwin.configFiles = ['config1.json', 'config2.json'];
     digitalTwin.lifecycleFiles = ['lifecycle1.txt', 'lifecycle2.txt'];

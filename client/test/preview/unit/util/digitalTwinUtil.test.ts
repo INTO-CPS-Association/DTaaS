@@ -1,23 +1,20 @@
 import { getDTSubfolders } from 'preview/util/digitalTwinUtils';
-import { Gitlab } from '@gitbeaker/rest';
 import { DT_DIRECTORY } from 'model/backend/gitlab/constants';
 
 const mockApi = {
-  RepositoryFiles: {
-    show: jest.fn(),
-    remove: jest.fn(),
-    edit: jest.fn(),
-    create: jest.fn(),
-  },
-  Repositories: {
-    allRepositoryTrees: jest.fn(),
-  },
-  PipelineTriggerTokens: {
-    trigger: jest.fn(),
-  },
-  Pipelines: {
-    cancel: jest.fn(),
-  },
+  init: jest.fn(),
+  startPipeline: jest.fn(),
+  cancelPipeline: jest.fn(),
+  createRepositoryFile: jest.fn(),
+  editRepositoryFile: jest.fn(),
+  removeRepositoryFile: jest.fn(),
+  getRepositoryFileContent: jest.fn(),
+  listRepositoryFiles: jest.fn(),
+  getGroupByName: jest.fn(),
+  listGroupProjects: jest.fn(),
+  listPipelineJobs: jest.fn(),
+  getJobLog: jest.fn(),
+  getPipelineStatus: jest.fn(),
 };
 
 describe('DigitalTwinUtil', () => {
@@ -29,21 +26,16 @@ describe('DigitalTwinUtil', () => {
       { name: 'file1', path: 'digital_twins/file1', type: 'blob' },
     ];
 
-    mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
+    mockApi.listRepositoryFiles.mockResolvedValue(files);
+    // mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
 
-    const subfolders = await getDTSubfolders(
-      projectId,
-      mockApi as unknown as InstanceType<typeof Gitlab>,
-    );
+    const subfolders = await getDTSubfolders(projectId, mockApi);
 
     expect(subfolders).toHaveLength(2);
 
-    expect(mockApi.Repositories.allRepositoryTrees).toHaveBeenCalledWith(
+    expect(mockApi.listRepositoryFiles).toHaveBeenCalledWith(
       projectId,
-      {
-        path: DT_DIRECTORY,
-        recursive: false,
-      },
+      DT_DIRECTORY, // recursive is false by default
     );
   });
 });

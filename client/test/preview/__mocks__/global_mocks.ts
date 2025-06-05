@@ -4,6 +4,7 @@ import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
 import DTAssets from 'preview/util/DTAssets';
 import LibraryManager from 'preview/util/libraryManager';
+import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
@@ -55,19 +56,41 @@ export type mockGitlabInstanceType = {
   getPipelineStatus: jest.Mock;
 };
 
-export const mockGitlabInstance: BackendInterface = {
-  projectName: 'mockedUsername',
-  api: new Gitlab({
-    host: 'mockedHost',
-    token: 'mockedToken',
-    requesterFn: jest.fn(),
+export const mockGitlabClient = new Gitlab({
+  host: 'mockedHost',
+  token: 'mockedToken',
+  requesterFn: jest.fn(),
+});
+
+export const mockBackendAPI = {
+  init: jest.fn(),
+  startPipeline: jest.fn(),
+  cancelPipeline: jest.fn(),
+  createRepositoryFile: jest.fn(),
+  editRepositoryFile: jest.fn(),
+  removeRepositoryFile: jest.fn(),
+  getRepositoryFileContent: jest.fn(),
+  listRepositoryFiles: jest.fn(),
+  getGroupByName: jest.fn(),
+  listGroupProjects: jest.fn(),
+  listPipelineJobs: jest.fn(),
+  getJobLog: jest.fn(),
+  getPipelineStatus: jest.fn(),
+  getTriggerToken: jest.fn().mockImplementation((projectId) => {
+    if (projectId === 15) {
+      return null;
+    }
+    return 'some-token';
   }),
+} as unknown as GitlabAPI;
+
+export const mockBackendInstance: BackendInterface = {
+  projectName: 'mockedUsername',
+  api: mockBackendAPI,
   logs: [],
-  triggerToken: 'mock trigger token',
   init: jest.fn(),
   getProjectId: jest.fn().mockReturnValue(1),
   getCommonProjectId: jest.fn().mockReturnValue(3),
-  getTriggerToken: jest.fn(),
   executionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
   getJobTrace: jest.fn(),
@@ -76,7 +99,7 @@ export const mockGitlabInstance: BackendInterface = {
 
 export const mockFileHandler: FileHandler = {
   name: 'mockedName',
-  backend: mockGitlabInstance,
+  backend: mockBackendInstance,
   createFile: jest.fn(),
   updateFile: jest.fn(),
   deleteDT: jest.fn(),
@@ -89,7 +112,7 @@ export const mockFileHandler: FileHandler = {
 
 export const mockDTAssets: DTAssets = {
   DTName: 'mockedDTName',
-  backend: mockGitlabInstance,
+  backend: mockBackendInstance,
   fileHandler: mockFileHandler,
   createFiles: jest.fn(),
   getFilesFromAsset: jest.fn(),
@@ -107,7 +130,7 @@ export const mockDTAssets: DTAssets = {
 
 export const mockLibraryManager: LibraryManager = {
   assetName: 'mockedAssetName',
-  backend: mockGitlabInstance,
+  backend: mockBackendInstance,
   fileHandler: mockFileHandler,
   getFileContent: jest.fn(),
   getFileNames: jest.fn(),
@@ -117,7 +140,7 @@ export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
   description: 'mockedDescription',
   fullDescription: 'mockedFullDescription',
-  backend: mockGitlabInstance,
+  backend: mockBackendInstance,
   DTAssets: mockDTAssets,
   pipelineId: 1,
   lastExecutionStatus: 'mockedStatus',
@@ -150,7 +173,7 @@ export const mockLibraryAsset = {
   path: 'path',
   type: 'Digital Twins',
   isPrivate: true,
-  backend: mockGitlabInstance,
+  backend: mockBackendInstance,
   description: 'description',
   fullDescription: 'fullDescription',
   libraryManager: mockLibraryManager,

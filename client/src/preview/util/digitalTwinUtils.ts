@@ -1,15 +1,15 @@
 /* eslint-disable no-param-reassign */
 
 import {
-  backendApi,
+  BackendAPI,
   LibraryConfigFile,
   ProjectId,
 } from 'model/backend/gitlab/interfaces';
 /* import { Gitlab } from '@gitbeaker/rest'; */
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
+import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 import DigitalTwin from './digitalTwin';
-import { GitlabAPI } from 'model/backend/gitlab/gitlab';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   const { backend } = digitalTwin;
@@ -61,7 +61,7 @@ export function getUpdatedLibraryFile(
 
 export async function getDTSubfolders(
   projectId: ProjectId,
-  api: backendApi,
+  api: BackendAPI,
 ): Promise<Asset[]> {
   const files = await api.listRepositoryFiles(projectId, DT_DIRECTORY);
   const subfolders: Asset[] = await Promise.all(

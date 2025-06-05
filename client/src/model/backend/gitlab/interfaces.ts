@@ -55,7 +55,9 @@ export interface ProjectSummary {
 export type ProjectId = number | string;
 
 // Interface for interacting with Gitlab-like APIs (Github, Azure DevOps, etc.)
-export interface backendApi {
+export interface BackendAPI {
+  init(projectId: ProjectId): Promise<void>;
+
   startPipeline(
     projectId: ProjectId,
     ref: string,
@@ -145,9 +147,8 @@ export interface BackendInterface
     PipelineProvider,
     LogProvider {
   projectName: string;
-  api: backendApi;
+  api: BackendAPI;
   logs: LogEntry[];
-  //triggerToken: string | null;
   init(): Promise<void>;
 }
 

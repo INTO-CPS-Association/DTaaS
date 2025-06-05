@@ -11,7 +11,7 @@ import { FileState } from 'model/backend/gitlab/interfaces';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import {
-  mockGitlabInstance,
+  mockBackendInstance,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
@@ -47,7 +47,7 @@ describe('Editor', () => {
       }),
   });
 
-  const digitalTwinInstance = new DigitalTwin('Asset 1', mockGitlabInstance);
+  const digitalTwinInstance = new DigitalTwin('Asset 1', mockBackendInstance);
   digitalTwinInstance.descriptionFiles = ['file1.md', 'file2.md'];
   digitalTwinInstance.configFiles = ['config1.json', 'config2.json'];
   digitalTwinInstance.lifecycleFiles = ['lifecycle1.txt', 'lifecycle2.txt'];
@@ -134,7 +134,7 @@ describe('Editor', () => {
       },
     ];
 
-    const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+    const newDigitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
 
     await dispatchSetDigitalTwin(newDigitalTwin);
 
@@ -161,7 +161,7 @@ describe('Editor', () => {
   it('should fetch file content for an unmodified file', async () => {
     const modifiedFiles: FileState[] = [];
 
-    const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+    const newDigitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
     newDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockResolvedValueOnce('Fetched content');
@@ -191,7 +191,7 @@ describe('Editor', () => {
   it('should set error message when fetching file content fails', async () => {
     const modifiedFiles: FileState[] = [];
 
-    const newDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+    const newDigitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
     newDigitalTwin.DTAssets.getFileContent = jest
       .fn()
       .mockRejectedValueOnce(new Error('Fetch error'));

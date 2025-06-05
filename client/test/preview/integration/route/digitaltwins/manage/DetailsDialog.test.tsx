@@ -12,17 +12,17 @@ import fileSlice from 'preview/store/file.slice';
 import libraryConfigFilesSlice from 'preview/store/libraryConfigFiles.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import LibraryAsset from 'preview/util/libraryAsset';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
 import LibraryManager from 'preview/util/libraryManager';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
 }));
 
-const mockDigitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+const mockDigitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
 mockDigitalTwin.fullDescription = 'Digital Twin Description';
 
-const mockLibraryManager = new LibraryManager('Asset 1', mockGitlabInstance);
+const mockLibraryManager = new LibraryManager('Asset 1', mockBackendInstance);
 
 const mockLibraryAsset = new LibraryAsset(
   mockLibraryManager,

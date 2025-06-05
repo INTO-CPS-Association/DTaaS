@@ -14,9 +14,7 @@ describe('LibraryAsset', () => {
     backend = {
       projectName: 'mockedUsername',
       api: {
-        Repositories: {
-          allRepositoryTrees: jest.fn(),
-        },
+        listRepositoryFiles: jest.fn(),
       },
       logs: [],
       triggerToken: 'mock trigger token',
@@ -95,7 +93,7 @@ describe('LibraryAsset', () => {
       { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
     ];
 
-    (backend.api.Repositories.allRepositoryTrees as jest.Mock) // USED
+    (backend.api.listRepositoryFiles as jest.Mock) // USED
       .mockResolvedValue(files);
 
     const type = 'Tools' as keyof typeof AssetTypes;
@@ -108,11 +106,11 @@ describe('LibraryAsset', () => {
     expect(subfolders).toHaveLength(1);
 
     expect(
-      backend.api.Repositories.allRepositoryTrees, // USED
-    ).toHaveBeenCalledWith(backend.getCommonProjectId(), {
-      path: AssetTypes[type],
-      recursive: false,
-    });
+      backend.api.listRepositoryFiles, // USED
+    ).toHaveBeenCalledWith(
+      backend.getCommonProjectId(),
+      AssetTypes[type], // recursive is false by default
+    );
   });
 
   it('should throw error when fetching invalid library asset type', async () => {

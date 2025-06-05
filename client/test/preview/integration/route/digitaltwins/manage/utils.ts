@@ -7,7 +7,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import snackbarReducer from 'preview/store/snackbar.slice';
 import {
-  mockGitlabInstance,
+  mockBackendInstance,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
@@ -32,7 +32,7 @@ const setupStore = () => {
       }),
   });
 
-  const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+  const digitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
   digitalTwin.descriptionFiles = ['description.md'];
 
   store.dispatch(setAssets(preSetItems));

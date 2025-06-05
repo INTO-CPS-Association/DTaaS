@@ -1,8 +1,9 @@
+import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
 import { AssetTypes } from 'model/backend/gitlab/constants';
-import GitlabInstance, { GitlabAPI } from 'model/backend/gitlab/gitlab';
 import DigitalTwin from './digitalTwin';
 import { setAsset /* setAssets */ } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';

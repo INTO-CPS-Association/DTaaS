@@ -121,7 +121,6 @@ class DigitalTwin implements DigitalTwinInterface {
       pipeline === 'parentPipeline' ? this.pipelineId : this.pipelineId! + 1;
     try {
       await this.backend.api.cancelPipeline(projectId, pipelineId!);
-      //await this.backend.api.Pipelines.cancel(projectId, pipelineId!); // USED
       this.backend.logs.push({
         // USED
         status: 'canceled',
@@ -131,7 +130,6 @@ class DigitalTwin implements DigitalTwinInterface {
       this.lastExecutionStatus = 'canceled';
     } catch (error) {
       this.backend.logs.push({
-        // USED
         status: 'error',
         error: new Error(String(error)),
         DTName: this.DTName,

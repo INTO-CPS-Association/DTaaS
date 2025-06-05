@@ -4,7 +4,7 @@ import LibraryManager, {
 } from 'preview/util/libraryManager';
 import { BackendInterface, FileState } from 'model/backend/gitlab/interfaces';
 import FileHandler from 'preview/util/fileHandler';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileHandler');
 jest.mock('model/backend/gitlab/interfaces');
@@ -15,7 +15,7 @@ describe('LibraryManager', () => {
   let libraryManager: LibraryManager;
 
   beforeEach(() => {
-    backend = mockGitlabInstance;
+    backend = mockBackendInstance;
     fileHandler = new FileHandler('testAsset', backend);
     libraryManager = new LibraryManager('testAsset', backend);
     libraryManager.fileHandler = fileHandler;

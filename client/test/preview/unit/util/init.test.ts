@@ -40,11 +40,27 @@ const mockGitlab = {
 };
 
 const createGitlabInstance = jest.fn();
-jest.mock('model/backend/gitlab/gitlab', () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => mockGitlab),
-  initialGitlabInstance: mockGitlab,
-}));
+jest.mock('model/backend/gitlab/gitlab', () => {
+  const mockGitlabInstance = jest.fn().mockImplementation(() => mockGitlab);
+  const mockGitlabAPI = jest.fn().mockImplementation(() => ({
+    getGroupByName: jest.fn(),
+    listGroupProjects: jest.fn(),
+    getTriggerToken: jest.fn(),
+    listPipelineJobs: jest.fn(),
+    getJobLog: jest.fn(),
+    getPipelineStatus: jest.fn(),
+    RepositoryFiles: mockApi.RepositoryFiles,
+    Repositories: mockApi.Repositories,
+    PipelineTriggerTokens: mockApi.PipelineTriggerTokens,
+    Pipelines: mockApi.Pipelines,
+  }));
+
+  return {
+    __esModule: true,
+    default: mockGitlabInstance,
+    GitlabAPI: mockGitlabAPI,
+  };
+});
 
 const mockGetLibrarySubfolders = jest.fn();
 jest.mock('preview/util/libraryAsset', () => ({

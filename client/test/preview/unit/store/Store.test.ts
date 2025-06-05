@@ -12,6 +12,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 import snackbarSlice, {
   hideSnackbar,
   showSnackbar,
@@ -101,9 +102,11 @@ describe('reducers', () => {
   });
 
   describe('digitalTwin reducer', () => {
+    const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
     const digitalTwin = new DigitalTwin(
       'asset1',
-      new GitlabInstance('user1', 'authority', 'token1'),
+      new GitlabInstance('user1', gitlabBackendAPI),
+      // Could this be a mock? (from global mock)
     );
 
     const initialState = {
@@ -126,9 +129,10 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineCompleted', () => {
+      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
+        new GitlabInstance('user1', gitlabBackendAPI),
       );
       updatedDigitalTwin.pipelineCompleted = false;
 
@@ -148,9 +152,10 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineLoading', () => {
+      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
+        new GitlabInstance('user1', gitlabBackendAPI),
       );
       updatedDigitalTwin.pipelineLoading = false;
 
@@ -168,9 +173,10 @@ describe('reducers', () => {
     });
 
     it('should handle updateDescription', () => {
+      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', 'authority', 'token1'),
+        new GitlabInstance('user1', gitlabBackendAPI),
       );
       updatedDigitalTwin.description = '';
 

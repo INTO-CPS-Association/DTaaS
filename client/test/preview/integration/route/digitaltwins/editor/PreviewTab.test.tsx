@@ -4,7 +4,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import * as React from 'react';
-import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
 import { Provider } from 'react-redux';
 import { act, render, screen } from '@testing-library/react';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
@@ -26,7 +26,7 @@ describe('PreviewTab', () => {
           }),
       });
 
-      const digitalTwin = new DigitalTwin('Asset 1', mockGitlabInstance);
+      const digitalTwin = new DigitalTwin('Asset 1', mockBackendInstance);
       digitalTwin.descriptionFiles = ['file1.md', 'file2.md'];
       digitalTwin.configFiles = ['config1.json', 'config2.json'];
       digitalTwin.lifecycleFiles = ['lifecycle1.txt', 'lifecycle2.txt'];

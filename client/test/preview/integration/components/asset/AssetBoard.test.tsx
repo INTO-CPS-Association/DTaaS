@@ -10,7 +10,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
 import {
-  mockGitlabInstance,
+  mockBackendInstance,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
@@ -57,7 +57,7 @@ describe('AssetBoard Integration Tests', () => {
     store.dispatch(
       setDigitalTwin({
         assetName: 'Asset 1',
-        digitalTwin: new DigitalTwin('Asset 1', mockGitlabInstance),
+        digitalTwin: new DigitalTwin('Asset 1', mockBackendInstance),
       }),
     );
     store.dispatch(addOrUpdateFile(files[0]));
