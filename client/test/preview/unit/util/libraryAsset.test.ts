@@ -23,7 +23,7 @@ describe('LibraryAsset', () => {
       getProjectId: jest.fn().mockReturnValue(1),
       getCommonProjectId: jest.fn().mockReturnValue(3),
       getTriggerToken: jest.fn(),
-      executionLogs: jest.fn(),
+      getExecutionLogs: jest.fn(),
       getPipelineJobs: jest.fn(),
       getJobTrace: jest.fn(),
       getPipelineStatus: jest.fn(),
@@ -93,8 +93,7 @@ describe('LibraryAsset', () => {
       { name: 'subfolder1', path: 'tools/subfolder1', type: 'tree' },
     ];
 
-    (backend.api.listRepositoryFiles as jest.Mock) // USED
-      .mockResolvedValue(files);
+    (backend.api.listRepositoryFiles as jest.Mock).mockResolvedValue(files);
 
     const type = 'Tools' as keyof typeof AssetTypes;
     const subfolders = await getLibrarySubfolders(
@@ -105,9 +104,7 @@ describe('LibraryAsset', () => {
 
     expect(subfolders).toHaveLength(1);
 
-    expect(
-      backend.api.listRepositoryFiles, // USED
-    ).toHaveBeenCalledWith(
+    expect(backend.api.listRepositoryFiles).toHaveBeenCalledWith(
       backend.getCommonProjectId(),
       AssetTypes[type], // recursive is false by default
     );

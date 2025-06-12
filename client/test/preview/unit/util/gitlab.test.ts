@@ -38,10 +38,10 @@ describe('GitlabInstance', () => {
     expect(gitlab.getProjectId()).toBe(1);
     expect(gitlab.getCommonProjectId()).toBe(2);
     const token = await mockApi.getTriggerToken(1);
-    expect(token).toBe('test-token'); // USED
+    expect(token).toBe('test-token');
     expect(mockApi.getGroupByName).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.listGroupProjects).toHaveBeenCalledWith(1);
-    expect(mockApi.getTriggerToken).toHaveBeenCalledWith(1);
+    expect(mockApi.getTriggerToken).toHaveBeenCalledWith(1); // Buggy? Should be 2 as I just called it?
   });
 
   it('should throw error if project is not found', async () => {
@@ -105,9 +105,9 @@ describe('GitlabInstance', () => {
       error: undefined,
     };
 
-    gitlab.logs.push(mockLog); // USED
+    gitlab.logs.push(mockLog);
 
-    const logs = gitlab.executionLogs(); // USED
+    const logs = gitlab.getExecutionLogs();
 
     expect(logs).toHaveLength(1);
     expect(logs[0].status).toBe('canceled');
@@ -123,16 +123,15 @@ describe('GitlabInstance', () => {
       { id: 2, name: 'job2', status: 'failed' },
     ];
 
-    jest.spyOn(mockApi, 'listPipelineJobs').mockResolvedValue(jobs); // USED
-    // mockApi.Jobs.all.mockResolvedValue(jobs);
+    jest.spyOn(mockApi, 'listPipelineJobs').mockResolvedValue(jobs);
 
-    const result = await gitlab.getPipelineJobs(projectId, pipelineId); // USED
+    const result = await gitlab.getPipelineJobs(projectId, pipelineId);
 
     expect(result).toEqual(jobs);
     expect(mockApi.listPipelineJobs).toHaveBeenCalledWith(
       projectId,
       pipelineId,
-    ); // USED
+    );
   });
 
   it('should fetch job trace successfully', async () => {
@@ -141,9 +140,8 @@ describe('GitlabInstance', () => {
     const log = 'Job log content';
 
     jest.spyOn(mockApi, 'getJobLog').mockResolvedValue(log);
-    // mockApi.Jobs.showLog.mockResolvedValue(log);
 
-    const result = await gitlab.getJobTrace(projectId, jobId); // USED
+    const result = await gitlab.getJobTrace(projectId, jobId);
 
     expect(result).toBe(log);
     expect(mockApi.getJobLog).toHaveBeenCalledWith(projectId, jobId);
@@ -154,10 +152,9 @@ describe('GitlabInstance', () => {
     const pipelineId = 2;
     const status = 'success';
 
-    jest.spyOn(mockApi, 'getPipelineStatus').mockResolvedValue(status); // USED
-    // mockApi.Pipelines.show.mockResolvedValue({ status });
+    jest.spyOn(mockApi, 'getPipelineStatus').mockResolvedValue(status);
 
-    const result = await gitlab.getPipelineStatus(projectId, pipelineId); // USED
+    const result = await gitlab.getPipelineStatus(projectId, pipelineId);
 
     expect(result).toBe(status);
     expect(mockApi.getPipelineStatus).toHaveBeenCalledWith(

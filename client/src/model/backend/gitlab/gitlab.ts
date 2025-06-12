@@ -22,13 +22,13 @@ export class GitlabInstance implements BackendInterface {
 
   public commonProjectId: ProjectId = 0;
 
-  constructor(projectName: string, backendApi: BackendAPI) {
+  public constructor(projectName: string, backendApi: BackendAPI) {
     this.projectName = projectName;
     this.api = backendApi;
     this.logs = [];
   }
 
-  async init() {
+  public async init() {
     await this.setProjectIds();
     await this.api.init(this.projectId);
   }
@@ -64,24 +64,22 @@ export class GitlabInstance implements BackendInterface {
     return this.commonProjectId;
   }
 
-  executionLogs(): LogEntry[] {
+  public getExecutionLogs(): LogEntry[] {
     return this.logs;
   }
 
-  async getPipelineJobs(
+  public async getPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<JobSummary[]> {
-    const jobs = await this.api.listPipelineJobs(projectId, pipelineId);
-    return jobs;
+    return this.api.listPipelineJobs(projectId, pipelineId);
   }
 
-  async getJobTrace(projectId: number, jobId: number): Promise<string> {
-    const log = await this.api.getJobLog(projectId, jobId);
-    return log;
+  public async getJobTrace(projectId: number, jobId: number): Promise<string> {
+    return this.api.getJobLog(projectId, jobId);
   }
 
-  async getPipelineStatus(
+  public async getPipelineStatus(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<PipelineStatus> {

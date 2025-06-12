@@ -139,7 +139,7 @@ interface PipelineProvider {
 }
 
 interface LogProvider {
-  executionLogs(): LogEntry[];
+  getExecutionLogs(): LogEntry[];
 }
 
 export interface BackendInterface

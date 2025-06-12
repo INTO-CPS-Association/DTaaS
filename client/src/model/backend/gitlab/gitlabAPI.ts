@@ -16,18 +16,18 @@ export class GitlabAPI implements BackendAPI {
 
   private triggerToken: string | null = null;
 
-  constructor(host: string, oauthToken: string) {
+  public constructor(host: string, oauthToken: string) {
     this.client = new Gitlab({ host, oauthToken });
   }
 
-  async init(projectId: ProjectId): Promise<void> {
+  public async init(projectId: ProjectId): Promise<void> {
     this.triggerToken = await this.getTriggerToken(projectId);
     if (!this.triggerToken) {
       throw new Error('Trigger token not found');
     }
   }
 
-  async startPipeline(
+  public async startPipeline(
     projectId: ProjectId,
     ref: string,
     variables?: Record<string, string>,
@@ -41,7 +41,7 @@ export class GitlabAPI implements BackendAPI {
     return { id: response.id };
   }
 
-  async cancelPipeline(
+  public async cancelPipeline(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<Pipeline> {
@@ -49,7 +49,7 @@ export class GitlabAPI implements BackendAPI {
     return { id: response.id };
   }
 
-  async createRepositoryFile(
+  public async createRepositoryFile(
     projectId: ProjectId,
     filePath: string,
     branch: string,
@@ -66,7 +66,7 @@ export class GitlabAPI implements BackendAPI {
     return { content };
   }
 
-  async editRepositoryFile(
+  public async editRepositoryFile(
     projectId: ProjectId,
     filePath: string,
     branch: string,
@@ -98,7 +98,7 @@ export class GitlabAPI implements BackendAPI {
     return { content: '' };
   }
 
-  async getRepositoryFileContent(
+  public async getRepositoryFileContent(
     projectId: ProjectId,
     filePath: string,
     ref: string,
@@ -131,27 +131,26 @@ export class GitlabAPI implements BackendAPI {
     }));
   }
 
-  async getGroupByName(groupName: string): Promise<ProjectSummary> {
+  public async getGroupByName(groupName: string): Promise<ProjectSummary> {
     return this.client.Groups.show(groupName);
   }
 
-  async listGroupProjects(groupId: string): Promise<ProjectSummary[]> {
+  public async listGroupProjects(groupId: string): Promise<ProjectSummary[]> {
     return this.client.Groups.allProjects(groupId);
   }
 
-  async listPipelineJobs(
+  public async listPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<JobSummary[]> {
-    const jobs = await this.client.Jobs.all(projectId, { pipelineId });
-    return jobs;
+    return this.client.Jobs.all(projectId, { pipelineId });
   }
 
-  async getJobLog(projectId: ProjectId, jobId: number): Promise<string> {
+  public async getJobLog(projectId: ProjectId, jobId: number): Promise<string> {
     return this.client.Jobs.showLog(projectId, jobId);
   }
 
-  async getPipelineStatus(
+  public async getPipelineStatus(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<PipelineStatus> {
@@ -160,7 +159,7 @@ export class GitlabAPI implements BackendAPI {
   }
 
   // Unique function of GitLab backendApi
-  async getTriggerToken(projectId: ProjectId): Promise<string | null> {
+  public async getTriggerToken(projectId: ProjectId): Promise<string | null> {
     let token: string | null = null;
 
     const triggers = await this.client.PipelineTriggerTokens.all(projectId);

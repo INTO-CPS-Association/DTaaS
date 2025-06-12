@@ -100,7 +100,7 @@ export async function getLibrarySubfolders(
 
   const isPrivate = projectId === backend.getProjectId();
 
-  const { api } = backend; // USED
+  const { api } = backend;
   const files = await api.listRepositoryFiles(projectId, mappedPath);
 
   const subfolders: Asset[] = await Promise.all(

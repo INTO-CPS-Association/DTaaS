@@ -90,13 +90,6 @@ class DigitalTwin implements DigitalTwinInterface {
       'main',
       variables,
     );
-    /*     return this.backend.api.PipelineTriggerTokens.trigger(
-        // USED
-        this.backend.getProjectId(),
-        'main',
-        this.backend.triggerToken!, // USED
-        { variables },
-      ); */
   }
 
   async execute(): Promise<number | null> {
@@ -122,7 +115,6 @@ class DigitalTwin implements DigitalTwinInterface {
     try {
       await this.backend.api.cancelPipeline(projectId, pipelineId!);
       this.backend.logs.push({
-        // USED
         status: 'canceled',
         DTName: this.DTName,
         runnerTag: RUNNER_TAG,

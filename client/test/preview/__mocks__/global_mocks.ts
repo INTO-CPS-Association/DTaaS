@@ -63,7 +63,7 @@ export const mockGitlabClient = new Gitlab({
 });
 
 export const mockBackendAPI = {
-  init: jest.fn(),
+  init: jest.fn(GitlabAPI.prototype.init), // Just use the original init method from GitlabAPI
   startPipeline: jest.fn(),
   cancelPipeline: jest.fn(),
   createRepositoryFile: jest.fn(),
@@ -91,7 +91,7 @@ export const mockBackendInstance: BackendInterface = {
   init: jest.fn(),
   getProjectId: jest.fn().mockReturnValue(1),
   getCommonProjectId: jest.fn().mockReturnValue(3),
-  executionLogs: jest.fn(),
+  getExecutionLogs: jest.fn(),
   getPipelineJobs: jest.fn(),
   getJobTrace: jest.fn(),
   getPipelineStatus: jest.fn(),

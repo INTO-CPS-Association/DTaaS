@@ -131,14 +131,6 @@ class FileHandler implements FileHandlerInterface {
         undefined,
         false,
       );
-      /*       const response = await this.backend.api.Repositories.allRepositoryTrees(
-        // USED
-        projectToUse,
-        {
-          path: filePath,
-          recursive: false,
-        },
-      ); */
 
       const fileNames: string[] = [];
       for (const file of response) {
@@ -178,14 +170,6 @@ class FileHandler implements FileHandlerInterface {
         undefined,
         shouldBeRecursive,
       );
-      // const response = await this.backend.api.Repositories.allRepositoryTrees(
-      //   // USED
-      //   projectToUse,
-      //   {
-      //     path: filePath,
-      //     recursive: shouldBeRecursive,
-      //   },
-      // );
 
       return response
         .filter((item) => isValidFileType(item, FileType.CONFIGURATION))
@@ -203,11 +187,6 @@ class FileHandler implements FileHandlerInterface {
         undefined,
         false,
       );
-      // const response = await this.backend.api.Repositories.allRepositoryTrees(
-      //   // USED
-      //   this.backend.getProjectId(),
-      //   { path, recursive: false },
-      // );
 
       return response
         .filter((item: { type: string }) => item.type === 'tree')
