@@ -1,5 +1,6 @@
 import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChecks';
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
+import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/digitalTwin', () => ({
@@ -10,6 +11,12 @@ jest.mock('preview/util/digitalTwin', () => ({
 jest.mock('preview/route/digitaltwins/execute/pipelineUtils', () => ({
   fetchJobLogs: jest.fn(),
   updatePipelineStateOnCompletion: jest.fn(),
+}));
+
+jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+  delay: jest.fn(),
+  hasTimedOut: jest.fn(),
+  getPollingInterval: jest.fn(() => 5000),
 }));
 
 jest.useFakeTimers();
@@ -104,7 +111,7 @@ describe('PipelineChecks', () => {
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
-    jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
+    jest.spyOn(PipelineCore, 'hasTimedOut').mockReturnValue(true);
     await PipelineChecks.checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
@@ -119,14 +126,14 @@ describe('PipelineChecks', () => {
   });
 
   it('checks parent pipeline status and returns running', async () => {
-    const delay = jest.spyOn(PipelineChecks, 'delay');
+    const delay = jest.spyOn(PipelineCore, 'delay');
     delay.mockImplementation(() => Promise.resolve());
 
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
     jest
-      .spyOn(PipelineChecks, 'hasTimedOut')
+      .spyOn(PipelineCore, 'hasTimedOut')
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
@@ -174,7 +181,7 @@ describe('PipelineChecks', () => {
     jest
       .spyOn(digitalTwin.gitlabInstance, 'getPipelineStatus')
       .mockResolvedValue('running');
-    jest.spyOn(PipelineChecks, 'hasTimedOut').mockReturnValue(true);
+    jest.spyOn(PipelineCore, 'hasTimedOut').mockReturnValue(true);
 
     await PipelineChecks.checkChildPipelineStatus(completeParams);
 
@@ -182,7 +189,7 @@ describe('PipelineChecks', () => {
   });
 
   it('checks child pipeline status and returns running', async () => {
-    const delay = jest.spyOn(PipelineChecks, 'delay');
+    const delay = jest.spyOn(PipelineCore, 'delay');
     delay.mockImplementation(() => Promise.resolve());
 
     const getPipelineStatusMock = jest.spyOn(

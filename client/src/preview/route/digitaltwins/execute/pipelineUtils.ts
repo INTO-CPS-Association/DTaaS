@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import GitlabInstance from 'preview/util/gitlab';
-import cleanLog from 'model/backend/gitlab/cleanLog';
+import { fetchJobLogs as fetchJobLogsCore } from 'model/backend/gitlab/execution/logFetching';
 import {
   setJobLogs,
   setPipelineCompleted,
@@ -95,38 +95,5 @@ export const updatePipelineStateOnStop = (
 export const fetchJobLogs = async (
   gitlabInstance: GitlabInstance,
   pipelineId: number,
-): Promise<Array<{ jobName: string; log: string }>> => {
-  const { projectId } = gitlabInstance;
-  if (!projectId) {
-    return [];
-  }
-
-  const jobs = await gitlabInstance.getPipelineJobs(projectId, pipelineId);
-
-  const logPromises = jobs.map(async (job) => {
-    if (!job || typeof job.id === 'undefined') {
-      return { jobName: 'Unknown', log: 'Job ID not available' };
-    }
-
-    try {
-      let log = await gitlabInstance.getJobTrace(projectId, job.id);
-
-      if (typeof log === 'string') {
-        log = cleanLog(log);
-      } else {
-        log = '';
-      }
-
-      return {
-        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
-        log,
-      };
-    } catch (_e) {
-      return {
-        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
-        log: 'Error fetching log content',
-      };
-    }
-  });
-  return (await Promise.all(logPromises)).reverse();
-};
+): Promise<Array<{ jobName: string; log: string }>> =>
+  fetchJobLogsCore(gitlabInstance, pipelineId);

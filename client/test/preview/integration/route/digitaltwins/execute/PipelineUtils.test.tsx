@@ -1,4 +1,5 @@
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
+import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
 import cleanLog from 'model/backend/gitlab/cleanLog';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
 import { mockGitlabInstance } from 'test/preview/__mocks__/global_mocks';
@@ -64,7 +65,7 @@ describe('PipelineUtils', () => {
     const mockGetJobTrace = jest.spyOn(mockGitlabInstance, 'getJobTrace');
     mockGetJobTrace.mockResolvedValue('log1');
 
-    const result = await PipelineUtils.fetchJobLogs(mockGitlabInstance, 1);
+    const result = await fetchJobLogs(mockGitlabInstance, 1);
 
     expect(mockGetPipelineJobs).toHaveBeenCalledWith(
       mockGitlabInstance.projectId,
@@ -93,7 +94,7 @@ describe('PipelineUtils', () => {
     const mockGetJobTrace = jest.spyOn(mockGitlabInstance, 'getJobTrace');
     mockGetJobTrace.mockResolvedValue(rawLog);
 
-    const logs = await PipelineUtils.fetchJobLogs(mockGitlabInstance, 456);
+    const logs = await fetchJobLogs(mockGitlabInstance, 456);
 
     expect(logs).toHaveLength(1);
     expect(logs[0].jobName).toBe('test-job');

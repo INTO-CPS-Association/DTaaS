@@ -6,7 +6,15 @@ import {
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { showSnackbar } from 'preview/store/snackbar.slice';
-import { MAX_EXECUTION_TIME } from 'model/backend/gitlab/constants';
+import {
+  delay,
+  hasTimedOut,
+  getPollingInterval,
+} from 'model/backend/gitlab/execution/pipelineCore';
+import {
+  isSuccessStatus,
+  isFailureStatus,
+} from 'model/backend/gitlab/execution/statusChecking';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -14,14 +22,6 @@ interface PipelineStatusParams {
   setLogButtonDisabled: Dispatch<SetStateAction<boolean>>;
   dispatch: ReturnType<typeof useDispatch>;
 }
-
-export const delay = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-
-export const hasTimedOut = (startTime: number) =>
-  Date.now() - startTime > MAX_EXECUTION_TIME;
 
 export const handleTimeout = (
   DTName: string,
@@ -58,7 +58,7 @@ export const checkParentPipelineStatus = async ({
     digitalTwin.pipelineId!,
   );
 
-  if (pipelineStatus === 'success') {
+  if (isSuccessStatus(pipelineStatus)) {
     await checkChildPipelineStatus({
       setButtonText,
       digitalTwin,
@@ -66,7 +66,7 @@ export const checkParentPipelineStatus = async ({
       dispatch,
       startTime,
     });
-  } else if (pipelineStatus === 'failed') {
+  } else if (isFailureStatus(pipelineStatus)) {
     const jobLogs = await fetchJobLogs(
       digitalTwin.gitlabInstance,
       digitalTwin.pipelineId!,
@@ -86,7 +86,7 @@ export const checkParentPipelineStatus = async ({
       dispatch,
     );
   } else {
-    await delay(5000);
+    await delay(getPollingInterval());
     checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
@@ -138,14 +138,17 @@ export const checkChildPipelineStatus = async ({
     pipelineId,
   );
 
-  if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
+  if (isSuccessStatus(pipelineStatus) || isFailureStatus(pipelineStatus)) {
+    const statusForCompletion = isSuccessStatus(pipelineStatus)
+      ? 'success'
+      : 'failed';
     await handlePipelineCompletion(
       pipelineId,
       digitalTwin,
       setButtonText,
       setLogButtonDisabled,
       dispatch,
-      pipelineStatus,
+      statusForCompletion,
     );
   } else if (hasTimedOut(startTime)) {
     handleTimeout(
@@ -155,7 +158,7 @@ export const checkChildPipelineStatus = async ({
       dispatch,
     );
   } else {
-    await delay(5000);
+    await delay(getPollingInterval());
     await checkChildPipelineStatus({
       setButtonText,
       digitalTwin,
