@@ -1,6 +1,5 @@
 import {
   fetchJobLogs,
-  fetchPipelineJobLogs,
   validateLogs,
   filterValidLogs,
   combineLogs,
@@ -65,19 +64,6 @@ describe('logFetching', () => {
 
       const result = await fetchJobLogs(mockGitlabInstance, 456);
       expect(result[0].log).toBe('Error fetching log content');
-    });
-  });
-
-  describe('fetchPipelineJobLogs', () => {
-    const mockCleanLogFn = jest.fn((log: string) => log.toUpperCase());
-
-    it('should use custom clean log function', async () => {
-      mockGitlabInstance.getPipelineJobs.mockResolvedValue(mockJobs);
-      mockGitlabInstance.getJobTrace.mockResolvedValue('test log');
-
-      await fetchPipelineJobLogs(mockGitlabInstance, 456, mockCleanLogFn);
-
-      expect(mockCleanLogFn).toHaveBeenCalledWith('test log');
     });
   });
 
