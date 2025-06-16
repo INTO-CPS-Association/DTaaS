@@ -62,6 +62,62 @@ export const fetchJobLogs = async (
 };
 
 /**
+ * Core log fetching function - pure business logic
+ * @param gitlabInstance GitLab instance with API methods
+ * @param pipelineId Pipeline ID to fetch logs for
+ * @param cleanLogFn Function to clean log content
+ * @returns Promise resolving to array of job logs
+ */
+export const fetchPipelineJobLogs = async (
+  gitlabInstance: {
+    projectId?: number;
+    getPipelineJobs: (
+      projectId: number,
+      pipelineId: number,
+    ) => Promise<unknown[]>;
+    getJobTrace: (projectId: number, jobId: number) => Promise<string>;
+  },
+  pipelineId: number,
+  cleanLogFn: (log: string) => string,
+): Promise<JobLog[]> => {
+  const { projectId } = gitlabInstance;
+  if (!projectId) {
+    return [];
+  }
+
+  const rawJobs = await gitlabInstance.getPipelineJobs(projectId, pipelineId);
+  // Convert unknown jobs to GitLabJob format
+  const jobs: GitLabJob[] = rawJobs.map((job) => job as GitLabJob);
+
+  const logPromises = jobs.map(async (job) => {
+    if (!job || typeof job.id === 'undefined') {
+      return { jobName: 'Unknown', log: 'Job ID not available' };
+    }
+
+    try {
+      let log = await gitlabInstance.getJobTrace(projectId, job.id);
+
+      if (typeof log === 'string') {
+        log = cleanLogFn(log);
+      } else {
+        log = '';
+      }
+
+      return {
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
+        log,
+      };
+    } catch (_e) {
+      return {
+        jobName: typeof job.name === 'string' ? job.name : 'Unknown',
+        log: 'Error fetching log content',
+      };
+    }
+  });
+  return (await Promise.all(logPromises)).reverse();
+};
+
+/**
  * Validates if job logs contain meaningful content
  * @param logs Array of job logs to validate
  * @returns True if logs contain meaningful content
