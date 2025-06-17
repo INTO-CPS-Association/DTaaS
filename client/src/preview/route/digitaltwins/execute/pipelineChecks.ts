@@ -87,7 +87,7 @@ export const checkParentPipelineStatus = async ({
     );
   } else {
     await delay(getPollingInterval());
-    checkParentPipelineStatus({
+    await checkParentPipelineStatus({
       setButtonText,
       digitalTwin,
       setLogButtonDisabled,
