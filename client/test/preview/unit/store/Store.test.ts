@@ -37,7 +37,7 @@ import libraryFilesSlice, {
   addOrUpdateLibraryFile,
   removeAllModifiedLibraryFiles,
 } from 'preview/store/libraryConfigFiles.slice';
-import { LibraryConfigFile } from 'model/backend/gitlab/interfaces';
+import { LibraryConfigFile } from 'model/backend/gitlab/UtilityInterfaces';
 
 describe('reducers', () => {
   let initialState: {

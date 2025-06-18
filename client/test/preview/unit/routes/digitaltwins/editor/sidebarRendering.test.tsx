@@ -7,7 +7,7 @@ import {
   mockDigitalTwin,
   mockLibraryAsset,
 } from 'test/preview/__mocks__/global_mocks';
-import { FileState } from 'model/backend/gitlab/interfaces';
+import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 
 describe('SidebarRendering', () => {
   const setFileName = jest.fn();

@@ -10,7 +10,10 @@ import {
   Box,
 } from '@mui/material';
 import { removeAllCreationFiles } from 'preview/store/file.slice';
-import { FileState, LibraryConfigFile } from 'model/backend/gitlab/interfaces';
+import {
+  FileState,
+  LibraryConfigFile,
+} from 'model/backend/gitlab/UtilityInterfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import DigitalTwin from 'preview/util/digitalTwin';

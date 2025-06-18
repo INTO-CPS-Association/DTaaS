@@ -7,7 +7,7 @@ import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
-import { FileState } from 'model/backend/gitlab/interfaces';
+import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
 import {

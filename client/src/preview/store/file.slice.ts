@@ -1,5 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileState } from 'model/backend/gitlab/interfaces';
+import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import { RootState } from 'store/store';
 
 const initialState: FileState[] = [];

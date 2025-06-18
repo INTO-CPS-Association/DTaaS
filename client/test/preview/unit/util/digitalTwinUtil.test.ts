@@ -27,7 +27,6 @@ describe('DigitalTwinUtil', () => {
     ];
 
     mockApi.listRepositoryFiles.mockResolvedValue(files);
-    // mockApi.Repositories.allRepositoryTrees.mockResolvedValue(files);
 
     const subfolders = await getDTSubfolders(projectId, mockApi);
 

@@ -1,5 +1,5 @@
 import LibraryAsset, { getLibrarySubfolders } from 'preview/util/libraryAsset';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import { BackendInterface } from 'model/backend/gitlab/UtilityInterfaces';
 import LibraryManager from 'preview/util/libraryManager';
 import { AssetTypes } from 'model/backend/gitlab/constants';
 

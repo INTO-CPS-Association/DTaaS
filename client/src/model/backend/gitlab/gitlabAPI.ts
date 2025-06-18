@@ -9,10 +9,10 @@ import {
   JobSummary,
   PipelineStatus,
   GitLabPipelineStatus,
-} from './interfaces';
+} from './UtilityInterfaces';
 
 export class GitlabAPI implements BackendAPI {
-  private client: InstanceType<typeof Gitlab>;
+  readonly client: InstanceType<typeof Gitlab>;
 
   private triggerToken: string | null = null;
 
@@ -83,7 +83,7 @@ export class GitlabAPI implements BackendAPI {
     return { content };
   }
 
-  async removeRepositoryFile(
+  public async removeRepositoryFile(
     projectId: ProjectId,
     filePath: string,
     branch: string,
@@ -112,7 +112,7 @@ export class GitlabAPI implements BackendAPI {
     return { content: atob(raw) };
   }
 
-  async listRepositoryFiles(
+  public async listRepositoryFiles(
     projectId: ProjectId,
     path = '',
     ref = 'main',

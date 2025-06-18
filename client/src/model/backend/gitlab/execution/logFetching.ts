@@ -1,11 +1,6 @@
 import { JobLog } from 'model/backend/gitlab/types/executionHistory';
 import cleanLog from 'model/backend/gitlab/cleanLog';
-
-interface GitLabJob {
-  id?: number;
-  name?: string;
-  [key: string]: unknown;
-}
+import { BackendInterface, JobSummary } from '../UtilityInterfaces';
 
 /**
  * Fetches job logs from GitLab for a specific pipeline
@@ -15,25 +10,18 @@ interface GitLabJob {
  * @returns Promise resolving to array of job logs
  */
 export const fetchJobLogs = async (
-  gitlabInstance: {
-    projectId?: number | null;
-    getPipelineJobs: (
-      projectId: number,
-      pipelineId: number,
-    ) => Promise<unknown[]>;
-    getJobTrace: (projectId: number, jobId: number) => Promise<string>;
-  },
+  backend: BackendInterface,
   pipelineId: number,
 ): Promise<JobLog[]> => {
-  const { projectId } = gitlabInstance;
+  const projectId = backend.getProjectId();
   if (!projectId) {
     return [];
   }
 
-  const rawJobs = await gitlabInstance.getPipelineJobs(projectId, pipelineId);
-  const jobs: GitLabJob[] = rawJobs.map((job) => job as GitLabJob);
+  const rawJobs = await backend.getPipelineJobs(projectId, pipelineId);
+  const jobs: JobSummary[] = rawJobs.map((job) => job as JobSummary);
 
-  const logPromises = jobs.map((job) => fetchSingleJobLog(gitlabInstance, job));
+  const logPromises = jobs.map((job) => fetchSingleJobLog(backend, job));
   return (await Promise.all(logPromises)).reverse();
 };
 
@@ -44,13 +32,10 @@ export const fetchJobLogs = async (
  * @returns A promise that resolves to a `JobLog` object containing the job name and its log content.
  */
 export const fetchSingleJobLog = async (
-  gitlabInstance: {
-    projectId?: number | null;
-    getJobTrace: (projectId: number, jobId: number) => Promise<string>;
-  },
-  job: GitLabJob,
+  backend: BackendInterface,
+  job: JobSummary,
 ): Promise<JobLog> => {
-  const { projectId } = gitlabInstance;
+  const projectId = backend.getProjectId();
   let result: JobLog;
 
   if (!projectId || job?.id === undefined) {
@@ -60,7 +45,7 @@ export const fetchSingleJobLog = async (
     };
   } else {
     try {
-      let log = await gitlabInstance.getJobTrace(projectId, job.id);
+      let log = await backend.getJobTrace(projectId, job.id);
 
       if (typeof log === 'string') {
         log = cleanLog(log);

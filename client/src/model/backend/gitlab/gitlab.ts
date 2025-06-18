@@ -9,7 +9,7 @@ import {
   PipelineStatus,
   ProjectId,
   JobSummary,
-} from './interfaces';
+} from './UtilityInterfaces';
 
 export class GitlabInstance implements BackendInterface {
   public projectName: string;

@@ -2,12 +2,15 @@ import LibraryManager, {
   getFilePath,
   FileType,
 } from 'preview/util/libraryManager';
-import { BackendInterface, FileState } from 'model/backend/gitlab/interfaces';
+import {
+  BackendInterface,
+  FileState,
+} from 'model/backend/gitlab/UtilityInterfaces';
 import FileHandler from 'preview/util/fileHandler';
 import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileHandler');
-jest.mock('model/backend/gitlab/interfaces');
+jest.mock('model/backend/gitlab/UtilityInterfaces');
 
 describe('LibraryManager', () => {
   let backend: BackendInterface;

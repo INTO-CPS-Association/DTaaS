@@ -5,7 +5,7 @@ import {
   FileState,
   BackendInterface,
   FileHandlerInterface,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import { FileType } from 'model/backend/gitlab/constants';
 
 export function isValidFileType(

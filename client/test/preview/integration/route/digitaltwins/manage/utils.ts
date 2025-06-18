@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
-import { FileState } from 'model/backend/gitlab/interfaces';
+import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import assetsReducer, { setAssets } from 'preview/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,

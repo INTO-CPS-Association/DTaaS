@@ -5,7 +5,7 @@ import {
   FileState,
   BackendInterface,
   LibraryManagerInterface,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import FileHandler from './fileHandler';
 
 export enum FileType {

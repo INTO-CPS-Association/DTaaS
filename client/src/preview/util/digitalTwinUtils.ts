@@ -4,8 +4,7 @@ import {
   BackendAPI,
   LibraryConfigFile,
   ProjectId,
-} from 'model/backend/gitlab/interfaces';
-/* import { Gitlab } from '@gitbeaker/rest'; */
+} from 'model/backend/gitlab/UtilityInterfaces';
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import GitlabAPI from 'model/backend/gitlab/gitlabAPI';

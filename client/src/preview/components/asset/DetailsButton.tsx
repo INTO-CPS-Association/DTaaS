@@ -2,10 +2,9 @@ import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
-import LibraryAsset from 'preview/util/libraryAsset';
 import { selectAssetByPathAndPrivacy } from 'preview/store/assets.slice';
+import { DescriptionProvider } from 'model/backend/gitlab/UtilityInterfaces';
 import { selectDigitalTwinByName } from '../../store/digitalTwin.slice';
-import DigitalTwin from '../../util/digitalTwin';
 
 interface DialogButtonProps {
   assetName: string;
@@ -16,15 +15,15 @@ interface DialogButtonProps {
 }
 
 export const handleToggleDetailsDialog = async (
-  digitalTwin: DigitalTwin | LibraryAsset,
+  asset: DescriptionProvider,
   setShowDetails: Dispatch<SetStateAction<boolean>>,
 ) => {
-  await digitalTwin.getFullDescription();
+  await asset.getFullDescription();
   setShowDetails(true);
 };
 
 export const handleToggleDetailsLibraryDialog = async (
-  asset: LibraryAsset | DigitalTwin,
+  asset: DescriptionProvider,
   setShowDetails: Dispatch<SetStateAction<boolean>>,
 ) => {
   await asset.getFullDescription();

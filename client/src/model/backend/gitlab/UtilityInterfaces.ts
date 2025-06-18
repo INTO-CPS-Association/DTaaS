@@ -1,4 +1,3 @@
-// import { Camelize, JobSchema/* , Gitlab  */} from '@gitbeaker/rest';
 import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
 
@@ -12,10 +11,10 @@ export type GitLabPipelineStatus =
   | 'skipped'
   | 'manual';
 
-export type PipelineStatus = string | GitLabPipelineStatus;
+export type PipelineStatus = string;
 
 export interface LogEntry {
-  status: PipelineStatus | 'error';
+  status: PipelineStatus;
   DTName: string;
   runnerTag: string;
   error?: Error;
@@ -106,10 +105,6 @@ export interface BackendAPI {
 
   listGroupProjects(groupId: ProjectId): Promise<ProjectSummary[]>;
 
-  /*   listTriggerTokens(
-    projectId: ProjectId
-  ): Promise<TriggerToken[]>; */
-
   listPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
@@ -123,7 +118,6 @@ export interface BackendAPI {
 export interface ProjectProvider {
   getProjectId(): ProjectId;
   getCommonProjectId(): ProjectId;
-  /* getTriggerToken(projectId: number): Promise<string | null>; */
 }
 
 interface PipelineProvider {
@@ -152,19 +146,46 @@ export interface BackendInterface
   init(): Promise<void>;
 }
 
-// digitalTwin.ts
-export interface DigitalTwinLifecycleProvider {
-  execute(): Promise<number | null>; // May need to be ProjectId type
-  stop(projectId: ProjectId, pipeline: string): Promise<void>;
+export interface DigitalTwinDetails {
+  DTName: string;
+  description: string | undefined;
+  fullDescription: string;
+}
+
+export interface DigitalTwinPipelineState {
+  pipelineId: number | null;
+  lastExecutionStatus: string | null;
+  jobLogs: { jobName: string; log: string }[];
+  pipelineLoading: boolean;
+  pipelineCompleted: boolean;
+}
+
+export interface DigitalTwinFiles {
+  descriptionFiles: string[];
+  configFiles: string[];
+  lifecycleFiles: string[];
+  assetFiles: { assetPath: string; fileNames: string[] }[];
+}
+
+export interface DigitalTwinCreator {
   create(
     files: FileState[],
     cartAssets: LibraryAssetInterface[],
     libraryFiles: LibraryConfigFile[],
   ): Promise<string>;
+}
+
+export interface DigitalTwinExecutor {
+  execute(): Promise<number | null>;
+  stop(projectId: ProjectId, pipeline: string): Promise<void>;
+}
+
+export interface DigitalTwinDeleter {
   delete(): Promise<string>;
 }
 
-export interface DigitalTwinDescriptionProvider {
+// Used both for LibraryAsset and DigitalTwin
+export interface DescriptionProvider {
   getDescription(): Promise<void>;
   getFullDescription(): Promise<void>;
 }
@@ -177,23 +198,16 @@ export interface DigitalTwinFileProvider {
 }
 
 export interface DigitalTwinInterface
-  extends DigitalTwinLifecycleProvider,
-    DigitalTwinDescriptionProvider,
+  extends DigitalTwinDetails,
+    DigitalTwinPipelineState,
+    DigitalTwinFiles,
+    DigitalTwinCreator,
+    DigitalTwinExecutor,
+    DigitalTwinDeleter,
+    DescriptionProvider,
     DigitalTwinFileProvider {
-  DTName: string;
-  description: string | undefined;
-  fullDescription: string;
   backend: BackendInterface;
   DTAssets: DTAssetsInterface;
-  pipelineId: number | null;
-  lastExecutionStatus: string | null;
-  jobLogs: { jobName: string; log: string }[];
-  pipelineLoading: boolean;
-  pipelineCompleted: boolean;
-  descriptionFiles: string[];
-  configFiles: string[];
-  lifecycleFiles: string[];
-  assetFiles: { assetPath: string; fileNames: string[] }[];
 }
 
 // ifile.ts
@@ -217,7 +231,7 @@ export interface LibraryConfigFile {
 }
 
 // DTAssets.ts
-export interface DTAssetsFileProvider {
+export interface DTAssetsFileCreator {
   createFiles(
     files:
       | FileState[]
@@ -230,10 +244,27 @@ export interface DTAssetsFileProvider {
     mainFolderPath: string,
     lifecycleFolderPath: string,
   ): Promise<void>;
+}
+
+export interface DTAssetsFileUpdater {
+  updateFileContent(fileName: string, fileContent: string): Promise<void>;
+}
+
+export interface DTAssetsFolderProvider {
+  getFolders(path: string): Promise<string[]>;
+}
+
+export interface DTAssetsFileProvider {
   getFileContent(fileName: string): Promise<string>;
   getFileNames(fileType: FileType): Promise<string[]>;
-  getFolders(path: string): Promise<string[]>;
-  updateFileContent(fileName: string, fileContent: string): Promise<void>;
+}
+
+export interface DTAssetFileContentUpdater {
+  updateLibraryFileContent(
+    fileName: string,
+    fileContent: string,
+    assetPath: string,
+  ): Promise<void>;
 }
 
 export interface DTAssetsLibraryFileProvider {
@@ -249,11 +280,6 @@ export interface DTAssetsLibraryFileProvider {
     }>
   >;
   getLibraryFileContent(assetPath: string, fileName: string): Promise<string>;
-  updateLibraryFileContent(
-    fileName: string,
-    fileContent: string,
-    assetPath: string,
-  ): Promise<void>;
   getLibraryConfigFileNames(filePath: string): Promise<string[]>;
 }
 
@@ -262,77 +288,84 @@ export interface DTAssetsPipelineProvider {
   removeTriggerFromPipeline(): Promise<string>;
 }
 
-export interface DTAssetsDeletionProvider {
+export interface DTAssetsDeleter {
   delete(): Promise<void>;
 }
 
 export interface DTAssetsInterface
-  extends DTAssetsFileProvider,
+  extends DTAssetsFileCreator,
+    DTAssetFileContentUpdater,
+    DTAssetsFileProvider,
+    DTAssetsFolderProvider,
+    DTAssetsFileUpdater,
     DTAssetsLibraryFileProvider,
     DTAssetsPipelineProvider,
-    DTAssetsDeletionProvider {
+    DTAssetsDeleter {
   DTName: string;
   backend: BackendInterface;
   fileHandler: FileHandlerInterface;
 }
 
 // FileHandlerInterface.ts
-export interface FileHandlerInterface extends IFile {
-  name: string;
-  backend: BackendInterface;
-  getFileNames(fileType: FileType): Promise<string[]>;
-  updateFile(
-    filePath: string,
-    updatedContent: string,
-    commitMessage: string,
-  ): Promise<void>;
-  deleteDT(digitalTwinPath: string): Promise<void>;
-  getFileNames(fileType: FileType): Promise<string[]>;
-  getFileContent(filePath: string): Promise<string>;
-  getFileContent(filePath: string, isPrivate?: boolean): Promise<string>;
+export interface FileHandlerLibraryFileProvider {
   getLibraryFileNames(filePath: string, isPrivate: boolean): Promise<string[]>;
-  getFolders(path: string): Promise<string[]>;
-  createFile(
-    file: FileState | { name: string; content: string; isNew: boolean },
-    filePath: string,
-    commitMessage: string,
-    commonProject?: boolean,
-  ): Promise<void>;
   getLibraryConfigFileNames(
     filePath: string,
     isPrivate: boolean,
   ): Promise<string[]>;
 }
 
-// libraryAsset.ts
-export interface LibraryAssetDescriptionProvider {
-  description: string;
-  fullDescription: string;
+export interface FileHandlerFolderProvider {
+  getFolders(path: string): Promise<string[]>;
+}
 
-  getDescription(): Promise<void>;
-  getFullDescription(): Promise<void>;
+export interface FileHandlerInterface
+  extends IFile,
+    FileHandlerLibraryFileProvider,
+    FileHandlerFolderProvider {
+  name: string;
+  backend: BackendInterface;
+  createFile(
+    file: FileState | { name: string; content: string; isNew: boolean },
+    filePath: string,
+    commitMessage: string,
+    commonProject?: boolean,
+  ): Promise<void>;
+  getFileContent(filePath: string, isPrivate?: boolean): Promise<string>;
+}
+
+// libraryAsset.ts
+export interface LibraryAssetDetails {
+  name: string; // Name of the library asset
+  description: string; // The description.md content
+  fullDescription: string; // The README.md content
+}
+
+export interface LibraryAssetFiles {
+  path: string;
+  type: string;
+  isPrivate: boolean;
+  configFiles: string[];
 }
 
 export interface LibraryAssetFileProvider {
-  configFiles: string[];
   getConfigFiles(): Promise<void>;
 }
 
 export interface LibraryAssetInterface
-  extends LibraryAssetDescriptionProvider,
+  extends LibraryAssetDetails,
+    LibraryAssetFiles,
+    DescriptionProvider,
     LibraryAssetFileProvider {
-  name: string;
-  path: string;
-  type: string;
-  isPrivate: boolean;
   backend: BackendInterface;
-  description: string;
-  fullDescription: string;
   libraryManager: LibraryManagerInterface;
-  configFiles: string[];
 }
 
 // LibraryManager.ts
+export interface LibraryManagerDetails {
+  assetName: string;
+}
+
 export interface FileContentProvider {
   getFileContent(
     isPrivate: boolean,
@@ -347,8 +380,8 @@ export interface FileNamesProvider {
 
 export interface LibraryManagerInterface
   extends FileContentProvider,
-    FileNamesProvider {
-  assetName: string;
+    FileNamesProvider,
+    LibraryManagerDetails {
   backend: BackendInterface;
   fileHandler: FileHandlerInterface;
 }

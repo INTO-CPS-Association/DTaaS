@@ -16,7 +16,10 @@ import {
   removeAllModifiedLibraryFiles,
   selectModifiedLibraryFiles,
 } from 'preview/store/libraryConfigFiles.slice';
-import { LibraryConfigFile, FileState } from 'model/backend/gitlab/interfaces';
+import {
+  LibraryConfigFile,
+  FileState,
+} from 'model/backend/gitlab/UtilityInterfaces';
 import {
   removeAllModifiedFiles,
   selectModifiedFiles,

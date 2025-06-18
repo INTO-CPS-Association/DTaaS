@@ -1,5 +1,5 @@
 import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import { BackendInterface } from 'model/backend/gitlab/UtilityInterfaces';
 import createGitlabInstance from 'preview/util/gitlabFactory';
 import { mockAuthority } from 'test/__mocks__/global_mocks';
 

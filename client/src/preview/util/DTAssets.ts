@@ -7,7 +7,7 @@ import {
   BackendInterface,
   DTAssetsInterface,
   FileHandlerInterface,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import FileHandler from './fileHandler';
 
 export function getFilePath(

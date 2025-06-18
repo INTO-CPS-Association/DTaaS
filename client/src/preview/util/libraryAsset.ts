@@ -5,7 +5,7 @@ import {
   BackendInterface,
   LibraryAssetInterface,
   ProjectId,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import LibraryManager from './libraryManager';
 
 class LibraryAsset implements LibraryAssetInterface {

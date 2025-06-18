@@ -1,5 +1,8 @@
 import { addOrUpdateFile, renameFile } from 'preview/store/file.slice';
-import { FileState, LibraryConfigFile } from 'model/backend/gitlab/interfaces';
+import {
+  FileState,
+  LibraryConfigFile,
+} from 'model/backend/gitlab/UtilityInterfaces';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 

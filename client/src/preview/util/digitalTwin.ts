@@ -9,7 +9,7 @@ import {
   BackendInterface,
   DTAssetsInterface,
   ProjectId,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import { RUNNER_TAG, FileType } from 'model/backend/gitlab/constants';
 import {
   isValidInstance,

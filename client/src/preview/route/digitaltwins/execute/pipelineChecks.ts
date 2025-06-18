@@ -15,7 +15,7 @@ import {
   isSuccessStatus,
   isFailureStatus,
 } from 'model/backend/gitlab/execution/statusChecking';
-import { ProjectId } from 'model/backend/gitlab/interfaces';
+import { ProjectId } from 'model/backend/gitlab/UtilityInterfaces';
 
 interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;

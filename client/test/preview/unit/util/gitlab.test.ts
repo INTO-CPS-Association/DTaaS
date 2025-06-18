@@ -4,7 +4,7 @@ import {
   BackendInterface,
   JobSummary,
   PipelineStatus,
-} from 'model/backend/gitlab/interfaces';
+} from 'model/backend/gitlab/UtilityInterfaces';
 import {
   COMMON_LIBRARY_PROJECT_NAME,
   GROUP_NAME,
@@ -56,7 +56,7 @@ describe('GitlabInstance', () => {
 
     expect(mockApi.getGroupByName).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.listGroupProjects).toHaveBeenCalledWith(1);
-    expect(await mockApi.getTriggerToken).not.toHaveBeenCalled();
+    expect(mockApi.getTriggerToken).not.toHaveBeenCalled();
   });
 
   it('should throw error if commonProject is not found', async () => {

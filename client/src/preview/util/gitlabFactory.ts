@@ -1,6 +1,6 @@
 import GitlabInstance from 'model/backend/gitlab/gitlab';
 import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import { BackendInterface } from 'model/backend/gitlab/UtilityInterfaces';
 import { getAuthority } from 'util/envUtil';
 
 export const createGitlabInstance = (): BackendInterface => {
