@@ -127,7 +127,6 @@ describe('fetchAssets', () => {
 
     expect(createGitlabInstance).toHaveBeenCalledTimes(3);
     // Thrice in fetchDigitalTwins, twice in fetchLibraryAssets
-    // TODO: Mock fetchLibraryAssets in this test
     expect(mockInit).toHaveBeenCalledTimes(5);
     expect(mockGetDescription).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledTimes(2);

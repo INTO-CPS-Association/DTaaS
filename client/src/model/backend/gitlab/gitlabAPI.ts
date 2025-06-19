@@ -7,8 +7,6 @@ import {
   RepositoryTreeItem,
   ProjectSummary,
   JobSummary,
-  PipelineStatus,
-  GitLabPipelineStatus,
 } from './UtilityInterfaces';
 
 export class GitlabAPI implements BackendAPI {
@@ -153,9 +151,9 @@ export class GitlabAPI implements BackendAPI {
   public async getPipelineStatus(
     projectId: ProjectId,
     pipelineId: number,
-  ): Promise<PipelineStatus> {
+  ): Promise<string> {
     const pipeline = await this.client.Pipelines.show(projectId, pipelineId);
-    return pipeline.status as GitLabPipelineStatus;
+    return pipeline.status;
   }
 
   // Unique function of GitLab backendApi

@@ -6,7 +6,6 @@ import {
   BackendAPI,
   BackendInterface,
   LogEntry,
-  PipelineStatus,
   ProjectId,
   JobSummary,
 } from './UtilityInterfaces';
@@ -82,7 +81,7 @@ export class GitlabInstance implements BackendInterface {
   public async getPipelineStatus(
     projectId: ProjectId,
     pipelineId: number,
-  ): Promise<PipelineStatus> {
+  ): Promise<string> {
     return this.api.getPipelineStatus(projectId, pipelineId);
   }
 }

@@ -2,19 +2,8 @@ import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
 
 // gitlab.ts
-export type GitLabPipelineStatus =
-  | 'running'
-  | 'pending'
-  | 'success'
-  | 'failed'
-  | 'canceled'
-  | 'skipped'
-  | 'manual';
-
-export type PipelineStatus = string;
-
 export interface LogEntry {
-  status: PipelineStatus;
+  status: string;
   DTName: string;
   runnerTag: string;
   error?: Error;
@@ -124,7 +113,7 @@ interface PipelineProvider {
   getPipelineStatus(
     projectId: ProjectId,
     pipelineId: ProjectId,
-  ): Promise<PipelineStatus>;
+  ): Promise<string>;
   getPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
