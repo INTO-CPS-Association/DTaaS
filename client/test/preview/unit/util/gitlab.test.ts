@@ -3,7 +3,6 @@ import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 import {
   BackendInterface,
   JobSummary,
-  PipelineStatus,
 } from 'model/backend/gitlab/UtilityInterfaces';
 import {
   COMMON_LIBRARY_PROJECT_NAME,
@@ -99,7 +98,7 @@ describe('GitlabInstance', () => {
 
   it('should return execution logs', () => {
     const mockLog = {
-      status: 'canceled' as PipelineStatus,
+      status: 'canceled' as string,
       DTName: 'test-DTName-2',
       runnerTag: 'test-runnerTag-2',
       error: undefined,
