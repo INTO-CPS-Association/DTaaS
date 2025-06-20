@@ -8,22 +8,29 @@ import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 export const mapGitlabStatusToExecutionStatus = (
   gitlabStatus: string,
 ): ExecutionStatus => {
+  let executionStatus: ExecutionStatus;
   switch (gitlabStatus.toLowerCase()) {
     case 'success':
-      return ExecutionStatus.COMPLETED;
+      executionStatus = ExecutionStatus.COMPLETED;
+      break;
     case 'failed':
-      return ExecutionStatus.FAILED;
+      executionStatus = ExecutionStatus.FAILED;
+      break;
     case 'running':
     case 'pending':
-      return ExecutionStatus.RUNNING;
+      executionStatus = ExecutionStatus.RUNNING;
+      break;
     case 'canceled':
     case 'cancelled':
-      return ExecutionStatus.CANCELED;
+      executionStatus = ExecutionStatus.CANCELED;
+      break;
     case 'skipped':
-      return ExecutionStatus.FAILED; // Treat skipped as failed
+      executionStatus = ExecutionStatus.FAILED; // Treat skipped as failed
+      break;
     default:
-      return ExecutionStatus.RUNNING; // Default to running for unknown statuses
+      executionStatus = ExecutionStatus.RUNNING; // Default to running for unknown statuses
   }
+  return executionStatus;
 };
 
 /**

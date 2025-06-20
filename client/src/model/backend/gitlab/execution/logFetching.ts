@@ -33,9 +33,7 @@ export const fetchJobLogs = async (
   const rawJobs = await gitlabInstance.getPipelineJobs(projectId, pipelineId);
   const jobs: GitLabJob[] = rawJobs.map((job) => job as GitLabJob);
 
-  const logPromises = jobs.map((job) =>
-    fetchSingleJobLog(gitlabInstance, job)
-  );
+  const logPromises = jobs.map((job) => fetchSingleJobLog(gitlabInstance, job));
   return (await Promise.all(logPromises)).reverse();
 };
 
@@ -160,8 +158,7 @@ export const countSuccessfulJobs = (logs: JobLog[]): number =>
   Array.isArray(logs)
     ? logs.filter(
         (log) =>
-          typeof log.log === 'string' &&
-          /success|completed/i.test(log.log)
+          typeof log.log === 'string' && /success|completed/i.test(log.log),
       ).length
     : 0;
 
@@ -173,8 +170,6 @@ export const countSuccessfulJobs = (logs: JobLog[]): number =>
 export const countFailedJobs = (logs: JobLog[]): number =>
   Array.isArray(logs)
     ? logs.filter(
-        (log) =>
-          typeof log.log === 'string' &&
-          /(error|failed)/i.test(log.log)
+        (log) => typeof log.log === 'string' && /(error|failed)/i.test(log.log),
       ).length
     : 0;
