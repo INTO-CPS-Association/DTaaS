@@ -87,25 +87,36 @@ export const isFinishedStatus = (status: string | null | undefined): boolean =>
 export const getStatusDescription = (
   status: string | null | undefined,
 ): string => {
-  if (!status) return 'Pipeline status: unknown';
-
-  switch (status.toLowerCase()) {
-    case 'success':
-      return 'Pipeline completed successfully';
-    case 'failed':
-      return 'Pipeline failed';
-    case 'running':
-      return 'Pipeline is running';
-    case 'pending':
-      return 'Pipeline is pending';
-    case 'canceled':
-    case 'cancelled':
-      return 'Pipeline was canceled';
-    case 'skipped':
-      return 'Pipeline was skipped';
-    default:
-      return `Pipeline status: ${status}`;
+  let description: string;
+  if (!status) {
+    description = 'Pipeline status: unknown';
+  } else {
+    switch (status.toLowerCase()) {
+      case 'success':
+        description = 'Pipeline completed successfully';
+        break;
+      case 'failed':
+        description = 'Pipeline failed';
+        break;
+      case 'running':
+        description = 'Pipeline is running';
+        break;
+      case 'pending':
+        description = 'Pipeline is pending';
+        break;
+      case 'canceled':
+      case 'cancelled':
+        description = 'Pipeline was canceled';
+        break;
+      case 'skipped':
+        description = 'Pipeline was skipped';
+        break;
+      default:
+        description = `Pipeline status: ${status}`;
+        break;
+    }
   }
+  return description;
 };
 
 /**
@@ -116,8 +127,15 @@ export const getStatusDescription = (
 export const getStatusSeverity = (
   status: string | null | undefined,
 ): 'success' | 'error' | 'warning' | 'info' => {
-  if (isSuccessStatus(status)) return 'success';
-  if (isFailureStatus(status)) return 'error';
-  if (isCanceledStatus(status)) return 'warning';
-  return 'info'; // For running, pending, etc.
+  let severity: 'success' | 'error' | 'warning' | 'info';
+  if (isSuccessStatus(status)) {
+    severity = 'success';
+  } else if (isFailureStatus(status)) {
+    severity = 'error';
+  } else if (isCanceledStatus(status)) {
+    severity = 'warning';
+  } else {
+    severity = 'info'; // Default to info for running/pending/unknown statuses
+  }
+  return severity;
 };
