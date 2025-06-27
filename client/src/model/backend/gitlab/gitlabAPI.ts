@@ -106,8 +106,7 @@ export class GitlabAPI implements BackendAPI {
       filePath,
       ref,
     );
-    const content = Buffer.from(response.content, 'base64').toString('utf8');
-    return { content };
+    return { content: atob(response.content) };
   }
 
   public async listRepositoryFiles(
