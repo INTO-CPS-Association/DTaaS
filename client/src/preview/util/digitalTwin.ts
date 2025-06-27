@@ -63,7 +63,6 @@ class DigitalTwin implements DigitalTwinInterface {
       const fileContent = await this.DTAssets.getFileContent('description.md');
       this.description = fileContent;
     } catch (_error) {
-      console.log(_error);
       this.description = `There is no description.md file`;
     }
   }
