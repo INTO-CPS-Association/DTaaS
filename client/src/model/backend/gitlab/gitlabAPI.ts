@@ -10,7 +10,7 @@ import {
 } from './UtilityInterfaces';
 
 export class GitlabAPI implements BackendAPI {
-  readonly client: InstanceType<typeof Gitlab>;
+  public client: InstanceType<typeof Gitlab>;
 
   private triggerToken: string | null = null;
 
@@ -106,8 +106,8 @@ export class GitlabAPI implements BackendAPI {
       filePath,
       ref,
     );
-    const raw = Buffer.from(response.content, 'base64').toString('utf8');
-    return { content: atob(raw) };
+    const content = Buffer.from(response.content, 'base64').toString('utf8');
+    return { content };
   }
 
   public async listRepositoryFiles(

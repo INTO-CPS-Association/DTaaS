@@ -24,7 +24,7 @@ class GitlabInstance {
     type: string,
     isPrivate: boolean,
   );
-  executionLogs();
+  getExecutionLogs();
   async getPipelineJobs(
     projectId: number,
     pipelineId: number,

@@ -5,6 +5,6 @@ export interface Asset {
   path: string;
   type: string;
   isPrivate: boolean;
-  gitlabInstance?: BackendInterface;
+  backendInstance?: BackendInterface;
   fullDescription?: string;
 }
