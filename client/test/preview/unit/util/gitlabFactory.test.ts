@@ -1,7 +1,7 @@
 import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
 import { BackendInterface } from 'model/backend/gitlab/UtilityInterfaces';
 import createGitlabInstance from 'preview/util/gitlabFactory';
-import { mockAuthority } from 'test/__mocks__/global_mocks';
+import * as envUtil from 'util/envUtil';
 
 jest.mock('model/backend/gitlab/gitlabAPI', () => ({
   __esModule: true,
@@ -37,6 +37,11 @@ describe('gitlabFactory', () => {
   });
 
   it('should create a GitlabInstance with the correct parameters', () => {
+    const getAuthoritySpy = jest.spyOn(envUtil, 'getAuthority');
+    (getAuthoritySpy as jest.Mock).mockReturnValue(
+      'https://mock-authority.com',
+    );
+
     sessionStorage.setItem('username', TEST_PROJECT_NAME);
     sessionStorage.setItem('access_token', TEST_TOKEN);
 
@@ -44,8 +49,11 @@ describe('gitlabFactory', () => {
 
     expect(gitlabInstance).toBeDefined();
     expect(gitlabInstance.projectName).toBe(TEST_PROJECT_NAME);
-
-    expect(GitlabAPI).toHaveBeenCalledWith(mockAuthority, TEST_TOKEN);
+    expect(getAuthoritySpy).toHaveBeenCalled();
+    expect(GitlabAPI).toHaveBeenCalledWith(
+      'https://mock-authority.com',
+      TEST_TOKEN,
+    );
   });
 
   it('should not create a GitlabInstance without projectId in session storage', () => {
