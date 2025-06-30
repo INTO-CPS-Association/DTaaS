@@ -2,58 +2,86 @@ import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
 
 // gitlab.ts
-export interface LogEntry {
+export type LogEntry = {
   status: string;
   DTName: string;
   runnerTag: string;
   error?: Error;
-}
+};
 
 // Minimal backend API return value interfaces
-export interface TriggerToken {
+export type TriggerToken = {
   token: string;
-}
+};
 
-export interface JobSummary {
+export type JobSummary = {
   id: number;
   name: string;
   status: string;
-}
+};
 
-export interface Pipeline {
+export type Pipeline = {
   id: number;
   status?: string;
-}
+};
 
-export interface RepositoryFile {
+export type RepositoryFile = {
   content: string;
-}
+};
 
-export interface RepositoryTreeItem {
+export type RepositoryTreeItem = {
   name: string;
   type: 'blob' | 'tree';
   path: string;
-}
+};
 
-export interface ProjectSummary {
+export type ProjectSummary = {
   id: number | string;
   name: string;
-}
+};
 
 export type ProjectId = number | string;
 
-// Interface for interacting with Gitlab-like APIs (Github, Azure DevOps, etc.)
+/**
+ * Interface for interacting directly with Gitlab-like APIs (Github, Azure DevOps, etc.)
+ */
 export interface BackendAPI {
+  /**
+   * Sets up configurations for executing/storing remotely, e.g. trigger tokens.
+   * @param projectId - The ID of the project to initialize.
+   */
   init(projectId: ProjectId): Promise<void>;
 
+  /**
+   * Starts a new pipeline for the specified project.
+   * @param projectId - The ID of the project to start the pipeline for.
+   * @param ref - The Git reference (branch/tag) to build.
+   * @param variables - Optional variables to pass to the pipeline.
+   * @returns A promise that resolves to the created pipeline.
+   */
   startPipeline(
     projectId: ProjectId,
     ref: string,
     variables?: Record<string, string>,
   ): Promise<Pipeline>;
 
+  /**
+   * Cancels an existing pipeline.
+   * @param projectId - The ID of the project containing the pipeline.
+   * @param pipelineId - The ID of the pipeline to cancel.
+   * @returns A promise that resolves to the canceled pipeline.
+   */
   cancelPipeline(projectId: ProjectId, pipelineId: number): Promise<Pipeline>;
 
+  /**
+   * Creates a new file in the repository.
+   * @param projectId - The ID of the project to create the file in.
+   * @param filePath - The path where the file will be created.
+   * @param branch - The branch where the file will be created.
+   * @param content - The content of the file.
+   * @param commitMessage - The commit message for the creation.
+   * @returns A promise that resolves to the created repository file.
+   */
   createRepositoryFile(
     projectId: ProjectId,
     filePath: string,
@@ -62,6 +90,15 @@ export interface BackendAPI {
     commitMessage: string,
   ): Promise<RepositoryFile>;
 
+  /**
+   * Edits an existing file in the repository.
+   * @param projectId - The ID of the project containing the file.
+   * @param filePath - The path of the file to edit.
+   * @param branch - The branch where the file is located.
+   * @param content - The new content for the file.
+   * @param commitMessage - The commit message for the edit.
+   * @returns A promise that resolves to the edited repository file.
+   */
   editRepositoryFile(
     projectId: ProjectId,
     filePath: string,
@@ -70,6 +107,14 @@ export interface BackendAPI {
     commitMessage: string,
   ): Promise<RepositoryFile>;
 
+  /**
+   * Removes a file from the repository.
+   * @param projectId - The ID of the project containing the file.
+   * @param filePath - The path of the file to remove.
+   * @param branch - The branch where the file is located.
+   * @param commitMessage - The commit message for the removal.
+   * @returns A promise that resolves to the removed repository file.
+   */
   removeRepositoryFile(
     projectId: ProjectId,
     filePath: string,
@@ -77,12 +122,27 @@ export interface BackendAPI {
     commitMessage: string,
   ): Promise<RepositoryFile>;
 
+  /**
+   * Retrieves the content of a file in the repository.
+   * @param projectId - The ID of the project containing the file.
+   * @param filePath - The path of the file to retrieve.
+   * @param ref - The Git reference (branch/tag) to retrieve the file from.
+   * @returns A promise that resolves to the repository file content.
+   */
   getRepositoryFileContent(
     projectId: ProjectId,
     filePath: string,
     ref: string,
   ): Promise<RepositoryFile>;
 
+  /**
+   * Lists files in a repository directory.
+   * @param projectId - The ID of the project to list files from.
+   * @param path - The path of the directory to list files from.
+   * @param ref - The Git reference (branch/tag) to list files from.
+   * @param recursive - Whether to list files recursively.
+   * @returns A promise that resolves to an array of repository tree items.
+   */
   listRepositoryFiles(
     projectId: ProjectId,
     path?: string,
@@ -90,17 +150,45 @@ export interface BackendAPI {
     recursive?: boolean,
   ): Promise<RepositoryTreeItem[]>;
 
+  /**
+   * Retrieves a trigger token for a project.
+   * @param projectId - The ID of the project to get the trigger token for.
+   * @returns A promise that resolves to the trigger token.
+   */
   getGroupByName(groupName: string): Promise<ProjectSummary>;
 
+  /**
+   * Lists all projects in a group.
+   * @param groupId - The ID of the group to list projects from.
+   * @returns A promise that resolves to an array of project summaries.
+   */
   listGroupProjects(groupId: ProjectId): Promise<ProjectSummary[]>;
 
+  /**
+   * Lists all jobs in a pipeline.
+   * @param projectId - The ID of the project containing the pipeline.
+   * @param pipelineId - The ID of the pipeline to list jobs from.
+   * @returns A promise that resolves to an array of job summaries.
+   */
   listPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<JobSummary[]>;
 
+  /**
+   * Retrieves the log of a specific job in a pipeline.
+   * @param projectId - The ID of the project containing the job.
+   * @param jobId - The ID of the job to retrieve the log for.
+   * @returns A promise that resolves to the job log as a string.
+   */
   getJobLog(projectId: ProjectId, jobId: number): Promise<string>;
 
+  /**
+   * Retrieves the status of a specific pipeline.
+   * @param projectId - The ID of the project containing the pipeline.
+   * @param pipelineId - The ID of the pipeline to retrieve the status for.
+   * @returns A promise that resolves to the pipeline status as a string.
+   */
   getPipelineStatus(projectId: ProjectId, pipelineId: number): Promise<string>;
 }
 
@@ -125,6 +213,9 @@ interface LogProvider {
   getExecutionLogs(): LogEntry[];
 }
 
+/**
+ * Interface for holding information about the backend, including project details, API access, and logs.
+ */
 export interface BackendInterface
   extends ProjectProvider,
     PipelineProvider,
@@ -132,6 +223,9 @@ export interface BackendInterface
   projectName: string;
   api: BackendAPI;
   logs: LogEntry[];
+  /**
+   * Obtains project information from API and initializes backendAPI instance.
+   */
   init(): Promise<void>;
 }
 
@@ -173,9 +267,20 @@ export interface DigitalTwinDeleter {
   delete(): Promise<string>;
 }
 
-// Used both for LibraryAsset and DigitalTwin
+/**
+ * Interface for providing descriptions of assets.
+ * Used in both digital twins and library assets.
+ */
 export interface DescriptionProvider {
+  /**
+   * Fetches the description.md content for the digital twin.
+   * @returns A promise that resolves when the description is fetched.
+   */
   getDescription(): Promise<void>;
+  /**
+   * Fetches the README.md content for the digital twin.
+   * @returns A promise that resolves when the full description is fetched.
+   */
   getFullDescription(): Promise<void>;
 }
 
@@ -200,24 +305,24 @@ export interface DigitalTwinInterface
 }
 
 // ifile.ts
-export interface FileState {
+export type FileState = {
   name: string;
   content: string;
   isNew: boolean;
   isModified: boolean;
   type?: string;
   isFromCommonLibrary?: boolean;
-}
+};
 
 // libraryConfigFile.slice.ts
-export interface LibraryConfigFile {
+export type LibraryConfigFile = {
   assetPath: string;
   fileName: string;
   fileContent: string;
   isNew: boolean;
   isModified: boolean;
   isPrivate: boolean;
-}
+};
 
 // DTAssets.ts
 export interface DTAssetsFileCreator {
@@ -281,6 +386,9 @@ export interface DTAssetsDeleter {
   delete(): Promise<void>;
 }
 
+/*
+ * Interface for managing digital twin assets, including file creation, updates, and library management.
+ */
 export interface DTAssetsInterface
   extends DTAssetsFileCreator,
     DTAssetFileContentUpdater,
@@ -308,45 +416,88 @@ export interface FileHandlerFolderProvider {
   getFolders(path: string): Promise<string[]>;
 }
 
+/*
+ * Interface for handling file operations within the DTaaS application.
+ * @extends IFile
+ * @extends FileHandlerLibraryFileProvider
+ * @extends FileHandlerFolderProvider
+ */
 export interface FileHandlerInterface
   extends IFile,
     FileHandlerLibraryFileProvider,
     FileHandlerFolderProvider {
   name: string;
   backend: BackendInterface;
+  /**
+   * Create a file at the given path, committing with the provided message.
+   * @param file - either an existing FileState, or an { name: string, content: string, isNew: boolean } object.
+   * @param filePath - repository path (folder and filename) where the file will be created
+   * @param commitMessage - the commit message to use when creating the file
+   * @param commonProject - flag indicating if the file should be put in the library instead of the user's repo
+   * @returns a promise that resolves once the create operation has completed
+   */
   createFile(
     file: FileState | { name: string; content: string; isNew: boolean },
     filePath: string,
     commitMessage: string,
     commonProject?: boolean,
   ): Promise<void>;
+
+  /**
+   * Fetch the full text content of a file from the given path.
+   * @param filePath - the path (folder and filename) of the file to retrieve
+   * @param optional flag indicating if the file is private (default is true)
+   * @returns a promise resolving to the file’s content as a string
+   */
   getFileContent(filePath: string, isPrivate?: boolean): Promise<string>;
 }
 
 // libraryAsset.ts
-export interface LibraryAssetDetails {
-  name: string; // Name of the library asset
-  description: string; // The description.md content
-  fullDescription: string; // The README.md content
-}
+export type LibraryAssetDetails = {
+  /**
+   * Name of the library asset
+   */
+  name: string;
+  /**
+   * Path to the library asset in the repository
+   */
+  description: string;
+  /**
+   * Full path to the library asset in the repository
+   */
+  fullDescription: string;
+};
 
-export interface LibraryAssetFiles {
+export type LibraryAssetFiles = {
   path: string;
   type: string;
   isPrivate: boolean;
   configFiles: string[];
-}
+};
 
 export interface LibraryAssetFileProvider {
   getConfigFiles(): Promise<void>;
 }
 
+/**
+ * Interface for managing library assets, including details, files, and descriptions.
+ * @extends LibraryAssetDetails
+ * @extends LibraryAssetFiles
+ * @extends DescriptionProvider
+ * @extends LibraryAssetFileProvider
+ */
 export interface LibraryAssetInterface
   extends LibraryAssetDetails,
     LibraryAssetFiles,
     DescriptionProvider,
     LibraryAssetFileProvider {
+  /**
+   * The backend provider instance
+   */
   backend: BackendInterface;
+  /**
+   * The file handler instance for managing files related to the library asset
+   */
   libraryManager: LibraryManagerInterface;
 }
 
@@ -367,10 +518,19 @@ export interface FileNamesProvider {
   getFileNames(isPrivate: boolean, path: string): Promise<string[]>;
 }
 
+/**
+ * Interface for managing library assets, including file content retrieval and file name listing.
+ */
 export interface LibraryManagerInterface
   extends FileContentProvider,
     FileNamesProvider,
     LibraryManagerDetails {
+  /**
+   * The backend provider instance
+   */
   backend: BackendInterface;
+  /**
+   * The file handler instance for managing files related to the library asset
+   */
   fileHandler: FileHandlerInterface;
 }
