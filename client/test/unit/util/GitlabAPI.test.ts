@@ -95,7 +95,7 @@ describe('GitlabAPI', () => {
 
     it('starts pipeline without variables', async () => {
       (mockClient.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
-        { id: 666 },
+        { id: 666, status: 'running' },
       );
 
       const result = await api.startPipeline(1, 'develop');
@@ -106,17 +106,21 @@ describe('GitlabAPI', () => {
         'test-token',
         { variables: undefined },
       );
-      expect(result).toEqual({ id: 666 });
+      expect(result).toEqual({ id: 666, status: 'running' });
     });
 
     it('cancels pipeline and returns the result', async () => {
-      (mockClient.Pipelines.cancel as jest.Mock).mockResolvedValue({ id: 777 });
+      (mockClient.Pipelines.cancel as jest.Mock).mockResolvedValue({
+        id: 777,
+        status: 'canceled',
+      });
 
       const result = await api.cancelPipeline(2, 777);
 
       expect(mockClient.Pipelines.cancel).toHaveBeenCalledWith(2, 777);
-      expect(result).toEqual({ id: 777 });
+      expect(result).toEqual({ id: 777, status: 'canceled' });
     });
+
 
     it('gets pipeline status', async () => {
       (mockClient.Pipelines.show as jest.Mock).mockResolvedValue({

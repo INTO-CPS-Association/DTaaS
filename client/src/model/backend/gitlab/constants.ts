@@ -22,6 +22,7 @@ export const defaultFiles = [
   { name: 'README.md', type: 'description' },
   { name: '.gitlab-ci.yml', type: 'config' },
 ];
+
 export enum FileType {
   DESCRIPTION = 'description',
   CONFIGURATION = 'configuration',

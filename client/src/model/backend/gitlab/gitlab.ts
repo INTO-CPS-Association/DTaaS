@@ -1,3 +1,8 @@
+/**
+ * GitlabInstance class provides and maintains information about the project it is tied to,
+ * as well as library (common) project information, by communicating with an associated backend API.
+ * It provides methods to initialize the instance, retrieve project IDs, and manage execution logs.
+ */
 import {
   GROUP_NAME,
   COMMON_LIBRARY_PROJECT_NAME,

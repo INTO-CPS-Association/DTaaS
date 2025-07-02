@@ -1,3 +1,8 @@
+/**
+ * GitlabAPI is a generalized interface to interact with select parts of GitLab's REST
+ * API. It provides methods to manage pipelines, repository files related to a project,
+ * and retrieve project information.
+ */
 import { Gitlab } from '@gitbeaker/rest';
 import {
   BackendAPI,
@@ -36,7 +41,7 @@ export class GitlabAPI implements BackendAPI {
       this.triggerToken!,
       { variables },
     );
-    return { id: response.id };
+    return { id: response.id, status: response.status };
   }
 
   public async cancelPipeline(
@@ -44,7 +49,7 @@ export class GitlabAPI implements BackendAPI {
     pipelineId: number,
   ): Promise<Pipeline> {
     const response = await this.client.Pipelines.cancel(projectId, pipelineId);
-    return { id: response.id };
+    return { id: response.id, status: response.status };
   }
 
   public async createRepositoryFile(

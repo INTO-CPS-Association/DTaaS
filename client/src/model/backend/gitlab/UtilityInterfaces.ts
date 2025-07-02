@@ -22,7 +22,7 @@ export type JobSummary = {
 
 export type Pipeline = {
   id: number;
-  status?: string;
+  status: string;
 };
 
 export type RepositoryFile = {
@@ -214,7 +214,7 @@ interface LogProvider {
 }
 
 /**
- * Interface for holding information about the backend, including project details, API access, and logs.
+ * Interface for holding backend related information, including project details, BackendAPI instance, and logs.
  */
 export interface BackendInterface
   extends ProjectProvider,
@@ -291,6 +291,17 @@ export interface DigitalTwinFileProvider {
   getAssetFiles(): Promise<{ assetPath: string; fileNames: string[] }[]>;
 }
 
+/**
+ * Interface for managing digital twins, including details, pipeline state, files, and operations.
+ * @extends DigitalTwinDetails
+ * @extends DigitalTwinPipelineState
+ * @extends DigitalTwinFiles
+ * @extends DigitalTwinCreator
+ * @extends DigitalTwinExecutor
+ * @extends DigitalTwinDeleter
+ * @extends DescriptionProvider
+ * @extends DigitalTwinFileProvider
+ */
 export interface DigitalTwinInterface
   extends DigitalTwinDetails,
     DigitalTwinPipelineState,
