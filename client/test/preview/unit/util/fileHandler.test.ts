@@ -1,6 +1,6 @@
 import { FileType } from 'model/backend/gitlab/constants';
 import FileHandler from 'preview/util/fileHandler';
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabInstance from 'model/backend/gitlab/instance';
 import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
 
 const mockApi = mockBackendAPI;

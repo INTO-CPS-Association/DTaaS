@@ -1,4 +1,4 @@
-import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
+import GitlabAPI from 'model/backend/gitlab/backend';
 import { Gitlab } from '@gitbeaker/rest';
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -120,7 +120,6 @@ describe('GitlabAPI', () => {
       expect(mockClient.Pipelines.cancel).toHaveBeenCalledWith(2, 777);
       expect(result).toEqual({ id: 777, status: 'canceled' });
     });
-
 
     it('gets pipeline status', async () => {
       (mockClient.Pipelines.show as jest.Mock).mockResolvedValue({

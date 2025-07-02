@@ -40,7 +40,7 @@ const mockGitlab = {
 };
 
 const createGitlabInstance = jest.fn();
-jest.mock('model/backend/gitlab/gitlab', () => {
+jest.mock('model/backend/gitlab/instance', () => {
   const mockGitlabInstance = jest.fn().mockImplementation(() => mockGitlab);
   const mockGitlabAPI = jest.fn().mockImplementation(() => ({
     getGroupByName: jest.fn(),
@@ -77,7 +77,7 @@ jest.mock('preview/store/digitalTwin.slice', () => ({
   setDigitalTwin,
 }));
 
-jest.mock('preview/util/gitlabFactory', () => ({
+jest.mock('model/backend/gitlab/gitlabFactory', () => ({
   createGitlabInstance,
 }));
 

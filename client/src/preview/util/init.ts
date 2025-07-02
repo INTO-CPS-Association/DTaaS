@@ -1,5 +1,5 @@
-import GitlabInstance from 'model/backend/gitlab/gitlab';
-import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
+import GitlabInstance from 'model/backend/gitlab/instance';
+import GitlabAPI from 'model/backend/gitlab/backend';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAuthority } from 'util/envUtil';
@@ -9,7 +9,7 @@ import { setAsset /* setAssets */ } from '../store/assets.slice';
 import { setDigitalTwin } from '../store/digitalTwin.slice';
 import LibraryAsset, { getLibrarySubfolders } from './libraryAsset';
 import { getDTSubfolders } from './digitalTwinUtils';
-import { createGitlabInstance } from './gitlabFactory';
+import { createGitlabInstance } from '../../model/backend/gitlab/gitlabFactory';
 import LibraryManager from './libraryManager';
 
 const initialGitlabAPI = new GitlabAPI(
