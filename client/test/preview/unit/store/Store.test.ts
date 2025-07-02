@@ -11,8 +11,8 @@ import digitalTwinReducer, {
   updateDescription,
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
-import GitlabInstance from 'model/backend/gitlab/gitlab';
-import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
+import GitlabInstance from 'model/backend/gitlab/instance';
+import GitlabAPI from 'model/backend/gitlab/backend';
 import snackbarSlice, {
   hideSnackbar,
   showSnackbar,

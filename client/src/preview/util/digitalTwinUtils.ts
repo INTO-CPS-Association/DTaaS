@@ -7,7 +7,7 @@ import {
 } from 'model/backend/gitlab/UtilityInterfaces';
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
-import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
+import GitlabAPI from 'model/backend/gitlab/backend';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {

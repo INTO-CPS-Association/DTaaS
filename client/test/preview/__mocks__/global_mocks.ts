@@ -4,7 +4,7 @@ import DigitalTwin from 'preview/util/digitalTwin';
 import FileHandler from 'preview/util/fileHandler';
 import DTAssets from 'preview/util/DTAssets';
 import LibraryManager from 'preview/util/libraryManager';
-import GitlabAPI from 'model/backend/gitlab/gitlabAPI';
+import GitlabAPI from 'model/backend/gitlab/backend';
 
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';

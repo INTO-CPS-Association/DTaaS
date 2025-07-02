@@ -10,7 +10,7 @@ import {
   DTAssetsInterface,
   ProjectId,
 } from 'model/backend/gitlab/UtilityInterfaces';
-import { RUNNER_TAG, FileType } from 'model/backend/gitlab/constants';
+import { RUNNER_TAG, FileType, GROUP_NAME, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import {
   isValidInstance,
   logError,
@@ -68,13 +68,13 @@ class DigitalTwin implements DigitalTwinInterface {
   }
 
   async getFullDescription(): Promise<void> {
-    const imagesPath = `digital_twins/${this.DTName}/`;
+    const imagesPath = `${DT_DIRECTORY}/${this.DTName}/`;
     try {
       const fileContent = await this.DTAssets.getFileContent('README.md');
       this.fullDescription = fileContent.replace(
         /(!\[[^\]]*\])\(([^)]+)\)/g,
         (match, altText, imagePath) => {
-          const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
+          const fullUrl = `${getAuthority()}/${GROUP_NAME.toLowerCase()}/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}${imagePath}`;
           return `${altText}(${fullUrl})`;
         },
       );

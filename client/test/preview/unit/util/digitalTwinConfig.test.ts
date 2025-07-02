@@ -1,4 +1,4 @@
-import GitlabInstance from 'model/backend/gitlab/gitlab';
+import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin from 'preview/util/digitalTwin';
 import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
 
