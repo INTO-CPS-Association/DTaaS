@@ -17,28 +17,23 @@ import {
 export class GitlabAPI implements BackendAPI {
   public client: InstanceType<typeof Gitlab>;
 
-  private triggerToken: string | null = null;
-
   public constructor(host: string, oauthToken: string) {
     this.client = new Gitlab({ host, oauthToken });
-  }
-
-  public async init(projectId: ProjectId): Promise<void> {
-    this.triggerToken = await this.getTriggerToken(projectId);
-    if (!this.triggerToken) {
-      throw new Error('Trigger token not found');
-    }
   }
 
   public async startPipeline(
     projectId: ProjectId,
     ref: string,
     variables?: Record<string, string>,
+    triggerToken?: string,
   ): Promise<Pipeline> {
+    if (!triggerToken) {
+      throw new Error('Trigger token is required to start a pipeline');
+    }
     const response = await this.client.PipelineTriggerTokens.trigger(
       projectId,
       ref,
-      this.triggerToken!,
+      triggerToken,
       { variables },
     );
     return { id: response.id, status: response.status };

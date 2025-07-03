@@ -85,7 +85,7 @@ describe('GitlabInstance', () => {
     ]);
     jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue(null);
 
-    await gitlab.init();
+    await expect(gitlab.init()).rejects.toThrow('Trigger token not found');
 
     expect(gitlab.getProjectId()).toBe(1);
     expect(gitlab.getCommonProjectId()).toBe(3);

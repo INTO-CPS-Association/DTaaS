@@ -10,7 +10,12 @@ import {
   DTAssetsInterface,
   ProjectId,
 } from 'model/backend/gitlab/UtilityInterfaces';
-import { RUNNER_TAG, FileType, GROUP_NAME, DT_DIRECTORY } from 'model/backend/gitlab/constants';
+import {
+  RUNNER_TAG,
+  FileType,
+  GROUP_NAME,
+  DT_DIRECTORY,
+} from 'model/backend/gitlab/constants';
 import {
   isValidInstance,
   logError,
@@ -85,7 +90,7 @@ class DigitalTwin implements DigitalTwinInterface {
 
   private async triggerPipeline() {
     const variables = { DTName: this.DTName, RunnerTag: RUNNER_TAG };
-    return this.backend.api.startPipeline(
+    return this.backend.startPipeline(
       this.backend.getProjectId(),
       'main',
       variables,
