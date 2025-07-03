@@ -1,7 +1,7 @@
 import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
-import { RUNNER_TAG } from 'model/backend/gitlab/constants';
+import { GROUP_NAME, RUNNER_TAG } from 'model/backend/gitlab/constants';
 import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
 
 const mockGitlabInstance = {
@@ -75,7 +75,7 @@ describe('DigitalTwin', () => {
     await dt.getFullDescription();
 
     expect(dt.fullDescription).toBe(
-      'Test README content with an image ![alt text](https://example.com/AUTHORITY/dtaas/testUser/-/raw/main/digital_twins/test-DTName/image.png)',
+      `Test README content with an image ![alt text](https://example.com/AUTHORITY/${GROUP_NAME}/testUser/-/raw/main/digital_twins/test-DTName/image.png)`,
     );
 
     expect(mockBackendAPI.getRepositoryFileContent).toHaveBeenCalledWith(
