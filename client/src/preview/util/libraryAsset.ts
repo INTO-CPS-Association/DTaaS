@@ -1,5 +1,5 @@
 import { getAuthority } from 'util/envUtil';
-import { AssetTypes } from 'model/backend/gitlab/constants';
+import { AssetTypes, GROUP_NAME } from 'model/backend/gitlab/constants';
 import { Asset } from 'preview/components/asset/Asset';
 import {
   BackendInterface,
@@ -68,7 +68,7 @@ class LibraryAsset implements LibraryAssetInterface {
         this.fullDescription = fileContent.replace(
           /(!\[[^\]]*\])\(([^)]+)\)/g,
           (match, altText, imagePath) => {
-            const fullUrl = `${getAuthority()}/dtaas/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}/${imagePath}`;
+            const fullUrl = `${getAuthority()}/${GROUP_NAME}/${sessionStorage.getItem('username')}/-/raw/main/${imagesPath}/${imagePath}`;
             return `${altText}(${fullUrl})`;
           },
         );
