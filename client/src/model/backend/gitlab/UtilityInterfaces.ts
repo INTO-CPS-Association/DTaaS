@@ -9,7 +9,7 @@ export type LogEntry = {
   error?: Error;
 };
 
-// Minimal backend API return value interfaces
+// Backend API return value interfaces
 export type TriggerToken = {
   token: string;
 };
@@ -214,6 +214,10 @@ interface LogProvider {
 
 /**
  * Interface for holding backend related information, including project details, BackendAPI instance, and logs.
+ * Also may be used to start pipelines.
+ * @extends ProjectProvider
+ * @extends PipelineProvider
+ * @extends LogProvider
  */
 export interface BackendInterface
   extends ProjectProvider,
@@ -222,9 +226,6 @@ export interface BackendInterface
   projectName: string;
   api: BackendAPI;
   logs: LogEntry[];
-  /**
-   * Obtains project information from API and initializes backendAPI instance.
-   */
   init(): Promise<void>;
 }
 
@@ -426,7 +427,7 @@ export interface FileHandlerFolderProvider {
   getFolders(path: string): Promise<string[]>;
 }
 
-/*
+/**
  * Interface for handling file operations within the DTaaS application.
  * @extends IFile
  * @extends FileHandlerLibraryFileProvider

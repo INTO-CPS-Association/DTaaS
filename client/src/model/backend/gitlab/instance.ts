@@ -23,7 +23,8 @@ export class GitlabInstance implements BackendInterface {
 
   public logs: LogEntry[];
 
-  private projectId: ProjectId = 0; // Dummy values to enforce type
+  // Defined during initialization
+  private projectId: ProjectId = 0;
 
   public commonProjectId: ProjectId = 0;
 
