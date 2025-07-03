@@ -11,6 +11,7 @@ const mockGitlabInstance = {
   setProjectIds: jest.fn(),
   getProjectId: jest.fn().mockReturnValue(1),
   getCommonProjectId: jest.fn().mockReturnValue(2),
+  startPipeline: jest.fn().mockResolvedValue({ id: 123 }),
 } as unknown as GitlabInstance;
 
 const files = [
@@ -97,7 +98,9 @@ describe('DigitalTwin', () => {
 
   it('should execute pipeline and return the pipeline ID', async () => {
     const mockResponse = { id: 123 };
-    (mockBackendAPI.startPipeline as jest.Mock).mockResolvedValue(mockResponse);
+    (mockGitlabInstance.startPipeline as jest.Mock).mockResolvedValue(
+      mockResponse,
+    );
     (mockBackendAPI.getTriggerToken as jest.Mock).mockResolvedValue(
       'test-token',
     );
@@ -106,7 +109,7 @@ describe('DigitalTwin', () => {
 
     expect(pipelineId).toBe(123);
     expect(dt.lastExecutionStatus).toBe('success');
-    expect(mockBackendAPI.startPipeline).toHaveBeenCalledWith(1, 'main', {
+    expect(mockGitlabInstance.startPipeline).toHaveBeenCalledWith(1, 'main', {
       DTName: 'test-DTName',
       RunnerTag: RUNNER_TAG,
     });

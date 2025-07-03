@@ -52,21 +52,6 @@ describe('GitlabAPI', () => {
 
       expect(Gitlab).toHaveBeenCalledWith({ host, oauthToken: token });
     });
-
-    it('resolves when a trigger token is found', async () => {
-      (mockClient.PipelineTriggerTokens.all as jest.Mock).mockResolvedValue([
-        { token: 'abc123' },
-      ]);
-
-      await expect(api.init(42)).resolves.toBeUndefined();
-      expect(mockClient.PipelineTriggerTokens.all).toHaveBeenCalledWith(42);
-    });
-
-    it('throws if no trigger token is found', async () => {
-      (mockClient.PipelineTriggerTokens.all as jest.Mock).mockResolvedValue([]);
-
-      await expect(api.init(99)).rejects.toThrow('Trigger token not found');
-    });
   });
 
   describe('pipeline operations', () => {
@@ -74,15 +59,19 @@ describe('GitlabAPI', () => {
       (mockClient.PipelineTriggerTokens.all as jest.Mock).mockResolvedValue([
         { token: 'test-token' },
       ]);
-      await api.init(1);
     });
 
     it('starts pipeline with correct parameters', async () => {
       (mockClient.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
-        { id: 555 },
+        { id: 555, status: 'test-status' },
       );
 
-      const result = await api.startPipeline(1, 'main', { FOO: 'bar' });
+      const result = await api.startPipeline(
+        1,
+        'main',
+        { FOO: 'bar' },
+        'test-token',
+      );
 
       expect(mockClient.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
         1,
@@ -90,7 +79,7 @@ describe('GitlabAPI', () => {
         'test-token',
         { variables: { FOO: 'bar' } },
       );
-      expect(result).toEqual({ id: 555 });
+      expect(result).toEqual({ id: 555, status: 'test-status' });
     });
 
     it('starts pipeline without variables', async () => {
@@ -98,7 +87,12 @@ describe('GitlabAPI', () => {
         { id: 666, status: 'running' },
       );
 
-      const result = await api.startPipeline(1, 'develop');
+      const result = await api.startPipeline(
+        1,
+        'develop',
+        undefined,
+        'test-token',
+      );
 
       expect(mockClient.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
         1,

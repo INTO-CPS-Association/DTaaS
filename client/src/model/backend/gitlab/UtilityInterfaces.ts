@@ -47,12 +47,6 @@ export type ProjectId = number | string;
  */
 export interface BackendAPI {
   /**
-   * Sets up configurations for executing/storing remotely, e.g. trigger tokens.
-   * @param projectId - The ID of the project to initialize.
-   */
-  init(projectId: ProjectId): Promise<void>;
-
-  /**
    * Starts a new pipeline for the specified project.
    * @param projectId - The ID of the project to start the pipeline for.
    * @param ref - The Git reference (branch/tag) to build.
@@ -151,9 +145,9 @@ export interface BackendAPI {
   ): Promise<RepositoryTreeItem[]>;
 
   /**
-   * Retrieves a trigger token for a project.
-   * @param projectId - The ID of the project to get the trigger token for.
-   * @returns A promise that resolves to the trigger token.
+   * Retrieves the group by its name.
+   * @param groupName - The name of the group to retrieve.
+   * @returns A promise that resolves to the project summary of the group.
    */
   getGroupByName(groupName: string): Promise<ProjectSummary>;
 
@@ -198,6 +192,11 @@ export interface ProjectProvider {
 }
 
 interface PipelineProvider {
+  startPipeline(
+    projectId: ProjectId,
+    ref: string,
+    variables?: Record<string, string>,
+  ): Promise<Pipeline>;
   getPipelineStatus(
     projectId: ProjectId,
     pipelineId: ProjectId,

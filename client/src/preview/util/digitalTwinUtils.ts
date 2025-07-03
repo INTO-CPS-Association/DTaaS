@@ -7,14 +7,15 @@ import {
 } from 'model/backend/gitlab/UtilityInterfaces';
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
-import GitlabAPI from 'model/backend/gitlab/backend';
+import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   const { backend } = digitalTwin;
-  const requiresTriggerToken = backend.api instanceof GitlabAPI;
+  const requiresTriggerToken = backend instanceof GitlabInstance;
   const hasTriggerToken =
-    requiresTriggerToken && (backend.api as GitlabAPI).getTriggerToken !== null;
+    requiresTriggerToken &&
+    (backend as GitlabInstance).getTriggerToken() !== null;
   return !requiresTriggerToken || hasTriggerToken;
 }
 

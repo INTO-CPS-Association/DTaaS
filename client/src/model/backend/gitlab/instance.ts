@@ -8,17 +8,18 @@ import {
   COMMON_LIBRARY_PROJECT_NAME,
 } from 'model/backend/gitlab/constants';
 import {
-  BackendAPI,
   BackendInterface,
   LogEntry,
   ProjectId,
   JobSummary,
+  Pipeline,
 } from './UtilityInterfaces';
+import GitlabAPI from './backend';
 
 export class GitlabInstance implements BackendInterface {
   public projectName: string;
 
-  public api: BackendAPI;
+  public api: GitlabAPI;
 
   public logs: LogEntry[];
 
@@ -26,7 +27,9 @@ export class GitlabInstance implements BackendInterface {
 
   public commonProjectId: ProjectId = 0;
 
-  public constructor(projectName: string, backendApi: BackendAPI) {
+  private triggerToken: string | null = null;
+
+  public constructor(projectName: string, backendApi: GitlabAPI) {
     this.projectName = projectName;
     this.api = backendApi;
     this.logs = [];
@@ -34,12 +37,26 @@ export class GitlabInstance implements BackendInterface {
 
   public async init() {
     await this.setProjectIds();
-    await this.api.init(this.projectId);
+    this.triggerToken = await this.api.getTriggerToken(this.projectId);
+    if (!this.triggerToken) {
+      throw new Error('Trigger token not found');
+    }
+  }
+
+  public startPipeline(
+    projectId: ProjectId,
+    ref: string,
+    variables?: Record<string, string>,
+  ): Promise<Pipeline> {
+    if (!this.triggerToken) {
+      throw new Error('Trigger token is not set');
+    }
+    return this.api.startPipeline(projectId, ref, variables, this.triggerToken);
   }
 
   private async setProjectIds(): Promise<void> {
     const group = await this.api.getGroupByName(GROUP_NAME);
-    const projects = await this.api.listGroupProjects(group.id);
+    const projects = await this.api.listGroupProjects(group.id as string);
     const project =
       projects.find((proj) => proj.name === this.projectName) ?? null;
     const commonProject =
@@ -88,6 +105,10 @@ export class GitlabInstance implements BackendInterface {
     pipelineId: number,
   ): Promise<string> {
     return this.api.getPipelineStatus(projectId, pipelineId);
+  }
+
+  public getTriggerToken(): string | null {
+    return this.triggerToken;
   }
 }
 
