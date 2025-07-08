@@ -47,9 +47,9 @@ describe('GitlabAPI', () => {
       const host = 'https://gitlab.example.com';
       const token = 'oauth-token';
 
-      /* eslint-disable no-new */
-      new GitlabAPI(host, token);
+      const gitlabApi = new GitlabAPI(host, token);
 
+      expect(gitlabApi).toBeDefined();
       expect(Gitlab).toHaveBeenCalledWith({ host, oauthToken: token });
     });
   });

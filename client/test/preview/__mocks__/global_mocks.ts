@@ -153,7 +153,6 @@ export const mockDigitalTwin: DigitalTwin = {
   assetFiles: [
     { assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] },
   ],
-
   getDescription: jest.fn(),
   getFullDescription: jest.fn(),
   triggerPipeline: jest.fn(),

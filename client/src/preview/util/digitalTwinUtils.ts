@@ -14,8 +14,7 @@ export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   const { backend } = digitalTwin;
   const requiresTriggerToken = backend instanceof GitlabInstance;
   const hasTriggerToken =
-    requiresTriggerToken &&
-    (backend as GitlabInstance).getTriggerToken() !== null;
+    requiresTriggerToken && backend.getTriggerToken() !== null;
   return !requiresTriggerToken || hasTriggerToken;
 }
 

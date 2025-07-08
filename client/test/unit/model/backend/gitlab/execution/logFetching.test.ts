@@ -9,14 +9,9 @@ import {
   countFailedJobs,
 } from 'model/backend/gitlab/execution/logFetching';
 import { JobLog } from 'model/backend/gitlab/types/executionHistory';
+import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
 
 describe('logFetching', () => {
-  const mockGitlabInstance = {
-    projectId: 123,
-    getPipelineJobs: jest.fn(),
-    getJobTrace: jest.fn(),
-  };
-
   const mockJobs = [
     { id: 1, name: 'job1' },
     { id: 2, name: 'job2' },
@@ -29,40 +24,55 @@ describe('logFetching', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (mockBackendInstance.getProjectId as jest.Mock).mockReturnValue(123);
   });
 
   describe('fetchJobLogs', () => {
     it('should fetch job logs successfully', async () => {
-      mockGitlabInstance.getPipelineJobs.mockResolvedValue(mockJobs);
-      mockGitlabInstance.getJobTrace
+      (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue(
+        mockJobs,
+      );
+      (mockBackendInstance.getJobTrace as jest.Mock)
         .mockResolvedValueOnce('Success: Job completed')
         .mockResolvedValueOnce('Error: Job failed');
 
-      const result = await fetchJobLogs(mockGitlabInstance, 456);
+      const result = await fetchJobLogs(mockBackendInstance, 456);
 
       expect(result).toHaveLength(2);
       expect(result[0].jobName).toBe('job2');
       expect(result[1].jobName).toBe('job1');
-      expect(mockGitlabInstance.getPipelineJobs).toHaveBeenCalledWith(123, 456);
+      expect(mockBackendInstance.getPipelineJobs).toHaveBeenCalledWith(
+        123,
+        456,
+      );
     });
 
     it('should return empty array when projectId is null', async () => {
-      const instanceWithoutProject = { ...mockGitlabInstance, projectId: null };
+      const instanceWithoutProject = {
+        ...mockBackendInstance,
+        getProjectId: jest.fn().mockReturnValue(null),
+      };
       const result = await fetchJobLogs(instanceWithoutProject, 456);
       expect(result).toEqual([]);
     });
 
     it('should handle jobs without id', async () => {
-      mockGitlabInstance.getPipelineJobs.mockResolvedValue([{ name: 'job1' }]);
-      const result = await fetchJobLogs(mockGitlabInstance, 456);
+      (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue([
+        { name: 'job1' },
+      ]);
+      const result = await fetchJobLogs(mockBackendInstance, 456);
       expect(result[0].log).toBe('Job ID not available');
     });
 
     it('should handle trace fetch errors', async () => {
-      mockGitlabInstance.getPipelineJobs.mockResolvedValue(mockJobs);
-      mockGitlabInstance.getJobTrace.mockRejectedValue(new Error('API Error'));
+      (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue(
+        mockJobs,
+      );
+      (mockBackendInstance.getJobTrace as jest.Mock).mockRejectedValue(
+        new Error('API Error'),
+      );
 
-      const result = await fetchJobLogs(mockGitlabInstance, 456);
+      const result = await fetchJobLogs(mockBackendInstance, 456);
       expect(result[0].log).toBe('Error fetching log content');
     });
   });

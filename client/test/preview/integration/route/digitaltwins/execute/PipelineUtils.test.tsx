@@ -10,6 +10,7 @@ describe('PipelineUtils', () => {
   let digitalTwin: DigitalTwin;
 
   beforeEach(() => {
+    (mockBackendInstance.getProjectId as jest.Mock).mockReturnValue(1234);
     digitalTwin = new DigitalTwin('mockedDTName', mockBackendInstance);
     store.dispatch(setDigitalTwin({ assetName: 'mockedDTName', digitalTwin }));
 
@@ -55,25 +56,15 @@ describe('PipelineUtils', () => {
   it('fetches job logs', async () => {
     const mockJob = { id: 1, name: 'job1' } as JobSchema;
 
-    const mockGetPipelineJobs = jest.spyOn(
-      mockBackendInstance,
-      'getPipelineJobs',
-    );
-    mockGetPipelineJobs.mockResolvedValue([mockJob]);
-
-    const mockGetJobTrace = jest.spyOn(mockBackendInstance, 'getJobTrace');
-    mockGetJobTrace.mockResolvedValue('log1');
+    (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue([
+      mockJob,
+    ]);
+    (mockBackendInstance.getJobTrace as jest.Mock).mockResolvedValue('log1');
 
     const result = await PipelineUtils.fetchJobLogs(mockBackendInstance, 1);
 
-    expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-      mockBackendInstance.getProjectId(),
-      1,
-    );
-    expect(mockGetJobTrace).toHaveBeenCalledWith(
-      mockBackendInstance.getProjectId(),
-      1,
-    );
+    expect(mockBackendInstance.getPipelineJobs).toHaveBeenCalledWith(1234, 1);
+    expect(mockBackendInstance.getJobTrace).toHaveBeenCalledWith(1234, 1);
     expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
   });
 
@@ -84,14 +75,11 @@ describe('PipelineUtils', () => {
 
     const mockJob = { id: 123, name: 'test-job' } as JobSchema;
 
-    const mockGetPipelineJobs = jest.spyOn(
-      mockBackendInstance,
-      'getPipelineJobs',
-    );
-    mockGetPipelineJobs.mockResolvedValue([mockJob]);
+    (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue([
+      mockJob,
+    ]);
 
-    const mockGetJobTrace = jest.spyOn(mockBackendInstance, 'getJobTrace');
-    mockGetJobTrace.mockResolvedValue(rawLog);
+    (mockBackendInstance.getJobTrace as jest.Mock).mockResolvedValue(rawLog);
 
     const logs = await PipelineUtils.fetchJobLogs(mockBackendInstance, 456);
 

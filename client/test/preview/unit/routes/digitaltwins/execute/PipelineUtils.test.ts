@@ -4,29 +4,42 @@ import {
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
 import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
-import { JobSchema } from '@gitbeaker/rest';
-import { BackendInterface } from 'model/backend/gitlab/interfaces';
+import {
+  BackendInterface,
+  JobSummary,
+} from 'model/backend/gitlab/UtilityInterfaces';
 
 describe('PipelineUtils', () => {
-  const digitalTwin = mockDigitalTwin;
+  let digitalTwin: typeof mockDigitalTwin;
   const dispatch = jest.fn();
   const setLogButtonDisabled = jest.fn();
   const setButtonText = jest.fn();
-  const { backend } = digitalTwin;
   const pipelineId = 1;
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    digitalTwin = {
+      ...mockDigitalTwin,
+      backend: {
+        ...mockDigitalTwin.backend,
+        getProjectId: jest.fn().mockReturnValue(1),
+        getPipelineJobs: jest.fn(),
+        getJobTrace: jest.fn(),
+      },
+    } as unknown as typeof mockDigitalTwin;
+  });
+
   afterEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
   it('starts pipeline and handles success', async () => {
-    const mockExecute = jest.spyOn(digitalTwin, 'execute');
+    // const mockExecute = jest.spyOn(digitalTwin, 'execute');
     digitalTwin.lastExecutionStatus = 'success';
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
 
-    expect(mockExecute).toHaveBeenCalled();
+    expect(digitalTwin.execute).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -41,12 +54,12 @@ describe('PipelineUtils', () => {
   });
 
   it('starts pipeline and handles failed', async () => {
-    const mockExecute = jest.spyOn(digitalTwin, 'execute');
+    // const mockExecute = jest.spyOn(digitalTwin, 'execute');
     digitalTwin.lastExecutionStatus = 'failed';
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
 
-    expect(mockExecute).toHaveBeenCalled();
+    expect(digitalTwin.execute).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -76,46 +89,52 @@ describe('PipelineUtils', () => {
 
   describe('fetchJobLogs', () => {
     it('fetches job logs', async () => {
-      const mockJob = { id: 1, name: 'job1' } as JobSchema;
+      const mockJob = { id: 1, name: 'job1' } as JobSummary;
 
-      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
-      mockGetPipelineJobs.mockResolvedValue([mockJob]);
+      // const getPipelineJobsSpy = jest.spyOn(backend, 'getPipelineJobs');
+      (digitalTwin.backend.getPipelineJobs as jest.Mock).mockResolvedValue([
+        mockJob,
+      ]);
 
-      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
-      mockGetJobTrace.mockResolvedValue('log1');
+      (digitalTwin.backend.getJobTrace as jest.Mock).mockResolvedValue('log1');
 
-      const result = await fetchJobLogs(backend, pipelineId);
+      const result = await fetchJobLogs(digitalTwin.backend, pipelineId);
 
-      expect(mockGetPipelineJobs).toHaveBeenCalledWith(
-        backend.getProjectId(),
+      expect(digitalTwin.backend.getPipelineJobs).toHaveBeenCalledWith(
+        digitalTwin.backend.getProjectId(),
         pipelineId,
       );
-      expect(mockGetJobTrace).toHaveBeenCalledWith(backend.getProjectId(), 1);
+      expect(digitalTwin.backend.getJobTrace).toHaveBeenCalledWith(
+        digitalTwin.backend.getProjectId(),
+        1,
+      );
       expect(result).toEqual([{ jobName: 'job1', log: 'log1' }]);
     });
 
     it('returns empty array if projectId is falsy', async () => {
-      const mockBacakendInstance = {
-        ...backend,
-        projectId: undefined,
+      const mockBackendInstance = {
+        ...digitalTwin.backend,
+        getProjectId: jest.fn().mockReturnValue(undefined),
         getPipelineJobs: jest.fn(),
         getJobTrace: jest.fn(),
       } as unknown as BackendInterface;
 
-      const result = await fetchJobLogs(mockBacakendInstance, pipelineId);
+      const result = await fetchJobLogs(mockBackendInstance, pipelineId);
       expect(result).toEqual([]);
     });
 
     it('handles error when fetching job trace', async () => {
-      const mockJob = { id: 1, name: 'job1' } as JobSchema;
+      const mockJob = { id: 1, name: 'job1' } as JobSummary;
 
-      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
-      mockGetPipelineJobs.mockResolvedValue([mockJob]);
+      (digitalTwin.backend.getPipelineJobs as jest.Mock).mockResolvedValue([
+        mockJob,
+      ]);
 
-      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
-      mockGetJobTrace.mockRejectedValue(new Error('Error fetching trace'));
+      (digitalTwin.backend.getJobTrace as jest.Mock).mockRejectedValue(
+        new Error('Error fetching trace'),
+      );
 
-      const result = await fetchJobLogs(backend, pipelineId);
+      const result = await fetchJobLogs(digitalTwin.backend, pipelineId);
 
       expect(result).toEqual([
         { jobName: 'job1', log: 'Error fetching log content' },
@@ -123,29 +142,30 @@ describe('PipelineUtils', () => {
     });
 
     it('handles job with missing name', async () => {
-      const mockJob = { id: 1 } as JobSchema;
+      const mockJob = { id: 1 } as JobSummary;
 
-      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
-      mockGetPipelineJobs.mockResolvedValue([mockJob]);
+      (digitalTwin.backend.getPipelineJobs as jest.Mock).mockResolvedValue([
+        mockJob,
+      ]);
+      (digitalTwin.backend.getJobTrace as jest.Mock).mockResolvedValue(
+        'log content',
+      );
 
-      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
-      mockGetJobTrace.mockResolvedValue('log content');
-
-      const result = await fetchJobLogs(backend, pipelineId);
+      const result = await fetchJobLogs(digitalTwin.backend, pipelineId);
 
       expect(result).toEqual([{ jobName: 'Unknown', log: 'log content' }]);
     });
 
     it('handles non-string log content', async () => {
-      const mockJob = { id: 1, name: 'job1' } as JobSchema;
+      const mockJob = { id: 1, name: 'job1' } as JobSummary;
 
-      const mockGetPipelineJobs = jest.spyOn(backend, 'getPipelineJobs');
-      mockGetPipelineJobs.mockResolvedValue([mockJob]);
+      (digitalTwin.backend.getPipelineJobs as jest.Mock).mockResolvedValue([
+        mockJob,
+      ]);
 
-      const mockGetJobTrace = jest.spyOn(backend, 'getJobTrace');
-      mockGetJobTrace.mockResolvedValue('');
+      (digitalTwin.backend.getJobTrace as jest.Mock).mockResolvedValue('');
 
-      const result = await fetchJobLogs(backend, pipelineId);
+      const result = await fetchJobLogs(digitalTwin.backend, pipelineId);
 
       expect(result).toEqual([{ jobName: 'job1', log: '' }]);
     });
