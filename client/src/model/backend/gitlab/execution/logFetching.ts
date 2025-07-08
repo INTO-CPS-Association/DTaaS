@@ -18,8 +18,7 @@ export const fetchJobLogs = async (
     return [];
   }
 
-  const rawJobs = await backend.getPipelineJobs(projectId, pipelineId);
-  const jobs: JobSummary[] = rawJobs.map((job) => job as JobSummary);
+  const jobs = await backend.getPipelineJobs(projectId, pipelineId);
 
   const logPromises = jobs.map((job) => fetchSingleJobLog(backend, job));
   return (await Promise.all(logPromises)).reverse();

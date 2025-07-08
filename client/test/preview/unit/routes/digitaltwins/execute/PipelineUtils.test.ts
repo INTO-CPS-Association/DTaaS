@@ -34,7 +34,6 @@ describe('PipelineUtils', () => {
   });
 
   it('starts pipeline and handles success', async () => {
-    // const mockExecute = jest.spyOn(digitalTwin, 'execute');
     digitalTwin.lastExecutionStatus = 'success';
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
@@ -54,7 +53,6 @@ describe('PipelineUtils', () => {
   });
 
   it('starts pipeline and handles failed', async () => {
-    // const mockExecute = jest.spyOn(digitalTwin, 'execute');
     digitalTwin.lastExecutionStatus = 'failed';
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
@@ -91,7 +89,6 @@ describe('PipelineUtils', () => {
     it('fetches job logs', async () => {
       const mockJob = { id: 1, name: 'job1' } as JobSummary;
 
-      // const getPipelineJobsSpy = jest.spyOn(backend, 'getPipelineJobs');
       (digitalTwin.backend.getPipelineJobs as jest.Mock).mockResolvedValue([
         mockJob,
       ]);
