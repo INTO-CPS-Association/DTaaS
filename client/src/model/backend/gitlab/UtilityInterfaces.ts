@@ -1,7 +1,8 @@
 import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
+import { JobLog } from './types/executionHistory';
 
-// gitlab.ts
+// Instance
 export type LogEntry = {
   status: string;
   DTName: string;
@@ -238,7 +239,7 @@ export interface DigitalTwinDetails {
 export interface DigitalTwinPipelineState {
   pipelineId: number | null;
   lastExecutionStatus: string | null;
-  jobLogs: { jobName: string; log: string }[];
+  jobLogs: JobLog[];
   pipelineLoading: boolean;
   pipelineCompleted: boolean;
 }

@@ -1,4 +1,4 @@
-// util/gitlab.ts
+// Backend
 export const GROUP_NAME = 'DTaaS';
 export const DT_DIRECTORY = 'digital_twins';
 export const COMMON_LIBRARY_PROJECT_NAME = 'common';
@@ -12,10 +12,10 @@ export enum AssetTypes {
   'Digital Twin' = 'digital_twin',
 }
 
-// util/digitalTwin.ts
+// Digital Twin
 export const RUNNER_TAG = 'linux';
 
-// route/digitaltwins/execute/pipelineChecks.ts
+// Pipeline
 export const MAX_EXECUTION_TIME = 10 * 60 * 1000;
 export const PIPELINE_POLL_INTERVAL = 5000; // 5 seconds - for pipeline status checks
 export const defaultFiles = [

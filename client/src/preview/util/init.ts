@@ -1,4 +1,3 @@
-// init.ts
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { AssetTypes } from 'model/backend/gitlab/constants';
