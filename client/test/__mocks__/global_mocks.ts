@@ -1,3 +1,11 @@
+import { Gitlab } from '@gitbeaker/core';
+import { BackendInterface } from 'model/backend/gitlab/UtilityInterfaces';
+import DigitalTwin from 'preview/util/digitalTwin';
+import FileHandler from 'preview/util/fileHandler';
+import DTAssets from 'preview/util/DTAssets';
+import LibraryManager from 'preview/util/libraryManager';
+import GitlabAPI from 'model/backend/gitlab/backend';
+
 export const mockAppURL = 'https://example.com/';
 export const mockURLforDT = 'https://example.com/URL_DT';
 export const mockURLforLIB = 'https://example.com/URL_LIB';
@@ -6,7 +14,7 @@ export const mockClientID = 'mockedClientID';
 export const mockAuthority = 'https://example.com/AUTHORITY';
 export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
 export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
-export const mockGitLabScopes = 'example scopes';
+export const mockGitLabScopes = 'openid profile read_user read_repository api';
 
 export type mockUserType = {
   access_token: string;
@@ -42,25 +50,137 @@ export const mockAuthState: mockAuthStateType = {
   user: mockUser,
 };
 
-window.env = {
-  ...window.env,
-  REACT_APP_ENVIRONMENT: 'test',
-  REACT_APP_URL: 'https://foo.com',
-  REACT_APP_URL_BASENAME: 'mock_url_basename',
-  REACT_APP_URL_DTLINK: '/lab',
-  REACT_APP_URL_LIBLINK: '',
-  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-  REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-  REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
-  REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
-  REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
+export type mockGitlabInstanceType = {
+  projectId: number;
+  triggerToken: string;
+  getPipelineStatus: jest.Mock;
+};
 
-  REACT_APP_CLIENT_ID: 'abc123',
-  REACT_APP_AUTH_AUTHORITY: 'https://foo.git.com',
-  REACT_APP_REDIRECT_URI: 'https://bar.com',
-  REACT_APP_LOGOUT_REDIRECT_URI: 'https://foobar.com',
-  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+export const mockGitlabClient = new Gitlab({
+  host: 'mockedHost',
+  token: 'mockedToken',
+  requesterFn: jest.fn(),
+});
+
+export const mockBackendAPI = {
+  startPipeline: jest.fn(),
+  cancelPipeline: jest.fn(),
+  createRepositoryFile: jest.fn(),
+  editRepositoryFile: jest.fn(),
+  removeRepositoryFile: jest.fn(),
+  getRepositoryFileContent: jest.fn(),
+  listRepositoryFiles: jest.fn(),
+  getGroupByName: jest.fn(),
+  listGroupProjects: jest.fn(),
+  listPipelineJobs: jest.fn(),
+  getJobLog: jest.fn(),
+  getPipelineStatus: jest.fn(),
+  getTriggerToken: jest.fn().mockImplementation((projectId) => {
+    if (projectId === 15) {
+      return null;
+    }
+    return 'some-token';
+  }),
+} as unknown as GitlabAPI;
+
+export const mockBackendInstance: BackendInterface = {
+  projectName: 'mockedUsername',
+  api: mockBackendAPI,
+  logs: [],
+  init: jest.fn(),
+  getProjectId: jest.fn().mockReturnValue(1),
+  getCommonProjectId: jest.fn().mockReturnValue(3),
+  getExecutionLogs: jest.fn(),
+  getPipelineJobs: jest.fn(),
+  startPipeline: jest.fn(),
+  getJobTrace: jest.fn(),
+  getPipelineStatus: jest.fn(),
+};
+
+export const mockFileHandler: FileHandler = {
+  name: 'mockedName',
+  backend: mockBackendInstance,
+  createFile: jest.fn(),
+  updateFile: jest.fn(),
+  deleteDT: jest.fn(),
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getLibraryFileNames: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
+};
+
+export const mockDTAssets: DTAssets = {
+  DTName: 'mockedDTName',
+  backend: mockBackendInstance,
+  fileHandler: mockFileHandler,
+  createFiles: jest.fn(),
+  getFilesFromAsset: jest.fn(),
+  updateFileContent: jest.fn(),
+  updateLibraryFileContent: jest.fn(),
+  appendTriggerToPipeline: jest.fn(),
+  removeTriggerFromPipeline: jest.fn(),
+  delete: jest.fn(),
+  getFileContent: jest.fn(),
+  getLibraryFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
+};
+
+export const mockLibraryManager: LibraryManager = {
+  assetName: 'mockedAssetName',
+  backend: mockBackendInstance,
+  fileHandler: mockFileHandler,
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+};
+
+export const mockDigitalTwin: DigitalTwin = {
+  DTName: 'mockedDTName',
+  description: 'mockedDescription',
+  fullDescription: 'mockedFullDescription',
+  backend: mockBackendInstance,
+  DTAssets: mockDTAssets,
+  pipelineId: 1,
+  lastExecutionStatus: 'mockedStatus',
+  jobLogs: [{ jobName: 'job1', log: 'log1' }],
+  pipelineLoading: false,
+  pipelineCompleted: false,
+  descriptionFiles: ['descriptionFile'],
+  configFiles: ['configFile'],
+  lifecycleFiles: ['lifecycleFile'],
+  assetFiles: [
+    { assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] },
+  ],
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  triggerPipeline: jest.fn(),
+  execute: jest.fn(),
+  stop: jest.fn(),
+  create: jest.fn().mockResolvedValue('Success'),
+  delete: jest.fn(),
+  getDescriptionFiles: jest.fn().mockResolvedValue(['descriptionFile']),
+  getLifecycleFiles: jest.fn().mockResolvedValue(['lifecycleFile']),
+  getConfigFiles: jest.fn().mockResolvedValue(['configFile']),
+  prepareAllAssetFiles: jest.fn(),
+  getAssetFiles: jest.fn(),
+} as unknown as DigitalTwin;
+
+export const mockLibraryAsset = {
+  name: 'Asset 1',
+  path: 'path',
+  type: 'Digital Twins',
+  isPrivate: true,
+  backend: mockBackendInstance,
+  description: 'description',
+  fullDescription: 'fullDescription',
+  libraryManager: mockLibraryManager,
+  configFiles: [],
+
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  getConfigFiles: jest.fn(),
 };
 
 jest.mock('util/envUtil', () => ({
@@ -79,4 +199,29 @@ jest.mock('util/envUtil', () => ({
     { key: '2', link: 'link2' },
     { key: '3', link: 'link3' },
   ],
+}));
+
+window.env = {
+  ...window.env,
+  REACT_APP_ENVIRONMENT: 'test',
+  REACT_APP_URL: mockAppURL,
+  REACT_APP_URL_BASENAME: 'mock_url_basename',
+  REACT_APP_URL_DTLINK: '/lab',
+  REACT_APP_URL_LIBLINK: '',
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+  REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
+  REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
+  REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+  REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
+  REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
+
+  REACT_APP_CLIENT_ID: mockClientID,
+  REACT_APP_AUTH_AUTHORITY: mockAuthority,
+  REACT_APP_REDIRECT_URI: mockRedirectURI,
+  REACT_APP_LOGOUT_REDIRECT_URI: mockLogoutRedirectURI,
+  REACT_APP_GITLAB_SCOPES: mockGitLabScopes,
+};
+
+jest.mock('model/backend/gitlab/gitlabFactory', () => ({
+  createGitlabInstance: jest.fn(() => mockBackendInstance),
 }));

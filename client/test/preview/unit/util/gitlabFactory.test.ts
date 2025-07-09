@@ -8,6 +8,10 @@ jest.mock('model/backend/gitlab/backend', () => ({
   default: jest.fn().mockImplementation(() => jest.fn()),
 }));
 
+jest.mock('model/backend/gitlab/gitlabFactory', () => ({
+  ...jest.requireActual('model/backend/gitlab/gitlabFactory'),
+}));
+
 const TEST_TOKEN = 'testToken';
 const TEST_PROJECT_NAME = 'testUser';
 

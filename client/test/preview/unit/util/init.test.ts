@@ -9,59 +9,6 @@ jest.mock('preview/util/digitalTwin', () => ({
   default: DigitalTwin,
 }));
 
-const mockApi = {
-  RepositoryFiles: {
-    show: jest.fn(),
-    remove: jest.fn(),
-    edit: jest.fn(),
-    create: jest.fn(),
-  },
-  Repositories: {
-    allRepositoryTrees: jest.fn(),
-  },
-  PipelineTriggerTokens: {
-    trigger: jest.fn(),
-  },
-  Pipelines: {
-    cancel: jest.fn(),
-  },
-};
-
-const mockInit = jest.fn().mockImplementation(() => Promise.resolve());
-const mockGitlab = {
-  init: mockInit,
-  api: mockApi,
-  triggerToken: 'test-token',
-  logs: [],
-  setProjectIds: jest.fn(),
-  getProjectId: jest.fn().mockReturnValue(1),
-  getCommonProjectId: jest.fn().mockReturnValue(2),
-  getTriggerToken: jest.fn(),
-};
-
-const createGitlabInstance = jest.fn();
-jest.mock('model/backend/gitlab/instance', () => {
-  const mockGitlabInstance = jest.fn().mockImplementation(() => mockGitlab);
-  const mockGitlabAPI = jest.fn().mockImplementation(() => ({
-    getGroupByName: jest.fn(),
-    listGroupProjects: jest.fn(),
-    getTriggerToken: jest.fn(),
-    listPipelineJobs: jest.fn(),
-    getJobLog: jest.fn(),
-    getPipelineStatus: jest.fn(),
-    RepositoryFiles: mockApi.RepositoryFiles,
-    Repositories: mockApi.Repositories,
-    PipelineTriggerTokens: mockApi.PipelineTriggerTokens,
-    Pipelines: mockApi.Pipelines,
-  }));
-
-  return {
-    __esModule: true,
-    default: mockGitlabInstance,
-    GitlabAPI: mockGitlabAPI,
-  };
-});
-
 const mockGetLibrarySubfolders = jest.fn();
 jest.mock('preview/util/libraryAsset', () => ({
   getLibrarySubfolders: mockGetLibrarySubfolders,
@@ -77,12 +24,13 @@ jest.mock('preview/store/digitalTwin.slice', () => ({
   setDigitalTwin,
 }));
 
-jest.mock('model/backend/gitlab/gitlabFactory', () => ({
-  createGitlabInstance,
-}));
-
 import { fetchDigitalTwins, fetchLibraryAssets } from 'preview/util/init';
 import { getLibrarySubfolders } from 'preview/util/libraryAsset';
+import {
+  mockBackendInstance,
+  mockBackendAPI,
+} from 'test/preview/__mocks__/global_mocks';
+import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 
 describe('fetchAssets', () => {
   const dispatch = jest.fn();
@@ -90,8 +38,10 @@ describe('fetchAssets', () => {
   const mockGetDescription = jest.fn().mockResolvedValue('Mock description');
 
   beforeEach(() => {
-    mockGitlab.getProjectId = jest.fn().mockReturnValue(1);
-    mockGitlab.getCommonProjectId = jest.fn().mockReturnValue(2);
+    mockBackendInstance.getProjectId = jest.fn().mockReturnValue(1);
+    mockBackendInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
+    mockBackendInstance.init = jest.fn().mockResolvedValue(undefined);
+    (createGitlabInstance as jest.Mock).mockReturnValue(mockBackendInstance);
     getDTSubfolders.mockResolvedValue([{ name: 'DT1' }, { name: 'DT2' }]);
     mockGetLibrarySubfolders.mockResolvedValue([
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },
@@ -100,7 +50,6 @@ describe('fetchAssets', () => {
       getDescription: mockGetDescription,
     }));
     setDigitalTwin.mockImplementation(() => {});
-    createGitlabInstance.mockReturnValue({ ...mockGitlab });
   });
 
   afterEach(() => {
@@ -110,24 +59,28 @@ describe('fetchAssets', () => {
   it('should fetch library assets and set them', async () => {
     const assetType = 'models';
     await fetchLibraryAssets(dispatch, setError, assetType, true);
+
     expect(createGitlabInstance).toHaveBeenCalledTimes(1);
-    expect(getLibrarySubfolders).toHaveBeenCalledWith(1, assetType, mockGitlab);
-    expect(mockInit).toHaveBeenCalledTimes(2);
+    expect(getLibrarySubfolders).toHaveBeenCalledWith(
+      1,
+      assetType,
+      mockBackendInstance,
+    );
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(2); // restored count
   });
 
   it('should fetch digital twins and set them', async () => {
     await fetchDigitalTwins(dispatch, setError);
 
-    expect(getDTSubfolders).toHaveBeenCalledWith(1, mockApi);
+    expect(getDTSubfolders).toHaveBeenCalledWith(1, mockBackendAPI); // kept
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       'Digital Twins',
-      mockGitlab,
+      mockBackendInstance,
     );
 
-    expect(createGitlabInstance).toHaveBeenCalledTimes(3);
-    // Thrice in fetchDigitalTwins, twice in fetchLibraryAssets
-    expect(mockInit).toHaveBeenCalledTimes(5);
+    expect(createGitlabInstance).toHaveBeenCalledTimes(3); // restored count
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(5); // restored count
     expect(mockGetDescription).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledTimes(2);
 

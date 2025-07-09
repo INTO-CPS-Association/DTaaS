@@ -113,7 +113,7 @@ describe('configUtil', () => {
       const results = await getValidationResults();
       expect(results.REACT_APP_CLIENT_ID.error).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.status).toBeUndefined();
-      expect(results.REACT_APP_CLIENT_ID.value).toEqual('abc123');
+      expect(results.REACT_APP_CLIENT_ID.value).toEqual('mockedClientID');
     });
   });
 

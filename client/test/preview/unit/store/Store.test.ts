@@ -11,8 +11,7 @@ import digitalTwinReducer, {
   updateDescription,
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
-import GitlabInstance from 'model/backend/gitlab/instance';
-import GitlabAPI from 'model/backend/gitlab/backend';
+import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 import snackbarSlice, {
   hideSnackbar,
   showSnackbar,
@@ -102,11 +101,9 @@ describe('reducers', () => {
   });
 
   describe('digitalTwin reducer', () => {
-    const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
     const digitalTwin = new DigitalTwin(
       'asset1',
-      new GitlabInstance('user1', gitlabBackendAPI),
-      // Could this be a mock? (from global mock)
+      createGitlabInstance('user1', 'token1'),
     );
 
     const initialState = {
@@ -129,10 +126,9 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineCompleted', () => {
-      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', gitlabBackendAPI),
+        createGitlabInstance('user1', 'token1'),
       );
       updatedDigitalTwin.pipelineCompleted = false;
 
@@ -152,10 +148,9 @@ describe('reducers', () => {
     });
 
     it('should handle setPipelineLoading', () => {
-      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', gitlabBackendAPI),
+        createGitlabInstance('user1', 'token1'),
       );
       updatedDigitalTwin.pipelineLoading = false;
 
@@ -173,10 +168,9 @@ describe('reducers', () => {
     });
 
     it('should handle updateDescription', () => {
-      const gitlabBackendAPI = new GitlabAPI('user1', 'token1');
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        new GitlabInstance('user1', gitlabBackendAPI),
+        createGitlabInstance('user1', 'token1'),
       );
       updatedDigitalTwin.description = '';
 

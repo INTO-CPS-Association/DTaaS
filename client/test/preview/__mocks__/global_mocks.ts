@@ -14,7 +14,7 @@ export const mockClientID = 'mockedClientID';
 export const mockAuthority = 'https://example.com/AUTHORITY';
 export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
 export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
-export const mockGitLabScopes = 'example scopes';
+export const mockGitLabScopes = 'openid profile read_user read_repository api';
 
 export type mockUserType = {
   access_token: string;
@@ -221,3 +221,7 @@ window.env = {
   REACT_APP_LOGOUT_REDIRECT_URI: mockLogoutRedirectURI,
   REACT_APP_GITLAB_SCOPES: mockGitLabScopes,
 };
+
+jest.mock('model/backend/gitlab/gitlabFactory', () => ({
+  createGitlabInstance: jest.fn(() => mockBackendInstance),
+}));
