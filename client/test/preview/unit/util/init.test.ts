@@ -10,13 +10,15 @@ jest.mock('preview/util/digitalTwin', () => ({
 }));
 
 const mockGetLibrarySubfolders = jest.fn();
+const mockLibraryAsset = jest.fn();
 jest.mock('preview/util/libraryAsset', () => ({
   getLibrarySubfolders: mockGetLibrarySubfolders,
+  default: mockLibraryAsset,
 }));
 
+const setAsset = jest.fn();
 jest.mock('preview/store/assets.slice', () => ({
-  setAsset: jest.fn(),
-  setAssets: jest.fn(),
+  setAsset,
 }));
 
 const setDigitalTwin = jest.fn();
@@ -35,54 +37,76 @@ import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 describe('fetchAssets', () => {
   const dispatch = jest.fn();
   const setError = jest.fn();
-  const mockGetDescription = jest.fn().mockResolvedValue('Mock description');
+  const mockDTGetDescription = jest.fn().mockResolvedValue('Mock description');
+  const mockLibraryGetDescription = jest
+    .fn()
+    .mockResolvedValue('Mock library description');
 
   beforeEach(() => {
     mockBackendInstance.getProjectId = jest.fn().mockReturnValue(1);
     mockBackendInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
-    mockBackendInstance.init = jest.fn().mockResolvedValue(undefined);
+    mockBackendInstance.init = jest.fn();
     (createGitlabInstance as jest.Mock).mockReturnValue(mockBackendInstance);
     getDTSubfolders.mockResolvedValue([{ name: 'DT1' }, { name: 'DT2' }]);
     mockGetLibrarySubfolders.mockResolvedValue([
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },
+      { name: 'asset2', path: 'path2', type: 'models', isPrivate: false },
     ]);
     DigitalTwin.mockImplementation(() => ({
-      getDescription: mockGetDescription,
+      getDescription: mockDTGetDescription,
     }));
     setDigitalTwin.mockImplementation(() => {});
+    mockLibraryAsset.mockImplementation(() => ({
+      getDescription: mockLibraryGetDescription,
+    }));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  it('should throw an error if gitlab fails to initialize', async () => {
+    const errorMessage = 'Failed to initialize Gitlab';
+    (mockBackendInstance.init as jest.Mock).mockRejectedValue(errorMessage);
+    const assetType = 'functions';
+    await fetchLibraryAssets(dispatch, setError, assetType, true);
+    expect(setError).toHaveBeenCalledWith(
+      `An error occurred while fetching assets: ${errorMessage}`,
+    );
+  });
+
   it('should fetch library assets and set them', async () => {
     const assetType = 'models';
     await fetchLibraryAssets(dispatch, setError, assetType, true);
 
-    expect(createGitlabInstance).toHaveBeenCalledTimes(1);
+    expect(createGitlabInstance).toHaveBeenCalledTimes(2);
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       assetType,
       mockBackendInstance,
     );
-    expect(mockBackendInstance.init).toHaveBeenCalledTimes(2); // restored count
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(3);
+    expect(mockLibraryGetDescription).toHaveBeenCalledTimes(2);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+
+    const { calls } = setAsset.mock;
+    expect(calls.length).toBe(2);
   });
 
   it('should fetch digital twins and set them', async () => {
     await fetchDigitalTwins(dispatch, setError);
 
-    expect(getDTSubfolders).toHaveBeenCalledWith(1, mockBackendAPI); // kept
+    expect(getDTSubfolders).toHaveBeenCalledWith(1, mockBackendAPI);
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       'Digital Twins',
       mockBackendInstance,
     );
 
-    expect(createGitlabInstance).toHaveBeenCalledTimes(3); // restored count
-    expect(mockBackendInstance.init).toHaveBeenCalledTimes(5); // restored count
-    expect(mockGetDescription).toHaveBeenCalledTimes(2);
-    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(createGitlabInstance).toHaveBeenCalledTimes(4);
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(6);
+    expect(mockDTGetDescription).toHaveBeenCalledTimes(2);
+    expect(dispatch).toHaveBeenCalledTimes(4);
 
     const { calls } = setDigitalTwin.mock;
     expect(calls.length).toBeGreaterThan(0);

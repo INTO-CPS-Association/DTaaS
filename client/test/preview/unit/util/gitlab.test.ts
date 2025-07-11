@@ -1,9 +1,6 @@
 import GitlabInstance from 'model/backend/gitlab/instance';
 import GitlabAPI from 'model/backend/gitlab/backend';
-import {
-  BackendInterface,
-  JobSummary,
-} from 'model/backend/gitlab/UtilityInterfaces';
+import { JobSummary } from 'model/backend/gitlab/UtilityInterfaces';
 import {
   COMMON_LIBRARY_PROJECT_NAME,
   GROUP_NAME,
@@ -13,13 +10,72 @@ import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 jest.mock('@gitbeaker/rest');
 
 describe('GitlabInstance', () => {
-  let gitlab: BackendInterface;
+  let gitlab: GitlabInstance;
   const mockApi: GitlabAPI = mockBackendAPI;
 
   beforeEach(() => {
     jest.clearAllMocks();
-
     gitlab = new GitlabInstance('user1', mockApi);
+  });
+
+  it('should start pipeline', async () => {
+    jest.spyOn(mockApi, 'startPipeline').mockResolvedValue({
+      id: 1,
+      status: 'running',
+    });
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 5, name: GROUP_NAME });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 2, name: 'user1' },
+      { id: 5, name: 'common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+    const result = await gitlab.startPipeline(2, 'ref');
+
+    expect(result).toEqual({ id: 1, status: 'running' });
+    expect(mockApi.startPipeline).toHaveBeenCalledWith(
+      2,
+      'ref',
+      undefined,
+      'test-token',
+    );
+  });
+
+  it('should start pipeline with variables', async () => {
+    jest.spyOn(mockApi, 'startPipeline').mockResolvedValue({
+      id: 1,
+      status: 'running',
+    });
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 5, name: GROUP_NAME });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 2, name: 'user1' },
+      { id: 5, name: 'common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+    const result = await gitlab.startPipeline(2, 'ref', {
+      testKey: 'testValue',
+    });
+
+    expect(result).toEqual({ id: 1, status: 'running' });
+    expect(mockApi.startPipeline).toHaveBeenCalledWith(
+      2,
+      'ref',
+      { testKey: 'testValue' },
+      'test-token',
+    );
+  });
+
+  it('should throw error if triggerToken is not provided when starting pipeline', async () => {
+    await expect(gitlab.startPipeline(0, 'ref', {})).rejects.toThrow(
+      'Trigger token is not set',
+    );
   });
 
   it('should initialize with a project ID and trigger token', async () => {
@@ -36,11 +92,9 @@ describe('GitlabInstance', () => {
 
     expect(gitlab.getProjectId()).toBe(1);
     expect(gitlab.getCommonProjectId()).toBe(2);
-    const token = await mockApi.getTriggerToken(1);
-    expect(token).toBe('test-token');
     expect(mockApi.getGroupByName).toHaveBeenCalledWith(GROUP_NAME);
     expect(mockApi.listGroupProjects).toHaveBeenCalledWith(1);
-    expect(mockApi.getTriggerToken).toHaveBeenCalledWith(1); // Buggy? Should be 2 as I just called it?
+    expect(mockApi.getTriggerToken).toHaveBeenCalledWith(1);
   });
 
   it('should throw error if project is not found', async () => {
@@ -160,5 +214,25 @@ describe('GitlabInstance', () => {
       projectId,
       pipelineId,
     );
+  });
+
+  it('should get triggerToken', async () => {
+    jest.spyOn(mockApi, 'startPipeline').mockResolvedValue({
+      id: 1,
+      status: 'running',
+    });
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 5, name: GROUP_NAME });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 2, name: 'user1' },
+      { id: 5, name: 'common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+    const result = gitlab.getTriggerToken();
+
+    expect(result).toEqual('test-token');
   });
 });

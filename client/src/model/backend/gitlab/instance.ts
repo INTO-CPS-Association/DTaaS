@@ -44,7 +44,7 @@ export class GitlabInstance implements BackendInterface {
     }
   }
 
-  public startPipeline(
+  public async startPipeline(
     projectId: ProjectId,
     ref: string,
     variables?: Record<string, string>,

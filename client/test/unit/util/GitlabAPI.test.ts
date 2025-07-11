@@ -61,6 +61,12 @@ describe('GitlabAPI', () => {
       ]);
     });
 
+    it('throws error when starting pipeline without trigger token', async () => {
+      await expect(
+        await api.startPipeline(4, 'testReference', { bar: 'bar' }),
+      ).rejects.toThrow('Trigger token is required to start a pipeline');
+    });
+
     it('starts pipeline with correct parameters', async () => {
       (mockClient.PipelineTriggerTokens.trigger as jest.Mock).mockResolvedValue(
         { id: 555, status: 'test-status' },
