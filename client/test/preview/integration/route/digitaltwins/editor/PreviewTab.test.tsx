@@ -4,7 +4,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import * as React from 'react';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import { Provider } from 'react-redux';
 import { act, render, screen } from '@testing-library/react';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';

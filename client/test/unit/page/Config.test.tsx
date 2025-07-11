@@ -3,6 +3,16 @@ import Config from 'route/config/Config';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
+jest.mock('@mui/material/CircularProgress', () => ({
+  __esModule: true,
+  default: jest.requireActual('@mui/material/CircularProgress').default,
+}));
+
+jest.mock('components/LinkButtons', () => ({
+  __esModule: true,
+  ...jest.requireActual('components/LinkButtons'),
+}));
+
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

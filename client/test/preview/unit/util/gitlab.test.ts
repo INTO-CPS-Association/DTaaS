@@ -8,7 +8,7 @@ import {
   COMMON_LIBRARY_PROJECT_NAME,
   GROUP_NAME,
 } from 'model/backend/gitlab/constants';
-import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 
 jest.mock('@gitbeaker/rest');
 

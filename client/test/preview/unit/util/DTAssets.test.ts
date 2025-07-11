@@ -2,7 +2,7 @@ import DTAssets from 'preview/util/DTAssets';
 import {
   mockFileHandler,
   mockBackendInstance,
-} from 'test/preview/__mocks__/global_mocks';
+} from 'test/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileHandler', () => ({
   default: jest.fn().mockImplementation(() => mockFileHandler),

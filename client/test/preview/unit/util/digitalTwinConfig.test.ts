@@ -1,6 +1,6 @@
 import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin from 'preview/util/digitalTwin';
-import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 
 const mockApi = mockBackendAPI;
 

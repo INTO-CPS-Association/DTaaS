@@ -5,6 +5,11 @@ import { TabComponent, constructURL } from 'components/tab/TabComponent';
 import { assetType } from 'route/library/LibraryTabData';
 import { createCombinedTabs, createTabs } from 'route/library/Library';
 
+jest.mock('components/tab/TabComponent', () => ({
+  __esModule: true,
+  ...jest.requireActual('components/tab/TabComponent'),
+}));
+
 describe('TabComponent', () => {
   const assetTypeTabs = createTabs();
   const scopeTabs = createCombinedTabs();

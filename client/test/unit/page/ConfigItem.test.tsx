@@ -9,6 +9,11 @@ import {
 } from 'route/config/ConfigItems';
 import { cleanup, render, screen } from '@testing-library/react';
 
+jest.mock('@mui/material/CircularProgress', () => ({
+  __esModule: true,
+  default: jest.requireActual('@mui/material/CircularProgress').default,
+}));
+
 describe('ConfigItem', () => {
   afterEach(() => {
     cleanup();

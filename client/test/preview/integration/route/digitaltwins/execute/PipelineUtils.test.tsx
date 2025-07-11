@@ -1,7 +1,7 @@
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import cleanLog from 'model/backend/gitlab/cleanLog';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
 import { JobSchema } from '@gitbeaker/rest';
 import DigitalTwin from 'preview/util/digitalTwin';

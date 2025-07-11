@@ -3,7 +3,7 @@ import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
 import store from 'store/store';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

@@ -7,7 +7,7 @@ import {
   FileState,
 } from 'model/backend/gitlab/UtilityInterfaces';
 import FileHandler from 'preview/util/fileHandler';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileHandler');
 jest.mock('model/backend/gitlab/UtilityInterfaces');

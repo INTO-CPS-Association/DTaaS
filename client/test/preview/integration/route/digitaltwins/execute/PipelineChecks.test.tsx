@@ -2,7 +2,7 @@ import * as PipelineChecks from 'preview/route/digitaltwins/execute/pipelineChec
 import * as PipelineUtils from 'preview/route/digitaltwins/execute/pipelineUtils';
 import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
 import { setDigitalTwin } from 'preview/store/digitalTwin.slice';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
 
 jest.useFakeTimers();

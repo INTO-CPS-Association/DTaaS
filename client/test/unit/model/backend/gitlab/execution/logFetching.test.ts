@@ -9,7 +9,7 @@ import {
   countFailedJobs,
 } from 'model/backend/gitlab/execution/logFetching';
 import { JobLog } from 'model/backend/gitlab/types/executionHistory';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 
 describe('logFetching', () => {
   const mockJobs = [

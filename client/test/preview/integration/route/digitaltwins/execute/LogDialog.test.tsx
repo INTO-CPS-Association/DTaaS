@@ -7,7 +7,7 @@ import digitalTwinReducer, {
   setDigitalTwin,
   setJobLogs,
 } from 'preview/store/digitalTwin.slice';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 
 const store = configureStore({
   reducer: combineReducers({

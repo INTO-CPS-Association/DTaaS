@@ -5,7 +5,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from 'store/store';
 import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import { initDigitalTwin } from 'preview/util/init';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { validateFiles } from 'preview/util/fileUtils';
 
 jest.mock('react-redux', () => ({

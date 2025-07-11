@@ -13,7 +13,7 @@ import DigitalTwin from 'preview/util/digitalTwin';
 import {
   mockBackendInstance,
   mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+} from 'test/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import LibraryAsset from 'preview/util/libraryAsset';
 import cartSlice, { addToCart } from 'preview/store/cart.slice';

@@ -8,7 +8,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

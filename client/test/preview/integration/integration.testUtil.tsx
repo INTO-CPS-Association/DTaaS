@@ -8,7 +8,7 @@ import store from 'store/store';
 import { configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockAuthState, mockAuthStateType } from '../__mocks__/global_mocks';
+import { mockAuthState, mockAuthStateType } from 'test/__mocks__/global_mocks';
 
 export const previewStore = configureStore({
   reducer: {

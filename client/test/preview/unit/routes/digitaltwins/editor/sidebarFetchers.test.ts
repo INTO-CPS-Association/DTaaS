@@ -1,7 +1,4 @@
-import {
-  mockDigitalTwin,
-  mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
 import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
 import * as FileUtils from 'preview/util/fileUtils';
 

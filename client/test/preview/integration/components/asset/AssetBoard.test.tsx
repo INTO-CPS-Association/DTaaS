@@ -12,7 +12,7 @@ import snackbarSlice from 'preview/store/snackbar.slice';
 import {
   mockBackendInstance,
   mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+} from 'test/__mocks__/global_mocks';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
 import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import DigitalTwin from 'preview/util/digitalTwin';

@@ -29,7 +29,7 @@ import { getLibrarySubfolders } from 'preview/util/libraryAsset';
 import {
   mockBackendInstance,
   mockBackendAPI,
-} from 'test/preview/__mocks__/global_mocks';
+} from 'test/__mocks__/global_mocks';
 import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 
 describe('fetchAssets', () => {

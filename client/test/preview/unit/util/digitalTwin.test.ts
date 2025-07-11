@@ -2,7 +2,7 @@ import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
 import { GROUP_NAME, RUNNER_TAG } from 'model/backend/gitlab/constants';
-import { mockBackendAPI } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 
 const mockGitlabInstance = {
   api: mockBackendAPI,

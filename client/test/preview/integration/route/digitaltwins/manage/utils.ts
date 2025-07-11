@@ -9,7 +9,7 @@ import snackbarReducer from 'preview/store/snackbar.slice';
 import {
   mockBackendInstance,
   mockLibraryAsset,
-} from 'test/preview/__mocks__/global_mocks';
+} from 'test/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
 import LibraryAsset from 'preview/util/libraryAsset';
 

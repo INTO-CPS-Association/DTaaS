@@ -2,7 +2,7 @@ import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunc
 import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import * as FileUtils from 'preview/util/fileUtils';
 import * as SidebarFetchers from 'preview/route/digitaltwins/editor/sidebarFetchers';
-import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 
 jest.mock('preview/util/fileUtils');
 jest.mock('preview/route/digitaltwins/editor/sidebarFetchers');

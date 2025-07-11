@@ -12,7 +12,7 @@ import fileSlice from 'preview/store/file.slice';
 import libraryConfigFilesSlice from 'preview/store/libraryConfigFiles.slice';
 import DigitalTwin from 'preview/util/digitalTwin';
 import LibraryAsset from 'preview/util/libraryAsset';
-import { mockBackendInstance } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import LibraryManager from 'preview/util/libraryManager';
 
 jest.mock('react-redux', () => ({
