@@ -63,7 +63,7 @@ describe('GitlabAPI', () => {
 
     it('throws error when starting pipeline without trigger token', async () => {
       await expect(
-        await api.startPipeline(4, 'testReference', { bar: 'bar' }),
+        api.startPipeline(4, 'testReference', { bar: 'bar' }),
       ).rejects.toThrow('Trigger token is required to start a pipeline');
     });
 
