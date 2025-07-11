@@ -28,6 +28,6 @@
   "modulePaths": ["<rootDir>/src/"],
   "moduleNameMapper": {
     "^test/(.*)$": "<rootDir>/test/$1",
-    "\\.(css|less|scss)$": "<rootDir>/test/preview/__mocks__/styleMock.ts"
+    "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts"
   }
 }
