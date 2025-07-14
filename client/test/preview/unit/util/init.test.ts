@@ -26,7 +26,11 @@ jest.mock('preview/store/digitalTwin.slice', () => ({
   setDigitalTwin,
 }));
 
-import { fetchDigitalTwins, fetchLibraryAssets } from 'preview/util/init';
+import {
+  fetchDigitalTwins,
+  fetchLibraryAssets,
+  initDigitalTwin,
+} from 'preview/util/init';
 import { getLibrarySubfolders } from 'preview/util/libraryAsset';
 import {
   mockBackendInstance,
@@ -119,5 +123,39 @@ describe('fetchAssets', () => {
       assetName: 'DT2',
       digitalTwin: expect.objectContaining(DigitalTwin.prototype),
     });
+  });
+
+  it('initializes a DigitalTwin with initDigitalTwin', async () => {
+    const DT = await initDigitalTwin('my digital twin');
+    expect(createGitlabInstance).toHaveBeenCalledWith('', '');
+    expect(mockBackendInstance.init).toHaveBeenCalled();
+    expect(DigitalTwin).toHaveBeenCalledWith(
+      'my digital twin',
+      mockBackendInstance,
+    );
+    expect(DT).toEqual(new DigitalTwin('my digital twin', mockBackendInstance));
+  });
+
+  it('initializes a DigitalTwin with initDigitalTwin with sessionStorage', async () => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn((itemName) => {
+          if (itemName === 'username') return 'my username';
+          if (itemName === 'access_token') return 'my token';
+          return null;
+        }),
+      },
+    });
+    const DT = await initDigitalTwin('my digital twin');
+    expect(createGitlabInstance).toHaveBeenCalledWith(
+      'my username',
+      'my token',
+    );
+    expect(mockBackendInstance.init).toHaveBeenCalled();
+    expect(DigitalTwin).toHaveBeenCalledWith(
+      'my digital twin',
+      mockBackendInstance,
+    );
+    expect(DT).toEqual(new DigitalTwin('my digital twin', mockBackendInstance));
   });
 });

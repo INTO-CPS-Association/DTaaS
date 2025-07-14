@@ -180,6 +180,7 @@ describe('FileHandler', () => {
       filePath,
       false,
     );
+    expect(fileHandler.backend.getCommonProjectId).toHaveBeenCalled();
     expect(mockApi.listRepositoryFiles).toHaveBeenCalledWith(
       2,
       filePath,
@@ -187,5 +188,28 @@ describe('FileHandler', () => {
       true,
     );
     expect(fileNames).toEqual(['config1.json', 'foo.yml']);
+  });
+
+  it('should get private Library config file names', async () => {
+    const filePath = 'common/functions/Functions3';
+    (mockApi.listRepositoryFiles as jest.Mock).mockResolvedValue([
+      {
+        type: 'blob',
+        name: 'privateConfig.json',
+        path: 'common/functions/Functions3/privateConfig.json',
+      },
+    ]);
+    const fileNames = await fileHandler.getLibraryConfigFileNames(
+      filePath,
+      true,
+    );
+    expect(fileHandler.backend.getProjectId).toHaveBeenCalled();
+    expect(mockApi.listRepositoryFiles).toHaveBeenCalledWith(
+      1,
+      filePath,
+      undefined,
+      true,
+    );
+    expect(fileNames).toEqual(['privateConfig.json']);
   });
 });
