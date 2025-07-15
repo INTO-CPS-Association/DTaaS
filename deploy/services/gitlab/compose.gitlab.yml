@@ -1,4 +1,3 @@
-# Reference: https://docs.gitlab.com/ee/install/docker/installation.html
 services:
   gitlab:
     image: 'gitlab/gitlab-ce:17.9.2-ce.0'
@@ -9,23 +8,40 @@ services:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://${SERVER_DNS}/gitlab'
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
+
         nginx['listen_port'] = 80
         nginx['enable'] = true
         nginx['listen_https'] = false
         nginx['redirect_http_to_https'] = false
         letsencrypt['enable'] = false
+
+        ## Container Registry (HTTP on port 5050)
+        gitlab_rails['registry_enabled'] = true
+        registry_external_url 'http://${SERVER_DNS}:5050'
+        registry['enable'] = true
+        registry_nginx['enable'] = true
+        registry_nginx['listen_port'] = 5050
+        registry_nginx['listen_https'] = false
+
     volumes:
       - '${DTAAS_DIR}/deploy/services/gitlab/config:/etc/gitlab'
       - '${DTAAS_DIR}/deploy/services/gitlab/logs:/var/log/gitlab'
       - '${DTAAS_DIR}/deploy/services/gitlab/data:/var/opt/gitlab'
     shm_size: '256m'
+
+    ports:
+      - '5050:5050'     # registry
+      - '2424:2424'     # ssh
+
     labels:
+      # GitLab Web UI via Traefik
       - "traefik.enable=true"
       - "traefik.http.routers.gitlab.entryPoints=web-secure"
-      - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/gitlab`)"
+      - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS}`) && PathPrefix(`/gitlab`)"
       - "traefik.http.routers.gitlab.service=gitlab"
       - "traefik.http.services.gitlab.loadbalancer.server.port=80"
       - "traefik.http.routers.gitlab.tls=true"
+
     networks:
       - dtaas-frontend
 

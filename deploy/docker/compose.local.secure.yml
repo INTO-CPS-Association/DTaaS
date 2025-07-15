@@ -13,11 +13,15 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
+      - "--certificatesresolvers.manual.acme.tlschallenge=true"
+      - "--certificatesresolvers.manual.acme.email=your-email@domain.com"
+      - "--certificatesresolvers.manual.acme.storage=/etc/traefik-certs/acme.json"
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"
       - "${DTAAS_DIR}/deploy/docker/dynamic/tls.local.yml:/etc/traefik/dynamic/tls.yml"
       - "${DTAAS_DIR}/deploy/docker/certs:/etc/traefik-certs"
     networks:
@@ -31,8 +35,10 @@ services:
       - "${DTAAS_DIR}/deploy/config/client/env.local.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.client.rule=Host(`release.dtaas-digitaltwin.com`)"
+      - "traefik.http.routers.client.entrypoints=web-secure"
       - "traefik.http.routers.client.tls=true"
+      - "traefik.http.routers.client.tls.certresolver=manual"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
     networks:
       - frontend
@@ -49,8 +55,10 @@ services:
     shm_size: 512m
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`)"
+      - "traefik.http.routers.u1.rule=Host(`release.dtaas-digitaltwin.com`) && PathPrefix(`/${username1}`)"
+      - "traefik.http.routers.u1.entrypoints=web-secure"
       - "traefik.http.routers.u1.tls=true"
+      - "traefik.http.routers.u1.tls.certresolver=manual"
     networks:
       - users
 
