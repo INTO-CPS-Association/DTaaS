@@ -1,5 +1,5 @@
 import * as PipelineHandlers from 'preview/route/digitaltwins/execute/pipelineHandler';
-import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,

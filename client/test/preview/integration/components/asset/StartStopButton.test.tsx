@@ -15,7 +15,7 @@ import digitalTwinReducer, {
 } from 'preview/store/digitalTwin.slice';
 import { handleButtonClick } from 'preview/route/digitaltwins/execute/pipelineHandler';
 import '@testing-library/jest-dom';
-import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 
 jest.mock('preview/route/digitaltwins/execute/pipelineHandler', () => ({
   handleButtonClick: jest.fn(),

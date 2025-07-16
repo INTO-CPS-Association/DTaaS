@@ -10,10 +10,8 @@ import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
 import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 import * as React from 'react';
 import DigitalTwin from 'preview/util/digitalTwin';
-import {
-  mockBackendInstance,
-  mockLibraryAsset,
-} from 'test/__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import { handleFileClick } from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import LibraryAsset from 'preview/util/libraryAsset';
 import cartSlice, { addToCart } from 'preview/store/cart.slice';

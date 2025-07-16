@@ -11,7 +11,10 @@ import digitalTwinReducer, {
   setDigitalTwin,
 } from 'preview/store/digitalTwin.slice';
 import snackbarSlice from 'preview/store/snackbar.slice';
-import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { RootState } from 'store/store';
 
 jest.mock('react-redux', () => ({

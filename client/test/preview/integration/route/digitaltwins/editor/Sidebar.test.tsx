@@ -13,10 +13,8 @@ import {
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import * as React from 'react';
-import {
-  mockBackendInstance,
-  mockLibraryAsset,
-} from 'test/__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
+import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import DigitalTwin from 'preview/util/digitalTwin';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import cartSlice, { addToCart } from 'preview/store/cart.slice';

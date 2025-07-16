@@ -26,7 +26,7 @@ import fileSlice, {
   renameFile,
 } from 'preview/store/file.slice';
 import LibraryAsset from 'preview/util/libraryAsset';
-import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
+import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
 import cartSlice, {
   addToCart,
   clearCart,

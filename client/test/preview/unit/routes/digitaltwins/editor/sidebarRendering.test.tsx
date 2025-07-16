@@ -3,7 +3,10 @@ import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunc
 import { render, screen, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import { SimpleTreeView } from '@mui/x-tree-view';
-import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { FileState } from 'model/backend/gitlab/UtilityInterfaces';
 
 describe('SidebarRendering', () => {

@@ -4,7 +4,10 @@ import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunc
 import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store, { RootState } from 'store/store';
-import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
+import {
+  mockDigitalTwin,
+  mockLibraryAsset,
+} from 'test/preview/__mocks__/global_mocks';
 import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
 import * as ReactRedux from 'react-redux';
 

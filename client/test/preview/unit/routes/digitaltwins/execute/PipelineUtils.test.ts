@@ -3,7 +3,7 @@ import {
   updatePipelineStateOnCompletion,
 } from 'preview/route/digitaltwins/execute/pipelineUtils';
 import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
-import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
 import {
   BackendInterface,
   JobSummary,
