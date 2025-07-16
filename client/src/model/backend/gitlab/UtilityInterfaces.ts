@@ -1,6 +1,6 @@
 import { FileType } from './constants';
 import { IFile } from '../interfaces/ifile';
-import { JobLog } from './types/executionHistory';
+import { DigitalTwinPipelineState } from './types/executionHistory';
 
 // Instance
 export type LogEntry = {
@@ -234,14 +234,6 @@ export interface DigitalTwinDetails {
   DTName: string;
   description: string | undefined;
   fullDescription: string;
-}
-
-export interface DigitalTwinPipelineState {
-  pipelineId: number | null;
-  lastExecutionStatus: string | null;
-  jobLogs: JobLog[];
-  pipelineLoading: boolean;
-  pipelineCompleted: boolean;
 }
 
 export interface DigitalTwinFiles {

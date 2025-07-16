@@ -9,6 +9,7 @@ import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin from './digitalTwin';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   const { backend } = digitalTwin;
@@ -24,7 +25,7 @@ export function logSuccess(digitalTwin: DigitalTwin, RUNNER_TAG: string): void {
     DTName: digitalTwin.DTName,
     runnerTag: RUNNER_TAG,
   });
-  digitalTwin.lastExecutionStatus = 'success';
+  digitalTwin.lastExecutionStatus = ExecutionStatus.SUCCESS;
 }
 
 export function logError(
@@ -38,7 +39,7 @@ export function logError(
     DTName: digitalTwin.DTName,
     runnerTag: RUNNER_TAG,
   });
-  digitalTwin.lastExecutionStatus = 'error';
+  digitalTwin.lastExecutionStatus = ExecutionStatus.ERROR;
 }
 
 export function getUpdatedLibraryFile(

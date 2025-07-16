@@ -7,9 +7,19 @@ export enum ExecutionStatus {
   FAILED = 'failed',
   CANCELED = 'canceled',
   TIMEOUT = 'timeout',
+  SUCCESS = 'success',
+  ERROR = 'error',
 }
 
 export interface JobLog {
   jobName: JobName;
   log: LogContent;
+}
+
+export interface DigitalTwinPipelineState {
+  pipelineId: number | null;
+  lastExecutionStatus: ExecutionStatus | null;
+  jobLogs: JobLog[];
+  pipelineLoading: boolean;
+  pipelineCompleted: boolean;
 }

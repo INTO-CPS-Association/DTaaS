@@ -8,6 +8,7 @@ import {
   BackendInterface,
   JobSummary,
 } from 'model/backend/gitlab/UtilityInterfaces';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 
 describe('PipelineUtils', () => {
   let digitalTwin: typeof mockDigitalTwin;
@@ -34,7 +35,7 @@ describe('PipelineUtils', () => {
   });
 
   it('starts pipeline and handles success', async () => {
-    digitalTwin.lastExecutionStatus = 'success';
+    digitalTwin.lastExecutionStatus = ExecutionStatus.SUCCESS;
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
 
@@ -53,7 +54,7 @@ describe('PipelineUtils', () => {
   });
 
   it('starts pipeline and handles failed', async () => {
-    digitalTwin.lastExecutionStatus = 'failed';
+    digitalTwin.lastExecutionStatus = ExecutionStatus.FAILED;
 
     await startPipeline(digitalTwin, dispatch, setLogButtonDisabled);
 

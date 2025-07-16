@@ -33,8 +33,9 @@ import {
 } from 'preview/util/init';
 import { getLibrarySubfolders } from 'preview/util/libraryAsset';
 import {
-  mockBackendInstance,
+  mockAuthority,
   mockBackendAPI,
+  mockBackendInstance,
 } from 'test/__mocks__/global_mocks';
 import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 
@@ -127,7 +128,7 @@ describe('fetchAssets', () => {
 
   it('initializes a DigitalTwin with initDigitalTwin', async () => {
     const DT = await initDigitalTwin('my digital twin');
-    expect(createGitlabInstance).toHaveBeenCalledWith('', '');
+    expect(createGitlabInstance).toHaveBeenCalledWith('', '', mockAuthority);
     expect(mockBackendInstance.init).toHaveBeenCalled();
     expect(DigitalTwin).toHaveBeenCalledWith(
       'my digital twin',
@@ -150,6 +151,7 @@ describe('fetchAssets', () => {
     expect(createGitlabInstance).toHaveBeenCalledWith(
       'my username',
       'my token',
+      mockAuthority,
     );
     expect(mockBackendInstance.init).toHaveBeenCalled();
     expect(DigitalTwin).toHaveBeenCalledWith(

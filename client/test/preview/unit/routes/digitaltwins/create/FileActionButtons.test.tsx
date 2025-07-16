@@ -27,6 +27,6 @@ describe('FileActionButtons', () => {
 
   it('handles click on change file name button', () => {
     screen.getByText('Rename File').click();
-    expect(setOpenDeleteFileDialog).not.toBeCalled();
+    expect(setOpenDeleteFileDialog).not.toHaveBeenCalled();
   });
 });

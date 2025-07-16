@@ -24,9 +24,9 @@ export class GitlabInstance implements BackendInterface {
   public logs: LogEntry[];
 
   // Defined during initialization
-  private projectId: ProjectId = 0;
+  private projectId!: ProjectId;
 
-  public commonProjectId: ProjectId = 0;
+  public commonProjectId!: ProjectId;
 
   private triggerToken: string | null = null;
 

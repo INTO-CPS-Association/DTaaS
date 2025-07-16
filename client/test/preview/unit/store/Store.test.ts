@@ -103,7 +103,7 @@ describe('reducers', () => {
   describe('digitalTwin reducer', () => {
     const digitalTwin = new DigitalTwin(
       'asset1',
-      createGitlabInstance('user1', 'token1'),
+      createGitlabInstance('user1', 'token1', 'mockAuthority'),
     );
 
     const initialState = {
@@ -128,7 +128,7 @@ describe('reducers', () => {
     it('should handle setPipelineCompleted', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        createGitlabInstance('user1', 'token1'),
+        createGitlabInstance('user1', 'token1', 'auth1'),
       );
       updatedDigitalTwin.pipelineCompleted = false;
 
@@ -150,7 +150,7 @@ describe('reducers', () => {
     it('should handle setPipelineLoading', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        createGitlabInstance('user1', 'token1'),
+        createGitlabInstance('user1', 'token1', 'auth1'),
       );
       updatedDigitalTwin.pipelineLoading = false;
 
@@ -170,7 +170,7 @@ describe('reducers', () => {
     it('should handle updateDescription', () => {
       const updatedDigitalTwin = new DigitalTwin(
         'asset1',
-        createGitlabInstance('user1', 'token1'),
+        createGitlabInstance('user1', 'token1', 'auth1'),
       );
       updatedDigitalTwin.description = '';
 

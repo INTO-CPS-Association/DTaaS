@@ -9,6 +9,7 @@ import {
 } from 'preview/store/digitalTwin.slice';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'preview/store/snackbar.slice';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 
 export const startPipeline = async (
   digitalTwin: DigitalTwin,
@@ -17,14 +18,14 @@ export const startPipeline = async (
 ) => {
   await digitalTwin.execute();
   const executionStatusMessage =
-    digitalTwin.lastExecutionStatus === 'success'
+    digitalTwin.lastExecutionStatus === ExecutionStatus.SUCCESS
       ? `Execution started successfully for ${formatName(digitalTwin.DTName)}. Wait until completion for the logs...`
       : `Execution ${digitalTwin.lastExecutionStatus} for ${formatName(digitalTwin.DTName)}`;
   dispatch(
     showSnackbar({
       message: executionStatusMessage,
       severity:
-        digitalTwin.lastExecutionStatus === 'success' ? 'success' : 'error',
+        digitalTwin.lastExecutionStatus === ExecutionStatus.SUCCESS ? ExecutionStatus.SUCCESS : ExecutionStatus.ERROR,
     }),
   );
   setLogButtonDisabled(true);

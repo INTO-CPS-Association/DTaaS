@@ -3,6 +3,7 @@ import DigitalTwin, { formatName } from 'preview/util/digitalTwin';
 import * as dtUtils from 'preview/util/digitalTwinUtils';
 import { GROUP_NAME, RUNNER_TAG } from 'model/backend/gitlab/constants';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 
 const mockGitlabInstance = {
   api: mockBackendAPI,
@@ -108,7 +109,7 @@ describe('DigitalTwin', () => {
     const pipelineId = await dt.execute();
 
     expect(pipelineId).toBe(123);
-    expect(dt.lastExecutionStatus).toBe('success');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.SUCCESS);
     expect(mockGitlabInstance.startPipeline).toHaveBeenCalledWith(1, 'main', {
       DTName: 'test-DTName',
       RunnerTag: RUNNER_TAG,
@@ -123,7 +124,7 @@ describe('DigitalTwin', () => {
       DTName: 'test-DTName',
       runnerTag: RUNNER_TAG,
     });
-    expect(dt.lastExecutionStatus).toBe('success');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.SUCCESS);
   });
 
   it('should log error when triggering pipeline fails', async () => {
@@ -134,7 +135,7 @@ describe('DigitalTwin', () => {
     const pipelineId = await dt.execute();
 
     expect(pipelineId).toBeNull();
-    expect(dt.lastExecutionStatus).toBe('error');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.ERROR);
   });
 
   it('should handle non-Error thrown during pipeline execution', async () => {
@@ -145,7 +146,7 @@ describe('DigitalTwin', () => {
     const pipelineId = await dt.execute();
 
     expect(pipelineId).toBeNull();
-    expect(dt.lastExecutionStatus).toBe('error');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.ERROR);
   });
 
   it('should stop the parent pipeline and update status', async () => {
@@ -154,7 +155,7 @@ describe('DigitalTwin', () => {
     await dt.stop(1, 'parentPipeline');
 
     expect(mockBackendAPI.cancelPipeline).toHaveBeenCalled();
-    expect(dt.lastExecutionStatus).toBe('canceled');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.CANCELED);
   });
 
   it('should stop the child pipeline and update status', async () => {
@@ -163,7 +164,7 @@ describe('DigitalTwin', () => {
     await dt.stop(1, 'childPipeline');
 
     expect(mockBackendAPI.cancelPipeline).toHaveBeenCalled();
-    expect(dt.lastExecutionStatus).toBe('canceled');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.CANCELED);
   });
 
   it('should handle stop error', async () => {
@@ -173,7 +174,7 @@ describe('DigitalTwin', () => {
 
     await dt.stop(1, 'parentPipeline');
 
-    expect(dt.lastExecutionStatus).toBe('error');
+    expect(dt.lastExecutionStatus).toBe(ExecutionStatus.ERROR);
   });
 
   it('should format the name correctly', () => {

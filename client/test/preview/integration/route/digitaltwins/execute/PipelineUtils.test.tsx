@@ -5,6 +5,7 @@ import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import { previewStore as store } from 'test/preview/integration/integration.testUtil';
 import { JobSchema } from '@gitbeaker/rest';
 import DigitalTwin from 'preview/util/digitalTwin';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 
 describe('PipelineUtils', () => {
   let digitalTwin: DigitalTwin;
@@ -15,7 +16,7 @@ describe('PipelineUtils', () => {
     store.dispatch(setDigitalTwin({ assetName: 'mockedDTName', digitalTwin }));
 
     digitalTwin.execute = jest.fn().mockImplementation(async () => {
-      digitalTwin.lastExecutionStatus = 'success';
+      digitalTwin.lastExecutionStatus = ExecutionStatus.SUCCESS;
       return Promise.resolve();
     });
   });

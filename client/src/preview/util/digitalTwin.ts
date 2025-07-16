@@ -16,6 +16,7 @@ import {
   GROUP_NAME,
   DT_DIRECTORY,
 } from 'model/backend/gitlab/constants';
+import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
 import {
   isValidInstance,
   logError,
@@ -41,7 +42,7 @@ class DigitalTwin implements DigitalTwinInterface {
 
   public pipelineId: number | null = null;
 
-  public lastExecutionStatus: string | null = null;
+  public lastExecutionStatus!: ExecutionStatus | null;
 
   public jobLogs: { jobName: string; log: string }[] = [];
 
@@ -124,7 +125,7 @@ class DigitalTwin implements DigitalTwinInterface {
         DTName: this.DTName,
         runnerTag: RUNNER_TAG,
       });
-      this.lastExecutionStatus = 'canceled';
+      this.lastExecutionStatus = ExecutionStatus.CANCELED;
     } catch (error) {
       this.backend.logs.push({
         status: 'error',
@@ -132,7 +133,7 @@ class DigitalTwin implements DigitalTwinInterface {
         DTName: this.DTName,
         runnerTag: RUNNER_TAG,
       });
-      this.lastExecutionStatus = 'error';
+      this.lastExecutionStatus = ExecutionStatus.ERROR;
     }
   }
 
