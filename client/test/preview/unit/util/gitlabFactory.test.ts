@@ -22,12 +22,9 @@ describe('gitlabFactory', () => {
       'token',
       'auth',
     );
-    
+
     expect(gitlabInstance).toBeDefined();
     expect(gitlabInstance.projectName).toBe('username');
-    expect(GitlabAPI).toHaveBeenCalledWith(
-      'auth',
-      'token',
-    );
+    expect(GitlabAPI).toHaveBeenCalledWith('auth', 'token');
   });
 });

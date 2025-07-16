@@ -8,8 +8,8 @@ import {
 import { Asset } from 'preview/components/asset/Asset';
 import { AssetTypes, DT_DIRECTORY } from 'model/backend/gitlab/constants';
 import GitlabInstance from 'model/backend/gitlab/instance';
-import DigitalTwin from './digitalTwin';
 import { ExecutionStatus } from 'model/backend/gitlab/types/executionHistory';
+import DigitalTwin from './digitalTwin';
 
 export function isValidInstance(digitalTwin: DigitalTwin): boolean {
   const { backend } = digitalTwin;

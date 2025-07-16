@@ -25,7 +25,9 @@ export const startPipeline = async (
     showSnackbar({
       message: executionStatusMessage,
       severity:
-        digitalTwin.lastExecutionStatus === ExecutionStatus.SUCCESS ? ExecutionStatus.SUCCESS : ExecutionStatus.ERROR,
+        digitalTwin.lastExecutionStatus === ExecutionStatus.SUCCESS
+          ? ExecutionStatus.SUCCESS
+          : ExecutionStatus.ERROR,
     }),
   );
   setLogButtonDisabled(true);
