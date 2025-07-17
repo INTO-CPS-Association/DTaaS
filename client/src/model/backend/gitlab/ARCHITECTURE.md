@@ -115,7 +115,7 @@ These types manage the complex state of digital twin instances. Example:
 type DigitalTwinPipelineState = {
   pipelineId: number | null;
   lastExecutionStatus: ExecutionStatus | null;
-  jobLogs: { jobName: string; log: string }[];
+  jobLogs: JobLog[];
   pipelineLoading: boolean;
   pipelineCompleted: boolean;
 };
