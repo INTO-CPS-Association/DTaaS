@@ -1,6 +1,7 @@
+---
 name: Auto PR Comment
 
-on:
+'on':
   pull_request:
     types: [opened, synchronize]
 
