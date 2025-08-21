@@ -3,38 +3,18 @@ name: Auto PR Comment
 
 'on':
   pull_request:
-    types: [opened, synchronize,reopened]
+    types: [opened, synchronize]
 
 jobs:
-  copilot-review:
-    name: Post copilot review comments on PR
+  comment:
+    name: Post automatic comment on PR
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Post a comment
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          fetch-depth: 0
-
-      - name: GitHub Copilot Review
-        uses: github/copilot-code-review-action@v1
-        with:
-          # GitHub token for API access
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          
-          # Review configuration
-          review-level: "comprehensive"  # Options: basic, detailed, comprehensive
-          
-          # Whether to post comments on the PR
-          post-review-comments: true
-          
-          # Whether to post a summary comment
-          post-summary-comment: true
-          
-          # Maximum number of comments per file
-          max-comments-per-file: 10
-          
-          # Whether to review only changed lines or entire files
-          review-scope: "changed-lines"  # Options: changed-lines, entire-file
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            @copilot review
