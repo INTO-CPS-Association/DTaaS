@@ -8,6 +8,8 @@ jobs:
   comment:
     name: Post automatic comment on PR
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Post a comment
         uses: peter-evans/create-or-update-comment@v4
