@@ -1,0 +1,18 @@
+name: Auto PR Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  comment:
+    name: Post automatic comment on PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post a comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            <!-- Copilot Chat Review -->
+            Your Copilot Chat review or feedback goes here.
