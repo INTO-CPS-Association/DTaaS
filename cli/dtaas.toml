@@ -8,11 +8,11 @@ git-repo = "https://github.com/into-cps-association/DTaaS.git"
 [common]
 # absolute path to the DTaaS application directory
 server-dns = "localhost"
-path = "/home/Desktop/DTaaS"
+path = "C:\\Users\\Mohamed\\DTaaS"
 
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"] 
+add = ["mohamedtest"] 
 delete = ["username2", "username3"]
 
 [users.username1]
