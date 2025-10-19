@@ -56,10 +56,10 @@ Setup the _dtaas.toml_ file in the _cli_ directory:
 # absolute path to the DTaaS application directory
 server-dns = "localhost"
 path = "/home/Desktop/DTaaS"
-or
+# or
 path = "C:\\Users\\XXX\\DTaaS"
-Note: You have to either use / or \\ when specifying path, else you would get 
-"Error while getting toml file: dtaas.toml, Invalid unicode value"
+#Note: You have to either use / or \\ when specifying path, else you would get 
+# "Error while getting toml file: dtaas.toml, Invalid unicode value"
 ```
 
 ### Select Template
