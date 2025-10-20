@@ -1,0 +1,22 @@
+version: '3'
+services:
+  astitvasehgal05:
+    image: mltooling/ml-workspace-minimal:0.13.2
+    volumes:
+    - /home/astitva/Desktop/yamlstuff/files/common:/workspace/common
+    - /home/astitva/Desktop/yamlstuff/files/astitvasehgal05:/workspace
+    environment:
+    - AUTHENTICATE_VIA_JUPYTER=
+    - WORKSPACE_BASE_URL=astitvasehgal05
+    shm_size: 512m
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.astitvasehgal05.entryPoints=web
+    - traefik.http.routers.astitvasehgal05.rule=PathPrefix(`/astitvasehgal05`)
+    - traefik.http.routers.astitvasehgal05.middlewares=traefik-forward-auth
+    networks:
+    - users
+networks:
+  users:
+    name: dtaas-users
+    external: true
