@@ -21,6 +21,11 @@ path = "/home/Desktop/DTaaS"
 add = ["username1","username2", "username3"] 
 delete = ["username2", "username3"]
 
+[users.resourcelimits]
+cpus = 4 # virtual CPUs
+memory = "4g" # RAM space
+pids = 4000 # number of processes
+
 [users.username1]
 email = "username1@gitlab.foo.com"
 

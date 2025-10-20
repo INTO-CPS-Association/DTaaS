@@ -60,7 +60,7 @@ class Config:
 
         if len(stringsList)==0:
             return None, Exception(f'Config file error: users.{key} list is empty')
-        
+
         return stringsList, None
 
 
@@ -83,3 +83,28 @@ class Config:
         """Gets the 'delete' list from config.users """
         deleteUsersList, err = self.getStringListFromUsers('delete')
         return deleteUsersList, err
+
+    def getResourceLimits(self):
+        """Gets the 'resourcelimits' from config.users"""
+        confUsers, err = self.getUsers()
+        if err is not None:
+            return None, err
+
+        # Return default values if resourcelimits is not present
+        if 'resourcelimits' not in confUsers:
+            return {
+                'cpus': '4',
+                'memory': '4g',
+                'pids': 4000
+            }, None
+
+        resourceLimits = confUsers['resourcelimits']
+
+        # Validate and set default values if specific keys are missing
+        limits = {
+            'cpus': str(resourceLimits.get('cpus', '4')),
+            'memory': str(resourceLimits.get('memory', '4g')),
+            'pids': int(resourceLimits.get('pids', 4000))
+        }
+
+        return limits, None

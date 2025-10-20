@@ -4,19 +4,22 @@ import subprocess
 import shutil
 from src.pkg import utils
 
-def getComposeConfig(username, server, path):
+def getComposeConfig(username, server, path, resourceLimits):
     """Makes and returns the config for the user"""
 
     template = {}
     mapping = {
         "${DTAAS_DIR}": path,
         "${username}" : username,
+        "${cpus}": str(resourceLimits['cpus']),
+        "${memory}": str(resourceLimits['memory']),
+        "${pids}": str(resourceLimits['pids']),
     }
     try:
         if server==utils.LOCALHOST_SERVER:
             template, err = utils.importYaml('users.local.yml')
             utils.checkError(err)
-            
+
         else:
             template, err = utils.importYaml('users.server.yml')
             utils.checkError(err)
@@ -34,10 +37,10 @@ def createUserFiles(users, filePath):
     for username in users:
         shutil.copytree(filePath+'/template', filePath+'/'+username, dirs_exist_ok=True)
 
-def addUsersToCompose(users, compose, server, path):
+def addUsersToCompose(users, compose, server, path, resourceLimits):
     """Adds all the users config to the compose dictionary"""
     for username in users:
-        config, err = getComposeConfig(username, server, path)
+        config, err = getComposeConfig(username, server, path, resourceLimits)
         if err is not None:
             return err
         compose['services'][username] = config
@@ -80,6 +83,8 @@ def addUsers(configObj):
         utils.checkError(err)
         path, err = configObj.getPath()
         utils.checkError(err)
+        resourceLimits, err = configObj.getResourceLimits()
+        utils.checkError(err)
     except Exception as e:
         return e
 
@@ -98,7 +103,7 @@ def addUsers(configObj):
     try:
         err = createUserFiles(userList, path+'/files')
         utils.checkError(err)
-        err = addUsersToCompose(userList, compose, server, path)
+        err = addUsersToCompose(userList, compose, server, path, resourceLimits)
         utils.checkError(err)
         err = utils.exportYaml(compose, 'compose.users.yml')
         utils.checkError(err)
@@ -125,8 +130,8 @@ def deleteUser(configObj):
 
         err = utils.exportYaml(compose, 'compose.users.yml')
         utils.checkError(err)
-    
+
     except Exception as e:
         return e
-    
+
     return None
