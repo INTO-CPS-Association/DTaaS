@@ -6,6 +6,7 @@ def test_import_yaml_users():
 
     expected = {
         "image": "mltooling/ml-workspace-minimal:0.13.2",
+        "restart": "unless-stopped",
         "volumes": [
         "${DTAAS_DIR}/files/common:/workspace/common",
         "${DTAAS_DIR}/files/${username}:/workspace"
@@ -15,6 +16,15 @@ def test_import_yaml_users():
         "WORKSPACE_BASE_URL=${username}"
         ],
         "shm_size": "512m",
+        "deploy": {
+            "resources": {
+                "limits": {
+                    "cpus": "${cpus}",
+                    "memory": "${memory}",
+                    "pids": "${pids}"
+                }
+            }
+        },
         "labels": [
         "traefik.enable=true",
         "traefik.http.routers.${username}.entryPoints=web",
@@ -29,7 +39,7 @@ def test_import_yaml_users():
     template, err= utils.importYaml("users.local.yml")
     if err!=None:
         raise Exception(err)
-    
+
     assert template==expected
 
 def test_import_yaml_compose():
@@ -44,7 +54,7 @@ def test_import_toml():
     toml, err = utils.importToml('tests/dtaas.test.toml')
     if err is not None:
         raise Exception(err)
-    
+
     expected = {
         "name" : "Digital Twin as a Service (DTaaS)",
         "version" : "0.1.0",
@@ -60,7 +70,11 @@ def test_import_toml():
             # matching user info must present in this config file
             "add" : ["username1","username2", "username3"],
             "delete" : ["username2", "username3"],
-
+            "resourcelimits" : {
+                "cpus" : 4,
+                "memory" : "4g",
+                "pids" : 4000
+            },
             "username1" :{
             "email" : "username1@gitlab.foo.com"
             },
@@ -79,7 +93,7 @@ def test_import_toml():
                 }
         }
     }
-    
+
     assert expected==toml
 
 def test_replace_all():
