@@ -4,6 +4,7 @@ venv/
 env/
 .env/
 ENV/
+__pycache__/
 
 # User workspaces (exclude personal directories, keep templates)
 files/*/
@@ -196,3 +197,5 @@ credentials.csv
 deploy/services/certs/*
 !deploy/services/certs/services.foo.com
 
+.qlty
+!.qlty/qlty.toml

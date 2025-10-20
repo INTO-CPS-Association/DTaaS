@@ -57,7 +57,7 @@ This is divided into 3 sections:
 
 ```toml
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.1.0"
+version = "0.1.1"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 ```
@@ -72,7 +72,13 @@ of documentation and reference.
 [common]
 # absolute path to the DTaaS application directory
 server-dns = "foo.com"
+# Specify the directory of DTaaS installation
+# Linux example
 path = "/home/Desktop/DTaaS"
+# Windows example
+path = "C:\\Users\\XXX\\DTaaS"
+# Note: You have to either use / or \\ when specifying path, else you would get 
+# "Error while getting toml file: dtaas.toml, Invalid unicode value"
 ```
 
 The _path_ variable is used globally by the CLI.
@@ -168,6 +174,19 @@ This is to be done because the integration tests in test_cli.py
 directly run cli commands for add, delete which will fail
 if the DTaaS path directly isn't set correctly.
 
+## Security Check
+
+To scan for known security vulnerabilities in dependencies, use the `safety` tool.
+
+```bash
+safety scan --detailed-output # detailed security report
+safety scan                   # summary security report
+```
+
+This command checks all installed packages against a database of
+known vulnerabilities and provides detailed information about any
+security issues found.
+
 ## Publishing
 
 The CLI is published to [PyPI](https://pypi.org/).
@@ -202,35 +221,3 @@ The following are the next steps for the CLI:
   This is because '.' is a special character for labels in docker compose.
   We need to include such usernames, simply by internally replacing
   '.' instances in usernames by '-' or '_'.
-
-  
-## Security Check
-
-To scan for known security vulnerabilities in dependencies, use the `safety` tool.
-
-### Installation
-
-First, install `safety` in your virtual environment:
-
-```bash
-pip install safety
-```
-
-### Running Security Scan
-
-To generate a detailed security report:
-
-```bash
-safety scan --detailed-output
-```
-
-This command checks all installed packages against a database of known vulnerabilities and provides detailed information about any security issues found.
-
-### Alternative: Quick Scan
-
-For a simpler output format:
-
-```bash
-safety scan
-```
-
