@@ -76,7 +76,7 @@ server-dns = "foo.com"
 # Linux example
 path = "/home/Desktop/DTaaS"
 # Windows example
-path = "C:\\Users\\XXX\\DTaaS"
+#path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get 
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 ```
