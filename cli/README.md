@@ -51,6 +51,9 @@ Setup the _dtaas.toml_ file in the _cli_ directory:
 - Set the _path_ to the full system path
   of the DTaaS directory.
 
+- Configure resource limits for user containers (optional).
+  If not specified, default values will be used.
+
 ```toml
 [common]
 # absolute path to the DTaaS application directory
@@ -62,7 +65,26 @@ path = "/home/Desktop/DTaaS"
 #path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get 
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
+
+[users.resourcelimits]
+cpus = 4 # virtual CPUs per user container
+memory = "4g" # RAM space per user container
+pids = 4000 # maximum number of processes per user container
 ```
+
+### Resource Limits
+
+User containers are configured with resource limits to prevent
+one user from consuming all available system resources.
+The default limits are:
+
+- **CPUs**: 4 virtual CPUs
+- **Memory**: 4 GB RAM
+- **PIDs**: 4000 processes
+
+These limits can be customized in the `dtaas.toml` file under
+the `[users.resourcelimits]` section. If not specified,
+the default values will be used automatically.
 
 ### Select Template
 
