@@ -15,16 +15,19 @@ def test_import_yaml_users():
         "AUTHENTICATE_VIA_JUPYTER=",
         "WORKSPACE_BASE_URL=${username}"
         ],
-        "shm_size": "512m",
         "deploy": {
             "resources": {
                 "limits": {
                     "cpus": "${cpus}",
                     "memory": "${memory}",
                     "pids": "${pids}"
+                },
+                "reservations": {
+                    "memory": "${shm_size}"
                 }
             }
         },
+        "shm_size": "${shm_size}",
         "labels": [
         "traefik.enable=true",
         "traefik.http.routers.${username}.entryPoints=web",
@@ -73,7 +76,8 @@ def test_import_toml():
             "resourcelimits" : {
                 "cpus" : 4,
                 "memory" : "4g",
-                "pids" : 4000
+                "pids" : 4000,
+                "shm_size" : "512m"
             },
             "username1" :{
             "email" : "username1@gitlab.foo.com"

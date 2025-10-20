@@ -25,6 +25,7 @@ delete = ["username2", "username3"]
 cpus = 4 # virtual CPUs
 memory = "4g" # RAM space
 pids = 4000 # number of processes
+shm_size = "512m" # shared memory size
 
 [users.username1]
 email = "username1@gitlab.foo.com"

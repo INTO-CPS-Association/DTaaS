@@ -14,6 +14,7 @@ def getComposeConfig(username, server, path, resourceLimits):
         "${cpus}": str(resourceLimits['cpus']),
         "${memory}": str(resourceLimits['memory']),
         "${pids}": str(resourceLimits['pids']),
+        "${shm_size}": str(resourceLimits['shm_size']),
     }
     try:
         if server==utils.LOCALHOST_SERVER:

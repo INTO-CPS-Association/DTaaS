@@ -199,3 +199,7 @@ deploy/services/certs/*
 
 .qlty
 !.qlty/qlty.toml
+
+# CLI specific files
+cli/compose.users.yml
+cli/compose.users.exp.yml

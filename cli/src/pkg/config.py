@@ -2,6 +2,7 @@
 
 import click
 from src.pkg import utils
+from src.pkg.constants import DefaultResourceLimits
 
 class Config:
     """The Config class for DTaaS"""
@@ -93,18 +94,20 @@ class Config:
         # Return default values if resourcelimits is not present
         if 'resourcelimits' not in confUsers:
             return {
-                'cpus': '4',
-                'memory': '4g',
-                'pids': 4000
+                'cpus': DefaultResourceLimits['cpus'],
+                'memory': DefaultResourceLimits['memory'],
+                'pids': DefaultResourceLimits['pids'],
+                'shm_size': DefaultResourceLimits['shm_size']
             }, None
 
         resourceLimits = confUsers['resourcelimits']
 
         # Validate and set default values if specific keys are missing
         limits = {
-            'cpus': str(resourceLimits.get('cpus', '4')),
-            'memory': str(resourceLimits.get('memory', '4g')),
-            'pids': int(resourceLimits.get('pids', 4000))
+            'cpus': str(resourceLimits.get('cpus', DefaultResourceLimits['cpus'])),
+            'memory': str(resourceLimits.get('memory', DefaultResourceLimits['memory'])),
+            'pids': int(resourceLimits.get('pids', DefaultResourceLimits['pids'])),
+            'shm_size': str(resourceLimits.get('shm_size', DefaultResourceLimits['shm_size']))
         }
 
         return limits, None

@@ -13,7 +13,8 @@ def test_get_resource_limits():
     expected = {
         'cpus': '4',
         'memory': '4g',
-        'pids': 4000
+        'pids': 4000,
+        'shm_size': '512m'
     }
 
     assert resourceLimits == expected
@@ -33,8 +34,10 @@ def test_get_resource_limits_defaults():
     assert 'cpus' in resourceLimits
     assert 'memory' in resourceLimits
     assert 'pids' in resourceLimits
+    assert 'shm_size' in resourceLimits
 
     # Should be of correct types
     assert isinstance(resourceLimits['cpus'], str)
     assert isinstance(resourceLimits['memory'], str)
     assert isinstance(resourceLimits['pids'], int)
+    assert isinstance(resourceLimits['shm_size'], str)

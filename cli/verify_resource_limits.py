@@ -26,7 +26,8 @@ def verify_resource_limits():
         print(f"   ✓ Resource limits from config:")
         print(f"     - CPUs: {resourceLimits['cpus']}")
         print(f"     - Memory: {resourceLimits['memory']}")
-        print(f"     - PIDs: {resourceLimits['pids']}\n")
+        print(f"     - PIDs: {resourceLimits['pids']}")
+        print(f"     - Shared Memory: {resourceLimits['shm_size']}\n")
         
         # Test 2: Generate compose config
         print("2. Testing compose config generation...")
@@ -59,7 +60,8 @@ def verify_resource_limits():
         print(f"   ✓ Resource limits in compose config:")
         print(f"     - CPUs: {limits['cpus']}")
         print(f"     - Memory: {limits['memory']}")
-        print(f"     - PIDs: {limits['pids']}\n")
+        print(f"     - PIDs: {limits['pids']}")
+        print(f"     - Shared Memory: {composeConfig['shm_size']}\n")
         
         # Test 4: Verify limits match config
         print("4. Verifying limits match configuration...")
@@ -73,6 +75,10 @@ def verify_resource_limits():
         
         if limits['pids'] != str(resourceLimits['pids']):
             print(f"   ❌ PIDs mismatch: {limits['pids']} != {resourceLimits['pids']}")
+            return False
+        
+        if composeConfig['shm_size'] != str(resourceLimits['shm_size']):
+            print(f"   ❌ SHM mismatch: {composeConfig['shm_size']} != {resourceLimits['shm_size']}")
             return False
         
         print("   ✓ All limits match configuration\n")

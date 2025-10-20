@@ -10,7 +10,8 @@ def test_get_compose_config_with_resource_limits():
     resourceLimits = {
         'cpus': '4',
         'memory': '4g',
-        'pids': 4000
+        'pids': 4000,
+        'shm_size': '512m'
     }
 
     config, err = users.getComposeConfig(username, server, path, resourceLimits)
@@ -27,6 +28,9 @@ def test_get_compose_config_with_resource_limits():
     assert limits['memory'] == '4g'
     assert limits['pids'] == '4000'  # String because replaceAll converts to strings
 
+    # Verify shm_size is present
+    assert config['shm_size'] == '512m'
+
     # Verify other fields are still present
     assert config['image'] == 'mltooling/ml-workspace-minimal:0.13.2'
     assert username in str(config['environment'])
@@ -41,7 +45,8 @@ def test_get_compose_config_with_custom_resource_limits():
     resourceLimits = {
         'cpus': '8',
         'memory': '16g',
-        'pids': 8000
+        'pids': 8000,
+        'shm_size': '1g'
     }
 
     config, err = users.getComposeConfig(username, server, path, resourceLimits)
@@ -52,3 +57,6 @@ def test_get_compose_config_with_custom_resource_limits():
     assert limits['cpus'] == '8'
     assert limits['memory'] == '16g'
     assert limits['pids'] == '8000'  # String because replaceAll converts to strings
+
+    # Verify custom shm_size
+    assert config['shm_size'] == '1g'

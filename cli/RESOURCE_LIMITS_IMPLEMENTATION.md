@@ -83,7 +83,7 @@ poetry run python verify_resource_limits.py
 
 ✅ **Test coverage is improved**: Added 4 new tests specifically for resource limits functionality, improving overall test coverage.
 
-✅ **No qlty issues**: Code follows existing patterns and passes linting (8.00/10 rating, consistent with existing code).
+✅ **No qlty issues**: Code follows existing patterns and passes linting with 10.00/10 rating when checked with `pylint src --rcfile=../.pylintrc`.
 
 ## Backwards Compatibility
 

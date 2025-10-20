@@ -70,6 +70,7 @@ path = "/home/Desktop/DTaaS"
 cpus = 4 # virtual CPUs per user container
 memory = "4g" # RAM space per user container
 pids = 4000 # maximum number of processes per user container
+shm_size = "512m" # shared memory size per user container
 ```
 
 ### Resource Limits
@@ -81,6 +82,7 @@ The default limits are:
 - **CPUs**: 4 virtual CPUs
 - **Memory**: 4 GB RAM
 - **PIDs**: 4000 processes
+- **Shared Memory**: 512 MB
 
 These limits can be customized in the `dtaas.toml` file under
 the `[users.resourcelimits]` section. If not specified,
