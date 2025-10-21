@@ -221,3 +221,35 @@ The following are the next steps for the CLI:
   This is because '.' is a special character for labels in docker compose.
   We need to include such usernames, simply by internally replacing
   '.' instances in usernames by '-' or '_'.
+
+  
+## Security Check
+
+To scan for known security vulnerabilities in dependencies, use the `safety` tool.
+
+### Installation
+
+First, install `safety` in your virtual environment:
+
+```bash
+pip install safety
+```
+
+### Running Security Scan
+
+To generate a detailed security report:
+
+```bash
+safety scan --detailed-output
+```
+
+This command checks all installed packages against a database of known vulnerabilities and provides detailed information about any security issues found.
+
+### Alternative: Quick Scan
+
+For a simpler output format:
+
+```bash
+safety scan
+```
+
