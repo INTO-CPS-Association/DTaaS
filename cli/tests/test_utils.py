@@ -1,11 +1,11 @@
 from src.pkg import utils
-import filecmp
 from pprint import pprint
 
 def test_import_yaml_users():
 
     expected = {
         "image": "mltooling/ml-workspace-minimal:0.13.2",
+        "restart": "unless-stopped",
         "volumes": [
         "${DTAAS_DIR}/files/common:/workspace/common",
         "${DTAAS_DIR}/files/${username}:/workspace"
@@ -35,7 +35,7 @@ def test_import_yaml_users():
 def test_import_yaml_compose():
     expected = getTestComposeObject()
 
-    compose, err = utils.importYaml('tests/compose.users.test.yml')
+    compose, err = utils.importYaml('tests/data/compose.users.test.yml')
     if err is not None:
         raise Exception(err)
     assert expected==compose
@@ -104,11 +104,19 @@ def test_export_yaml():
 
     data = getTestComposeObject()
 
-    err = utils.exportYaml(data, 'tests/compose.users.exp.yml')
+    err = utils.exportYaml(data, 'tests/data/compose.users.exp.yml')
     if err is not None:
         raise Exception(err)
     
-    assert filecmp.cmp('tests/compose.users.test.yml', 'tests/compose.users.exp.yml')
+    expected, err1 = utils.importYaml('tests/data/compose.users.test.yml')
+    actual, err2 = utils.importYaml('tests/data/compose.users.exp.yml')
+    
+    if err1:
+        raise Exception(err1)
+    if err2:
+        raise Exception(err2)
+    
+    assert expected == actual
 
 def getReplaceAllObject(randomVals):
 
