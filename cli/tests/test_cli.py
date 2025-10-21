@@ -1,13 +1,26 @@
-from src.pkg import utils
 import subprocess
+from pathlib import Path
+import sys
 
 
 def test_add_user_cli():
-    #integration test: to be run with empty & filled add user list in dtaas.toml
-    result =subprocess.run(["dtaas admin user add"], shell=True)
-    assert result.returncode == 0
+    """Integration test: verify user addition via CLI"""
+    # Run as Python module
+    result = subprocess.run(
+        [sys.executable, "-m", "src.cmd", "admin", "user", "add"], 
+        capture_output=True,
+        text=True,
+        cwd=Path(__file__).parent.parent
+    )
+    assert result.returncode == 0, f"Command failed: {result.stderr}\n{result.stdout}"
+
 
 def test_delete_user_cli():
-    #integration test: to be run with empty & filled delete user list in dtaas.toml
-    result = subprocess.run(["dtaas admin user delete"], shell=True)
-    assert result.returncode == 0
+    """Integration test: verify user deletion via CLI"""
+    result = subprocess.run(
+        [sys.executable, "-m", "src.cmd", "admin", "user", "delete"],
+        capture_output=True,
+        text=True,
+        cwd=Path(__file__).parent.parent
+    )
+    assert result.returncode == 0, f"Command failed: {result.stderr}\n{result.stdout}"
