@@ -233,9 +233,7 @@ Thumbs.db
 # Lock files (if you prefer to exclude them)
 poetry.lock
 
-# Local config files
 
-
-# Docker deployment files
-
-
+# Local environment config
+deploy/config/client/env.local.js
+deploy/docker/.env.local
