@@ -184,5 +184,3 @@ dtaas admin user delete
 - '.' is a special character. Currently, usernames which have
   '.'s in them cannot be added properly through the CLI.
   This is an active issue that will be resolved in future releases.
-
-
