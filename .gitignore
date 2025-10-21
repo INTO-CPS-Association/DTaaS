@@ -1,6 +1,9 @@
 # Python virtual environments
 venv/
+venv-linux/
 .venv/
+wind-venv/
+venv
 env/
 .env/
 ENV/
@@ -195,4 +198,44 @@ services.env
 credentials.csv
 deploy/services/certs/*
 !deploy/services/certs/services.foo.com
+
+
+########################################333
+# Coverage files
+.coverage
+.coverage.*
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# pytest cache
+.pytest_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+
+# Lock files (if you prefer to exclude them)
+poetry.lock
+
+# Local config files
+
+
+# Docker deployment files
+
 
