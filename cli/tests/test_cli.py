@@ -4,7 +4,7 @@ import sys
 
 
 def test_add_user_cli():
-    """Integration test: verify user addition via CLI"""
+    """verify user addition via CLI"""
     # Run as Python module
     result = subprocess.run(
         [sys.executable, "-m", "src.cmd", "admin", "user", "add"], 
@@ -16,7 +16,7 @@ def test_add_user_cli():
 
 
 def test_delete_user_cli():
-    """Integration test: verify user deletion via CLI"""
+    """verify user deletion via CLI"""
     result = subprocess.run(
         [sys.executable, "-m", "src.cmd", "admin", "user", "delete"],
         capture_output=True,
