@@ -9,5 +9,5 @@ rules:
   document-start:
     present: false
   truthy:
-    allowed-values: ['True', 'true', 'False', 'false']
+    allowed-values: ['TRUE', 'True', 'true', 'FALSE', 'False', 'false']
     check-keys: true

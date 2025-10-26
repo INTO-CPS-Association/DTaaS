@@ -51,22 +51,27 @@ class Config:
         users, err = self.getFromConfig("users")
         return users, err
 
+
     def getStringListFromUsers(self, key):
         """Gets the specific key as a list of strings from config.users"""
-        confUsers, err = self.getUsers()
+        err = None
         stringsList = None
-        error = err
 
-        if error is None:
-            if key not in confUsers:
-                error = Exception(f"Config file error: No {key} list in 'users' tag")
-            else:
-                stringsList = [str(x) for x in confUsers[key]]
-                if len(stringsList) == 0:
-                    stringsList = None
-                    error = Exception(f"Config file error: users.{key} list is empty")
+        confUsers, err = self.getUsers()
+        if err is not None:
+            return None, err
 
-        return stringsList, error
+        try:
+            stringsList = [ str(x) for x in confUsers[key]]
+            if len(stringsList) == 0:
+                stringsList = None
+                raise ValueError
+        except KeyError:
+            err = Exception(f"Config file error: No {key} list in 'users' tag")
+        except ValueError:
+            err = Exception(f'Config file error: users.{key} list is empty')
+
+        return stringsList, err
 
     def getPath(self):
         """Gets the 'path' from config.common"""
