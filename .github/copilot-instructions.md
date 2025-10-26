@@ -5,7 +5,7 @@
 DTaaS (Digital Twin as a Service) is a comprehensive platform for
 creating, managing, and executing digital twins. The project consists
 of multiple components including a React TypeScript client,
-nestjs.js / Python backend services, documentation, and
+NestJS / Python backend services, documentation, and
 infrastructure configurations.
 
 ## Project Structure
