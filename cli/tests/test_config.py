@@ -1,6 +1,6 @@
 import pytest
 from src.pkg import config
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import click
 
 
@@ -37,7 +37,7 @@ def test_get_config_not_initialized():
     """Test getConfig when data is None"""
     cfg = config.Config.__new__(config.Config)
     cfg.data = None
-    data, err = cfg.getConfig()
+    _, err = cfg.getConfig()
     assert err is not None
 
 

@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from src.pkg import users, config
+from src.pkg import users
 from unittest.mock import patch, MagicMock
 import tempfile
 
