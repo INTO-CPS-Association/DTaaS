@@ -86,8 +86,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: example-shm-dist
+          name: dtaas-cli
           path: |
-            dist/*.whl
-            dist/*.tar.gz
+            cli/dist/*.whl
+            cli/dist/*.tar.gz
           retention-days: 1
