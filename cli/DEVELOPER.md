@@ -160,7 +160,7 @@ _cli/tests_ directory. Be sure to name any new files as
 _test_*_.py_. To run all tests, with coverage:
 
 ```bash
-pytest --cov
+pytest --cov=src --cov-report=xml --cov-report=term-missing
 ```
 
 ### Caveat
