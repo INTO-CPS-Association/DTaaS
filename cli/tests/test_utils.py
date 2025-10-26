@@ -150,22 +150,22 @@ def getTestComposeObject():
     testCompose = {
         "version": '3',
         "services":{
-            "astitvasehgal05":{
+            "testuser":{
                 "image": "mltooling/ml-workspace-minimal:0.13.2",
                 "volumes": [
-                "/home/astitva/Desktop/yamlstuff/files/common:/workspace/common",
-                "/home/astitva/Desktop/yamlstuff/files/astitvasehgal05:/workspace"
+                "/home/testuser/DTaaS/files/common:/workspace/common",
+                "/home/testuser/DTaaS/files/testuser:/workspace"
                 ],
                 "environment":[
                 "AUTHENTICATE_VIA_JUPYTER=",
-                "WORKSPACE_BASE_URL=astitvasehgal05"
+                "WORKSPACE_BASE_URL=testuser"
                 ],
                 "shm_size": "512m",
                 "labels": [
                 "traefik.enable=true",
-                "traefik.http.routers.astitvasehgal05.entryPoints=web",
-                "traefik.http.routers.astitvasehgal05.rule=PathPrefix(`/astitvasehgal05`)",
-                "traefik.http.routers.astitvasehgal05.middlewares=traefik-forward-auth"
+                "traefik.http.routers.testuser.entryPoints=web",
+                "traefik.http.routers.testuser.rule=PathPrefix(`/testuser`)",
+                "traefik.http.routers.testuser.middlewares=traefik-forward-auth"
                 ],
                 "networks":["users"]
             }

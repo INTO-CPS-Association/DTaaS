@@ -32,4 +32,3 @@ email = "username3@gitlab.foo.com"
 
 [client.web]
 config = "/home/Desktop/DTaaS/env.local.js"
-
