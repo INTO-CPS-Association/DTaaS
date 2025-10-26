@@ -1,7 +1,7 @@
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 @pytest.fixture

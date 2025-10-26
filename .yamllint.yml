@@ -1,0 +1,12 @@
+---
+
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+  - '.yamllint'
+
+extends: default
+
+rules:
+  document-start:
+    present: true

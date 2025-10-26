@@ -3,19 +3,19 @@ services:
   testuser:
     image: mltooling/ml-workspace-minimal:0.13.2
     volumes:
-    - /home/testuser/DTaaS/files/common:/workspace/common
-    - /home/testuser/DTaaS/files/testuser:/workspace
+      - /home/testuser/DTaaS/files/common:/workspace/common
+      - /home/testuser/DTaaS/files/testuser:/workspace
     environment:
-    - AUTHENTICATE_VIA_JUPYTER=
-    - WORKSPACE_BASE_URL=testuser
+      - AUTHENTICATE_VIA_JUPYTER=
+      - WORKSPACE_BASE_URL=testuser
     shm_size: 512m
     labels:
-    - traefik.enable=true
-    - traefik.http.routers.testuser.entryPoints=web
-    - traefik.http.routers.testuser.rule=PathPrefix(`/testuser`)
-    - traefik.http.routers.testuser.middlewares=traefik-forward-auth
+      - traefik.enable=true
+      - traefik.http.routers.testuser.entryPoints=web
+      - traefik.http.routers.testuser.rule=PathPrefix(`/testuser`)
+      - traefik.http.routers.testuser.middlewares=traefik-forward-auth
     networks:
-    - users
+      - users
 networks:
   users:
     name: dtaas-users

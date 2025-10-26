@@ -1,9 +1,8 @@
-""" This file defines all cli entrypoints for dtaas"""
+"""This file defines all cli entrypoints for DTaaS"""
 
 import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
-
 
 
 ### Groups
@@ -12,15 +11,18 @@ def dtaas():
     """all commands to help with Digital Twins as a Service"""
     return
 
+
 @dtaas.group()
 def admin():
     "administrative commands for DTaaS"
     return
 
+
 @admin.group()
 def user():
     """user management commands"""
     return
+
 
 #### user group commands
 @user.command()
@@ -36,6 +38,7 @@ def add():
     if err is not None:
         raise click.ClickException("Error while adding users: " + str(err))
     click.echo("Users added successfully")
+
 
 @user.command()
 def delete():
