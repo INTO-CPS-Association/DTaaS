@@ -8,21 +8,15 @@ import click
 def mock_toml_data():
     """Mock TOML configuration data"""
     return {
-        "common": {
-            "path": "/test/path",
-            "server-dns": "localhost"
-        },
-        "users": {
-            "add": ["user1", "user2"],
-            "delete": ["user3"]
-        }
+        "common": {"path": "/test/path", "server-dns": "localhost"},
+        "users": {"add": ["user1", "user2"], "delete": ["user3"]},
     }
 
 
 @pytest.fixture
 def mock_utils():
     """Mock utils.importToml"""
-    with patch('src.pkg.config.utils.importToml') as mock_import:
+    with patch("src.pkg.config.utils.importToml") as mock_import:
         yield mock_import
 
 
@@ -45,7 +39,7 @@ def test_get_from_config_missing_key(mock_utils, mock_toml_data):
     """Test getFromConfig with missing key"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    result, err = cfg.getFromConfig('missing_key')
+    result, err = cfg.getFromConfig("missing_key")
     assert result is None
     assert err is not None
     assert "Missing missing_key tag" in str(err)
@@ -55,7 +49,7 @@ def test_get_string_from_common_missing_key(mock_utils, mock_toml_data):
     """Test getStringFromCommon with missing key"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    result, err = cfg.getStringFromCommon('missing_key')
+    result, err = cfg.getStringFromCommon("missing_key")
     assert result is None
     assert err is not None
 
@@ -66,7 +60,7 @@ def test_get_users_success(mock_utils, mock_toml_data):
     cfg = config.Config()
     users, err = cfg.getUsers()
     assert err is None
-    assert users == mock_toml_data['users']
+    assert users == mock_toml_data["users"]
 
 
 # getStringListFromUsers tests
@@ -74,7 +68,7 @@ def test_get_string_list_from_users_success(mock_utils, mock_toml_data):
     """Test getStringListFromUsers retrieves list"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    add_list, err = cfg.getStringListFromUsers('add')
+    add_list, err = cfg.getStringListFromUsers("add")
     assert err is None
     assert add_list == ["user1", "user2"]
 
@@ -83,7 +77,7 @@ def test_get_string_list_from_users_missing_key(mock_utils, mock_toml_data):
     """Test getStringListFromUsers with missing key"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    result, err = cfg.getStringListFromUsers('missing_key')
+    result, err = cfg.getStringListFromUsers("missing_key")
     assert result is None
     assert err is not None
 
@@ -93,7 +87,7 @@ def test_get_string_list_from_users_empty_list(mock_utils):
     data = {"users": {"add": []}}
     mock_utils.return_value = (data, None)
     cfg = config.Config()
-    result, err = cfg.getStringListFromUsers('add')
+    result, err = cfg.getStringListFromUsers("add")
     assert result is None
     assert err is not None
     assert "list is empty" in str(err)

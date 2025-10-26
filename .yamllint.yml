@@ -9,4 +9,4 @@ extends: default
 
 rules:
   document-start:
-    present: true
+    present: false
