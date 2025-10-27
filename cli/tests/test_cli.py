@@ -7,10 +7,10 @@ def test_add_user_cli():
     """verify user addition via CLI"""
     # Run as Python module
     result = subprocess.run(
-        [sys.executable, "-m", "src.cmd", "admin", "user", "add"], 
+        [sys.executable, "-m", "src.cmd", "admin", "user", "add"],
         capture_output=True,
         text=True,
-        cwd=Path(__file__).parent.parent
+        cwd=Path(__file__).parent.parent,
     )
     assert result.returncode == 0, f"Command failed: {result.stderr}\n{result.stdout}"
 
@@ -21,6 +21,6 @@ def test_delete_user_cli():
         [sys.executable, "-m", "src.cmd", "admin", "user", "delete"],
         capture_output=True,
         text=True,
-        cwd=Path(__file__).parent.parent
+        cwd=Path(__file__).parent.parent,
     )
     assert result.returncode == 0, f"Command failed: {result.stderr}\n{result.stdout}"

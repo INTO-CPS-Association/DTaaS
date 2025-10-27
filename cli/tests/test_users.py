@@ -83,17 +83,15 @@ def test_add_users_to_compose_config_error():
 def test_get_compose_config(mock_utils, server, file):
     result, err = users.getComposeConfig("testuser", server, "/test")
     assert mock_utils["import"].called
-    if server != "localhost":
-        mock_utils["import"].assert_called_with(file)
+    mock_utils["import"].assert_called_with(file)
 
 
 def test_get_compose_config_error():
     with patch(
         "src.pkg.users.utils.importYaml", return_value=(None, Exception("Error"))
     ):
-        assert isinstance(
-            users.getComposeConfig("testuser", "localhost", "/test"), Exception
-        )
+        result, err = users.getComposeConfig("testuser", "localhost", "/test")
+        assert (result, isinstance(err, Exception)) == (None, True)
 
 
 @pytest.mark.parametrize("func", [users.startUserContainers, users.stopUserContainers])

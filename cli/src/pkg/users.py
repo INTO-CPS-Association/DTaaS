@@ -26,7 +26,7 @@ def getComposeConfig(username, server, path):
         config, err = utils.replaceAll(template, mapping)
         utils.checkError(err)
     except Exception as e:
-        return e
+        return None, e
 
     return config, None
 
