@@ -5,13 +5,18 @@ import shutil
 from src.pkg import utils
 
 
-def getComposeConfig(username, server, path):
+def getComposeConfig(username, server, path, resources):
     """Makes and returns the config for the user"""
 
     template = {}
     mapping = {
         "${DTAAS_DIR}": path,
         "${username}": username,
+        "${shm_size}": str(resources["shm_size"]),
+        "${cpus}": str(resources["cpus"]),
+        "${mem_limit}": str(resources["mem_limit"]),
+        "${pids_limit}": str(resources["pids_limit"]),
+
     }
     try:
         if server == utils.LOCALHOST_SERVER:
@@ -39,10 +44,14 @@ def createUserFiles(users, filePath):
         )
 
 
-def addUsersToCompose(users, compose, server, path):
+def addUsersToCompose(users, compose, server, path, configObj):
     """Adds all the users config to the compose dictionary"""
     for username in users:
-        config, err = getComposeConfig(username, server, path)
+        resources, err = configObj.getUserResourceLimits(username)
+        if err is not None:
+            return err
+
+        config, err = getComposeConfig(username, server, path, resources)
         if err is not None:
             return err
         compose["services"][username] = config
@@ -66,6 +75,7 @@ def stopUserContainers(users):
 
 
 def runCommandForContainers(command, containers):
+    """Runs the given docker command for the given containers"""
     cmd = [command]
     for name in containers:
         cmd.append(name)
@@ -101,7 +111,7 @@ def addUsers(configObj):
     try:
         err = createUserFiles(userList, path + "/files")
         utils.checkError(err)
-        err = addUsersToCompose(userList, compose, server, path)
+        err = addUsersToCompose(userList, compose, server, path, configObj)
         utils.checkError(err)
         err = utils.exportYaml(compose, "compose.users.yml")
         utils.checkError(err)

@@ -92,3 +92,42 @@ class Config:
         """Gets the 'delete' list from config.users"""
         deleteUsersList, err = self.getStringListFromUsers("delete")
         return deleteUsersList, err
+
+    def getResourceLimits (self):
+        """Gets the default resourse limits"""
+        confcommon, err = self.getCommon()
+        if err is not None:
+            return None, err
+        # It's assumed that resources is given in dtaas.toml
+        resources = confcommon.get("resources", None)
+        if resources is None:
+            err = Exception("Config file error: Missing default resources limits")
+            return None, err
+        return resources, None
+
+    def getUserResourceLimits (self, username):
+        """Gets the resource limits for a specific user"""
+        confUsers, err = self.getUsers()
+        if err is not None:
+            return None, err
+
+        defaultResourcesLimits, err = self.getResourceLimits()
+        if err is not None:
+            return None, err
+
+        if username not in confUsers:
+            return defaultResourcesLimits, None
+
+        userConfig = confUsers[username]
+        if not isinstance(userConfig, dict) or "resources" not in userConfig:
+            return defaultResourcesLimits, None
+
+        # Merge user defined limits with default
+        userResourcesLimits = userConfig["resources"]
+        resources = defaultResourcesLimits.copy()
+
+        for key in resources:
+            if key in userResourcesLimits:
+                # If the user has defined this resource limit, use it.
+                resources[key] = userResourcesLimits[key]
+        return resources, None

@@ -61,18 +61,32 @@ def test_create_user_files_already_exists(temp_dir_with_template):
 
 
 def test_add_users_to_compose(mock_utils):
+    """Test addUsersToCompose with resources"""
+    mockConfigObj = MagicMock()
+    mockConfigObj.getUserResourceLimits.return_value = ({
+        "cpus": 4,
+        "mem_limit": "4g",
+        "pids_limit": 4800,
+        "shm_size": "512m"
+    }, None)
+    
     users.addUsersToCompose(
-        ["user1", "user2", "user3"], {"services": {}}, "localhost", "/test"
+        ["user1", "user2", "user3"], {"services": {}}, "localhost", "/test", mockConfigObj
     )
     assert mock_utils["replace"].call_count == 3
 
 
+
 def test_add_users_to_compose_config_error():
+    """Test addUsersToCompose with config error"""
+    mockConfigObj = MagicMock()
+    mockConfigObj.getUserResourceLimits.return_value = (None, Exception("Error"))
+    
     with patch(
         "src.pkg.users.getComposeConfig", return_value=(None, Exception("Error"))
     ):
         assert (
-            users.addUsersToCompose(["user1"], {"services": {}}, "localhost", "/test")
+            users.addUsersToCompose(["user1"], {"services": {}}, "localhost", "/test", mockConfigObj)
             is not None
         )
 
@@ -81,16 +95,30 @@ def test_add_users_to_compose_config_error():
     "server,file", [("localhost", "users.local.yml"), ("foo.com", "users.server.yml")]
 )
 def test_get_compose_config(mock_utils, server, file):
-    result, err = users.getComposeConfig("testuser", server, "/test")
+    """Test getComposeConfig with resources parameter"""
+    resources = {
+        "cpus": 4,
+        "mem_limit": "4g",
+        "pids_limit": 4800,
+        "shm_size": "512m"
+    }
+    result, err = users.getComposeConfig("testuser", server, "/test", resources)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)
 
 
 def test_get_compose_config_error():
+    """Test getComposeConfig with error"""
+    resources = {
+        "cpus": 4,
+        "mem_limit": "4g",
+        "pids_limit": 4800,
+        "shm_size": "512m"
+    }
     with patch(
         "src.pkg.users.utils.importYaml", return_value=(None, Exception("Error"))
     ):
-        result, err = users.getComposeConfig("testuser", "localhost", "/test")
+        result, err = users.getComposeConfig("testuser", "localhost", "/test", resources)
         assert (result, isinstance(err, Exception)) == (None, True)
 
 
