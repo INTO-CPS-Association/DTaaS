@@ -10,7 +10,10 @@ def test_import_yaml_users():
             "${DTAAS_DIR}/files/${username}:/workspace",
         ],
         "environment": ["AUTHENTICATE_VIA_JUPYTER=", "WORKSPACE_BASE_URL=${username}"],
-        "shm_size": "512m",
+        "shm_size": "${shm_size}",
+        "cpus": "${cpus}",
+        "mem_limit": "${mem_limit}",
+        "pids_limit": "${pids_limit}",
         "labels": [
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
