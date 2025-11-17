@@ -92,6 +92,72 @@ services:
     networks:
       - platform-services
 
+  postgres:
+    image: 'postgres:16'
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_DB: thingsboard
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d thingsboard || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - platform-services
+
+  thingsboard-install:
+    image: 'thingsboard/tb-node:4.2.1'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      INSTALL_TB: "true"
+      LOAD_DEMO: "true"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    volumes:
+      - './data/thingsboard:/data'
+    restart: "no"
+    networks:
+      - platform-services
+
+  thingsboard-ce:
+    image: 'thingsboard/tb-node:4.2.1'
+    container_name: thingsboard
+    restart: always
+    ports:
+      - '${THINGSBOARD_PORT}:8080'
+      - '${THINGSBOARD_EDGE_RPC_PORT}:7070'
+      - '${THINGSBOARD_MQTT_PORT}:1883'
+      - '${THINGSBOARD_MQTT_SSL_PORT}:8883'
+      - '${THINGSBOARD_COAP_LwM2M_PORTS}:5683-5688/udp'
+    volumes:
+      - './log/thingsboard:/var/log/thingsboard'
+      - './data/thingsboard:/data'
+    environment:
+      TB_SERVICE_ID: tb-ce-node
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '100m'
+        max-file: '10'
+    depends_on:
+      - postgres
+      - thingsboard-install
+    networks:
+      - platform-services
+
 networks:
   platform-services:
     name: dtaas-platform-services
