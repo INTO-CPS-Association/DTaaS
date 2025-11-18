@@ -5,7 +5,7 @@ import shutil
 from src.pkg import utils
 
 
-def getComposeConfig(username, server, path, resources):
+def get_compose_config(username, server, path, resources):
     """Makes and returns the config for the user"""
 
     template = {}
@@ -14,90 +14,87 @@ def getComposeConfig(username, server, path, resources):
         "${username}": username,
         "${shm_size}": str(resources["shm_size"]),
         "${cpus}": str(resources["cpus"]),
+        "${cpuset}": str(resources["cpuset"]),
         "${mem_limit}": str(resources["mem_limit"]),
-        "${pids_limit}": str(resources["pids_limit"]),
+        "${pids_limit}": str(resources["pids_limit"])
 
     }
     try:
         if server == utils.LOCALHOST_SERVER:
-            template, err = utils.importYaml("users.local.yml")
-            utils.checkError(err)
+            template, err = utils.import_yaml("users.local.yml")
+            utils.check_error(err)
 
         else:
-            template, err = utils.importYaml("users.server.yml")
-            utils.checkError(err)
+            template, err = utils.import_yaml("users.server.yml")
+            utils.check_error(err)
             mapping["${SERVER_DNS}"] = server
 
-        config, err = utils.replaceAll(template, mapping)
-        utils.checkError(err)
+        config, err = utils.replace_all(template, mapping)
+        utils.check_error(err)
     except Exception as e:
         return None, e
 
     return config, None
 
 
-def createUserFiles(users, filePath):
+def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
         shutil.copytree(
-            filePath + "/template", filePath + "/" + username, dirs_exist_ok=True
+            file_path + "/template", file_path + "/" + username, dirs_exist_ok=True
         )
 
 
-def addUsersToCompose(users, compose, server, path, configObj):
+def add_users_to_compose(users, compose, server, path, resources):
     """Adds all the users config to the compose dictionary"""
     for username in users:
-        resources, err = configObj.getUserResourceLimits(username)
-        if err is not None:
-            return err
-
-        config, err = getComposeConfig(username, server, path, resources)
+        config, err = get_compose_config(username, server, path, resources)
         if err is not None:
             return err
         compose["services"][username] = config
     return None
 
 
-def startUserContainers(users):
+def start_user_containers(users):
     """Starts all the user containers in the 'users' list"""
 
     cmd = "docker compose -f compose.users.yml up -d"
-    err = runCommandForContainers(cmd, users)
+    err = run_command_for_containers(cmd, users)
     return err
 
 
-def stopUserContainers(users):
+def stop_user_containers(users):
     """Stops all the user containers in the 'users' list"""
 
     cmd = "docker compose -f compose.users.yml down"
-    err = runCommandForContainers(cmd, users)
+    err = run_command_for_containers(cmd, users)
     return err
 
 
-def runCommandForContainers(command, containers):
+def run_command_for_containers(command, containers):
     """Runs the given docker command for the given containers"""
     cmd = [command]
     for name in containers:
         cmd.append(name)
 
-    cmdStr = " ".join(cmd)
-    result = subprocess.run(cmdStr, shell=True, check=False)
+    cmd_str = " ".join(cmd)
+    result = subprocess.run(cmd_str, shell=True, check=False)
     if result.returncode != 0:
-        return Exception(f"failed to run '{cmdStr}' command")
+        return Exception(f"failed to run '{cmd_str}' command")
     return None
 
 
-def addUsers(configObj):
+def add_users(config_obj):
     """add cli command handler"""
     try:
-        compose, err = utils.importYaml("compose.users.yml")
-        utils.checkError(err)
-        userList, err = configObj.getAddUsersList()
-        utils.checkError(err)
-        server, err = configObj.getServerDNS()
-        utils.checkError(err)
-        path, err = configObj.getPath()
-        utils.checkError(err)
+        compose, err = utils.import_yaml("compose.users.yml")
+        utils.check_error(err)
+        user_list, err = config_obj.get_add_users_list()
+        utils.check_error(err)
+        server, err = config_obj.get_server_dns()
+        utils.check_error(err)
+        path, err = config_obj.get_path()
+        utils.check_error(err)
     except Exception as e:
         return e
 
@@ -109,36 +106,37 @@ def addUsers(configObj):
         compose["networks"] = {"users": {"name": "dtaas-users", "external": True}}
 
     try:
-        err = createUserFiles(userList, path + "/files")
-        utils.checkError(err)
-        err = addUsersToCompose(userList, compose, server, path, configObj)
-        utils.checkError(err)
-        err = utils.exportYaml(compose, "compose.users.yml")
-        utils.checkError(err)
-        err = startUserContainers(userList)
-        utils.checkError(err)
+        create_user_files(user_list, path + "/files")
+        resources, err = config_obj.get_resource_limits()
+        utils.check_error(err)
+        err = add_users_to_compose(user_list, compose, server, path, resources)
+        utils.check_error(err)
+        err = utils.export_yaml(compose, "compose.users.yml")
+        utils.check_error(err)
+        err = start_user_containers(user_list)
+        utils.check_error(err)
     except Exception as e:
         return e
 
     return None
 
 
-def deleteUser(configObj):
+def delete_user(config_obj):
     """delete cli command handler"""
     try:
-        compose, err = utils.importYaml("compose.users.yml")
-        utils.checkError(err)
-        userList, err = configObj.getDeleteUsersList()
-        utils.checkError(err)
-        err = stopUserContainers(userList)
-        utils.checkError(err)
+        compose, err = utils.import_yaml("compose.users.yml")
+        utils.check_error(err)
+        user_list, err = config_obj.get_delete_users_list()
+        utils.check_error(err)
+        err = stop_user_containers(user_list)
+        utils.check_error(err)
 
-        for username in userList:
+        for username in user_list:
             if "services" in compose and username in compose["services"]:
                 del compose["services"][username]
 
-        err = utils.exportYaml(compose, "compose.users.yml")
-        utils.checkError(err)
+        err = utils.export_yaml(compose, "compose.users.yml")
+        utils.check_error(err)
 
     except Exception as e:
         return e

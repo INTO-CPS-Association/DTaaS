@@ -8,20 +8,20 @@ class Config:
     """The Config class for DTaaS"""
 
     def __init__(self):
-        config, err = utils.importToml("dtaas.toml")
+        config, err = utils.import_toml("dtaas.toml")
         if err is not None:
             raise click.ClickException("config initialisation failed: " + str(err))
         self.data = config
 
-    def getConfig(self):
+    def get_config(self):
         """Gets the config dictionary"""
         if self.data is not None:
             return self.data, None
         return None, Exception("Config not initialised")
 
-    def getFromConfig(self, key):
+    def get_from_config(self, key):
         """Gets the specific key from config"""
-        conf, err = self.getConfig()
+        conf, err = self.get_config()
         if err is not None:
             return None, err
 
@@ -29,105 +29,78 @@ class Config:
             return None, Exception(f"Config file error: Missing {key} tag")
         return conf[key], None
 
-    def getCommon(self):
+    def get_common(self):
         """Gets the 'common' section of config"""
-        common, err = self.getFromConfig("common")
+        common, err = self.get_from_config("common")
         return common, err
 
-    def getStringFromCommon(self, key):
+    def get_string_from_common(self, key):
         """Gets the specific string key from config.common"""
-        confCommon, err = self.getCommon()
+        conf_common, err = self.get_common()
         if err is not None:
             return None, err
 
-        if key not in confCommon or confCommon[key] == "":
+        if key not in conf_common or conf_common[key] == "":
             return None, Exception(
                 f"Config file error: config.common.{key} not set in TOML"
             )
-        return str(confCommon[key]), None
+        return str(conf_common[key]), None
 
-    def getUsers(self):
+    def get_users(self):
         """Gets the 'users' section of config"""
-        users, err = self.getFromConfig("users")
+        users, err = self.get_from_config("users")
         return users, err
 
 
-    def getStringListFromUsers(self, key):
+    def get_string_list_from_users(self, key):
         """Gets the specific key as a list of strings from config.users"""
         err = None
-        stringsList = None
+        strings_list = None
 
-        confUsers, err = self.getUsers()
+        conf_users, err = self.get_users()
         if err is not None:
             return None, err
 
         try:
-            stringsList = [ str(x) for x in confUsers[key]]
-            if len(stringsList) == 0:
-                stringsList = None
+            strings_list = [ str(x) for x in conf_users[key]]
+            if len(strings_list) == 0:
+                strings_list = None
                 raise ValueError
         except KeyError:
             err = Exception(f"Config file error: No {key} list in 'users' tag")
         except ValueError:
             err = Exception(f'Config file error: users.{key} list is empty')
 
-        return stringsList, err
+        return strings_list, err
 
-    def getPath(self):
+    def get_path(self):
         """Gets the 'path' from config.common"""
-        path, err = self.getStringFromCommon("path")
+        path, err = self.get_string_from_common("path")
         return path, err
 
-    def getServerDNS(self):
+    def get_server_dns(self):
         """Gets the 'server-dns' from config.common"""
-        server, err = self.getStringFromCommon("server-dns")
+        server, err = self.get_string_from_common("server-dns")
         return server, err
 
-    def getAddUsersList(self):
+    def get_add_users_list(self):
         """Gets the 'add' list from config.users"""
-        addUsersList, err = self.getStringListFromUsers("add")
-        return addUsersList, err
+        add_users_list, err = self.get_string_list_from_users("add")
+        return add_users_list, err
 
-    def getDeleteUsersList(self):
+    def get_delete_users_list(self):
         """Gets the 'delete' list from config.users"""
-        deleteUsersList, err = self.getStringListFromUsers("delete")
-        return deleteUsersList, err
+        delete_users_list, err = self.get_string_list_from_users("delete")
+        return delete_users_list, err
 
-    def getResourceLimits (self):
+    def get_resource_limits(self):
         """Gets the default resourse limits"""
-        confcommon, err = self.getCommon()
+        conf_common, err = self.get_common()
         if err is not None:
             return None, err
         # It's assumed that resources is given in dtaas.toml
-        resources = confcommon.get("resources", None)
+        resources = conf_common.get("resources", None)
         if resources is None:
             err = Exception("Config file error: Missing default resources limits")
             return None, err
-        return resources, None
-
-    def getUserResourceLimits (self, username):
-        """Gets the resource limits for a specific user"""
-        confUsers, err = self.getUsers()
-        if err is not None:
-            return None, err
-
-        defaultResourcesLimits, err = self.getResourceLimits()
-        if err is not None:
-            return None, err
-
-        if username not in confUsers:
-            return defaultResourcesLimits, None
-
-        userConfig = confUsers[username]
-        if not isinstance(userConfig, dict) or "resources" not in userConfig:
-            return defaultResourcesLimits, None
-
-        # Merge user defined limits with default
-        userResourcesLimits = userConfig["resources"]
-        resources = defaultResourcesLimits.copy()
-
-        for key in resources:
-            if key in userResourcesLimits:
-                # If the user has defined this resource limit, use it.
-                resources[key] = userResourcesLimits[key]
         return resources, None

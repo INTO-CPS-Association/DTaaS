@@ -34,7 +34,7 @@ def add():
 
     configObj = configPkg.Config()
 
-    err = userPkg.addUsers(configObj)
+    err = userPkg.add_users(configObj)
     if err is not None:
         raise click.ClickException("Error while adding users: " + str(err))
     click.echo("Users added successfully")
@@ -49,7 +49,7 @@ def delete():
 
     configObj = configPkg.Config()
 
-    err = userPkg.deleteUser(configObj)
+    err = userPkg.delete_user(configObj)
     if err is not None:
         raise click.ClickException("Error while deleting users: " + str(err))
     click.echo("User deleted successfully")

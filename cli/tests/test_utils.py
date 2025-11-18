@@ -23,7 +23,7 @@ def test_import_yaml_users():
         "networks": ["users"],
     }
 
-    template, err = utils.importYaml("users.local.yml")
+    template, err = utils.import_yaml("users.local.yml")
     if err is not None:
         raise Exception(err)
 
@@ -33,14 +33,14 @@ def test_import_yaml_users():
 def test_import_yaml_compose():
     expected = getTestComposeObject()
 
-    compose, err = utils.importYaml("tests/data/compose.users.test.yml")
+    compose, err = utils.import_yaml("tests/data/compose.users.test.yml")
     if err is not None:
         raise Exception(err)
     assert expected == compose
 
 
 def test_import_toml():
-    toml, err = utils.importToml("tests/dtaas.test.toml")
+    toml, err = utils.import_toml("tests/dtaas.test.toml")
     if err is not None:
         raise Exception(err)
 
@@ -86,7 +86,7 @@ def test_replace_all():
     for i in range(len(templateRandomVals)):
         mapping[templateRandomVals[i]] = expectedRandomVals[i]
 
-    ans, err = utils.replaceAll(template, mapping)
+    ans, err = utils.replace_all(template, mapping)
     if err is not None:
         raise Exception(err)
 
@@ -96,12 +96,12 @@ def test_replace_all():
 def test_export_yaml():
     data = getTestComposeObject()
 
-    err = utils.exportYaml(data, "tests/data/compose.users.exp.yml")
+    err = utils.export_yaml(data, "tests/data/compose.users.exp.yml")
     if err is not None:
         raise Exception(err)
 
-    expected, err1 = utils.importYaml("tests/data/compose.users.test.yml")
-    actual, err2 = utils.importYaml("tests/data/compose.users.exp.yml")
+    expected, err1 = utils.import_yaml("tests/data/compose.users.test.yml")
+    actual, err2 = utils.import_yaml("tests/data/compose.users.exp.yml")
 
     if err1:
         raise Exception(err1)

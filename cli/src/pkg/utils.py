@@ -6,7 +6,7 @@ import tomlkit
 LOCALHOST_SERVER = "localhost"
 
 
-def importYaml(filename):
+def import_yaml(filename):
     """This function is used to import a yaml file safely"""
     config = {}
     try:
@@ -21,7 +21,7 @@ def importYaml(filename):
     return config if config is not None else {}, None
 
 
-def exportYaml(data, filename):
+def export_yaml(data, filename):
     """This function is used to export to a yaml file safely"""
     try:
         with open(filename, "w") as file:
@@ -31,7 +31,7 @@ def exportYaml(data, filename):
     return None
 
 
-def importToml(filename):
+def import_toml(filename):
     """This function is used to import a toml file safely"""
     try:
         with open(filename, "r") as file:
@@ -43,47 +43,47 @@ def importToml(filename):
     return config, None
 
 
-def replaceAll(obj, mapping):
+def replace_all(obj, mapping):
     """This function is used to replace all placeholders with values in a nested object"""
     if isinstance(obj, str):
-        obj, err = replaceString(obj, mapping)
+        obj, err = replace_string(obj, mapping)
         return obj, err
 
     if isinstance(obj, list):
-        obj, err = replaceList(obj, mapping)
+        obj, err = replace_list(obj, mapping)
         return obj, err
 
     if isinstance(obj, dict):
-        obj, err = replaceDict(obj, mapping)
+        obj, err = replace_dict(obj, mapping)
         return obj, err
 
     return None, Exception("Config substition failed: Object format not valid")
 
 
-def replaceString(s, mapping):
+def replace_string(s, mapping):
     for key in mapping:
         s = s.replace(key, mapping[key])
     return s, None
 
 
-def replaceList(arr, mapping):
+def replace_list(arr, mapping):
     for ind, val in enumerate(arr):
-        arr[ind], err = replaceAll(val, mapping)
+        arr[ind], err = replace_all(val, mapping)
         if err is not None:
             return None, err
     return arr, None
 
 
-def replaceDict(dictionary, mapping):
+def replace_dict(dictionary, mapping):
     for key in dictionary:
         if not isinstance(key, str):
             return None, Exception("Config substitution failed: Key is not a string")
-        dictionary[key], err = replaceAll(dictionary[key], mapping)
+        dictionary[key], err = replace_all(dictionary[key], mapping)
         if err is not None:
             return None, err
     return dictionary, None
 
 
-def checkError(err):
+def check_error(err):
     if err is not None:
         raise err

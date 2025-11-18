@@ -9,19 +9,26 @@ import tempfile
 def mock_config():
     """Mock config object"""
     mock = MagicMock()
-    mock.getAddUsersList.return_value = (["user1"], None)
-    mock.getDeleteUsersList.return_value = (["user1"], None)
-    mock.getServerDNS.return_value = ("localhost", None)
-    mock.getPath.return_value = ("/test/path", None)
+    mock.get_add_users_list.return_value = (["user1"], None)
+    mock.get_delete_users_list.return_value = (["user1"], None)
+    mock.get_server_dns.return_value = ("localhost", None)
+    mock.get_path.return_value = ("/test/path", None)
+    mock.get_resource_limits.return_value = ({
+        "cpus": 4,
+        "cpuset": "0-6",
+        "mem_limit": "4G",
+        "pids_limit": 4800,
+        "shm_size": "512m"
+    }, None)
     return mock
 
 
 @pytest.fixture
 def mock_utils():
     """Mock all utils functions"""
-    with patch("src.pkg.users.utils.importYaml") as mi, patch(
-        "src.pkg.users.utils.exportYaml"
-    ) as me, patch("src.pkg.users.utils.replaceAll") as mr:
+    with patch("src.pkg.users.utils.import_yaml") as mi, patch(
+        "src.pkg.users.utils.export_yaml"
+    ) as me, patch("src.pkg.users.utils.replace_all") as mr:
         mi.return_value = ({"version": "3", "services": {}}, None)
         me.return_value = None
         mr.return_value = ({"image": "test"}, None)
@@ -31,10 +38,10 @@ def mock_utils():
 @pytest.fixture
 def mock_user_operations():
     """Mock user operation functions"""
-    with patch("src.pkg.users.createUserFiles") as mc, patch(
-        "src.pkg.users.addUsersToCompose"
-    ) as ma, patch("src.pkg.users.startUserContainers") as ms, patch(
-        "src.pkg.users.stopUserContainers"
+    with patch("src.pkg.users.create_user_files") as mc, patch(
+        "src.pkg.users.add_users_to_compose"
+    ) as ma, patch("src.pkg.users.start_user_containers") as ms, patch(
+        "src.pkg.users.stop_user_containers"
     ) as mst:
         mc.return_value = ma.return_value = ms.return_value = mst.return_value = None
         yield {"create": mc, "add": ma, "start": ms, "stop": mst}
@@ -51,27 +58,27 @@ def temp_dir_with_template():
 
 @pytest.mark.parametrize("usernames", [["testuser"], ["user1", "user2", "user3"], []])
 def test_create_user_files(temp_dir_with_template, usernames):
-    assert users.createUserFiles(usernames, temp_dir_with_template) is None
+    assert users.create_user_files(usernames, temp_dir_with_template) is None
     assert all(Path(temp_dir_with_template, u).exists() for u in usernames)
 
 
 def test_create_user_files_already_exists(temp_dir_with_template):
     Path(temp_dir_with_template, "testuser").mkdir(parents=True)
-    assert users.createUserFiles(["testuser"], temp_dir_with_template) is None
+    assert users.create_user_files(["testuser"], temp_dir_with_template) is None
 
 
 def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
-    mockConfigObj = MagicMock()
-    mockConfigObj.getUserResourceLimits.return_value = ({
+    resources = {
         "cpus": 4,
-        "mem_limit": "4g",
+        "cpuset": "0-6",
+        "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
-    }, None)
+    }
     
-    users.addUsersToCompose(
-        ["user1", "user2", "user3"], {"services": {}}, "localhost", "/test", mockConfigObj
+    users.add_users_to_compose(
+        ["user1", "user2", "user3"], {"services": {}}, "localhost", "/test", resources
     )
     assert mock_utils["replace"].call_count == 3
 
@@ -79,14 +86,18 @@ def test_add_users_to_compose(mock_utils):
 
 def test_add_users_to_compose_config_error():
     """Test addUsersToCompose with config error"""
-    mockConfigObj = MagicMock()
-    mockConfigObj.getUserResourceLimits.return_value = (None, Exception("Error"))
-    
+    resources = {
+        "cpus": 4,
+        "cpuset": "0-6",
+        "mem_limit": "4G",
+        "pids_limit": 4800,
+        "shm_size": "512m"
+    }
     with patch(
-        "src.pkg.users.getComposeConfig", return_value=(None, Exception("Error"))
+        "src.pkg.users.get_compose_config", return_value=(None, Exception("Error"))
     ):
         assert (
-            users.addUsersToCompose(["user1"], {"services": {}}, "localhost", "/test", mockConfigObj)
+            users.add_users_to_compose(["user1"], {"services": {}}, "localhost", "/test", resources)
             is not None
         )
 
@@ -98,11 +109,12 @@ def test_get_compose_config(mock_utils, server, file):
     """Test getComposeConfig with resources parameter"""
     resources = {
         "cpus": 4,
-        "mem_limit": "4g",
+        "cpuset": "0-6",
+        "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
     }
-    result, err = users.getComposeConfig("testuser", server, "/test", resources)
+    result, err = users.get_compose_config("testuser", server, "/test", resources)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)
 
@@ -111,18 +123,19 @@ def test_get_compose_config_error():
     """Test getComposeConfig with error"""
     resources = {
         "cpus": 4,
-        "mem_limit": "4g",
+        "cpuset": "0-6",
+        "mem_limit": "4",
         "pids_limit": 4800,
         "shm_size": "512m"
     }
     with patch(
-        "src.pkg.users.utils.importYaml", return_value=(None, Exception("Error"))
+        "src.pkg.users.utils.import_yaml", return_value=(None, Exception("Error"))
     ):
-        result, err = users.getComposeConfig("testuser", "localhost", "/test", resources)
+        result, err = users.get_compose_config("testuser", "localhost", "/test", resources)
         assert (result, isinstance(err, Exception)) == (None, True)
 
 
-@pytest.mark.parametrize("func", [users.startUserContainers, users.stopUserContainers])
+@pytest.mark.parametrize("func", [users.start_user_containers, users.stop_user_containers])
 @patch("src.pkg.users.subprocess.run", return_value=MagicMock(returncode=0))
 def test_container_operations(mock_run, func):
     func(["user1", "user2"])
@@ -135,7 +148,7 @@ def test_run_command_for_containers(mock_run, returncode, has_error):
     mock_run.return_value = MagicMock(
         returncode=returncode, stderr="Error" if has_error else ""
     )
-    assert (users.runCommandForContainers("up", ["user1"]) is not None) == has_error
+    assert (users.run_command_for_containers("up", ["user1"]) is not None) == has_error
 
 
 # addUsers tests
@@ -146,21 +159,21 @@ def test_add_users_missing_fields(
     mock_config, mock_utils, mock_user_operations, compose, field
 ):
     mock_utils["import"].return_value = (compose, None)
-    assert users.addUsers(mock_config) is None and field in compose
+    assert users.add_users(mock_config) is None and field in compose
 
 
 def test_add_users_export_error(mock_config, mock_utils, mock_user_operations):
     mock_utils["export"].return_value = Exception("Export failed")
-    assert users.addUsers(mock_config) is not None
+    assert users.add_users(mock_config) is not None
 
 
 # deleteUser tests
 @pytest.mark.parametrize("export_error", [False, True])
 def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error):
     compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
-    mock_config.getDeleteUsersList.return_value = (["user1"], None)
+    mock_config.get_delete_users_list.return_value = (["user1"], None)
     mock_utils["import"].return_value = (compose, None)
     mock_utils["export"].return_value = Exception("Failed") if export_error else None
 
-    err = users.deleteUser(mock_config)
+    err = users.delete_user(mock_config)
     assert (err is not None) if export_error else err is None

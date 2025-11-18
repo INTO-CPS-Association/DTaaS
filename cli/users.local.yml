@@ -7,6 +7,7 @@ environment:
   - AUTHENTICATE_VIA_JUPYTER=
   - WORKSPACE_BASE_URL=${username}
 shm_size: ${shm_size}
+cpuset: "${cpuset}"
 cpus: ${cpus}
 mem_limit: ${mem_limit}
 pids_limit: ${pids_limit}

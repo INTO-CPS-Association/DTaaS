@@ -19,6 +19,7 @@ path = "/home/Desktop/DTaaS"
 [common.resources]
 # These are the default limits for user containers.
 cpus = 4 # Virtual CPU
+cpuset = "0-6" # Threads limit
 mem_limit = "4G"
 pids_limit = 4800 # Number of processes
 shm_size = "512m" # Shared memory size

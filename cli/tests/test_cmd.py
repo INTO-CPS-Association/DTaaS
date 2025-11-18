@@ -13,8 +13,8 @@ def runner():
 @pytest.fixture
 def mock_user_pkg():
     """Mock user package functions"""
-    with patch("src.cmd.userPkg.addUsers") as mock_add, patch(
-        "src.cmd.userPkg.deleteUser"
+    with patch("src.cmd.userPkg.add_users") as mock_add, patch(
+        "src.cmd.userPkg.delete_user"
     ) as mock_delete:
         yield {"add": mock_add, "delete": mock_delete}
 

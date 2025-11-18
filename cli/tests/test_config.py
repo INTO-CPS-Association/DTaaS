@@ -16,22 +16,23 @@ def mockTomlData():
 
 @pytest.fixture
 def mockUtils():
-    """Mock utils.importToml"""
-    with patch("src.pkg.config.utils.importToml") as mockImport:
+    """Mock utils.import_toml"""
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
         yield mockImport
 
 
 @pytest.fixture
 def mockConfig():
     """Create a mock config object with test data"""
-    with patch("src.pkg.config.utils.importToml") as mockImport:
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
         mockImport.return_value = ({
             "common": {
                 "server-dns": "localhost",
                 "path": "/test/path",
                 "resources": {
                     "cpus": 4,
-                    "mem_limit": "4g",
+                    "cpuset": "0-6",
+                    "mem_limit": "4G",
                     "pids_limit": 4800,
                     "shm_size": "512m"
                 }
@@ -56,7 +57,7 @@ def testGetConfigNotInitialized():
     """Test getConfig when data is None"""
     cfg = config.Config.__new__(config.Config)
     cfg.data = None
-    _, err = cfg.getConfig()
+    _, err = cfg.get_config()
     assert err is not None
 
 
@@ -64,7 +65,7 @@ def testGetFromConfigMissingKey(mockUtils, mockTomlData):
     """Test getFromConfig with missing key"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    result, err = cfg.getFromConfig("missing_key")
+    result, err = cfg.get_from_config("missing_key")
     assert result is None
     assert err is not None
     assert "Missing missing_key tag" in str(err)
@@ -74,7 +75,7 @@ def testGetStringFromCommonMissingKey(mockUtils, mockTomlData):
     """Test getStringFromCommon with missing key"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    result, err = cfg.getStringFromCommon("missing_key")
+    result, err = cfg.get_string_from_common("missing_key")
     assert result is None
     assert err is not None
 
@@ -83,7 +84,7 @@ def testGetUsersSuccess(mockUtils, mockTomlData):
     """Test getUsers retrieves users section"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    users, err = cfg.getUsers()
+    users, err = cfg.get_users()
     assert err is None
     assert users == mockTomlData["users"]
 
@@ -92,7 +93,7 @@ def testGetStringListFromUsersSuccess(mockUtils, mockTomlData):
     """Test getStringListFromUsers retrieves list"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    addList, err = cfg.getStringListFromUsers("add")
+    addList, err = cfg.get_string_list_from_users("add")
     assert err is None
     assert addList == ["user1", "user2"]
 
@@ -101,7 +102,7 @@ def testGetStringListFromUsersMissingKey(mockUtils, mockTomlData):
     """Test getStringListFromUsers with missing key"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    result, err = cfg.getStringListFromUsers("missing_key")
+    result, err = cfg.get_string_list_from_users("missing_key")
     assert result is None
     assert err is not None
 
@@ -111,7 +112,7 @@ def testGetStringListFromUsersEmptyList(mockUtils):
     data = {"users": {"add": []}}
     mockUtils.return_value = (data, None)
     cfg = config.Config()
-    result, err = cfg.getStringListFromUsers("add")
+    result, err = cfg.get_string_list_from_users("add")
     assert result is None
     assert err is not None
     assert "list is empty" in str(err)
@@ -121,7 +122,7 @@ def testGetPathSuccess(mockUtils, mockTomlData):
     """Test getPath retrieves path"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    path, err = cfg.getPath()
+    path, err = cfg.get_path()
     assert err is None
     assert path == "/test/path"
 
@@ -130,7 +131,7 @@ def testGetServerDnsSuccess(mockUtils, mockTomlData):
     """Test getServerDNS retrieves server DNS"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    server, err = cfg.getServerDNS()
+    server, err = cfg.get_server_dns()
     assert err is None
     assert server == "localhost"
 
@@ -139,7 +140,7 @@ def testGetAddUsersListSuccess(mockUtils, mockTomlData):
     """Test getAddUsersList retrieves add list"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    addList, err = cfg.getAddUsersList()
+    addList, err = cfg.get_add_users_list()
     assert err is None
     assert addList == ["user1", "user2"]
 
@@ -148,7 +149,7 @@ def testGetDeleteUsersListSuccess(mockUtils, mockTomlData):
     """Test getDeleteUsersList retrieves delete list"""
     mockUtils.return_value = (mockTomlData, None)
     cfg = config.Config()
-    deleteList, err = cfg.getDeleteUsersList()
+    deleteList, err = cfg.get_delete_users_list()
     assert err is None
     assert deleteList == ["user3"]
 
@@ -156,11 +157,12 @@ def testGetDeleteUsersListSuccess(mockUtils, mockTomlData):
 def testGetResourcesSuccess(mockConfig):
     """Test getResources retrieves resources section"""
     cfg = mockConfig
-    resources, err = cfg.getResourceLimits()
+    resources, err = cfg.get_resource_limits()
     assert err is None
     assert resources == {
         "cpus": 4,
-        "mem_limit": "4g",
+        "cpuset": "0-6",
+        "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m",
     }
@@ -168,78 +170,10 @@ def testGetResourcesSuccess(mockConfig):
 
 def testGetResourceLimitsMissing():
     """Test getting resource limits when resources section is missing"""
-    with patch("src.pkg.config.utils.importToml") as mockImport:
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
         mockImport.return_value = ({"common": {}}, None)
         cfg = Config()
-        result, err = cfg.getResourceLimits()
+        result, err = cfg.get_resource_limits()
         assert result is None
         assert err is not None
         assert "Missing default resources limits" in str(err)
-
-
-def testGetUserResourceLimitsCustom():
-    """Test getting resource limits for user with custom limits"""
-    with patch("src.pkg.config.utils.importToml") as mockImport:
-        mockImport.return_value = ({
-            "common": {
-                "resources": {
-                    "cpus": 4,
-                    "mem_limit": "4g",
-                    "pids_limit": 4800,
-                    "shm_size": "512m"
-                }
-            },
-            "users": {
-                "username1": {
-                    "email": "test@example.com",
-                    "resources": {
-                        "cpus": 2,
-                        "mem_limit": "2g"
-                    }
-                }
-            }
-        }, None)
-        cfg = Config()
-        result, err = cfg.getUserResourceLimits("username1")
-        assert err is None
-        # Should have custom CPU and memory, but default pids and shm
-        assert result["cpus"] == 2
-        assert result["mem_limit"] == "2g"
-        assert result["pids_limit"] == 4800
-        assert result["shm_size"] == "512m"
-
-
-def testGetUserResourceLimitsNonexistentUser(mockConfig):
-    """Test getting resource limits for non-existent user"""
-    result, err = mockConfig.getUserResourceLimits("nonexistent")
-    assert err is None
-    # Should return default limits
-    assert result is not None
-    assert result["cpus"] == 4
-
-
-def testGetUserResourceLimitsNoResourcesKey():
-    """Test user config exists but has no resources key"""
-    with patch("src.pkg.config.utils.importToml") as mockImport:
-        mockImport.return_value = ({
-            "common": {
-                "resources": {
-                    "cpus": 4,
-                    "mem_limit": "4g",
-                    "pids_limit": 4800,
-                    "shm_size": "512m"
-                }
-            },
-            "users": {
-                "username1": {
-                    "email": "test@example.com"
-                    # No resources key
-                }
-            }
-        }, None)
-        cfg = Config()
-        result, err = cfg.getUserResourceLimits("username1")
-        assert err is None
-        # Should return default limits
-        assert result["cpus"] == 4
-        assert result["mem_limit"] == "4g"
