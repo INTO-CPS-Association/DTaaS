@@ -12,6 +12,7 @@ def test_import_yaml_users():
         "environment": ["AUTHENTICATE_VIA_JUPYTER=", "WORKSPACE_BASE_URL=${username}"],
         "shm_size": "${shm_size}",
         "cpus": "${cpus}",
+        "cpuset": "${cpuset}",
         "mem_limit": "${mem_limit}",
         "pids_limit": "${pids_limit}",
         "labels": [
