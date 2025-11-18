@@ -54,7 +54,10 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username1}
-    shm_size: 512m
+    shm_size: "712m"
+    cpus: 5.6
+    mem_limit: "6.6G"
+    pids_limit: 4960
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.entryPoints=web"
@@ -72,7 +75,10 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username2}
-    shm_size: 512m
+    shm_size: "512m"
+    cpus: 5.6
+    mem_limit: "2.4G"
+    pids_limit: 4960
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web"

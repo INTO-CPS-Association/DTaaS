@@ -69,7 +69,7 @@ def startUserContainers(users):
 def stopUserContainers(users):
     """Stops all the user containers in the 'users' list"""
 
-    cmd = "docker compose -f 'compose.users.yml' down"
+    cmd = "docker compose -f compose.users.yml down"
     err = runCommandForContainers(cmd, users)
     return err
 
