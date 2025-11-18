@@ -93,39 +93,16 @@ services:
       - platform-services
 
   postgres:
-    image: 'postgres:16'
+    image: 'postgres:16.11'
     container_name: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - '${POSTGRES_PORT}:5432'
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
     environment:
-      POSTGRES_DB: thingsboard
-      POSTGRES_PASSWORD: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d thingsboard || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 10s
-    networks:
-      - platform-services
-
-  thingsboard-install:
-    image: 'thingsboard/tb-node:4.2.1'
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      INSTALL_TB: "true"
-      LOAD_DEMO: "true"
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-    volumes:
-      - './data/thingsboard:/data'
-    restart: "no"
+      POSTGRES_DB: '${POSTGRES_DB}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
     networks:
       - platform-services
 
@@ -140,13 +117,16 @@ services:
       - '${THINGSBOARD_MQTT_SSL_PORT}:8883'
       - '${THINGSBOARD_COAP_LwM2M_PORTS}:5683-5688/udp'
     volumes:
-      - './log/thingsboard:/var/log/thingsboard'
-      - './data/thingsboard:/data'
+    - './log/thingsboard:/var/log/thingsboard'
+    - './data/thingsboard:/data'
+    - './certs/${HOSTNAME}:/certs'
     environment:
       TB_SERVICE_ID: tb-ce-node
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SSL_ENABLED: "true"
+      SSL_CREDENTIALS_TYPE: "PEM"
+      SSL_PEM_CERT: "/certs/fullchain.pem"
+      SSL_PEM_KEY: "/certs/privkey.pem"
     logging:
       driver: 'json-file'
       options:
@@ -154,7 +134,6 @@ services:
         max-file: '10'
     depends_on:
       - postgres
-      - thingsboard-install
     networks:
       - platform-services
 

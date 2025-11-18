@@ -12,6 +12,7 @@ The following services can be installed:
   The **MQTT plugin** of this broker has been enabled.
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
+* **ThingsBoard** IoT device management and data visualization platform
 
 ## Directory Structure
 
@@ -95,6 +96,7 @@ at the following ports / URLs.
 | Influx | services.foo.com:8086 |
 | MongoDB database | services.foo.com:8087 |
 | Grafana | services.foo.com:8088 |
+| ThingsBoard | services.foo.com:8089 |
 
 Please note that the TCP ports used by the services can be changed
 by updating the `config/service.env` file and rerunning the docker commands.
