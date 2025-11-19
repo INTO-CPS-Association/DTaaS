@@ -78,7 +78,7 @@ services:
     shm_size: "512m"
     cpus: 4
     mem_limit: "2.4G"
-    pids_limit: 4960
+    pids_limit: "512m"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web"
