@@ -3,7 +3,7 @@
 import subprocess
 import shutil
 from src.pkg import utils
-
+from constants import COMPOSE_USERS_YML
 
 def get_compose_config(username, server, path, resources):
     """Makes and returns the config for the user"""
@@ -86,7 +86,7 @@ def run_command_for_containers(command, containers):
 def add_users(config_obj):
     """add cli command handler"""
     try:
-        compose, err = utils.import_yaml("compose.users.yml")
+        compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         user_list, err = config_obj.get_add_users_list()
         utils.check_error(err)
@@ -110,7 +110,7 @@ def add_users(config_obj):
         utils.check_error(err)
         err = add_users_to_compose(user_list, compose, server, path, resources)
         utils.check_error(err)
-        err = utils.export_yaml(compose, "compose.users.yml")
+        err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
         err = start_user_containers(user_list)
         utils.check_error(err)
@@ -123,7 +123,7 @@ def add_users(config_obj):
 def delete_user(config_obj):
     """delete cli command handler"""
     try:
-        compose, err = utils.import_yaml("compose.users.yml")
+        compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         user_list, err = config_obj.get_delete_users_list()
         utils.check_error(err)
@@ -134,7 +134,7 @@ def delete_user(config_obj):
             if "services" in compose and username in compose["services"]:
                 del compose["services"][username]
 
-        err = utils.export_yaml(compose, "compose.users.yml")
+        err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
 
     except Exception as e:

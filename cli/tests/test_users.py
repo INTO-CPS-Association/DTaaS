@@ -110,7 +110,7 @@ def test_get_compose_config(mock_utils, server, file):
         "pids_limit": 4800,
         "shm_size": "512m"
     }
-    result, err = users.get_compose_config("testuser", server, "/test", resources)
+    _, _ = users.get_compose_config("testuser", server, "/test", resources)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)
 
