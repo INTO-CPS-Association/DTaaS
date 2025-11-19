@@ -12,6 +12,8 @@ The following services can be installed:
   The **MQTT plugin** of this broker has been enabled.
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
+* **ThingsBoard** IoT device management and data visualization platform
+* **PostgreSQL** database server for ThingsBoard
 
 ## Directory Structure
 
@@ -39,7 +41,7 @@ Please replace the same with your server's hostname.
 
   ```bash
   cat certs/services.foo.com/privkey.pem \
-    certs/services.foo.com/fullchain.pem > certs/foo.com/combined.pem
+    certs/services.foo.com/fullchain.pem > certs/servicesfoo.com/combined.pem
   chmod 600 certs/services.foo.com/combined.pem
   chown 999:999 certs/services.foo.com/combined.pem
   ```
@@ -59,6 +61,15 @@ Please replace the same with your server's hostname.
   chown 999 certs/services.foo.com/privkey-rabbitmq.pem
   ```
 
+* Adjust permissions of certificates for PostgreSQL user in docker container.
+
+  ```bash
+  cp certs/services.foo.com/privkey.pem \
+    certs/services.foo.com/privkey-postgres.pem
+  chown 999:999 certs/services.foo.com/privkey-postgres.pem
+  chmod 600 certs/services.foo.com/privkey-postgres.pem
+  ```
+
 * Note down your userid and groupid on Linux systems.
   
   ```bash
@@ -71,6 +82,17 @@ Please replace the same with your server's hostname.
 
   ```bash
   cp config/services.env.template config/services.env
+  ```
+
+* Start PostgreSQL and run ThingsBoard install.
+
+  ```bash
+  docker compose -f compose.services.secure.yml\
+    --env-file config/services.env\
+    up -d postgres
+  docker compose -f compose.services.secure.yml \
+    --env-file config/services.env \
+    run --rm -e INSTALL_TB=true thingsboard-ce
   ```
 
 * Start or stop services.
@@ -95,6 +117,7 @@ at the following ports / URLs.
 | Influx | services.foo.com:8086 |
 | MongoDB database | services.foo.com:8087 |
 | Grafana | services.foo.com:8088 |
+| ThingsBoard | services.foo.com:8089 |
 
 Please note that the TCP ports used by the services can be changed
 by updating the `config/service.env` file and rerunning the docker commands.
