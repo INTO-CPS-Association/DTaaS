@@ -17,7 +17,7 @@ path = "/home/Desktop/DTaaS"
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
 [common.resources]
-# These are the default limits for user containers.
+# These are the default resource limits for user containers.
 cpus = 4 # Virtual CPU
 mem_limit = "4G"
 pids_limit = 4800 # Number of processes

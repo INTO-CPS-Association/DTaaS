@@ -47,8 +47,8 @@ services:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=${username1}
     shm_size: "712m"
-    cpus: 5.6
-    mem_limit: "6.6G"
+    cpus: 4
+    mem_limit: "4G"
     pids_limit: 4960
     labels:
       - "traefik.enable=true"

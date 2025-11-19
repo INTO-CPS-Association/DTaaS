@@ -3,7 +3,7 @@
 import subprocess
 import shutil
 from src.pkg import utils
-from constants import COMPOSE_USERS_YML
+from src.pkg.constants import COMPOSE_USERS_YML
 
 def get_compose_config(username, server, path, resources):
     """Makes and returns the config for the user"""
