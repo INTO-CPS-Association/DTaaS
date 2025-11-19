@@ -15,7 +15,6 @@ def mock_config():
     mock.get_path.return_value = ("/test/path", None)
     mock.get_resource_limits.return_value = ({
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
@@ -71,7 +70,6 @@ def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
     resources = {
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
@@ -88,7 +86,6 @@ def test_add_users_to_compose_config_error():
     """Test addUsersToCompose with config error"""
     resources = {
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
@@ -109,7 +106,6 @@ def test_get_compose_config(mock_utils, server, file):
     """Test getComposeConfig with resources parameter"""
     resources = {
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m"
@@ -123,7 +119,6 @@ def test_get_compose_config_error():
     """Test getComposeConfig with error"""
     resources = {
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4",
         "pids_limit": 4800,
         "shm_size": "512m"

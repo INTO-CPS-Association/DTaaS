@@ -31,7 +31,6 @@ def mockConfig():
                 "path": "/test/path",
                 "resources": {
                     "cpus": 4,
-                    "cpuset": "0-6",
                     "mem_limit": "4G",
                     "pids_limit": 4800,
                     "shm_size": "512m"
@@ -161,7 +160,6 @@ def testGetResourcesSuccess(mockConfig):
     assert err is None
     assert resources == {
         "cpus": 4,
-        "cpuset": "0-6",
         "mem_limit": "4G",
         "pids_limit": 4800,
         "shm_size": "512m",

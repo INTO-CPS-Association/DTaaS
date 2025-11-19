@@ -48,7 +48,6 @@ services:
       - WORKSPACE_BASE_URL=${username1}
     shm_size: "712m"
     cpus: 5.6
-    cpuset : "0-6"
     mem_limit: "6.6G"
     pids_limit: 4960
     labels:

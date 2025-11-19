@@ -14,7 +14,6 @@ def get_compose_config(username, server, path, resources):
         "${username}": username,
         "${shm_size}": str(resources["shm_size"]),
         "${cpus}": str(resources["cpus"]),
-        "${cpuset}": str(resources["cpuset"]),
         "${mem_limit}": str(resources["mem_limit"]),
         "${pids_limit}": str(resources["pids_limit"])
 
