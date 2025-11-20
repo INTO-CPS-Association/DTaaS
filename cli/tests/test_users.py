@@ -16,7 +16,7 @@ def mock_config():
     mock.get_resource_limits.return_value = ({
         "cpus": 4,
         "mem_limit": "4G",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m"
     }, None)
     return mock
@@ -71,7 +71,7 @@ def test_add_users_to_compose(mock_utils):
     resources = {
         "cpus": 4,
         "mem_limit": "4G",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m"
     }
     
@@ -87,7 +87,7 @@ def test_add_users_to_compose_config_error():
     resources = {
         "cpus": 4,
         "mem_limit": "4G",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m"
     }
     with patch(
@@ -107,7 +107,7 @@ def test_get_compose_config(mock_utils, server, file):
     resources = {
         "cpus": 4,
         "mem_limit": "4G",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m"
     }
     _, _ = users.get_compose_config("testuser", server, "/test", resources)
@@ -120,7 +120,7 @@ def test_get_compose_config_error():
     resources = {
         "cpus": 4,
         "mem_limit": "4",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m"
     }
     with patch(

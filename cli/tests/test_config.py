@@ -32,7 +32,7 @@ def mock_config():
                 "resources": {
                     "cpus": 4,
                     "mem_limit": "4G",
-                    "pids_limit": 4800,
+                    "pids_limit": 4960,
                     "shm_size": "512m"
                 }
             },
@@ -161,7 +161,7 @@ def test_get_resources_success(mock_config):
     assert resources == {
         "cpus": 4,
         "mem_limit": "4G",
-        "pids_limit": 4800,
+        "pids_limit": 4960,
         "shm_size": "512m",
     }
 

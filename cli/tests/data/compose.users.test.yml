@@ -8,7 +8,7 @@ services:
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
       - WORKSPACE_BASE_URL=testuser
-    shm_size: 512m
+    shm_size: "512m"
     labels:
       - traefik.enable=true
       - traefik.http.routers.testuser.entryPoints=web
