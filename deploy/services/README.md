@@ -160,3 +160,19 @@ docker exec -it rabbitmq bash
 # inside docker container
 python3 rabbitmq.py
 ```
+
+**ThingsBoard:** Creating Tenants and User Accounts
+
+1. Log in as System Administrator and change password
+Open the ThingsBoard URL and log in with the default system administrator account:
+
+- **Email:** `sysadmin@thingsboard.org`  
+- **Password:** `sysadmin`
+
+Click the three dots in the top-right corner → Account → Change Password
+
+2. Create a Tenant
+
+In the left menu, navigate to Tenants, click the **+**, give it a name and click *Add*.
+Click on the tenant and click *Administer tenant*, click the **+**, enter a valid email, and click *Add*.
+Go to the activation link URL, where you will be prompted to create a password for the new tenant administrator.
