@@ -41,7 +41,7 @@ Please replace the same with your server's hostname.
 
   ```bash
   cat certs/services.foo.com/privkey.pem \
-    certs/services.foo.com/fullchain.pem > certs/servicesfoo.com/combined.pem
+    certs/services.foo.com/fullchain.pem > certs/services.foo.com/combined.pem
   chmod 600 certs/services.foo.com/combined.pem
   chown 999:999 certs/services.foo.com/combined.pem
   ```
@@ -84,11 +84,18 @@ Please replace the same with your server's hostname.
   cp config/services.env.template config/services.env
   ```
 
+* Set required permissions for ThingsBoard data and log directories.
+
+  ```bash
+  sudo chown -R 799:799 data/thingsboard
+  sudo chown -R 799:799 log/thingsboard
+  ```
+
 * Start PostgreSQL and run ThingsBoard install.
 
   ```bash
-  docker compose -f compose.services.secure.yml\
-    --env-file config/services.env\
+  docker compose -f compose.services.secure.yml \
+    --env-file config/services.env \
     up -d postgres
   docker compose -f compose.services.secure.yml \
     --env-file config/services.env \
@@ -120,7 +127,7 @@ at the following ports / URLs.
 | ThingsBoard | services.foo.com:8089 |
 
 Please note that the TCP ports used by the services can be changed
-by updating the `config/service.env` file and rerunning the docker commands.
+by updating the `config/services.env` file and rerunning the docker commands.
 
 The firewall and network access settings of corporate / cloud network
 need to be configured to allow external access to the services.
@@ -129,14 +136,21 @@ services from their user workspaces.
 
 ## New User Accounts
 
-There are ready to use scripts for adding accounts in **InfluxDB** and
-**RabbitMQ** services.
+There are ready to use scripts for adding accounts in **InfluxDB**,
+**RabbitMQ**, and **ThingsBoard** services.
 
 Copy the user accounts template and add user account credentials.
 
 ```bash
 cp config/credentials.csv.template config/credentials.csv
 # edit credentials.csv file
+```
+
+Use the following commands to add new users to **ThingsBoard** service.
+
+```bash
+chmod +x script/thingsboard.py
+./script/thingsboard.py
 ```
 
 Use the following commands to add new users to **InfluxDB** service.
@@ -160,19 +174,3 @@ docker exec -it rabbitmq bash
 # inside docker container
 python3 rabbitmq.py
 ```
-
-**ThingsBoard:** Creating Tenants and User Accounts
-
-1. Log in as System Administrator and change password
-Open the ThingsBoard URL and log in with the default system administrator account:
-
-- **Email:** `sysadmin@thingsboard.org`  
-- **Password:** `sysadmin`
-
-Click the three dots in the top-right corner → Account → Change Password
-
-2. Create a Tenant
-
-In the left menu, navigate to Tenants, click the **+**, give it a name and click *Add*.
-Click on the tenant and click *Administer tenant*, click the **+**, enter a valid email, and click *Add*.
-Go to the activation link URL, where you will be prompted to create a password for the new tenant administrator.

@@ -132,6 +132,8 @@ services:
     environment:
       TB_SERVICE_ID: tb-ce-node
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?sslmode=require
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SSL_ENABLED: "true"
       SSL_CREDENTIALS_TYPE: "PEM"
       SSL_PEM_CERT: "/certs/fullchain.pem"
