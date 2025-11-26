@@ -19,7 +19,8 @@ The following services can be installed:
 
 * **config** is used for storing the service configuration
 * **data** is used by the services for storing data
-* **certs** is used for storing the TLS certificates needed by the services.
+* **log** is used by the services for logging
+* **certs** is used for storing the TLS certificates needed by the services
 * **script** contains scripts for creating user accounts
 
 ## Installation steps
@@ -65,9 +66,31 @@ Please replace the same with your server's hostname.
 
   ```bash
   cp certs/services.foo.com/privkey.pem \
-    certs/services.foo.com/privkey-postgres.pem
-  chown 999:999 certs/services.foo.com/privkey-postgres.pem
-  chmod 600 certs/services.foo.com/privkey-postgres.pem
+    certs/services.foo.com/postgres.key
+  cp certs/services.foo.com/fullchain.pem \
+    certs/services.foo.com/postgres.crt
+  chown 999:999 certs/services.foo.com/postgres.key certs/services.foo.com/postgres.crt
+  chmod 600 certs/services.foo.com/postgres.key
+  chmod 644 certs/services.foo.com/postgres.crt
+  ```
+
+* Adjust permissions of certificates for ThingsBoard user in docker container.
+
+  ```bash
+  cp certs/services.foo.com/privkey.pem \
+   certs/services.foo.com/privkey-thingsboard.pem
+  cp certs/services.foo.com/fullchain.pem \
+   certs/services.foo.com/fullchain-thingsboard.pem
+  chown 799:799 certs/services.foo.com/privkey-thingsboard.pem
+  chown 799:799 certs/services.foo.com/fullchain-thingsboard.pem
+  chmod 600 certs/services.foo.com/privkey-thingsboard.pem
+  chmod 644 certs/services.foo.com/fullchain-thingsboard.pem
+  ```
+* Set required permissions for ThingsBoard data and log directories.
+
+  ```bash
+  sudo chown -R 799:799 data/thingsboard
+  sudo chown -R 799:799 log/thingsboard
   ```
 
 * Note down your userid and groupid on Linux systems.
@@ -82,13 +105,6 @@ Please replace the same with your server's hostname.
 
   ```bash
   cp config/services.env.template config/services.env
-  ```
-
-* Set required permissions for ThingsBoard data and log directories.
-
-  ```bash
-  sudo chown -R 799:799 data/thingsboard
-  sudo chown -R 799:799 log/thingsboard
   ```
 
 * Start PostgreSQL and run ThingsBoard install.
@@ -150,7 +166,7 @@ Use the following commands to add new users to **ThingsBoard** service.
 
 ```bash
 chmod +x script/thingsboard.py
-./script/thingsboard.py
+ptyhon3 script/thingsboard.py
 ```
 
 Use the following commands to add new users to **InfluxDB** service.

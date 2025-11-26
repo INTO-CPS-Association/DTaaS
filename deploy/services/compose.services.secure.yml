@@ -101,6 +101,7 @@ services:
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
       - './certs/${HOSTNAME}:/etc/ssl'
+      - './config/init-thingsboard-user.sql:/docker-entrypoint-initdb.d/init-thingsboard-user.sql:ro'
     environment:
       POSTGRES_DB: '${POSTGRES_DB}'
       POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
@@ -109,9 +110,9 @@ services:
       - -c
       - ssl=on
       - -c
-      - ssl_cert_file=/etc/ssl/fullchain.pem
+      - ssl_cert_file=/etc/ssl/postgres.crt
       - -c
-      - ssl_key_file=/etc/ssl/privkey-postgres.pem
+      - ssl_key_file=/etc/ssl/postgres.key
     networks:
       - platform-services
 
@@ -136,8 +137,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SSL_ENABLED: "true"
       SSL_CREDENTIALS_TYPE: "PEM"
-      SSL_PEM_CERT: "/certs/fullchain.pem"
-      SSL_PEM_KEY: "/certs/privkey.pem"
+      SSL_PEM_CERT: "/certs/fullchain-thingsboard.pem"
+      SSL_PEM_KEY: "/certs/privkey-thingsboard.pem"
     logging:
       driver: 'json-file'
       options:

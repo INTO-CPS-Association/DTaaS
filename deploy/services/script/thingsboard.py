@@ -5,7 +5,8 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
-CONFIG_ENV_PATH = Path("config/services.env")
+BASE_DIR = Path(__file__).resolve().parent.parent  # script/ -> project root
+CONFIG_ENV_PATH = BASE_DIR / "config" / "services.env"
 
 # Load credentials from the env file
 def load_env(path: Path) -> dict:
@@ -23,7 +24,7 @@ def load_env(path: Path) -> dict:
     return env
 
 class ThingsboardClient:
-    def __init__(self, base_url: str, verify_tls: bool = False):
+    def __init__(self, base_url: str, verify_tls: bool = True):
         self.base_url = base_url.rstrip("/")
         if not verify_tls:
             self.ssl_ctx = ssl._create_unverified_context()
@@ -143,15 +144,15 @@ def main():
     tb_url = build_tb_url(env)
     print(f"Using ThingsBoard URL: {tb_url}")
 
-    sys_email = env.get("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
-    sys_default_pw = env.get("TB_SYSADMIN_DEFAULT_PASSWORD", "sysadmin")
+    sys_email = env.get("TB_SYSADMIN_EMAIL")
+    sys_default_pw = env.get("TB_SYSADMIN_DEFAULT_PASSWORD")
     sys_new_pw = env.get("TB_SYSADMIN_NEW_PASSWORD", sys_default_pw)
 
     tenant_title = env.get("TB_TENANT_TITLE", "DTaaS")
-    tenant_admin_email = env.get("TB_TENANT_ADMIN_EMAIL", "dtaas-admin@example.org")
-    tenant_admin_password = env.get("TB_TENANT_ADMIN_PASSWORD", "ChangeMe123!")
+    tenant_admin_email = env.get("TB_TENANT_ADMIN_EMAIL")
+    tenant_admin_password = env.get("TB_TENANT_ADMIN_PASSWORD")
 
-    client = ThingsboardClient(tb_url, verify_tls=False)
+    client = ThingsboardClient(tb_url, verify_tls=True)
 
     # 1) Login as sysadmin; try default, then new
     print(f"Logging in as sysadmin ({sys_email})...")
