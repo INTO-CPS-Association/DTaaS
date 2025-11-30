@@ -1,7 +1,6 @@
 import platform 
 import os
 from pathlib import Path
-import argparse
 import os
 import platform
 import shutil
@@ -9,12 +8,23 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Tuple
+from dotenv import load_dotenv
+
+env_path = Path(__file__).parent.parent / "config" / "services.env"
+load_dotenv(dotenv_path=env_path)
+
+HOSTNAME = os.environ["HOSTNAME"]
+INFLUX_UID = os.environ["INFLUX_UID"]
+INFLUX_GID = os.environ["INFLUX_GID"]
+MONGO_UID = os.environ["MONGO_UID"]
+MONGO_GID = os.environ["MONGO_GID"]
+RABBIT_UID = os.environ["RABBIT_UID"]
 
 class ServicesConfig:
-    def __init__(self, host_name : str = "services.foo.com") -> None:
+    def __init__(self) -> None:
         """" initialize configuration paths and files"""
         self.base_dir = Path(__file__).parent.resolve()
-        self.host_name = host_name
+        self.host_name = HOSTNAME
         self.config_dir = self.base_dir / "config"
         self.data_dir = self.base_dir / "data"
         self.certs_dir = self.base_dir / "certs"
@@ -38,7 +48,7 @@ class ServicesConfig:
             raise RuntimeError("Unable to determine operating system type.")
 
 
-    def obtain_tls_certs(self) -> Tuple[bool, str]:
+    def copy_letsencrypt_certs(self) -> Tuple[bool, str]:
         """
         Obtain TLS certificates for services.
         
@@ -57,8 +67,7 @@ class ServicesConfig:
             try:
                 for files in source_dir.glob("*"):
                     shutil.copy2(files, certs_target / files.name)
-                # TODO: Will we have only 1 key (one privkey and one fullchain)?
-                # Then we do not need to pick the latest files.
+                # Copy/rename the latest certificates, and delete older versions.
                 priv_candidates = list(certs_target.glob("privkey*.pem"))
                 full_candidates = list(certs_target.glob("fullchain*.pem"))
 
@@ -68,6 +77,9 @@ class ServicesConfig:
                     if target_priv.exists():
                         target_priv.unlink()
                     latest_priv.rename(target_priv)
+                    for p in priv_candidates:
+                        if p != target_priv and p.exists():
+                            p.unlink()
 
                 if full_candidates:
                     latest_full = max(full_candidates, key=lambda p: p.name)
@@ -75,6 +87,9 @@ class ServicesConfig:
                     if target_full.exists():
                         target_full.unlink()
                     latest_full.rename(target_full)
+                    for p in full_candidates:
+                        if p != target_full and p.exists():
+                            p.unlink()
 
                 return True, f"Certificates copied and normalized in {certs_target}"
 
@@ -85,8 +100,8 @@ class ServicesConfig:
             return False, "Windows: Not implemented."
         else:
             return False, f"Unsupported OS: {self.os_type}" 
-
         
+  
     def permissions__mongoDB(self) -> Tuple[bool, str]:
         """
         Combine privkey.pem + fullchain.pem -> combined.pem and set permissions for MongoDB.
@@ -101,30 +116,56 @@ class ServicesConfig:
                 return False, ("This operation requires root privileges, run with sudo.")
 
         try:
+            self.cert_dir.mkdir(parents=True, exist_ok=True)  
             with open(self.combined, "wb") as out_f: 
-                # cat privkey.pem fullchain.pem > combined.pem
                 with open(self.privkey, "rb") as pk:
                     out_f.write(pk.read())
                 with open(self.fullchain, "rb") as fc:
                     out_f.write(fc.read())
 
-            # Set permission mode 600 (owner read/write only)
             self.combined.chmod(0o600)
-            # Set ownership to mongodb's UID:GID inside container (999:999)
             if self.os_type in ("linux", "darwin"):
-                subprocess.run(["chown", "999:999", str(self.combined)], check=True)
-            return True, f"combined.pem created at {self.combined} with mode 600 and ownership set."
+                subprocess.run(["chown", f"{MONGO_UID}:{MONGO_GID}", str(self.combined)], check=True)
+            return True, f"combined.pem created at {self.combined} with mode 600 and ownership set to {MONGO_UID}:{MONGO_GID}."
         except Exception as e:
             return False, f"Error creating combined.pem: {e}"
 
 
+    def permissions__influxDB(self) -> Tuple[bool, str]:
+        """
+        Copy privkey.pem -> privkey-influxdb.pem and change owner.
+        """
+        cert_dir = self.certs_dir / self.host_name
+        source_priv = cert_dir / "privkey.pem"
+        influx_key = cert_dir / "privkey-influxdb.pem"
+
+        if not source_priv.exists():
+            return False, f"Missing {source_priv}; run obtain_tls_certs first."
+
+        if self.os_type in ("linux", "darwin"):
+            try:
+                is_root = (os.geteuid() == 0)
+            except AttributeError:
+                is_root = False
+            if not is_root:
+                return False, ("This operation requires root privileges, run with sudo.")
+        try:
+
+            shutil.copy2(source_priv, influx_key)
+            if self.os_type in ("linux", "darwin"):
+                subprocess.run(["chown", f"{INFLUX_UID}:{INFLUX_GID}", str(influx_key)], check=True)
+            return True, f"{influx_key} created and ownership set to {INFLUX_UID}:{INFLUX_GID}."
+        except subprocess.CalledProcessError as cpe:
+            return False, f"chown failed while setting ownership for {influx_key}: {cpe}"
+        except Exception as e:
+            return False, f"Error creating {influx_key}: {e}"
 
     def permissions__rabbitMQ(self) -> Tuple[bool, str]:
         """
         Copy privkey.pem -> privkey-rabbitmq.pem and set owner to 999 (user-only).
         """
         if not self.privkey.exists():
-            return False, f"Missing {self.privkey}; run obtain_tls_certs first."
+            return False, f"Missing {self.privkey}; run copy_letsencrypt_certs first."
 
         if self.os_type in ("linux", "darwin"):
             try:
@@ -137,32 +178,25 @@ class ServicesConfig:
             # Copy to a new file.
             shutil.copy2(self.privkey, self.rabbit_key)
             if self.os_type in ("linux", "darwin"):
-                subprocess.run(["chown", "999", str(self.rabbit_key)], check=True)
-            return True, f"{self.rabbit_key} created and ownership set to user 999."
+                subprocess.run(["chown", f"{RABBIT_UID}", str(self.rabbit_key)], check=True)
+            return True, f"{self.rabbit_key} created and ownership set to user {RABBIT_UID}."
         except Exception as e:
             return False, f"Error creating {self.rabbit_key}: {e}"
         
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("host")
-    parser.add_argument(
-        "action",
-        choices=["copy-certs", "fix-perms-mongo", "fix-perms-influx", "fix-perms-rabbit",],
-    )
-    args = parser.parse_args()
-
-    cfg = ServicesConfig(args.host)
-
-    if args.action == "copy-certs":
-        ok, msg = cfg.obtain_tls_certs()
-    elif args.action == "fix-perms-mongo":
-        ok, msg = cfg.permissions__mongoDB()
-    elif args.action == "fix-perms-influx":
-        ok, msg = cfg.permissions__influxDB()
-    elif args.action == "fix-perms-rabbit":
-        ok, msg = cfg.permissions__rabbitMQ()
-    else:
-        ok, msg = False, "Unknown action"
-
-    sys.exit(0 if ok else 3)
+    cfg = ServicesConfig()
+    steps = [
+        #cfg.copy_letsencrypt_certs,
+        cfg.permissions__mongoDB,
+        cfg.permissions__influxDB,
+        cfg.permissions__rabbitMQ,
+    ]
+    for step in steps:
+        ok, msg = step()
+        if not ok:
+            print(f"ERROR: {msg}", file=sys.stderr)
+            sys.exit(3)
+        else:
+            print(f"OK: {msg}")
+    sys.exit(0)
