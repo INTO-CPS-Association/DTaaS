@@ -20,6 +20,41 @@ The following services can be installed:
 * **certs** is used for storing the TLS certificates needed by the services.
 * **script** contains scripts for creating user accounts
 
+## Automated Certificate and Permission Setup
+
+`script/service_setup.py`, is provided to streamline the setup of TLS certificates
+
+and permissions for MongoDB, InfluxDB, and RabbitMQ services.
+
+### Features
+
+* **Automation** Automates all manual certificate and permission steps for
+ MongoDB, InfluxDB, and RabbitMQ as described above.
+* **Cross-platform:** Works on Linux, macOS, and Windows.
+* **Configuration-driven:** Reads all required user IDs, group IDs, and hostnames
+from `config/services.env`.
+
+### Usage
+
+1. Update `config/services.env` with the correct values for your environment.
+2. Run the script from the with root privilege:
+
+  ```bash
+  cd deploy/services
+  sudo python3 script/service_setup.py
+  ```
+
+  The script will:
+
+* Combine and set permissions for MongoDB certificates.
+* Copy and set permissions for InfluxDB and RabbitMQ certificates.
+* Use the correct UID/GID values from `config/services.env`.
+
+If any required variable is missing, the script will exit with an error message.
+
+This automation reduces manual errors and ensures your service containers have
+the correct certificate files and permissions for secure operation.
+
 ## Installation steps
 
 Please follow the steps outlined here for installation.
