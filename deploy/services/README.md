@@ -60,7 +60,7 @@ The script will:
 * Combine and set permissions for MongoDB certificates.
 * Copy and set permissions for InfluxDB and RabbitMQ certificates.
 * Use the correct UID/GID values from `config/services.env`.
-* Start the Docker Compose services automatically after setup. 
+* Start the Docker Compose services automatically after setup.
 
 If any required variable is missing, the script will exit with an error message.
 

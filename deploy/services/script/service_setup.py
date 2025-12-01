@@ -79,8 +79,8 @@ class ServicesConfig:
 
     def _load_env(self, env_path: Path) -> dict:
         """Load environment variables from a file into a dictionary."""
-        if not env_path.exists():  
-            raise FileNotFoundError(f"Environment (config/services.env) file not found: {env_path}")  
+        if not env_path.exists():
+            raise FileNotFoundError(f"Environment (config/services.env) file not found: {env_path}")
         load_dotenv(dotenv_path=env_path, override=True)
         return dict(os.environ)
 
@@ -102,13 +102,15 @@ class ServicesConfig:
             return False, f"Source directory for certs not found: {source_dir}"
         self.certs["dir"].mkdir(parents=True, exist_ok=True)
         try:
-            for files in source_dir.glob("*"):
-                shutil.copy2(files, self.certs["dir"] / files.name)
+            for path in source_dir.glob("*"):
+                shutil.copy2(path, self.certs["dir"] / path.name)
             self._normalize_cert_candidates("privkey")
             self._normalize_cert_candidates("fullchain")
             return True, f"Certificates copied and normalized in {self.certs['dir']}"
-        except Exception as e:
+        except (OSError, IOError, PermissionError) as e:
             return False, f"Error copying certificates: {e}"
+        except subprocess.CalledProcessError as e:
+            return False, f"Failed to set ownership: {e.stderr}"
 
 
     def _normalize_cert_candidates(self, prefix: str) -> None:
@@ -121,7 +123,7 @@ class ServicesConfig:
         target.unlink(missing_ok=True)
         latest.rename(target)
         for p in candidates:
-            if p != target:
+            if p.resolve() != target.resolve():
                 p.unlink(missing_ok=True)
 
 
@@ -132,7 +134,7 @@ class ServicesConfig:
         if not privkey_path.exists():
             raise FileNotFoundError( f"Missing privkey.pem at {privkey_path}.")
         if not fullchain_path.exists():
-            raise FileNotFoundError(  f"Missing fullchain.pem at {fullchain_path}.")
+            raise FileNotFoundError( f"Missing fullchain.pem at {fullchain_path}.")
         with open(self.certs["combined"], "wb") as out_f:
             with open(privkey_path, "rb") as pk:
                 out_f.write(pk.read())
@@ -141,19 +143,20 @@ class ServicesConfig:
 
 
     def permissions_mongodb(self) -> Tuple[bool, str]:
-        """Creates combined.pem and set permissions for MongoDB."""
+        """Creates combined.pem and sets permissions for MongoDB."""
         try:
             self.certs["dir"].mkdir(parents=True, exist_ok=True)
             self._create_combined_pem()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
-                chown_args = ["chown",f"{self.mongo['uid']}:{self.mongo['gid']}",str(self.certs["combined"])]
+                chown_args = ["chown", f"{self.mongo['uid']}:{self.mongo['gid']}", str(self.certs["combined"])]
                 subprocess.run(chown_args, check=True)
-            return True, (
-                f"combined.pem created with mode 600 and ownership set to "
+            return True, (f"combined.pem created with mode 600 and ownership set to "
                 f"{self.mongo['uid']}:{self.mongo['gid']}.")
-        except Exception as e:
-            return False, f"Error creating combined.pem: {e}"
+        except (OSError, IOError, PermissionError) as e:
+            return False, f"Error copying certificates: {e}"
+        except subprocess.CalledProcessError as e:
+            return False, f"Failed to set ownership: {e.stderr}"
 
 
     def permissions_influxdb(self) -> Tuple[bool, str]:
@@ -161,27 +164,30 @@ class ServicesConfig:
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown",f"{self.influx['uid']}:{self.influx['gid']}",str(self.influx["key"])]
+                chown_args = ["chown", f"{self.influx['uid']}:{self.influx['gid']}", str(self.influx["key"])]
                 subprocess.run(chown_args, check=True)
             return True, (
                 f"{self.influx['key']} created and ownership set to "
                 f"{self.influx['uid']}:{self.influx['gid']}.")
-        except Exception as e:
-            return False, (f"Error creating {self.influx['key']}: {e}")
+        except (OSError, IOError, PermissionError) as e:
+            return False, f"Error copying certificates: {e}"
+        except subprocess.CalledProcessError as e:
+            return False, f"Failed to set ownership: {e.stderr}"
 
 
     def permissions_rabbitmq(self) -> Tuple[bool, str]:
-        """Copy privkey.pem -> privkey-rabbitmq.pem and set owner."""
+        """Copy privkey.pem -> privkey-rabbitmq.pem and sets owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown",f"{self.rabbitmq['uid']}",str(self.rabbitmq["key"])]
+                chown_args = ["chown", f"{self.rabbitmq['uid']}", str(self.rabbitmq["key"])]
                 subprocess.run(chown_args, check=True)
-            return True, (
-                f"{self.rabbitmq['key']} created and ownership set to user "
+            return True, (f"{self.rabbitmq['key']} created and ownership set to user "
                 f"{self.rabbitmq['uid']}.")
-        except Exception as e:
-            return False, (f"Error creating {self.rabbitmq['key']}: {e}")
+        except (OSError, IOError, PermissionError) as e:
+            return False, f"Error copying certificates: {e}"
+        except subprocess.CalledProcessError as e:
+            return False, f"Failed to set ownership: {e.stderr}"
 
 
     def start_docker_compose(self) -> Tuple[bool, str]:
@@ -191,11 +197,12 @@ class ServicesConfig:
                 ["docker", "compose", "-f", str(self.compose_file), "up", "-d"],
                 check=True,
                 capture_output=True,
-                text=True
-            )
+                text=True)
             return True, f"Docker Compose started successfully:\n{result.stdout}"
+        except (OSError, IOError, PermissionError) as e:
+            return False, f"Error copying certificates: {e}"
         except subprocess.CalledProcessError as e:
-            return False, f"Failed to start Docker Compose:\n{e.stderr}"
+            return False, f"Failed to set ownership: {e.stderr}"
 
 
 if __name__ == "__main__":
