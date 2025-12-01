@@ -1,4 +1,4 @@
-import platform 
+import platform
 import os
 import shutil
 import subprocess
@@ -8,20 +8,31 @@ from typing import Tuple
 from dotenv import load_dotenv
 
 class ServicesConfig:
+    """
+    Configuration and setup utility for DTaaS platform services.
+
+    This class handles:
+        - Loading environment variables and service configuration.
+        - Managing TLS certificates for services (copying, normalizing, combining).
+        - Setting file permissions and ownership for MongoDB, InfluxDB, and RabbitMQ.
+        - Starting platform services using Docker Compose.
+        - Supporting Linux/MacOS and Windows environments.
+    """
 
     def __init__(self) -> None:
+
         """Initialize configuration paths and files, grouped by service."""
         self.base_dir = Path(__file__).parent.resolve()
         self.env_file = self.base_dir.parent / "config" / "services.env"
         self.env = self._load_env(self.env_file)
 
         self.host_name = self.get_required_env("HOSTNAME")
+        self.os_type = platform.system().lower()
 
         self.dir_path = {
-            "config": self.base_dir / "config",
-            "data": self.base_dir / "data",
-            "certs": self.base_dir / "certs",
-            "script": self.base_dir / "script",
+            "config": self.base_dir.parent / "config",
+            "data": self.base_dir.parent / "data",
+            "certs": self.base_dir.parent / "certs",
         }
 
         self.certs = {
@@ -51,16 +62,19 @@ class ServicesConfig:
         self.env_template = self.dir_path["config"] / "services.env.template"
         self.compose_file = self.base_dir.parent / "compose.services.secure.yml"
 
-        if platform.system():
-            self.os_type = platform.system().lower()
-            if self.os_type in ("linux", "darwin"):
-                try:
-                    is_root = (os.geteuid() == 0)
-                except AttributeError:
-                    is_root = False
-                if not is_root:
-                    print("This script must be run as root (Linux/MacOS).")
-                    exit(1)
+        if self.os_type in ("linux", "darwin"):
+            self._check_root_unix()
+
+
+    def _check_root_unix(self) -> None:
+        """Check if script is run as root on Unix systems."""
+        try:
+            is_root = os.geteuid() == 0
+        except AttributeError:
+            is_root = False
+        if not is_root:
+            print("This script must be run as root (Linux/MacOS).")
+            sys.exit(1)
 
 
     def _load_env(self, env_path: Path) -> dict:
@@ -75,34 +89,30 @@ class ServicesConfig:
         if value is None:
             raise RuntimeError(
                 f"Required environment variable '{var_name}' is not set. "
-                f"Please ensure it is defined in the services.env file."
-            )
+                f"Please ensure it is defined in the services.env file.")
         return value
-    
+
 
     def copy_letsencrypt_certs(self) -> Tuple[bool, str]:
-        """
-        Obtain TLS certificates for services.
-        Returns: (success: bool, message: str)
-        """
-        source_dir = Path(f"/etc/letsencrypt/archive/{self.host_name}")
+        """Obtain TLS certificates for services."""
+        source_dir = Path(f"C:/Certbot/archive/{self.host_name}")
+        if self.os_type in ("linux", "darwin"):
+            source_dir = Path(f"/etc/letsencrypt/archive/{self.host_name}")
         if not source_dir.exists():
             return False, f"Source directory for certs not found: {source_dir}"
         self.certs["dir"].mkdir(parents=True, exist_ok=True)
         try:
             for files in source_dir.glob("*"):
-                shutil.copy2(files, self.certs["dir"]  / files.name)
+                shutil.copy2(files, self.certs["dir"] / files.name)
             self._normalize_cert_candidates("privkey")
             self._normalize_cert_candidates("fullchain")
             return True, f"Certificates copied and normalized in {self.certs['dir']}"
         except Exception as e:
-            return False, f"Error copying/normalizing certificates: {e}"
+            return False, f"Error copying certificates: {e}"
 
 
     def _normalize_cert_candidates(self, prefix: str) -> None:
-        """
-        Keep only the latest cert file for a given prefix, rename it, and remove others.
-        """
+        """Keep only the latest cert file for a given prefix, rename it, and remove others."""
         candidates = list(self.certs["dir"].glob(f"{prefix}*.pem"))
         if candidates:
             latest = max(candidates, key=lambda p: p.stat().st_mtime)
@@ -112,57 +122,69 @@ class ServicesConfig:
             for p in candidates:
                 if p != target:
                     p.unlink(missing_ok=True)
-    
+
+
+    def _create_combined_pem(self) -> None:
+        """Create combined.pem from privkey.pem and fullchain.pem."""
+        with open(self.certs["combined"], "wb") as out_f:
+            with open(self.certs["privkey"], "rb") as pk:
+                out_f.write(pk.read())
+            with open(self.certs["fullchain"], "rb") as fc:
+                out_f.write(fc.read())
+
 
     def permissions__mongodb(self) -> Tuple[bool, str]:
-        """
-        Combine privkey.pem + fullchain.pem -> combined.pem and set permissions for Mongodb.
-        """
+        """Creates combined.pem and set permissions for MongoDB."""
         try:
             self.certs["dir"].mkdir(parents=True, exist_ok=True)
-            with open(self.certs["combined"], "wb") as out_f:
-                with open(self.certs["privkey"], "rb") as pk:
-                    out_f.write(pk.read())
-                with open(self.certs["fullchain"], "rb") as fc:
-                    out_f.write(fc.read())
-
-            self.certs["combined"].chmod(0o600)
-            subprocess.run(["chown", f"{self.mongo['uid']}:{self.mongo['gid']}", str(self.certs["combined"])] , check=True)
-            return True, f"combined.pem created at {self.certs['combined']} with mode 600 and ownership set to {self.mongo['uid']}:{self.mongo['gid']}."
+            self._create_combined_pem()
+            if self.os_type in ("linux", "darwin"):
+                self.certs["combined"].chmod(0o600)
+                chown_args = ["chown",
+                    f"{self.mongo['uid']}:{self.mongo['gid']}",str(self.certs["combined"])]
+                subprocess.run(chown_args, check=True)
+            return True, (
+                f"combined.pem created with mode 600 and ownership set to "
+                f"{self.mongo['uid']}:{self.mongo['gid']}.")
         except Exception as e:
             return False, f"Error creating combined.pem: {e}"
 
 
     def permissions__influxdb(self) -> Tuple[bool, str]:
-        """
-        Copy privkey.pem -> privkey-influxdb.pem and change owner.
-        """  
+        """Copy privkey.pem -> privkey-influxdb.pem and change owner."""  
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
-            subprocess.run(["chown", f"{self.influx['uid']}:{self.influx['gid']}", str(self.influx["key"])] , check=True)
-            return True, f"{self.influx['key']} created and ownership set to {self.influx['uid']}:{self.influx['gid']}."
+            if self.os_type in ("linux", "darwin"):
+                chown_args = ["chown",
+                    f"{self.influx['uid']}:{self.influx['gid']}",
+                    str(self.influx["key"])]
+                subprocess.run(chown_args, check=True)
+            return True, (
+                f"{self.influx['key']} created and ownership set to "
+                f"{self.influx['uid']}:{self.influx['gid']}.")
         except subprocess.CalledProcessError as cpe:
-            return False, f"chown failed while setting ownership for {self.influx['key']}: {cpe}"
-        except Exception as e:
-            return False, f"Error creating {self.influx['key']}: {e}"
-    
+            return False, (
+                f"chown failed while setting ownership for {self.influx['key']}: {cpe}")
+
 
     def permissions__rabbitmq(self) -> Tuple[bool, str]:
-        """
-        Copy privkey.pem -> privkey-rabbitmq.pem and set owner to 999 (user-only).
-        """
+        """Copy privkey.pem -> privkey-rabbitmq.pem and set owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
-            subprocess.run(["chown", f"{self.rabbitmq['uid']}", str(self.rabbitmq["key"])] , check=True)
-            return True, f"{self.rabbitmq['key']} created and ownership set to user {self.rabbitmq['uid']}."
+            if self.os_type in ("linux", "darwin"):
+                chown_args = ["chown",
+                    f"{self.rabbitmq['uid']}",
+                    str(self.rabbitmq["key"])]
+                subprocess.run(chown_args, check=True)
+            return True, (
+                f"{self.rabbitmq['key']} created and ownership set to user "
+                f"{self.rabbitmq['uid']}.")
         except Exception as e:
-            return False, f"Error creating {self.rabbitmq['key']}: {e}"
-    
+            return False, (f"Error creating {self.rabbitmq['key']}: {e}")
+
 
     def start_docker_compose(self) -> Tuple[bool, str]:
-        """
-        Start the platform services using docker compose.
-        """
+        """Start the platform services using docker compose."""
         try:
             result = subprocess.run(
                 ["docker", "compose", "-f", str(self.compose_file), "up", "-d"],
@@ -173,7 +195,7 @@ class ServicesConfig:
             return True, f"Docker Compose started successfully:\n{result.stdout}"
         except subprocess.CalledProcessError as e:
             return False, f"Failed to start Docker Compose:\n{e.stderr}"
-        
+
 
 if __name__ == "__main__":
     cfg = ServicesConfig()
