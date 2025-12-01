@@ -30,7 +30,7 @@ and permissions for MongoDB, InfluxDB, and RabbitMQ services.
 
 ### Features
 
-* **Automation** Automates all manual certificate and permission steps for
+* **Automation:** Automates all manual certificate and permission steps for
  MongoDB, InfluxDB, and RabbitMQ as described above.
 * **Cross-platform:** Works on Linux, macOS, and Windows.
 * **Configuration-driven:** Reads all required user IDs, group IDs, and hostnames
@@ -39,7 +39,7 @@ from `config/services.env`.
 ### Usage
 
 1. Update `config/services.env` with the correct values for your environment.
-2. Run the script from the with root privilege:
+2. Run the script from with root privilege:
 
   ```bash
   cd deploy/services
