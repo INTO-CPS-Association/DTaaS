@@ -79,6 +79,8 @@ class ServicesConfig:
 
     def _load_env(self, env_path: Path) -> dict:
         """Load environment variables from a file into a dictionary."""
+        if not env_path.exists():  
+            raise FileNotFoundError(f"Environment (config/services.env) file not found: {env_path}")  
         load_dotenv(dotenv_path=env_path, override=True)
         return dict(os.environ)
 
@@ -95,9 +97,7 @@ class ServicesConfig:
 
     def copy_letsencrypt_certs(self) -> Tuple[bool, str]:
         """Obtain TLS certificates for services."""
-        source_dir = Path(f"C:/Certbot/archive/{self.host_name}")
-        if self.os_type in ("linux", "darwin"):
-            source_dir = Path(f"/etc/letsencrypt/archive/{self.host_name}")
+        source_dir = Path(self.get_required_env("CERTS_SRC"))
         if not source_dir.exists():
             return False, f"Source directory for certs not found: {source_dir}"
         self.certs["dir"].mkdir(parents=True, exist_ok=True)
@@ -114,14 +114,15 @@ class ServicesConfig:
     def _normalize_cert_candidates(self, prefix: str) -> None:
         """Keep only the latest cert file for a given prefix, rename it, and remove others."""
         candidates = list(self.certs["dir"].glob(f"{prefix}*.pem"))
-        if candidates:
-            latest = max(candidates, key=lambda p: p.stat().st_mtime)
-            target = self.certs["dir"] / f"{prefix}.pem"
-            target.unlink(missing_ok=True)
-            latest.rename(target)
-            for p in candidates:
-                if p != target:
-                    p.unlink(missing_ok=True)
+        if not candidates:
+            return
+        latest = max(candidates, key=lambda p: p.stat().st_mtime)
+        target = self.certs["dir"] / f"{prefix}.pem"
+        target.unlink(missing_ok=True)
+        latest.rename(target)
+        for p in candidates:
+            if p != target:
+                p.unlink(missing_ok=True)
 
 
     def _create_combined_pem(self) -> None:
