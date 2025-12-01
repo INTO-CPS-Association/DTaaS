@@ -115,7 +115,7 @@ Please replace the same with your server's hostname.
     up -d postgres
   docker compose -f compose.services.secure.yml \
     --env-file config/services.env \
-    run --rm -e INSTALL_TB=true thingsboard-ce
+    run --rm -e INSTALL_TB=true -e LOAD_DEMO=false thingsboard-ce
   ```
 
 * Start or stop services.
@@ -166,7 +166,7 @@ Use the following commands to add new users to **ThingsBoard** service.
 
 ```bash
 chmod +x script/thingsboard.py
-ptyhon3 script/thingsboard.py
+python3 script/thingsboard.py
 ```
 
 Use the following commands to add new users to **InfluxDB** service.
