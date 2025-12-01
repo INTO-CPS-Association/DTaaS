@@ -126,22 +126,27 @@ class ServicesConfig:
 
     def _create_combined_pem(self) -> None:
         """Create combined.pem from privkey.pem and fullchain.pem."""
+        privkey_path = self.certs["privkey"]
+        fullchain_path = self.certs["fullchain"]
+        if not privkey_path.exists():
+            raise FileNotFoundError( f"Missing privkey.pem at {privkey_path}.")
+        if not fullchain_path.exists():
+            raise FileNotFoundError(  f"Missing fullchain.pem at {fullchain_path}.")
         with open(self.certs["combined"], "wb") as out_f:
-            with open(self.certs["privkey"], "rb") as pk:
+            with open(privkey_path, "rb") as pk:
                 out_f.write(pk.read())
-            with open(self.certs["fullchain"], "rb") as fc:
+            with open(fullchain_path, "rb") as fc:
                 out_f.write(fc.read())
 
 
-    def permissions__mongodb(self) -> Tuple[bool, str]:
+    def permissions_mongodb(self) -> Tuple[bool, str]:
         """Creates combined.pem and set permissions for MongoDB."""
         try:
             self.certs["dir"].mkdir(parents=True, exist_ok=True)
             self._create_combined_pem()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
-                chown_args = ["chown",
-                    f"{self.mongo['uid']}:{self.mongo['gid']}",str(self.certs["combined"])]
+                chown_args = ["chown",f"{self.mongo['uid']}:{self.mongo['gid']}",str(self.certs["combined"])]
                 subprocess.run(chown_args, check=True)
             return True, (
                 f"combined.pem created with mode 600 and ownership set to "
@@ -150,31 +155,26 @@ class ServicesConfig:
             return False, f"Error creating combined.pem: {e}"
 
 
-    def permissions__influxdb(self) -> Tuple[bool, str]:
-        """Copy privkey.pem -> privkey-influxdb.pem and change owner."""  
+    def permissions_influxdb(self) -> Tuple[bool, str]:
+        """Copy privkey.pem -> privkey-influxdb.pem and change owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown",
-                    f"{self.influx['uid']}:{self.influx['gid']}",
-                    str(self.influx["key"])]
+                chown_args = ["chown",f"{self.influx['uid']}:{self.influx['gid']}",str(self.influx["key"])]
                 subprocess.run(chown_args, check=True)
             return True, (
                 f"{self.influx['key']} created and ownership set to "
                 f"{self.influx['uid']}:{self.influx['gid']}.")
-        except subprocess.CalledProcessError as cpe:
-            return False, (
-                f"chown failed while setting ownership for {self.influx['key']}: {cpe}")
+        except Exception as e:
+            return False, (f"Error creating {self.influx['key']}: {e}")
 
 
-    def permissions__rabbitmq(self) -> Tuple[bool, str]:
+    def permissions_rabbitmq(self) -> Tuple[bool, str]:
         """Copy privkey.pem -> privkey-rabbitmq.pem and set owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown",
-                    f"{self.rabbitmq['uid']}",
-                    str(self.rabbitmq["key"])]
+                chown_args = ["chown",f"{self.rabbitmq['uid']}",str(self.rabbitmq["key"])]
                 subprocess.run(chown_args, check=True)
             return True, (
                 f"{self.rabbitmq['key']} created and ownership set to user "
@@ -201,16 +201,16 @@ if __name__ == "__main__":
     cfg = ServicesConfig()
     steps = [
         #cfg.copy_letsencrypt_certs,
-        cfg.permissions__mongodb,
-        cfg.permissions__influxdb,
-        cfg.permissions__rabbitmq,
+        cfg.permissions_mongodb,
+        cfg.permissions_influxdb,
+        cfg.permissions_rabbitmq,
         cfg.start_docker_compose,
     ]
     for step in steps:
         ok, msg = step()
         if not ok:
             print(f"ERROR: {msg}", file=sys.stderr)
-            sys.exit(3)
+            sys.exit(1)
         else:
             print(f"OK: {msg}")
     sys.exit(0)
