@@ -132,9 +132,9 @@ class ServicesConfig:
         privkey_path = self.certs["privkey"]
         fullchain_path = self.certs["fullchain"]
         if not privkey_path.exists():
-            raise FileNotFoundError( f"Missing privkey.pem at {privkey_path}.")
+            raise FileNotFoundError(f"Missing privkey.pem at {privkey_path}.")
         if not fullchain_path.exists():
-            raise FileNotFoundError( f"Missing fullchain.pem at {fullchain_path}.")
+            raise FileNotFoundError(f"Missing fullchain.pem at {fullchain_path}.")
         with open(self.certs["combined"], "wb") as out_f:
             with open(privkey_path, "rb") as pk:
                 out_f.write(pk.read())
@@ -154,9 +154,9 @@ class ServicesConfig:
             return True, (f"combined.pem created with mode 600 and ownership set to "
                 f"{self.mongo['uid']}:{self.mongo['gid']}.")
         except OSError as e:
-            return False, f"Error Setting permissions for MongoDB: {e}"
+            return False, f"Error setting permissions for MongoDB: {e}"
         except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {e.stderr}"
+            return False, f"Failed to set ownership: {str(e)}"
 
 
     def permissions_influxdb(self) -> Tuple[bool, str]:
@@ -172,7 +172,7 @@ class ServicesConfig:
         except OSError as e:
             return False, f"Error setting permissions for InfluxDB: {e}"
         except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {e.stderr}"
+            return False, f"Failed to set ownership: {str(e)}"
 
 
     def permissions_rabbitmq(self) -> Tuple[bool, str]:
@@ -187,7 +187,7 @@ class ServicesConfig:
         except OSError as e:
             return False, f"Error setting permissions for RabbitMQ: {e}"
         except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {e.stderr}"
+            return False, f"Failed to set ownership: {str(e)}"
 
 
     def start_docker_compose(self) -> Tuple[bool, str]:
@@ -202,7 +202,7 @@ class ServicesConfig:
         except OSError as e:
             return False, f"Error starting Docker Compose: {e}"
         except subprocess.CalledProcessError as e:
-            return False, f"Failed to start Docker Compose: {e.stderr}"
+            return False, f"Failed to start Docker Compose: {str(e)}"
 
 
 if __name__ == "__main__":
