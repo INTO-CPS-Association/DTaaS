@@ -2,10 +2,11 @@
 import csv
 import subprocess
 from pathlib import Path
-from typing import List, Tuple
 
 
-def execute_command(command: List[str], verbose: bool = True) -> Tuple[bool, str]:
+def execute_command(
+    command: list[str], verbose: bool = True
+) -> tuple[bool, str]:
     """
     Execute a shell command.
 
@@ -33,7 +34,7 @@ def execute_command(command: List[str], verbose: bool = True) -> Tuple[bool, str
         return False, error_msg
 
 
-def add_rabbitmq_users(credentials_file: Path) -> Tuple[bool, str]:
+def add_rabbitmq_users(credentials_file: Path) -> tuple[bool, str]:
     """
     Add users to RabbitMQ service.
 
@@ -47,18 +48,18 @@ def add_rabbitmq_users(credentials_file: Path) -> Tuple[bool, str]:
         return False, f"Credentials file not found: {credentials_file}"
 
     try:
-        with open(credentials_file, mode='r', newline='', encoding='utf-8') as creds_file:
-            credentials = csv.DictReader(creds_file, delimiter=',')
+        with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
+            credentials = csv.DictReader(creds_file, delimiter=",")
 
             for credential in credentials:
-                username = credential['username']
-                password = credential['password']
+                username = credential["username"]
+                password = credential["password"]
                 vhost = username
 
                 # Add user
                 success, output = execute_command([
-                    'docker', 'exec', 'rabbitmq',
-                    'rabbitmqctl', 'add_user',
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "add_user",
                     username, password
                 ])
 
@@ -67,30 +68,30 @@ def add_rabbitmq_users(credentials_file: Path) -> Tuple[bool, str]:
 
                 # Add vhost
                 execute_command([
-                    'docker', 'exec', 'rabbitmq',
-                    'rabbitmqctl', 'add_vhost',
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "add_vhost",
                     vhost
                 ])
 
                 # Set permissions on user vhost
                 execute_command([
-                    'docker', 'exec', 'rabbitmq',
-                    'rabbitmqctl', 'set_permissions',
-                    '-p', vhost,
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "set_permissions",
+                    "-p", vhost,
                     username,
-                    '.*', '.*', '.*'
+                    ".*", ".*", ".*"
                 ])
 
                 # Set permissions on default vhost
                 execute_command([
-                    'docker', 'exec', 'rabbitmq',
-                    'rabbitmqctl', 'set_permissions',
-                    '-p', '/',
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "set_permissions",
+                    "-p", "/",
                     username,
-                    '.*', '.*', '.*'
+                    ".*", ".*", ".*"
                 ])
 
         return True, "RabbitMQ users created successfully"
 
-    except Exception as e:
+    except (OSError, KeyError) as e:
         return False, f"Error adding RabbitMQ users: {e}"

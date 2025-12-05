@@ -1,7 +1,5 @@
 """Tests for configuration management"""
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 from src.pkg.config import Config
 
 

@@ -3,7 +3,6 @@ import platform
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Tuple
 
 from .config import Config
 
@@ -33,10 +32,18 @@ class ServiceSetup:
         self.certs = {
             "dir": self.dir_path["certs"] / self.host_name,
             "privkey": self.dir_path["certs"] / self.host_name / "privkey.pem",
-            "fullchain": self.dir_path["certs"] / self.host_name / "fullchain.pem",
-            "combined": self.dir_path["certs"] / self.host_name / "combined.pem",
-            "influx_key": self.dir_path["certs"] / self.host_name / "privkey-influxdb.pem",
-            "rabbit_key": self.dir_path["certs"] / self.host_name / "privkey-rabbitmq.pem",
+            "fullchain": (
+                self.dir_path["certs"] / self.host_name / "fullchain.pem"
+            ),
+            "combined": (
+                self.dir_path["certs"] / self.host_name / "combined.pem"
+            ),
+            "influx_key": (
+                self.dir_path["certs"] / self.host_name / "privkey-influxdb.pem"
+            ),
+            "rabbit_key": (
+                self.dir_path["certs"] / self.host_name / "privkey-rabbitmq.pem"
+            ),
         }
 
         # Service configurations
@@ -57,7 +64,7 @@ class ServiceSetup:
 
         self.compose_file = config.base_dir / "compose.services.secure.yml"
 
-    def copy_certs(self) -> Tuple[bool, str]:
+    def copy_certs(self) -> tuple[bool, str]:
         """
         Copy TLS certificates from source to destination.
 
@@ -108,17 +115,19 @@ class ServiceSetup:
         fullchain_path = self.certs["fullchain"]
 
         if not privkey_path.exists():
-            raise FileNotFoundError(f"Missing privkey.pem at {privkey_path}")
+            msg = f"Missing privkey.pem at {privkey_path}"
+            raise FileNotFoundError(msg)
         if not fullchain_path.exists():
-            raise FileNotFoundError(f"Missing fullchain.pem at {fullchain_path}")
+            msg = f"Missing fullchain.pem at {fullchain_path}"
+            raise FileNotFoundError(msg)
 
-        with open(self.certs["combined"], "wb") as out_f:
-            with open(privkey_path, "rb") as pk:
+        with self.certs["combined"].open("wb") as out_f:
+            with privkey_path.open("rb") as pk:
                 out_f.write(pk.read())
-            with open(fullchain_path, "rb") as fc:
+            with fullchain_path.open("rb") as fc:
                 out_f.write(fc.read())
 
-    def setup_mongodb(self) -> Tuple[bool, str]:
+    def setup_mongodb(self) -> tuple[bool, str]:
         """
         Set up MongoDB certificates and permissions.
 
@@ -136,7 +145,7 @@ class ServiceSetup:
                     f"{self.mongo['uid']}:{self.mongo['gid']}",
                     str(self.certs["combined"])
                 ]
-                subprocess.run(chown_args, check=True)
+                subprocess.run(chown_args, check=True)  # noqa: S603
 
             return True, (
                 f"combined.pem created with mode 600 and ownership set to "
@@ -145,7 +154,7 @@ class ServiceSetup:
         except (OSError, subprocess.CalledProcessError) as e:
             return False, f"Error setting up MongoDB: {e}"
 
-    def setup_influxdb(self) -> Tuple[bool, str]:
+    def setup_influxdb(self) -> tuple[bool, str]:
         """
         Set up InfluxDB certificates and permissions.
 
@@ -161,7 +170,7 @@ class ServiceSetup:
                     f"{self.influx['uid']}:{self.influx['gid']}",
                     str(self.influx["key"])
                 ]
-                subprocess.run(chown_args, check=True)
+                subprocess.run(chown_args, check=True)  # noqa: S603
 
             return True, (
                 f"{self.influx['key']} created and ownership set to "
@@ -170,7 +179,7 @@ class ServiceSetup:
         except (OSError, subprocess.CalledProcessError) as e:
             return False, f"Error setting up InfluxDB: {e}"
 
-    def setup_rabbitmq(self) -> Tuple[bool, str]:
+    def setup_rabbitmq(self) -> tuple[bool, str]:
         """
         Set up RabbitMQ certificates and permissions.
 
@@ -186,7 +195,7 @@ class ServiceSetup:
                     f"{self.rabbitmq['uid']}",
                     str(self.rabbitmq["key"])
                 ]
-                subprocess.run(chown_args, check=True)
+                subprocess.run(chown_args, check=True)  # noqa: S603
 
             return True, (
                 f"{self.rabbitmq['key']} created and ownership set to user "
@@ -195,7 +204,7 @@ class ServiceSetup:
         except (OSError, subprocess.CalledProcessError) as e:
             return False, f"Error setting up RabbitMQ: {e}"
 
-    def start_services(self) -> Tuple[bool, str]:
+    def start_services(self) -> tuple[bool, str]:
         """
         Start the platform services using Docker Compose.
 

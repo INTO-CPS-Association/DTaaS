@@ -1,7 +1,6 @@
 """Tests for service setup functionality"""
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 from src.pkg.setup import ServiceSetup
 from src.pkg.config import Config
 

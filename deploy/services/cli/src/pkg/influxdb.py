@@ -3,10 +3,11 @@ import csv
 import json
 import subprocess
 from pathlib import Path
-from typing import List, Tuple
 
 
-def execute_command(command: List[str], verbose: bool = True) -> Tuple[bool, str]:
+def execute_command(
+    command: list[str], verbose: bool = True
+) -> tuple[bool, str]:
     """
     Execute a shell command.
 
@@ -34,7 +35,7 @@ def execute_command(command: List[str], verbose: bool = True) -> Tuple[bool, str
         return False, error_msg
 
 
-def add_influxdb_users(credentials_file: Path) -> Tuple[bool, str]:
+def add_influxdb_users(credentials_file: Path) -> tuple[bool, str]:
     """
     Add users to InfluxDB service.
 
@@ -48,20 +49,20 @@ def add_influxdb_users(credentials_file: Path) -> Tuple[bool, str]:
         return False, f"Credentials file not found: {credentials_file}"
 
     try:
-        with open(credentials_file, mode='r', newline='', encoding='utf-8') as creds_file:
-            credentials = csv.DictReader(creds_file, delimiter=',')
+        with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
+            credentials = csv.DictReader(creds_file, delimiter=",")
 
             for credential in credentials:
-                username = credential['username']
-                password = credential['password']
+                username = credential["username"]
+                password = credential["password"]
 
                 # Create user
                 success, output = execute_command([
-                    'docker', 'exec', 'influxdb',
-                    'influx', 'user', 'create',
-                    '--skip-verify',
-                    '-n', username,
-                    '-p', password
+                    "docker", "exec", "influxdb",
+                    "influx", "user", "create",
+                    "--skip-verify",
+                    "-n", username,
+                    "-p", password
                 ])
 
                 if not success:
@@ -70,49 +71,49 @@ def add_influxdb_users(credentials_file: Path) -> Tuple[bool, str]:
 
             # Get list of users
             success, users_json_str = execute_command([
-                'docker', 'exec', 'influxdb',
-                'influx', 'user', 'list',
-                '--skip-verify',
-                '--json'
+                "docker", "exec", "influxdb",
+                "influx", "user", "list",
+                "--skip-verify",
+                "--json"
             ], verbose=False)
 
             if not success:
                 return False, "Could not retrieve user list"
 
             users_json_list = json.loads(users_json_str)
-            users_dict = {user['name']: user['id'] for user in users_json_list}
+            users_dict = {user["name"]: user["id"] for user in users_json_list}
 
             # Create organizations and buckets for each user
             for name, user_id in users_dict.items():
                 # Create organization
                 execute_command([
-                    'docker', 'exec', 'influxdb',
-                    'influx', 'org', 'create',
-                    '--skip-verify',
-                    '--name', name,
-                    '--description', name
+                    "docker", "exec", "influxdb",
+                    "influx", "org", "create",
+                    "--skip-verify",
+                    "--name", name,
+                    "--description", name
                 ])
 
                 # Add user as owner to organization
                 execute_command([
-                    'docker', 'exec', 'influxdb',
-                    'influx', 'org', 'members', 'add',
-                    '--skip-verify',
-                    '--name', name,
-                    '--owner',
-                    '-m', user_id
+                    "docker", "exec", "influxdb",
+                    "influx", "org", "members", "add",
+                    "--skip-verify",
+                    "--name", name,
+                    "--owner",
+                    "-m", user_id
                 ])
 
                 # Create bucket for user
                 execute_command([
-                    'docker', 'exec', 'influxdb',
-                    'influx', 'bucket', 'create',
-                    '--skip-verify',
-                    '--name', name,
-                    '--org', name
+                    "docker", "exec", "influxdb",
+                    "influx", "bucket", "create",
+                    "--skip-verify",
+                    "--name", name,
+                    "--org", name
                 ])
 
         return True, "InfluxDB users created successfully"
 
-    except Exception as e:
+    except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding InfluxDB users: {e}"
