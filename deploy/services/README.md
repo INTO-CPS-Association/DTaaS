@@ -18,54 +18,43 @@ The following services can be installed:
 * **config** is used for storing the service configuration
 * **data** is used by the services for storing data
 * **certs** is used for storing the TLS certificates needed by the services.
-* **script** contains scripts for creating user accounts
+* **cli** contains a CLI package for automated service management (recommended)
+* **manual** contains manual scripts for service setup and user management
+
+## Installation Methods
+
+You can install and manage the services using either:
+
+1. **CLI Package (Recommended):** Automated CLI tool for easy service management.
+   See [cli/README.md](cli/README.md) for details.
+2. **Manual Scripts:** Step-by-step manual installation and management.
+   See [manual/README.md](manual/README.md) for details.
 
 ## Installation steps
 
-Please follow the steps outlined here for installation.
-`script/service_setup.py`, is provided to streamline the setup of TLS certificates
-and permissions for MongoDB, InfluxDB, and RabbitMQ services.
+### Using CLI Package (Recommended)
 
-The script has the following features:
-
-* **Automation:** Automates all manual certificate and permission steps for
- MongoDB, InfluxDB, and RabbitMQ as described above.
-* **Cross-platform:** Works on Linux, macOS, and Windows.
-* **Configuration-driven:** Reads all required user IDs, group IDs, and hostnames
-from `config/services.env`.
-
-### Create Config
+The CLI package provides an automated, user-friendly way to manage services.
 
 1. Copy `config/services.env.template` into `config/services.env`.
 2. Update `config/services.env` with the correct values for your environment.
-3. Run the script with root privilege.
-
-### Install
-
-Install Python dependencies before running the script:
+3. Install and use the CLI tool:
 
 ```bash
-pip install -r script/requirements.txt
+cd deploy/services/cli
+poetry install
+poetry run dtaas-services setup
 ```
 
-Run the installation script
+See [cli/README.md](cli/README.md) for detailed CLI usage.
 
-```bash
-cd deploy/services
-sudo python3 script/service_setup.py
-```
+### Using Manual Scripts
 
-The script will:
+For manual installation using Python scripts:
 
-* Combine and set permissions for MongoDB certificates.
-* Copy and set permissions for InfluxDB and RabbitMQ certificates.
-* Use the correct UID/GID values from `config/services.env`.
-* Start the Docker Compose services automatically after setup.
-
-If any required variable is missing, the script will exit with an error message.
-
-This automation reduces manual errors and ensures your service containers have
-the correct certificate files and permissions for secure operation.
+1. Copy `config/services.env.template` into `config/services.env`.
+2. Update `config/services.env` with the correct values for your environment.
+3. Follow the manual installation steps in [manual/README.md](manual/README.md)
 
 ## Use
 
@@ -91,34 +80,22 @@ services from their user workspaces.
 
 ## New User Accounts
 
-There are ready to use scripts for adding accounts in **InfluxDB** and
-**RabbitMQ** services.
+### Using CLI Package (Recommended)
 
-Copy the user accounts template and add user account credentials.
+Copy the user accounts template and add user account credentials:
 
 ```bash
 cp config/credentials.csv.template config/credentials.csv
-# edit credentials.csv file
+# edit credentials.csv
 ```
 
-Use the following commands to add new users to **InfluxDB** service.
+Add users to both InfluxDB and RabbitMQ:
 
 ```bash
-# on host machine
-docker cp script/influxdb.py influxdb:/influxdb.py
-docker cp config/credentials.csv influxdb:/credentials.csv
-docker exec -it influxdb bash
-# inside docker container
-python3 influxdb.py
+cd deploy/services/cli
+poetry run dtaas-services user add
 ```
 
-Use the following commands to add new users to **RabbitMQ** service.
+### Using Manual Scripts
 
-```bash
-# on host machine
-docker cp script/rabbitmq.py rabbitmq:/rabbitmq.py
-docker cp config/credentials.csv rabbitmq:/credentials.csv
-docker exec -it rabbitmq bash
-# inside docker container
-python3 rabbitmq.py
-```
+See [manual/README.md](manual/README.md) for manual user account creation steps.

@@ -1,12 +1,10 @@
-[project]
-name = "dtaas-services"
-version = "0.1.0"
-description = "DTaaS Platform Services Management CLI"
-authors = [
-    {name = "Mohamed Abdulkarim"}
-]
-license = "INTO-CPS-Association"
-readme = "README.md"
+[tool.poetry]  
+name = "dtaas-services"  
+version = "0.1.0"  
+description = "DTaaS Platform Services Management CLI"  
+authors = ["Mohamed Abdulkarim"]  
+license = "INTO-CPS-Association"  
+readme = "README.md"  
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
