@@ -53,12 +53,12 @@ def login(base_url: str, email: str, password: str) -> str | None:
 
 def change_sysadmin_password_if_needed(base_url: str, session: requests.Session) -> None:
     """Ensure sysadmin password is TB_SYSADMIN_NEW_PASSWORD, using default if needed."""
-    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
-    default_pw = os.getenv("TB_SYSADMIN_DEFAULT_PASSWORD", "sysadmin")
+    sys_email = "sysadmin@thingsboard.org"
+    default_pw = "sysadmin"
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
 
     if not new_pw:
-        print("B_SYSADMIN_NEW_PASSWORD is not set in config/services.env, skipping password change.")
+        print("TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env, skipping password change.")
         return
 
     # 1) Try login with new password first – if it works, we're done
