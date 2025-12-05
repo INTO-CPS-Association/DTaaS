@@ -1,0 +1,27 @@
+[project]
+name = "dtaas-services"
+version = "0.1.0"
+description = "DTaaS Platform Services Management CLI"
+authors = [
+    {name = "Mohamed Abdulkarim"}
+]
+license = "INTO-CPS-Association"
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-cov = "^6.0.0"
+pylint = "^3.3.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dtaas-services = "src.cmd:services"
