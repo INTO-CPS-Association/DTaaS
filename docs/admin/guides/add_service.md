@@ -70,7 +70,7 @@ Update your actual `services.env` file with the real values.
 **3. Create data directory:**
 
 ```bash
-cd /home/runner/work/DTaaS/DTaaS/deploy/services/manual
+cd deploy/services/manual
 mkdir -p data/redis
 ```
 
