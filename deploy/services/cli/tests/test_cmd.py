@@ -1,7 +1,9 @@
 """Tests for CLI commands"""
+from unittest.mock import MagicMock, patch
+
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock
+
 from src.cmd import cli
 
 
@@ -40,9 +42,9 @@ def mock_service_setup():
 def test_setup_command_success(mock_root, runner, mock_config, mock_service_setup):
     """Test successful setup command"""
     mock_root.return_value = None
-    
+
     result = runner.invoke(cli, ["setup"])
-    
+
     assert result.exit_code == 0
     assert "Services setup completed successfully" in result.output
     mock_service_setup.return_value.copy_certs.assert_called_once()
@@ -59,9 +61,9 @@ def test_setup_command_failure(mock_root, runner, mock_config, mock_service_setu
     mock_service_setup.return_value.copy_certs.return_value = (
         False, "Failed to copy certs"
     )
-    
+
     result = runner.invoke(cli, ["setup"])
-    
+
     assert result.exit_code == 1
     assert "ERROR" in result.output
     assert "Failed to copy certs" in result.output
@@ -70,7 +72,7 @@ def test_setup_command_failure(mock_root, runner, mock_config, mock_service_setu
 def test_start_command_success(runner, mock_config, mock_service_setup):
     """Test successful start command"""
     result = runner.invoke(cli, ["start"])
-    
+
     assert result.exit_code == 0
     assert "Services started successfully" in result.output
     mock_service_setup.return_value.start_services.assert_called_once()
@@ -81,9 +83,9 @@ def test_start_command_failure(runner, mock_config, mock_service_setup):
     mock_service_setup.return_value.start_services.return_value = (
         False, "Failed to start services"
     )
-    
+
     result = runner.invoke(cli, ["start"])
-    
+
     assert result.exit_code == 1
     assert "ERROR" in result.output
     assert "Failed to start services" in result.output
@@ -97,10 +99,10 @@ def test_user_add_command_success(
     """Test successful user add command"""
     mock_influxdb.return_value = (True, "InfluxDB users added")
     mock_rabbitmq.return_value = (True, "RabbitMQ users added")
-    
+
     with patch("pathlib.Path.exists", return_value=True):
         result = runner.invoke(cli, ["user", "add"])
-    
+
     assert result.exit_code == 0
     assert "Users added successfully" in result.output
     mock_influxdb.assert_called_once()
@@ -112,7 +114,7 @@ def test_user_add_command_missing_credentials(mock_influxdb, runner, mock_config
     """Test user add command with missing credentials file"""
     with patch("pathlib.Path.exists", return_value=False):
         result = runner.invoke(cli, ["user", "add"])
-    
+
     assert result.exit_code == 1
     assert "Credentials file not found" in result.output
     mock_influxdb.assert_not_called()
@@ -125,10 +127,10 @@ def test_user_add_command_influxdb_failure(
 ):
     """Test user add command with InfluxDB failure"""
     mock_influxdb.return_value = (False, "InfluxDB error")
-    
+
     with patch("pathlib.Path.exists", return_value=True):
         result = runner.invoke(cli, ["user", "add"])
-    
+
     assert result.exit_code == 1
     assert "ERROR" in result.output
     assert "InfluxDB error" in result.output

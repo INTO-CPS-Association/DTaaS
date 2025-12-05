@@ -1,14 +1,13 @@
 """CLI commands for DTaaS services management"""
-import sys
 import os
 import platform
+import sys
 
 import click
 
+from .pkg import influxdb, rabbitmq
 from .pkg.config import Config
 from .pkg.setup import ServiceSetup
-from .pkg import influxdb
-from .pkg import rabbitmq
 
 
 def check_root_unix() -> None:
@@ -70,7 +69,7 @@ def setup():
 
         click.echo("\n✓ Services setup completed successfully!")
 
-    except Exception as e:
+    except (FileNotFoundError, RuntimeError, OSError) as e:
         click.echo(f"ERROR: {e}", err=True)
         sys.exit(1)
 
@@ -96,7 +95,7 @@ def start():
         click.echo(f"OK: {message}")
         click.echo("\n✓ Services started successfully!")
 
-    except Exception as e:
+    except (FileNotFoundError, RuntimeError, OSError) as e:
         click.echo(f"ERROR: {e}", err=True)
         sys.exit(1)
 
@@ -147,7 +146,7 @@ def add():
 
         click.echo("\n✓ Users added successfully to all services!")
 
-    except Exception as e:
+    except (FileNotFoundError, RuntimeError, OSError) as e:
         click.echo(f"ERROR: {e}", err=True)
         sys.exit(1)
 
