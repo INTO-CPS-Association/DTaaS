@@ -1,90 +1,95 @@
-#!/bin/python3
+"""RabbitMQ user management for DTaaS services"""
 import csv
-from pathlib import Path
 import subprocess
-from typing import Optional, Tuple
-
-def execute_shell_command(command: str, verbose:bool = True) -> str:
-    # Execute the command
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    if(verbose):
-        print("Output:", result.stdout)
-    if result.returncode != 0:
-        print("Error:", result.stderr)
-        return ''
-    else:
-        return result.stdout
-
-def create_accounts_internal() -> None:
-    """This function runs INSIDE the container."""
-    csv_file = "credentials.csv"  # Inside container, it's in the same directory
-    
-    with open(csv_file, mode='r', newline='') as creds_file:
-        creds_dict = {}
-        credentials = csv.DictReader(creds_file, delimiter=',')
-        for credential in credentials:
-            creds_dict[credential['username']] = credential['password']
-            vhost = credential['username']
-
-            execute_shell_command('rabbitmqctl add_user'+ ' '
-                + credential['username'] + ' ' + credential['password'])
-            execute_shell_command('rabbitmqctl add_vhost ' + vhost)
-            execute_shell_command('rabbitmqctl set_permissions -p'
-                + ' ' + vhost + ' ' + credential['username'] + ' '
-                + '".*" ".*" ".*"')
-            execute_shell_command('rabbitmqctl set_permissions -p'
-                + ' ' + '/' + ' ' + credential['username'] + ' '
-                + '".*" ".*" ".*"')
-    return None
+from pathlib import Path
 
 
-def create_accounts() -> Tuple[Optional[Exception], str]:
+def execute_command(
+    command: list[str], verbose: bool = True
+) -> tuple[bool, str]:
     """
-    This function runs ON THE HOST and orchestrates the container execution.
-    This is called by the CLI.
+    Execute a shell command.
+    
+    Args:
+        command: Command to execute as a list
+        verbose: Whether to print output
+        
+    Returns:
+        Tuple of (success, output/error message)
     """
-    base_dir = Path(__file__).parent.parent.parent.parent
-    csv_file = base_dir / "config" / "credentials.csv"
-    script_file = Path(__file__)  # This current file
-    
-    if not csv_file.exists():
-        return FileNotFoundError(f"CSV not found: {csv_file}"), str(csv_file)
-    
     try:
-        # Copy this script to container
         result = subprocess.run(
-            ["docker", "cp", str(script_file), "rabbitmq:/rabbitmq.py"],
+            command,
             capture_output=True,
             text=True,
             check=True
         )
-        
-        # Copy CSV to container
-        result = subprocess.run(
-            ["docker", "cp", str(csv_file), "rabbitmq:/credentials.csv"],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        
-        # Execute this script inside container
-        result = subprocess.run(
-            ["docker", "exec", "rabbitmq", "python3", "/rabbitmq.py"],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        
-        return None, "Successfully added users to RabbitMQ"
-        
+        if verbose:
+            print("Output:", result.stdout)
+        return True, result.stdout
     except subprocess.CalledProcessError as e:
-        return e, f"Failed to add users: {e.stderr}"
-    except FileNotFoundError as e:
-        return e, "Docker command not found"
-    except Exception as e:
-        return e, f"Error: {str(e)}"
+        error_msg = f"Error: {e.stderr}"
+        if verbose:
+            print(error_msg)
+        return False, error_msg
 
 
-if __name__ == "__main__":
-    # When run inside container, execute the internal function
-    create_accounts_internal()
+def add_rabbitmq_users() -> tuple[bool, str]:
+    """
+    Add users to RabbitMQ service.
+
+    Returns:
+        Tuple of (success, message)
+    """
+    credentials_file = Path(__file__).parent.parent.parent.parent / "config" / "credentials.csv"
+    if not credentials_file.exists():
+        return False, f"Credentials file not found: {credentials_file}"
+
+    try:
+        with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
+            credentials = csv.DictReader(creds_file, delimiter=",")
+
+            for credential in credentials:
+                username = credential["username"]
+                password = credential["password"]
+                vhost = username
+
+                # Add user
+                success, output = execute_command([
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "add_user",
+                    username, password
+                ])
+
+                if not success:
+                    print(f"Warning: Could not add user {username}: {output}")
+
+                # Add vhost
+                execute_command([
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "add_vhost",
+                    vhost
+                ])
+
+                # Set permissions on user vhost
+                execute_command([
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "set_permissions",
+                    "-p", vhost,
+                    username,
+                    ".*", ".*", ".*"
+                ])
+
+                # Set permissions on default vhost
+                execute_command([
+                    "docker", "exec", "rabbitmq",
+                    "rabbitmqctl", "set_permissions",
+                    "-p", "/",
+                    username,
+                    ".*", ".*", ".*"
+                ])
+
+        return True, "RabbitMQ users created successfully"
+
+    except (OSError, KeyError) as e:
+        return False, f"Error adding RabbitMQ users: {e}"

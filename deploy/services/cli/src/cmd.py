@@ -123,7 +123,7 @@ def add():
     
     # Add to InfluxDB
     click.echo("\nAdding users to InfluxDB...")
-    err, msg = influxdb.create_accounts()
+    err, msg = influxdb.add_influxdb_users()
     if err:
         click.echo(f"InfluxDB: {msg}", err=True)
     else:
@@ -131,7 +131,7 @@ def add():
     
     # Add to RabbitMQ
     click.echo("\nAdding users to RabbitMQ...")
-    err, msg = rabbitmq.create_accounts()
+    err, msg = rabbitmq.add_rabbitmq_users()
     if err:
         click.echo(f"RabbitMQ: {msg}", err=True)
     else:
