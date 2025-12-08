@@ -56,8 +56,8 @@ and have navigated to the `deploy/services` directory.
 * Set required permissions for ThingsBoard data and log directories.
 
   ```bash
-  sudo chmod -R 777 data/thingsboard
-  sudo chmod -R 777 log/thingsboard
+  chown -R 799:799 data/thingsboard
+  chown -R 799:799 log/thingsboard
   ```
 
 * Use configuration template and create service configuration.
