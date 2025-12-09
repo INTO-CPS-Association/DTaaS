@@ -50,7 +50,7 @@ def test_setup_success(runner, mock_setup_pkg):
     
     result = runner.invoke(services, ['setup'])
     assert result.exit_code == 0
-    assert "Service setup completed" in result.output
+    assert "Services started successfully" in result.output
 
 
 def test_setup_cert_copy_fails(runner, mock_setup_pkg):

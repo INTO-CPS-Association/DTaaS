@@ -5,6 +5,7 @@ InfluxDB, RabbitMQ, and Grafana.
 
 ## Features
 
+* **Project Initialization:** Generate project structure with config and data directories
 * **Automated Setup:** One-command setup of TLS certificates and permissions
 * **Service Management:** Start, stop, and check status of all services
 * **User Management:** Easy creation of user accounts in InfluxDB and RabbitMQ
@@ -19,32 +20,69 @@ InfluxDB, RabbitMQ, and Grafana.
 * Docker and Docker Compose
 * TLS certificates in the `certs/` directory
 
+### Install from GitHub Release (Recommended)
+
+Download the latest wheel package from the
+[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases)
+and install it:
+
+```bash
+# Download the .whl file from the releases page, then:
+pip install dtaas_services-0.1.0-py3-none-any.whl
+```
+
+Or install directly from the release URL:
+
+```bash
+pip install TODO: XXXXX 
+```
+
 ### Install from Source
+
+For development or if you want the latest unreleased version:
 
 ```bash
 cd deploy/services/cli
 pip install .
 ```
 
-## Configuration
+### Build Your Own Wheel
 
-1. Copy the services configuration template:
+```bash
+cd deploy/services/cli
+pip install poetry
+poetry build
+# This creates a .whl file in dist/
+pip install dist/dtaas_services-0.1.0-py3-none-any.whl
+```
+
+## Quick Start
+
+1. Generate the project structure:
 
    ```bash
-   cp ../config/services.env.template ../config/services.env
+   dtaas-services generate-project --path /path/to/your/project
+   cd /path/to/your/project
    ```
 
-2. Update `../config/services.env` with your environment values:
+   This creates:
+   * `config/` directory with configuration templates
+   * `data/` directory for service data
+   * `compose.services.secure.yml` for Docker Compose
+
+2. Update `config/services.env` with your environment values:
    * `SERVICES_UID` - User ID for service file ownership
    * `SERVICES_GID` - Group ID for service file ownership
    * `SERVER_DNS` - Your server hostname
    * Port numbers for each service
 
+3. Update `config/credentials.csv` with user accounts (format: `username,password`)
+
 ## Usage
 
 ### Service Setup
 
-Run the complete setup process (certificates, permissions, and service startup):
+After generating the project and configuring your settings:
 
 ```bash
 dtaas-services setup
@@ -80,21 +118,31 @@ dtaas-services status
 
 ### User Account Management
 
-1. Create a credentials file:
+1. Edit `config/credentials.csv` with user accounts (format: `username,password`)
 
-   ```bash
-   cp ../config/credentials.csv.template ../config/credentials.csv
-   ```
-
-2. Edit `../config/credentials.csv` with user accounts (format: `username,password`)
-
-3. Add users to InfluxDB and RabbitMQ:
+2. Add users to InfluxDB and RabbitMQ:
 
    ```bash
    dtaas-services user add
    ```
 
+   This will create user accounts with appropriate permissions in both services.
+
 ## Commands Reference
+
+### `dtaas-services generate-project`
+
+Generates the project structure with config, data directories, and compose file.
+
+**Options:**
+
+* `--path` - Directory to generate project structure (default: current directory)
+
+**Example:**
+
+```bash
+dtaas-services generate-project --path /path/to/project
+```
 
 ### `dtaas-services setup`
 
