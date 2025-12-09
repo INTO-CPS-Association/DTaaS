@@ -47,7 +47,7 @@ class Config:
             # Linux/MacOS: Use parent of current working directory
             return Path.cwd().parent
         else:
-             # Windows: Check if running from venv or source
+            # Windows: Check if running from venv or source
             file_path = Path(__file__).resolve()
             
             # If running from venv (site-packages), use cwd.parent

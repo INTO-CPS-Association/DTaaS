@@ -61,5 +61,3 @@ env/
 .DS_Store
 Thumbs.db
 
-# Poetry
-poetry.lock  # Optional: remove this line if you want to commit the lock file

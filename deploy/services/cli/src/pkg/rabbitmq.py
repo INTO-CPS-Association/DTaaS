@@ -1,81 +1,54 @@
 """RabbitMQ user management for DTaaS services"""
 import csv
-from pathlib import Path
-from python_on_whales import DockerClient
-from .config import Config
+from .utils import get_credentials_path, execute_docker_command
 
 
-def _get_credentials_path() -> Path:
-    """Get the path to credentials.csv file."""
-    base_dir = Config.get_base_dir()
-    return base_dir / "config" / "credentials.csv"
-
-
-def execute_command(
-    command: list[str], verbose: bool = True
-) -> tuple[bool, str]:
+def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     """
-    Execute a shell command.
+    Add a user to RabbitMQ with vhost and permissions.
     
     Args:
-        command: Command to execute as a list
-        verbose: Whether to print output
+        username: RabbitMQ username
+        password: RabbitMQ password
         
     Returns:
-        Tuple of (success, output/error message)
+        Tuple of (success, error message if any)
     """
-    try:
-        docker = DockerClient()
-        container_name = command[2]  # "rabbitmq"
-        exec_cmd = command[3:]  # ["rabbitmqctl", "add_user", ...]
-        result = docker.execute(container_name, exec_cmd)
-        if verbose:
-            print("Output:", result)
-        return True, result
-    except Exception as e:
-        error_msg = f"Error: {str(e)}"
-        if verbose:
-            print(error_msg)
-        return False, error_msg
-
-
-def _add_rabbitmq_user(username: str, password: str) -> bool:
-    """Add a user to RabbitMQ with vhost and permissions."""
     vhost = username
 
-    success, output = execute_command([
-        "docker", "exec", "rabbitmq",
-        "rabbitmqctl", "add_user",
-        username, password
-    ])
-
+    # Add user
+    success, output = execute_docker_command(
+        "rabbitmq",
+        ["rabbitmqctl", "add_user", username, password]
+    )
     if not success:
-        print(f"Warning: Could not add user {username}: {output}")
-        return False
+        return False, f"Failed to add user {username}: {output}"
 
-    execute_command([
-        "docker", "exec", "rabbitmq",
-        "rabbitmqctl", "add_vhost",
-        vhost
-    ])
+    # Add vhost
+    success, output = execute_docker_command(
+        "rabbitmq",
+        ["rabbitmqctl", "add_vhost", vhost]
+    )
+    if not success:
+        return False, f"Failed to add vhost {vhost}: {output}"
 
-    execute_command([
-        "docker", "exec", "rabbitmq",
-        "rabbitmqctl", "set_permissions",
-        "-p", vhost,
-        username,
-        ".*", ".*", ".*"
-    ])
+    # Set permissions on vhost
+    success, output = execute_docker_command(
+        "rabbitmq",
+        ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"]
+    )
+    if not success:
+        return False, f"Failed to set permissions on vhost {vhost}: {output}"
 
-    execute_command([
-        "docker", "exec", "rabbitmq",
-        "rabbitmqctl", "set_permissions",
-        "-p", "/",
-        username,
-        ".*", ".*", ".*"
-    ])
+    # Set permissions on default vhost
+    success, output = execute_docker_command(
+        "rabbitmq",
+        ["rabbitmqctl", "set_permissions", "-p", "/", username, ".*", ".*", ".*"]
+    )
+    if not success:
+        return False, f"Failed to set permissions on default vhost: {output}"
 
-    return True
+    return True, ""
 
 
 def setup_rabbitmq_users() -> tuple[bool, str]:
@@ -85,7 +58,7 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
-    credentials_file = _get_credentials_path()
+    credentials_file = get_credentials_path()
     if not credentials_file.exists():
         return False, f"Credentials file not found: {credentials_file}"
 
@@ -98,7 +71,9 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
             for credential in credentials:
                 username = credential["username"]
                 password = credential["password"]
-                _add_rabbitmq_user(username, password)
+                success, error_msg = _add_rabbitmq_user(username, password)
+                if not success:
+                    return False, error_msg
 
         return True, "RabbitMQ users created successfully"
 
