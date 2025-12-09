@@ -21,12 +21,10 @@ def setup():
     - Sets up RabbitMQ certificates and permissions
     - Starts the services using Docker Compose
     """
-    
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        setup_obj._check_root_unix()
-
+        setup_obj.check_root_unix()
         click.echo("Starting service setup....")
 
         steps = [
@@ -41,13 +39,13 @@ def setup():
             success, msg = step_func()
             if not success:
                 raise click.ClickException(f"{step_name} failed: {msg}")
-        
+
         click.echo("\nService setup completed.")
         err, msg = setup_obj.start_services()
         if err is not None:
             raise click.ClickException(f"Starting services failed: {msg}")
-        click.echo(f"\nStarting services...")
-        
+        click.echo("\nStarting services...")
+
     except FileNotFoundError as e:
         raise click.ClickException(str(e))
     except RuntimeError as e:
@@ -60,15 +58,16 @@ def start():
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        
+
         click.echo("Starting services...")
         err, msg = setup_obj.start_services()
         if err is not None:
             raise click.ClickException(msg)
-        
-        click.echo(f"{msg}")
-        
-    except Exception as e:
+
+        click.echo(msg)
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e))
+    except RuntimeError as e:
         raise click.ClickException(str(e))
     
 
@@ -78,17 +77,15 @@ def stop():
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        
         click.echo("Stopping services...")
         err, msg = setup_obj.stop_services()
         if err is not None:
             raise click.ClickException(msg)
-        
-        click.echo(f"{msg}")
-        
+        click.echo(msg)
+
     except Exception as e:
         raise click.ClickException(str(e))
-    
+
 
 @services.command()
 def status():
@@ -96,16 +93,14 @@ def status():
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        
         err, msg = setup_obj.get_status()
         if err is not None:
             raise click.ClickException(msg)
-        
-        click.echo(f"{msg}")
-        
+        click.echo(msg)
+
     except Exception as e:
         raise click.ClickException(str(e))
-    
+
 
 @services.group()
 def user():
@@ -117,28 +112,25 @@ def user():
 def add():
     """
     Add user accounts to InfluxDB and RabbitMQ.
-    
     Reads config/credentials.csv and creates accounts in both services.
-    
     Example:
         dtaas-services user add
     """
     click.echo("Adding users from CSV file...")
-    
     click.echo("\nAdding users to InfluxDB...")
     success, msg = influxdb.setup_influxdb_users()
     if not success:
         click.echo(f"InfluxDB: Failed - {msg}", err=True)
     else:
         click.echo(f"InfluxDB: {msg}")
-    
+
     click.echo("\nAdding users to RabbitMQ...")
     success, msg = rabbitmq.setup_rabbitmq_users()
     if not success:
         click.echo(f"RabbitMQ: Failed - {msg}", err=True)
     else:
         click.echo(f"RabbitMQ: {msg}")
-    
+
     click.echo("\nAdding user completed!")
 
 

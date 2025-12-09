@@ -2,7 +2,6 @@ import platform
 import os
 import sys
 import shutil
-import subprocess
 from pathlib import Path
 from typing import Tuple, Optional
 from python_on_whales import DockerClient
@@ -66,7 +65,7 @@ class ServicesSetup:
         self.compose_file = self.base_dir / "compose.services.secure.yml"
         self.docker = DockerClient(compose_files=[self.compose_file])
 
-    def _check_root_unix(self) -> None:
+    def check_root_unix(self) -> None:
         """Check if script is run as root on Unix systems."""
         try:
             is_root = os.geteuid() == 0
@@ -135,15 +134,13 @@ class ServicesSetup:
             self._create_combined_pem()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
-                shutil.chown(self.certs["combined"], 
-                             user=int(self.mongo["uid"]), 
+                shutil.chown(self.certs["combined"],
+                             user=int(self.mongo["uid"]),
                              group=int(self.mongo["gid"]))
             return True, (f"combined.pem created with mode 600 and ownership set to "
                 f"{self.mongo['uid']}:{self.mongo['gid']}.")
         except OSError as e:
             return False, f"Error setting permissions for MongoDB: {e}"
-        except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {str(e)}"
 
 
     def permissions_influxdb(self) -> Tuple[bool, str]:
@@ -151,16 +148,14 @@ class ServicesSetup:
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
             if self.os_type in ("linux", "darwin"):
-                shutil.chown(self.influx["key"], 
-                             user=int(self.influx["uid"]), 
+                shutil.chown(self.influx["key"],
+                             user=int(self.influx["uid"]),
                              group=int(self.influx["gid"]))
             return True, (
                 f"{self.influx['key']} created and ownership set to "
                 f"{self.influx['uid']}:{self.influx['gid']}.")
         except OSError as e:
             return False, f"Error setting permissions for InfluxDB: {e}"
-        except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {str(e)}"
 
 
     def permissions_rabbitmq(self) -> Tuple[bool, str]:
@@ -168,13 +163,11 @@ class ServicesSetup:
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
             if self.os_type in ("linux", "darwin"):
-                shutil.chown(self.rabbitmq["key"], user=int(self.rabbitmq["uid"]))            
+                shutil.chown(self.rabbitmq["key"], user=int(self.rabbitmq["uid"]))       
                 return True, (f"{self.rabbitmq['key']} created and ownership set to user "
                 f"{self.rabbitmq['uid']}.")
         except OSError as e:
             return False, f"Error setting permissions for RabbitMQ: {e}"
-        except subprocess.CalledProcessError as e:
-            return False, f"Failed to set ownership: {str(e)}"
 
 
     def start_services(self) -> Tuple[bool, str]:
@@ -188,17 +181,16 @@ class ServicesSetup:
         except Exception as e:
             return e, f"Failed to start Docker Compose: {str(e)}"
 
+
     def stop_services(self) -> Tuple[Optional[Exception], str]:
         """
         Stop platform services using Docker Compose.
-        
         Returns:
             Tuple of (Exception or None, message)
         """
         if not self.compose_file.exists():
             err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
             return err, str(err)
-        
         try:
             self.docker.compose.down()
             return None, "Services stopped successfully"
@@ -209,14 +201,12 @@ class ServicesSetup:
     def get_status(self) -> Tuple[Optional[Exception], str]:
         """
         Get status of platform services.
-        
         Returns:
             Tuple of (Exception or None, status message)
         """
         if not self.compose_file.exists():
             err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
             return err, str(err)
-        
         try:
             result = self.docker.compose.ps()  
             return None, str(result)

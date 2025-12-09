@@ -2,7 +2,6 @@
 import csv
 import json
 import platform
-import subprocess
 from pathlib import Path
 from python_on_whales import DockerClient
 
@@ -41,9 +40,11 @@ def setup_influxdb_users() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
-    credentials_file = Path(__file__).parent.parent.parent.parent / "config" / "credentials.csv"
+    base_dir = Path(__file__).parent.parent.parent.parent
     if platform.system().lower() in ['linux', 'darwin']:
-        credentials_file = Path.cwd().parent / "config" / "credentials.csv"
+        base_dir = Path.cwd().parent
+    
+    credentials_file = base_dir / "config" / "credentials.csv"
     if not credentials_file.exists():
         return False, f"Credentials file not found: {credentials_file}"
 

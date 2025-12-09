@@ -63,10 +63,10 @@ class ServicesConfig:
         self.compose_file = self.base_dir.parent / "compose.services.secure.yml"
 
         if self.os_type in ("linux", "darwin"):
-            self._check_root_unix()
+            self.check_root_unix()
 
 
-    def _check_root_unix(self) -> None:
+    def check_root_unix(self) -> None:
         """Check if script is run as root on Unix systems."""
         try:
             is_root = os.geteuid() == 0
