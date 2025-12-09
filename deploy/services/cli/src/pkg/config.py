@@ -1,4 +1,5 @@
 import os
+import platform
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -8,7 +9,10 @@ class Config:
 
     def __init__(self):
         base_dir = Path(__file__).parent.parent.parent.parent
-        self.env_path = base_dir/"config"/"services.env"
+
+        if platform.system().lower() in ['linux', 'darwin']:
+            base_dir = Path.cwd().parent
+        self.env_path = base_dir / "config" / "services.env"
 
         if not self.env_path.exists():
             raise FileNotFoundError(
@@ -16,7 +20,7 @@ class Config:
                     f"Please copy config/services.env.template to config/services.env "
                     )
         
-        load_dotenv(dotenv_path=self.env_path, override = True)
+        load_dotenv(dotenv_path=self.env_path, override=True)
         self.env = dict(os.environ)
         
 

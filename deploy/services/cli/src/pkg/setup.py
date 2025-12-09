@@ -5,6 +5,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import Tuple, Optional
+from python_on_whales import DockerClient
 from .config import Config
 
 
@@ -30,7 +31,8 @@ class ServicesSetup:
         self.base_dir = Path(__file__).parent.parent.parent.parent
         self.host_name = self.config.get_value("HOSTNAME")
         self.os_type = platform.system().lower()
-
+        if self.os_type in ['linux', 'darwin']:
+            self.base_dir = Path.cwd().parent
         self.dir_path = {
             "config": self.base_dir / "config",
             "data": self.base_dir / "data",
@@ -62,7 +64,7 @@ class ServicesSetup:
         }
 
         self.compose_file = self.base_dir / "compose.services.secure.yml"
-
+        self.docker = DockerClient(compose_files=[self.compose_file])
 
     def _check_root_unix(self) -> None:
         """Check if script is run as root on Unix systems."""
@@ -71,7 +73,8 @@ class ServicesSetup:
         except AttributeError:
             is_root = False
         if not is_root:
-            print("This script must be run as root (Linux/MacOS).")
+            print("This script must be run as root (Linux/MacOS)." \
+            "try sudo -E env PATH=\"$PATH\" dtaas-services setup")
             sys.exit(1)
 
 
@@ -84,7 +87,10 @@ class ServicesSetup:
         try:
             for path in source_dir.glob("*"):
                 if path.is_file():
-                    shutil.copy2(path, self.certs["dir"] / path.name)
+                    dest = self.certs["dir"] / path.name
+                    if path.resolve() == dest.resolve():
+                        continue
+                    shutil.copy2(path, dest)
             self._normalize_cert_candidates("privkey")
             self._normalize_cert_candidates("fullchain")
             return True, f"Certificates copied and normalized in {self.certs['dir']}"
@@ -129,8 +135,9 @@ class ServicesSetup:
             self._create_combined_pem()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
-                chown_args = ["chown", f"{self.mongo['uid']}:{self.mongo['gid']}", str(self.certs["combined"])]
-                subprocess.run(chown_args, check=True)
+                shutil.chown(self.certs["combined"], 
+                             user=int(self.mongo["uid"]), 
+                             group=int(self.mongo["gid"]))
             return True, (f"combined.pem created with mode 600 and ownership set to "
                 f"{self.mongo['uid']}:{self.mongo['gid']}.")
         except OSError as e:
@@ -144,8 +151,9 @@ class ServicesSetup:
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown", f"{self.influx['uid']}:{self.influx['gid']}", str(self.influx["key"])]
-                subprocess.run(chown_args, check=True)
+                shutil.chown(self.influx["key"], 
+                             user=int(self.influx["uid"]), 
+                             group=int(self.influx["gid"]))
             return True, (
                 f"{self.influx['key']} created and ownership set to "
                 f"{self.influx['uid']}:{self.influx['gid']}.")
@@ -160,9 +168,8 @@ class ServicesSetup:
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
             if self.os_type in ("linux", "darwin"):
-                chown_args = ["chown", f"{self.rabbitmq['uid']}", str(self.rabbitmq["key"])]
-                subprocess.run(chown_args, check=True)
-            return True, (f"{self.rabbitmq['key']} created and ownership set to user "
+                shutil.chown(self.rabbitmq["key"], user=int(self.rabbitmq["uid"]))            
+                return True, (f"{self.rabbitmq['key']} created and ownership set to user "
                 f"{self.rabbitmq['uid']}.")
         except OSError as e:
             return False, f"Error setting permissions for RabbitMQ: {e}"
@@ -172,18 +179,14 @@ class ServicesSetup:
 
     def start_services(self) -> Tuple[bool, str]:
         """Start the platform services using docker compose."""
+        if not self.compose_file.exists():
+            err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
+            return err, str(err)
         try:
-            result = subprocess.run(
-                ["docker", "compose", "-f", str(self.compose_file), "up", "-d"],
-                check=True,
-                capture_output=True,
-                text=True)
-            return True, f"Docker Compose started successfully:\n{result.stdout}"
-        except OSError as e:
-            return False, f"Error starting Docker Compose: {e}"
-        except subprocess.CalledProcessError as e:
-            return False, f"Failed to start Docker Compose: {str(e)}"
-
+            self.docker.compose.up(detach=True)
+            return None, "Docker Compose started successfully"
+        except Exception as e:
+            return e, f"Failed to start Docker Compose: {str(e)}"
 
     def stop_services(self) -> Tuple[Optional[Exception], str]:
         """
@@ -197,17 +200,10 @@ class ServicesSetup:
             return err, str(err)
         
         try:
-            result = subprocess.run(
-                ["docker", "compose", "-f", str(self.compose_file), "down"],
-                check=True,
-                capture_output=True,
-                text=True
-            )
-            return None, f"Services stopped successfully:\n{result.stdout}"
-        except FileNotFoundError as e:
-            return e, "Docker command not found."
-        except subprocess.CalledProcessError as e:
-            return e, f"Failed to stop services:\n{e.stderr}"
+            self.docker.compose.down()
+            return None, "Services stopped successfully"
+        except Exception as e:
+            return e, f"Failed to stop services: {str(e)}"
 
 
     def get_status(self) -> Tuple[Optional[Exception], str]:
@@ -222,14 +218,7 @@ class ServicesSetup:
             return err, str(err)
         
         try:
-            result = subprocess.run(
-                ["docker", "compose", "-f", str(self.compose_file), "ps"],
-                check=True,
-                capture_output=True,
-                text=True
-            )
-            return None, result.stdout
-        except FileNotFoundError as e:
-            return e, "Docker command not found."
-        except subprocess.CalledProcessError as e:
-            return e, f"Failed to get status:\n{e.stderr}"
+            result = self.docker.compose.ps()  
+            return None, str(result)
+        except Exception as e:
+            return e, f"Failed to get status: {str(e)}"

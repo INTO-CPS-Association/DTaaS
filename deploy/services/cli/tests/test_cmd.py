@@ -1,5 +1,4 @@
 import pytest
-from pathlib import Path
 from unittest.mock import patch, Mock
 from click.testing import CliRunner
 from src.cmd import services
@@ -47,7 +46,7 @@ def test_setup_success(runner, mock_setup_pkg):
     mock_setup_pkg["setup"].permissions_mongodb.return_value = (True, "MongoDB OK")
     mock_setup_pkg["setup"].permissions_influxdb.return_value = (True, "InfluxDB OK")
     mock_setup_pkg["setup"].permissions_rabbitmq.return_value = (True, "RabbitMQ OK")
-    mock_setup_pkg["setup"].start_services.return_value = (True, "Started")
+    mock_setup_pkg["setup"].start_services.return_value = (None, "Started")
     
     result = runner.invoke(services, ['setup'])
     assert result.exit_code == 0
@@ -73,7 +72,7 @@ def test_setup_config_not_found(runner):
 
 def test_start_success(runner, mock_setup_pkg):
     """Test successful service start"""
-    mock_setup_pkg["setup"].start_services.return_value = (True, "Services started")
+    mock_setup_pkg["setup"].start_services.return_value = (None, "Services started")
     
     result = runner.invoke(services, ['start'])
     assert result.exit_code == 0
@@ -82,7 +81,7 @@ def test_start_success(runner, mock_setup_pkg):
 
 def test_start_failure(runner, mock_setup_pkg):
     """Test service start failure"""
-    mock_setup_pkg["setup"].start_services.return_value = (False, "Docker not found")
+    mock_setup_pkg["setup"].start_services.return_value = (FileNotFoundError("Docker not found"), "Docker not found")
     
     result = runner.invoke(services, ['start'])
     assert result.exit_code != 0
@@ -91,7 +90,7 @@ def test_start_failure(runner, mock_setup_pkg):
 
 def test_stop_success(runner, mock_setup_pkg):
     """Test successful service stop"""
-    mock_setup_pkg["setup"].stop_services.return_value = (True, "Services stopped")
+    mock_setup_pkg["setup"].stop_services.return_value = (None, "Services stopped")
     
     result = runner.invoke(services, ['stop'])
     assert result.exit_code == 0
@@ -100,7 +99,7 @@ def test_stop_success(runner, mock_setup_pkg):
 
 def test_stop_failure(runner, mock_setup_pkg):
     """Test service stop failure"""
-    mock_setup_pkg["setup"].stop_services.return_value = (False, "Stop failed")
+    mock_setup_pkg["setup"].stop_services.return_value = (Exception("Stop failed"), "Stop failed")
     
     result = runner.invoke(services, ['stop'])
     assert result.exit_code != 0
@@ -115,8 +114,8 @@ def test_user_help(runner):
 
 def test_add_users_success(runner, mock_user_pkg):
     """Test successful user addition"""
-    mock_user_pkg["influxdb"].create_accounts.return_value = (None, "Added to InfluxDB")
-    mock_user_pkg["rabbitmq"].create_accounts.return_value = (None, "Added to RabbitMQ")
+    mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (True, "Added to InfluxDB")
+    mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (True, "Added to RabbitMQ")
     
     result = runner.invoke(services, ['user', 'add'])
     assert result.exit_code == 0
@@ -127,21 +126,21 @@ def test_add_users_success(runner, mock_user_pkg):
 
 def test_add_users_influxdb_fails(runner, mock_user_pkg):
     """Test when InfluxDB addition fails"""
-    mock_user_pkg["influxdb"].create_accounts.return_value = (Exception("Error"), "Failed")
-    mock_user_pkg["rabbitmq"].create_accounts.return_value = (None, "Success")
+    mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (False, "InfluxDB error")
+    mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (True, "Added to RabbitMQ")
     
     result = runner.invoke(services, ['user', 'add'])
     assert result.exit_code == 0
-    assert "InfluxDB: Failed" in result.output
-    assert "RabbitMQ: Success" in result.output
+    assert "InfluxDB: Failed - InfluxDB error" in result.output
+    assert "RabbitMQ: Added to RabbitMQ" in result.output
 
 
 def test_add_users_both_fail(runner, mock_user_pkg):
     """Test when both services fail"""
-    mock_user_pkg["influxdb"].create_accounts.return_value = (Exception("Error"), "InfluxDB failed")
-    mock_user_pkg["rabbitmq"].create_accounts.return_value = (Exception("Error"), "RabbitMQ failed")
+    mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (False, "InfluxDB failed")
+    mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (False, "RabbitMQ failed")
     
     result = runner.invoke(services, ['user', 'add'])
     assert result.exit_code == 0
-    assert "InfluxDB: InfluxDB failed" in result.output
-    assert "RabbitMQ: RabbitMQ failed" in result.output
+    assert "InfluxDB: Failed - InfluxDB failed" in result.output
+    assert "RabbitMQ: Failed - RabbitMQ failed" in result.output

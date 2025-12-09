@@ -16,15 +16,14 @@ InfluxDB, RabbitMQ, and Grafana.
 ### Prerequisites
 
 * Python 3.10 or higher
-* Poetry package manager
 * Docker and Docker Compose
 * TLS certificates in the `certs/` directory
 
-### Install Dependencies
+### Install from Source
 
 ```bash
 cd deploy/services/cli
-poetry install
+pip install .
 ```
 
 ## Configuration
@@ -48,7 +47,7 @@ poetry install
 Run the complete setup process (certificates, permissions, and service startup):
 
 ```bash
-poetry run dtaas-services setup
+dtaas-services setup
 ```
 
 This command will:
@@ -64,19 +63,19 @@ This command will:
 Start all services:
 
 ```bash
-poetry run dtaas-services start
+dtaas-services start
 ```
 
 Stop all services:
 
 ```bash
-poetry run dtaas-services stop
+dtaas-services stop
 ```
 
 Check service status:
 
 ```bash
-poetry run dtaas-services status
+dtaas-services status
 ```
 
 ### User Account Management
@@ -92,7 +91,7 @@ poetry run dtaas-services status
 3. Add users to InfluxDB and RabbitMQ:
 
    ```bash
-   poetry run dtaas-services user add
+   dtaas-services user add
    ```
 
 ## Commands Reference
@@ -104,7 +103,7 @@ Performs complete service setup including certificates, permissions, and startup
 **Example:**
 
 ```bash
-poetry run dtaas-services setup
+dtaas-services setup
 ```
 
 ### `dtaas-services start`
@@ -114,7 +113,7 @@ Starts all platform services using Docker Compose.
 **Example:**
 
 ```bash
-poetry run dtaas-services start
+dtaas-services start
 ```
 
 ### `dtaas-services stop`
@@ -124,7 +123,7 @@ Stops all running platform services.
 **Example:**
 
 ```bash
-poetry run dtaas-services stop
+dtaas-services stop
 ```
 
 ### `dtaas-services status`
@@ -134,7 +133,7 @@ Shows the current status of all services.
 **Example:**
 
 ```bash
-poetry run dtaas-services status
+dtaas-services status
 ```
 
 ### `dtaas-services user add`
@@ -144,32 +143,24 @@ Adds user accounts to InfluxDB and RabbitMQ from `config/credentials.csv`.
 **Example:**
 
 ```bash
-poetry run dtaas-services user add
+dtaas-services user add
 ```
 
-## Development
+## Troubleshooting
 
-### Running Tests
+### Permission Issues (Linux/macOS)
+
+If you encounter permission errors when setting up services,
+ensure you run the setup command with appropriate privileges:
 
 ```bash
-poetry run pytest tests
+sudo -E env PATH="$PATH" dtaas-services setup
 ```
 
-### Code Structure
+### Docker Connection Issues
 
-```
-cli/
-├── pyproject.toml          # Poetry configuration and dependencies
-├── src/
-│   ├── cmd.py              # Main CLI commands
-│   └── pkg/
-│       ├── config.py       # Configuration loader
-│       ├── setup.py        # Service setup logic
-│       ├── influxdb.py     # InfluxDB user management
-│       ├── rabbitmq.py     # RabbitMQ user management
-│       └── utils.py        # Utility functions
-└── tests/
-    ├── test_cmd.py         # CLI command tests
-    ├── test_config.py      # Configuration tests
-    └── test_utils.py       # Utility function tests
+Ensure Docker daemon is running:
+
+```bash
+docker ps
 ```

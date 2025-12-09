@@ -11,6 +11,7 @@ packages = [{include = "src"}]
 python = "^3.10"
 click = "^8.1.7"
 python-dotenv = "^1.0.0"
+python-on-whales = "^0.75.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

@@ -25,6 +25,7 @@ def setup():
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
+        setup_obj._check_root_unix()
 
         click.echo("Starting service setup....")
 
@@ -33,7 +34,6 @@ def setup():
             ("Configuring MongoDB", setup_obj.permissions_mongodb),
             ("Configuring InfluxDB", setup_obj.permissions_influxdb),
             ("Configuring RabbitMQ", setup_obj.permissions_rabbitmq),
-            ("Starting services", setup_obj.start_services),    
         ]
 
         for step_name, step_func in steps:
@@ -43,6 +43,10 @@ def setup():
                 raise click.ClickException(f"{step_name} failed: {msg}")
         
         click.echo("\nService setup completed.")
+        err, msg = setup_obj.start_services()
+        if err is not None:
+            raise click.ClickException(f"Starting services failed: {msg}")
+        click.echo(f"\nStarting services...")
         
     except FileNotFoundError as e:
         raise click.ClickException(str(e))
@@ -58,8 +62,8 @@ def start():
         setup_obj = ServicesSetup(config)
         
         click.echo("Starting services...")
-        success, msg = setup_obj.start_services()
-        if not success:
+        err, msg = setup_obj.start_services()
+        if err is not None:
             raise click.ClickException(msg)
         
         click.echo(f"{msg}")
@@ -76,8 +80,8 @@ def stop():
         setup_obj = ServicesSetup(config)
         
         click.echo("Stopping services...")
-        success, msg = setup_obj.stop_services()
-        if not success:
+        err, msg = setup_obj.stop_services()
+        if err is not None:
             raise click.ClickException(msg)
         
         click.echo(f"{msg}")
@@ -93,8 +97,8 @@ def status():
         config = Config()
         setup_obj = ServicesSetup(config)
         
-        success, msg = setup_obj.get_status()
-        if not success:
+        err, msg = setup_obj.get_status()
+        if err is not None:
             raise click.ClickException(msg)
         
         click.echo(f"{msg}")
@@ -121,19 +125,17 @@ def add():
     """
     click.echo("Adding users from CSV file...")
     
-    # Add to InfluxDB
     click.echo("\nAdding users to InfluxDB...")
-    err, msg = influxdb.add_influxdb_users()
-    if err:
-        click.echo(f"InfluxDB: {msg}", err=True)
+    success, msg = influxdb.setup_influxdb_users()
+    if not success:
+        click.echo(f"InfluxDB: Failed - {msg}", err=True)
     else:
         click.echo(f"InfluxDB: {msg}")
     
-    # Add to RabbitMQ
     click.echo("\nAdding users to RabbitMQ...")
-    err, msg = rabbitmq.add_rabbitmq_users()
-    if err:
-        click.echo(f"RabbitMQ: {msg}", err=True)
+    success, msg = rabbitmq.setup_rabbitmq_users()
+    if not success:
+        click.echo(f"RabbitMQ: Failed - {msg}", err=True)
     else:
         click.echo(f"RabbitMQ: {msg}")
     

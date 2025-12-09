@@ -45,6 +45,7 @@ coverage.xml
 
 # Virtual environments
 venv/
+linux-venv/
 ENV/
 env/
 .venv

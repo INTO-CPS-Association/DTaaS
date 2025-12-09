@@ -1,7 +1,9 @@
 """RabbitMQ user management for DTaaS services"""
 import csv
+import platform
 import subprocess
 from pathlib import Path
+from python_on_whales import DockerClient
 
 
 def execute_command(
@@ -18,23 +20,21 @@ def execute_command(
         Tuple of (success, output/error message)
     """
     try:
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        docker = DockerClient()
+        container_name = command[2]  # "rabbitmq"
+        exec_cmd = command[3:]  # ["rabbitmqctl", "add_user", ...]
+        result = docker.execute(container_name, exec_cmd)
         if verbose:
-            print("Output:", result.stdout)
-        return True, result.stdout
-    except subprocess.CalledProcessError as e:
-        error_msg = f"Error: {e.stderr}"
+            print("Output:", result)
+        return True, result
+    except Exception as e:
+        error_msg = f"Error: {str(e)}"
         if verbose:
             print(error_msg)
         return False, error_msg
 
 
-def add_rabbitmq_users() -> tuple[bool, str]:
+def setup_rabbitmq_users() -> tuple[bool, str]:
     """
     Add users to RabbitMQ service.
 
@@ -42,6 +42,8 @@ def add_rabbitmq_users() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     credentials_file = Path(__file__).parent.parent.parent.parent / "config" / "credentials.csv"
+    if platform.system().lower() in ['linux', 'darwin']:
+        credentials_file = Path.cwd().parent / "config" / "credentials.csv"
     if not credentials_file.exists():
         return False, f"Credentials file not found: {credentials_file}"
 
