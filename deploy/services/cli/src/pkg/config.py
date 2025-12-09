@@ -1,3 +1,4 @@
+"""Configuration management for DTaaS services"""
 import os
 import platform
 from pathlib import Path
@@ -5,33 +6,63 @@ from dotenv import load_dotenv
 
 
 class Config:
-    """ This class handles loading and accessing configuration values from an environment file. """
+    """This class handles loading and accessing configuration values from an environment file."""
 
     def __init__(self):
-        # Default windows path
-        base_dir = Path(__file__).parent.parent.parent.parent
-        # If it is Linux or MacOS, adjust the base directory
-        if platform.system().lower() in ['linux', 'darwin']:
-            base_dir = Path.cwd().parent
+        base_dir = self.get_base_dir()
         self.env_path = base_dir / "config" / "services.env"
+        self.base_dir = base_dir
 
         if not self.env_path.exists():
             raise FileNotFoundError(
-                    f"Configuration file not found: {self.env_path}\n"
-                    f"Please copy config/services.env.template to config/services.env ")
+                f"Configuration file not found: {self.env_path}\n"
+                f"Please copy config/services.env.template to config/services.env "
+            )
+        
         load_dotenv(dotenv_path=self.env_path, override=True)
         self.env = dict(os.environ)
 
+    @staticmethod
+    def get_base_dir() -> Path:
+        """
+        Get the base directory for the project.
+        
+        Supports both standalone package and development workflows:
+        - If config/services.env exists in cwd, use cwd (standalone package)
+        - Otherwise use package source location (development in DTaaS repo)
+        
+        On Linux/MacOS in development mode, uses Path.cwd().parent
+        On Windows in development mode, uses Path(__file__).parent.parent.parent.parent
+        
+        Returns:
+            Path object representing the base directory
+        """
+        # Check if running from generated project (standalone package workflow)
+        cwd_config = Path.cwd() / "config" / "services.env"
+        if cwd_config.exists():
+            return Path.cwd()
+        
+        # Running from source in DTaaS repository (development workflow)
+        if platform.system().lower() in ['linux', 'darwin']:
+            # Linux/MacOS: Use parent of current working directory
+            return Path.cwd().parent
+        else:
+             # Windows: Check if running from venv or source
+            file_path = Path(__file__).resolve()
+            
+            # If running from venv (site-packages), use cwd.parent
+            if 'site-packages' in str(file_path) or 'venv' in str(file_path):
+                return Path.cwd().parent
+            
+            # Running from source: Go up from src/pkg/config.py to deploy/services/
+            return Path(__file__).parent.parent.parent.parent
+
 
     def get_value(self, key: str) -> str:
-        """ Gets a required configuration value from the environment file. """
+        """Gets a required configuration value from the environment file."""
         value = self.env.get(key)
         if value is None:
             raise RuntimeError(
-                f"Required configuration key '{key}' is not set in the environment file.")
+                f"Required configuration key '{key}' is not set in the environment file."
+            )
         return value
-
-
-    def get_all(self) -> dict:
-        """Get all configuration values as a dictionary."""
-        return self.env.copy()

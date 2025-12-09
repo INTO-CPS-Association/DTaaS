@@ -1,8 +1,14 @@
 """RabbitMQ user management for DTaaS services"""
 import csv
-import platform
 from pathlib import Path
 from python_on_whales import DockerClient
+from .config import Config
+
+
+def _get_credentials_path() -> Path:
+    """Get the path to credentials.csv file."""
+    base_dir = Config.get_base_dir()
+    return base_dir / "config" / "credentials.csv"
 
 
 def execute_command(
@@ -33,6 +39,45 @@ def execute_command(
         return False, error_msg
 
 
+def _add_rabbitmq_user(username: str, password: str) -> bool:
+    """Add a user to RabbitMQ with vhost and permissions."""
+    vhost = username
+
+    success, output = execute_command([
+        "docker", "exec", "rabbitmq",
+        "rabbitmqctl", "add_user",
+        username, password
+    ])
+
+    if not success:
+        print(f"Warning: Could not add user {username}: {output}")
+        return False
+
+    execute_command([
+        "docker", "exec", "rabbitmq",
+        "rabbitmqctl", "add_vhost",
+        vhost
+    ])
+
+    execute_command([
+        "docker", "exec", "rabbitmq",
+        "rabbitmqctl", "set_permissions",
+        "-p", vhost,
+        username,
+        ".*", ".*", ".*"
+    ])
+
+    execute_command([
+        "docker", "exec", "rabbitmq",
+        "rabbitmqctl", "set_permissions",
+        "-p", "/",
+        username,
+        ".*", ".*", ".*"
+    ])
+
+    return True
+
+
 def setup_rabbitmq_users() -> tuple[bool, str]:
     """
     Add users to RabbitMQ service.
@@ -40,57 +85,20 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
-    base_dir = Path(__file__).parent.parent.parent.parent
-    if platform.system().lower() in ['linux', 'darwin']:
-        base_dir = Path.cwd().parent
-    
-    credentials_file = base_dir / "config" / "credentials.csv"
+    credentials_file = _get_credentials_path()
     if not credentials_file.exists():
         return False, f"Credentials file not found: {credentials_file}"
 
     try:
-        with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
+        with credentials_file.open(
+            mode="r", newline="", encoding="utf-8"
+        ) as creds_file:
             credentials = csv.DictReader(creds_file, delimiter=",")
 
             for credential in credentials:
                 username = credential["username"]
                 password = credential["password"]
-                vhost = username
-
-                # Add user
-                success, output = execute_command([
-                    "docker", "exec", "rabbitmq",
-                    "rabbitmqctl", "add_user",
-                    username, password
-                ])
-
-                if not success:
-                    print(f"Warning: Could not add user {username}: {output}")
-
-                # Add vhost
-                execute_command([
-                    "docker", "exec", "rabbitmq",
-                    "rabbitmqctl", "add_vhost",
-                    vhost
-                ])
-
-                # Set permissions on user vhost
-                execute_command([
-                    "docker", "exec", "rabbitmq",
-                    "rabbitmqctl", "set_permissions",
-                    "-p", vhost,
-                    username,
-                    ".*", ".*", ".*"
-                ])
-
-                # Set permissions on default vhost
-                execute_command([
-                    "docker", "exec", "rabbitmq",
-                    "rabbitmqctl", "set_permissions",
-                    "-p", "/",
-                    username,
-                    ".*", ".*", ".*"
-                ])
+                _add_rabbitmq_user(username, password)
 
         return True, "RabbitMQ users created successfully"
 

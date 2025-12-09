@@ -35,13 +35,3 @@ def test_config_get_value_missing():
         config.get_value("MISSING_KEY")
     assert "MISSING_KEY" in str(exc_info.value)
 
-
-def test_config_get_all():
-    """Test getting all configuration values"""
-    config = Config.__new__(Config)
-    config.env = {"HOSTNAME": "test.local", "INFLUX_UID": "1000"}
-    config.env_path = Path("test.env")
-    
-    all_values = config.get_all()
-    assert isinstance(all_values, dict)
-    assert "HOSTNAME" in all_values

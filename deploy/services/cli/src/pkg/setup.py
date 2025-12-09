@@ -1,3 +1,4 @@
+"""DTaaS platform services setup module"""
 import platform
 import os
 import sys
@@ -27,7 +28,7 @@ class ServicesSetup:
             config: Configuration object. If None, creates default Config.
         """
         self.config = config or Config()
-        self.base_dir = Path(__file__).parent.parent.parent.parent
+        self.base_dir = Config.get_base_dir()
         self.host_name = self.config.get_value("HOSTNAME")
         self.os_type = platform.system().lower()
         if self.os_type in ['linux', 'darwin']:
@@ -65,17 +66,20 @@ class ServicesSetup:
         self.compose_file = self.base_dir / "compose.services.secure.yml"
         self.docker = DockerClient(compose_files=[self.compose_file])
 
-    def check_root_unix(self) -> None:
+    def _check_root_unix(self) -> None:
         """Check if script is run as root on Unix systems."""
+        if platform.system().lower() not in ['linux', 'darwin']:
+            return
         try:
             is_root = os.geteuid() == 0
         except AttributeError:
             is_root = False
         if not is_root:
-            print("This script must be run as root (Linux/MacOS)." \
-            "try sudo -E env PATH=\"$PATH\" dtaas-services setup")
+            print(
+                "This script must be run as root (Linux/MacOS). "
+                "Try: sudo -E env PATH=\"$PATH\" dtaas-services setup"
+            )
             sys.exit(1)
-
 
     def copy_certs(self) -> Tuple[bool, str]:
         """Obtain TLS certificates for services."""
@@ -96,7 +100,6 @@ class ServicesSetup:
         except OSError as e:
             return False, f"Error copying certificates: {e}"
 
-
     def _normalize_cert_candidates(self, prefix: str) -> None:
         """Keep only the latest cert file for a given prefix, rename it, and remove others."""
         candidates = list(self.certs["dir"].glob(f"{prefix}*.pem"))
@@ -110,7 +113,6 @@ class ServicesSetup:
         for p in candidates:
             if p.resolve() != target.resolve():
                 p.unlink(missing_ok=True)
-
 
     def _create_combined_pem(self) -> None:
         """Create combined.pem from privkey.pem and fullchain.pem."""
@@ -126,7 +128,6 @@ class ServicesSetup:
             with open(fullchain_path, "rb") as fc:
                 out_f.write(fc.read())
 
-
     def permissions_mongodb(self) -> Tuple[bool, str]:
         """Creates combined.pem and sets permissions for MongoDB."""
         try:
@@ -134,81 +135,151 @@ class ServicesSetup:
             self._create_combined_pem()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
-                shutil.chown(self.certs["combined"],
-                             user=int(self.mongo["uid"]),
-                             group=int(self.mongo["gid"]))
-            return True, (f"combined.pem created with mode 600 and ownership set to "
-                f"{self.mongo['uid']}:{self.mongo['gid']}.")
+                shutil.chown(
+                    self.certs["combined"],
+                    user=int(self.mongo["uid"]),
+                    group=int(self.mongo["gid"])
+                )
+            msg = (
+                f"combined.pem created with mode 600 and ownership set to "
+                f"{self.mongo['uid']}:{self.mongo['gid']}."
+            )
+            return True, msg
         except OSError as e:
             return False, f"Error setting permissions for MongoDB: {e}"
-
 
     def permissions_influxdb(self) -> Tuple[bool, str]:
         """Copy privkey.pem -> privkey-influxdb.pem and change owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.influx["key"])
             if self.os_type in ("linux", "darwin"):
-                shutil.chown(self.influx["key"],
-                             user=int(self.influx["uid"]),
-                             group=int(self.influx["gid"]))
-            return True, (
+                shutil.chown(
+                    self.influx["key"],
+                    user=int(self.influx["uid"]),
+                    group=int(self.influx["gid"])
+                )
+            msg = (
                 f"{self.influx['key']} created and ownership set to "
-                f"{self.influx['uid']}:{self.influx['gid']}.")
+                f"{self.influx['uid']}:{self.influx['gid']}."
+            )
+            return True, msg
         except OSError as e:
             return False, f"Error setting permissions for InfluxDB: {e}"
-
 
     def permissions_rabbitmq(self) -> Tuple[bool, str]:
         """Copy privkey.pem -> privkey-rabbitmq.pem and sets owner."""
         try:
             shutil.copy2(self.certs["privkey"], self.rabbitmq["key"])
             if self.os_type in ("linux", "darwin"):
-                shutil.chown(self.rabbitmq["key"], user=int(self.rabbitmq["uid"]))       
-                return True, (f"{self.rabbitmq['key']} created and ownership set to user "
-                f"{self.rabbitmq['uid']}.")
+                shutil.chown(self.rabbitmq["key"], user=int(self.rabbitmq["uid"]))
+            msg = (
+                f"{self.rabbitmq['key']} created and ownership set to user "
+                f"{self.rabbitmq['uid']}."
+            )
+            return True, msg
         except OSError as e:
             return False, f"Error setting permissions for RabbitMQ: {e}"
 
-
-    def start_services(self) -> Tuple[bool, str]:
-        """Start the platform services using docker compose."""
-        if not self.compose_file.exists():
-            err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
-            return err, str(err)
-        try:
-            self.docker.compose.up(detach=True)
-            return None, "Docker Compose started successfully"
-        except Exception as e:
-            return e, f"Failed to start Docker Compose: {str(e)}"
-
-
-    def stop_services(self) -> Tuple[Optional[Exception], str]:
+    def start_services(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
         """
-        Stop platform services using Docker Compose.
+        Start the platform services using docker compose.
+        
+        Args:
+            service_list: Optional list of specific services to start
+            
         Returns:
             Tuple of (Exception or None, message)
         """
         if not self.compose_file.exists():
-            err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
+            err = FileNotFoundError(
+                f"Docker Compose file not found: {self.compose_file}"
+            )
             return err, str(err)
         try:
-            self.docker.compose.down()
+            if service_list:
+                self.docker.compose.up(service_list, detach=True)
+            else:
+                self.docker.compose.up(detach=True)
+            return None, "Docker Compose started successfully"
+        except Exception as e:
+            return e, f"Failed to start Docker Compose: {str(e)}"
+
+    def stop_services(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
+        """
+        Stop platform services using Docker Compose.
+        
+        Args:
+            service_list: Optional list of specific services to stop
+            
+        Returns:
+            Tuple of (Exception or None, message)
+        """
+        if not self.compose_file.exists():
+            err = FileNotFoundError(
+                f"Docker Compose file not found: {self.compose_file}"
+            )
+            return err, str(err)
+        try:
+            if service_list:
+                self.docker.compose.stop(service_list)
+            else:
+                self.docker.compose.down()
             return None, "Services stopped successfully"
         except Exception as e:
             return e, f"Failed to stop services: {str(e)}"
 
+    def restart_services(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
+        """
+        Restart platform services using Docker Compose.
+        
+        Args:
+            service_list: Optional list of specific services to restart
+            
+        Returns:
+            Tuple of (Exception or None, message)
+        """
+        if not self.compose_file.exists():
+            err = FileNotFoundError(
+                f"Docker Compose file not found: {self.compose_file}"
+            )
+            return err, str(err)
+        try:
+            if service_list:
+                self.docker.compose.restart(service_list)
+            else:
+                self.docker.compose.restart()
+            return None, "Services restarted successfully"
+        except Exception as e:
+            return e, f"Failed to restart services: {str(e)}"
 
-    def get_status(self) -> Tuple[Optional[Exception], str]:
+    def get_status(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
         """
         Get status of platform services.
+        
+        Args:
+            service_list: Optional list of specific services to check
+            
         Returns:
             Tuple of (Exception or None, status message)
         """
         if not self.compose_file.exists():
-            err = FileNotFoundError(f"Docker Compose file not found: {self.compose_file}")
+            err = FileNotFoundError(
+                f"Docker Compose file not found: {self.compose_file}"
+            )
             return err, str(err)
         try:
-            result = self.docker.compose.ps()  
+            if service_list:
+                result = self.docker.compose.ps(service_list)
+            else:
+                result = self.docker.compose.ps()
             return None, str(result)
         except Exception as e:
             return e, f"Failed to get status: {str(e)}"

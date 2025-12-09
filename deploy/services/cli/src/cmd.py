@@ -1,13 +1,92 @@
+"""DTaaS Services CLI commands"""
 import click
-
+import shutil
+import src
+from pathlib import Path
 from .pkg.config import Config
 from .pkg.setup import ServicesSetup
 from .pkg import influxdb, rabbitmq
+
 
 @click.group()
 def services():
     """Manage DTaaS platform services."""
     pass
+
+
+@services.command()
+@click.option('--path', default='.', help='Directory to generate project structure')
+def generate_project(path):
+    """
+    Generate project structure with template config, data directories, and compose file.
+    
+    This creates the necessary directory structure and copies template files
+    from the installed package so you can run dtaas-services commands.
+    
+    Example:
+        dtaas-services generate-project
+        dtaas-services generate-project --path /path/to/project
+    """
+    try:
+        target_dir = Path(path).resolve()
+        target_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Get package root directory (where config, data, compose files are bundled)
+        package_root = Path(src.__file__).parent
+        
+        # Copy the following directories and files to the users target directory 
+        items_to_copy = [
+            ('config', 'config'),
+            ('data', 'data'),
+            ('compose.services.secure.yml', 'compose.services.secure.yml')
+        ]
+        
+        click.echo(f"Generating project structure in {target_dir}...")
+        
+        for src_item, dest_item in items_to_copy:
+            src_path = package_root / src_item
+            dest_path = target_dir / dest_item
+            
+            if not src_path.exists():
+                click.echo(f"  Warning: {src_item} not found in package", err=True)
+                continue
+            
+            if src_path.is_dir():
+                if dest_path.exists():
+                    click.echo(f"  Skipping {dest_item}/ (already exists)")
+                else:
+                    shutil.copytree(src_path, dest_path)
+                    click.echo(f"  Created {dest_item}/")
+            elif src_path.is_file():
+                if dest_path.exists():
+                    click.echo(f"  Skipping {dest_item} (already exists)")
+                else:
+                    shutil.copy2(src_path, dest_path)
+                    click.echo(f"  Created {dest_item}")
+        
+        # Copy template files to actual config files if they don't exist
+        config_dir = target_dir / "config"
+        template_mappings = [
+            ('services.env.template', 'services.env'),
+            ('credentials.csv.template', 'credentials.csv')
+        ]
+        
+        for template_name, actual_name in template_mappings:
+            template_file = config_dir / template_name
+            actual_file = config_dir / actual_name
+            if template_file.exists() and not actual_file.exists():
+                shutil.copy2(template_file, actual_file)
+                click.echo(f"  Created config/{actual_name} from template")
+        
+        click.echo(f"\nProject structure generated successfully in {target_dir}!")
+        click.echo(f"\nNext steps:")
+        click.echo(f"1. cd {target_dir}")
+        click.echo(f"2. Update config/services.env and config/credentials.csv with your settings")
+        click.echo(f"3. Run: dtaas-services setup")
+        
+    except Exception as e:
+        raise click.ClickException(f"Failed to generate project: {e}") from e
+
 
 @services.command()
 def setup():
@@ -24,7 +103,7 @@ def setup():
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        setup_obj.check_root_unix()
+        setup_obj._check_root_unix()
         click.echo("Starting service setup....")
 
         steps = [
@@ -47,59 +126,108 @@ def setup():
         click.echo("\nStarting services...")
 
     except FileNotFoundError as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
     except RuntimeError as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
 
 
 @services.command()
-def start():
-    """This command only starts the platform services."""
+@click.option('--services', '-s', help='Comma-separated list of services to start')
+def start(services):
+    """Start the platform services."""
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
 
-        click.echo("Starting services...")
-        err, msg = setup_obj.start_services()
+        service_list = [s.strip() for s in services.split(',')] if services else None
+        
+        if service_list:
+            click.echo(f"Starting services: {', '.join(service_list)}...")
+        else:
+            click.echo("Starting all services...")
+            
+        err, msg = setup_obj.start_services(service_list)
         if err is not None:
             raise click.ClickException(msg)
 
         click.echo(msg)
     except FileNotFoundError as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
     except RuntimeError as e:
-        raise click.ClickException(str(e))
-    
+        raise click.ClickException(str(e)) from e
+
 
 @services.command()
-def stop():
-    """This command only stops the platform services."""
+@click.option('--services', '-s', help='Comma-separated list of services to stop')
+def stop(services):
+    """Stop the platform services."""
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        click.echo("Stopping services...")
-        err, msg = setup_obj.stop_services()
+        
+        service_list = [s.strip() for s in services.split(',')] if services else None
+        
+        if service_list:
+            click.echo(f"Stopping services: {', '.join(service_list)}...")
+        else:
+            click.echo("Stopping all services...")
+            
+        err, msg = setup_obj.stop_services(service_list)
         if err is not None:
             raise click.ClickException(msg)
         click.echo(msg)
 
-    except Exception as e:
-        raise click.ClickException(str(e))
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except RuntimeError as e:
+        raise click.ClickException(str(e)) from e
 
 
 @services.command()
-def status():
-    """This command shows the status of the platform services."""
+@click.option('--services', '-s', help='Comma-separated list of services to check')
+def status(services):
+    """Show the status of the platform services."""
     try:
         config = Config()
         setup_obj = ServicesSetup(config)
-        err, msg = setup_obj.get_status()
+        
+        service_list = [s.strip() for s in services.split(',')] if services else None
+        
+        err, msg = setup_obj.get_status(service_list)
         if err is not None:
             raise click.ClickException(msg)
         click.echo(msg)
 
-    except Exception as e:
-        raise click.ClickException(str(e))
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except RuntimeError as e:
+        raise click.ClickException(str(e)) from e
+
+
+@services.command()
+@click.option('--services', '-s', help='Comma-separated list of services to restart')
+def restart(services):
+    """Restart the platform services."""
+    try:
+        config = Config()
+        setup_obj = ServicesSetup(config)
+        
+        service_list = [s.strip() for s in services.split(',')] if services else None
+        
+        if service_list:
+            click.echo(f"Restarting services: {', '.join(service_list)}...")
+        else:
+            click.echo("Restarting all services...")
+            
+        err, msg = setup_obj.restart_services(service_list)
+        if err is not None:
+            raise click.ClickException(msg)
+        click.echo(msg)
+
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except RuntimeError as e:
+        raise click.ClickException(str(e)) from e
 
 
 @services.group()
@@ -112,7 +240,9 @@ def user():
 def add():
     """
     Add user accounts to InfluxDB and RabbitMQ.
+    
     Reads config/credentials.csv and creates accounts in both services.
+    
     Example:
         dtaas-services user add
     """

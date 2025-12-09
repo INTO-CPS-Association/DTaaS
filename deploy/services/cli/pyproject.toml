@@ -6,11 +6,6 @@ authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"  
 readme = "README.md"  
 packages = [{include = "src"}]
-include = [
-    "../config/**/*",
-    "../data/**/*",
-    "../compose.services.secure.yml"
-]
 
 [tool.poetry.dependencies]
 python = "^3.10"
