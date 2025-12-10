@@ -19,6 +19,11 @@ cd DTaaS/deploy/services/cli
 python -m venv venv
 venv\Scripts\activate
 pip install poetry
+
+# Copy external files (config, data, compose) into the package
+python build.py
+
+# Install dependencies
 poetry install
 ```
 
@@ -47,30 +52,44 @@ poetry run pytest tests/test_config.py
 Run with coverage report:
 
 ```bash
-poetry run pytest --cov=src --cov-report=html
+poetry run pytest --cov=dtaas_services --cov-report=html
 ```
 
 ### Building
 
+Before building, ensure external files are copied:
+
 ```bash
+# Copy external files (config, data, compose) into the package
+python build.py
+
+# Build the wheel
 poetry build
 ```
+
+This creates distribution files in the `dist/` directory.
 
 ## Project Structure
 
 ```text
 cli/
 ├── pyproject.toml          # Poetry configuration and dependencies
+├── build.py                # Build script to copy external files
 ├── README.md               # User documentation
 ├── DEVELOPER.md            # This file
-├── src/
+├── dtaas_services/         # Main package directory
 │   ├── __init__.py
 │   ├── cmd.py              # Main CLI commands
-│   ├── compose.services.secure.yml  # Docker Compose configuration
-│   ├── config/             # Configuration templates (bundled)
+│   ├── compose.services.secure.yml  # Docker Compose configuration (copied by build.py)
+│   ├── config/             # Configuration files (copied by build.py)
 │   │   ├── services.env.template
-│   │   └── credentials.csv.template
-│   ├── data/               # Data directories structure (bundled)
+│   │   ├── credentials.csv.template
+│   │   └── ...
+│   ├── data/               # Data directories structure (copied by build.py)
+│   │   ├── grafana/
+│   │   ├── influxdb/
+│   │   ├── mongodb/
+│   │   └── rabbitmq/
 │   └── pkg/
 │       ├── __init__.py
 │       ├── config.py       # Configuration loader
@@ -84,6 +103,9 @@ cli/
     ├── test_config.py      # Configuration tests
     └── test_users.py       # User management tests
 ```
+
+**Note:** Files marked as "copied by build.py" are generated during the build process
+from the parent `deploy/services/` directory and are gitignored.
 
 ## Code Organization
 
@@ -131,7 +153,7 @@ For testing CLI commands, use Click's `CliRunner` instead of subprocess:
 
 ```python
 from click.testing import CliRunner
-from src.cmd import services
+from dtaas_services.cmd import services
 
 def test_generate_project():
     runner = CliRunner()
@@ -147,7 +169,7 @@ Always mock Docker, file system, and configuration operations:
 ```python
 from unittest.mock import Mock, patch
 
-@patch('src.pkg.utils.DockerClient')
+@patch('dtaas_services.pkg.utils.DockerClient')
 def test_execute_docker_command(mock_docker):
     mock_docker.return_value.execute.return_value = "output"
     success, output = execute_docker_command("container", ["command"])
@@ -167,5 +189,5 @@ Aim for high test coverage, especially for:
 Run coverage reports to identify untested code:
 
 ```bash
-poetry run pytest --cov=src --cov-report=term-missing
+poetry run pytest --cov=dtaas_services --cov-report=term-missing
 ```

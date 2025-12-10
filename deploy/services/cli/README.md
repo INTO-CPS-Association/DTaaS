@@ -51,9 +51,15 @@ pip install .
 ```bash
 cd deploy/services/cli
 pip install poetry
+
+# Copy external files (config, data, compose) into the package
+python build.py
+
+# Build the wheel
 poetry build
-# This creates a .whl file in dist/
-pip install dist/dtaas_services-0.1.0-py3-none-any.whl
+
+# This creates a .whl file in dist/ (filename varies by Python version and platform)
+pip install dist/dtaas_services-0.1.0-*.whl
 ```
 
 ## Quick Start

@@ -5,7 +5,7 @@ description = "DTaaS Platform Services Management CLI"
 authors = ["Mohamed Abdulkarim"]  
 license = "INTO-CPS-Association"  
 readme = "README.md"  
-packages = [{include = "src"}]
+packages = [{include = "dtaas_services"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -23,4 +23,8 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-dtaas-services = "src.cmd:services"
+dtaas-services = "dtaas_services.cmd:services"
+
+[tool.poetry.build]
+script = "build.py"
+generate-setup-file = false

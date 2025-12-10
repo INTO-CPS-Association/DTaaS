@@ -54,7 +54,7 @@ class Config:
             if 'site-packages' in str(file_path) or 'venv' in str(file_path):
                 return Path.cwd().parent
             
-            # Running from source: Go up from src/pkg/config.py to deploy/services/
+            # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
             return Path(__file__).parent.parent.parent.parent
 
 

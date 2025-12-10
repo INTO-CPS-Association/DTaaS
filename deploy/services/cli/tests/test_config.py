@@ -2,7 +2,7 @@
 import pytest
 from pathlib import Path
 from unittest.mock import patch
-from src.pkg.config import Config
+from dtaas_services.pkg.config import Config
 
 
 def test_config_file_not_found():
@@ -15,7 +15,7 @@ def test_config_file_not_found():
 
 def test_config_get_value():
     """Test getting configuration value"""
-    with patch("src.pkg.config.load_dotenv"), \
+    with patch("dtaas_services.pkg.config.load_dotenv"), \
          patch("os.environ", {"HOSTNAME": "test.local", "INFLUX_UID": "1000"}):
         config = Config.__new__(Config)
         config.env = {"HOSTNAME": "test.local", "INFLUX_UID": "1000"}

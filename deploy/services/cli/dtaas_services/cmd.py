@@ -1,7 +1,7 @@
 """DTaaS Services CLI commands"""
 import click
 import shutil
-import src
+import dtaas_services
 from pathlib import Path
 from .pkg.config import Config
 from .pkg.setup import ServicesSetup
@@ -73,7 +73,7 @@ def generate_project(path):
         target_dir = Path(path).resolve()
         target_dir.mkdir(parents=True, exist_ok=True)
         # Get package root directory (where config, data, compose files are bundled)
-        package_root = Path(src.__file__).parent
+        package_root = Path(dtaas_services.__file__).parent
         
         # Copy the following directories and files to the users target directory 
         items_to_copy = [('config', 'config'), ('data', 'data'),

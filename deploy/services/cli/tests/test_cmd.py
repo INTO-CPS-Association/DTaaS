@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, Mock
 from click.testing import CliRunner
-from src.cmd import services
+from dtaas_services.cmd import services
 
 
 @pytest.fixture
@@ -13,8 +13,8 @@ def runner():
 @pytest.fixture
 def mock_setup_pkg():
     """Mock setup package"""
-    with patch("src.cmd.Config") as mock_config, \
-         patch("src.cmd.ServicesSetup") as mock_setup_class:
+    with patch("dtaas_services.cmd.Config") as mock_config, \
+         patch("dtaas_services.cmd.ServicesSetup") as mock_setup_class:
         
         config_instance = Mock()
         mock_config.return_value = config_instance
@@ -28,8 +28,8 @@ def mock_setup_pkg():
 @pytest.fixture
 def mock_user_pkg():
     """Mock user management modules"""
-    with patch("src.cmd.influxdb") as mock_influx, \
-         patch("src.cmd.rabbitmq") as mock_rabbit:
+    with patch("dtaas_services.cmd.influxdb") as mock_influx, \
+         patch("dtaas_services.cmd.rabbitmq") as mock_rabbit:
         yield {"influxdb": mock_influx, "rabbitmq": mock_rabbit}
 
 
@@ -64,7 +64,7 @@ def test_setup_cert_copy_fails(runner, mock_setup_pkg):
 
 def test_setup_config_not_found(runner):
     """Test setup fails when config not found"""
-    with patch("src.cmd.Config", side_effect=FileNotFoundError("Config not found")):
+    with patch("dtaas_services.cmd.Config", side_effect=FileNotFoundError("Config not found")):
         result = runner.invoke(services, ['setup'])
         assert result.exit_code != 0
         assert "Config not found" in result.output
