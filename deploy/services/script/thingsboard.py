@@ -10,7 +10,7 @@ import requests
 def load_env_file(path: str) -> None:
     """Load simple KEY=VALUE lines from an env file into os.environ."""
     if not os.path.exists(path):
-        print(f"nv file not found: {path}")
+        print(f"env file not found: {path}")
         return
     with open(path) as f:
         for line in f:

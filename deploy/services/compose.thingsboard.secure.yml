@@ -45,8 +45,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SSL_ENABLED: "true"
       SSL_CREDENTIALS_TYPE: "PEM"
-      SSL_PEM_CERT: "/certs/fullchain.pem"
-      SSL_PEM_KEY: "/certs/privkey.pem"
+      SSL_PEM_CERT: "/certs/thingsboard-fullchain.pem"
+      SSL_PEM_KEY: "/certs/thingsboard-privkey.pem"
     logging:
       driver: 'json-file'
       options:
