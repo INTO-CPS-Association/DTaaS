@@ -100,6 +100,42 @@ chmod +x script/thingsboard.py
 python3 script/thingsboard.py
 ```
 
+## Troubleshooting
+
+If the PostgreSQL logs show errors like:
+
+- `ERROR: relation "ts_kv" does not exist`
+- `ERROR: relation "ts_kv_latest" does not exist`
+
+this usually means that the ThingsBoard service started before the database
+schema was fully created.
+
+To fix this:
+
+1. Stop all services:
+
+   ```bash
+   docker compose -f compose.thingsboard.secure.yml \
+     --env-file config/services.env down
+   ```
+
+2. Delete the data folders:
+
+   ```bash
+   rm -rf data/thingsboard
+   rm -rf data/postgres
+   ```
+
+3. Start PostgreSQL and run ThingsBoard install again:
+
+   ```bash
+   docker compose -f compose.thingsboard.secure.yml \
+     --env-file config/services.env up -d postgres
+   docker compose -f compose.thingsboard.secure.yml \
+     --env-file config/services.env \
+     run --rm -e INSTALL_TB=true -e LOAD_DEMO=false thingsboard-ce
+   ```
+
 ## Use
 
 After the installation is complete, you can see the ThingsBoard service active
