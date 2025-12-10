@@ -4,7 +4,7 @@ It is recommended to install the third-party software *ThingsBoard* for use
 by digital twins running inside the DTaaS software.
 *This service can only be installed in secure (TLS) mode.*
 
-ThingsBoard uses PostgreSQL as its database:
+The steps given here install two services:
 
 * **ThingsBoard** is an IoT device management and data visualization platform
 * **PostgreSQL** is a database server for ThingsBoard
@@ -15,7 +15,7 @@ ThingsBoard uses PostgreSQL as its database:
 * **data** is used by the services for storing data
 * **log** is used by the services for logging
 * **certs** is used for storing the TLS certificates needed by the services
-* **script** contains scripts for creating user accounts
+* **script** contains scripts for creating user accounts and service management
 
 ## Installation steps & prerequisites
 
@@ -48,9 +48,13 @@ and have navigated to the `deploy/services` directory.
 * Adjust permissions of certificates for ThingsBoard user in docker container.
 
   ```bash
-  chown 799:799 certs/services.foo.com/privkey.pem certs/services.foo.com/fullchain.pem
-  chmod 600 certs/services.foo.com/privkey.pem
-  chmod 644 certs/services.foo.com/fullchain.pem
+  cp certs/services.foo.com/privkey.pem \
+    certs/services.foo.com/thingsboard-privkey.pem
+  cp certs/services.foo.com/fullchain.pem \
+    certs/services.foo.com/thingsboard-fullchain.pem
+  chown 799:799 certs/services.foo.com/thingsboard-*.pem
+  chmod 600 certs/services.foo.com/thingsboard-privkey.pem
+  chmod 644 certs/services.foo.com/thingsboard-fullchain.pem
   ```
 
 * Set required permissions for ThingsBoard data and log directories.
@@ -62,6 +66,8 @@ and have navigated to the `deploy/services` directory.
 
 * Use configuration template and create service configuration.
   Remember to update the services.env file with the appropriate values.
+  Take special care in setting strong password for thingsboard and
+  postgres services.
 
   ```bash
   cp config/services.env.template config/services.env
@@ -77,15 +83,16 @@ and have navigated to the `deploy/services` directory.
     --env-file config/services.env \
     run --rm -e INSTALL_TB=true -e LOAD_DEMO=false thingsboard-ce
   ```
+
 Once ThingsBoard is installed, the service can be started.
 
 * Start or stop services.
   
   ```bash
   docker compose -f compose.thingsboard.secure.yml \
-    --env-file config/services.env up -d
+    --env-file config/services.env up -d thingsboard-ce
   docker compose -f compose.thingsboard.secure.yml \
-    --env-file config/services.env down
+    --env-file config/services.env down thingsboard-ce
   ```
 
 ## New User Accounts
@@ -122,8 +129,9 @@ To fix this:
 2. Delete the data folders:
 
    ```bash
-   rm -rf data/thingsboard
-   rm -rf data/postgres
+   rm -rf data/thingsboard/*
+   rm -rf data/postgres/*
+   rm -rf log/thingsboard/*
    ```
 
 3. Start PostgreSQL and run ThingsBoard install again:
