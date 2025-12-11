@@ -142,7 +142,7 @@ class TestServiceStopServices:
         service = Service(config=mock_config_instance)
         
         with patch.object(Path, "exists", return_value=False):
-            err, message = service.stop_services()
+            err, _ = service.stop_services()
         
         assert err is not None
         assert isinstance(err, FileNotFoundError)
@@ -205,7 +205,7 @@ class TestServiceRestartServices:
         service = Service(config=mock_config_instance)
         
         with patch.object(Path, "exists", return_value=False):
-            err, message = service.restart_services()
+            err, _ = service.restart_services()
         
         assert err is not None
         assert isinstance(err, FileNotFoundError)
@@ -271,7 +271,7 @@ class TestServiceGetStatus:
         service = Service(config=mock_config_instance)
         
         with patch.object(Path, "exists", return_value=False):
-            err, message = service.get_status()
+            err, _ = service.get_status()
         
         assert err is not None
         assert isinstance(err, FileNotFoundError)
