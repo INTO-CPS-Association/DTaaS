@@ -66,8 +66,8 @@ and have navigated to the `deploy/services` directory.
 
 * Use configuration template and create service configuration.
   Remember to update the services.env file with the appropriate values.
-  Take special care in setting strong password for thingsboard and
-  postgres services.
+  Take special care in setting strong password for Thingsboard and
+  PostgreSQL services.
 
   ```bash
   cp config/services.env.template config/services.env
