@@ -8,7 +8,7 @@ import requests
 
 
 def load_env_file(path: str) -> None:
-    """Load simple KEY=VALUE lines from an env file into os.environ."""
+    """Loads process environment variables from a file."""
     if not os.path.exists(path):
         print(f"env file not found: {path}")
         return
@@ -25,13 +25,12 @@ def load_env_file(path: str) -> None:
 def build_base_url() -> str:
     hostname = os.getenv("HOSTNAME", "localhost")
     port = os.getenv("THINGSBOARD_PORT", "8080")
-    # We use HTTPS because your compose setup exposes TB with TLS on this port.
     scheme = os.getenv("THINGSBOARD_SCHEME", "https")
     return f"{scheme}://{hostname}:{port}".rstrip("/")
 
 
 def login(base_url: str, email: str, password: str) -> str | None:
-    """Try to log in; return JWT token or None."""
+    """Authenticate with ThingsBoard and return a JWT token."""
     url = f"{base_url}/api/auth/login"
     resp = requests.post(
         url,
@@ -47,22 +46,34 @@ def login(base_url: str, email: str, password: str) -> str | None:
         # invalid credentials – just return None
         return None
     else:
-        print(f"nexpected login response {resp.status_code}: {resp.text}")
+        print(
+            f"nexpected login response {resp.status_code}: "
+            f"{resp.text}"
+        )
     return None
 
 
-def change_sysadmin_password_if_needed(base_url: str, session: requests.Session) -> None:
-    """Ensure sysadmin password is TB_SYSADMIN_NEW_PASSWORD, using default if needed."""
+def change_sysadmin_password_if_needed(
+    base_url: str,
+    session: requests.Session,
+) -> None:
+    """Change the sysadmin password."""
     sys_email = "sysadmin@thingsboard.org"
     default_pw = "sysadmin"
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
 
     if not new_pw:
-        print("TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env, skipping password change.")
+        print(
+            "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env.",
+            "Skipping sysadmin password change.",
+        )
         return
 
     # 1) Try login with new password first – if it works, we're done
-    print(f"Logging in as sysadmin '{sys_email}' with new password to check current state...")
+    print(
+        "Logging in as sysadmin "
+        f"'{sys_email}' with new password to check current state..."
+    )
     token = login(base_url, sys_email, new_pw)
     if token:
         print("Sysadmin already uses the new password. No change needed.")
@@ -74,9 +85,11 @@ def change_sysadmin_password_if_needed(base_url: str, session: requests.Session)
     token = login(base_url, sys_email, default_pw)
     if not token:
         print(
-            "Unable to log in as sysadmin with either new or default password.\n"
-            "Check TB_SYSADMIN_EMAIL, TB_SYSADMIN_DEFAULT_PASSWORD, and TB_SYSADMIN_NEW_PASSWORD "
-            "in config/services.env and make sure ThingsBoard is running."
+            "Unable to log in as sysadmin with either new or default "
+            "password.\n"
+            "Check TB_SYSADMIN_EMAIL, TB_SYSADMIN_DEFAULT_PASSWORD, and "
+            "TB_SYSADMIN_NEW_PASSWORD in config/services.env and make "
+            "sure ThingsBoard is running."
         )
         sys.exit(1)
 
@@ -92,13 +105,19 @@ def change_sysadmin_password_if_needed(base_url: str, session: requests.Session)
     if resp.status_code == 200:
         print("Sysadmin password changed successfully.")
     else:
-        print(f"Failed to change sysadmin password: {resp.status_code} {resp.text}")
+        print(
+            "Failed to change sysadmin password: "
+            f"{resp.status_code} {resp.text}"
+        )
         sys.exit(1)
 
     # Log in again with new password to get a clean token
     token = login(base_url, sys_email, new_pw)
     if not token:
-        print("Changed password but failed to log in with new sysadmin password.")
+        print(
+            "Changed password but failed to log in with new sysadmin "
+            "password."
+        )
         sys.exit(1)
 
     session.headers["X-Authorization"] = f"Bearer {token}"
@@ -106,7 +125,7 @@ def change_sysadmin_password_if_needed(base_url: str, session: requests.Session)
 
 
 def get_or_create_tenant(base_url: str, session: requests.Session) -> dict:
-    """Get tenant with TB_TENANT_TITLE or create it."""
+    """Create new tenant in DTaaS name."""
     tenant_title = os.getenv("TB_TENANT_TITLE", "DTaaS")
     print(f"Ensuring tenant '{tenant_title}' exists...")
 
@@ -117,10 +136,14 @@ def get_or_create_tenant(base_url: str, session: requests.Session) -> dict:
         body = resp.json()
         for t in body.get("data", []):
             if t.get("title") == tenant_title:
-                print(f"Tenant already exists: '{tenant_title}' (id={t.get('id', {}).get('id')})")
+                print(
+                    "Tenant already exists: "
+                    f"'{tenant_title}' "
+                    f"(id={t.get('id', {}).get('id')})"
+                )
                 return t
     else:
-        print(f"ailed to list tenants: {resp.status_code} {resp.text}")
+        print(f"Failed to list tenants: {resp.status_code} {resp.text}")
 
     # Not found – create
     print(f"Creating tenant '{tenant_title}'...")
@@ -135,29 +158,44 @@ def get_or_create_tenant(base_url: str, session: requests.Session) -> dict:
     return tenant
 
 
-def ensure_tenant_admin(base_url: str, session: requests.Session, tenant: dict) -> None:
-    """Create/activate tenant admin user and set password from env."""
+def ensure_tenant_admin(
+    base_url: str,
+    session: requests.Session,
+    tenant: dict
+) -> None:
+    """Create/activate tenant admin user and set password."""
     admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL")
     admin_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
 
     if not admin_email or not admin_pw:
-        print("B_TENANT_ADMIN_EMAIL or TB_TENANT_ADMIN_PASSWORD not set. Skipping tenant admin creation.")
+        print(
+            "TB_TENANT_ADMIN_EMAIL or TB_TENANT_ADMIN_PASSWORD not set. "
+            "Skipping tenant admin creation."
+        )
         return
 
-    print(f"Ensuring tenant admin user '{admin_email}' exists and has a password...")
+    print(
+        "Ensuring tenant admin user "
+        f"'{admin_email}' exists and has a password..."
+    )
 
     # First, check if we can already log in as that tenant admin.
     print("Trying to log in as tenant admin to see if it already exists...")
     token = login(base_url, admin_email, admin_pw)
     if token:
-        print("Tenant admin already exists and password matches. Nothing to do.")
+        print("Tenant admin already exists and password matches. "
+              "Nothing to do."
+        )
         return
 
     # Otherwise, we create a tenant admin and activate it via activation link.
     tenant_id_obj = tenant.get("id") or {}
     tenant_id = tenant_id_obj.get("id")
     if not tenant_id:
-        print(f"Invalid tenant object, missing id: {json.dumps(tenant, indent=2)}")
+        print(
+            "Invalid tenant object, missing id: "
+            f"{json.dumps(tenant, indent=2)}"
+        )
         sys.exit(1)
 
     # Create user with sendActivationMail=false so we can activate via API.
@@ -170,7 +208,10 @@ def ensure_tenant_admin(base_url: str, session: requests.Session, tenant: dict) 
         # "lastName": "Admin",
     }
 
-    print(f"Creating tenant admin user '{admin_email}' (sendActivationMail=false)...")
+    print(
+        f"Creating tenant admin user '{admin_email}' "
+        "(sendActivationMail=false)..."
+    )
     resp = session.post(
         f"{base_url}/api/user",
         params={"sendActivationMail": "false"},
@@ -178,22 +219,37 @@ def ensure_tenant_admin(base_url: str, session: requests.Session, tenant: dict) 
         timeout=10,
     )
     if resp.status_code not in (200, 201):
-        print(f"Failed to create tenant admin user: {resp.status_code} {resp.text}")
+        print(
+            "Failed to create tenant admin user: "
+            f"{resp.status_code} {resp.text}"
+        )
         sys.exit(1)
 
     user = resp.json()
     user_id_obj = user.get("id") or {}
     user_id = user_id_obj.get("id")
     if not user_id:
-        print(f"Created user response missing id: {json.dumps(user, indent=2)}")
+        print(
+            "Created user response missing id: "
+            f"{json.dumps(user, indent=2)}"
+        )
         sys.exit(1)
 
-    print(f"Tenant admin user created (id={user_id}). Fetching activation link...")
+    print(
+        f"Tenant admin user created (id={user_id}). "
+        "Fetching activation link..."
+    )
 
     # Get activation link for this user
-    resp = session.get(f"{base_url}/api/user/{user_id}/activationLink", timeout=10)
+    resp = session.get(
+        f"{base_url}/api/user/{user_id}/activationLink",
+        timeout=10,
+    )
     if resp.status_code != 200:
-        print(f"Failed to get activation link: {resp.status_code} {resp.text}")
+        print(
+            "Failed to get activation link: "
+            f"{resp.status_code} {resp.text}"
+        )
         sys.exit(1)
 
     activation_link = resp.text.strip().strip('"')
@@ -220,7 +276,10 @@ def ensure_tenant_admin(base_url: str, session: requests.Session, tenant: dict) 
         timeout=10,
     )
     if resp.status_code != 200:
-        print(f"Failed to activate tenant admin user: {resp.status_code} {resp.text}")
+        print(
+            "Failed to activate tenant admin user: "
+            f"{resp.status_code} {resp.text}"
+        )
         sys.exit(1)
 
     print("Tenant admin user activated and password set successfully.")
@@ -230,7 +289,10 @@ def ensure_tenant_admin(base_url: str, session: requests.Session, tenant: dict) 
     if token:
         print("Verified: can log in as tenant admin with configured password.")
     else:
-        print("Activation returned 200 but login as tenant admin still failed. Check ThingsBoard logs.")
+        print(
+            "Activation returned 200 but login as tenant admin "
+            "still failed. Check ThingsBoard logs."
+        )
 
 
 def main() -> None:
