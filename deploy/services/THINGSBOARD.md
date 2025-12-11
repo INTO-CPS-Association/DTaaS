@@ -104,6 +104,9 @@ and add a new tenant to **ThingsBoard** service.
 
 ```bash
 chmod +x script/thingsboard.py
+python3 -m venv .venv
+source .venv/bin/activate
+pip install requests
 python3 script/thingsboard.py
 ```
 
