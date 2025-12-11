@@ -4,7 +4,6 @@ import json
 import shutil
 import platform
 from typing import Tuple
-from pathlib import Path
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
 

@@ -16,7 +16,8 @@ class Config:
         if not self.env_path.exists():
             raise FileNotFoundError(
                 f"Configuration file not found: {self.env_path}\n"
-                f"Please copy config/services.env.template to config/services.env "
+                f"Please copy config/services.env.template to config/services.env \n"
+                f"and update it with your configuration "
             )
         
         load_dotenv(dotenv_path=self.env_path, override=True)
