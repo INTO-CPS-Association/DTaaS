@@ -4,8 +4,14 @@ import shutil
 import dtaas_services
 from pathlib import Path
 from .pkg.config import Config
-from .pkg.setup import ServicesSetup
+from .pkg.cert import copy_certs
+from .pkg.mongodb import permissions_mongodb
+from .pkg.influxdb import permissions_influxdb
+from .pkg.rabbitmq import permissions_rabbitmq
+from .pkg.service import Service
+from .pkg.utils import check_root_unix
 from .pkg import influxdb, rabbitmq
+
 
 
 @click.group()
@@ -113,15 +119,15 @@ def setup():
     """
     try:
         config = Config()
-        setup_obj = ServicesSetup(config)
-        setup_obj._check_root_unix()
+        setup_obj = Service(config)
+        check_root_unix()
         click.echo("Starting service setup....")
 
         steps = [
-            ("Copying certificates", setup_obj.copy_certs),
-            ("Configuring MongoDB", setup_obj.permissions_mongodb),
-            ("Configuring InfluxDB", setup_obj.permissions_influxdb),
-            ("Configuring RabbitMQ", setup_obj.permissions_rabbitmq),
+            ("Copying certificates", copy_certs),
+            ("Configuring MongoDB", permissions_mongodb),
+            ("Configuring InfluxDB", permissions_influxdb),
+            ("Configuring RabbitMQ", permissions_rabbitmq),
         ]
 
         for step_name, step_func in steps:
@@ -147,7 +153,7 @@ def start(services):
     """Start the platform services."""
     try:
         config = Config()
-        setup_obj = ServicesSetup(config)
+        setup_obj = Service(config)
 
         service_list = [s.strip() for s in services.split(',')] if services else None
         
@@ -173,7 +179,7 @@ def stop(services):
     """Stop the platform services."""
     try:
         config = Config()
-        setup_obj = ServicesSetup(config)
+        setup_obj = Service(config)
         
         service_list = [s.strip() for s in services.split(',')] if services else None
         
@@ -199,7 +205,7 @@ def status(services):
     """Show the status of the platform services."""
     try:
         config = Config()
-        setup_obj = ServicesSetup(config)
+        setup_obj = Service(config)
         
         service_list = [s.strip() for s in services.split(',')] if services else None
         
@@ -220,7 +226,7 @@ def restart(services):
     """Restart the platform services."""
     try:
         config = Config()
-        setup_obj = ServicesSetup(config)
+        setup_obj = Service(config)
         
         service_list = [s.strip() for s in services.split(',')] if services else None
         

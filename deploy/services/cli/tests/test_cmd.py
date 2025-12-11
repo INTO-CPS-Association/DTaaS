@@ -11,18 +11,27 @@ def runner():
 
 
 @pytest.fixture
-def mock_setup_pkg():
-    """Mock setup package"""
-    with patch("dtaas_services.cmd.Config") as mock_config, \
-         patch("dtaas_services.cmd.ServicesSetup") as mock_setup_class:
+def mock_service_setup():
+    """Mock Service class and setup functions"""
+    with patch("dtaas_services.cmd.Service") as mock_service_class, \
+         patch("dtaas_services.cmd.copy_certs") as mock_copy_certs, \
+         patch("dtaas_services.cmd.permissions_mongodb") as mock_mongodb, \
+         patch("dtaas_services.cmd.permissions_influxdb") as mock_influxdb, \
+         patch("dtaas_services.cmd.permissions_rabbitmq") as mock_rabbitmq, \
+         patch("dtaas_services.cmd.check_root_unix") as mock_check_root:
         
-        config_instance = Mock()
-        mock_config.return_value = config_instance
+        service_instance = Mock()
+        mock_service_class.return_value = service_instance
         
-        setup_instance = Mock()
-        mock_setup_class.return_value = setup_instance
-        
-        yield {"config": mock_config, "setup": setup_instance}
+        yield {
+            "service": mock_service_class,
+            "service_instance": service_instance,
+            "copy_certs": mock_copy_certs,
+            "mongodb": mock_mongodb,
+            "influxdb": mock_influxdb,
+            "rabbitmq": mock_rabbitmq,
+            "check_root": mock_check_root
+        }
 
 
 @pytest.fixture
@@ -40,22 +49,22 @@ def test_services_help(runner):
     assert 'Manage DTaaS platform services' in result.output
 
 
-def test_setup_success(runner, mock_setup_pkg):
+def test_setup_success(runner, mock_service_setup):
     """Test successful setup"""
-    mock_setup_pkg["setup"].copy_certs.return_value = (True, "Certs copied")
-    mock_setup_pkg["setup"].permissions_mongodb.return_value = (True, "MongoDB OK")
-    mock_setup_pkg["setup"].permissions_influxdb.return_value = (True, "InfluxDB OK")
-    mock_setup_pkg["setup"].permissions_rabbitmq.return_value = (True, "RabbitMQ OK")
-    mock_setup_pkg["setup"].start_services.return_value = (None, "Started")
+    mock_service_setup["copy_certs"].return_value = (True, "Certs copied")
+    mock_service_setup["mongodb"].return_value = (True, "MongoDB OK")
+    mock_service_setup["influxdb"].return_value = (True, "InfluxDB OK")
+    mock_service_setup["rabbitmq"].return_value = (True, "RabbitMQ OK")
+    mock_service_setup["service_instance"].start_services.return_value = (None, "Started")
     
     result = runner.invoke(services, ['setup'])
     assert result.exit_code == 0
     assert "Services started successfully" in result.output
 
 
-def test_setup_cert_copy_fails(runner, mock_setup_pkg):
+def test_setup_cert_copy_fails(runner, mock_service_setup):
     """Test setup fails when cert copy fails"""
-    mock_setup_pkg["setup"].copy_certs.return_value = (False, "Copy failed")
+    mock_service_setup["copy_certs"].return_value = (False, "Copy failed")
     
     result = runner.invoke(services, ['setup'])
     assert result.exit_code != 0
@@ -70,36 +79,36 @@ def test_setup_config_not_found(runner):
         assert "Config not found" in result.output
 
 
-def test_start_success(runner, mock_setup_pkg):
+def test_start_success(runner, mock_service_setup):
     """Test successful service start"""
-    mock_setup_pkg["setup"].start_services.return_value = (None, "Services started")
+    mock_service_setup["service_instance"].start_services.return_value = (None, "Services started")
     
     result = runner.invoke(services, ['start'])
     assert result.exit_code == 0
     assert "Services started" in result.output
 
 
-def test_start_failure(runner, mock_setup_pkg):
+def test_start_failure(runner, mock_service_setup):
     """Test service start failure"""
-    mock_setup_pkg["setup"].start_services.return_value = (FileNotFoundError("Docker not found"), "Docker not found")
+    mock_service_setup["service_instance"].start_services.return_value = (FileNotFoundError("Docker not found"), "Docker not found")
     
     result = runner.invoke(services, ['start'])
     assert result.exit_code != 0
     assert "Docker not found" in result.output
 
 
-def test_stop_success(runner, mock_setup_pkg):
+def test_stop_success(runner, mock_service_setup):
     """Test successful service stop"""
-    mock_setup_pkg["setup"].stop_services.return_value = (None, "Services stopped")
+    mock_service_setup["service_instance"].stop_services.return_value = (None, "Services stopped")
     
     result = runner.invoke(services, ['stop'])
     assert result.exit_code == 0
     assert "Services stopped" in result.output
 
 
-def test_stop_failure(runner, mock_setup_pkg):
+def test_stop_failure(runner, mock_service_setup):
     """Test service stop failure"""
-    mock_setup_pkg["setup"].stop_services.return_value = (Exception("Stop failed"), "Stop failed")
+    mock_service_setup["service_instance"].stop_services.return_value = (Exception("Stop failed"), "Stop failed")
     
     result = runner.invoke(services, ['stop'])
     assert result.exit_code != 0

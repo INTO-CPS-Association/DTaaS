@@ -1,7 +1,12 @@
 """InfluxDB user management for DTaaS services"""
 import csv
 import json
+import shutil
+import platform
+from typing import Tuple
+from pathlib import Path
 from .utils import get_credentials_path, execute_docker_command
+from .config import Config
 
 
 def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
@@ -129,3 +134,36 @@ def setup_influxdb_users() -> tuple[bool, str]:
 
     except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding InfluxDB users: {e}"
+
+
+def permissions_influxdb() -> Tuple[bool, str]:
+    """Copy privkey.pem -> privkey-influxdb.pem and change owner.
+    
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        config = Config()
+        base_dir = Config.get_base_dir()
+        os_type = platform.system().lower()
+        host_name = config.get_value("HOSTNAME")
+        certs_dir = base_dir / "certs" / host_name
+        privkey_path = certs_dir / "privkey.pem"
+        influx_key_path = certs_dir / "privkey-influxdb.pem"
+        influx_uid = int(config.get_value("INFLUX_UID"))
+        influx_gid = int(config.get_value("INFLUX_GID"))
+        
+        shutil.copy2(privkey_path, influx_key_path)
+        if os_type in ("linux", "darwin"):
+            shutil.chown(
+                influx_key_path,
+                user=influx_uid,
+                group=influx_gid
+            )
+        msg = (
+            f"{influx_key_path} created and ownership set to "
+            f"{influx_uid}:{influx_gid}."
+        )
+        return True, msg
+    except OSError as e:
+        return False, f"Error setting permissions for InfluxDB: {e}"

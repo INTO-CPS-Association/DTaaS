@@ -1,5 +1,8 @@
 """Utility functions for DTaaS services CLI"""
 from pathlib import Path
+import sys
+import os
+import platform
 from python_on_whales import DockerClient
 from .config import Config
 
@@ -15,11 +18,8 @@ def get_credentials_path() -> Path:
     return base_dir / "config" / "credentials.csv"
 
 
-def execute_docker_command(
-    container_name: str,
-    exec_cmd: list[str],
-    verbose: bool = True
-) -> tuple[bool, str]:
+def execute_docker_command(container_name: str,
+    exec_cmd: list[str], verbose: bool = True) -> tuple[bool, str]:
     """
     Execute a command in a Docker container.
     
@@ -42,3 +42,20 @@ def execute_docker_command(
         if verbose:
             print(error_msg)
         return False, error_msg
+
+
+def check_root_unix() -> None:
+    """Check if script is run as root on Unix systems."""
+    if platform.system().lower() not in ['linux', 'darwin']:
+        return
+    try:
+        is_root = os.geteuid() == 0
+    except AttributeError:
+        is_root = False
+    if not is_root:
+        print(
+            "This script must be run as root (Linux/MacOS). "
+            "Try: sudo -E env PATH=\"$PATH\" dtaas-services setup"
+        )
+        sys.exit(1)
+

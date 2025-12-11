@@ -93,10 +93,12 @@ cli/
 │   └── pkg/
 │       ├── __init__.py
 │       ├── config.py       # Configuration loader
-│       ├── setup.py        # Service setup logic
-│       ├── utils.py        # Shared utilities (Docker commands)
-│       ├── influxdb.py     # InfluxDB user management
-│       └── rabbitmq.py     # RabbitMQ user management
+│       ├── service.py      # Docker Compose service management
+│       ├── cert.py         # TLS certificate operations
+│       ├── mongodb.py      # MongoDB certificate and permission setup
+│       ├── influxdb.py     # InfluxDB certificate, permission, and user management
+│       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
+│       └── utils.py        # Shared utilities (Docker commands, credentials)
 └── tests/
     ├── __init__.py
     ├── test_cmd.py         # CLI command tests
@@ -109,21 +111,56 @@ from the parent `deploy/services/` directory and are gitignored.
 
 ## Code Organization
 
+### Architecture
+
+The package uses a modular architecture where each service has its own module:
+
+* **`config.py`**: Central configuration loader that handles environment variables
+  and base directory detection across different OS platforms (Linux, macOS, Windows)
+
+* **`service.py`**: Docker Compose service management (start, stop, restart, status)
+
+* **`cert.py`**: TLS certificate operations:
+  * `copy_certs()`: Copy certificates from source and normalize filenames
+
+* **`mongodb.py`**: MongoDB setup:
+  * `create_combined_pem()`: Create combined certificate file
+  * `permissions_mongodb()`: Set certificate permissions and ownership
+
+* **`influxdb.py`**: InfluxDB setup:
+  * `permissions_influxdb()`: Set certificate permissions and ownership
+  * `setup_influxdb_users()`: Create users, organizations, and buckets
+
+* **`rabbitmq.py`**: RabbitMQ setup:
+  * `permissions_rabbitmq()`: Set certificate permissions and ownership
+  * `setup_rabbitmq_users()`: Create users and vhosts
+
 ### Shared Utilities (`pkg/utils.py`)
 
-To avoid code duplication, common functionality is extracted into `utils.py`:
+Common functionality is extracted to avoid code duplication:
 
+* `check_root_unix()`: Verify root/sudo privileges on Unix systems
 * `execute_docker_command()`: Execute commands in Docker containers with error handling
 * `get_credentials_path()`: Get the path to the credentials CSV file
 
-Both `influxdb.py` and `rabbitmq.py` use these utilities to eliminate
-duplicated code.
+### Configuration Pattern
+
+Each module that needs configuration imports and instantiates `Config()` internally:
+
+```python
+def permissions_mongodb() -> Tuple[bool, str]:
+    config = Config()
+    base_dir = Config.get_base_dir()
+    # Use config values as needed
+```
+
+This keeps each module self-contained and independent.
 
 ### Error Handling Pattern
 
 All service management functions follow a consistent error handling pattern:
 
-* Return `tuple[bool, str]` - (success status, error message)
+* Return `tuple[bool, str]`: (success status, message)
 * Check success of all operations before continuing
 * Provide detailed error messages for debugging
 * Stop execution on first failure to prevent inconsistent state
@@ -142,8 +179,8 @@ All service management functions follow a consistent error handling pattern:
 
 Tests are organized to mirror the source code structure:
 
-* `test_cmd.py` - Tests for CLI commands and argument parsing
-* `test_config.py` - Tests for configuration loading and validation
+* `test_cmd.py`: Tests for CLI commands and argument parsing
+* `test_config.py`: Tests for configuration loading and validation
 
 ### Testing Guidelines
 
