@@ -47,7 +47,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
         return None
     else:
         print(
-            f"nexpected login response {resp.status_code}: "
+            f"Unexpected login response {resp.status_code}: "
             f"{resp.text}"
         )
     return None

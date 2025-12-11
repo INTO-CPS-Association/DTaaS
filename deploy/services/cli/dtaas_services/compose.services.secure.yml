@@ -1,0 +1,97 @@
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.0.7-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_PORT}:5671"              # RabbitMQ SSL port
+      - '${RABBITMQ_MANAGEMENT_PORT}:15671'  # RabbitMQ management plugin port
+      - '${RABBITMQ_MQTT_PORT}:8883'         # RabbitMQ MQTT plugin port
+    environment:
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_ADMIN_USERNAME}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'
+    volumes:
+      - './data/rabbitmq:/var/lib/rabbitmq'
+      - './certs/${HOSTNAME}:/etc/rabbitmq/certs'
+      - './config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf'
+      - './config/rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins'
+    networks:
+      - platform-services
+
+  mongodb:
+    image: 'mongo:8.0.3'
+    container_name: mongodb
+    restart: always
+    command: mongod --config /etc/mongod.conf
+    ports:
+      - '${MONGODB_PORT}:27017'
+    volumes:
+      - './data/mongodb:/data/db'
+      - './config/mongod.conf.secure:/etc/mongod.conf'
+      - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGODB_ADMIN_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_ADMIN_PASSWORD}'
+    shm_size: '256m'
+    networks:
+      - platform-services
+
+  grafana:
+    image: 'grafana/grafana:11.5.2-ubuntu'
+    container_name: grafana
+    restart: always
+    user: '${USERID}:${GROUPID}'
+    ports:
+      - '${GRAFANA_PORT}:3000'
+    volumes:
+      - './data/grafana:/var/lib/grafana'
+      - './certs/${HOSTNAME}:/etc/ssl/certs'
+    environment:
+      GF_AUTH_BASIC_ENABLED: false
+      GF_AUTH_PROXY_ENABLED: false
+      GF_AUTH_ANONYMOUS_ENABLED: false
+      GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_HOME: /usr/share/grafana
+      GF_PATHS_LOGS: /var/log/grafana
+      GF_PATHS_PLUGINS: /var/lib/grafana/plugins
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_SECURITY_ADMIN_USER: '${GRAFANA_ADMIN_USERNAME}'
+      GF_SECURITY_ADMIN_PASSWORD: '${GRAFANA_ADMIN_PASSWORD}'
+      GF_SERVER_DOMAIN: '${HOSTNAME}'
+      GF_SERVER_ROOT_URL: '%(protocol)s://%(domain)s:%(http_port)s'
+      GF_SERVER_PROTOCOL: https
+      GF_SERVER_CERT_FILE: /etc/ssl/certs/fullchain.pem
+      GF_SERVER_CERT_KEY: /etc/ssl/certs/privkey.pem
+      GF_USERS_ALLOW_SIGN_UP: false
+    networks:
+      - platform-services
+
+  influxdb:
+    image: 'influxdb:2.7'
+    container_name: influxdb
+    restart: always
+    #user: '${USERID}:${GROUPID}'
+    ports:
+      - '${INFLUXDB_PORT}:8086'
+    volumes:
+      - './data/influxdb:/var/lib/influxdb2'
+      - './config/influxdb:/etc/influxdb2'
+      - './certs/${HOSTNAME}:/etc/ssl'
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: '${INFLUXDB_ADMIN_USERNAME}'
+      DOCKER_INFLUXDB_INIT_PASSWORD: '${INFLUXDB_ADMIN_PASSWORD}'
+      DOCKER_INFLUXDB_INIT_ORG: '${INFLUXDB_ORG}'
+      DOCKER_INFLUXDB_INIT_BUCKET: '${INFLUXDB_BUCKET}'
+      INFLUXD_TLS_CERT: /etc/ssl/fullchain.pem
+      INFLUXD_TLS_KEY: /etc/ssl/privkey-influxdb.pem
+    networks:
+      - platform-services
+
+networks:
+  platform-services:
+    name: dtaas-platform-services
