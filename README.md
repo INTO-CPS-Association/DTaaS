@@ -52,13 +52,13 @@ publisher = {SAGE Publications Sage UK: London, England}
 
 ## :hammer_and_wrench: Development Setup
 
-This is a mono repo containing code for
-both the web client and the microservices code base.
-The [web client](client),
+This is a monorepo containing code for
+both the web client and the microservices codebase.
+The source code for [web client](client),
 [library](servers/lib) and
 [runner](servers/execution/runner)
-microservices are functional at present.
-These packages are available on
+microservices is available in this monorepo.
+The downloadable packages are available on
 [github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
 Please see the

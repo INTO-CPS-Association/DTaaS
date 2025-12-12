@@ -74,7 +74,7 @@ a development workflow is in place. Each developer should follow these steps:
    [Codecov](https://docs.codecov.com/docs/quick-start)
    for your fork. The codecov does not require secret token
    for public repositories.
-1. nvm use 22 (if nvm or node isn't installed)
+1. Use NodeJS 22 and Python 3.12 development environments
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
@@ -92,6 +92,33 @@ a development workflow is in place. Each developer should follow these steps:
 Remember that every PR should be meaningful and satisfies
 a well-defined user story or improve
 the code quality.
+
+## ✨Coding Agents and Editors
+
+We make extensive use of coding agents. A non-exhaustive list of
+usage scenarios are:
+
+👍 co-development
+👍 code reviews
+👍 draft pull requests to prototype ideas
+
+This monorepo has [copilot instructions](.github/copilot-instructions.md)
+to inform github copilot about the project structure and software
+development conventions.
+
+Most Code IDEs like VSCode and Cursor have native integration of
+coding agents. No extra-effort is necessary for integrating these
+LLM-driven development workflows. Please disclose the code generated
+by the coding agent, especially if it embeds significant
+programming logic.
+
+Having said that, the following are a strict NO-NO:
+
+👎Contributing unknown code
+👎Not knowing the generated code
+
+**TLDR**: Know your contributions and do not outsource your thinking
+to coding agents.
 
 ## :eye: Code Quality
 
