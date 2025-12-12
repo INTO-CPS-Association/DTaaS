@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 22
   HTTP_PORT: 4002
   LIBMS_CONFIG_PATH: test/libms.test.yaml
 
