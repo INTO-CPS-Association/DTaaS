@@ -1,5 +1,3 @@
-import { fixupConfigRules } from '@eslint/compat';
-import { FlatCompat } from '@eslint/eslintrc';
 import globals from 'globals';
 import jest from 'eslint-plugin-jest';
 import js from '@eslint/js';
@@ -7,8 +5,6 @@ import prettier from 'eslint-config-prettier';
 import ts from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import imprt from 'eslint-plugin-import'; // 'import' is ambiguous & prettier has trouble
-
-const flatCompat = new FlatCompat();
 
 export default [
   {
