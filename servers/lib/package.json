@@ -42,7 +42,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
     "@nestjs/graphql": "^13.2.0",
-    "@nestjs/platform-express": "^11.1.19",
+    "@nestjs/platform-express": "^11.1.9",
     "axios": "^1.13.2",
     "cloudcmd": "^19.0.13",
     "commander": "^14.0.2",
