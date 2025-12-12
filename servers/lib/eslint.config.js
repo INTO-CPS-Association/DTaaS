@@ -12,18 +12,21 @@ const flatCompat = new FlatCompat();
 
 export default [
   {
+    ignores: [
+      'api/*',
+      'build/*',
+      'coverage/*',
+      'dist/*',
+      'node_modules/*',
+      'script/*',
+      'src/types.ts',
+      'test/update-config.js',
+      'test/coverage/*',
+    ],
+  },
+  {
     ...js.configs.recommended,
     files: ['src/**', 'test/**'],
-  },
-  {
-    ...fixupConfigRules(flatCompat.extends('airbnb-base')),
-    files: ['src/**', 'test/**'],
-  },
-  prettier,
-  {
-    ignores: [
-      'test/update-config.js', // Add the file you want to ignore
-    ],
   },
   {
     languageOptions: {
@@ -42,8 +45,9 @@ export default [
       },
     },
     files: ['src/**', 'test/**'],
-    plugins: { jest, '@typescript-eslint': ts, import: imprt, ts },
+    plugins: { jest, '@typescript-eslint': ts, import: imprt },
     rules: {
+      ...prettier.rules,
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
       'no-console': 'error',
       'import/first': 'error',
@@ -52,14 +56,5 @@ export default [
       'import/extensions': 'off', // That includes the production build.. We use linter for code checking / clean code optimization..
       'no-use-before-define': 'off',
     },
-    ignores: [
-      'api/*',
-      'build/*',
-      'coverage/*',
-      'dist/*',
-      'node_modules/*',
-      'script/*',
-      'src/types.ts',
-    ],
   },
 ];

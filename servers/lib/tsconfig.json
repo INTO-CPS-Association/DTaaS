@@ -12,7 +12,7 @@
       "ES2022"
     ],
     "module": "ES2022", //use node module system
-    "moduleResolution": "node", //use node module resolution strategy node
+    "moduleResolution": "bundler", //use bundler module resolution for ESM
     "noImplicitReturns": true, //raise error on implicit returns
     "noUnusedLocals": true, //raise error on unused locals
     "noUnusedParameters": true, //raise no error on unused parameters

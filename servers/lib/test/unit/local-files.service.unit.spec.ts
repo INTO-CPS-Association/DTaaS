@@ -14,7 +14,7 @@ import {
   jestMockConfigService,
   testFileArray,
 } from '../testUtil';
-import { Dirent } from 'fs';
+
 import { CONFIG_SERVICE } from 'src/config/config.interface';
 
 jest.mock('fs', () => ({
@@ -60,9 +60,7 @@ describe('LocalFilesService', () => {
       isDirectory: () => true, // change this to false when you need a file instead of a directory
     };
 
-    jest
-      .spyOn(fs.promises, 'readdir')
-      .mockResolvedValue(testFileArray as unknown as Dirent[]);
+    jest.spyOn(fs.promises, 'readdir').mockResolvedValue(testFileArray as any);
 
     jest.spyOn(fs.promises, 'lstat').mockImplementation((pathToDirectory) => {
       if (typeof pathToDirectory === 'string') {
