@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   render,
   screen,
@@ -362,7 +361,7 @@ describe('ExecutionHistoryList', () => {
     mockDispatch.mockClear();
 
     // Ensure the adapter mock has the correct implementation
-    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const adapter = require('model/backend/util/digitalTwinAdapter');
 
     adapter.createDigitalTwinFromData.mockImplementation(
@@ -379,7 +378,7 @@ describe('ExecutionHistoryList', () => {
       }),
     );
 
-    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pipelineHandler = require('route/digitaltwins/execution/executionButtonHandlers');
     const handleStopSpy = jest
       .spyOn(pipelineHandler, 'handleStop')
@@ -763,6 +762,34 @@ describe('ExecutionHistoryList', () => {
       (_content, element) => element?.textContent?.includes('Running') || false,
     );
     expect(runningElements.length).toBeGreaterThan(0);
+  });
+
+  it('prevents accordion expansion when clicking action buttons area', async () => {
+    mockOnViewLogs.mockClear();
+    testStore = createTestStore(mockExecutions);
+
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) => selector(testStore.getState()),
+    );
+
+    render(
+      <Provider store={testStore}>
+        <ExecutionHistoryList dtName={dtName} onViewLogs={mockOnViewLogs} />
+      </Provider>,
+    );
+
+    const actionContainers = screen.getAllByTestId('action-buttons-container');
+    expect(actionContainers.length).toBeGreaterThan(0);
+
+    fireEvent.click(actionContainers[0]);
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+    });
+
+    expect(mockOnViewLogs).not.toHaveBeenCalled();
   });
 });
 

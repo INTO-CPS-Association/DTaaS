@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { Paper, Typography } from '@mui/material';

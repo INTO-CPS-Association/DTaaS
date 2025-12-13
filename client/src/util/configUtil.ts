@@ -7,12 +7,7 @@ export interface ValidationType {
   error?: string;
 }
 
-const EnvironmentEnum: z.ZodEnum<['dev', 'local', 'prod', 'test']> = z.enum([
-  'dev',
-  'local',
-  'prod',
-  'test',
-]);
+const EnvironmentEnum = z.enum(['dev', 'local', 'prod', 'test']);
 const PathString: z.ZodString = z.string();
 const ScopesString: z.ZodLiteral<string> = z.literal(
   'openid profile read_user read_repository api',

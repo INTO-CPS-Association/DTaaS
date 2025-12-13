@@ -1,4 +1,3 @@
-import * as React from 'react';
 import SidebarDialog from 'preview/route/digitaltwins/editor/SidebarDialog';
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';

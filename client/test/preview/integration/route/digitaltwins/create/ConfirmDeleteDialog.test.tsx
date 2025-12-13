@@ -1,4 +1,3 @@
-import * as React from 'react';
 import ConfirmDeleteDialog from 'preview/route/digitaltwins/create/ConfirmDeleteDialog';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';

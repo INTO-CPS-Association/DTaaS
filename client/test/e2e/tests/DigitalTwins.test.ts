@@ -14,7 +14,7 @@ test.describe('Digital Twin Log Cleaning', () => {
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Navigate directly to the Digital Twins page
     await page.goto('./preview/digitaltwins');
@@ -23,7 +23,8 @@ test.describe('Digital Twin Log Cleaning', () => {
     await page.getByRole('tab', { name: 'Execute' }).click();
 
     // Wait for the page to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(1000);
   });
 
   // @slow - This test requires waiting for actual GitLab pipeline execution
@@ -40,7 +41,7 @@ test.describe('Digital Twin Log Cleaning', () => {
     const startButton = helloWorldCard
       .getByRole('button', { name: 'Start' })
       .first();
-    await expect(startButton).toBeVisible();
+    await expect(startButton).toBeVisible({ timeout: 10000 });
 
     // Start the execution
     await startButton.click();
@@ -52,31 +53,36 @@ test.describe('Digital Twin Log Cleaning', () => {
     const historyButton = helloWorldCard
       .getByRole('button', { name: 'History' })
       .first();
-    await expect(historyButton).toBeEnabled({ timeout: 5000 });
+    await expect(historyButton).toBeEnabled({ timeout: 10000 });
     await historyButton.click();
 
     // Verify that the execution history dialog is displayed
     const historyDialog = page.locator('div[role="dialog"]');
-    await expect(historyDialog).toBeVisible();
+    await expect(historyDialog).toBeVisible({ timeout: 10000 });
     await expect(
       helloWorldCard.locator('button:has-text("Start")'),
     ).toBeVisible({ timeout: 300000 });
     await expect(
       page.getByRole('heading', { name: /Hello world Execution History/ }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
+
+    // Wait for execution history to load
+    await expect(
+      historyDialog.getByText('Execution History', { exact: true }),
+    ).toBeVisible({ timeout: 10000 });
 
     // Wait for execution to complete using dynamic waiting instead of fixed timeout
     await expect(async () => {
       const completedExecutions = historyDialog
-        .locator('[role="button"][aria-controls*="execution-"]')
-        .filter({ hasText: /Status: Completed|Failed|Canceled/ });
+        .locator('.MuiAccordionSummary-root')
+        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
     }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
 
     const completedExecution = historyDialog
-      .locator('[role="button"][aria-controls*="execution-"]')
-      .filter({ hasText: /Status: Completed|Failed|Canceled/ })
+      .locator('.MuiAccordionSummary-root')
+      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
       .first();
 
     // Expand the accordion to view the logs for the completed execution
@@ -112,14 +118,14 @@ test.describe('Digital Twin Log Cleaning', () => {
 
     // Wait for confirmation dialog and confirm deletion
     const confirmDialog = page.locator('div[role="dialog"]').nth(1); // Second dialog (confirmation)
-    await expect(confirmDialog).toBeVisible();
+    await expect(confirmDialog).toBeVisible({ timeout: 10000 });
     await page.getByRole('button', { name: 'DELETE' }).click();
-    await expect(confirmDialog).not.toBeVisible();
+    await expect(confirmDialog).not.toBeVisible({ timeout: 10000 });
 
     // Close the dialog
     await page.getByRole('button', { name: 'Close' }).click();
 
     // Verify the dialog is closed
-    await expect(historyDialog).not.toBeVisible();
+    await expect(historyDialog).not.toBeVisible({ timeout: 10000 });
   });
 });

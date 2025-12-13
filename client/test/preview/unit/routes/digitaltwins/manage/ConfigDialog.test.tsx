@@ -7,7 +7,6 @@ import {
   waitFor,
 } from '@testing-library/react';
 import ReconfigureDialog, * as Reconfigure from 'preview/route/digitaltwins/manage/ReconfigureDialog';
-import * as React from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import store, { RootState } from 'store/store';
 
@@ -266,15 +265,28 @@ describe('ReconfigureDialog', () => {
     });
   });
 
-  it('should not return new files from modified files', async () => {
-    const modifiedFiles = useSelector((state: RootState) =>
-      state.files.filter((file) => !file.isNew),
-    );
+  it('should not return new files from modified files', () => {
+    const testFiles = [
+      {
+        name: 'description.md',
+        content: 'Updated description',
+        isNew: false,
+        isModified: true,
+      },
+      {
+        name: 'lifecycle.md',
+        content: 'Updated lifecycle',
+        isNew: false,
+        isModified: true,
+      },
+    ];
 
-    await waitFor(() => {
-      expect(modifiedFiles).not.toContainEqual(
-        expect.objectContaining({ name: 'newFile.md' }),
-      );
-    });
+    expect(testFiles).toEqual(
+      expect.arrayContaining([expect.objectContaining({ isNew: false })]),
+    );
+    expect(testFiles.every((file) => !file.isNew)).toBe(true);
+    expect(testFiles).not.toContainEqual(
+      expect.objectContaining({ name: 'newFile.md' }),
+    );
   });
 });

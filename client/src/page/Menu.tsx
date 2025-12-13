@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,8 +13,9 @@ const useSetupMiniDrawer = () => {
   const theme = useTheme();
   const menuState = useSelector((state: RootState) => state.menu);
   const dispatch = useDispatch();
-  const [anchorElUser, setAnchorElUser] =
-    React.useState<HTMLButtonElement | null>(null);
+  const [anchorElUser, setAnchorElUser] = useState<HTMLButtonElement | null>(
+    null,
+  );
   return { theme, menuState, dispatch, anchorElUser, setAnchorElUser };
 };
 

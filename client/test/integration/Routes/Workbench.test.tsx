@@ -5,11 +5,11 @@ import {
 } from 'test/integration/integration.testUtil';
 import { testLayout } from 'test/integration/Routes/routes.testUtil';
 
-window.env = {
-  ...window.env,
+globalThis.env = {
+  ...globalThis.env,
   REACT_APP_URL: 'http://example.com/',
   REACT_APP_URL_BASENAME: 'basename',
-  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?foo=bar',
   REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
   REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
   REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
@@ -31,7 +31,7 @@ const setup = () => setupIntegrationTest('/workbench');
 
 describe('Workbench', () => {
   const desktopLabel =
-    'http://example.com/basename/username/tools/vnc/?password=vncpassword';
+    'http://example.com/basename/username/tools/vnc/?foo=bar';
   const VSCodeLabel = 'http://example.com/basename/username/tools/vscode';
   const jupyterLabLabel = 'http://example.com/basename/username/lab';
   const jupyterNotebookLabel = 'http://example.com/basename/username/';

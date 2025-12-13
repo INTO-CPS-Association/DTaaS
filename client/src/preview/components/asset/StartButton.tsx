@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction, useState, useCallback } from 'react';
 import { Button, CircularProgress, Box } from '@mui/material';
 import { handleStart } from 'route/digitaltwins/execution';

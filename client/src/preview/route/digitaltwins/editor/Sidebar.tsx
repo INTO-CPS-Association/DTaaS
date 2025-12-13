@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, Fragment } from 'react';
 import { Grid, CircularProgress, Button, Box } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { useDispatch, useSelector } from 'react-redux';
@@ -180,7 +179,7 @@ const Sidebar = ({
 
       <SimpleTreeView>
         {name && digitalTwinInstance ? (
-          <React.Fragment key="reconfigure-page">
+          <Fragment key="reconfigure-page">
             {renderFileTreeItems(
               'Description',
               digitalTwinInstance.descriptionFiles,
@@ -243,9 +242,9 @@ const Sidebar = ({
                   assetFolder.assetPath,
                 ),
             )}
-          </React.Fragment>
+          </Fragment>
         ) : (
-          <React.Fragment key="create-page">
+          <Fragment key="create-page">
             {renderFileSection(
               'Description',
               FileType.DESCRIPTION,
@@ -312,7 +311,7 @@ const Sidebar = ({
                 libraryFiles,
               ),
             )}
-          </React.Fragment>
+          </Fragment>
         )}
       </SimpleTreeView>
     </Grid>

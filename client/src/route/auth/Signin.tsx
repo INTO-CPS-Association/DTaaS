@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -35,7 +34,7 @@ function BoxForSignIn(props: { children: React.ReactNode }) {
   );
 }
 
-const avatar: JSX.Element = (
+const avatar: React.ReactElement = (
   <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
     <LockOutlinedIcon />
   </Avatar>

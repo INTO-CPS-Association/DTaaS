@@ -8,7 +8,6 @@ import digitalTwinReducer, {
 } from 'model/backend/state/digitalTwin.slice';
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
-import * as React from 'react';
 import DigitalTwin from 'model/backend/digitalTwin';
 import {
   mockLibraryAsset,

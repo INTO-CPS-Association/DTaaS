@@ -6,6 +6,14 @@ import { mockBackendInstance as backend } from 'test/__mocks__/global_mocks';
 import 'test/preview/__mocks__/constants.mock';
 import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 
+// Re-export imported types and mocks for convenience
+export type {
+  mockUserType,
+  mockAuthStateType,
+  mockGitlabInstanceType,
+} from 'test/__mocks__/global_mocks';
+export { mockUser, mockAuthState } from 'test/__mocks__/global_mocks';
+
 const createMockURL = (path: string) => `https://example.com/${path}`;
 
 export const mockAppURL = createMockURL('');
@@ -16,46 +24,6 @@ export const mockAuthority = createMockURL('AUTHORITY');
 export const mockRedirectURI = createMockURL('REDIRECT_URI');
 export const mockLogoutRedirectURI = createMockURL('LOGOUT_REDIRECT_URI');
 export const mockGitLabScopes = 'example scopes';
-
-export type mockUserType = {
-  access_token: string;
-  profile: {
-    groups: string[] | string | undefined;
-    picture: string | undefined;
-    preferred_username: string | undefined;
-    profile: string | undefined;
-  };
-};
-
-export const mockUser: mockUserType = {
-  access_token: 'example_token',
-  profile: {
-    groups: 'group-one',
-    picture: 'pfp.jpg',
-    preferred_username: 'username',
-    profile: 'example/username',
-  },
-};
-
-export type mockAuthStateType = {
-  user?: mockUserType | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  activeNavigator?: string;
-  error?: Error;
-};
-
-export const mockAuthState: mockAuthStateType = {
-  isAuthenticated: true,
-  isLoading: false,
-  user: mockUser,
-};
-
-export type mockGitlabInstanceType = {
-  projectId: number;
-  triggerToken: string;
-  getPipelineStatus: jest.Mock;
-};
 
 const createCommonMocks = () => ({
   getFileContent: jest.fn(),

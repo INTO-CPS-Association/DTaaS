@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import CartList from 'preview/components/cart/CartList';
-import * as React from 'react';
 import * as cartAccess from 'preview/store/CartAccess';
 import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
 

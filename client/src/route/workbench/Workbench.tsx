@@ -1,7 +1,7 @@
 import { Paper, Typography } from '@mui/material';
 import LinkButtons from 'components/LinkButtons';
 import Layout from 'page/Layout';
-import * as React from 'react';
+
 import styled from '@emotion/styled';
 import { getWorkbenchLinkValues } from 'util/envUtil';
 

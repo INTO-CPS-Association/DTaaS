@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import AddToCartButton from 'preview/components/asset/AddToCartButton';
-import * as React from 'react';
 import * as cartAccess from 'preview/store/CartAccess';
 import { mockLibraryAsset } from 'test/preview/__mocks__/global_mocks';
 import { useSelector } from 'react-redux';

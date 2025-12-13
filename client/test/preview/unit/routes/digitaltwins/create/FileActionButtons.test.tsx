@@ -1,5 +1,4 @@
 import FileActionButtons from 'preview/route/digitaltwins/create/FileActionButtons';
-import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 
 describe('FileActionButtons', () => {
@@ -22,7 +21,7 @@ describe('FileActionButtons', () => {
 
   it('handles click on delete file button', () => {
     screen.getByText('Delete File').click();
-    expect(setOpenDeleteFileDialog).toBeCalledWith(true);
+    expect(setOpenDeleteFileDialog).toHaveBeenCalledWith(true);
   });
 
   it('handles click on change file name button', () => {

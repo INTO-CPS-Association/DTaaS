@@ -1,4 +1,3 @@
-import * as React from 'react';
 import useCart from 'preview/store/CartAccess';
 import LibraryAsset from 'model/backend/libraryAsset';
 

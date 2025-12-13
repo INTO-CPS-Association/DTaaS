@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 22
   HTTP_PORT: 4002
   LIBMS_CONFIG_PATH: test/libms.test.yaml
 
@@ -55,6 +55,14 @@ jobs:
         run: |
           yarn build
           yarn test:all
+
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: servers/lib/coverage/clover.xml
+          flags: lib-microservice-tests
 
       - name: Update configuration
         env:
@@ -103,14 +111,6 @@ jobs:
       - name: Stop http mode
         run: |
           yarn stop:pm2
-
-      - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          files: servers/lib/coverage/clover.xml
-          flags: lib-microservice-tests
 
   get_version:
     name: Get version and variables

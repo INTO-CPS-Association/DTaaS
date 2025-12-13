@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import ConfirmDeleteDialog from 'preview/route/digitaltwins/create/ConfirmDeleteDialog';
-import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   removeAllCreationFiles,

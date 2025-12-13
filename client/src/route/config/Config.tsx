@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { getValidationResults, ValidationType } from 'util/configUtil';
 import { Paper, Typography } from '@mui/material';
 import { ConfigItem, loadingComponent } from 'route/config/ConfigItems';
@@ -21,7 +20,7 @@ const typographyStyle = {
 
 const DeveloperConfig = (
   validationResults: Record<string, ValidationType>,
-): JSX.Element => (
+): React.ReactElement => (
   <Paper
     sx={{
       ...paperStyle,
@@ -48,7 +47,7 @@ const DeveloperConfig = (
   </Paper>
 );
 
-const userConfigInvalidText: JSX.Element = (
+const userConfigInvalidText: React.ReactElement = (
   <>
     Invalid Application Configuration. Please contact the administrator of your
     DTaaS installation.
@@ -59,7 +58,7 @@ const userConfigInvalidText: JSX.Element = (
   </>
 );
 
-const userConfigValidText: JSX.Element = (
+const userConfigValidText: React.ReactElement = (
   <>
     <p>Configuration appears to be valid.</p>
     <a href="/">Return to login</a>
@@ -68,7 +67,7 @@ const userConfigValidText: JSX.Element = (
 
 const UserConfig = (
   validationResults: Record<string, ValidationType>,
-): JSX.Element => {
+): React.ReactElement => {
   const hasConfigErrors = useConfigErrors(validationResults);
   return (
     <Paper
@@ -122,7 +121,7 @@ const useConfigErrors = (validationResults: Record<string, ValidationType>) =>
 const Config = (props: { role: string }) => {
   const { validationResults, isLoading } = useValidationResults();
 
-  const configVerification = React.useMemo(
+  const configVerification = useMemo(
     () =>
       props.role === 'user'
         ? UserConfig(validationResults)

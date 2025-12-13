@@ -14,14 +14,14 @@ Object.defineProperty(AbortSignal, 'timeout', {
 
 describe('configUtil', () => {
   let networkError: Error;
-  const initialEnv = { ...window.env };
+  const initialEnv = { ...globalThis.env };
   beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    globalThis.fetch = jest.fn().mockResolvedValue(mockResponse);
     networkError = new Error('Network error');
   });
 
   afterEach(() => {
-    window.env = { ...initialEnv };
+    globalThis.env = { ...initialEnv };
     jest.resetAllMocks();
   });
 
@@ -33,7 +33,7 @@ describe('configUtil', () => {
 
   describe('retryFetch', () => {
     test('retryFetch returns a valid response', async () => {
-      global.fetch = jest.fn().mockResolvedValue(mockResponse);
+      globalThis.fetch = jest.fn().mockResolvedValue(mockResponse);
       const response: Response = await retryFetch('https://foo.bar', {
         method: 'HEAD',
         signal: AbortSignal.timeout(1000),
@@ -46,7 +46,7 @@ describe('configUtil', () => {
     });
 
     test('retryFetch retries conditionally until getting a valid response', async () => {
-      global.fetch = jest
+      globalThis.fetch = jest
         .fn()
         .mockRejectedValueOnce(networkError)
         .mockRejectedValueOnce(networkError)
@@ -62,23 +62,23 @@ describe('configUtil', () => {
         3,
       );
       expect(response).toBe(mockResponse);
-      expect(global.fetch).toHaveBeenCalledTimes(3);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(3);
     });
 
     test('retryFetch retries until failing', async () => {
-      global.fetch = jest.fn().mockRejectedValue(networkError);
+      globalThis.fetch = jest.fn().mockRejectedValue(networkError);
 
       const fetchPromise: Promise<Response> = retryFetch('https://bar.com');
       await expect(fetchPromise).rejects.toThrow(networkError);
-      expect(global.fetch).toHaveBeenCalledTimes(3);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(3);
     });
   });
 
   describe('getValidationResults', () => {
-    test('getValidationResults object includes all keys of window.env', async () => {
+    test('getValidationResults object includes all keys of globalThis.env', async () => {
       const results: ValidationType = await getValidationResults();
       const resultKeys: string[] = Object.keys(results);
-      const envKeys: string[] = Object.keys(window.env);
+      const envKeys: string[] = Object.keys(globalThis.env);
 
       const missingKeys: string[] = envKeys.filter(
         (key) => !resultKeys.includes(key),
@@ -91,8 +91,8 @@ describe('configUtil', () => {
       expect(unexpectedKeys).toEqual([]);
     });
     test('getValidationResult AUTH_AUTHORITY has error if it fails reachability', async () => {
-      window.env.REACT_APP_AUTH_AUTHORITY = 'https://foo.bar';
-      global.fetch = jest.fn().mockRejectedValue(networkError);
+      globalThis.env.REACT_APP_AUTH_AUTHORITY = 'https://foo.bar';
+      globalThis.fetch = jest.fn().mockRejectedValue(networkError);
       const results: Record<string, ValidationType> =
         await getValidationResults();
       expect(results.REACT_APP_AUTH_AUTHORITY.error).toBeDefined();
@@ -101,7 +101,7 @@ describe('configUtil', () => {
     });
 
     test('getValidationResult ENVIRONMENT has error if it fails parse', async () => {
-      window.env.REACT_APP_ENVIRONMENT = 'foo';
+      globalThis.env.REACT_APP_ENVIRONMENT = 'foo';
       const results: Record<string, ValidationType> =
         await getValidationResults();
       expect(results.REACT_APP_ENVIRONMENT.error).toBeDefined();
@@ -119,7 +119,7 @@ describe('configUtil', () => {
 
   describe('urlIsReachable', () => {
     test('urlIsReachable object has value if it succeeds', async () => {
-      global.fetch = jest.fn().mockResolvedValue(mockResponse);
+      globalThis.fetch = jest.fn().mockResolvedValue(mockResponse);
       const result: ValidationType = await urlIsReachable('https://foo.bar');
       expect(result.error).toBeUndefined();
       expect(result.status).toBe(200);
@@ -127,7 +127,7 @@ describe('configUtil', () => {
     });
 
     test('urlIsReachable object has error if it fails', async () => {
-      global.fetch = jest.fn().mockRejectedValue(networkError);
+      globalThis.fetch = jest.fn().mockRejectedValue(networkError);
       const result: ValidationType = await urlIsReachable('https://foo.bar');
       expect(result.error).toBeDefined();
       expect(result.status).toBeUndefined();

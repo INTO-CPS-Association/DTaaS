@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Children } from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -40,10 +40,8 @@ function Layout(props: {
           className="content"
         >
           <Grid container spacing={3} sx={{ minHeight: '100%' }}>
-            {React.Children.map(props.children, (child) => (
-              <Grid item xs={12} md={12} lg={12}>
-                {child}
-              </Grid>
+            {Children.map(props.children, (child) => (
+              <Grid size={{ xs: 12, md: 12, lg: 12 }}>{child}</Grid>
             ))}
           </Grid>
         </Container>

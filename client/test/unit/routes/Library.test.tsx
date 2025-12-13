@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Library from 'route/library/Library';
 import { assetType } from 'route/library/LibraryTabData';
 import AuthProvider from 'route/auth/AuthProvider';

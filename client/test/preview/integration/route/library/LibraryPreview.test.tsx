@@ -1,4 +1,3 @@
-import * as React from 'react';
 import LibraryPreview from 'preview/route/library/LibraryPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';

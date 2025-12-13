@@ -68,8 +68,14 @@ test.describe('Concurrent Execution', () => {
     await expect(
       page.getByRole('heading', { name: /Hello world Execution History/ }),
     ).toBeVisible();
+
+    // Wait for execution history to load
+    await expect(
+      historyDialog.getByText('Execution History', { exact: true }),
+    ).toBeVisible();
+
     const executionAccordions = historyDialog.locator(
-      '[role="button"][aria-controls*="execution-"]',
+      '.MuiAccordionSummary-root',
     );
     await expect(async () => {
       const count = await executionAccordions.count();
@@ -81,16 +87,16 @@ test.describe('Concurrent Execution', () => {
     // Use dynamic waiting instead of fixed timeout
     await expect(async () => {
       const completedExecutions = historyDialog
-        .locator('[role="button"][aria-controls*="execution-"]')
-        .filter({ hasText: /Status: Completed|Failed|Canceled/ });
+        .locator('.MuiAccordionSummary-root')
+        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
     }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
 
     // For the first completed execution, expand the accordion to view the logs
     const firstCompletedExecution = historyDialog
-      .locator('[role="button"][aria-controls*="execution-"]')
-      .filter({ hasText: /Status: Completed|Failed|Canceled/ })
+      .locator('.MuiAccordionSummary-root')
+      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
       .first();
 
     await firstCompletedExecution.click();
@@ -106,8 +112,8 @@ test.describe('Concurrent Execution', () => {
 
     // Check another execution's logs if available
     const secondExecution = historyDialog
-      .locator('[role="button"][aria-controls*="execution-"]')
-      .filter({ hasText: /Status: Completed|Failed|Canceled/ })
+      .locator('.MuiAccordionSummary-root')
+      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
       .nth(1);
 
     if ((await secondExecution.count()) > 0) {
@@ -122,8 +128,8 @@ test.describe('Concurrent Execution', () => {
 
     // Get all completed executions
     const completedExecutions = historyDialog
-      .locator('[role="button"][aria-controls*="execution-"]')
-      .filter({ hasText: /Status: Completed|Failed|Canceled/ });
+      .locator('.MuiAccordionSummary-root')
+      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
 
     const completedCount = await completedExecutions.count();
 
@@ -136,8 +142,8 @@ test.describe('Concurrent Execution', () => {
 
       // Always delete the first one since the list gets rerendered after each deletion
       const execution = historyDialog
-        .locator('[role="button"][aria-controls*="execution-"]')
-        .filter({ hasText: /Status: Completed|Failed|Canceled/ })
+        .locator('.MuiAccordionSummary-root')
+        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
         .first();
 
       // Find the delete button within the accordion summary
@@ -223,9 +229,14 @@ test.describe('Concurrent Execution', () => {
     const postReloadHistoryDialog = page.locator('div[role="dialog"]');
     await expect(postReloadHistoryDialog).toBeVisible();
 
+    // Wait for execution history to load
+    await expect(
+      postReloadHistoryDialog.getByText('Execution History', { exact: true }),
+    ).toBeVisible();
+
     // Verify that there is at least 1 execution in the history
     const postReloadExecutionItems = postReloadHistoryDialog.locator(
-      '[role="button"][aria-controls*="execution-"]',
+      '.MuiAccordionSummary-root',
     );
     await expect(postReloadExecutionItems.first()).toBeVisible({
       timeout: 10000,
@@ -236,15 +247,15 @@ test.describe('Concurrent Execution', () => {
     // Wait for the execution to complete using dynamic waiting
     await expect(async () => {
       const completedExecutions = postReloadHistoryDialog
-        .locator('[role="button"][aria-controls*="execution-"]')
-        .filter({ hasText: /Status: Completed|Failed|Canceled/ });
+        .locator('.MuiAccordionSummary-root')
+        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
     }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
 
     const completedSelector = postReloadHistoryDialog
-      .locator('[role="button"][aria-controls*="execution-"]')
-      .filter({ hasText: /Status: Completed|Failed|Canceled/ })
+      .locator('.MuiAccordionSummary-root')
+      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
       .first();
 
     // Clean up by deleting the execution

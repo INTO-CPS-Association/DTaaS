@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState } from 'react';
 import { Box, Grid, Tabs, Tab } from '@mui/material';
 import EditorTab from 'preview/route/digitaltwins/editor/EditorTab';

@@ -1,7 +1,6 @@
 import { screen, render, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import HistoryButton from 'components/asset/HistoryButton';
-import * as React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import executionHistoryReducer from 'model/backend/state/executionHistory.slice';

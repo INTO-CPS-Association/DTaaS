@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import * as React from 'react';
 import { handleStart } from 'route/digitaltwins/execution/executionButtonHandlers';
 import StartButton from 'preview/components/asset/StartButton';
 import { ExecutionStatus, JobLog } from 'model/backend/interfaces/execution';
@@ -107,8 +106,16 @@ describe('StartButton', () => {
   };
 
   beforeEach(() => {
+    jest.useFakeTimers();
     mockDispatch.mockClear();
     mockReduxState();
+  });
+
+  afterEach(() => {
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
   });
 
   const renderComponent = () =>
@@ -135,11 +142,8 @@ describe('StartButton', () => {
 
     await act(async () => {
       fireEvent.click(startButton);
-    });
-
-    // Wait a bit for async operations
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
+      // Fast-forward timers to complete debounce
+      jest.runAllTimers();
     });
 
     expect(handleStart).toHaveBeenCalled();

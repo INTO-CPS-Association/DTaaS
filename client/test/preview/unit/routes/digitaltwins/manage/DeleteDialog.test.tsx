@@ -1,4 +1,3 @@
-import * as React from 'react';
 import DeleteDialog from 'preview/route/digitaltwins/manage/DeleteDialog';
 import {
   render,

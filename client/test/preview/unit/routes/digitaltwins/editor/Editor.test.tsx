@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
-import * as React from 'react';
 
 jest.mock('preview/route/digitaltwins/editor/EditorTab', () => ({
   __esModule: true,

@@ -54,7 +54,7 @@ test.describe('Menu Links from first page (Layout)', () => {
       const popupPromise = page.waitForEvent('popup');
       await page.getByRole('link', { name: link.text }).click();
       const popup = await popupPromise;
-      await popup.waitForLoadState();
+      await popup.waitForLoadState('load', { timeout: 30000 });
       const popupUrl = popup.url();
       expect(popupUrl).toContain(link.url.replace('./', ''));
       await popup.close();

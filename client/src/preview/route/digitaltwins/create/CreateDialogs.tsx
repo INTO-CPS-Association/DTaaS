@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import ChangeFileNameDialog from 'preview/route/digitaltwins/create/ChangeFileNameDialog';
 import DeleteFileDialog from 'preview/route/digitaltwins/create/DeleteFileDialog';

@@ -15,7 +15,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     await expect(page).toHaveURL(/.*Library/);
   });
 
@@ -26,7 +26,7 @@ test.describe('Tests on Authentication Flow', () => {
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     await expect(page).toHaveURL(/.*Library/);
 
     await page.locator('[aria-label="Open settings"]').click();

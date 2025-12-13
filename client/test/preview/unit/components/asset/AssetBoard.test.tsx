@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';

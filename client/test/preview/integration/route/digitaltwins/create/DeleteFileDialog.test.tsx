@@ -1,4 +1,3 @@
-import * as React from 'react';
 import DeleteFileDialog from 'preview/route/digitaltwins/create/DeleteFileDialog';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';

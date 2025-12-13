@@ -292,4 +292,45 @@ describe('SidebarFunctions', () => {
 
     expect(setErrorMessage).toHaveBeenCalledWith("File name can't be empty.");
   });
+
+  it('should call setLibraryAssetPath when reconfiguring modified library file', async () => {
+    const testFiles: FileState[] = [
+      { name: 'file1.md', content: 'content', isNew: false, isModified: false },
+    ];
+
+    const testLibraryConfigFiles = [
+      {
+        assetPath: 'test/path',
+        fileName: 'file1.md',
+        fileContent: 'updated content',
+        isNew: false,
+        isModified: true,
+        isPrivate: true,
+      },
+    ];
+
+    const updateFileStateSpy = jest
+      .spyOn(FileUtils, 'updateFileState')
+      .mockImplementation(jest.fn());
+
+    await SidebarFunctions.handleReconfigureFileClick(
+      'file1.md',
+      null,
+      testFiles,
+      setFileName,
+      setFileContent,
+      setFileType,
+      setFilePrivacy,
+      setIsLibraryFile,
+      setLibraryAssetPath,
+      dispatch,
+      true,
+      testLibraryConfigFiles,
+      'test/path',
+    );
+
+    expect(updateFileStateSpy).toHaveBeenCalled();
+    expect(setIsLibraryFile).toHaveBeenCalledWith(true);
+    expect(setLibraryAssetPath).toHaveBeenCalledWith('test/path');
+  });
 });

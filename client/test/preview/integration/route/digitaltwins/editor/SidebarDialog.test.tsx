@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import SidebarDialog from 'preview/route/digitaltwins/editor/SidebarDialog';
 import fileSlice from 'preview/store/file.slice';
-import * as React from 'react';
 import { act } from 'react';
 import { Provider } from 'react-redux';
 

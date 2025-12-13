@@ -7,7 +7,6 @@ import {
   act,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as React from 'react';
 import { useAuth } from 'react-oidc-context';
 import { ITabs } from 'route/IData';
 import store from 'store/store';
@@ -22,7 +21,7 @@ export const normalizer = getDefaultNormalizer({
 });
 
 const renderWithAppProvider = (route: string) => {
-  window.history.pushState({}, 'Test page', route);
+  globalThis.history.pushState({}, 'Test page', route);
   return render(
     AppProvider({
       children: (
@@ -92,18 +91,13 @@ export async function itShowsTheTooltipWhenHoveringButton(toolTipText: string) {
   });
 }
 
-/* eslint-disable no-await-in-loop */
 export async function itShowsTheParagraphOfToTheSelectedTab(
   tablistsData: ITabs[][],
 ) {
-  for (
-    let tablistsIndex = 0;
-    tablistsIndex < tablistsData.length;
-    tablistsIndex += 1
-  ) {
-    const tablistData = tablistsData[tablistsIndex];
-    for (let tabIndex = 0; tabIndex < tablistData.length; tabIndex += 1) {
-      const tabData = tablistData[tabIndex];
+  await tablistsData.reduce(async (previousPromise, tablistData) => {
+    await previousPromise;
+    await tablistData.reduce(async (prevTabPromise, tabData, tabIndex) => {
+      await prevTabPromise;
       const isFirstTab = tabIndex === 0;
       const tab = screen.getByRole('tab', {
         name: tabData.label,
@@ -117,7 +111,6 @@ export async function itShowsTheParagraphOfToTheSelectedTab(
         normalizer,
       });
       expect(tabParagraph).toBeInTheDocument();
-    }
-  }
+    }, Promise.resolve());
+  }, Promise.resolve());
 }
-/* eslint-enable no-await-in-loop */

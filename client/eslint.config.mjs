@@ -91,11 +91,14 @@ export default [{
                 "caughtErrorsIgnorePattern": "^_",
             }
         ],
+        "class-methods-use-this": "off",
+        "no-underscore-dangle": "off",
+        "no-param-reassign": "off",
+        "global-require": "off",
+        "vars-on-top": "off",
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "error",
         "no-console": "error",
-        // Complicates mocking
-        // "import/first": "error",
         "react/prop-types": "off",
         "linebreak-style": 0,
         "import/no-unresolved": "off",
@@ -106,7 +109,36 @@ export default [{
         // Conflict with SonarCube fixes
         "consistent-return": "off",
         "no-restricted-syntax": "off",
-        
+
+        // Not needed with React 17+ new JSX transform
+        "react/react-in-jsx-scope": "off",
+
+        // SonarCube based rules
+        "no-restricted-globals": ["error",
+            {
+                "name": "global",
+                "message": "Use 'globalThis' instead of 'global' for cross-platform compatibility."
+            }
+        ],
+        "no-restricted-imports": ["error",
+            {
+                "paths": [
+                    {
+                        "name": "util",
+                        "message": "Use 'node:util' instead of 'util' to explicitly import Node.js built-in modules."
+                    },
+                    {
+                        "name": "path",
+                        "message": "Use 'node:path' instead of 'path' to explicitly import Node.js built-in modules."
+                    },
+                    {
+                        "name": "fs",
+                        "message": "Use 'node:fs' instead of 'fs' to explicitly import Node.js built-in modules."
+                    }
+                ]
+            }
+        ],
+
     },
 }, {
     files: ["**/*.ts", "**/*.tsx"],
@@ -132,6 +164,11 @@ export default [{
             version: "detect",
         },
     },
+
+    rules: {
+        // TypeScript-specific rules that require type information
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    },
 }, {
     files: ["src/**/*.slice.ts"],
 
@@ -139,5 +176,20 @@ export default [{
         "no-param-reassign": ["error", {
             props: false,
         }],
+    },
+}, {
+    files: ["test/**/*.ts", "test/**/*.tsx"],
+
+    rules: {
+        "no-restricted-globals": ["error",
+            {
+                "name": "global",
+                "message": "Use 'globalThis' instead of 'global' for cross-platform compatibility."
+            },
+            {
+                "name": "window",
+                "message": "Use 'globalThis' instead of 'window' for cross-platform compatibility in tests."
+            }
+        ],
     },
 }];

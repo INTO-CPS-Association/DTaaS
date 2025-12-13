@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,

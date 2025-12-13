@@ -1,4 +1,3 @@
-import * as React from 'react';
 import ChangeFileNameDialog from 'preview/route/digitaltwins/create/ChangeFileNameDialog';
 import { Provider } from 'react-redux';
 import {

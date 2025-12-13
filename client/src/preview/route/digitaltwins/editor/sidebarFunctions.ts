@@ -97,8 +97,8 @@ export const handleCreateFileClick = (
     const libraryFile = libraryFiles!.find(
       (file) =>
         file.fileName === fileName &&
-        file.assetPath === asset!.path &&
-        file.isPrivate === asset!.isPrivate,
+        file.assetPath === asset.path &&
+        file.isPrivate === asset.isPrivate,
     );
     if (libraryFile?.isModified) {
       updateFileState(
@@ -210,7 +210,7 @@ export const handleReconfigureFileClick = async (
         );
       }
       setIsLibraryFile(true);
-      setLibraryAssetPath!(assetPath!);
+      setLibraryAssetPath(assetPath!);
     }
   }
 };

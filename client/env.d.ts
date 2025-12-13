@@ -26,4 +26,6 @@ declare global {
   interface Window {
     env: NodeJS.ProcessEnv;
   }
+
+  var env: NodeJS.ProcessEnv;
 }

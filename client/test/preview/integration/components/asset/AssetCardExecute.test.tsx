@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AssetCardExecute } from 'preview/components/asset/AssetCard';
-import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import assetsReducer, {
   selectAssetByPathAndPrivacy,

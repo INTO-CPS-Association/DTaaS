@@ -2,9 +2,20 @@
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
   "transform": {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "jsx": "react-jsx",
+          "noUnusedLocals": false,
+          "types": ["jest", "node", "react"]
+        }
+      }
+    ]
   },
-  "transformIgnorePatterns": ["/node_modules/(?![d3-shape|recharts]).+\\.js$"],
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(d3-shape|recharts|uuid)/).+\\.js$"
+  ],
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
   "testTimeout": 15000,

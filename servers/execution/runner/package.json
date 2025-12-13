@@ -35,7 +35,7 @@
     "singleQuote": true
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.1",
+    "@eslint/compat": "^2.0.0",
     "@eslint/eslintrc": "^3.1.0",
     "@jest/globals": "^29.7.0",
     "@nestjs/cli": "^10.4.5",

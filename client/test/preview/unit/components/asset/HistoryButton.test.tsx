@@ -3,7 +3,6 @@ import '@testing-library/jest-dom';
 import HistoryButton, {
   handleToggleHistory,
 } from 'components/asset/HistoryButton';
-import * as React from 'react';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import * as redux from 'react-redux';
 

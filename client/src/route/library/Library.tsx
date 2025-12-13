@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Layout from 'page/Layout';
 import TabComponent, { constructURL } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';

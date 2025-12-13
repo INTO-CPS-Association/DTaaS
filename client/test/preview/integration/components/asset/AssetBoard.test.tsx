@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import AssetBoard from 'preview/components/asset/AssetBoard';

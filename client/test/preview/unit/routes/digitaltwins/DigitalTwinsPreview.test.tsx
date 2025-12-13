@@ -1,4 +1,3 @@
-import * as React from 'react';
 import DigitalTwinsPreview from 'preview/route/digitaltwins/DigitalTwinsPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';

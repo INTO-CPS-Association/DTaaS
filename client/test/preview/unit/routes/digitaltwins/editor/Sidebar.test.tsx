@@ -1,7 +1,6 @@
 import { render, waitFor, screen, act } from '@testing-library/react';
 import Sidebar from 'preview/route/digitaltwins/editor/Sidebar';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
-import * as React from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store, { RootState } from 'store/store';
 import {

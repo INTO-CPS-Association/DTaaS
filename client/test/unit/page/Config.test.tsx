@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Config from 'route/config/Config';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -24,7 +23,7 @@ Object.defineProperty(AbortSignal, 'timeout', {
   writable: false,
 });
 
-const initialEnv = { ...window.env };
+const initialEnv = { ...globalThis.env };
 
 describe('Config', () => {
   const mockResponse = {
@@ -33,8 +32,8 @@ describe('Config', () => {
     json: async () => ({ data: 'success' }),
   };
   beforeEach(() => {
-    window.env = { ...initialEnv };
-    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    globalThis.env = { ...initialEnv };
+    globalThis.fetch = jest.fn().mockResolvedValue(mockResponse);
   });
 
   afterEach(() => {
@@ -65,7 +64,7 @@ describe('Config', () => {
 
   test('renders invalid UserConfig correctly', async () => {
     // Invalidate one config field to show user config
-    window.env.REACT_APP_GITLAB_SCOPES = 'invalid';
+    globalThis.env.REACT_APP_GITLAB_SCOPES = 'invalid';
     render(
       <MemoryRouter>
         <Config role="user" />

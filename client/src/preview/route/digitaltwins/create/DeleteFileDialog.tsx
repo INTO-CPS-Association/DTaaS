@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { deleteFile } from 'preview/store/file.slice';

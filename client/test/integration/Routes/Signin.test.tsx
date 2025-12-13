@@ -3,7 +3,7 @@ import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 import { testPublicLayout } from 'test/integration/Routes/routes.testUtil';
 
 // Bypass the config verification
-global.fetch = jest.fn().mockResolvedValue({
+globalThis.fetch = jest.fn().mockResolvedValue({
   ok: true,
   status: 200,
   json: async () => ({ data: 'success' }),

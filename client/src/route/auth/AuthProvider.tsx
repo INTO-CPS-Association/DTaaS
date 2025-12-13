@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { AuthProvider as OIDCAuthProvider } from 'react-oidc-context';
 import { useOidcConfig } from 'util/auth/useOidcConfig';
 

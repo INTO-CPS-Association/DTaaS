@@ -87,7 +87,7 @@ describe('AssetCard', () => {
     renderComponent(AssetCardManage, { asset, onDelete: jest.fn() });
 
     expect(screen.getByText(formatName(asset.name))).toBeInTheDocument();
-    expect(screen.getByText('Asset description')).toBeInTheDocument();
+    expect(screen.getByText('Digital Twin description')).toBeInTheDocument();
     expect(screen.getByTestId('details-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('reconfigure-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
@@ -98,7 +98,7 @@ describe('AssetCard', () => {
     renderComponent(AssetCardExecute, { asset });
 
     expect(screen.getByText(formatName(asset.name))).toBeInTheDocument();
-    expect(screen.getByText('Asset description')).toBeInTheDocument();
+    expect(screen.getByText('Digital Twin description')).toBeInTheDocument();
     expect(screen.getByTestId('log-dialog')).toBeInTheDocument();
   });
 });

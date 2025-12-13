@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, CircularProgress } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -37,11 +37,7 @@ const AssetGridItem: React.FC<{
 }> = ({ asset, tab, onDelete }) => (
   <Grid
     key={asset.path}
-    item
-    xs={12}
-    sm={6}
-    md={4}
-    lg={3}
+    size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
     sx={{ minWidth: 250 }}
   >
     {tab === 'Execute' ? (
@@ -56,15 +52,15 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
   const allAssets = useSelector(
     selectAssetsByTypeAndPrivacy('Digital Twins', true),
   );
-  const [filter, setFilter] = React.useState<string>('');
-  const [error, setError] = React.useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const shouldFetchDigitalTwins = useSelector(
     (state: RootState) => state.digitalTwin.shouldFetchDigitalTwins,
   );
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {

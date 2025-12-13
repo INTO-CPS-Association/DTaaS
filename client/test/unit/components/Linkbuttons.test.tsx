@@ -1,4 +1,3 @@
-import * as React from 'react';
 import LinkButtons, { LinkIcons } from 'components/LinkButtons';
 import { render, screen } from '@testing-library/react';
 import { KeyLinkPair } from 'util/envUtil';
@@ -63,15 +62,15 @@ describe('LinkButtons component default size', () => {
   });
 
   it('opens a new tab with the link when clicked on the button', async () => {
-    window.open = jest.fn();
+    globalThis.open = jest.fn();
 
     await buttons.reduce(async (promise, button) => {
       await promise;
       await userEvent.click(getButton(button.key));
-      expect(window.open).toHaveBeenCalledWith(button.link, '_blank');
+      expect(globalThis.open).toHaveBeenCalledWith(button.link, '_blank');
     }, Promise.resolve());
 
-    expect(window.open).toHaveBeenCalledTimes(buttons.length);
+    expect(globalThis.open).toHaveBeenCalledTimes(buttons.length);
   });
 
   it('should render icon buttons with default size when size is not specified', () => {

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import DesktopWindowsOutlinedIcon from '@mui/icons-material/DesktopWindowsOutlined';
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';

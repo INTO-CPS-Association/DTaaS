@@ -23,7 +23,7 @@ describe('useSignOut', () => {
     writable: false,
   });
 
-  Object.defineProperty(global, 'fetch', {
+  Object.defineProperty(globalThis, 'fetch', {
     value: jest.fn(async (URL, signal) => {
       signal();
       switch (URL) {
@@ -41,6 +41,17 @@ describe('useSignOut', () => {
     writable: true,
   });
 
+  // Mock location.reload once to avoid JSDOM navigation errors
+  try {
+    Object.defineProperty(globalThis.location, 'reload', {
+      value: jest.fn(),
+      writable: true,
+      configurable: true,
+    });
+  } catch {
+    // Ignore errors if property is already defined
+  }
+
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({
       signoutRedirect: mockSignoutRedirect,
@@ -54,24 +65,16 @@ describe('useSignOut', () => {
     );
     (useAppURL as jest.Mock).mockReturnValue('https://foo.com/');
     (cleanURL as jest.Mock).mockReturnValue('https://foo.com');
-    Object.defineProperty(globalThis, 'document', {
-      value: {
-        cookie: '',
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      },
+
+    // Reset document.cookie using descriptor
+    Object.defineProperty(document, 'cookie', {
+      value: '',
       writable: true,
+      configurable: true,
     });
-    Object.defineProperty(globalThis, 'sessionStorage', {
-      value: {
-        clear: mockClear,
-      },
-      writable: true,
-    });
-    Object.defineProperty(globalThis, 'location', {
-      value: { reload: jest.fn() },
-      writable: true,
-    });
+
+    // Mock sessionStorage.clear
+    jest.spyOn(Storage.prototype, 'clear').mockImplementation(mockClear);
   });
 
   it('expires _xsrf cookie', async () => {
@@ -79,7 +82,7 @@ describe('useSignOut', () => {
     const signOut = useSignOut();
     await signOut(auth);
 
-    expect(window.document.cookie).toBe(
+    expect(globalThis.document.cookie).toBe(
       '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;',
     );
   });
@@ -108,12 +111,12 @@ describe('useSignOut', () => {
     expect(mockremoveUser).toHaveBeenCalled();
   });
 
-  it('fetches the URI from window.env', async () => {
+  it('fetches the URI from globalThis.env', async () => {
     const auth = useAuth();
     const signOut = useSignOut();
     const fetchBody = { signal: AbortSignal.timeout(30000) };
     await signOut(auth);
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(globalThis.fetch).toHaveBeenCalledWith(
       'https://foo.com/_oauth/logout',
       fetchBody,
     );
@@ -122,7 +125,7 @@ describe('useSignOut', () => {
   it('throws an error if fetch rejects', async () => {
     const auth = useAuth();
     const signOut = useSignOut();
-    global.fetch = jest.fn().mockRejectedValueOnce('foo');
+    globalThis.fetch = jest.fn().mockRejectedValueOnce('foo');
     await expect(signOut(auth)).rejects.toThrow(
       Error('Error occurred during logout: foo'),
     );

@@ -1,5 +1,6 @@
 import '@fontsource/roboto';
-import * as React from 'react';
+
+import { StrictMode } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import AppProvider from 'AppProvider';
@@ -15,11 +16,11 @@ const App = () => {
 
   if (root) {
     ReactDOM.createRoot(root).render(
-      <React.StrictMode>
+      <StrictMode>
         <AppProvider>
           <RouterProvider router={router} />
         </AppProvider>
-      </React.StrictMode>,
+      </StrictMode>,
     );
   } else {
     throw Error("Couldn't find root element");

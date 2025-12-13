@@ -20,7 +20,7 @@ describe('sidebarFetchers', () => {
 
   it('should fetch and set file content if library is true', async () => {
     const getLibraryFileContentSpy = jest
-      .spyOn(mockDigitalTwin!.DTAssets, 'getLibraryFileContent')
+      .spyOn(mockDigitalTwin.DTAssets, 'getLibraryFileContent')
       .mockResolvedValue('fileContent');
     const updateFileStateSpy = jest.spyOn(FileUtils, 'updateFileState');
 
@@ -41,7 +41,7 @@ describe('sidebarFetchers', () => {
 
   it('should fetch and set file content if not library', async () => {
     const getFileContentSpy = jest
-      .spyOn(mockDigitalTwin!.DTAssets, 'getFileContent')
+      .spyOn(mockDigitalTwin.DTAssets, 'getFileContent')
       .mockResolvedValue('fileContent');
 
     await SidebarFetchers.fetchAndSetFileContent(
@@ -58,7 +58,7 @@ describe('sidebarFetchers', () => {
 
   it('should set error message if error occurs while fetching file content', async () => {
     jest
-      .spyOn(mockDigitalTwin!.DTAssets, 'getFileContent')
+      .spyOn(mockDigitalTwin.DTAssets, 'getFileContent')
       .mockRejectedValue('error');
 
     await SidebarFetchers.fetchAndSetFileContent(

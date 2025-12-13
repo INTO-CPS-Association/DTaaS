@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import CreatePage from 'preview/route/digitaltwins/create/CreatePage';
 

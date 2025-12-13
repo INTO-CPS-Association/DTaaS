@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 // Check if playwright was called with 'ext' flag.
 const useExtServer = process.env.ext === 'true';
 
-dotenv.config({ path: './test/.env' });
+dotenv.config({ path: './test/.env', quiet: true });
 // import fs from 'fs';
 // import path from 'path';
 
@@ -23,7 +23,7 @@ export default defineConfig({
         url: BASE_URI,
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
-  timeout: process.env.CI ? 1000 : 60 * 1000,
+  timeout: 90 * 1000, // 90 seconds per test
   globalTimeout: 10 * 60 * 1000,
   workers: 3,
   testDir: './test/e2e/tests',

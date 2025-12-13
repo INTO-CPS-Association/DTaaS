@@ -55,7 +55,7 @@ Definitions of the INTO-CPS Association Public license modes:
 
 * GPL = GPL version 3.
 
-* ICA-Internal-EPL = These INTO-CPA Association Public
+* ICA-Internal-EPL = These INTO-CPS Association Public
   license conditions together with
   Internally restricted EPL, i.e., EPL version 1.0 with the Additional Condition
   that use and redistribution by a member of the INTO-CPS Association is only allowed
@@ -66,7 +66,7 @@ Definitions of the INTO-CPS Association Public license modes:
   the size of the organization including all its affiliates, use and redistribution
   is allowed within/between its affiliates.
 
-* ICA-External-EPL = These INTO-CPA Association Public
+* ICA-External-EPL = These INTO-CPS Association Public
   license conditions together with
   Externally restricted EPL, i.e., EPL version 1.0 with the Additional Condition
   that use and redistribution by a member of the INTO-CPS Association, or by a Licensed

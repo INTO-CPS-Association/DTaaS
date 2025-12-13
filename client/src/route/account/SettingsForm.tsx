@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
@@ -142,7 +141,7 @@ const SettingsForm: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               id="groupName"
@@ -154,7 +153,7 @@ const SettingsForm: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               id="dtDirectory"
@@ -166,7 +165,7 @@ const SettingsForm: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               id="commonLibraryProjectName"
@@ -178,7 +177,7 @@ const SettingsForm: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               id="runnerTag"
@@ -190,7 +189,7 @@ const SettingsForm: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               id="branchName"
@@ -203,8 +202,7 @@ const SettingsForm: React.FC = () => {
           </Grid>
 
           <Grid
-            item
-            xs={12}
+            size={{ xs: 12 }}
             sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}
           >
             <Stack direction="row" spacing={2}>

@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 jest.mock('components/LinkButtons', () => ({
   default: () => <div role="button">Button</div>,
 }));

@@ -1,7 +1,6 @@
 import * as SidebarRendering from 'preview/route/digitaltwins/editor/sidebarRendering';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
 import { render, screen, fireEvent } from '@testing-library/react';
-import * as React from 'react';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import {
   mockDigitalTwin,

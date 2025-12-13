@@ -1,4 +1,5 @@
-import MCR, { CoverageReportOptions } from 'monocart-coverage-reports';
+import MCR from 'monocart-coverage-reports';
+import type { CoverageReportOptions } from 'monocart-coverage-reports';
 
 // https://github.com/cenfun/monocart-coverage-reports
 const coverageOptions: CoverageReportOptions = {
@@ -11,6 +12,8 @@ const coverageOptions: CoverageReportOptions = {
     const isFromNodeModules = sourceName.search(/node_modules\//) !== -1; // regexp match "node_modules/"
     const isFromOutEditor = sourceName.search(/out-editor\//) !== -1; // regexp match "out-editor/"
     const isTypeScript = sourceName.search(/\.tsx?$/) !== -1;
+    const isMonacoFiles = /monaco-editor/.test(sourceName);
+
     if (isFromNodeModules) {
       return false;
     }
@@ -18,6 +21,9 @@ const coverageOptions: CoverageReportOptions = {
       return false;
     }
     if (!isTypeScript) {
+      return false;
+    }
+    if (isMonacoFiles) {
       return false;
     }
     return true;
@@ -29,6 +35,8 @@ const coverageOptions: CoverageReportOptions = {
     const isCSS = entry.url.search(/\.css$/) !== -1;
     const isEnv = entry.url.search(/env\.js$/) !== -1;
     const isOutEditor = entry.url.search(/out-editor\//) !== -1; // regexp match "out-editor/"
+    const isMonacoFiles =
+      entry.url.search(/cdn\.jsdelivr\.net\/npm\/monaco-editor/) !== -1; // regexp match monaco editor from CDN
     if (isFromGitlab) {
       return false;
     }
@@ -39,6 +47,9 @@ const coverageOptions: CoverageReportOptions = {
       return false;
     }
     if (isOutEditor) {
+      return false;
+    }
+    if (isMonacoFiles) {
       return false;
     }
     return true;

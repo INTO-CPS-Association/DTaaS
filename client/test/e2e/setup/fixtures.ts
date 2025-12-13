@@ -27,14 +27,20 @@ const test = testBase.extend<{
 
       // console.log('autoTestFixture teardown...');
       if (isChromium) {
-        const [jsCoverage, cssCoverage] = await Promise.all([
-          page.coverage.stopJSCoverage(),
-          page.coverage.stopCSSCoverage(),
-        ]);
-        const coverageList = [...jsCoverage, ...cssCoverage];
-        // console.log(coverageList.map((item) => item.url));
-        const mcr = MCR(coverageOptions);
-        await mcr.add(coverageList);
+        try {
+          const [jsCoverage, cssCoverage] = await Promise.all([
+            page.coverage.stopJSCoverage(),
+            page.coverage.stopCSSCoverage(),
+          ]);
+          const coverageList = [...jsCoverage, ...cssCoverage];
+          // console.log(coverageList.map((item) => item.url));
+          const mcr = MCR(coverageOptions);
+          await mcr.add(coverageList);
+        } catch (error) {
+          // Log the error but don't fail the test
+          // eslint-disable-next-line no-console
+          console.warn('Failed to collect coverage:', error);
+        }
       }
     },
     {

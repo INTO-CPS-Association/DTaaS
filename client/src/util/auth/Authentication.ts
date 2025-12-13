@@ -18,7 +18,7 @@ export function useGetAndSetUsername() {
     if (!auth.user) {
       return;
     }
-    const profileUrl = auth.user!.profile.profile ?? '';
+    const profileUrl = auth.user.profile.profile ?? '';
     const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
     sessionStorage.setItem('username', username ?? '');
     dispatch(setUserName(username));

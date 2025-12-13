@@ -1,11 +1,13 @@
-import * as React from 'react';
 import { ValidationType } from 'util/configUtil';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
 import { StatusCodes } from 'http-status-codes';
 
-const ConfigIcon = (toolTipTitle: string, icon: JSX.Element): JSX.Element => (
+const ConfigIcon = (
+  toolTipTitle: string,
+  icon: React.ReactElement,
+): React.ReactElement => (
   <Tooltip
     title={toolTipTitle}
     PopperProps={
@@ -19,7 +21,7 @@ const ConfigIcon = (toolTipTitle: string, icon: JSX.Element): JSX.Element => (
 );
 
 interface ValidationIconConfig {
-  icon: JSX.Element;
+  icon: React.ReactElement;
   hoverTip: string;
 }
 
@@ -52,7 +54,7 @@ const getValidationIconConfig = (
 export const getConfigIcon = (
   validation: ValidationType,
   label: string,
-): JSX.Element => {
+): React.ReactElement => {
   const { icon, hoverTip } = getValidationIconConfig(validation, label);
   return ConfigIcon(hoverTip, icon);
 };

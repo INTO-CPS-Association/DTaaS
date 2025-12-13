@@ -1,7 +1,6 @@
 import DeleteButton from 'preview/components/asset/DeleteButton';
 import { Provider } from 'react-redux';
 import store from 'store/store';
-import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 jest.mock('react-redux', () => ({

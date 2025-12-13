@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { Remarkable } from 'remarkable';

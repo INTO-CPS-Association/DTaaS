@@ -1,4 +1,3 @@
-import * as React from 'react';
 import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';

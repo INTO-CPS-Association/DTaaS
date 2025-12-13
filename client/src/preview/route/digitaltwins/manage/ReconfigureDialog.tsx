@@ -1,7 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-
-import * as React from 'react';
 import { useState, Dispatch, SetStateAction } from 'react';
 import {
   Dialog,
@@ -137,13 +133,16 @@ export const saveChanges = async (
   dispatch: ReturnType<typeof useDispatch>,
   name: string,
 ) => {
-  for (const file of modifiedFiles) {
-    await handleFileUpdate(file, digitalTwin, dispatch);
-  }
+  const fileUpdatePromises = [
+    ...modifiedFiles.map((file) =>
+      handleFileUpdate(file, digitalTwin, dispatch),
+    ),
+    ...modifiedLibraryFiles.map((file) =>
+      handleFileUpdate(file, digitalTwin, dispatch),
+    ),
+  ];
 
-  for (const file of modifiedLibraryFiles) {
-    await handleFileUpdate(file, digitalTwin, dispatch);
-  }
+  await Promise.all(fileUpdatePromises);
 
   showSuccessSnackbar(dispatch, name);
   dispatch(removeAllModifiedFiles());

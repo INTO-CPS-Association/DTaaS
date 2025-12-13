@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';

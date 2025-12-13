@@ -4,7 +4,7 @@ import { IFilesService } from '../interfaces/files.service.interface.js';
 import { CONFIG_MODE } from '../../enums/config-mode.enum.js';
 import * as git from 'isomorphic-git';
 import * as fs from 'fs';
-import * as http from 'isomorphic-git/http/node/index.cjs';
+import http from 'isomorphic-git/http/node';
 import LocalFilesService from '../local/local-files.service.js';
 import Config from '../../config/config.service.js';
 import { CONFIG_SERVICE } from '../../config/config.interface.js';

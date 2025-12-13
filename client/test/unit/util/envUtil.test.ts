@@ -22,7 +22,7 @@ describe('envUtil', () => {
   const testRedirect = 'https://example.com/redirect';
   const testLogoutRedirect = 'https://example.com';
 
-  window.env = {
+  globalThis.env = {
     REACT_APP_ENVIRONMENT: 'test',
     REACT_APP_URL: testAppURL,
     REACT_APP_URL_BASENAME: testBasename,
@@ -94,7 +94,7 @@ describe('envUtil', () => {
   });
 
   it('still handles if basename is set to empty string', () => {
-    window.env.REACT_APP_URL_BASENAME = '';
+    globalThis.env.REACT_APP_URL_BASENAME = '';
     expect(useURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
     expect(useURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
     expect(useURLbasename()).toBe('');

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import CreatePage from 'preview/route/digitaltwins/create/CreatePage';
 import {
   act,

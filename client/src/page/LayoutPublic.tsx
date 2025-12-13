@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
 import Footer from 'page/Footer';

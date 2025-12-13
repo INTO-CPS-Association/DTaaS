@@ -47,10 +47,9 @@ describe('Digital Twins', () => {
     await itShowsTheParagraphOfToTheSelectedTab([tabs]);
   });
 
-  /* eslint-disable no-await-in-loop */
   it('changes iframe src according to the selected tab', async () => {
-    for (let tabsIndex = 0; tabsIndex < tabs.length; tabsIndex += 1) {
-      const tabsData = tabs[tabsIndex];
+    await tabs.reduce(async (previousPromise, tabsData, tabsIndex) => {
+      await previousPromise;
       const isFirstTab = tabsIndex === 0;
       const tab = screen.getByRole('tab', {
         name: tabsData.label,
@@ -60,7 +59,6 @@ describe('Digital Twins', () => {
       const iframe = screen.getByTitle(`JupyterLight-Demo-${tabsData.label}`);
       expect(iframe).toBeInTheDocument();
       expect(iframe).toHaveProperty('src', `https://example.com/URL_DT`);
-    }
+    }, Promise.resolve());
   });
-  /* eslint-enable no-await-in-loop */
 });

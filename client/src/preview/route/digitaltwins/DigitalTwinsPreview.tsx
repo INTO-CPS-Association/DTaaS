@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@mui/material';
 import Layout from 'page/Layout';
@@ -47,7 +46,7 @@ export const createDTTab = ({
     }));
 
 export const DTContent = () => {
-  const [newDigitalTwinName, setNewDigitalTwinName] = React.useState('');
+  const [newDigitalTwinName, setNewDigitalTwinName] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {

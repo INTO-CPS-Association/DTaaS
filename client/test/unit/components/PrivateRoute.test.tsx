@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';

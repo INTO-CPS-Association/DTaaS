@@ -1,6 +1,5 @@
 import { screen, render, fireEvent } from '@testing-library/react';
 import ReconfigureButton from 'preview/components/asset/ReconfigureButton';
-import * as React from 'react';
 import { Provider } from 'react-redux';
 import store from 'store/store';
 

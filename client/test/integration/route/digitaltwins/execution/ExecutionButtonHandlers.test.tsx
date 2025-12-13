@@ -7,7 +7,7 @@ import digitalTwinReducer, {
   DigitalTwinData,
 } from 'model/backend/state/digitalTwin.slice';
 import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
-import snackbarSlice, { SnackbarState } from 'store/snackbar.slice';
+import snackbarSlice from 'store/snackbar.slice';
 import { formatName } from 'model/backend/digitalTwin';
 
 const store = configureStore({
@@ -96,7 +96,7 @@ describe('PipelineHandler Integration Tests', () => {
 
     await PipelineHandlers.handleStop(digitalTwin, jest.fn(), dispatch);
 
-    const snackbarState = store.getState().snackbar as SnackbarState;
+    const snackbarState = store.getState().snackbar;
 
     expect(snackbarState.message).toBe(
       `Execution stop failed for ${formatName(digitalTwin.DTName)}`,

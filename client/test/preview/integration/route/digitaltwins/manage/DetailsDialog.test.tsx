@@ -9,7 +9,6 @@ import {
   GITLAB_MOCKS,
 } from 'test/preview/__mocks__/adapterMocks';
 
-import * as React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';

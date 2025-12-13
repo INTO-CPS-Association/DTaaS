@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Button, Badge } from '@mui/material';
 import { useSelector } from 'react-redux';

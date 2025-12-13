@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import CustomSnackbar from 'components/route/Snackbar';
@@ -12,10 +11,10 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
-  const [isInitialFetchDone, setIsInitialFetchDone] = React.useState(false);
+  const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
   let returnJSX;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (auth.isAuthenticated && !isInitialFetchDone) {
       if (auth.user !== null && auth.user !== undefined) {
         sessionStorage.setItem('access_token', auth.user.access_token);

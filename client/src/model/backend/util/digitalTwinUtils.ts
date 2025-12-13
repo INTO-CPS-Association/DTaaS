@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import {
   BackendAPI,
   ProjectId,
@@ -32,6 +30,7 @@ export function logSuccess(
     DTName: digitalTwin.DTName,
     runnerTag: RUNNER_TAG,
   });
+
   digitalTwin.lastExecutionStatus = ExecutionStatus.SUCCESS;
 }
 
@@ -46,6 +45,7 @@ export function logError(
     DTName: digitalTwin.DTName,
     runnerTag: RUNNER_TAG,
   });
+
   digitalTwin.lastExecutionStatus = ExecutionStatus.ERROR;
 }
 

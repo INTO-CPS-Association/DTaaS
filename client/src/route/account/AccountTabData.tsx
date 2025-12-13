@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { createElement, Children, ReactNode } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import SettingsForm from 'route/account/SettingsForm';
 
-function ListGroups(groups: string[]): React.ReactNode[] {
+function ListGroups(groups: string[]): ReactNode[] {
   const boldGroups = groups.map((group) =>
-    React.createElement('b', null, group),
+    createElement('b', { key: group }, group),
   );
 
   const userBelongsToOneGroup = groups.length === 1;
@@ -13,7 +13,7 @@ function ListGroups(groups: string[]): React.ReactNode[] {
     return boldGroups;
   }
 
-  const groupListing: React.ReactNode[] = [];
+  const groupListing: ReactNode[] = [];
   boldGroups
     .slice(0, -1)
     .forEach((groupElement) => groupListing.push(groupElement, ', '));
@@ -24,7 +24,7 @@ function ListGroups(groups: string[]): React.ReactNode[] {
   return groupListing;
 }
 
-function GroupParagraph(groups: string[], name: React.ReactNode) {
+function GroupParagraph(groups: string[], name: ReactNode) {
   const userBelongsToAnyGroups = groups.length > 0;
   if (!userBelongsToAnyGroups) {
     return (
@@ -38,7 +38,7 @@ function GroupParagraph(groups: string[], name: React.ReactNode) {
   const groupSuffix = groups.length > 1 ? 's' : '';
   return (
     <p>
-      <b>{name}</b> belongs to {React.Children.toArray(groupListing)} group
+      <b>{name}</b> belongs to {Children.toArray(groupListing)} group
       {groupSuffix}.
     </p>
   );
@@ -46,7 +46,7 @@ function GroupParagraph(groups: string[], name: React.ReactNode) {
 
 function ProfileTab() {
   const { user } = useAuth();
-  const name = (user?.profile.preferred_username as string | undefined) ?? '';
+  const name = user?.profile.preferred_username ?? '';
   const pfp = user?.profile.picture;
   const profileUrl = user?.profile.profile;
 

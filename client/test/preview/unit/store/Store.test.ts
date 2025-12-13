@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-
 import assetsSlice, {
   deleteAsset,
   setAssets,
@@ -107,20 +105,20 @@ describe('reducers', () => {
       createGitlabInstance('user1', 'token1', 'mockAuthority'),
     );
 
-    const initialState = {
+    const digitalTwinInitialState = {
       digitalTwin: {},
       shouldFetchDigitalTwins: true,
     };
 
     it('should return the initial state when an unknown action is passed with an undefined state', () => {
       expect(digitalTwinReducer(undefined, { type: 'unknown' })).toEqual(
-        initialState,
+        digitalTwinInitialState,
       );
     });
 
     it('should handle setDigitalTwin', () => {
       const newState = digitalTwinReducer(
-        initialState,
+        digitalTwinInitialState,
         setDigitalTwin({
           assetName: 'asset1',
           digitalTwin: extractDataFromDigitalTwin(digitalTwin),
@@ -175,7 +173,7 @@ describe('reducers', () => {
       updatedDigitalTwin.pipelineLoading = false;
 
       const updatedState = {
-        ...initialState,
+        ...digitalTwinInitialState,
         digitalTwin: { asset1: extractDataFromDigitalTwin(updatedDigitalTwin) },
       };
 
@@ -195,7 +193,7 @@ describe('reducers', () => {
       updatedDigitalTwin.description = '';
 
       const updatedState = {
-        ...initialState,
+        ...digitalTwinInitialState,
         digitalTwin: { asset1: extractDataFromDigitalTwin(updatedDigitalTwin) },
       };
 
@@ -259,8 +257,8 @@ describe('reducers', () => {
         isNew: false,
         isModified: false,
       };
-      const initialState = [file1, file2];
-      const newState = fileSlice(initialState, addOrUpdateFile(file2Modified));
+      const fileState = [file1, file2];
+      const newState = fileSlice(fileState, addOrUpdateFile(file2Modified));
 
       const file2AfterUpdate = {
         ...file2Modified,
@@ -285,9 +283,9 @@ describe('reducers', () => {
     });
 
     it('should handle renameFile', () => {
-      const initialState = [file1, file2];
+      const fileState = [file1, file2];
       const newState = fileSlice(
-        initialState,
+        fileState,
         renameFile({ oldName: 'fileName2', newName: 'newName' }),
       );
       expect(newState[1].name).toBe('newName');
@@ -295,18 +293,18 @@ describe('reducers', () => {
     });
 
     it('should handle renameFile with extension md', () => {
-      const initialState = [file1, file2];
+      const fileState = [file1, file2];
       const newState = fileSlice(
-        initialState,
+        fileState,
         renameFile({ oldName: 'fileName2', newName: 'newName.md' }),
       );
       expect(newState[1].type).toBe('description');
     });
 
     it('should handle renameFile with extension json', () => {
-      const initialState = [file1, file2];
+      const fileState = [file1, file2];
       const newState = fileSlice(
-        initialState,
+        fileState,
         renameFile({ oldName: 'fileName2', newName: 'newName.json' }),
       );
       expect(newState[1].type).toBe('configuration');
@@ -319,20 +317,20 @@ describe('reducers', () => {
         isNew: false,
         isModified: true,
       };
-      const initialState = [file1Modified, file2];
-      const newState = fileSlice(initialState, removeAllModifiedFiles());
+      const fileState = [file1Modified, file2];
+      const newState = fileSlice(fileState, removeAllModifiedFiles());
       expect(newState).toEqual([file2]);
     });
 
     it('should handle deleteFile', () => {
-      const initialState = [file1, file2];
-      const newState = fileSlice(initialState, deleteFile('fileName1'));
+      const fileState = [file1, file2];
+      const newState = fileSlice(fileState, deleteFile('fileName1'));
       expect(newState).toEqual([file2]);
     });
 
     it('should handle removeAllCreationFiles', () => {
-      const initialState = [file1, file2];
-      const newState = fileSlice(initialState, removeAllCreationFiles());
+      const fileState = [file1, file2];
+      const newState = fileSlice(fileState, removeAllCreationFiles());
       expect(newState).toEqual([]);
     });
 
@@ -351,14 +349,14 @@ describe('reducers', () => {
         isModified: false,
       };
 
-      const initialState = [file1, file2, descriptionFile];
-      const newState = fileSlice(initialState, removeAllCreationFiles());
+      const fileState = [file1, file2, descriptionFile];
+      const newState = fileSlice(fileState, removeAllCreationFiles());
       expect(newState).toEqual([descriptionFileAfterUpdate]);
     });
 
     it('should handle removeAllFiles', () => {
-      const initialState = [file1, file2];
-      const newState = fileSlice(initialState, removeAllFiles());
+      const fileState = [file1, file2];
+      const newState = fileSlice(fileState, removeAllFiles());
       expect(newState).toEqual([]);
     });
   });
@@ -392,11 +390,11 @@ describe('reducers', () => {
   });
 
   describe('libraryFilesSlice', () => {
-    const initialState: LibraryConfigFile[] = [];
+    const libraryFilesInitialState: LibraryConfigFile[] = [];
 
     it('should handle initial state', () => {
       expect(libraryFilesSlice(undefined, { type: 'unknown' })).toEqual(
-        initialState,
+        libraryFilesInitialState,
       );
     });
 
@@ -417,7 +415,7 @@ describe('reducers', () => {
       };
 
       let state = libraryFilesSlice(
-        initialState,
+        libraryFilesInitialState,
         addOrUpdateLibraryFile(newFile),
       );
       expect(state).toEqual([newFile]);

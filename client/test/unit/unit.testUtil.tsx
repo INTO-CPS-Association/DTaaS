@@ -25,7 +25,7 @@ export const renderWithRouter = (
   ui: React.ReactElement,
   { route = '/', store }: RouterOptions = {},
 ) => {
-  window.history.pushState({}, 'Test page', route);
+  globalThis.history.pushState({}, 'Test page', route);
 
   return store
     ? render(

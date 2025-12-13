@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { createStore } from 'redux';
 import { screen, waitFor } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';

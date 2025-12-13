@@ -36,16 +36,21 @@
     "ecmaVersion": 2022,
     "sourceType": "module" // Allows for the use of imports
   },
-  "plugins": ["jsx-a11y", "react", "jest", "@typescript-eslint", "import"],
+  "plugins": ["jsx-a11y", "react", "react-hooks", "jest", "@typescript-eslint", "import"],
   "rules": {
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "no-console": "error",
     "import/first": "error",
     "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react-hooks/exhaustive-deps": "off",
     "linebreak-style": 0, // disable linter linebreak rule, to allow for both unix and windows developement
     "import/no-unresolved": "off", // Whatever IDE will pass an error if if the module is not found, so no reason for this..
     "import/extensions": "off", // That includes the production build.. We use linter for code checking / clean code optimization..
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "no-unused-expressions": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
   },
   "root": true,
   "overrides": [
@@ -59,13 +64,15 @@
       },
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "requireConfigFile": false,
-        "project": ["./tsconfig.json"]
+        "requireConfigFile": false
       },
-      "plugins": ["@typescript-eslint"]
+      "plugins": ["@typescript-eslint"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrors": "none" }]
+      }
     },
     {
-      "files": ["client/src/**/*.slice.ts"],
+      "files": ["src/**/*.slice.ts"],
       "rules": {
         "no-param-reassign": ["error", { "props": false }]
       }

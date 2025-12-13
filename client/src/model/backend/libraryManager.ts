@@ -1,6 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-
 import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
 import {
   LibraryManagerInterface,

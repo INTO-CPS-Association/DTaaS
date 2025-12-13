@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Button } from '@mui/material';
 import LibraryAsset from 'model/backend/libraryAsset';
 import useCart from 'preview/store/CartAccess';

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Account from 'route/account/Account';
 import { render, screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { screen } from '@testing-library/react';
 import WorkBench from 'route/workbench/Workbench';
 import { InitRouteTests } from 'test/unit/unit.testUtil';

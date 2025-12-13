@@ -1,7 +1,6 @@
 import { screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import HistoryButton from 'components/asset/HistoryButton';
-import * as React from 'react';
 import * as redux from 'react-redux';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 

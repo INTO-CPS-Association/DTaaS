@@ -106,14 +106,14 @@ jest.mock('util/envUtil', () => ({
   ],
 }));
 
-window.env = {
-  ...window.env,
+globalThis.env = {
+  ...globalThis.env,
   REACT_APP_ENVIRONMENT: 'test',
   REACT_APP_URL: mockAppURL,
   REACT_APP_URL_BASENAME: 'mock_url_basename',
   REACT_APP_URL_DTLINK: '/lab',
   REACT_APP_URL_LIBLINK: '',
-  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
+  REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?foo=bar',
   REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
   REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
   REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
@@ -129,4 +129,24 @@ window.env = {
 
 jest.mock('model/backend/gitlab/gitlabFactory', () => ({
   createGitlabInstance: jest.fn(() => mockBackendInstance),
+}));
+
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'test-uuid-1234'),
+  v5: jest.fn(() => 'test-uuid-5678'),
+  validate: jest.fn(() => true),
+  version: jest.fn(() => 4),
+}));
+
+jest.mock('react-syntax-highlighter', () => ({
+  Prism: ({ children }: { children: string }) => (
+    <div data-testid="syntax-highlighter">{children}</div>
+  ),
+  Light: ({ children }: { children: string }) => (
+    <div data-testid="syntax-highlighter">{children}</div>
+  ),
+}));
+
+jest.mock('react-syntax-highlighter/dist/esm/styles/prism', () => ({
+  materialDark: {},
 }));

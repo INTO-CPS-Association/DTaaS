@@ -1,6 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-
 import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
 import {
   DTAssetsInterface,
@@ -45,10 +42,31 @@ class DTAssets implements DTAssetsInterface {
     mainFolderPath: string,
     lifecycleFolderPath: string,
   ): Promise<void> {
-    for (const file of files) {
-      const fileType = (file as FileState).type;
-
-      if (file.isNew) {
+    const createPromises = (
+      files as Array<
+        | FileState
+        | {
+            name: string;
+            content: string;
+            isNew: boolean;
+            isFromCommonLibrary: boolean;
+          }
+      >
+    )
+      .filter(
+        (
+          file,
+        ): file is
+          | FileState
+          | {
+              name: string;
+              content: string;
+              isNew: boolean;
+              isFromCommonLibrary: boolean;
+            } => file.isNew,
+      )
+      .map(async (file) => {
+        const fileType = (file as FileState).type;
         const mainFolderPathUpdated = file.isFromCommonLibrary
           ? `${mainFolderPath}/common`
           : mainFolderPath;
@@ -60,9 +78,10 @@ class DTAssets implements DTAssetsInterface {
             ? lifecycleFolderPathUpdated
             : mainFolderPathUpdated;
         const commitMessage = `Add ${file.name} to ${fileType} folder`;
-        await this.fileHandler.createFile(file, filePath, commitMessage);
-      }
-    }
+        return this.fileHandler.createFile(file, filePath, commitMessage);
+      });
+
+    await Promise.all(createPromises);
   }
 
   async getFilesFromAsset(assetPath: string, isPrivate: boolean) {
@@ -72,27 +91,21 @@ class DTAssets implements DTAssetsInterface {
         isPrivate,
       );
 
-      const files: Array<{
-        name: string;
-        content: string;
-        path: string;
-        isPrivate: boolean;
-      }> = [];
-
-      for (const fileName of fileNames) {
+      const filePromises = fileNames.map(async (fileName) => {
         const fileContent = await this.fileHandler.getFileContent(
           `${assetPath}/${fileName}`,
           isPrivate,
         );
 
-        files.push({
+        return {
           name: fileName,
           content: fileContent,
           path: assetPath,
           isPrivate,
-        });
-      }
+        };
+      });
 
+      const files = await Promise.all(filePromises);
       return files;
     } catch (error) {
       throw new Error(

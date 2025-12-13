@@ -1,4 +1,3 @@
-import * as React from 'react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import {
