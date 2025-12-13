@@ -68,7 +68,14 @@ documentation for further help with creating these two OAuth applications.
 
 ## Configuration
 
-The configuration files to be updated are:
+Copy configuration templates into config files.
+
+```bash
+cp .env.template .env
+cp conf.dev.template conf.dev
+```
+
+Update the configuration files. The files to be updated are:
 
 1. docker/.env
    please see [docker README](../deploy/docker/DOCKER-ENV.md) for help
