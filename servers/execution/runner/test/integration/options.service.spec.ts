@@ -31,6 +31,6 @@ describe('Check Configuration Service', () => {
     expect(config.permitCommands()).toHaveLength(1);
     expect(config.permitCommands()).toContain('create');
     expect(config.getLocation()).toEqual(resolveFile('script'));
-    expect(spyOnCLIOptions).toBeCalled();
+    expect(spyOnCLIOptions).toHaveBeenCalled();
   });
 });

@@ -12,7 +12,7 @@ describe('Check UpdateCommandDto validation pipe', () => {
       executeCommandSchema,
     );
 
-    expect(updateCommandValidator.transform(updateCommandDto).name).toBe(
+    expect((updateCommandValidator.transform(updateCommandDto) as ExecuteCommandDto).name).toBe(
       'create',
     );
   });
