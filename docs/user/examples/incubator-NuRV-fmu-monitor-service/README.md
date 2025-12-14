@@ -58,10 +58,10 @@ by the NuRV service.
 Each time an update is received, the full state and verdict is
 printed to the console.
 
-## Digital Twin configuration
+## Digital Twin Configuration
 
-Before running the example, please configure the _simulation.conf_ file with
-your RabbitMQ credentials.
+Before running the example, the _simulation.conf_ file should be configured with
+the appropriate RabbitMQ credentials.
 
 The example uses the following assets:
 

@@ -74,7 +74,7 @@ data stored in their account.
 The username and the token required to instantiate the Gitbeaker _Gitlab_
 component, which is required for making the API calls, are retrieved from the
 session storage, taking the _access_token_ of the user already logged into the
-DTaaS application.
+DTaaS platform.
 
 The initialisation of the `GitlabInstance` object is concluded with the
 execution of the `init()` method, which enables the retrieval and storage of
@@ -91,7 +91,7 @@ inefficiencies arising from manual input. The user interface makes it easier
 for the user to deal with DTs by automatizing their selection and manages them
 more accurately. This implementation also eliminates the necessity for manual
 input from users for the access token and the username, which are automatically
-provided via the GitLab OAuth login.
+provided via the GitLab OAuth 2.0 login.
 
 Furthermore, logs maintained in the `GitlabInstance` class improve awareness
 and transparency over the operations conducted. The final three methods are

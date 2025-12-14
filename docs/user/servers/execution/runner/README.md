@@ -10,6 +10,12 @@ Multiple runners can be active simultaneously on one computer.
 The commands are sent via the REST API and are executed on the computer
 with active runner.
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    This npm package works only on Linux platforms
+<!-- markdownlint-enable MD046 -->
+
 ## :arrow_down: Install
 
 ### NPM Registry
@@ -31,7 +37,8 @@ The package is available in Github
 Set the registry and install the package with the following commands
 
 ```bash
-sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm config set @into-cps-association:registry \
+  https://npm.pkg.github.com
 sudo npm install -g @into-cps-association/runner
 ```
 
@@ -115,11 +122,11 @@ Access to the service on network is available at `http://<ip or hostname>:<port>
 Three REST API methods are active. The route paths and the responses given
 for these two sources are:
 
-| REST API Route                 | HTTP Method | Return Value | Comment |
-| :----------------------------- |:--------|:----------- | :------ |
-| localhost:port | POST  | Returns the execution status of command | Executes the command provided. Each invocation appends to _array_ of commands executed so far. |
-| localhost:port | GET |  Returns the execution status of the last command sent via POST request. |  |
-| localhost:port/history | GET | Returns the array of POST requests received so far. |  |
+| REST API Route                 | HTTP Method | Return Value                                                            | Comment                                                                                        |
+| :----------------------------- | :---------- | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- |
+| localhost:port                 | POST        | Returns the execution status of command                                 | Executes the command provided. Each invocation appends to _array_ of commands executed so far. |
+| localhost:port                 | GET         | Returns the execution status of the last command sent via POST request. |                                                                                                |
+| localhost:port/history         | GET         | Returns the array of POST requests received so far.                     |                                                                                                |
 
 #### POST Request to /
 
@@ -217,7 +224,7 @@ Shows the status of the command last executed.
     X-Powered-By: Express
 
     {
-      "name": "<command-name",
+      "name": "<command-name>",
       "status": "invalid",
       "logs": {
         "stdout": "",

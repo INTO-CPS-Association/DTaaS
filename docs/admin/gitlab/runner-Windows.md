@@ -1,12 +1,22 @@
 # Setting up GitLab Runners with Docker on Windows for DTaaS
 
-This guide documents how to properly set up and configure GitLab runners with Docker on Windows for the Digital Twins as a Service (DTaaS) project.
+This guide documents how to properly set up and configure GitLab runners with
+Docker on Windows for the DTaaS platform.
+
+This document outlines the steps needed to properly set up and
+configure GitLab runners on Windows.
+An illustration of the intended installation setup is shown below.
+
+![GitLab Runner Integration](gitlab-integrated-runner.png))
+
+There are two installation scenarios:
 
 ## Step-by-Step Setup Process
 
 ### 1. Install GitLab Runner
 
-Download and install GitLab Runner for Windows from [GitLab's official download page](https://docs.gitlab.com/runner/install/windows.html).
+Download and install GitLab Runner for Windows from
+[GitLab's official download page](https://docs.gitlab.com/runner/install/windows.html).
 
 ```powershell
 # Navigate to your download directory
@@ -18,23 +28,28 @@ cd C:\path\to\download\folder
 # Start the service
 .\gitlab-runner.exe start
 ```
+
 ### 2. Getting a token
-To get your GitLab token first head to your page should look something like this "https://dtaas-digitaltwin.com/gitlab/dtaas/USERNAME", then do the following:
+
+To get your GitLab token first head to your page should look something like
+this <https://dtaas-digitaltwin.com/gitlab/dtaas/USERNAME>, then do the following:
 
 1. settings -> CI/CD -> Runners
-2. Now press "New Project Runner"
-3. Add tag `linux` 
-4. Leave the rest as is, and press "Create Runner" 
+2. Now press **New Project Runner**
+3. Add tag `linux`
+4. Leave the rest as is, and press **Create Runner**
 5. Now you get your token! SAVE IT!
 
 You now have your runner token.
+
 ### 3. Register Your Runner for DTaaS
 
-For the DTaaS project, you need to register your runner using the specific GitLab instance URL and token:
+For the DTaaS project, you need to register your runner using
+the specific GitLab instance URL and token:
 
 ```powershell
 # Register the runner for DTaaS
-.\gitlab-runner.exe register --url "https://maestro.cps.digit.au.dk/gitlab" --token ""
+.\gitlab-runner.exe register --url "https://foo.com/gitlab" --token ""
 
 # When prompted, enter:
 # - Name: [Your machine name or any preferred name]
@@ -43,11 +58,15 @@ For the DTaaS project, you need to register your runner using the specific GitLa
 # - Tags: linux
 ```
 
-This configuration is designed for the DTaaS digital twins which require a Linux environment to run properly. The pipelines use shell scripts with commands like `chmod +x`, which need a Linux-compatible environment.
+This configuration is designed for the DTaaS digital twins which require
+a Linux environment to run properly. The pipelines use shell scripts with
+commands like `chmod +x`, which need a Linux-compatible environment.
 
-### 4. Configure Your config.toml File for DTaaS
+### 4. Configure Your config.toml
 
-The most important part is properly configuring your `config.toml` file, which is typically located at `C:\Users\YourUsername\.gitlab-runner\config.toml` or in the directory where you downloaded and ran the gitlab-runner executable.
+The most important part is properly configuring your `config.toml` file, which
+is typically located at `C:\Users\YourUsername\.gitlab-runner\config.toml` or
+in the directory where you downloaded and ran the gitlab-runner executable.
 
 #### DTaaS Configuration for Windows Hosts
 
@@ -126,9 +145,10 @@ The DTaaS project uses a specific structure for running digital twins:
 
 ## Common Errors
 
-When attempting to run GitLab CI/CD pipelines on Windows with Docker, you might encounter these errors:
+When attempting to run GitLab CI/CD pipelines on Windows with Docker,
+you might encounter these errors:
 
-```
+```env
 ERROR: Failed to remove network for build
 ERROR: Job failed: invalid volume specification: "c:\\cache"
 ```
@@ -141,6 +161,11 @@ These errors are typically caused by:
 
 ## Conclusion
 
-By following this guide, you should be able to properly set up GitLab runners with Docker on Windows for the DTaaS project and avoid the common configuration errors. The most crucial aspects are using the Docker (Linux) executor and properly formatting the volume paths.
+By following this guide, you should be able to properly set up GitLab runners
+with Docker on Windows for the DTaaS project and avoid the common
+configuration errors. The most crucial aspects are using the Docker (Linux)
+executor and properly formatting the volume paths.
 
-Remember that for the DTaaS digital twins, using the standard Docker executor is required, even when running on a Windows host, since the scripts are designed to run in a Linux environment.
+Remember that for the DTaaS digital twins, using the standard Docker executor
+is required, even when running on a Windows host, since the scripts are
+designed to run in a Linux environment.

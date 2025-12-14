@@ -91,8 +91,8 @@ It contains the following environment variables.
 Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | :------------ | :--------------- | :--------------- |
+  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
 
 :clipboard: Important points to note:
@@ -149,6 +149,8 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: 'xxxxxx',
     REACT_APP_AUTH_AUTHORITY: 'https://localhost/gitlab/',

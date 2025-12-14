@@ -2,9 +2,18 @@
 
 ## Install
 
-The goal is to install and administer the DTaaS application for users.
+The objective is to install and administer the DTaaS platform for users.
 
-The DTaaS can be installed in different ways.
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The DTaaS platform has been developed and tested on
+    [docker CE v28](https://docs.docker.com/engine/release-notes/28/).
+    The software does not work on
+    [docker CE v29](https://docs.docker.com/engine/release-notes/29/) yet.
+<!-- markdownlint-enable MD046 -->
+
+The DTaaS platform can be installed in different ways.
 Each version serves a different purpose.
 
 <!-- markdownlint-disable MD046 -->
@@ -15,20 +24,21 @@ Each version serves a different purpose.
     first time users. Please give it a try.
 <!-- markdownlint-enable MD046 -->
 
-Otherwise, use the installation setup that fits your needs.
+Otherwise, the installation setup that fits specific needs should be selected.
 
-| Installation Setup | Purpose |
-|:-----|:-----|
-| [localhost](./localhost.md) | Install DTaaS on your computer for a single user; does not need a web server. _This setup does not require domain name._ |
-| [secure localhost](./localhost-secure.md) | Install DTaaS on your computer for a single user over HTTPS with integrated [gitlab installation](gitlab/index.md); does not need a web server. _This setup does not require domain name._ |
-| [Server](./host.md) | Install DTaaS on server for multiple users. Please check the [requirements](requirements.md). It is also possible to host the application over HTTPS with integrated [gitlab installation](gitlab/index.md)|
-| [One vagrant machine](vagrant/single-machine.md) | Install DTaaS on a virtual machine; can be used for single or multiple users. |
-| [Two vagrant machines](vagrant/two-machines.md) | Install DTaaS on two virtual machines; can be used for single or multiple users. |
-|   | The core DTaaS application is installed on the first virtual machine and all the services (RabbitMQ, MQTT, InfluxDB, Grafana and MongoDB) are installed on second virtual machine. |
-| [Independent Packages](packages.md) | Can be used independently; do not need full installation of DTaaS. |
+| Installation Setup                               | Purpose                                                                                                                                                                                                        |
+| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [localhost](localhost.md)                        | Installation of the DTaaS on a local computer for a single user; does not require a web server. _This setup does not require a domain name._                                                                   |
+| [secure localhost](./localhost-secure.md)        | Installation of the DTaaS on a local computer for a single user over HTTPS with integrated [GitLab installation](gitlab/index.md); does not require a web server. _This setup does not require a domain name._ |
+| [Server](server.md)                              | Installation of the DTaaS on a server for multiple users. The [requirements](requirements.md) should be reviewed. Hosting over HTTPS with integrated [GitLab installation](gitlab/index.md) is also available. |
+| [One vagrant machine](vagrant/single-machine.md) | Installation of the DTaaS on a virtual machine; can be used for single or multiple users.                                                                                                                      |
+| [Two vagrant machines](vagrant/two-machines.md)  | Installation of the DTaaS on two virtual machines; can be used for single or multiple users.                                                                                                                   |
+|                                                  | The core DTaaS platform is installed on the first virtual machine, and all services (RabbitMQ, MQTT, InfluxDB, Grafana and MongoDB) are installed on the second virtual machine.                               |
+| [Independent Packages](packages.md)              | Can be used independently; does not require full installation of the DTaaS.                                                                                                                                    |
 
-The [installation steps](steps.md) is a good place to start the installation process.
+The [installation steps](steps.md) is a recommended starting point for
+the installation process.
 
 ## Administer
 
-There is a [CLI](cli.md) to add and delete users of a running application.
+A [CLI](cli.md) is available for adding and deleting users of a running application.

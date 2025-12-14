@@ -11,7 +11,7 @@ is responsible for the same.
 For our purpose, we require the Auth MS to be able to handle only
 requests of the general form ”Is User X allowed to access /BackendMS/example?”.
 
-If the user’s identity is correctly verified though the GitLab OAuth2
+If the user’s identity is correctly verified though the GitLab OAuth 2.0
 provider AND this user is allowed to access the
 requested microservice/action, then the Auth MS
 should respond with a 200 (OK) code and let the
@@ -20,7 +20,7 @@ the required microservice/server.
 
 If the
 user’s identity verification through
-GitLab OAuth2 fails OR this user is not
+GitLab OAuth 2.0 fails OR this user is not
 permitted to access the request resource,
 then the Auth MS should respond
 with a 40X (NOT OK) code, and restrict
@@ -70,7 +70,7 @@ diagram.
 
 - Any request made by the user is made on the
   React website, i.e. the
-  frontend of the DTaaS software.
+  frontend of the DTaaS platform.
 
 - This request then goes through the Traefik gateway.
   Here it should be
@@ -80,7 +80,7 @@ diagram.
   should be allowed.
 
 - The Auth MS, i.e. the Auth server verifies the identity of the user
-  using OAuth2 with GitLab, and checks if this user should be allowed
+  using OAuth 2.0 with GitLab, and checks if this user should be allowed
   to make this request.
 
 - If the user is verified and allowed to make the request, the Auth server

@@ -2,49 +2,57 @@
 
 ## User Guide
 
-This guide is for users of the DTaaS platform.
-Please make sure that you have access to a live installation of
-the DTaaS platform. The easiest is
+This guide is intended for users of the DTaaS platform.
+Access to a live installation of the DTaaS platform is required.
+The simplest option is the
 [localhost](../admin/localhost.md) installation scenario.
 
-Please see user-specific
-[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20240917-Users.pdf)
+The following user-specific
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
 and
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20240917-Users-Recorded-web.mp4)
-to get the conceptual framework behind composable digital twins in the DTaaS platform.
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
+provide the conceptual framework behind composable digital twins in the DTaaS platform.
 
 ## Motivation
 
-How can DT software platforms enable users collaborate to:
+A central question in Digital Twin (DT) software platforms is how to enable
+collaborative activities:
 
-* Build digital twins (DTs)
-* Use DTs themselves
-* Share DTs with other users
-* Provide the existing DTs as Service to other users
+* Building digital twins (DTs)
+* Utilizing DTs independently
+* Sharing DTs with other users
+* Providing existing DTs as a service to other users
 
-In addition, how can the DT software platforms:
+Additionally, DT software platforms must address:
 
-* Support DT lifecycle
-* Scale up rather than scale down (flexible convention over configuration)
+* Support for DT lifecycle management
+* Scalability through flexible convention over configuration
 
 ## Existing Approaches
 
-There are quite a few solutions proposed in the recent past to solve
-this problem. Some of them are:
+Several solutions have been proposed in recent literature to address
+these challenges. Notable approaches include:
 
-* Focus on data from Physical Twins (PTs) to
-  perform analysis, diagnosis, planning etc…
-* Share DT assets across the upstream, downstream etc….
-* Evaluate different models of PT
-* DevOps for Cyber Physical Systems (CPS)
-* Scale DT / execution of DT / ensemble of related DTs
+* Focus on data from Physical Twins (PTs) for
+  analysis, diagnosis, and planning
+* Sharing DT assets across upstream and downstream stakeholders
+* Evaluating different models of PT
+* DevOps methodologies for Cyber Physical Systems (CPS)
+* Scaling DT execution and ensemble management of related DTs
 * Support for PT product lifecycle
 
 ## Our Approach
 
+The DTaaS platform adopts the following principles[1]:
+
 * Support for transition from existing workflows to DT frameworks
-* Create DTs from reusable assets
-* Enable users to share DT assets
-* Offer DTs as a Service
-* Integrate the DTs with external software systems
-* Separate configurations of independent DT components
+* Creation of DTs from reusable assets
+* Enabling users to share DT assets
+* Offering DTs as a Service
+* Integration of DTs with external software systems
+* Separation of configurations for independent DT components
+
+## References
+
+[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
+     as a Service platform." Simulation 101.3 (2025): 287-311.

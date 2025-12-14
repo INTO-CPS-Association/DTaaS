@@ -12,7 +12,7 @@ by **vagrant**. The purpose is two fold:
 There are two scripts in this directory:
 
 | Script name | Purpose | Default |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `user.sh` | user installation | :white_check_mark: |
 | `developer.sh` | developer installation | :x: |
 

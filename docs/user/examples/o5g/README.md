@@ -1,7 +1,7 @@
 # Firefighter Mission in a Burning Building
 
-In an firefighter mission it is important to monitor the oxygen levels of
-each firefighters Self Contained Breating Aparatus (SCBA) in context of
+In a firefighter mission, it is important to monitor the oxygen levels of
+each firefighter's Self Contained Breathing Apparatus (SCBA) in the context of
 their mission.
 
 ## Physical Twin Overview
@@ -48,8 +48,8 @@ by Leucker et al.
 
 ### Quick Check
 
-Before runnnig this example please make sure the following files
-are at the correct locations:
+Before running this example, the following files
+must be verified to be at the correct locations:
 
 ```txt
 /workspace/examples/
@@ -121,13 +121,13 @@ export O5G_INFLUX_BUCKET=
 
 The lifecycles that are covered include:
 
-| Lifecycle Phase    | Completed Tasks |
-| --------- | ------- |
-| Install    | Installs Open Modelica, Rust, Telegraf and the required pip dependencies |
-| Create    | Create FMU from Open Modelica file                 |
-| Execute   | Execute the example in the background tmux terminal session                      |
-| Terminate | Terminate the tmux terminal session running in the background                                                  |
-| Clean | Delete the temporary files                                                 |
+| Lifecycle Phase | Completed Tasks                                                          |
+| --------------- | ------------------------------------------------------------------------ |
+| Install         | Installs Open Modelica, Rust, Telegraf and the required pip dependencies |
+| Create          | Create FMU from Open Modelica file                                       |
+| Execute         | Execute the example in the background tmux terminal session              |
+| Terminate       | Terminate the tmux terminal session running in the background            |
+| Clean           | Delete the temporary files                                               |
 
 ## Run the example
 
@@ -176,12 +176,12 @@ To detatch press `Ctrl-b` followed by `d`.
 
 The _tmux_ session contains 4 components of the digital twin:
 
-| Panel location | Purpose |
-|:---|:---|
-| Top Left | Sensor simulator generating random location and O2-level data |
-| Top Right | Main Digital Twin receives the sensor data and calculates an estimate of how many minutes of air remain |
-| Bottom Left | Telegraf to convert between different message formats, also displays all messages between components |
-| Bottom Right | TeSSLa monitor raises an alarm, if the remaining time is to low. |
+| Panel location | Purpose                                                                                                 |
+| :------------- | :------------------------------------------------------------------------------------------------------ |
+| Top Left       | Sensor simulator generating random location and O2-level data                                           |
+| Top Right      | Main Digital Twin receives the sensor data and calculates an estimate of how many minutes of air remain |
+| Bottom Left    | Telegraf to convert between different message formats, also displays all messages between components    |
+| Bottom Right   | TeSSLa monitor raises an alarm, if the remaining time is to low.                                        |
 
 #### Examine the Results
 

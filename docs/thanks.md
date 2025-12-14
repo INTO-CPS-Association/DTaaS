@@ -1,47 +1,44 @@
-# Contributors
+# Thanks
 
+## Funding Sources
+
+This project has been funded by the following projects.
+
+* Security for the Digital Twin as a Service Platform - a project sponsored by
+  Thomas B. Thriges Foundation
+* CP-SENS (Cyber-Physical Sensing for Machinery and Structures) -
+  a Grand Solution project funded by the Innovation Fund Denmark under
+  the grant agreement 2081-00006B.
+* The DIGITbrain (Digital Twins for Manufacturing SMEs) - a European Union’s
+  Horizon 2020 research and innovation program under grant agreement No 952071.
+* Digital Twins for Cyber-Physical Systems (DiT4CPS) - a project sponsored by
+  the Grundfos Foundation.
+
+## Developers
+
+Please see the list of contributors on
 [code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
-
-## Users
-
-Cláudio Ângelo Gonçalves Gomes,
-Dmitri Tcherniak,
-Elif Ecem Bas,
-Farshid Naseri,
-Giuseppe Abbiati,
-Hannes Iven,
-Hao Feng,
-Henrik Ejersbo,
-Lars Vosteen,
-Lei Zhao,
-Mirgita Frasheri,
-Morten Haahr Kristensen,
-Neena Goveas,
-Tanusree Roy,
-Santiago Gil Arboleda,
-Swarup Mahato,
-Valdemar Tang
 
 ## Example Contributors
 
-| Example Name | Contributors |
-|:---|:---|
-| Mass Spring Damper | Prasad Talasila |
-| Water Tank Fault Injection | Henrik Ejersbo and Mirgita Frasheri |
-| Water Tank Model Swap | Henrik Ejersbo and Mirgita Frasheri |
-| Desktop Robotti with RabbitMQ | Mirgita Frasheri |
-| Water Treatment Plant and OPC-UA | Lucia Royo and Alejandro Labarias |
-| Three Water Tanks with DT Manager Framework | Santiago Gil Arboleda |
-| Flex-Cell with Two Industrial Robots | Santiago Gil Arboleda |
-| Incubator | Morten Haahr Kristensen |
-| Firefighters in Emergency Environments | Lars Vosteen and Hannes Iven |
-| Mass Spring Damper with NuRV Runtime Monitor | Alberto Bonizzi  |
-| Incubator with NuRV Runtime Monitor | Alberto Bonizzi and Morten Haahr Kristensen |
-| Incubator with NuRV Runtime Monitor Service | Valdemar Tang |
-| Water Tank Fault Injection with NuRV Runtime Monitor | Alberto Bonizzi |
-| Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen |
-| Incubator with NuRV Runtime Monitor FMU as Service | Valdemar Tang and Morten Haahr Kristensen |
-| Incubator with NuRV Runtime Monitor as Service | Morten Haahr Kristensen and Valdemar Tang |
+| Example Name                                          | Contributors                                |
+| :---------------------------------------------------- | :------------------------------------------ |
+| Mass Spring Damper                                    | Prasad Talasila                             |
+| Water Tank Fault Injection                            | Henrik Ejersbo and Mirgita Frasheri         |
+| Water Tank Model Swap                                 | Henrik Ejersbo and Mirgita Frasheri         |
+| Desktop Robotti with RabbitMQ                         | Mirgita Frasheri                            |
+| Water Treatment Plant and OPC-UA                      | Lucia Royo and Alejandro Labarias           |
+| Three Water Tanks with DT Manager Framework           | Santiago Gil Arboleda                       |
+| Flex-Cell with Two Industrial Robots                  | Santiago Gil Arboleda                       |
+| Incubator                                             | Morten Haahr Kristensen                     |
+| Firefighters in Emergency Environments                | Lars Vosteen and Hannes Iven                |
+| Mass Spring Damper with NuRV Runtime Monitor          | Alberto Bonizzi                             |
+| Incubator with NuRV Runtime Monitor                   | Alberto Bonizzi and Morten Haahr Kristensen |
+| Incubator with NuRV Runtime Monitor Service           | Valdemar Tang                               |
+| Water Tank Fault Injection with NuRV Runtime Monitor  | Alberto Bonizzi                             |
+| Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen                     |
+| Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
+| Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
 
 ## Documentation
 

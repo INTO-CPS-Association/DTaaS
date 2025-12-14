@@ -1,13 +1,13 @@
 # Publish NPM packages
 
-The DTaaS software is developed as a monorepo with multiple npm packages.
+The DTaaS platform is developed as a monorepo with multiple npm packages.
 
 ## Default npm registry
 
 The default registry for npm packages is [npmjs](https://registry.npmjs.org).
 The freely-accessible public packages are published to the **npmjs** registry.
 The publication step is manual for the
-[runner](../user/servers/execution/runner/README.md).
+[runner](../user/servers/execution/runner/readme.md).
 
 ```bash
 npm login --registry="https://registry.npmjs.org"
@@ -18,11 +18,12 @@ yarn publish --registry="https://registry.npmjs.org" \
 ```
 
 At least one version of runner package is published to this registry
-for each release of DTaaS.
+for each release of the DTaaS platform.
 
-The publication step for
-[library microservice](../admin/servers/lib/npm.md) is automated via
-github actions.
+The publication steps for
+[library microservice](../admin/servers/lib/npm.md) and
+[runner](../user/servers/execution/runner/readme.md)
+are automated via github actions.
 
 ## Github  npm registry
 
@@ -77,13 +78,15 @@ for more information.
 If there is a need to unpublish a package, ex: `@dtaas/runner@0.0.2`, do:
 
 ```bash
-npm unpublish  --registry http://localhost:4873/ @dtaas/runner@0.0.2
+npm unpublish --registry http://localhost:4873/ \
+  @dtaas/runner@0.0.2
 ```
 
 To install / uninstall this utility for all users, do:
 
 ```bash
-sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
+sudo npm install --registry http://localhost:4873 \
+  -g @dtaas/runner
 sudo npm list -g # should list @dtaas/runner in the packages
 sudo npm remove --global @dtaas/runner
 ```
@@ -96,6 +99,7 @@ the regular npm packages installed from [npmjs](https://www.npmjs.com/).
 For example, to use `@dtaas/runner@0.0.2` package, do:
 
 ```bash
-sudo npm install  --registry http://localhost:4873 -g @dtaas/runner
+sudo npm install --registry http://localhost:4873 \
+  -g @dtaas/runner
 runner # launch the digital twin runner
 ```

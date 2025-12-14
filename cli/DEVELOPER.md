@@ -74,7 +74,7 @@ of documentation and reference.
 server-dns = "foo.com"
 # Specify the directory of DTaaS installation
 # Linux example
-path = "/home/Desktop/DTaaS"
+path = "/Users/username/DTaaS"
 # Windows example
 #path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get 
@@ -116,7 +116,7 @@ It is aimed to be incorporated in future versions.
 
 ```toml
 [client.web]
-config = "/home/Desktop/DTaaS/env.local.js"
+config = "/Users/username/DTaaS/env.local.js"
 ```
 
 These variables are currently not in use, and will be incorporated

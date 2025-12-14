@@ -41,7 +41,7 @@ A diagram depicting the logical software structure of the example can be seen be
 
 ![DT structure](./figures/dt-structure-nurv.svg)
 
-The _execute.py_ script is responsible for orchestrating and starting all
+The *execute.py* script is responsible for orchestrating and starting all
 the relevant services in this example. This includes the Incubator DT,
 CORBA naming service (omniNames) and the NuRV monitor server as well as
 implementing the *Monitor connector* component that connects the DT output
@@ -60,21 +60,21 @@ received of either state, the full state (the new updated state and
 the previous other state) is pushed to the NuRV monitor server whereafter
 the verdict is printed to the console.
 
-## Digital Twin configuration
+## Digital Twin Configuration
 
-Before running the example, please configure the _simulation.conf_ file with
-your RabbitMQ credentials.
+Before running the example, the *simulation.conf* file should be configured with
+the appropriate RabbitMQ credentials.
 
 The example uses the following assets:
 
-| Asset Type | Names of Assets | Visibility | Reuse in other Examples |
-|:---|:---|:---|:---|
-| Service | common/services/NuRV_orbit | Common | Yes |
-| DT | common/digital_twins/incubator | Common | Yes |
-| Specification | safe-operation.smv | Private | No |
-| Script | execute.py | Private | No |
+| Asset Type    | Names of Assets                | Visibility | Reuse in other Examples |
+| :------------ | :----------------------------- | :--------- | :---------------------- |
+| Service       | common/services/NuRV_orbit     | Common     | Yes                     |
+| DT            | common/digital_twins/incubator | Common     | Yes                     |
+| Specification | safe-operation.smv             | Private    | No                      |
+| Script        | execute.py                     | Private    | No                      |
 
-The _safe-operation.smv_ file contains the default monitored specification as
+The *safe-operation.smv* file contains the default monitored specification as
 described in the [Simulated scenario section](#simulated-scenario).
 These can be configured as desired.
 
@@ -82,11 +82,11 @@ These can be configured as desired.
 
 The lifecycle phases for this example include:
 
-| Lifecycle phase | Completed tasks |
-| ------ | ------- |
-| create    | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies |
-| execute   | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
-| clean     | Removes created _data_ directory and incubator log files. |
+| Lifecycle phase | Completed tasks                                                                                                                                                                                                |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| create          | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies                                                                                                         |
+| execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
+| clean           | Removes created *data* directory and incubator log files.                                                                                                                                                      |
 
 If required, change the execute permissions of lifecycle scripts you need to execute.
 This can be done using the following command
@@ -95,7 +95,7 @@ This can be done using the following command
 chmod +x lifecycle/{script}
 ```
 
-where {script} is the name of the script, e.g. _create_, _execute_ etc.
+where {script} is the name of the script, e.g. *create*, *execute* etc.
 
 ## Running the example
 
@@ -105,19 +105,19 @@ To run the example, first run the following command in a terminal:
 cd /workspace/examples/digital_twins/incubator-monitor-server/
 ```
 
-Then, first execute the _create_ script (this can take a few mins
-depending on your network connection) followed by the _execute_
+Then, first execute the *create* script (this can take a few mins
+depending on your network connection) followed by the *execute*
 script using the following command:
 
 ```bash
 lifecycle/{script}
 ```
 
-The _execute_ script will then start outputting system states and
+The *execute* script will then start outputting system states and
 the monitor verdict approx every 3 seconds. The output is printed
 as follows
 "__State: {anomaly state} & {energy_saving state}, verdict: {Verdict}__"
-where "_anomaly_" indicates that an anomaly is detected and "!anomaly"
+where "*anomaly*" indicates that an anomaly is detected and "!anomaly"
 indicates that an anomaly is not currently detected. The same format
 is used for the energy_saving state.
 

@@ -1,12 +1,13 @@
 # Reusable Assets
 
-The reusability of digital twin assets makes it easy for
-users to work with the digital twins. The reusability of
-assets is a fundamental feature of the platform.
+The reusability of digital twin assets facilitates
+efficient work with digital twins. Reusability of
+assets is a fundamental feature of the platform[1].
 
 ## Kinds of Reusable Assets
 
-The DTaaS software categorizes all the reusable library assets into six categories:
+The DTaaS platform categorizes all reusable library assets into
+six categories:
 
 ![Categories of Library Assets](library-assets.png)
 
@@ -131,11 +132,11 @@ workspace/
 ```
 
 !!! tip
-    The DTaaS is agnostic to the format of your assets.
+    The DTaaS is agnostic to the format of assets.
     The only requirement is that they are files which can
-    be uploaded on the Library page. Any directories can be
-    compressed as one file and uploaded. You can decompress
-    the file into a directory from a Terminal or xfce Desktop
+    be uploaded on the Library page. Directories can be
+    compressed as single files and uploaded. The files can be decompressed
+    into directories from a Terminal or xfce Desktop
     available on the Workbench page.
 
 A recommended file system structure for storing assets is also
@@ -144,27 +145,32 @@ available in
 
 ## Upload Assets
 
-Users can upload assets into their workspace using Library page of the website.
+Users can upload assets into their workspace using the Library page of the website.
 
-![Library Page](../../website/library.png)
+![Library Page](../../website/images/library.png)
 
-You can go into a directory and click on the **upload**
-button to upload a file or a directory into your workspace.
-This asset is then available in all the workbench tools you can use.
-You can also create new assets on the page by
-clicking on **new** drop down menu. This is a simple web interface
-which allows you to create text-based files.
-You need to upload other files using **upload** button.
+Navigation into a directory followed by clicking on the **upload**
+button allows uploading files or directories into the workspace.
+These assets then become available in all workbench tools.
+New assets can also be created on the page by
+clicking on the **new** dropdown menu. This simple web interface
+allows creation of text-based files.
+Other files must be uploaded using the **upload** button.
 
-The user workbench has the following services:
+The user workbench provides the following services:
 
 * Jupyter Notebook and Lab
 * VS Code
 * XFCE Desktop Environment available via VNC
 * Terminal
 
-Users can also bring their DT assets into user workspaces from outside
-using any of the above mentioned services. The developers using _git_
+Users can also bring DT assets into user workspaces from external sources
+using any of the above-mentioned services. Developers using _git_
 repositories can clone from and push to remote git servers. Users can
-also use widely used file transfer protocols such as FTP, and SCP to
+also use widely-used file transfer protocols such as FTP and SCP to
 bring the required DT assets into their workspaces.
+
+## References
+
+[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
+     as a Service platform." Simulation 101.3 (2025): 287-311.

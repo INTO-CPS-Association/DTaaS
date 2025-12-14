@@ -62,7 +62,7 @@ After the installation is complete, you can see the following services active
 at the following ports / URLs.
 
 | service | external url |
-|:---|:---|
+| :--- | :--- |
 | RabbitMQ Broker | services.foo.com:8083 |
 | RabbitMQ Broker Management Website | services.foo.com:8084 |
 | MQTT Broker | services.foo.com:8085 |

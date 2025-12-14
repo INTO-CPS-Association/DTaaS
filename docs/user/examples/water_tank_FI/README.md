@@ -2,9 +2,9 @@
 
 ## Overview
 
-This example shows a fault injection (FI) enabled digital twin (DT).
+This example demonstrates a fault injection (FI) enabled digital twin (DT).
 A live DT is subjected to simulated faults received from the environment.
-The simulated faults is specified as part of DT configuration and can be
+The simulated faults are specified as part of DT configuration and can be
 changed for new instances of DTs.
 
 In this co-simulation based DT, a watertank case-study is used; co-simulation
@@ -29,25 +29,25 @@ increasing in the tank beyond the desired level (```Level-2```).
 This example uses two models and one tool.
 The specific assets used are:
 
-| Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
-| Models | watertankcontroller-c.fmu | Private | Yes |
-|  | singlewatertank-20sim.fmu | Private | Yes |
-| Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
+| Asset Type | Names of Assets                         | Visibility | Reuse in Other Examples |
+| :--------- | :-------------------------------------- | :--------- | :---------------------- |
+| Models     | watertankcontroller-c.fmu               | Private    | Yes                     |
+|            | singlewatertank-20sim.fmu               | Private    | Yes                     |
+| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The `multimodelFI.json` and `simulation-config.json`
 are two DT configuration files used for executing the digital twin.
-You can change these two files to customize the DT to your needs.
+These two files can be modified to customize the DT for specific requirements.
 
 :fontawesome-solid-circle-info: The faults are defined in __wt_fault.xml__.
 
 ## Lifecycle Phases
 
-| Lifecycle Phase    | Completed Tasks |
-| -------- | ------- |
-| Create  | Installs Java Development Kit for Maestro tool    |
-| Execute | Produces and stores output in data/water_tank_FI/output directory|
-| Clean   | Clears run logs and outputs |
+| Lifecycle Phase | Completed Tasks                                                   |
+| --------------- | ----------------------------------------------------------------- |
+| Create          | Installs Java Development Kit for Maestro tool                    |
+| Execute         | Produces and stores output in data/water_tank_FI/output directory |
+| Clean           | Clears run logs and outputs                                       |
 
 ## Run the example
 

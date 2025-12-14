@@ -15,7 +15,7 @@ The docker compose environment creates the following development scenario.
 
 ## Folder Structure
 
-There are two dockerfiles for building the containers:
+There are four dockerfiles for building the containers:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
@@ -29,6 +29,9 @@ There are two dockerfiles for building the containers:
   microservice container from published npm package at npmjs.com.
   This Dockerfile is only used during publishing. It is used neither
   in the development builds nor in Github actions.
+
+In addition, there are docker compose and configuration files.
+
 - **compose.dev.yml:** Docker Compose configuration for
   development environment.
 - **.env**: environment variables for docker compose file
@@ -155,7 +158,7 @@ The regular users are encouraged to use the packages from npm and docker.
 A brief explanation of the packages is given below.
 
 | Package Name | Description | Documentation for | Availability |
-|:----|:----|:----|:----|
+| :---- | :---- | :---- | :---- |
 | dtaas-web | React web application | [container image](../docs/admin/client/docker.md) | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
 | libms |Library microservice | [npm package](../docs/admin/servers/lib/npm.md) | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
 | | | [container image](../docs/admin/servers/lib/docker.md) | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |

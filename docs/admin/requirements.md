@@ -10,17 +10,17 @@
     a production web server.
 <!-- markdownlint-enable MD046 -->
 
-There are two optional requirements for installing the DTaaS.
+Two optional requirements exist for installing the DTaaS.
 
-## OAuth Provider
+## OAuth 2.0 Provider
 
-The DTaaS software is uses OAuth for user authorization. It is
-possible to use either <http:>_gitlab.com_</http:> or your own
-OAuth service provider.
+The DTaaS platform uses OAuth 2.0 for user authorization. It is
+possible to use either <http:>_gitlab.com_</http:> or a custom
+OAuth 2.0 service provider.
 
 ## Domain name
 
-The DTaaS software is a web application and is preferably hosted
-on a server with a domain name like <http:>_foo.com_</http:>.
-However, it is possible to install the software on your computer
-and use access it at <http:>_localhost_</http:>.
+The DTaaS platform is a web application and is preferably hosted
+on a server with a domain name such as <http:>_foo.com_</http:>.
+However, installation on a local computer with access at
+<http:>_localhost_</http:> is also supported.

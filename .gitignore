@@ -227,3 +227,6 @@ deploy/services/cli/compose.services.secure.yml
 deploy/services/cli/data
 deploy/services/cli/config
 deploy/services/cli/test-output
+
+# local research papers
+.research-papers

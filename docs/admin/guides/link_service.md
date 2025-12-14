@@ -32,7 +32,7 @@ ssh -fNT -L <local_port>:<destination>:<destination_port> <user>@<services.serve
 ```
 
 Here's an example mapping the RabbitMQ broker service available at 5672 of
-_services.foo.com_ to localhost port 5672.
+`services.foo.com` to localhost port 5672.
 
 ```sh
 ssh -fNT -L 5672:localhost:5672 vagrant@services.foo.com

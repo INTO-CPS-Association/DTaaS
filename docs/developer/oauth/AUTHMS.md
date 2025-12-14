@@ -2,24 +2,24 @@
 
 This document details the workflow and implementation
 of the DTaaS Auth Microservice. Please go through
-the [System Design](DESIGN.md) and the summary of
-the [OAuth2.0 technology](OAUTH2.0.md) to be able to
+the [System Design](design.md) and the summary of
+the [OAuth 2.0 technology](oauth2.0.md) to be able to
 understand the content here better.
 
 ## Workflow
 
-### User Identity using OAuth2.0
+### User Identity using OAuth 2.0
 
 We define some constants that will help with the following discussion:
 
-- CLIENT ID: The OAuth2 Client ID of the Auth MS
-- CLIENT SECRET: The OAuth2 Client Secret of Auth MS
+- CLIENT ID: The OAuth 2.0 Client ID of the Auth MS
+- CLIENT SECRET: The OAuth 2.0 Client Secret of Auth MS
 - REDIRECT URI: The URI where the user is redirected to after the
   user has approved sharing of information with the client.
 - STATE: A random string used as an identifier for the specific "GET
   authcode" request (Figure 3.3)
 - AUTHCODE: The one-use-only Authorization code returned by the
-  OAuth2 provider (GitLab instance) in response to "GET authcode"
+  OAuth 2.0 provider (GitLab instance) in response to "GET authcode"
   after user approval.
 
 Additionally, let's say DTaaS uses a dedicated
@@ -28,11 +28,11 @@ gitlab instance hosted at the URL
 
 ![alt text](oauth2-workflow.png)
 
-A successful OAuth2 workflow (Figure 3.3) has the following steps:
+A successful OAuth 2.0 workflow (Figure 3.3) has the following steps:
 
 - The user requests a resource, say _GET/BackendMS_
-- The Auth MS intercepts this request, and starts the OAuth2 process.
-- The Auth MS sends a authorization request to the Gitlab instance.
+- The Auth MS intercepts this request, and starts the OAuth 2.0 process.
+- The Auth MS sends a authorization request to the GitLab instance.
 
 This is written in shorthand as _GET/authcode_. The
 actual request (a user redirect) looks like:
@@ -48,7 +48,7 @@ scope=read_user&state = STATE
 
 Here the gitlab.foo.com/oauth/authorize
 is the specific
-endpoint of the Gitlab instance that handles
+endpoint of the GitLab instance that handles
 authorisation code requests.
 
 The query parameters in the request include
@@ -60,11 +60,11 @@ the scope which is set to read user
 for our purpose, and the state (the
 random string to identify the specific request).
 
-- The OAuth2 provider redirects the user to the login page. Here the
+- The OAuth 2.0 provider redirects the user to the login page. Here the
   user logs into their protected account with their username/email ID
   and password.
 
-- The OAuth2 provider then asks the user to approve/deny sharing the
+- The OAuth 2.0 provider then asks the user to approve/deny sharing the
   requested information with the Auth MS. The user should approve this
   for successful authentication.
 
@@ -75,10 +75,10 @@ random string to identify the specific request).
 REDIRECT_URI?code=AUTHCODE&state=STATE
 ```
 
-  The REDIRECT URI is as defined previously, during the OAuth2
+  The REDIRECT URI is as defined previously, during the OAuth 2.0
   Client initialisation, i.e. the same as the one provided in the ”GET
   authcode” request by the Auth MS.
-  The query parameters are provided by the Gitlab instance.
+  The query parameters are provided by the GitLab instance.
   These include the AUTHCODE which is
   the authoriation code that the Auth MS had requested, and the STATE
   which is the same random string in the ”GET authcode” request.
@@ -105,15 +105,15 @@ redirect_uri=REDIRECT_URI'
 ```
 
 The request to get a token by exchanging an authorization code,
-is actually a POST request (for most OAuth2 providers).
-The <http:>https://gitlab.foo.com/oauth/token</http:> API endpoint handles
+is actually a POST request (for most OAuth 2.0 providers).
+The <http:><https://gitlab.foo.com/oauth/token></http:> API endpoint handles
 the token exchange requests. The parameters sent with the
 POST request are the client ID, the client secret, the AUTHCODE and the
 redirect uri. The grant type parameter is always set to the string
 ”authorization code”, which conveys that we will be exchanging an
 authentication code for an access token.
 
-- The Gitlab instance exchanges a valid AUTHCODE for an Access Token.
+- The GitLab instance exchanges a valid AUTHCODE for an Access Token.
   This is sent as a response to the Auth MS. An example response
   is of the following form:
 
@@ -147,7 +147,7 @@ authentication code for an access token.
   Auth MS. The steps till now in the sequence diagram are simply to get
   a valid access token for the user information.
 
-- The Auth MS makes a final request to the Gitlab instance, shorthanded
+- The Auth MS makes a final request to the GitLab instance, shorthanded
   as _GET user\_details_ in the sequence diagram. The actual request is
   of the form:
 
@@ -156,13 +156,13 @@ authentication code for an access token.
   "Authorization": Bearer <TOKEN>
   ```
 
-Here, <http:>https://gitlab.foo.com/api/v4/user</http:> is the API endpoint
+Here, <http:><https://gitlab.foo.com/api/v4/user></http:> is the API endpoint
 that responds with user information.
 An authorization header is required on the request,
 with a valid access token. The required header
 is added here, and TOKEN is the access token that the Auth MS holds.
 
-- The Gitlab instance verifies the access token, and if it is valid, responds
+- The GitLab instance verifies the access token, and if it is valid, responds
   with the required user information. This includes username, email ID,
   etc. An example response looks like:
 
@@ -258,7 +258,7 @@ the user access based on that.
 In the sequence diagram, the Auth MS has a self-request
 marked as ”Checks user permissions” after receiving
 the user identity from
-the Gitlab instance. This is when the Auth MS
+the GitLab instance. This is when the Auth MS
 compares the identity of the
 user to the rules and/or database it has for
 the requested service. Based on
@@ -310,10 +310,10 @@ There are three main steps of configuring the Auth MS properly.
 - The traefik-forward-auth service needs to be configured carefully.
   Firstly,
   we set the environment variables for our specific case.
-  Since, we are using Gitlab, we use the
+  Since, we are using GitLab, we use the
   generic-oauth provider configuration.
   Some important variables that are required are
-  the OAuth2 Client ID, Client Secret, Scope.
+  the OAuth 2.0 Client ID, Client Secret, Scope.
   The API endpoints
   for getting an AUTHCODE, exchanging the code for an access token and
   getting user information are also necessary
@@ -389,10 +389,10 @@ labels:
   which can be either ”auth” or ”allow”.
   If action is set to ”allow”, any requests
   on this route are allowed to bypass even
-  the OAuth2 identification. If the
+  the OAuth 2.0 identification. If the
   action is set to ”auth”, requests on this
   route will require User identity
-  OAuth2 and the system will follow the sequence diagram.
+  OAuth 2.0 and the system will follow the sequence diagram.
   For rules with action=”auth”, the user information
   is retrieved. The
   identity we use for a user is the user’s email ID.
@@ -407,7 +407,7 @@ labels:
 - Domain - This would be a domain
   (example: gmail.com), and only
   email IDs (user identities) of that
-  domain (example: johndoe@gmail.com)
+  domain (example: <johndoe@gmail.com>)
   would be allowed access to the corresponding route.
 
 Configuring any of these two properties of
@@ -415,10 +415,10 @@ an ”auth” rule allows us to
 selectively permit access to certain users
 for certain resources.
 Not configuring any of these properties for an ”auth” rule means
-that the OAuth2 process is carried out
+that the OAuth 2.0 process is carried out
 and the user identity is retrieved, but all
 known user identities (i.e. all users
-that successfully complete the OAuth) are
+that successfully complete the OAuth 2.0) are
 allowed to access the resource.
 
 DTaaS currently uses only the whitelist type of rules.
@@ -448,7 +448,7 @@ rule.onlyu1.whitelist=user1@localhost
 
 - Common Auth - Serves the Path(‘/common‘) route.
   A rule that requires
-  OAuth, i.e. with action=”allow”, but allows
+  OAuth 2.0, i.e. with action=”allow”, but allows
   all valid and known user
   identities should be imposed on this.
 
