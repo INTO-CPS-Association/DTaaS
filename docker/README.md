@@ -87,7 +87,7 @@ Update the configuration files. The files to be updated are:
    please see [client config](../docs/admin/client/config.md) for help
    with updating this config file)
 
-*note*: username(s) in `.env`, must be equal traefic used in `conf.dev` for `onlyu*`.
+**note**: The username(s) in `.env` and `conf.dev` must match.
 
 ## Development Environment
 
