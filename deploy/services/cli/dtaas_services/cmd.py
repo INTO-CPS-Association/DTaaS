@@ -3,7 +3,6 @@ import click
 import shutil
 import dtaas_services
 from pathlib import Path
-from .pkg.config import Config
 from .pkg.cert import copy_certs
 from .pkg.mongodb import permissions_mongodb
 from .pkg.influxdb import permissions_influxdb
@@ -118,7 +117,6 @@ def setup():
     - Starts the services using Docker Compose
     """
     try:
-        config = Config()
         setup_obj = Service()
         check_root_unix()
         click.echo("Starting service setup....")
@@ -152,7 +150,6 @@ def setup():
 def start(service_names):
     """Start the platform services."""
     try:
-        config = Config()
         setup_obj = Service()
 
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
@@ -178,7 +175,6 @@ def start(service_names):
 def stop(service_names):
     """Stop the platform services."""
     try:
-        config = Config()
         setup_obj = Service()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
@@ -204,7 +200,6 @@ def stop(service_names):
 def status(service_names):
     """Show the status of the platform services."""
     try:
-        config = Config()
         setup_obj = Service()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
@@ -225,7 +220,6 @@ def status(service_names):
 def restart(service_names):
     """Restart the platform services."""
     try:
-        config = Config()
         setup_obj = Service()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
