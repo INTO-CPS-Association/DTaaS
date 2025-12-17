@@ -6,10 +6,10 @@ InfluxDB, RabbitMQ, and Grafana.
 ## Features
 
 * **Project Initialization:** Generate project structure with config and data directories
-* **Automated Setup:** One-command setup of TLS certificates and permissions
+* **Automated Setup:** One command setup of TLS certificates and permissions
 * **Service Management:** Start, stop, and check status of all services
 * **User Management:** Easy creation of user accounts in InfluxDB and RabbitMQ
-* **Cross-platform:** Works on Linux, macOS, and Windows
+* **Cross platform:** Works on Linux, macOS, and Windows
 * **Configuration-driven:** Reads settings from `config/services.env`
 
 ## Installation
@@ -18,57 +18,31 @@ InfluxDB, RabbitMQ, and Grafana.
 
 * Python 3.10 or higher
 * Docker and Docker Compose
-* TLS certificates in the `certs/` directory
+* TLS certificates
 
-### Install from GitHub Release (Recommended)
+### Install from Wheel Package
 
-Download the latest wheel package from the
-[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases)
-and install it:
+Install the standalone wheel package using pip:
 
 ```bash
-# Download the .whl file from the releases page, then:
 pip install dtaas_services-0.1.0-py3-none-any.whl
 ```
 
-Or install directly from the release URL:
+This installs the `dtaas-services` command.
+
+To verify the installation:
 
 ```bash
-pip install TODO: XXXXX 
-```
-
-### Install from Source
-
-For development or if you want the latest unreleased version:
-
-```bash
-cd deploy/services/cli
-pip install .
-```
-
-### Build Your Own Wheel
-
-```bash
-cd deploy/services/cli
-pip install poetry
-
-# Copy external files (config, data, compose) into the package
-python build.py
-
-# Build the wheel
-poetry build
-
-# This creates a .whl file in dist/ (filename varies by Python version and platform)
-pip install dist/dtaas_services-0.1.0-*.whl
+dtaas-services --help
 ```
 
 ## Quick Start
 
-1. Generate the project structure:
+1. Navigate to where you want to set up the services and generate the project
+structure and run:
 
    ```bash
-   dtaas-services generate-project --path /path/to/your/project
-   cd /path/to/your/project
+   dtaas-services generate-project 
    ```
 
    This creates:

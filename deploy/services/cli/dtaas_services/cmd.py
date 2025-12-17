@@ -119,7 +119,7 @@ def setup():
     """
     try:
         config = Config()
-        setup_obj = Service(config)
+        setup_obj = Service()
         check_root_unix()
         click.echo("Starting service setup....")
 
@@ -148,14 +148,14 @@ def setup():
 
 
 @services.command()
-@click.option('--services', '-s', help='Comma-separated list of services to start')
-def start(services):
+@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to start')
+def start(service_names):
     """Start the platform services."""
     try:
         config = Config()
-        setup_obj = Service(config)
+        setup_obj = Service()
 
-        service_list = [s.strip() for s in services.split(',')] if services else None
+        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
             click.echo(f"Starting services: {', '.join(service_list)}...")
@@ -174,14 +174,14 @@ def start(services):
 
 
 @services.command()
-@click.option('--services', '-s', help='Comma-separated list of services to stop')
-def stop(services):
+@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to stop')
+def stop(service_names):
     """Stop the platform services."""
     try:
         config = Config()
-        setup_obj = Service(config)
+        setup_obj = Service()
         
-        service_list = [s.strip() for s in services.split(',')] if services else None
+        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
             click.echo(f"Stopping services: {', '.join(service_list)}...")
@@ -200,14 +200,14 @@ def stop(services):
 
 
 @services.command()
-@click.option('--services', '-s', help='Comma-separated list of services to check')
-def status(services):
+@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to check')
+def status(service_names):
     """Show the status of the platform services."""
     try:
         config = Config()
-        setup_obj = Service(config)
+        setup_obj = Service()
         
-        service_list = [s.strip() for s in services.split(',')] if services else None
+        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         err, msg = setup_obj.get_status(service_list)
         if err is not None:
@@ -221,14 +221,14 @@ def status(services):
 
 
 @services.command()
-@click.option('--services', '-s', help='Comma-separated list of services to restart')
-def restart(services):
+@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to restart')
+def restart(service_names):
     """Restart the platform services."""
     try:
         config = Config()
-        setup_obj = Service(config)
+        setup_obj = Service()
         
-        service_list = [s.strip() for s in services.split(',')] if services else None
+        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
             click.echo(f"Restarting services: {', '.join(service_list)}...")

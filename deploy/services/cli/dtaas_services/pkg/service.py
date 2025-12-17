@@ -1,5 +1,4 @@
 """DTaaS platform services setup module"""
-from pathlib import Path
 from typing import Tuple, Optional
 from python_on_whales import DockerClient
 from .config import Config
@@ -13,14 +12,10 @@ class Service:
     of platform services using Docker Compose.
     """
 
-    def __init__(self, config: Optional[Config] = None) -> None:
+    def __init__(self) -> None:
         """
         Initialize service setup.
-        
-        Args:
-            config: Configuration object. If None, creates default Config.
         """
-        config = config or Config()
         base_dir = Config.get_base_dir()
         self.compose_file = base_dir / "compose.services.secure.yml"
         self.docker = DockerClient(compose_files=[self.compose_file])
