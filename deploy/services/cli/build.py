@@ -3,6 +3,15 @@ from pathlib import Path
 import shutil
 
 
+def build(setup_kwargs):
+    """
+    This function is called by Poetry during build to prepare files.
+    """
+    copy_external_files()
+    return setup_kwargs
+
+
+
 def copy_external_files():
     """Copy config, data, and compose files from parent directory."""
     cli_dir = Path(__file__).parent

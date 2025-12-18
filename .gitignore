@@ -214,3 +214,7 @@ deploy/services/cli/dtaas_services/compose.services.secure.yml
 #ignore developer files
 docker/.env
 docker/conf.dev
+
+deploy/services/cli/data
+deploy/services/cli/config
+deploy/services/cli/test-output

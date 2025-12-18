@@ -6,6 +6,11 @@ authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"  
 readme = "README.md"  
 packages = [{include = "dtaas_services"}]
+include = [
+    { path = "dtaas_services/config", format = ["sdist", "wheel"] },
+    { path = "dtaas_services/data", format = ["sdist", "wheel"] },
+    { path = "dtaas_services/*.yml", format = ["sdist", "wheel"] }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
