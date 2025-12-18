@@ -1,6 +1,7 @@
 """Tests for utility functions"""
 from pathlib import Path
 from unittest.mock import patch, Mock
+from python_on_whales.exceptions import DockerException
 from dtaas_services.pkg.utils import check_root_unix, execute_docker_command, get_credentials_path
 
 
@@ -73,10 +74,10 @@ def test_execute_docker_command_failure(mock_docker_client):
     """Test Docker command execution failure"""
     mock_client = Mock()
     mock_docker_client.return_value = mock_client
-    mock_client.execute.side_effect = Exception("Docker error")
+    mock_client.execute.side_effect = DockerException(["docker", "exec"], 1, b"", b"Docker error")
     success, output = execute_docker_command("test_container", ["bad", "command"])
     assert success is False
-    assert "Error:" in output
+    assert "Docker error:" in output
     assert "Docker error" in output
 
 

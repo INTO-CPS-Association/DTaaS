@@ -73,7 +73,7 @@ def test_setup_cert_copy_fails(runner, mock_service_setup):
 
 def test_setup_config_not_found(runner):
     """Test setup fails when config not found"""
-    with patch("dtaas_services.cmd.Config", side_effect=FileNotFoundError("Config not found")):
+    with patch("dtaas_services.pkg.config.Config.__init__", side_effect=FileNotFoundError("Config not found")):
         result = runner.invoke(services, ['setup'])
         assert result.exit_code != 0
         assert "Config not found" in result.output
