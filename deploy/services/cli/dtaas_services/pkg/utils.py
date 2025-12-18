@@ -4,6 +4,7 @@ import sys
 import os
 import platform
 from python_on_whales import DockerClient
+from python_on_whales.exceptions import DockerException
 from .config import Config
 
 
@@ -37,8 +38,8 @@ def execute_docker_command(container_name: str,
         if verbose:
             print("Output:", result)
         return True, result
-    except Exception as e:
-        error_msg = f"Error: {str(e)}"
+    except DockerException as e:
+        error_msg = f"Docker error: {str(e)}"
         if verbose:
             print(error_msg)
         return False, error_msg
