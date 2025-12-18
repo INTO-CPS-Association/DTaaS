@@ -12,9 +12,10 @@ describe('Check UpdateCommandDto validation pipe', () => {
       executeCommandSchema,
     );
 
-    expect(updateCommandValidator.transform(updateCommandDto).name).toBe(
-      'create',
-    );
+    expect(
+      (updateCommandValidator.transform(updateCommandDto) as ExecuteCommandDto)
+        .name,
+    ).toBe('create');
   });
 
   it('zod schema validator works correctly', async () => {

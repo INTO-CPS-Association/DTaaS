@@ -26,7 +26,7 @@ services:
   client:
     build: 
       context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/client.built.dockerfile
+      dockerfile: ${DTAAS_DIR}/docker/client.dockerfile
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"

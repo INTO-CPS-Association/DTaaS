@@ -17,6 +17,8 @@ a working API and matching documentation in this README.
 However, there will be breaking changes in the API across each release
 until the package reaches version 1.0.0.
 
+:x: This package does not work on Windows OS.
+
 ## :arrow_down: Install
 
 ### NPM Registry
