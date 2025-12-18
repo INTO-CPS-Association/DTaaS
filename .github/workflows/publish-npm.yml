@@ -19,6 +19,9 @@ on:
     NPM_TOKEN:
       required: true
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+
 jobs:
   publish-package:
     runs-on: ubuntu-latest

@@ -10,12 +10,14 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 24
   HTTP_PORT: 4002
   LIBMS_CONFIG_PATH: test/libms.test.yaml
 
 jobs:
   test-lib-ms:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     name: Test library microservice
     strategy:
       matrix:
@@ -113,6 +115,8 @@ jobs:
           yarn stop:pm2
 
   get_version:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
     steps:
@@ -131,6 +135,9 @@ jobs:
       node-version: ${{ steps.get_version.outputs.node-version }}
 
   publish-package-github:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Required for github package registry
     if: | 
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
@@ -146,6 +153,8 @@ jobs:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-package-npm:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     if: | 
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
@@ -161,6 +170,9 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
 
   publish-docker-image-ghcr:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Required for publishing to github package registry
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
@@ -175,6 +187,8 @@ jobs:
     secrets: inherit
 
   publish-docker-image-dockerhub:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))

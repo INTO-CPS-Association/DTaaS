@@ -23,6 +23,10 @@ env:
   registry: ghcr.io
   password: ${{ secrets.GITHUB_TOKEN }}
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+  packages: write # ✅ Push to github package registry
+
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -39,7 +43,7 @@ jobs:
         if: ${{ inputs.image-name == 'dtaas-web' }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 

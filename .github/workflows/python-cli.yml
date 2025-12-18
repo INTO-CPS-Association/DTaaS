@@ -9,6 +9,9 @@ on:
       - 'cli/**'
   workflow_dispatch:
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+  actions: write # ✅ Required for uploading artifacts
 
 jobs:
   test-cli:

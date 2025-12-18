@@ -9,6 +9,9 @@ on:
       - 'docs/**'
   workflow_dispatch:
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+
 jobs:
   docs:
     name: Build html docs only

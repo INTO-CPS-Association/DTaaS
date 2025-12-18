@@ -12,6 +12,9 @@
 
 name: Build and Push Docker Image (DockerHub)
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+
 on:
   workflow_call:
     inputs:
@@ -62,7 +65,7 @@ jobs:
         if: ${{ inputs.image-name == 'dtaas-web' }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 

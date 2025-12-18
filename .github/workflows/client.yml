@@ -9,9 +9,14 @@ on:
       - 'client/**'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   client:
     name: Test react website
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      actions: write # ✅ Required for uploading artifacts
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -26,7 +31,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -71,7 +76,7 @@ jobs:
         with:
           name: playwright-report-linux
           path: client/playwright-report/**
-          retention-days: 30
+          retention-days: 1
 
       - name: Upload Playwright Report (Windows)
         uses: actions/upload-artifact@v4
@@ -79,7 +84,7 @@ jobs:
         with:
           name: playwright-report-windows
           path: client/playwright-report/**
-          retention-days: 30
+          retention-days: 1
 
       - name: Upload e2e test coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -89,6 +94,8 @@ jobs:
 
   get_version:
     name: Get version
+    permissions:
+      contents: read # ✅ Required for checking out the code
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
@@ -104,6 +111,9 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
 
   publish-docker-image-ghcr:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Push to github package registry
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
@@ -118,6 +128,8 @@ jobs:
     secrets: inherit
 
   publish-docker-image-dockerhub:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
