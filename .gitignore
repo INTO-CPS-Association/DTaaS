@@ -210,3 +210,6 @@ coverage.xml
 dtaas_services/config/
 dtaas_services/data/
 dtaas_services/compose.services.secure.yml
+#ignore developer files
+docker/.env
+docker/conf.dev
