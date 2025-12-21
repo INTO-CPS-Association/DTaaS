@@ -89,10 +89,28 @@ Stop all services:
 dtaas-services stop
 ```
 
+Restart services:
+
+```bash
+dtaas-services restart
+```
+
 Check service status:
 
 ```bash
 dtaas-services status
+```
+
+Remove services (with confirmation prompt):
+
+```bash
+dtaas-services remove
+```
+
+Remove services and their volumes:
+
+```bash
+dtaas-services remove --volumes
 ```
 
 ### User Account Management
@@ -137,30 +155,98 @@ dtaas-services setup
 
 Starts all platform services using Docker Compose.
 
-**Example:**
+**Options:**
+
+* `-s, --services` - Comma-separated list of specific services to start
+
+**Examples:**
 
 ```bash
+# Start all services
 dtaas-services start
+
+# Start specific services
+dtaas-services start --services influxdb,rabbitmq
 ```
 
 ### `dtaas-services stop`
 
 Stops all running platform services.
 
-**Example:**
+**Options:**
+
+* `-s, --services` - Comma-separated list of specific services to stop
+
+**Examples:**
 
 ```bash
+# Stop all services
 dtaas-services stop
+
+# Stop specific services
+dtaas-services stop -s mongodb,grafana
+```
+
+### `dtaas-services restart`
+
+Restarts platform services.
+
+**Options:**
+
+* `-s, --services` - Comma-separated list of specific services to restart
+
+**Examples:**
+
+```bash
+# Restart all services
+dtaas-services restart
+
+# Restart specific services
+dtaas-services restart --services influxdb
+```
+
+### `dtaas-services remove`
+
+Removes platform services and optionally their volumes.
+Prompts for confirmation before removal.
+
+**Options:**
+
+* `-s, --services` - Comma-separated list of specific services to remove
+* `-v, --volumes` - Remove volumes as well
+
+**Examples:**
+
+```bash
+# Remove all services (with confirmation)
+dtaas-services remove
+
+# Remove specific services
+dtaas-services remove --services influxdb,rabbitmq
+
+# Remove all services and their volumes
+dtaas-services remove --volumes
+
+# Remove specific services with volumes
+dtaas-services remove -s mongodb -v
 ```
 
 ### `dtaas-services status`
 
 Shows the current status of all services.
 
-**Example:**
+**Options:**
+
+* `-s, --services` - Comma-separated list of specific services to check
+
+**Examples:**
 
 ```bash
+# Show status of all services
 dtaas-services status
+
+# Show status of specific services
+dtaas-services status --services influxdb
 ```
 
 ### `dtaas-services user add`

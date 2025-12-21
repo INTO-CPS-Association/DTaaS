@@ -98,7 +98,12 @@ The package uses a modular architecture where each service has its own module:
 * **`config.py`**: Central configuration loader that handles environment variables
   and base directory detection across different OS platforms (Linux, macOS, Windows)
 
-* **`service.py`**: Docker Compose service management (start, stop, restart, status)
+* **`service.py`**: Docker Compose service management:
+  * `start_services()`: Start platform services
+  * `stop_services()`: Stop platform services
+  * `restart_services()`: Restart platform services
+  * `remove_services()`: Remove platform services and optionally volumes
+  * `get_status()`: Get status of platform services
 
 * **`cert.py`**: TLS certificate operations:
   * `copy_certs()`: Copy certificates from source and normalize filenames
@@ -110,10 +115,15 @@ The package uses a modular architecture where each service has its own module:
 * **`influxdb.py`**: InfluxDB setup:
   * `permissions_influxdb()`: Set certificate permissions and ownership
   * `setup_influxdb_users()`: Create users, organizations, and buckets
+  * `_create_influxdb_user()`: Create a single InfluxDB user
+  * `_get_influxdb_users()`: Get list of InfluxDB users
+  * `_get_existing_orgs()`: Get set of existing organization names
+  * `_setup_user_org_bucket()`: Set up organization and bucket for a user
 
 * **`rabbitmq.py`**: RabbitMQ setup:
   * `permissions_rabbitmq()`: Set certificate permissions and ownership
-  * `setup_rabbitmq_users()`: Create users and vhosts
+  * `setup_rabbitmq_users()`: Create users and vhosts (user-specific only)
+  * `_add_rabbitmq_user()`: Add a user to RabbitMQ with vhost and permissions
 
 ### Shared Utilities (`pkg/utils.py`)
 
@@ -135,6 +145,30 @@ def permissions_mongodb() -> Tuple[bool, str]:
 ```
 
 This keeps each module self-contained and independent.
+
+### Service Configuration
+
+The `Service` class automatically loads environment variables from `config/services.env`
+and sets them in `os.environ` before calling Docker Compose. This ensures all 
+Docker Compose variables are properly configured without additional setup.
+
+### User Management Best Practices
+
+#### InfluxDB Users
+
+* **Organization Management**: Always check for existing organizations before creating
+  new ones to avoid conflicts. Use `_get_existing_orgs()` before creating.
+* **User Ownership**: Users are added as **owners** (not members) of their 
+  organizations using the `--owner` flag, giving them full administrative rights.
+* **User-specific Resources**: Each user gets their own organization and bucket
+  with the same name as their username.
+
+#### RabbitMQ Users
+
+* **Vhost Isolation**: Each user only has access to their own vhost (username-based).
+  The default "/" vhost is NOT accessible to prevent permission conflicts.
+* **Full Permissions**: Users have complete permissions (`.*`, `.*`, `.*`) on their
+  own vhost for configure, write, and read operations.
 
 ### Error Handling Pattern
 

@@ -239,6 +239,32 @@ def restart(service_names):
         raise click.ClickException(str(e)) from e
 
 
+@services.command()
+@click.option('--services', '-s', 'service_names', help='Commaseparated list of services to remove')
+@click.option('--volumes', '-v', is_flag=True, help='Remove volumes as well')
+def remove(service_names, volumes):
+    """Remove the platform services and optionally their volumes."""
+    try:
+        setup_obj = Service()
+        
+        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
+        
+        if service_list:
+            click.echo(f"Removing services: {', '.join(service_list)}...")
+        else:
+            click.echo("Removing all services...")
+            
+        err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
+        if err is not None:
+            raise click.ClickException(msg)
+        click.echo(msg)
+
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except RuntimeError as e:
+        raise click.ClickException(str(e)) from e
+
+
 @services.group()
 def user():
     """User account management for services."""

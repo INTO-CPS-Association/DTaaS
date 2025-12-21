@@ -142,3 +142,34 @@ class Service:
             return None, str(result)
         except Exception as e:
             return e, f"Failed to get status: {str(e)}"
+
+
+    def remove_services(
+        self, service_list: Optional[list] = None, 
+        remove_volumes: bool = False
+    ) -> Tuple[Optional[Exception], str]:
+        """
+        Remove platform services and optionally their volumes.
+        
+        Args:
+            service_list: Optional list of specific services to remove
+            remove_volumes: Whether to remove volumes as well
+            
+        Returns:
+            Tuple of (Exception or None, message)
+        """
+        if not self.compose_file.exists():
+            err = FileNotFoundError(
+                f"Docker Compose file not found: {self.compose_file}"
+            )
+            return err, str(err)
+        try:
+            if service_list:
+                # Remove specific services
+                self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
+            else:
+                # Remove all services using down
+                self.docker.compose.down(volumes=remove_volumes)
+            return None, "Services removed successfully"
+        except Exception as e:
+            return e, f"Failed to remove services: {str(e)}"
