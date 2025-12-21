@@ -14,6 +14,9 @@ env:
   HTTP_PORT: 4002
   LIBMS_CONFIG_PATH: test/libms.test.yaml
 
+permissions:
+  contents: read # ✅ Required for checking out the code
+
 jobs:
   test-lib-ms:
     permissions:
@@ -29,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
@@ -59,7 +62,7 @@ jobs:
           yarn test:all
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -84,7 +87,7 @@ jobs:
         if: runner.os == 'Windows'
         env:
           PORT: ${{ env.HTTP_PORT }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 #v3.0.2
         with:
           timeout_seconds: 10
           max_attempts: 4
@@ -94,7 +97,7 @@ jobs:
         if: runner.os != 'Windows'
         env:
           PORT: ${{ env.HTTP_PORT }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 #v3.0.2
         with:
           timeout_seconds: 10
           max_attempts: 4
@@ -121,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
-          uses: actions/checkout@v4
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         - name: Install jq
           run: sudo apt-get install -y jq
         - name: get version
