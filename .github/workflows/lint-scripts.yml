@@ -1,0 +1,91 @@
+name: Lint Miscellaneous Scripts
+
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '**.py'
+      - '**.yml'
+      - '**.yaml'
+      - '.shellcheckrc'
+      - '.yamllint.yml'
+      - '.github/workflows/lint-scripts.yml'
+  pull_request:
+    paths:
+      - '**.sh'
+      - '**.py'
+      - '**.yml'
+      - '**.yaml'
+      - '.shellcheckrc'
+      - '.yamllint'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
+        with:
+          severity: warning
+          format: gcc
+
+  python-lint:
+    name: Lint Python Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint
+      - name: Run flake8
+        run: |
+          # Check if any Python files exist
+          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
+          else
+            echo "No Python files found to lint"
+          fi
+      - name: Run pylint
+        run: |
+          # Check if any Python files exist
+          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
+            find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | xargs pylint --rcfile='${{ github.workspace }}/.pylintrc' --fail-under=9
+          else
+            echo "No Python files found to lint"
+          fi
+  yaml-lint:
+    name: Lint YAML Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Install yamllint
+        run: |
+          python -m pip install --upgrade pip
+          pip install yamllint
+      - name: Run yamllint
+        run: |
+          yamllint .

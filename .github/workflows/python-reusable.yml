@@ -1,0 +1,109 @@
+name: Python Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: 'Directory to run commands in'
+        required: true
+        type: string
+      coverage-file:
+        description: 'Coverage XML file path'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Name for uploaded artifact'
+        required: true
+        type: string
+      artifact-path:
+        description: 'Path for artifact upload'
+        required: true
+        type: string
+
+jobs:
+  test-cli:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      # ───── 1. Checkout ─────
+      - uses: actions/checkout@v4
+
+      # ───── 2. Python + Poetry ─────
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        env:
+          POETRY_HOME: ${{ runner.temp }}/poetry
+        run: |
+          python -m pip install --upgrade pip
+          curl -sSL https://install.python-poetry.org | python -
+
+      - name: Add Poetry to PATH (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: echo "${{ runner.temp }}/poetry/bin" >> $GITHUB_PATH
+
+      - name: Add Poetry to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: echo "${{ runner.temp }}\poetry\bin" |
+          Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+
+      # ───── 3. Install deps once ─────
+      - name: Install dev dependencies
+        run: poetry install --with dev
+
+      # ───── 4. Lint ─────
+      - name: Run pylint (min score 9.0)
+        run: |
+          # Check if any Python files exist
+          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
+            find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | xargs poetry run pylint --rcfile='${{ github.workspace }}/.pylintrc' --fail-under=9
+          else
+            echo "No Python files found to lint"
+          fi
+
+      # ───── 5. Tests ─────
+      - name: Run pytest (with coverage)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          poetry run pytest --cov=src --cov-report=xml \
+            --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ${{ inputs.coverage-file }}
+          flags: cli-tests
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      # Windows/macOS → test without coverage
+      - name: Run pytest (no coverage)
+        if: matrix.os != 'ubuntu-latest'
+        run: poetry run pytest --no-cov -q
+
+      # ───── 6. Build + dist artefacts ─────
+      - name: Install runtime dependencies
+        run: poetry install --only main
+
+      - name: Build wheel and sdist
+        run: |
+          poetry build --format wheel
+          poetry build --format sdist
+
+      - name: Upload dist artefacts
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-path }}
+          retention-days: 1

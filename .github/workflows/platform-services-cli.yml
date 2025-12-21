@@ -1,0 +1,22 @@
+name: Platform Services CLI
+
+on:
+  push:
+    paths:
+      - 'deploy/services/cli/**'
+  pull_request:
+    paths:
+      - 'deploy/services/cli/**'
+  workflow_dispatch:
+
+
+jobs:
+  test-cli:
+    uses: ./.github/workflows/python-reusable.yml
+    with:
+      working-directory: deploy/services/cli
+      coverage-file: deploy/services/cli/coverage.xml
+      artifact-name: dtaas-cli
+      artifact-path: |
+        deploy/services/cli/dist/*.whl
+        deploy/services/cli/dist/*.tar.gz
