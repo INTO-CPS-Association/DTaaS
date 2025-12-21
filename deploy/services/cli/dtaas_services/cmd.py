@@ -99,6 +99,12 @@ def generate_project(path):
         for template_name, actual_name in template_mappings:
             _copy_template_to_config(config_dir, template_name, actual_name)
         
+        # Create data subdirectories for services
+        data_dir = target_dir / "data"
+        data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
+        for subdir in data_subdirs:
+            (data_dir / subdir).mkdir(parents=True, exist_ok=True)
+        
         click.echo(f"\nProject structure generated successfully in {target_dir}!")        
     except Exception as e:
         raise click.ClickException(f"Failed to generate project: {e}") from e

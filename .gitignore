@@ -197,6 +197,9 @@ services.env
 credentials.csv
 deploy/services/certs/*
 !deploy/services/certs/services.foo.com
+deploy/services/cli/certs/*
+deploy/services/cli/config/
+deploy/services/cli/data
 
 # qlty config
 .qlty
@@ -211,6 +214,7 @@ coverage.xml
 deploy/services/cli/dtaas_services/config/
 deploy/services/cli/dtaas_services/data/
 deploy/services/cli/dtaas_services/compose.services.secure.yml
+deploy/services/cli/dtaas_services/compose.thingsboard.secure.yml
 #ignore developer files
 docker/.env
 docker/conf.dev
