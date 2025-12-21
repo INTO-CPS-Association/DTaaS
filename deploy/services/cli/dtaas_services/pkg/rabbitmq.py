@@ -36,21 +36,13 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     if not success:
         return False, f"Failed to add vhost {vhost}: {output}"
 
-    # Set permissions on vhost
+    # Set permissions on user's own vhost only
     success, output = execute_docker_command(
         "rabbitmq",
         ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"]
     )
     if not success:
         return False, f"Failed to set permissions on vhost {vhost}: {output}"
-
-    # Set permissions on default vhost
-    success, output = execute_docker_command(
-        "rabbitmq",
-        ["rabbitmqctl", "set_permissions", "-p", "/", username, ".*", ".*", ".*"]
-    )
-    if not success:
-        return False, f"Failed to set permissions on default vhost: {output}"
 
     return True, ""
 

@@ -1,5 +1,7 @@
 """DTaaS platform services setup module"""
+import os
 from typing import Tuple, Optional
+from pathlib import Path
 from python_on_whales import DockerClient
 from .config import Config
 
@@ -17,7 +19,21 @@ class Service:
         Initialize service setup.
         """
         base_dir = Config.get_base_dir()
-        self.compose_file = base_dir / "compose.services.secure.yml"
+        compose_file = base_dir / "compose.services.secure.yml"
+        
+        # If compose file not in base_dir, look in package location
+        if not compose_file.exists():
+            package_dir = Path(__file__).parent.parent
+            compose_file = package_dir / "compose.services.secure.yml"
+        
+        self.compose_file = compose_file
+        
+        # Load environment variables from config and set them in os.environ
+        config = Config()
+        for key, value in config.env.items():
+            if value is not None:
+                os.environ[key] = str(value)
+        
         self.docker = DockerClient(compose_files=[self.compose_file])
 
 

@@ -55,26 +55,54 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
         return False, {}, f"Unexpected user list format: {str(e)}"
 
 
-def _setup_user_org_bucket(name: str, user_id: str) -> tuple[bool, str]:
+def _get_existing_orgs() -> tuple[bool, set, str]:
+    """
+    Get set of existing organization names in InfluxDB.
+    
+    Returns:
+        Tuple of (success, set of org names, error message if any)
+    """
+    success, orgs_json_str = execute_docker_command(
+        "influxdb",
+        ["influx", "org", "list", "--skip-verify", "--json"],
+        verbose=False
+    )
+
+    if not success:
+        return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
+
+    try:
+        orgs_json_list = json.loads(orgs_json_str)
+        org_names = {org["name"] for org in orgs_json_list}
+        return True, org_names, ""
+    except json.JSONDecodeError as e:
+        return False, set(), f"Failed to parse org list JSON: {str(e)}"
+    except (KeyError, TypeError) as e:
+        return False, set(), f"Unexpected org list format: {str(e)}"
+
+
+def _setup_user_org_bucket(name: str, user_id: str, existing_orgs: set) -> tuple[bool, str]:
     """
     Set up organization and bucket for a user.
     
     Args:
-        name: Organization/bucket name
+        name: Organization/bucket name (typically the username)
         user_id: User ID to add as owner
+        existing_orgs: Set of existing organization names
         
     Returns:
         Tuple of (success, error message if any)
     """
-    # Create organization
-    success, output = execute_docker_command(
-        "influxdb",
-        ["influx", "org", "create", "--skip-verify", "--name", name, "--description", name]
-    )
-    if not success:
-        return False, f"Failed to create organization {name}: {output}"
+    # Create organization only if it doesn't exist
+    if name not in existing_orgs:
+        success, output = execute_docker_command(
+            "influxdb",
+            ["influx", "org", "create", "--skip-verify", "--name", name, "--description", name]
+        )
+        if not success:
+            return False, f"Failed to create organization {name}: {output}"
 
-    # Add user as owner
+    # Add user as owner to organization
     success, output = execute_docker_command(
         "influxdb",
         ["influx", "org", "members", "add", "--skip-verify", "--name", name, "--owner", "-m", user_id]
@@ -123,9 +151,14 @@ def setup_influxdb_users() -> tuple[bool, str]:
             if not success:
                 return False, error_msg
 
+            # Get existing organizations to avoid conflicts
+            success, existing_orgs, error_msg = _get_existing_orgs()
+            if not success:
+                return False, error_msg
+
             # Set up org and bucket for each user
             for name, user_id in users_dict.items():
-                success, error_msg = _setup_user_org_bucket(name, user_id)
+                success, error_msg = _setup_user_org_bucket(name, user_id, existing_orgs)
                 if not success:
                     return False, error_msg
 

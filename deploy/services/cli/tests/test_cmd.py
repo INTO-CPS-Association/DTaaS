@@ -55,11 +55,10 @@ def test_setup_success(runner, mock_service_setup):
     mock_service_setup["mongodb"].return_value = (True, "MongoDB OK")
     mock_service_setup["influxdb"].return_value = (True, "InfluxDB OK")
     mock_service_setup["rabbitmq"].return_value = (True, "RabbitMQ OK")
-    mock_service_setup["service_instance"].start_services.return_value = (None, "Started")
     
     result = runner.invoke(services, ['setup'])
     assert result.exit_code == 0
-    assert "Services started successfully" in result.output
+    assert "Configuring RabbitMQ completed" in result.output
 
 
 def test_setup_cert_copy_fails(runner, mock_service_setup):

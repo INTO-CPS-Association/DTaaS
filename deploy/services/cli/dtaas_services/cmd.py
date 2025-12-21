@@ -122,7 +122,6 @@ def setup():
     - Sets up RabbitMQ certificates and permissions
     """
     try:
-        setup_obj = Service()
         check_root_unix()
         click.echo("Starting service setup....")
 
