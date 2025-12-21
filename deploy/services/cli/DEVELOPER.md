@@ -35,26 +35,6 @@ poetry install
 poetry run dtaas-services <command>
 ```
 
-### Running Tests
-
-Run all tests:
-
-```bash
-poetry run pytest
-```
-
-Run specific test file:
-
-```bash
-poetry run pytest tests/test_config.py
-```
-
-Run with coverage report:
-
-```bash
-poetry run pytest --cov=dtaas_services --cov-report=html
-```
-
 ### Building
 
 Before building, ensure external files are copied:
@@ -213,7 +193,27 @@ def test_execute_docker_command(mock_docker):
     assert success is True
 ```
 
-### Test Coverage
+### Running Tests
+
+Run all tests:
+
+```bash
+poetry run pytest
+```
+
+Run specific test file:
+
+```bash
+poetry run pytest tests/test_config.py
+```
+
+Run coverage reports to identify untested code:
+
+```bash
+poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
+```
+
+#### Test Coverage
 
 Aim for high test coverage, especially for:
 
@@ -222,9 +222,3 @@ Aim for high test coverage, especially for:
 * Docker command execution
 * Configuration parsing
 * File operations
-
-Run coverage reports to identify untested code:
-
-```bash
-poetry run pytest --cov=dtaas_services --cov-report=term-missing
-```
