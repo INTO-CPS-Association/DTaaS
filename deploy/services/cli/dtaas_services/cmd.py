@@ -114,7 +114,6 @@ def setup():
     - Sets up MongoDB certificates and permissions
     - Sets up InfluxDB certificates and permissions
     - Sets up RabbitMQ certificates and permissions
-    - Starts the services using Docker Compose
     """
     try:
         setup_obj = Service()
@@ -133,12 +132,7 @@ def setup():
             success, msg = step_func()
             if not success:
                 raise click.ClickException(f"{step_name} failed: {msg}")
-
-        click.echo("\nStarting services...")
-        err, msg = setup_obj.start_services()
-        if err is not None:
-            raise click.ClickException(f"Starting services failed: {msg}")
-        click.echo("Services started successfully.")
+            click.echo(f"{step_name} completed: {msg}")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except RuntimeError as e:

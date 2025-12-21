@@ -74,7 +74,6 @@ This command will:
 * Set up MongoDB certificates and permissions
 * Set up InfluxDB certificates and permissions
 * Set up RabbitMQ certificates and permissions
-* Start all services using Docker Compose
 
 ### Service Management
 
@@ -126,7 +125,7 @@ dtaas-services generate-project --path /path/to/project
 
 ### `dtaas-services setup`
 
-Performs complete service setup including certificates, permissions, and startup.
+Performs complete service setup including certificates and permissions.
 
 **Example:**
 
