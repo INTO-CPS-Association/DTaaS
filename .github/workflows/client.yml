@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'client/**'
+      - '.github/workflows/client.yml'
   pull_request:
     paths:
       - 'client/**'
+      - '.github/workflows/client.yml'
   workflow_dispatch:
 
 permissions:
@@ -77,7 +79,7 @@ jobs:
         with:
           name: playwright-report-linux
           path: client/playwright-report/**
-          retention-days: 1
+          retention-days: 5
 
       - name: Upload Playwright Report (Windows)
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
@@ -85,7 +87,7 @@ jobs:
         with:
           name: playwright-report-windows
           path: client/playwright-report/**
-          retention-days: 1
+          retention-days: 5
 
       - name: Upload e2e test coverage to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2

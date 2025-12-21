@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'servers/execution/**'
+      - '.github/workflows/runner.yml'
   pull_request:
     paths:
       - 'servers/execution/**'
+      - '.github/workflows/runner.yml'
   workflow_dispatch:
 
 env:
@@ -105,6 +107,7 @@ jobs:
     permissions:
       contents: read # ✅ Required for checking out the code
     if: | 
+      github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to NPM
@@ -116,4 +119,4 @@ jobs:
       directory: servers/execution/runner
       package-name: ${{ vars.PACKAGE_NAME || '' }}
     secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'cli/**'
+      - '.github/workflows/python-cli.yml'
   pull_request:
     paths:
       - 'cli/**'
+      - '.github/workflows/python-cli.yml'
   workflow_dispatch:
 
 permissions:

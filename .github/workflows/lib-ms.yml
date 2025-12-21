@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'servers/lib/**'
+      - '.github/workflows/lib-ms.yml'
   pull_request:
     paths:
       - 'servers/lib/**'
+      - '.github/workflows/lib-ms.yml'
   workflow_dispatch:
 
 env:
@@ -141,7 +143,8 @@ jobs:
     permissions:
       contents: read # ✅ Required for checking out the code
       packages: write # ✅ Required for github package registry
-    if: | 
+    if: |
+      github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to GitHub Packages
@@ -158,7 +161,8 @@ jobs:
   publish-package-npm:
     permissions:
       contents: read # ✅ Required for checking out the code
-    if: | 
+    if: |
+      github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to NPM
@@ -170,7 +174,7 @@ jobs:
       directory: servers/lib
       package-name: ${{ vars.PACKAGE_NAME || '' }}
     secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-docker-image-ghcr:
     permissions:
