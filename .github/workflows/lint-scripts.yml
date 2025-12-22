@@ -27,9 +27,12 @@ jobs:
   shellcheck:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
+    permissions:
+      contents: read 
     steps:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
@@ -53,23 +56,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 pylint
+      
       - name: Run flake8
         run: |
-          # Check if any Python files exist
-          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
-            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-            flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
-          else
-            echo "No Python files found to lint"
-          fi
+          flake8 cli/ servers/ script/ deploy/services/cli/ \
+            --count --select=E9,F63,F7,F82 --show-source --statistics \
+            --exclude=venv,.venv,__pycache__,.git || echo "No Python files to lint"
+          flake8 cli/ servers/ script/ deploy/services/cli/ \
+            --count --max-complexity=10 --max-line-length=127 --statistics \
+            --exclude=venv,.venv,__pycache__,.git || echo "No Python files to lint"
+      
       - name: Run pylint
         run: |
-          # Check if any Python files exist
-          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
-            find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | xargs pylint --rcfile='${{ github.workspace }}/.pylintrc' --fail-under=9
-          else
-            echo "No Python files found to lint"
-          fi
+          pylint cli/ servers/ script/ deploy/services/cli/ \
+            --rcfile='${{ github.workspace }}/.pylintrc' \
+            --fail-under=9 \
+            --recursive=y || echo "No Python files to lint"
   yaml-lint:
     name: Lint YAML Files
     runs-on: ubuntu-latest

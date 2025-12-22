@@ -62,19 +62,17 @@ jobs:
 
       # ───── 4. Lint ─────
       - name: Run pylint (min score 9.0)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          # Check if any Python files exist
-          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
-            find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | xargs poetry run pylint --rcfile='${{ github.workspace }}/.pylintrc' --fail-under=9
-          else
-            echo "No Python files found to lint"
-          fi
+          poetry run pylint dtaas_services tests build.py \
+            --rcfile='${{ github.workspace }}/.pylintrc' \
+            --fail-under=9
 
       # ───── 5. Tests ─────
       - name: Run pytest (with coverage)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          poetry run pytest --cov=src --cov-report=xml \
+          poetry run pytest --cov=dtaas_services --cov-report=xml \
             --cov-report=term-missing
 
       - name: Upload coverage to Codecov
