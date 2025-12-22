@@ -45,6 +45,7 @@ def copy_certs() -> Tuple[bool, str]:
             if path.is_file():
                 dest = certs_dir / path.name
                 if path.resolve() == dest.resolve():
+                    print("Source and destination are the same, skipping copy.")
                     continue
                 shutil.copy2(path, dest)
         normalize_cert_candidates(certs_dir, "privkey")
