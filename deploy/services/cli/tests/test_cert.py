@@ -1,7 +1,6 @@
 """Tests for certificate management module"""
-import pytest
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs
 
 
@@ -146,7 +145,7 @@ class TestCopyCerts:
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = tmp_path
         
-        success, message = copy_certs()
+        success, _ = copy_certs()
         
         # Should still succeed even if source and dest are the same
         assert success

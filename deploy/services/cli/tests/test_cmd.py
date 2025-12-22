@@ -366,7 +366,7 @@ def test_generate_project_default_path(runner, tmp_path):
     with runner.isolated_filesystem(temp_dir=tmp_path):
         result = runner.invoke(services, ['generate-project'])
         
-        # Should succeed - warnings are OK for missing source files
+        # Should succeed warnings are OK for missing source files
         assert result.exit_code == 0 or "Warning" in result.output
         assert "Generating project structure" in result.output
 
