@@ -151,6 +151,9 @@ class Service:
         """
         Remove platform services and optionally their volumes.
         
+        When volumes are removed, empty data directories are recreated to ensure
+        successful reinstallation of services.
+        
         Args:
             service_list: Optional list of specific services to remove
             remove_volumes: Whether to remove volumes as well
@@ -170,6 +173,16 @@ class Service:
             else:
                 # Remove all services using down
                 self.docker.compose.down(volumes=remove_volumes)
+            
+            # If volumes were removed, recreate empty data directories
+            if remove_volumes:
+                base_dir = Config.get_base_dir()
+                data_dir = base_dir / "data"
+                data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
+                for subdir in data_subdirs:
+                    subdir_path = data_dir / subdir
+                    subdir_path.mkdir(parents=True, exist_ok=True)
+            
             return None, "Services removed successfully"
         except Exception as e:
             return e, f"Failed to remove services: {str(e)}"

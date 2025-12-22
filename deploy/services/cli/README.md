@@ -210,10 +210,14 @@ dtaas-services restart --services influxdb
 Removes platform services and optionally their volumes.
 Prompts for confirmation before removal.
 
+**Note:** When volumes are removed with `--volumes`, the data directories are
+automatically recreated empty to ensure successful reinstallation of services.
+
 **Options:**
 
 * `-s, --services` - Comma-separated list of specific services to remove
-* `-v, --volumes` - Remove volumes as well
+* `-v, --volumes` - Remove volumes as well (data will be deleted
+but directories preserved)
 
 **Examples:**
 
