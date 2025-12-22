@@ -178,6 +178,7 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
