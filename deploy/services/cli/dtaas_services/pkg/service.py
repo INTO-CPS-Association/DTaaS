@@ -119,7 +119,7 @@ class Service:
 
     def get_status(
         self, service_list: Optional[list] = None
-    ) -> Tuple[Optional[Exception], str]:
+    ) -> Tuple[Optional[Exception], list]:
         """
         Get status of platform services.
         
@@ -127,21 +127,21 @@ class Service:
             service_list: Optional list of specific services to check
             
         Returns:
-            Tuple of (Exception or None, status message)
+            Tuple of (Exception or None, list of Container objects)
         """
         if not self.compose_file.exists():
             err = FileNotFoundError(
                 f"Docker Compose file not found: {self.compose_file}"
             )
-            return err, str(err)
+            return err, []
         try:
             if service_list:
                 result = self.docker.compose.ps(service_list)
             else:
                 result = self.docker.compose.ps()
-            return None, str(result)
+            return None, result
         except Exception as e:
-            return e, f"Failed to get status: {str(e)}"
+            return e, []
 
 
     def remove_services(

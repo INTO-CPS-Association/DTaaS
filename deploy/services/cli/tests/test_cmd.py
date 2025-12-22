@@ -152,3 +152,45 @@ def test_add_users_both_fail(runner, mock_user_pkg):
     assert result.exit_code == 0
     assert "InfluxDB: Failed - InfluxDB failed" in result.output
     assert "RabbitMQ: Failed - RabbitMQ failed" in result.output
+
+
+def test_status_success(runner, mock_service_setup):
+    """Test successful status check with rich formatting"""
+    # Mock Container objects
+    mock_container1 = Mock()
+    mock_container1.name = "grafana"
+    mock_container1.state.status = "running"
+    
+    mock_container2 = Mock()
+    mock_container2.name = "influxdb"
+    mock_container2.state.status = "exited"
+    
+    mock_service_setup["service_instance"].get_status.return_value = (
+        None, [mock_container1, mock_container2]
+    )
+    
+    result = runner.invoke(services, ['status'])
+    assert result.exit_code == 0
+    # Check that service names appear in output
+    assert "Grafana" in result.output or "grafana" in result.output
+
+
+def test_status_no_services(runner, mock_service_setup):
+    """Test status when no services are running"""
+    mock_service_setup["service_instance"].get_status.return_value = (None, [])
+    
+    result = runner.invoke(services, ['status'])
+    assert result.exit_code == 0
+    assert "No services" in result.output or "running" in result.output
+
+
+def test_status_failure(runner, mock_service_setup):
+    """Test status command when it fails"""
+    mock_service_setup["service_instance"].get_status.return_value = (
+        FileNotFoundError("Compose file not found"), []
+    )
+    
+    result = runner.invoke(services, ['status'])
+    assert result.exit_code != 0
+    assert "Compose file not found" in result.output
+

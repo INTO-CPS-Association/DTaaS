@@ -3,12 +3,14 @@ import click
 import shutil
 import dtaas_services
 from pathlib import Path
+from rich.console import Console
 from .pkg.cert import copy_certs
 from .pkg.mongodb import permissions_mongodb
 from .pkg.influxdb import permissions_influxdb
 from .pkg.rabbitmq import permissions_rabbitmq
 from .pkg.service import Service
 from .pkg.utils import check_root_unix
+from .pkg.formatter import format_container_status
 from .pkg import influxdb, rabbitmq
 
 
@@ -123,7 +125,8 @@ def setup():
     """
     try:
         check_root_unix()
-        click.echo("Starting service setup....")
+        console = Console()
+        console.print("[bold cyan]Starting service setup....[/bold cyan]")
 
         steps = [
             ("Copying certificates", copy_certs),
@@ -133,11 +136,11 @@ def setup():
         ]
 
         for step_name, step_func in steps:
-            click.echo(f"\n{step_name}...")
+            console.print(f"\n[cyan]{step_name}...[/cyan]")
             success, msg = step_func()
             if not success:
                 raise click.ClickException(f"{step_name} failed: {msg}")
-            click.echo(f"{step_name} completed: {msg}")
+            console.print(f"[green]✅ {step_name} completed:[/green] {msg}")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except RuntimeError as e:
@@ -150,19 +153,22 @@ def start(service_names):
     """Start the platform services."""
     try:
         setup_obj = Service()
+        console = Console()
 
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
-            click.echo(f"Starting services: {', '.join(service_list)}...")
+            console.print(f"[cyan]Starting services:[/cyan] {', '.join(service_list)}...")
         else:
-            click.echo("Starting all services...")
-            
-        err, msg = setup_obj.start_services(service_list)
+            console.print("[cyan]Starting all services...[/cyan]")
+        
+        with console.status("[bold cyan]Starting containers...[/bold cyan]", spinner="dots"):
+            err, msg = setup_obj.start_services(service_list)
+        
         if err is not None:
             raise click.ClickException(msg)
 
-        click.echo(msg)
+        console.print(f"[green]✅ {msg}[/green]")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except RuntimeError as e:
@@ -175,18 +181,21 @@ def stop(service_names):
     """Stop the platform services."""
     try:
         setup_obj = Service()
+        console = Console()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
-            click.echo(f"Stopping services: {', '.join(service_list)}...")
+            console.print(f"[yellow]Stopping services:[/yellow] {', '.join(service_list)}...")
         else:
-            click.echo("Stopping all services...")
-            
-        err, msg = setup_obj.stop_services(service_list)
+            console.print("[yellow]Stopping all services...[/yellow]")
+        
+        with console.status("[bold yellow]Stopping containers...[/bold yellow]", spinner="dots"):
+            err, msg = setup_obj.stop_services(service_list)
+        
         if err is not None:
             raise click.ClickException(msg)
-        click.echo(msg)
+        console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
@@ -200,13 +209,16 @@ def status(service_names):
     """Show the status of the platform services."""
     try:
         setup_obj = Service()
+        console = Console()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
-        err, msg = setup_obj.get_status(service_list)
+        err, containers = setup_obj.get_status(service_list)
         if err is not None:
-            raise click.ClickException(msg)
-        click.echo(msg)
+            raise click.ClickException(f"Failed to get status: {str(err)}")
+        
+        # Use rich formatter to display status
+        format_container_status(containers, console)
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
@@ -220,18 +232,21 @@ def restart(service_names):
     """Restart the platform services."""
     try:
         setup_obj = Service()
+        console = Console()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
-            click.echo(f"Restarting services: {', '.join(service_list)}...")
+            console.print(f"[blue]Restarting services:[/blue] {', '.join(service_list)}...")
         else:
-            click.echo("Restarting all services...")
-            
-        err, msg = setup_obj.restart_services(service_list)
+            console.print("[blue]Restarting all services...[/blue]")
+        
+        with console.status("[bold blue]Restarting containers...[/bold blue]", spinner="dots"):
+            err, msg = setup_obj.restart_services(service_list)
+        
         if err is not None:
             raise click.ClickException(msg)
-        click.echo(msg)
+        console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
@@ -240,24 +255,27 @@ def restart(service_names):
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Commaseparated list of services to remove')
+@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to remove')
 @click.option('--volumes', '-v', is_flag=True, help='Remove volumes as well')
 def remove(service_names, volumes):
     """Remove the platform services and optionally their volumes."""
     try:
         setup_obj = Service()
+        console = Console()
         
         service_list = [s.strip() for s in service_names.split(',')] if service_names else None
         
         if service_list:
-            click.echo(f"Removing services: {', '.join(service_list)}...")
+            console.print(f"[red]Removing services:[/red] {', '.join(service_list)}...")
         else:
-            click.echo("Removing all services...")
-            
-        err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
+            console.print("[red]Removing all services...[/red]")
+        
+        with console.status("[bold red]Removing containers...[/bold red]", spinner="dots"):
+            err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
+        
         if err is not None:
             raise click.ClickException(msg)
-        click.echo(msg)
+        console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
@@ -281,22 +299,24 @@ def add():
     Example:
         dtaas-services user add
     """
-    click.echo("Adding users from CSV file...")
-    click.echo("\nAdding users to InfluxDB...")
+    console = Console()
+    console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
+    
+    console.print("\n[cyan]Adding users to InfluxDB...[/cyan]")
     success, msg = influxdb.setup_influxdb_users()
     if not success:
-        click.echo(f"InfluxDB: Failed - {msg}", err=True)
+        console.print(f"[red]InfluxDB: Failed - {msg}[/red]", style="bold")
     else:
-        click.echo(f"InfluxDB: {msg}")
+        console.print(f"[green]✅ InfluxDB: {msg}[/green]")
 
-    click.echo("\nAdding users to RabbitMQ...")
+    console.print("\n[cyan]Adding users to RabbitMQ...[/cyan]")
     success, msg = rabbitmq.setup_rabbitmq_users()
     if not success:
-        click.echo(f"RabbitMQ: Failed - {msg}", err=True)
+        console.print(f"[red]RabbitMQ: Failed - {msg}[/red]", style="bold")
     else:
-        click.echo(f"RabbitMQ: {msg}")
+        console.print(f"[green]✅ RabbitMQ: {msg}[/green]")
 
-    click.echo("\nAdding user completed!")
+    console.print("\n[bold green]✅ Adding user completed![/bold green]")
 
 
 if __name__ == "__main__":
