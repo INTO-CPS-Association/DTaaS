@@ -138,3 +138,21 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
       node-version: ${{ steps.get_version.outputs.node-version }}
+
+  publish-package-npm:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+    if: |
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish to NPM
+    needs: [get-version,test-lib-ms]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get-version.outputs.node-version }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/lib
+      package-name: ${{ vars.PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
