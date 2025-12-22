@@ -139,61 +139,6 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
       node-version: ${{ steps.get_version.outputs.node-version }}
 
-  publish-package-github:
-    permissions:
-      contents: read # ✅ Required for checking out the code
-      packages: write # ✅ Required for github package registry
-    if: |
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish to GitHub Packages
-    needs: [get_version,test-lib-ms]
-    uses: ./.github/workflows/publish-npm.yml
-    with:
-      node-version: ${{ needs.get_version.outputs.node-version }}
-      registry-url: 'https://npm.pkg.github.com/'
-      directory: servers/lib
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-package-npm:
-    permissions:
-      contents: read # ✅ Required for checking out the code
-    if: |
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish to NPM
-    needs: [get_version,test-lib-ms]
-    uses: ./.github/workflows/publish-npm.yml
-    with:
-      node-version: ${{ needs.get_version.outputs.node-version }}
-      registry-url: 'https://registry.npmjs.org'
-      directory: servers/lib
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish-docker-image-ghcr:
-    permissions:
-      contents: read # ✅ Required for checking out the code
-      packages: write # ✅ Required for publishing to github package registry
-    if: | 
-      github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
-
-    name: Publish Docker image (GHCR)
-    needs: [get_version, test-lib-ms]
-    uses: ./.github/workflows/docker-ghcr.yml
-    with: 
-      image-name: libms
-      version: ${{ needs.get_version.outputs.version }}
-      dockerfile: libms.dockerfile
-    secrets: inherit
-
-  publish-docker-image-dockerhub:
     permissions:
       contents: read # ✅ Required for checking out the code
     if: | 
