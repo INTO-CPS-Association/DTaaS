@@ -14,6 +14,7 @@ name: Build and Push Docker Image (DockerHub)
 
 permissions:
   contents: read # ✅ Required for checking out the code
+  packages: write # ✅ Push to github package registry
 
 on:
   workflow_call:
@@ -54,8 +55,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      packages: write
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Required for publishing to github package registry
 
     steps:
       - name: Checkout Repository

@@ -32,8 +32,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      packages: write
+      packages: write # ✅ Push to github package registry
+      contents: read  # ✅ Required for checking out the code
 
     steps:
       - name: Checkout Repository

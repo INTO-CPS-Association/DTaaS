@@ -20,14 +20,15 @@ on:
       required: true
 
 permissions:
-  contents: read # ✅ Required for checking out the code
+  packages: write # ✅ Push to github package registry
+  contents: read  # ✅ Required for checking out the code
 
 jobs:
   publish-package:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
-      contents: read
+      packages: write # ✅ Push to github package registry
+      contents: read  # ✅ Required for checking out the code
     defaults:
       run:
         working-directory: ${{ inputs.directory }}

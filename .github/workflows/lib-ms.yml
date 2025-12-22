@@ -157,3 +157,40 @@ jobs:
       package-name: ${{ vars.PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-docker-image-ghcr:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Required for publishing to github package registry
+    if: |
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish Docker image (GHCR)
+    needs: [get-version, test-lib-ms]
+    uses: ./.github/workflows/docker-ghcr.yml
+    with:
+      image-name: libms
+      version: ${{ needs.get-version.outputs.version }}
+      dockerfile: libms.dockerfile
+    secrets: inherit
+
+  publish-docker-image-dockerhub:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+    if: |
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+
+    name: Publish Docker image (DockerHub)
+    needs: [get-version, test-lib-ms]
+    uses: ./.github/workflows/docker-dockerhub.yml
+    with:
+      image-name: libms
+      version: ${{ needs.get-version.outputs.version }}
+      dockerfile: libms.dockerfile
+      readme-file: servers/lib/DOCKER.md
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_SCOPE: ${{ secrets.DOCKERHUB_SCOPE }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
