@@ -1,8 +1,9 @@
 """Tests for DTaaS Services CLI commands"""
 import pytest
+from pathlib import Path
 from unittest.mock import patch, Mock
 from click.testing import CliRunner
-from dtaas_services.cmd import services, _copy_directory_or_file, _copy_template_to_config
+from dtaas_services.cmd import services
 
 
 @pytest.fixture
@@ -41,94 +42,6 @@ def mock_user_pkg():
     with patch("dtaas_services.cmd.influxdb") as mock_influx, \
          patch("dtaas_services.cmd.rabbitmq") as mock_rabbit:
         yield {"influxdb": mock_influx, "rabbitmq": mock_rabbit}
-
-
-class TestHelperFunctions:
-    """Tests for helper functions"""
-    
-    def test_copy_directory_or_file_directory(self, tmp_path):
-        """Test copying a directory"""
-        src_dir = tmp_path / "source"
-        src_dir.mkdir()
-        (src_dir / "file.txt").write_text("content")
-        
-        dest_dir = tmp_path / "dest"
-        
-        _copy_directory_or_file(src_dir, dest_dir, "test_dir")
-        
-        assert dest_dir.exists()
-        assert (dest_dir / "file.txt").exists()
-    
-
-    def test_copy_directory_or_file_file(self, tmp_path):
-        """Test copying a file"""
-        src_file = tmp_path / "source.txt"
-        src_file.write_text("content")
-        
-        dest_file = tmp_path / "dest.txt"
-        
-        _copy_directory_or_file(src_file, dest_file, "test_file")
-        
-        assert dest_file.exists()
-        assert dest_file.read_text() == "content"
-    
-
-    def test_copy_directory_or_file_not_exists(self, tmp_path, capsys):
-        """Test when source doesn't exist"""
-        src_path = tmp_path / "nonexistent"
-        dest_path = tmp_path / "dest"
-        
-        _copy_directory_or_file(src_path, dest_path, "test")
-        
-        captured = capsys.readouterr()
-        assert "Warning" in captured.err
-    
-
-    def test_copy_directory_or_file_already_exists(self, tmp_path, capsys):
-        """Test when destination already exists"""
-        src_dir = tmp_path / "source"
-        src_dir.mkdir()
-        
-        dest_dir = tmp_path / "dest"
-        dest_dir.mkdir()
-        
-        _copy_directory_or_file(src_dir, dest_dir, "test_dir")
-        
-        captured = capsys.readouterr()
-        assert "Skipping" in captured.out
-    
-
-    def test_copy_template_to_config(self, tmp_path):
-        """Test copying template to config"""
-        config_dir = tmp_path / "config"
-        config_dir.mkdir()
-        
-        template_file = config_dir / "services.env.template"
-        template_file.write_text("TEMPLATE=value")
-        
-        _copy_template_to_config(config_dir, "services.env.template", "services.env")
-        
-        actual_file = config_dir / "services.env"
-        assert actual_file.exists()
-        assert actual_file.read_text() == "TEMPLATE=value"
-    
-
-    def test_copy_template_to_config_already_exists(self, tmp_path):
-        """Test when actual config already exists"""
-        config_dir = tmp_path / "config"
-        config_dir.mkdir()
-        
-        template_file = config_dir / "services.env.template"
-        template_file.write_text("TEMPLATE=value")
-        
-        actual_file = config_dir / "services.env"
-        actual_file.write_text("EXISTING=value")
-        
-        _copy_template_to_config(config_dir, "services.env.template", "services.env")
-        
-        # Should not overwrite existing file
-        assert actual_file.read_text() == "EXISTING=value"
-
 
 
 def test_services_help(runner):
@@ -385,8 +298,8 @@ def test_generate_project_custom_path(runner, tmp_path):
 
 def test_generate_project_failure(runner):
     """Test generate-project failure"""
-    with patch("dtaas_services.cmd.Path") as mock_path:
-        mock_path.side_effect = Exception("Path error")
+    with patch("dtaas_services.cmd.generate_project_structure") as mock_gen:
+        mock_gen.return_value = (False, "Failed to generate project: Path error")
         
         result = runner.invoke(services, ['generate-project'])
         assert result.exit_code != 0

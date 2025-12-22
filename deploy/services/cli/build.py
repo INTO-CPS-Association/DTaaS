@@ -122,8 +122,7 @@ def create_data_structure(pkg_dir: Path):
         "influxdb",
         "mongodb",
         "postgres",
-        "rabbitmq",
-        "thingsboard"
+        "rabbitmq"
     ]
     
     for subdir in data_subdirs:

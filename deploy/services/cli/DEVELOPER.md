@@ -78,12 +78,18 @@ cli/
 │       ├── mongodb.py      # MongoDB certificate and permission setup
 │       ├── influxdb.py     # InfluxDB certificate, permission, and user management
 │       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
-│       └── utils.py        # Shared utilities (Docker commands, credentials)
+│       ├── formatter.py    # Output formatting utilities
+│       ├── template.py     # Project structure and template file management
+│       └── utils.py        # Shared utilities (Docker, file operations)
 └── tests/
     ├── __init__.py
     ├── test_cmd.py         # CLI command tests
     ├── test_config.py      # Configuration tests
-    └── test_users.py       # User management tests
+    ├── test_service.py     # Service management tests
+    ├── test_cert.py        # Certificate operations tests
+    ├── test_formatter.py   # Output formatting tests
+    ├── test_template.py    # Project structure and template tests
+    └── test_utils.py       # Utility functions tests
 ```
 
 **Note:** Files marked as "copied by build.py" are generated during the build process
@@ -109,7 +115,7 @@ The package uses a modular architecture where each service has its own module:
   * `copy_certs()`: Copy certificates from source and normalize filenames
 
 * **`mongodb.py`**: MongoDB setup:
-  * `create_combined_pem()`: Create combined certificate file
+  * `create_combined_cert()`: Create combined certificate file
   * `permissions_mongodb()`: Set certificate permissions and ownership
 
 * **`influxdb.py`**: InfluxDB setup:
@@ -125,26 +131,49 @@ The package uses a modular architecture where each service has its own module:
   * `setup_rabbitmq_users()`: Create users and vhosts (user-specific only)
   * `_add_rabbitmq_user()`: Add a user to RabbitMQ with vhost and permissions
 
-### Shared Utilities (`pkg/utils.py`)
+### Shared Utilities
 
-Common functionality is extracted to avoid code duplication:
+#### System & Docker Operations (`pkg/utils.py`)
 
 * `check_root_unix()`: Verify root/sudo privileges on Unix systems
 * `execute_docker_command()`: Execute commands in Docker containers with error handling
 * `get_credentials_path()`: Get the path to the credentials CSV file
 
+#### Project Structure & Templates (`pkg/template.py`)
+
+* `copy_directory_or_file()`: Copy files or directories with error handling
+* `copy_template_to_config()`: Copy template files to actual config files
+* `generate_project_structure()`: Generate complete project structure with
+config and data directories
+
+### Code Organization Pattern
+
+The project follows a clean separation between CLI interface and business logic:
+
+#### CLI Layer (`cmd.py`)
+
+* Thin command definitions using Click decorators
+* Argument parsing and validation
+* User-facing output formatting
+* Minimal business logic - delegates to `pkg/` modules
+
+#### Business Logic Layer (`pkg/`)
+
+* All core functionality implemented in dedicated modules
+* Pure functions that return results (success/failure, messages)
+* Independent, testable units
+* No direct CLI output (returns strings for CLI to display)
+
+This separation ensures:
+
+* Easy testing of business logic without CLI context
+* Reusability of functions across different commands
+* Clear responsibility boundaries
+
 ### Configuration Pattern
 
-Each module that needs configuration imports and instantiates `Config()` internally:
-
-```python
-def permissions_mongodb() -> Tuple[bool, str]:
-    config = Config()
-    base_dir = Config.get_base_dir()
-    # Use config values as needed
-```
-
-This keeps each module self-contained and independent.
+Each module that needs configuration imports and instantiates `Config()` internally,
+keeping each module self-contained and independent.
 
 ### Service Configuration
 
@@ -166,9 +195,13 @@ Docker Compose variables are properly configured without additional setup.
 #### RabbitMQ Users
 
 * **Vhost Isolation**: Each user only has access to their own vhost (username-based).
-  The default "/" vhost is NOT accessible to prevent permission conflicts.
-* **Full Permissions**: Users have complete permissions (`.*`, `.*`, `.*`) on their
-  own vhost for configure, write, and read operations.
+  The default "/" vhost is NOT accessib, argument parsing, and command integration
+* `test_config.py`: Tests for configuration loading and validation
+* `test_service.py`: Tests for Docker Compose service management operations
+* `test_cert.py`: Tests for certificate copying and normalization
+* `test_formatter.py`: Tests for output formatting utilities
+* `test_template.py`: Tests for project structure generation and template file management
+* `test_utils.py`: Tests for shared utility functions (Docker operations, credentials path)
 
 ### Error Handling Pattern
 
@@ -200,54 +233,52 @@ Tests are organized to mirror the source code structure:
 
 #### Use Click's CliRunner
 
-For testing CLI commands, use Click's `CliRunner` instead of subprocess:
-
-```python
-from click.testing import CliRunner
-from dtaas_services.cmd import services
-
-def test_generate_project():
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        result = runner.invoke(services, ['generate-project'])
-        assert result.exit_code == 0
-```
+For testing CLI commands, use Click's `CliRunner` instead of subprocess.
 
 #### Mock External Dependencies
 
 Always mock Docker, file system, and configuration operations:
 
 ```python
-from unittest.mock import Mock, patch
-
-@patch('dtaas_services.pkg.utils.DockerClient')
-def test_execute_docker_command(mock_docker):
-    mock_docker.return_value.execute.return_value = "output"
-    success, output = execute_docker_command("container", ["command"])
-    assert success is True
-```
-
-### Running Tests
-
-Run all tests:
-
-```bash
-poetry run pytest
-```
-
-Run specific test file:
-
-```bash
-poetry run pytest tests/test_config.py
-```
-
-Run coverage reports to identify untested code:
+fromwith coverage reports:
 
 ```bash
 poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
 ```
 
-#### Test Coverage
+View detailed HTML coverage report:
+
+```bash
+# Coverage report generated in htmlcov/index.html
+start htmlcov/index.html  # Windows
+open htmlcov/index.html   # macOS
+xdg-open htmlcov/index.html  # Linux
+```
+
+### Testing Best Practices
+
+Focus test coverage on:
+
+* **Error handling paths**: Test failure scenarios and error messages
+* **User input validation**: Test command arguments and options
+* **Docker command execution**: Mock Docker client for unit tests
+* **Configuration parsing**: Test various config file formats and edge cases
+* **File operations**: Use `tmp_path` fixture for file system tests
+* **Business logic in `pkg/`**: Aim for near 100% coverage of utility functions
+
+#### Testing Utilities vs CLI Commands
+
+* **Utility functions** (`pkg/`): Test return values directly
+* **CLI commands** (`cmd.py`): Use CliRunner to test command output and exit codes
+
+#### Use Click's CliRunner (Repeated)
+
+For testing CLI commands, use Click's `CliRunner` instead of subprocess.
+
+#### Mock External Dependencies (Repated)
+
+Always mock Docker, file system, and configuration operations to ensure tests are fast,
+isolated, and don't require external services.
 
 Aim for high test coverage, especially for:
 

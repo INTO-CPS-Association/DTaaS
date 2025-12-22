@@ -127,7 +127,7 @@ class ServicesConfig:
                 p.unlink(missing_ok=True)
 
 
-    def _create_combined_pem(self) -> None:
+    def _create_combined_cert(self) -> None:
         """Create combined.pem from privkey.pem and fullchain.pem."""
         privkey_path = self.certs["privkey"]
         fullchain_path = self.certs["fullchain"]
@@ -146,7 +146,7 @@ class ServicesConfig:
         """Creates combined.pem and sets permissions for MongoDB."""
         try:
             self.certs["dir"].mkdir(parents=True, exist_ok=True)
-            self._create_combined_pem()
+            self._create_combined_cert()
             if self.os_type in ("linux", "darwin"):
                 self.certs["combined"].chmod(0o600)
                 chown_args = ["chown", f"{self.mongo['uid']}:{self.mongo['gid']}", str(self.certs["combined"])]

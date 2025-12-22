@@ -2,7 +2,11 @@
 from pathlib import Path
 from unittest.mock import patch, Mock
 from python_on_whales.exceptions import DockerException
-from dtaas_services.pkg.utils import check_root_unix, execute_docker_command, get_credentials_path
+from dtaas_services.pkg.utils import (
+    check_root_unix,
+    execute_docker_command,
+    get_credentials_path
+)
 
 
 def test_check_root_unix_windows():

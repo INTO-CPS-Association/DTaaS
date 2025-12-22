@@ -1,6 +1,5 @@
 """DTaaS Services CLI commands"""
 import click
-import shutil
 import dtaas_services
 from pathlib import Path
 from rich.console import Console
@@ -10,6 +9,7 @@ from .pkg.influxdb import permissions_influxdb
 from .pkg.rabbitmq import permissions_rabbitmq
 from .pkg.service import Service
 from .pkg.utils import check_root_unix
+from .pkg.template import generate_project_structure
 from .pkg.formatter import format_container_status
 from .pkg import influxdb, rabbitmq
 
@@ -19,48 +19,6 @@ from .pkg import influxdb, rabbitmq
 def services():
     """Manage DTaaS platform services."""
     pass
-
-
-def _copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> None:
-    """
-    Copy a directory or file from source to destination.
-    
-    Args:
-        src_path: Source path
-        dest_path: Destination path
-        item_name: Name of the item for display purposes
-    """
-    if not src_path.exists():
-        click.echo(f"  Warning: {item_name} not found in package", err=True)
-        return
-    
-    if dest_path.exists():
-        click.echo(f"  Skipping {item_name} (already exists)")
-        return
-    
-    if src_path.is_dir():
-        shutil.copytree(src_path, dest_path)
-        click.echo(f"  Created {item_name}/")
-    elif src_path.is_file():
-        shutil.copy2(src_path, dest_path)
-        click.echo(f"  Created {item_name}")
-
-
-def _copy_template_to_config(config_dir: Path, template_name: str, actual_name: str) -> None:
-    """
-    Copy a template file to its actual config file if it doesn't exist.
-    
-    Args:
-        config_dir: Directory containing config files
-        template_name: Name of the template file
-        actual_name: Name of the actual config file
-    """
-    template_file = config_dir / template_name
-    actual_file = config_dir / actual_name
-    
-    if template_file.exists() and not actual_file.exists():
-        shutil.copy2(template_file, actual_file)
-        click.echo(f"  Created config/{actual_name} from template")
 
 
 @services.command()
@@ -76,40 +34,15 @@ def generate_project(path):
         dtaas-services generate-project
         dtaas-services generate-project --path /path/to/project
     """
-    try:
-        target_dir = Path(path).resolve()
-        target_dir.mkdir(parents=True, exist_ok=True)
-        # Get package root directory (where config, data, compose files are bundled)
-        package_root = Path(dtaas_services.__file__).parent
-        
-        # Copy the following directories and files to the users target directory 
-        items_to_copy = [('config', 'config'), ('data', 'data'),
-            ('compose.services.secure.yml', 'compose.services.secure.yml')]
-        
-        click.echo(f"Generating project structure in {target_dir}...")
-        
-        for src_item, dest_item in items_to_copy:
-            src_path = package_root / src_item
-            dest_path = target_dir / dest_item
-            _copy_directory_or_file(src_path, dest_path, dest_item)
-        
-        # Copy template files to actual config files if they don't exist
-        config_dir = target_dir / "config"
-        template_mappings = [('services.env.template', 'services.env'),
-            ('credentials.csv.template', 'credentials.csv')]
-        
-        for template_name, actual_name in template_mappings:
-            _copy_template_to_config(config_dir, template_name, actual_name)
-        
-        # Create data subdirectories for services
-        data_dir = target_dir / "data"
-        data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
-        for subdir in data_subdirs:
-            (data_dir / subdir).mkdir(parents=True, exist_ok=True)
-        
-        click.echo(f"\nProject structure generated successfully in {target_dir}!")        
-    except Exception as e:
-        raise click.ClickException(f"Failed to generate project: {e}") from e
+    target_dir = Path(path).resolve()
+    package_root = Path(dtaas_services.__file__).parent
+    
+    success, message = generate_project_structure(target_dir, package_root)
+    
+    if not success:
+        raise click.ClickException(message)
+    
+    click.echo(message)
     
 
 @services.command()

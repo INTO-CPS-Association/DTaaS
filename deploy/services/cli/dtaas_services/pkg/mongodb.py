@@ -6,7 +6,7 @@ from typing import Tuple
 from .config import Config
 
 
-def create_combined_pem(privkey_path: Path, fullchain_path: Path, combined_path: Path) -> None:
+def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path: Path) -> None:
     """Create combined.pem from privkey.pem and fullchain.pem.
     
     Args:
@@ -45,7 +45,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
         mongo_gid = int(config.get_value("MONGO_GID"))
         
         certs_dir.mkdir(parents=True, exist_ok=True)
-        create_combined_pem(privkey_path, fullchain_path, combined_path)
+        create_combined_cert(privkey_path, fullchain_path, combined_path)
         if os_type in ("linux", "darwin"):
             combined_path.chmod(0o600)
             shutil.chown(
