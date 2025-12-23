@@ -1,5 +1,6 @@
 """DTaaS platform services setup module"""
 import os
+import shutil
 from typing import Tuple, Optional
 from pathlib import Path
 from python_on_whales import DockerClient
@@ -62,6 +63,7 @@ class Service:
             return None, "Docker Compose started successfully"
         except Exception as e:
             return e, f"Failed to start Docker Compose: {str(e)}"
+
 
     def stop_services(
         self, service_list: Optional[list] = None
@@ -149,14 +151,14 @@ class Service:
         remove_volumes: bool = False
     ) -> Tuple[Optional[Exception], str]:
         """
-        Remove platform services and optionally their volumes.
+        Remove platform services and optionally their data.
         
-        When volumes are removed, empty data directories are recreated to ensure
-        successful reinstallation of services.
+        When remove_volumes is True, all data directories are deleted and recreated empty.
+        This ensures a completely fresh start on next service startup.
         
         Args:
             service_list: Optional list of specific services to remove
-            remove_volumes: Whether to remove volumes as well
+            remove_volumes: Whether to remove data directories as well
             
         Returns:
             Tuple of (Exception or None, message)
@@ -174,14 +176,21 @@ class Service:
                 # Remove all services using down
                 self.docker.compose.down(volumes=remove_volumes)
             
-            # If volumes were removed, recreate empty data directories
+            # If volumes were requested to be removed, delete and recreate data directories
             if remove_volumes:
                 base_dir = Config.get_base_dir()
                 data_dir = base_dir / "data"
                 data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
+                
                 for subdir in data_subdirs:
                     subdir_path = data_dir / subdir
+                    # Remove the directory and all its contents
+                    if subdir_path.exists():
+                        shutil.rmtree(subdir_path, ignore_errors=True)
+                    # Recreate empty directory
                     subdir_path.mkdir(parents=True, exist_ok=True)
+                
+                return None, "Services and data removed successfully"
             
             return None, "Services removed successfully"
         except Exception as e:
