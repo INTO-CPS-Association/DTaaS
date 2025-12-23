@@ -20,14 +20,14 @@ on:
       required: true
 
 permissions:
-  packages: write # ✅ Push to github package registry
+  packages: write  # ✅ Push to github package registry
   contents: read  # ✅ Required for checking out the code
 
 jobs:
   publish-package:
     runs-on: ubuntu-latest
     permissions:
-      packages: write # ✅ Push to github package registry
+      packages: write  # ✅ Push to github package registry
       contents: read  # ✅ Required for checking out the code
     defaults:
       run:
@@ -35,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  #v6.0.1
 
       - name: Setup node
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f  #v6.1.0
         with:
           node-version: ${{ inputs.node-version }}
           registry-url: ${{ inputs.registry-url }}
