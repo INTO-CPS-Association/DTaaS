@@ -20,8 +20,6 @@ on:
       - '.yamllint'
   workflow_dispatch:
 
-permissions:
-  contents: read
 
 jobs:
   shellcheck:
