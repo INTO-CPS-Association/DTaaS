@@ -4,13 +4,23 @@ on:
   push:
     paths:
       - 'servers/execution/**'
+      - '.github/workflows/runner.yml'
   pull_request:
     paths:
       - 'servers/execution/**'
+      - '.github/workflows/runner.yml'
   workflow_dispatch:
+
+env:
+  NODE_VERSION: 24
+
+permissions:
+  contents: read # ✅ Required for checking out the code
 
 jobs:
   test-runner:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     name: Test digital twin runner
     runs-on: ubuntu-latest
     defaults:
@@ -19,12 +29,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -46,46 +56,67 @@ jobs:
           yarn test
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner
 
-  publish-package:
+  get_version:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+    name: Get version and variables
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        - name: Install jq
+          run: sudo apt-get install -y jq
+        - name: get version
+          id: get_version
+          run: | 
+            version=`cat ./servers/execution/runner/package.json | jq -r '.version'`
+            echo "version=$version" >> $GITHUB_OUTPUT
+            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      node-version: ${{ steps.get_version.outputs.node-version }}
+
+  publish-package-github:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Push to github package registry
 
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
     name: Publish to GitHub Packages
-    runs-on: ubuntu-latest
-    needs: test-runner
+    needs: [test-runner, get_version]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/execution/runner
+      package-name: ${{ vars.PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-package-npm:
     permissions:
-      packages: write
-      contents: read
+      contents: read # ✅ Required for checking out the code
+    if: | 
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          always-auth: true
-          registry-url: 'https://npm.pkg.github.com/'
-
-      - name: Publish npm package
-        run: |
-          # copy README.md to project root
-          cp servers/execution/runner/README.md .
-          cd servers/execution/runner
-          yarn install
-          yarn build
-          yarn publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    name: Publish to NPM
+    needs: [get_version,test-runner]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get_version.outputs.node-version }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/execution/runner
+      package-name: ${{ vars.PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -9,7 +9,7 @@ WORKDIR /dtaas/libms
 COPY ./servers/lib/ .
 
 # Install dependencies
-RUN yarn install --immutable --immutable-cache --check-cache
+RUN yarn install --immutable --immutable-cache --check-cache --network-timeout 1000000
 
 # Build the app
 RUN yarn build

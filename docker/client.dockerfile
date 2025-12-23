@@ -9,7 +9,7 @@ COPY ./client/package.json ./
 COPY ./client/yarn.lock ./
 
 # Install dependencies
-RUN yarn install --immutable --immutable-cache --check-cache
+RUN yarn install --immutable --immutable-cache --check-cache --network-timeout 1000000
 
 # Copy the rest of the application code to the working directory
 COPY ./client/ .

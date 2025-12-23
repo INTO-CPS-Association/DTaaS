@@ -4,14 +4,22 @@ on:
   push:
     paths:
       - 'client/**'
+      - '.github/workflows/client.yml'
   pull_request:
     paths:
       - 'client/**'
+      - '.github/workflows/client.yml'
   workflow_dispatch:
+
+permissions:
+  contents: read # ✅ Required for checking out the code
 
 jobs:
   client:
     name: Test react website
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      actions: write # ✅ Required for uploading artifacts
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -21,12 +29,12 @@ jobs:
         working-directory: client/
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -53,7 +61,7 @@ jobs:
           yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -66,33 +74,35 @@ jobs:
           yarn test:e2e
 
       - name: Upload Playwright Report (Linux)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         if: ${{ !cancelled() && runner.os == 'Linux'}}
         with:
           name: playwright-report-linux
           path: client/playwright-report/**
-          retention-days: 30
+          retention-days: 5
 
       - name: Upload Playwright Report (Windows)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         if: ${{ !cancelled() && runner.os == 'Windows'}}
         with:
           name: playwright-report-windows
           path: client/playwright-report/**
-          retention-days: 30
+          retention-days: 5
 
       - name: Upload e2e test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
         with:
           files: client/coverage/e2e/codecov.json
           flags: client-e2e-tests
 
   get_version:
     name: Get version
+    permissions:
+      contents: read # ✅ Required for checking out the code
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
-          uses: actions/checkout@v4
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         - name: Install jq
           run: sudo apt-get install -y jq
         - name: get version
@@ -104,6 +114,9 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
 
   publish-docker-image-ghcr:
+    permissions:
+      contents: read # ✅ Required for checking out the code
+      packages: write # ✅ Push to github package registry
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
@@ -118,6 +131,8 @@ jobs:
     secrets: inherit
 
   publish-docker-image-dockerhub:
+    permissions:
+      contents: read # ✅ Required for checking out the code
     if: | 
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
