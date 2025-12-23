@@ -1,6 +1,5 @@
 """Tests for DTaaS Services CLI commands"""
 import pytest
-from pathlib import Path
 from unittest.mock import patch, Mock
 from click.testing import CliRunner
 from dtaas_services.cmd import services

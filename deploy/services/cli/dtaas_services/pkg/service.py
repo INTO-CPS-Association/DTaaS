@@ -136,9 +136,9 @@ class Service:
             return err, []
         try:
             if service_list:
-                result = self.docker.compose.ps(service_list)
+                result = self.docker.compose.ps(service_list, all=True)
             else:
-                result = self.docker.compose.ps()
+                result = self.docker.compose.ps(all=True)
             return None, result
         except Exception as e:
             return e, []
