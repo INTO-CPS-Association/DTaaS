@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/libms",
-  "version": "0.5.6",
+  "version": "0.5.8",
   "description": "microservices that handles request by fetching and returning the file-names and folders of given directory",
   "author": "phillip.boe.jensen@gmail.com",
   "contributors": [
@@ -45,7 +45,7 @@
     "@nestjs/graphql": "^13.2.3",
     "@nestjs/platform-express": "^11.1.9",
     "axios": "^1.13.2",
-    "cloudcmd": "^19.0.13",
+    "cloudcmd": "^19.0.17",
     "commander": "^14.0.2",
     "dotenv": "^17.2.3",
     "globals": "^16.5.0",

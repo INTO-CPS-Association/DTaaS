@@ -1,43 +1,42 @@
 name: Test and Publish
 
 on:
- workflow_call:
-  inputs:
-   registry-url:
-    required: true
-    type: string
-   directory:
-    required: true
-    type: string
-   node-version:
-    required: true
-    type: string
-   package-name:
-    default: ''
-    type: string
-  secrets:
-    NPM_TOKEN:
-      required: true
-
-permissions:
-  contents: read # ✅ Required for checking out the code
+  workflow_call:
+    inputs:
+      registry-url:
+        required: true
+        type: string
+      directory:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      package-name:
+        default: ''
+        type: string
+    secrets:
+      NPM_TOKEN:
+        required: true
 
 jobs:
   publish-package:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
-      contents: read
+      packages: write  # ✅ Push to github package registry
+      contents: read  # ✅ Required for checking out the code
     defaults:
       run:
         working-directory: ${{ inputs.directory }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup node
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        # v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
         with:
           node-version: ${{ inputs.node-version }}
           registry-url: ${{ inputs.registry-url }}
@@ -56,5 +55,3 @@ jobs:
           yarn install
           yarn build
           yarn publish --access public
-
-      

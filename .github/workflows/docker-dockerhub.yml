@@ -13,7 +13,8 @@
 name: Build and Push Docker Image (DockerHub)
 
 permissions:
-  contents: read # ✅ Required for checking out the code
+  contents: read  # ✅ Required for checking out the code
+  packages: write  # ✅ Push to github package registry
 
 on:
   workflow_call:
@@ -35,11 +36,11 @@ on:
       # Username used for DockerHub authorization
       DOCKERHUB_USERNAME:
         required: true
-      # Username under which the image will be published
+        # Username under which the image will be published
       DOCKERHUB_SCOPE:
         required: true
-      # Personal Access Token created by the user `DOCKERHUB_USERNAME`
-      # Must have read, write and delete permissions
+        # Personal Access Token created by the user `DOCKERHUB_USERNAME`
+        # Must have read, write and delete permissions
       DOCKERHUB_TOKEN:
         required: true
 
@@ -54,16 +55,18 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      packages: write
+      contents: read  # ✅ Required for checking out the code
+      packages: write  # ✅ Required for publishing to github package registry
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup node
         if: ${{ inputs.image-name == 'dtaas-web' }}
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        # v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
         with:
           node-version: 24
           cache: "yarn"
@@ -77,7 +80,8 @@ jobs:
           yarn build
 
       - name: Log in to the Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef #v3.6.0
+        # v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
         with:
           registry: ${{ env.registry }}
           username: ${{ env.username }}
@@ -85,8 +89,10 @@ jobs:
 
       - name: Check if version exists
         id: check_version
+        env:
+          IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}"
         run: |
-          if docker manifest inspect ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }} > /dev/null 2>&1; then
+          if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_ENV
           else
@@ -96,15 +102,19 @@ jobs:
 
       - name: Build and push Docker image
         if: env.exists == 'false'
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 #v6.18.0
+        # v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}, ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
+          tags: |
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
 
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa #v5.0.0
+        # v5.0.0
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa
         with:
           username: ${{ env.username }}
           password: ${{ env.password }}

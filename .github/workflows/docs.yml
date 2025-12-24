@@ -12,23 +12,26 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read # ✅ Required for checking out the code
+  contents: read  # ✅ Required for checking out the code
 
 jobs:
   docs:
     name: Build html docs only
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # ✅ Required for checking out the code
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: build docs
-        uses: Tiryoh/actions-mkdocs@14d3fd544b7a2bcffcdd86b05d558f20c244c9fc #v0.24.0
+        # v0.24.0
+        uses: Tiryoh/actions-mkdocs@14d3fd544b7a2bcffcdd86b05d558f20c244c9fc
         with:
           mkdocs_version: 'latest'
           requirements: 'docs/requirements-github.txt'
           configfile: 'mkdocs-github.yml'
-
 
       - name: show contents of compiled docs
         run: |

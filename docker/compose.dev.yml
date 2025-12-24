@@ -61,15 +61,15 @@ services:
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files/common:/workspace/common
-      - ${DTAAS_DIR}/files/${username1}:/workspace
+      - ${DTAAS_DIR}/files/${USERNAME1}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=${username1}
+      - WORKSPACE_BASE_URL=${USERNAME1}
     shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.entryPoints=web"
-      - "traefik.http.routers.u1.rule=PathPrefix(`/${username1}`) "
+      - "traefik.http.routers.u1.rule=PathPrefix(`/${USERNAME1}`) "
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
       - users
@@ -79,15 +79,15 @@ services:
     restart: unless-stopped
     volumes:
       - ${DTAAS_DIR}/files/common:/workspace/common 
-      - ${DTAAS_DIR}/files/${username2}:/workspace
+      - ${DTAAS_DIR}/files/${USERNAME2}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=${username2}
+      - WORKSPACE_BASE_URL=${USERNAME2}
     shm_size: 512m
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web"
-      - "traefik.http.routers.u2.rule=PathPrefix(`/${username2}`) "
+      - "traefik.http.routers.u2.rule=PathPrefix(`/${USERNAME2}`) "
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
     networks:
       - users

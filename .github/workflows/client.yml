@@ -11,15 +11,12 @@ on:
       - '.github/workflows/client.yml'
   workflow_dispatch:
 
-permissions:
-  contents: read # ✅ Required for checking out the code
-
 jobs:
   client:
     name: Test react website
     permissions:
-      contents: read # ✅ Required for checking out the code
-      actions: write # ✅ Required for uploading artifacts
+      contents: read  # ✅ Required for checking out the code
+      actions: write  # ✅ Required for uploading artifacts
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -29,10 +26,12 @@ jobs:
         working-directory: client/
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup node
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        # v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
         with:
           node-version: 24
           cache: "yarn"
@@ -61,7 +60,8 @@ jobs:
           yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
+        # v5.5.2
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -74,7 +74,8 @@ jobs:
           yarn test:e2e
 
       - name: Upload Playwright Report (Linux)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: ${{ !cancelled() && runner.os == 'Linux'}}
         with:
           name: playwright-report-linux
@@ -82,7 +83,8 @@ jobs:
           retention-days: 5
 
       - name: Upload Playwright Report (Windows)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: ${{ !cancelled() && runner.os == 'Windows'}}
         with:
           name: playwright-report-windows
@@ -90,59 +92,68 @@ jobs:
           retention-days: 5
 
       - name: Upload e2e test coverage to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
+        # v5.5.2
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
         with:
           files: client/coverage/e2e/codecov.json
           flags: client-e2e-tests
 
-  get_version:
+  get-version:
     name: Get version
     permissions:
-      contents: read # ✅ Required for checking out the code
+      contents: read  # ✅ Required for checking out the code
     runs-on: ubuntu-latest
     steps:
         - name: Checkout Repository
-          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+          # v6.0.1
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         - name: Install jq
           run: sudo apt-get install -y jq
         - name: get version
-          id: get_version
-          run: | 
-            version=`cat ./client/package.json | jq -r '.version'`
+          id: get-version
+          run: |
+            version=$(jq -r '.version' ./client/package.json)
             echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      version: ${{ steps.get-version.outputs.version }}
 
   publish-docker-image-ghcr:
     permissions:
-      contents: read # ✅ Required for checking out the code
-      packages: write # ✅ Push to github package registry
+      contents: read  # ✅ Required for checking out the code
+      packages: write  # ✅ Push to github package registry
     if: | 
       github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
       
     name: Publish Docker image (GHCR)
-    needs: [client, get_version]
+    needs: [client, get-version]
     uses: ./.github/workflows/docker-ghcr.yml
     with: 
       image-name: dtaas-web
-      version: ${{ needs.get_version.outputs.version }}
+      version: ${{ needs.get-version.outputs.version }}
       dockerfile: client.built.dockerfile
     secrets: inherit
 
   publish-docker-image-dockerhub:
     permissions:
-      contents: read # ✅ Required for checking out the code
+      contents: read  # ✅ Required for checking out the code
+      packages: write  # ✅ Required for publishing to github package registry
     if: | 
       github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/release-v'))
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
       
     name: Publish Docker image (DockerHub)
-    needs: [client, get_version]
+    needs: [client, get-version]
     uses: ./.github/workflows/docker-dockerhub.yml
     with: 
       image-name: dtaas-web
-      version: ${{ needs.get_version.outputs.version }}
+      version: ${{ needs.get-version.outputs.version }}
       dockerfile: client.built.dockerfile
       readme-file: client/DOCKER.md
     secrets:
