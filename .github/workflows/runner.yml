@@ -107,7 +107,7 @@ jobs:
       node-version: ${{ needs.get-version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/execution/runner
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -129,6 +129,6 @@ jobs:
       node-version: ${{ needs.get-version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/execution/runner
-      package-name: ${{ vars.PACKAGE_NAME || '' }}
+      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
