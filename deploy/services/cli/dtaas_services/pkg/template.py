@@ -28,8 +28,6 @@ def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> s
 
     shutil.copy2(src_path, dest_path)
     return f"  Created {item_name}"
-    
-    return ""
 
 
 def copy_template_to_config(config_dir: Path, template_name: str, actual_name: str) -> str:
