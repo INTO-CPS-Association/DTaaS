@@ -11,8 +11,7 @@ SERVICE_DISPLAY_NAMES = {
     'mongodb': 'MongoDB',
     'grafana': 'Grafana',
     'influxdb': 'InfluxDB',
-    'postgres': 'PostgreSQL',
-    'thingsboard': 'ThingsBoard'
+    'postgres': 'PostgreSQL'
 }
 
 # Status emoji and text mapping

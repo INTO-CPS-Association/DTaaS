@@ -125,7 +125,7 @@ class TestGenerateProjectStructure:
         assert (target_dir / "config" / "credentials.csv").exists()
         
         # Check data subdirectories
-        for subdir in ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']:
+        for subdir in ['grafana', 'influxdb', 'mongodb', 'rabbitmq']:
             assert (target_dir / "data" / subdir).exists()
     
 

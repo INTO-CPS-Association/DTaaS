@@ -182,8 +182,7 @@ class Service:
                 data_dir = base_dir / "data"
                 data_subdirs = [
                     'grafana', 'influxdb', 'mongodb',
-                    'postgres', 'rabbitmq', 'thingsboard'
-                ]
+                    'rabbitmq']
                 
                 for subdir in data_subdirs:
                     subdir_path = data_dir / subdir

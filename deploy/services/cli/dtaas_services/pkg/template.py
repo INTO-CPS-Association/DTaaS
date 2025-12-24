@@ -25,8 +25,8 @@ def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> s
     if src_path.is_dir():
         shutil.copytree(src_path, dest_path)
         return f"  Created {item_name}/"
-
-    shutil.copy2(src_path, dest_path)
+    else:
+        shutil.copy2(src_path, dest_path)
     return f"  Created {item_name}"
 
 
@@ -96,7 +96,7 @@ def generate_project_structure(target_dir: Path, package_root: Path) -> Tuple[bo
         
         # Create data subdirectories for services
         data_dir = target_dir / "data"
-        data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
+        data_subdirs = ['grafana', 'influxdb', 'mongodb', 'rabbitmq']
         for subdir in data_subdirs:
             (data_dir / subdir).mkdir(parents=True, exist_ok=True)
         

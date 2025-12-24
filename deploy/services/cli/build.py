@@ -95,10 +95,6 @@ def copy_config_templates(parent_dir: Path, pkg_dir: Path):
             shutil.copytree(src_subdir, dst_subdir)
             print(f"Copied: config/{subdir}/")
     
-    # Create __init__.py to make it a Python package
-    (dst_config / "__init__.py").touch()
-    print("Created: config/__init__.py")
-
 
 def create_data_structure(pkg_dir: Path):
     """
@@ -128,12 +124,10 @@ def create_data_structure(pkg_dir: Path):
     for subdir in data_subdirs:
         subdir_path = dst_data / subdir
         subdir_path.mkdir(exist_ok=True)
+        # Create .gitkeep to ensure directory is included in package
+        (subdir_path / ".gitkeep").touch()
         print(f"Created: data/{subdir}/")
     
-    # Create __init__.py to make it a Python package
-    (dst_data / "__init__.py").touch()
-    print("Created: data/__init__.py")
-
 
 if __name__ == "__main__":
     copy_external_files()

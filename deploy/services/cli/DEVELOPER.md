@@ -246,39 +246,7 @@ fromwith coverage reports:
 poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
 ```
 
-View detailed HTML coverage report:
-
-```bash
-# Coverage report generated in htmlcov/index.html
-start htmlcov/index.html  # Windows
-open htmlcov/index.html   # macOS
-xdg-open htmlcov/index.html  # Linux
-```
-
-### Testing Best Practices
-
-Focus test coverage on:
-
-* **Error handling paths**: Test failure scenarios and error messages
-* **User input validation**: Test command arguments and options
-* **Docker command execution**: Mock Docker client for unit tests
-* **Configuration parsing**: Test various config file formats and edge cases
-* **File operations**: Use `tmp_path` fixture for file system tests
-* **Business logic in `pkg/`**: Aim for near 100% coverage of utility functions
-
-#### Testing Utilities vs CLI Commands
-
-* **Utility functions** (`pkg/`): Test return values directly
-* **CLI commands** (`cmd.py`): Use CliRunner to test command output and exit codes
-
-#### Use Click's CliRunner (Repeated)
-
-For testing CLI commands, use Click's `CliRunner` instead of subprocess.
-
-#### Mock External Dependencies (Repated)
-
-Always mock Docker, file system, and configuration operations to ensure tests are fast,
-isolated, and don't require external services.
+#### Test Coverage
 
 Aim for high test coverage, especially for:
 
