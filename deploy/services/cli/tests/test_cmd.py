@@ -1,7 +1,9 @@
 """Tests for DTaaS Services CLI commands"""
-import pytest
 from unittest.mock import patch, Mock
+
+import pytest
 from click.testing import CliRunner
+
 from dtaas_services.cmd import services
 
 
@@ -73,7 +75,10 @@ def test_setup_cert_copy_fails(runner, mock_service_setup):
 
 def test_setup_config_not_found(runner):
     """Test setup fails when config not found"""
-    with patch("dtaas_services.pkg.config.Config.__init__", side_effect=FileNotFoundError("Config not found")):
+    with patch(
+        "dtaas_services.pkg.config.Config.__init__",
+        side_effect=FileNotFoundError("Config not found")
+    ):
         result = runner.invoke(services, ['setup'])
         assert result.exit_code != 0
         assert "Config not found" in result.output
@@ -90,7 +95,9 @@ def test_start_success(runner, mock_service_setup):
 
 def test_start_failure(runner, mock_service_setup):
     """Test service start failure"""
-    mock_service_setup["service_instance"].start_services.return_value = (FileNotFoundError("Docker not found"), "Docker not found")
+    mock_service_setup["service_instance"].start_services.return_value = (
+        FileNotFoundError("Docker not found"), "Docker not found"
+    )
     
     result = runner.invoke(services, ['start'])
     assert result.exit_code != 0
@@ -108,7 +115,9 @@ def test_stop_success(runner, mock_service_setup):
 
 def test_stop_failure(runner, mock_service_setup):
     """Test service stop failure"""
-    mock_service_setup["service_instance"].stop_services.return_value = (Exception("Stop failed"), "Stop failed")
+    mock_service_setup["service_instance"].stop_services.return_value = (
+        Exception("Stop failed"), "Stop failed"
+    )
     
     result = runner.invoke(services, ['stop'])
     assert result.exit_code != 0
@@ -210,7 +219,9 @@ def test_status_with_service_filter(runner, mock_service_setup):
 
 def test_restart_success(runner, mock_service_setup):
     """Test successful service restart"""
-    mock_service_setup["service_instance"].restart_services.return_value = (None, "Services restarted")
+    mock_service_setup["service_instance"].restart_services.return_value = (
+        None, "Services restarted"
+    )
     
     result = runner.invoke(services, ['restart'])
     assert result.exit_code == 0
@@ -219,7 +230,9 @@ def test_restart_success(runner, mock_service_setup):
 
 def test_restart_specific_services(runner, mock_service_setup):
     """Test restart with specific services"""
-    mock_service_setup["service_instance"].restart_services.return_value = (None, "Services restarted")
+    mock_service_setup["service_instance"].restart_services.return_value = (
+        None, "Services restarted"
+    )
     
     result = runner.invoke(services, ['restart', '--services', 'grafana'])
     assert result.exit_code == 0
@@ -247,7 +260,10 @@ def test_remove_success(runner, mock_service_setup):
 
 def test_remove_with_volumes(runner, mock_service_setup):
     """Test service removal with volumes"""
-    mock_service_setup["service_instance"].remove_services.return_value = (None, "Services and volumes removed")
+    remove_return = (None, "Services and volumes removed")
+    mock_service_setup["service_instance"].remove_services.return_value = (
+        remove_return
+    )
     
     result = runner.invoke(services, ['remove', '--volumes'])
     assert result.exit_code == 0

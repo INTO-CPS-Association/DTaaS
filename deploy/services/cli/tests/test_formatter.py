@@ -1,7 +1,9 @@
 """Tests for the formatter module"""
-from unittest.mock import Mock
-from rich.console import Console
 from io import StringIO
+from unittest.mock import Mock
+
+from rich.console import Console
+
 from dtaas_services.pkg.formatter import (
     format_container_status,
     format_service_list_status,

@@ -180,7 +180,10 @@ class Service:
             if remove_volumes:
                 base_dir = Config.get_base_dir()
                 data_dir = base_dir / "data"
-                data_subdirs = ['grafana', 'influxdb', 'mongodb', 'postgres', 'rabbitmq', 'thingsboard']
+                data_subdirs = [
+                    'grafana', 'influxdb', 'mongodb',
+                    'postgres', 'rabbitmq', 'thingsboard'
+                ]
                 
                 for subdir in data_subdirs:
                     subdir_path = data_dir / subdir

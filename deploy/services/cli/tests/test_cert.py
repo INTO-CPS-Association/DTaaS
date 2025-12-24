@@ -14,9 +14,9 @@ class TestNormalizeCertCandidates:
         
         # Should not raise any error when no candidates
         normalize_cert_candidates(certs_dir, "privkey")
-        
+
         # No files should be created
-        assert list(certs_dir.glob("privkey*.pem")) == []
+        assert not list(certs_dir.glob("privkey*.pem"))
     
 
     def test_normalize_cert_candidates_single_file(self, tmp_path):

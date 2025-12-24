@@ -256,7 +256,7 @@ def test_get_status_with_service_list(mock_docker_client, mock_config):
         err, _ = service.get_status(['grafana'])
     
     assert err is None
-    mock_docker.compose.ps.assert_called_once_with(['grafana'])
+    mock_docker.compose.ps.assert_called_once_with(['grafana'], all=True)
 
 
 @patch("dtaas_services.pkg.service.Config")
@@ -352,9 +352,11 @@ def test_remove_services_with_service_list(mock_docker_client, mock_config):
     
     with patch.object(Path, "exists", return_value=True):
         err, _ = service.remove_services(['grafana', 'influxdb'])
-    
+
     assert err is None
-    mock_docker.compose.rm.assert_called_once_with(['grafana', 'influxdb'], stop=True, volumes=False)
+    mock_docker.compose.rm.assert_called_once_with(
+        ['grafana', 'influxdb'], stop=True, volumes=False
+    )
 
 
 @patch("dtaas_services.pkg.service.Config")

@@ -42,21 +42,21 @@ class Config:
         cwd_config = Path.cwd() / "config" / "services.env"
         if cwd_config.exists():
             return Path.cwd()
-        
+
         # Running from source in DTaaS repository (development workflow)
         if platform.system().lower() in ['linux', 'darwin']:
             # Linux/MacOS: Use parent of current working directory
             return Path.cwd().parent
-        else:
-            # Windows: Check if running from venv or source
-            file_path = Path(__file__).resolve()
-            
-            # If running from venv (site-packages), use cwd.parent
-            if 'site-packages' in str(file_path) or 'venv' in str(file_path):
-                return Path.cwd().parent
-            
-            # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
-            return Path(__file__).parent.parent.parent.parent
+
+        # Windows: Check if running from venv or source
+        file_path = Path(__file__).resolve()
+
+        # If running from venv (site-packages), use cwd.parent
+        if 'site-packages' in str(file_path) or 'venv' in str(file_path):
+            return Path.cwd().parent
+
+        # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
+        return Path(__file__).parent.parent.parent.parent
 
 
     def get_value(self, key: str) -> str:

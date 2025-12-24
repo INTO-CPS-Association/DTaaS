@@ -105,7 +105,10 @@ def _setup_user_org_bucket(name: str, user_id: str, existing_orgs: set) -> tuple
     # Add user as owner to organization
     success, output = execute_docker_command(
         "influxdb",
-        ["influx", "org", "members", "add", "--skip-verify", "--name", name, "--owner", "-m", user_id]
+        [
+            "influx", "org", "members", "add", "--skip-verify",
+            "--name", name, "--owner", "-m", user_id
+        ]
     )
     if not success:
         return False, f"Failed to add user {user_id} as owner to {name}: {output}"

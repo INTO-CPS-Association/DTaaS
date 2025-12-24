@@ -147,9 +147,14 @@ class TestGenerateProjectStructure:
         target_dir = tmp_path / "project"
         # Use invalid package root to trigger exception
         package_root = tmp_path / "nonexistent"
-        
-        with patch("dtaas_services.pkg.template.Path.mkdir", side_effect=PermissionError("No permission")):
-            success, message = generate_project_structure(target_dir, package_root)
+
+        with patch(
+            "dtaas_services.pkg.template.Path.mkdir",
+            side_effect=PermissionError("No permission")
+        ):
+            success, message = generate_project_structure(
+                target_dir, package_root
+            )
             
             assert success is False
             assert "Failed to generate project" in message
