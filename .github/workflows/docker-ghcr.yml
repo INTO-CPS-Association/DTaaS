@@ -74,8 +74,9 @@ jobs:
 
       - name: Check if version exists
         id: check_version
+        env:
+          IMAGE_TAG: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
         run: |
-          IMAGE_TAG="${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}"
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_ENV

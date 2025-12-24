@@ -16,10 +16,6 @@ env:
   HTTP_PORT: 4002
   LIBMS_CONFIG_PATH: test/libms.test.yaml
 
-permissions:
-  contents: read  # ✅ Required for checking out the code
-  packages: write  # ✅ Push to github package registry
-
 jobs:
   test-lib-ms:
     permissions:

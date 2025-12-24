@@ -11,11 +11,6 @@ on:
       - '.github/workflows/client.yml'
   workflow_dispatch:
 
-permissions:
-  contents: read  # ✅ Required for checking out the code
-  packages: write  # ✅ Push to github package registry
-  actions: write  # ✅ Required for uploading artifacts
-
 jobs:
   client:
     name: Test react website
