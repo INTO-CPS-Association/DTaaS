@@ -37,12 +37,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-              # v6.0.1
+        # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup node for building the React client website
         if: ${{ inputs.image-name == 'dtaas-web' }}
-              # v6.1.0
+        # v6.1.0
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
         with:
           node-version: 24
@@ -65,7 +65,7 @@ jobs:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
 
       - name: Log in to the Container registry
-              # v3.6.0
+        # v3.6.0
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
         with:
           registry: ${{ env.registry }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Build and push Docker image
         if: env.exists == 'false'
-              # v6.18.0
+        # v6.18.0
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           context: .
