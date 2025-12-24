@@ -10,8 +10,10 @@ __pycache__/
 files/*/
 !files/template/
 !files/user1/
+!files/user2/
 !files/common/
 !files/README.md
+
 # compiled output
 /dist
 /node_modules
