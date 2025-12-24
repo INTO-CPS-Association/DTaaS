@@ -19,10 +19,6 @@ on:
       NPM_TOKEN:
         required: true
 
-permissions:
-  packages: write  # ✅ Push to github package registry
-  contents: read  # ✅ Required for checking out the code
-
 jobs:
   publish-package:
     runs-on: ubuntu-latest
