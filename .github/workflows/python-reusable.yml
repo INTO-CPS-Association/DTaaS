@@ -1,6 +1,6 @@
 name: Python Reusable Workflow
 
-on:
+'on':
   workflow_call:
     inputs:
       working-directory:
@@ -60,12 +60,15 @@ jobs:
       - name: Install dev dependencies
         run: poetry install --with dev
 
-      # ───── 4. Lint ─────
       - name: Run pylint (min score 9.0)
         run: |
           # Check if any Python files exist
-          if find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | grep -q .; then
-            find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | xargs poetry run pylint --rcfile='${{ github.workspace }}/.pylintrc' --fail-under=9
+          if find . -name "*.py" -not -path "./venv/*" \
+            -not -path "./.venv/*" | grep -q .; then
+            find . -name "*.py" -not -path "./venv/*" \
+              -not -path "./.venv/*" | xargs poetry run pylint \
+              --rcfile='${{ github.workspace }}/.pylintrc' \
+              --fail-under=9
           else
             echo "No Python files found to lint"
           fi
@@ -79,7 +82,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@7f8b4b4aaa6c612fe6ca4b8e3b2e3b4d1c4d1e8d # v5
+        #  v5
+        uses: codecov/codecov-action@7f8b4b4aaa6c612fe6ca4b8e3b2e3b4d1c4d1e8d
         with:
           files: ${{ inputs.coverage-file }}
           flags: cli-tests
