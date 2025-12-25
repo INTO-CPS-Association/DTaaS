@@ -82,8 +82,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        #  v5
-        uses: codecov/codecov-action@v5
+        # v5
+        uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
         with:
           files: ${{ inputs.coverage-file }}
           flags: cli-tests

@@ -1,9 +1,9 @@
 # Reusable workflow for building and pushing a Docker Image to DockerHub.
-# 
+#
 # Auth username is taken from the repository secret, "DOCKERHUB_USERNAME"
 # Publish username is taken from the repository secret, "DOCKERHUB_SCOPE"
 # Password is taken from the repository secret, "DOCKERHUB_TOKEN"
-# 
+#
 # NOTE: DockerHub currently does not provide PATs for organizations.
 # Users belonging to the org must use their own, which is why we need a
 # username to publish through: DOCKERHUB_USERNAME, and a username to publish

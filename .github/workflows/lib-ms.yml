@@ -70,21 +70,20 @@ jobs:
         with:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
-
       - name: Update configuration
         env:
           LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
-          node test/update-config.js  
+          node test/update-config.js
 
       - name: Start http mode
-        env: 
+        env:
           LIBMS_CONFIG_PATH: ${{env.LIBMS_CONFIG_PATH}}
         run: |
           yarn build
           yarn start:pm2
-      
+
       - name: Check server is running (Windows)
         if: runner.os == 'Windows'
         env:
@@ -131,17 +130,17 @@ jobs:
     name: Get version and variables
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout Repository
-          # v6.0.1
-          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        - name: Install jq
-          run: sudo apt-get install -y jq
-        - name: get version
-          id: get-version
-          run: | 
-            version=$(jq -r '.version' ./servers/lib/package.json)
-            echo "version=$version" >> $GITHUB_OUTPUT
-            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: get-version
+        run: |
+          version=$(jq -r '.version' ./servers/lib/package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       node-version: ${{ steps.get-version.outputs.node-version }}
