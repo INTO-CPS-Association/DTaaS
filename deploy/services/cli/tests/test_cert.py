@@ -65,7 +65,7 @@ class TestCopyCerts:
         """Test when source directory does not exist"""
         # Mock os.getenv to return None (not in CI)
         mock_getenv.return_value = None
-        
+
         mock_config = Mock()
         mock_config.get_value.side_effect = lambda key: {
             "HOSTNAME": "localhost",
@@ -88,7 +88,7 @@ class TestCopyCerts:
                 return 'true'
             return None
         mock_getenv.side_effect = getenv_side_effect
-        
+
         mock_config = Mock()
         mock_config.get_value.side_effect = lambda key: {
             "HOSTNAME": "localhost",

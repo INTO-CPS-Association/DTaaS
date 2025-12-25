@@ -51,13 +51,21 @@ def run_command(cmd_list, check=True):
             # Prepend sudo for setup command when not running as root
             cmd_list = ["sudo", "-E"] + cmd_list
 
-    result = subprocess.run(
-        cmd_list,
-        capture_output=True,
-        text=True,
-        check=check
-    )
-    return result
+    try:
+        result = subprocess.run(
+            cmd_list,
+            capture_output=True,
+            text=True,
+            check=check
+        )
+        return result
+    except subprocess.CalledProcessError as e:
+        # Print detailed error information for debugging
+        print(f"Command failed: {' '.join(cmd_list)}")
+        print(f"Exit code: {e.returncode}")
+        print(f"STDOUT: {e.stdout}")
+        print(f"STDERR: {e.stderr}")
+        raise
 
 
 def get_service_status(service_names=None):

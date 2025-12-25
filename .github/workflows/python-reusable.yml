@@ -78,6 +78,7 @@ jobs:
           fi
 
       - name: Run pylint (min score 9.0)
+        shell: bash
         run: |
           # Check if any Python files exist
           if find . -name "*.py" -not -path "./venv/*" \
