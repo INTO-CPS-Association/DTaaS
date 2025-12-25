@@ -60,6 +60,23 @@ jobs:
       - name: Install dev dependencies
         run: poetry install --with dev
 
+      # ───── 4. Docker setup (for system tests) ─────
+      - name: Set up Docker (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          # Docker is pre-installed on Ubuntu runners
+          # Just ensure the service is running
+          sudo systemctl start docker || sudo service docker start || true
+
+      - name: Check Docker availability
+        if: runner.os != 'Windows'
+        run: |
+          if ! command -v docker &> /dev/null; then
+            echo "Warning: Docker not available in PATH"
+          else
+            docker --version
+          fi
+
       - name: Run pylint (min score 9.0)
         run: |
           # Check if any Python files exist
@@ -74,7 +91,7 @@ jobs:
           fi
 
       # ───── 5. Tests ─────
-      - name: Run pytest (with coverage)
+      - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |
           poetry run pytest --cov=src --cov-report=xml \
@@ -90,10 +107,10 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      # Windows/macOS → test without coverage
-      - name: Run pytest (no coverage)
+      # Windows/macOS → test without coverage and skip system tests
+      - name: Run pytest (no coverage, skip system tests)
         if: matrix.os != 'ubuntu-latest'
-        run: poetry run pytest --no-cov -q
+        run: poetry run pytest --no-cov -q -m "not system"
 
       # ───── 6. Build + dist artefacts ─────
       - name: Install runtime dependencies
