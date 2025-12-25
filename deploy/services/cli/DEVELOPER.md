@@ -89,7 +89,9 @@ cli/
     ├── test_cert.py        # Certificate operations tests
     ├── test_formatter.py   # Output formatting tests
     ├── test_template.py    # Project structure and template tests
-    └── test_utils.py       # Utility functions tests
+    ├── test_utils.py       # Utility functions tests
+    └── system_tests/       # End-to-end system tests
+        └── test_services_commands.py  # Real CLI workflow tests
 ```
 
 **Note:** Files marked as "copied by build.py" are generated during the build process
@@ -237,10 +239,78 @@ For testing CLI commands, use Click's `CliRunner` instead of subprocess.
 
 #### Mock External Dependencies
 
-Always mock Docker, file system, and configuration operations:
+Always mock Docker, file system, and configuration operations.
 
-```python
-fromwith coverage reports:
+### System Tests
+
+The `tests/system_tests/` directory contains end-to-end tests that verify the complete
+CLI workflow with real Docker containers and services. These tests are designed to
+accelerate the pull request process by catching integration issues early.
+
+#### Purpose
+
+System tests execute actual `dtaas-services` commands against real Docker containers,
+validating:
+
+* Complete service lifecycle (setup → start → stop → restart)
+* Service state transitions and Docker container status
+* Multi-service operations and isolation
+* Proper error handling and exit codes
+
+This provides confidence that the entire system works as intended before PR review,
+reducing back-and-forth iterations and review cycles.
+
+#### Running System Tests
+
+Run only system tests:
+
+```bash
+poetry run pytest tests/system_tests -v
+```
+
+Run system tests with specific markers:
+
+```bash
+poetry run pytest -m system -v
+```
+
+Run all tests including system tests:
+
+```bash
+poetry run pytest -v
+```
+
+#### System Test Examples
+
+The test suite covers critical workflows:
+
+* **Full Setup and Start**: Verify all services start correctly with setup → start → status
+* **Selective Service Operations**: Start/stop individual services while keeping others running
+* **Multiple Service Operations**: Stop multiple services simultaneously and verify isolation
+* **Service Cycling**: Complete start → stop → start workflow for service restarts
+
+#### Key Characteristics
+
+* **Real Execution**: Tests run actual CLI commands, not mocks
+* **Docker Integration**: Validates real container states using Docker API
+* **Isolated Test Runs**: Each test performs its own setup and cleanup to ensure
+  independent test execution
+* **State Assertions**: Properly handles Docker container state transitions
+  (e.g., "running", "restarting", "stopped", "exited")
+
+#### Configuration
+
+System tests use the actual `services.env` configuration file located at:
+
+```
+deploy/services/config/services.env
+```
+
+This file contains real service credentials and configurations used during testing.
+
+## Running Tests with Coverage
+
+Run all tests with coverage reports:
 
 ```bash
 poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
@@ -255,3 +325,4 @@ Aim for high test coverage, especially for:
 * Docker command execution
 * Configuration parsing
 * File operations
+

@@ -194,7 +194,7 @@ def test_start_stop_start_cycle(ensure_services_stopped):
     
     # Verify running
     status = get_service_status()
-    print(f"\n[DEBUG] Service status after first start")
+    print("\n[DEBUG] Service status after first start")
     for service in AVAILABLE_SERVICES:
         print(f"  {service}: {status.get(service)}")
     assert all(status.get(s) in ["running", "restarting"] for s in AVAILABLE_SERVICES), \
@@ -210,7 +210,7 @@ def test_start_stop_start_cycle(ensure_services_stopped):
     
     # Verify running again
     status = get_service_status()
-    print(f"\n[DEBUG] Service status after second start")
+    print("\n[DEBUG] Service status after second start")
     for service in AVAILABLE_SERVICES:
         print(f"  {service}: {status.get(service)}")
     assert all(status.get(s) in ["running", "restarting"] for s in AVAILABLE_SERVICES), \
