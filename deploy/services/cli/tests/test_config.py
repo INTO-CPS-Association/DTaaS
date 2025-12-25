@@ -22,7 +22,6 @@ def test_config_get_value():
         config = Config.__new__(Config)
         config.env = {"HOSTNAME": "test.local", "INFLUX_UID": "1000"}
         config.env_path = Path("test.env")
-        
         assert config.get_value("HOSTNAME") == "test.local"
         assert config.get_value("INFLUX_UID") == "1000"
 
@@ -32,8 +31,6 @@ def test_config_get_value_missing():
     config = Config.__new__(Config)
     config.env = {"HOSTNAME": "test.local"}
     config.env_path = Path("test.env")
-    
     with pytest.raises(RuntimeError) as exc_info:
         config.get_value("MISSING_KEY")
     assert "MISSING_KEY" in str(exc_info.value)
-

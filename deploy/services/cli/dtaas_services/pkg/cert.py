@@ -7,7 +7,6 @@ from .config import Config
 
 def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
     """Keep only the latest cert file for a given prefix, rename it, and remove others.
-    
     Args:
         certs_dir: Directory containing certificates
         prefix: Certificate prefix (e.g., 'privkey', 'fullchain')
@@ -27,7 +26,6 @@ def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
 
 def copy_certs() -> Tuple[bool, str]:
     """Obtain TLS certificates for services.
-    
     Returns:
         Tuple of (success, message)
     """
@@ -36,7 +34,6 @@ def copy_certs() -> Tuple[bool, str]:
     host_name = config.get_value("HOSTNAME")
     certs_dir = base_dir / "certs" / host_name
     source_dir = Path(config.get_value("CERTS_SRC"))
-    
     if not source_dir.exists():
         return False, f"Source directory for certs not found: {source_dir}"
     certs_dir.mkdir(parents=True, exist_ok=True)

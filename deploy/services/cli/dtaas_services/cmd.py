@@ -27,10 +27,8 @@ def services():
 def generate_project(path):
     """
     Generate project structure with template config, data directories, and compose file.
-    
     This creates the necessary directory structure and copies template files
     from the installed package so you can run dtaas-services commands.
-    
     Example:
         dtaas-services generate-project
         dtaas-services generate-project --path /path/to/project
@@ -92,7 +90,6 @@ def start(service_names):
             console.print(f"[cyan]Starting services:[/cyan] {', '.join(service_list)}...")
         else:
             console.print("[cyan]Starting all services...[/cyan]")
-        
         with console.status("[bold cyan]Starting containers...[/bold cyan]", spinner="dots"):
             err, msg = setup_obj.start_services(service_list)
 
@@ -228,15 +225,12 @@ def user():
 def add():
     """
     Add user accounts to InfluxDB and RabbitMQ.
-    
     Reads config/credentials.csv and creates accounts in both services.
-    
     Example:
         dtaas-services user add
     """
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
-    
     console.print("\n[cyan]Adding users to InfluxDB...[/cyan]")
     success, msg = influxdb.setup_influxdb_users()
     if not success:

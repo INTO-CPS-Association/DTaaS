@@ -11,7 +11,7 @@ from .config import Config
 def get_credentials_path() -> Path:
     """
     Get the path to credentials.csv file.
-    
+
     Returns:
         Path to credentials.csv file
     """
@@ -23,12 +23,11 @@ def execute_docker_command(container_name: str,
     exec_cmd: list[str], verbose: bool = True) -> tuple[bool, str]:
     """
     Execute a command in a Docker container.
-    
+
     Args:
         container_name: Name of the Docker container
         exec_cmd: Command to execute as a list of arguments
         verbose: Whether to print output
-        
     Returns:
         Tuple of (success, output/error message)
     """

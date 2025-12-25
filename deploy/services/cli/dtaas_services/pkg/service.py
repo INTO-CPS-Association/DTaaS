@@ -21,20 +21,16 @@ class Service:
         """
         base_dir = Config.get_base_dir()
         compose_file = base_dir / "compose.services.secure.yml"
-        
         # If compose file not in base_dir, look in package location
         if not compose_file.exists():
             package_dir = Path(__file__).parent.parent
             compose_file = package_dir / "compose.services.secure.yml"
-        
         self.compose_file = compose_file
-        
         # Load environment variables from config and set them in os.environ
         config = Config()
         for key, value in config.env.items():
             if value is not None:
                 os.environ[key] = str(value)
-        
         self.docker = DockerClient(compose_files=[self.compose_file])
 
 
@@ -43,10 +39,9 @@ class Service:
     ) -> Tuple[Optional[Exception], str]:
         """
         Start the platform services using docker compose.
-        
         Args:
             service_list: Optional list of specific services to start
-            
+
         Returns:
             Tuple of (Exception or None, message)
         """
@@ -70,10 +65,9 @@ class Service:
     ) -> Tuple[Optional[Exception], str]:
         """
         Stop platform services using Docker Compose.
-        
         Args:
             service_list: Optional list of specific services to stop
-            
+
         Returns:
             Tuple of (Exception or None, message)
         """
@@ -97,10 +91,9 @@ class Service:
     ) -> Tuple[Optional[Exception], str]:
         """
         Restart platform services using Docker Compose.
-        
         Args:
             service_list: Optional list of specific services to restart
-            
+
         Returns:
             Tuple of (Exception or None, message)
         """
@@ -124,10 +117,9 @@ class Service:
     ) -> Tuple[Optional[Exception], list]:
         """
         Get status of platform services.
-        
         Args:
             service_list: Optional list of specific services to check
-            
+
         Returns:
             Tuple of (Exception or None, list of Container objects)
         """
@@ -152,14 +144,12 @@ class Service:
     ) -> Tuple[Optional[Exception], str]:
         """
         Remove platform services and optionally their data.
-        
         When remove_volumes is True, all data directories are deleted and recreated empty.
         This ensures a completely fresh start on next service startup.
-        
         Args:
             service_list: Optional list of specific services to remove
             remove_volumes: Whether to remove data directories as well
-            
+
         Returns:
             Tuple of (Exception or None, message)
         """
@@ -175,7 +165,7 @@ class Service:
             else:
                 # Remove all services using down
                 self.docker.compose.down(volumes=remove_volumes)
-            
+
             # If volumes were requested to be removed, delete and recreate data directories
             if remove_volumes:
                 base_dir = Config.get_base_dir()
@@ -183,7 +173,6 @@ class Service:
                 data_subdirs = [
                     'grafana', 'influxdb', 'mongodb',
                     'rabbitmq']
-                
                 for subdir in data_subdirs:
                     subdir_path = data_dir / subdir
                     # Remove the directory and all its contents
@@ -191,9 +180,8 @@ class Service:
                         shutil.rmtree(subdir_path, ignore_errors=True)
                     # Recreate empty directory
                     subdir_path.mkdir(parents=True, exist_ok=True)
-                
                 return None, "Services and data removed successfully"
-            
+
             return None, "Services removed successfully"
         except Exception as e:
             return e, f"Failed to remove services: {str(e)}"

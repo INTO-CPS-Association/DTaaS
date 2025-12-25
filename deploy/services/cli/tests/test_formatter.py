@@ -18,21 +18,15 @@ def test_format_container_status_with_running_containers():
     container1 = Mock()
     container1.name = "grafana"
     container1.state.status = "running"
-    
     container2 = Mock()
     container2.name = "influxdb"
     container2.state.status = "exited"
-    
     containers = [container1, container2]
-    
     # Capture console output
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=True)
-    
     format_container_status(containers, console)
-    
     output = string_io.getvalue()
-    
     # Check that service names appear
     assert "Grafana" in output or "grafana" in output
     assert "InfluxDB" in output or "influxdb" in output
@@ -41,12 +35,9 @@ def test_format_container_status_with_running_containers():
 def test_format_container_status_empty():
     """Test formatting with no containers"""
     containers = []
-    
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=True)
-    
     format_container_status(containers, console)
-    
     output = string_io.getvalue()
     assert "No services" in output
 
@@ -57,18 +48,13 @@ def test_format_container_status_sorting():
     container1 = Mock()
     container1.name = "rabbitmq"
     container1.state.status = "running"
-    
     container2 = Mock()
     container2.name = "grafana"
     container2.state.status = "running"
-    
     containers = [container1, container2]
-    
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=True)
-    
     format_container_status(containers, console)
-    
     output = string_io.getvalue()
     # Both should appear in the output
     assert "Grafana" in output or "grafana" in output
@@ -90,7 +76,6 @@ def test_status_info():
     assert "running" in STATUS_INFO
     assert "exited" in STATUS_INFO
     assert "restarting" in STATUS_INFO
-    
     # Check structure
     emoji, text, color = STATUS_INFO["running"]
     assert emoji == "✅"
@@ -104,17 +89,12 @@ def test_format_service_list_status():
     container = Mock()
     container.name = "grafana"
     container.state.status = "running"
-    
     services = {"grafana": container, "influxdb": None}
     all_services = ["grafana", "influxdb"]
-    
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=True)
-    
     format_service_list_status(services, all_services, console)
-    
     output = string_io.getvalue()
-    
     # Both services should appear
     assert "Grafana" in output or "grafana" in output
     assert "InfluxDB" in output or "influxdb" in output

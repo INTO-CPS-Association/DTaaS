@@ -8,7 +8,6 @@ from .config import Config
 
 def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path: Path) -> None:
     """Create combined.pem from privkey.pem and fullchain.pem.
-    
     Args:
         privkey_path: Path to privkey.pem
         fullchain_path: Path to fullchain.pem
@@ -27,7 +26,6 @@ def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path
 
 def permissions_mongodb() -> Tuple[bool, str]:
     """Creates combined.pem and sets permissions for MongoDB.
-    
     Returns:
         Tuple of (success, message)
     """
@@ -35,7 +33,6 @@ def permissions_mongodb() -> Tuple[bool, str]:
         config = Config()
         base_dir = Config.get_base_dir()
         os_type = platform.system().lower()
-        
         host_name = config.get_value("HOSTNAME")
         certs_dir = base_dir / "certs" / host_name
         privkey_path = certs_dir / "privkey.pem"
@@ -43,7 +40,6 @@ def permissions_mongodb() -> Tuple[bool, str]:
         combined_path = certs_dir / "combined.pem"
         mongo_uid = int(config.get_value("MONGO_UID"))
         mongo_gid = int(config.get_value("MONGO_GID"))
-        
         certs_dir.mkdir(parents=True, exist_ok=True)
         create_combined_cert(privkey_path, fullchain_path, combined_path)
         if os_type in ("linux", "darwin"):

@@ -11,11 +11,9 @@ from .config import Config
 def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     """
     Create a single InfluxDB user.
-    
     Args:
         username: InfluxDB username
         password: InfluxDB password
-        
     Returns:
         Tuple of (success, error message if any)
     """
@@ -32,7 +30,7 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
 def _get_influxdb_users() -> tuple[bool, dict, str]:
     """
     Get list of InfluxDB users as a dictionary.
-    
+
     Returns:
         Tuple of (success, users dict, error message if any)
     """
@@ -58,7 +56,7 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
 def _get_existing_orgs() -> tuple[bool, set, str]:
     """
     Get set of existing organization names in InfluxDB.
-    
+
     Returns:
         Tuple of (success, set of org names, error message if any)
     """
@@ -84,12 +82,12 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
 def _setup_user_org_bucket(name: str, user_id: str, existing_orgs: set) -> tuple[bool, str]:
     """
     Set up organization and bucket for a user.
-    
+
     Args:
         name: Organization/bucket name (typically the username)
         user_id: User ID to add as owner
         existing_orgs: Set of existing organization names
-        
+
     Returns:
         Tuple of (success, error message if any)
     """
@@ -173,7 +171,6 @@ def setup_influxdb_users() -> tuple[bool, str]:
 
 def permissions_influxdb() -> Tuple[bool, str]:
     """Copy privkey.pem -> privkey-influxdb.pem and change owner.
-    
     Returns:
         Tuple of (success, message)
     """
@@ -187,7 +184,7 @@ def permissions_influxdb() -> Tuple[bool, str]:
         influx_key_path = certs_dir / "privkey-influxdb.pem"
         influx_uid = int(config.get_value("INFLUX_UID"))
         influx_gid = int(config.get_value("INFLUX_GID"))
-        
+
         shutil.copy2(privkey_path, influx_key_path)
         if os_type in ("linux", "darwin"):
             shutil.chown(

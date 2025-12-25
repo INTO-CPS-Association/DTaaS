@@ -10,11 +10,9 @@ from .config import Config
 def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     """
     Add a user to RabbitMQ with vhost and permissions.
-    
     Args:
         username: RabbitMQ username
         password: RabbitMQ password
-        
     Returns:
         Tuple of (success, error message if any)
     """
@@ -79,7 +77,6 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
 
 def permissions_rabbitmq() -> Tuple[bool, str]:
     """Copy privkey.pem -> privkey-rabbitmq.pem and sets owner.
-    
     Returns:
         Tuple of (success, message)
     """
@@ -87,13 +84,11 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         config = Config()
         base_dir = Config.get_base_dir()
         os_type = platform.system().lower()
-        
         host_name = config.get_value("HOSTNAME")
         certs_dir = base_dir / "certs" / host_name
         privkey_path = certs_dir / "privkey.pem"
         rabbit_key_path = certs_dir / "privkey-rabbitmq.pem"
         rabbit_uid = int(config.get_value("RABBIT_UID"))
-        
         shutil.copy2(privkey_path, rabbit_key_path)
         if os_type in ("linux", "darwin"):
             shutil.chown(rabbit_key_path, user=rabbit_uid)

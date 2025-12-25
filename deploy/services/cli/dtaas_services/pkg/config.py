@@ -19,7 +19,6 @@ class Config:
                 f"Please copy config/services.env.template to config/services.env \n"
                 f"and update it with your configuration "
             )
-        
         load_dotenv(dotenv_path=self.env_path, override=True)
         self.env = dict(os.environ)
 
@@ -27,14 +26,11 @@ class Config:
     def get_base_dir() -> Path:
         """
         Get the base directory for the project.
-        
         Supports both standalone package and development workflows:
         - If config/services.env exists in cwd, use cwd (standalone package)
         - Otherwise use package source location (development in DTaaS repo)
-        
         On Linux/MacOS in development mode, uses Path.cwd().parent
         On Windows in development mode, uses Path(__file__).parent.parent.parent.parent
-        
         Returns:
             Path object representing the base directory
         """
