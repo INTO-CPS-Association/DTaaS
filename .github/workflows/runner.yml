@@ -73,17 +73,17 @@ jobs:
     name: Get version and variables
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout Repository
-          # v6.0.1
-          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        - name: Install jq
-          run: sudo apt-get install -y jq
-        - name: get version
-          id: get-version
-          run: | 
-            version=$(jq -r '.version' ./servers/execution/runner/package.json)
-            echo "version=$version" >> $GITHUB_OUTPUT
-            echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: get-version
+        run: |
+          version=$(jq -r '.version' ./servers/execution/runner/package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       node-version: ${{ steps.get-version.outputs.node-version }}
@@ -107,7 +107,8 @@ jobs:
       node-version: ${{ needs.get-version.outputs.node-version }}
       registry-url: 'https://npm.pkg.github.com/'
       directory: servers/execution/runner
-      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: >-
+        ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -129,6 +130,7 @@ jobs:
       node-version: ${{ needs.get-version.outputs.node-version }}
       registry-url: 'https://registry.npmjs.org'
       directory: servers/execution/runner
-      package-name: ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
+      package-name: >-
+        ${{ vars.NPM_RUNNER_PACKAGE_NAME || '' }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
