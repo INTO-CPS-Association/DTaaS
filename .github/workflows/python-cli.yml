@@ -12,9 +12,6 @@ on:
 
 jobs:
   test-cli:
-    permissions:
-      contents: read  #  Required for checking out the code
-      actions: write  #  Required for uploading artifacts
     uses: ./.github/workflows/python-reusable.yml
     with:
       working-directory: cli
