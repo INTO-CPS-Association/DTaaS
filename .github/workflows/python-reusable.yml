@@ -22,6 +22,9 @@ name: Python Reusable Workflow
 
 jobs:
   test-cli:
+    permissions:
+      contents: read  #  Required for checking out the code
+      actions: write  #  Required for uploading artifacts
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
