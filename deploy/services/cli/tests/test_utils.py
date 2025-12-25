@@ -28,6 +28,7 @@ def test_check_root_unix_linux_not_root():
     with patch("dtaas_services.pkg.utils.platform.system", return_value="Linux"), \
             patch("dtaas_services.pkg.utils.os") as mock_os, \
             patch("dtaas_services.pkg.utils.sys.exit") as mock_exit:
+        mock_os.getenv.return_value = None
         mock_os.geteuid.return_value = 1000
         check_root_unix()
         mock_exit.assert_called_once_with(1)
@@ -46,6 +47,7 @@ def test_check_root_unix_darwin_not_root():
     with patch("dtaas_services.pkg.utils.platform.system", return_value="Darwin"), \
             patch("dtaas_services.pkg.utils.os") as mock_os, \
             patch("dtaas_services.pkg.utils.sys.exit") as mock_exit:
+        mock_os.getenv.return_value = None
         mock_os.geteuid.return_value = 501
         check_root_unix()
         mock_exit.assert_called_once_with(1)
@@ -56,6 +58,7 @@ def test_check_root_unix_no_geteuid():
     with patch("dtaas_services.pkg.utils.platform.system", return_value="Linux"), \
             patch("dtaas_services.pkg.utils.os") as mock_os, \
             patch("dtaas_services.pkg.utils.sys.exit") as mock_exit:
+        mock_os.getenv.return_value = None
         mock_os.geteuid.side_effect = AttributeError
         check_root_unix()
         mock_exit.assert_called_once_with(1)

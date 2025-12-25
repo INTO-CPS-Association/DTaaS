@@ -45,7 +45,15 @@ def execute_docker_command(container_name: str,
 
 
 def check_root_unix() -> None:
-    """Check if script is run as root on Unix systems."""
+    """Check if script is run as root on Unix systems.
+
+    Skips the root check in CI environments (GitHub Actions, GitLab CI, etc.)
+    to allow tests to run without requiring elevated privileges.
+    """
+    # Skip root check in CI environments
+    if os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'):
+        return
+
     if platform.system().lower() not in ['linux', 'darwin']:
         return
     try:
