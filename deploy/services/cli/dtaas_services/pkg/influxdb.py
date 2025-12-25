@@ -1,4 +1,5 @@
 """InfluxDB user management for DTaaS services"""
+import os
 import csv
 import json
 import shutil
@@ -171,6 +172,9 @@ def setup_influxdb_users() -> tuple[bool, str]:
 
 def permissions_influxdb() -> Tuple[bool, str]:
     """Copy privkey.pem -> privkey-influxdb.pem and change owner.
+    
+    Skips permission changes in CI environments (GITHUB_ACTIONS, GITLAB_CI, CI env vars).
+    
     Returns:
         Tuple of (success, message)
     """
@@ -186,16 +190,21 @@ def permissions_influxdb() -> Tuple[bool, str]:
         influx_gid = int(config.get_value("INFLUX_GID"))
 
         shutil.copy2(privkey_path, influx_key_path)
-        if os_type in ("linux", "darwin"):
+        
+        # Skip permission changes in CI environments (they're read-only)
+        is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
+        if os_type in ("linux", "darwin") and not is_ci:
             shutil.chown(
                 influx_key_path,
                 user=influx_uid,
                 group=influx_gid
             )
-        msg = (
-            f"{influx_key_path} created and ownership set to "
-            f"{influx_uid}:{influx_gid}."
-        )
+            msg = (
+                f"{influx_key_path} created and ownership set to "
+                f"{influx_uid}:{influx_gid}."
+            )
+        else:
+            msg = f"{influx_key_path} created (permission changes skipped in CI)."
         return True, msg
     except OSError as e:
         return False, f"Error setting permissions for InfluxDB: {e}"

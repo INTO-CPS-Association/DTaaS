@@ -1,4 +1,5 @@
 """RabbitMQ user management for DTaaS services"""
+import os
 import csv
 import shutil
 import platform
@@ -77,6 +78,9 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
 
 def permissions_rabbitmq() -> Tuple[bool, str]:
     """Copy privkey.pem -> privkey-rabbitmq.pem and sets owner.
+    
+    Skips permission changes in CI environments (GITHUB_ACTIONS, GITLAB_CI, CI env vars).
+    
     Returns:
         Tuple of (success, message)
     """
@@ -90,12 +94,17 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         rabbit_key_path = certs_dir / "privkey-rabbitmq.pem"
         rabbit_uid = int(config.get_value("RABBIT_UID"))
         shutil.copy2(privkey_path, rabbit_key_path)
-        if os_type in ("linux", "darwin"):
+        
+        # Skip permission changes in CI environments (they're read-only)
+        is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
+        if os_type in ("linux", "darwin") and not is_ci:
             shutil.chown(rabbit_key_path, user=rabbit_uid)
-        msg = (
-            f"{rabbit_key_path} created and ownership set to user "
-            f"{rabbit_uid}."
-        )
+            msg = (
+                f"{rabbit_key_path} created and ownership set to user "
+                f"{rabbit_uid}."
+            )
+        else:
+            msg = f"{rabbit_key_path} created (permission changes skipped in CI)."
         return True, msg
     except OSError as e:
         return False, f"Error setting permissions for RabbitMQ: {e}"
