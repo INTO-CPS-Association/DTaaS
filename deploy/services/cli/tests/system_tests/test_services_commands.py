@@ -7,6 +7,7 @@ import pytest
 import os
 import platform
 import time
+import shutil
 from dtaas_services.pkg.service import Service
 
 pytestmark = pytest.mark.system
@@ -39,17 +40,25 @@ def run_command(cmd_list, check=True):
     Returns:
         subprocess.CompletedProcess with stdout, stderr, and returncode
     """
-    # For setup command on Linux/macOS in CI, use sudo if not already root
-    if (cmd_list and cmd_list[0] == "dtaas-services" and len(cmd_list) > 1 and 
-        cmd_list[1] == "setup" and 
+    # For setup command on Linux/macOS, use sudo if not already root
+    in_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
+
+    if (not in_ci and cmd_list and cmd_list[0] == "dtaas-services" and len(cmd_list) > 1 and
+        cmd_list[1] == "setup" and
         platform.system().lower() in ['linux', 'darwin']):
         try:
             is_root = os.geteuid() == 0
         except AttributeError:
             is_root = False
         if not is_root:
-            # Prepend sudo for setup command when not running as root
-            cmd_list = ["sudo", "-E"] + cmd_list
+            # Use poetry run with sudo to ensure the command is found in the venv
+            # sudo -E preserves environment variables needed for poetry
+            poetry_path = shutil.which("poetry")
+            if poetry_path:
+                cmd_list = ["sudo", "-E", poetry_path, "run"] + cmd_list
+            else:
+                # Fallback to poetry in PATH if which fails
+                cmd_list = ["sudo", "-E", "poetry", "run"] + cmd_list
 
     try:
         result = subprocess.run(
