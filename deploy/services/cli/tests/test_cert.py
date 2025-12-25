@@ -59,20 +59,52 @@ class TestNormalizeCertCandidates:
 
 class TestCopyCerts:
     """Tests for copy_certs function"""
+    @patch("dtaas_services.pkg.cert.os.getenv")
     @patch("dtaas_services.pkg.cert.Config")
-    def test_copy_certs_source_not_found(self, mock_config_class):
+    def test_copy_certs_source_not_found(self, mock_config_class, mock_getenv, tmp_path):
         """Test when source directory does not exist"""
+        # Mock os.getenv to return None (not in CI)
+        mock_getenv.return_value = None
+        
         mock_config = Mock()
         mock_config.get_value.side_effect = lambda key: {
             "HOSTNAME": "localhost",
             "CERTS_SRC": "/nonexistent/path"
         }.get(key)
         mock_config_class.return_value = mock_config
-        mock_config_class.get_base_dir.return_value = Path("/base")
+        mock_config_class.get_base_dir.return_value = tmp_path
         success, message = copy_certs()
         assert not success
         assert "Source directory" in message
         assert "not found" in message
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    @patch("dtaas_services.pkg.cert.Config")
+    def test_copy_certs_source_not_found_ci(self, mock_config_class, mock_getenv, tmp_path):
+        """Test when source directory does not exist in CI (should create dummy certs)"""
+        # Mock os.getenv to return 'true' for CI environment variable
+        def getenv_side_effect(key):
+            if key == 'CI':
+                return 'true'
+            return None
+        mock_getenv.side_effect = getenv_side_effect
+        
+        mock_config = Mock()
+        mock_config.get_value.side_effect = lambda key: {
+            "HOSTNAME": "localhost",
+            "CERTS_SRC": "/nonexistent/path"
+        }.get(key)
+        mock_config_class.return_value = mock_config
+        mock_config_class.get_base_dir.return_value = tmp_path
+        success, message = copy_certs()
+        # In CI, should succeed with dummy certificates
+        assert success
+        assert "Created dummy certificates" in message
+        # Check that dummy certs were created
+        certs_dir = tmp_path / "certs" / "localhost"
+        assert certs_dir.exists()
+        assert (certs_dir / "privkey.pem").exists()
+        assert (certs_dir / "fullchain.pem").exists()
 
     @patch("dtaas_services.pkg.cert.Config")
     def test_copy_certs_success(self, mock_config_class, tmp_path):
