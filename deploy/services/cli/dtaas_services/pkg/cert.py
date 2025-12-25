@@ -81,7 +81,7 @@ def copy_certs() -> Tuple[bool, str]:
 
                 return True, f"Created dummy certificates in {certs_dir} for CI testing"
             except OSError as e:
-                return False, f"Error creating dummy certificates: {e}"
+                return False, f"Source directory error creating dummy certificates: {e}"
         else:
             return False, f"Source directory for certs not found: {source_dir}"
 
