@@ -90,7 +90,8 @@ jobs:
       - name: Check if version exists
         id: check_version
         env:
-          IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}"
+          IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{
+            inputs.image-name }}:${{ inputs.version }}"
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
@@ -109,8 +110,10 @@ jobs:
           file: ./docker/${{ inputs.dockerfile }}
           push: true
           tags: |
-            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
-            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/
+            ${{ inputs.image-name }}:${{ inputs.version }}
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/
+            ${{ inputs.image-name }}:latest
 
       - name: Docker Hub Description
         # v5.0.0

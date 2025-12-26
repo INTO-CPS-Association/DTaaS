@@ -41,4 +41,3 @@ updates:
     target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
-

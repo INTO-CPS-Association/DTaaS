@@ -118,7 +118,7 @@ jobs:
   publish-docker-image-ghcr:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write # Push to github package registry
+      packages: write  # Push to github package registry
     if: |
       github.event_name == 'push' &&
       (
@@ -138,7 +138,7 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write # Required for publishing to registry
+      packages: write  # Required for publishing to registry
     if: |
       github.event_name == 'push' &&
       (

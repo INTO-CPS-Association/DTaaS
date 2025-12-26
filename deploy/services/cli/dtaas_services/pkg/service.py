@@ -155,7 +155,7 @@ class Service:
                 result = self.docker.compose.ps(all=True)
             return None, result
         except (subprocess.CalledProcessError, OSError, KeyError, ValueError, TypeError) as e:
-            err_exc, err_msg = self._handle_docker_error("get service status", e)
+            err_exc, _ = self._handle_docker_error("get service status", e)
             return err_exc, []
 
 
