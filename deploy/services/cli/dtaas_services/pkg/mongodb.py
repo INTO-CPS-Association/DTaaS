@@ -27,9 +27,7 @@ def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path
 
 def permissions_mongodb() -> Tuple[bool, str]:
     """Creates combined.pem and sets permissions for MongoDB.
-    
     Skips permission changes in CI environments (GITHUB_ACTIONS, GITLAB_CI, CI env vars).
-    
     Returns:
         Tuple of (success, message)
     """
@@ -46,7 +44,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
         mongo_gid = int(config.get_value("MONGO_GID"))
         certs_dir.mkdir(parents=True, exist_ok=True)
         create_combined_cert(privkey_path, fullchain_path, combined_path)
-        
+
         # Skip permission changes in CI environments (they're read-only)
         is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
         if os_type in ("linux", "darwin") and not is_ci:

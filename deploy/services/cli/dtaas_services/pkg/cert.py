@@ -123,4 +123,3 @@ def copy_certs() -> Tuple[bool, str]:
 
     # Copy certificates from source
     return _copy_cert_files(source_dir, certs_dir)
-

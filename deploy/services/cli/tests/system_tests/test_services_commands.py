@@ -6,7 +6,6 @@ import subprocess
 import pytest
 import os
 import platform
-import time
 import shutil
 from dtaas_services.pkg.service import Service
 

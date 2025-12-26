@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Tests for Service class and Docker operations"""
+import subprocess
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 from dtaas_services.pkg.service import Service
@@ -27,6 +28,93 @@ def test_service_init_compose_file_is_path(mock_docker_client, mock_config):
     mock_docker_client.return_value = mock_docker
     service = Service()
     assert isinstance(service.compose_file, Path)
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_check_compose_file_exists(mock_docker_client, mock_config):
+    """Test _check_compose_file when file exists"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    with patch.object(Path, "exists", return_value=True):
+        err, exists = service._check_compose_file()
+    assert err is None
+    assert exists is True
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_check_compose_file_not_exists(mock_docker_client, mock_config):
+    """Test _check_compose_file when file does not exist"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    with patch.object(Path, "exists", return_value=False):
+        err, exists = service._check_compose_file()
+    assert err is not None
+    assert isinstance(err, FileNotFoundError)
+    assert exists is False
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_handle_docker_error_subprocess(mock_docker_client, mock_config):
+    """Test _handle_docker_error with subprocess error"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    exc = subprocess.CalledProcessError(1, "docker")
+    err, message = service._handle_docker_error("test operation", exc)
+    assert err is exc
+    assert "test operation" in message
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_handle_docker_error_os_error(mock_docker_client, mock_config):
+    """Test _handle_docker_error with OSError"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    exc = OSError("Permission denied")
+    err, message = service._handle_docker_error("test operation", exc)
+    assert err is exc
+    assert "test operation" in message
+    assert "Permission denied" in message
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_handle_docker_error_value_error(mock_docker_client, mock_config):
+    """Test _handle_docker_error with ValueError"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    exc = ValueError("Invalid value")
+    err, message = service._handle_docker_error("test operation", exc)
+    assert err is exc
+    assert "Invalid configuration" in message
+
+
+@patch("dtaas_services.pkg.service.Config")
+@patch("dtaas_services.pkg.service.DockerClient")
+def test_handle_docker_error_generic(mock_docker_client, mock_config):
+    """Test _handle_docker_error with generic exception"""
+    mock_config.get_base_dir.return_value = Path("/path/to/base")
+    mock_docker = Mock()
+    mock_docker_client.return_value = mock_docker
+    service = Service()
+    exc = RuntimeError("Some runtime error")
+    err, message = service._handle_docker_error("test operation", exc)
+    assert err is exc
+    assert "RuntimeError" in message
+    assert "Some runtime error" in message
 
 
 @patch("dtaas_services.pkg.service.Config")
@@ -66,14 +154,14 @@ def test_start_services_docker_error(mock_docker_client, mock_config):
     """Test start_services with Docker error"""
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.up.side_effect = Exception("Docker error")
+    mock_docker.compose.up.side_effect = OSError("Docker error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
         err, message = service.start_services()
 
     assert err is not None
-    assert isinstance(err, Exception)
+    assert isinstance(err, OSError)
     assert "docker error" in message.lower()
 
 
@@ -125,7 +213,7 @@ def test_stop_services_docker_error(mock_docker_client, mock_config):
     """Test stop_services with Docker error"""
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.down.side_effect = Exception("Docker stop error")
+    mock_docker.compose.down.side_effect = OSError("Docker stop error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
@@ -183,7 +271,7 @@ def test_restart_services_docker_error(mock_docker_client, mock_config):
     """Test restart_services with Docker error"""
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.restart.side_effect = Exception("Restart error")
+    mock_docker.compose.restart.side_effect = OSError("Restart error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
@@ -248,7 +336,7 @@ def test_get_status_docker_error(mock_docker_client, mock_config):
     """Test get_status with Docker error"""
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.ps.side_effect = Exception("Status error")
+    mock_docker.compose.ps.side_effect = OSError("Status error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
@@ -330,7 +418,7 @@ def test_remove_services_docker_error(mock_docker_client, mock_config):
     """Test remove_services with Docker error"""
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.down.side_effect = Exception("Remove error")
+    mock_docker.compose.down.side_effect = OSError("Remove error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
