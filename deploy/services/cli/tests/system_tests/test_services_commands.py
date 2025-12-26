@@ -15,20 +15,20 @@ AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana", "influxdb"]
 
 @pytest.fixture(scope="module")
 def ensure_services_stopped():
-    """Ensure all services are stopped before and after tests"""
-    subprocess.run(["dtaas-services", "stop"], check=False, capture_output=True)
+    """Clean up services after all tests complete"""
     yield
-    # Cleanup after all tests
-    subprocess.run(["dtaas-services", "stop"], check=False, capture_output=True)
+    # Final cleanup after all tests
+    for service in AVAILABLE_SERVICES:
+        subprocess.run(["docker", "rm", "-f", service], check=False, capture_output=True)
 
 
 @pytest.fixture(autouse=True)
 def cleanup_between_tests():
-    """Clean up services between individual tests"""
+    """Clean up our specific services between individual tests"""
     yield
-    # After each test, stop services and give them time to fully stop
-    subprocess.run(["dtaas-services", "stop"], check=False, capture_output=True)
-    time.sleep(2)  # Allow services time to fully stop
+    # After each test, force remove only our service containers
+    for service in AVAILABLE_SERVICES:
+        subprocess.run(["docker", "rm", "-f", service], check=False, capture_output=True)
 
 
 def run_command(cmd_list, check=True):

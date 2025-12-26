@@ -2,7 +2,7 @@
 from pathlib import Path
 import time
 from unittest.mock import patch, Mock
-from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs
+from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs, _is_ci, _create_dummy_certs, _copy_cert_files
 
 
 class TestNormalizeCertCandidates:
@@ -55,6 +55,86 @@ class TestNormalizeCertCandidates:
         # Target should remain unchanged
         assert target.exists()
         assert target.read_text() == "target cert"
+
+
+class TestIsCi:
+    """Tests for _is_ci helper function"""
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_ci_env(self, mock_getenv):
+        """Test detection of CI environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "CI" else None
+        assert _is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_github_actions_env(self, mock_getenv):
+        """Test detection of GITHUB_ACTIONS environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "GITHUB_ACTIONS" else None
+        assert _is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_gitlab_ci_env(self, mock_getenv):
+        """Test detection of GITLAB_CI environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "GITLAB_CI" else None
+        assert _is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_no_ci_env(self, mock_getenv):
+        """Test when no CI environment variables are set"""
+        mock_getenv.return_value = None
+        assert _is_ci() is False
+
+
+class TestCreateDummyCerts:
+    """Tests for _create_dummy_certs helper function"""
+    def test_create_dummy_certs_success(self, tmp_path):
+        """Test successful creation of dummy certificates"""
+        certs_dir = tmp_path / "certs"
+        success, message = _create_dummy_certs(certs_dir)
+
+        assert success is True
+        assert "Created dummy certificates" in message
+        assert (certs_dir / "privkey.pem").exists()
+        assert (certs_dir / "fullchain.pem").exists()
+
+    def test_create_dummy_certs_already_exist(self, tmp_path):
+        """Test when dummy certs already exist"""
+        certs_dir = tmp_path / "certs"
+        certs_dir.mkdir(parents=True)
+        (certs_dir / "privkey.pem").write_text("existing privkey")
+        (certs_dir / "fullchain.pem").write_text("existing fullchain")
+        success, _ = _create_dummy_certs(certs_dir)
+        assert success is True
+        # Existing files should not be overwritten
+        assert (certs_dir / "privkey.pem").read_text() == "existing privkey"
+        assert (certs_dir / "fullchain.pem").read_text() == "existing fullchain"
+
+
+class TestCopyCertFiles:
+    """Tests for _copy_cert_files helper function"""
+    def test_copy_cert_files_success(self, tmp_path):
+        """Test successful certificate file copy"""
+        source_dir = tmp_path / "source"
+        source_dir.mkdir()
+        (source_dir / "privkey1.pem").write_text("privkey content")
+        (source_dir / "fullchain1.pem").write_text("fullchain content")
+        dest_dir = tmp_path / "dest"
+        success, message = _copy_cert_files(source_dir, dest_dir)
+        assert success is True
+        assert "copied and normalized" in message
+        assert (dest_dir / "privkey.pem").exists()
+        assert (dest_dir / "fullchain.pem").exists()
+
+    @patch("dtaas_services.pkg.cert.shutil.copy2")
+    def test_copy_cert_files_os_error(self, mock_copy, tmp_path):
+        """Test when OS error occurs during copy"""
+        source_dir = tmp_path / "source"
+        source_dir.mkdir()
+        (source_dir / "cert.pem").write_text("content")
+        dest_dir = tmp_path / "dest"
+        mock_copy.side_effect = OSError("Permission denied")
+        success, message = _copy_cert_files(source_dir, dest_dir)
+        assert success is False
+        assert "Error copying certificates" in message
 
 
 class TestCopyCerts:

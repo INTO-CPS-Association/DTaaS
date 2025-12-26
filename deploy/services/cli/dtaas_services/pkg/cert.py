@@ -48,6 +48,58 @@ def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
             p.unlink(missing_ok=True)
 
 
+def _is_ci() -> bool:
+    """Check if running in CI environment.
+    Returns:
+        True if CI environment variables are set
+    """
+    return bool(os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'))
+
+
+def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
+    """Create dummy certificates for CI testing.
+    Args:
+        certs_dir: Directory where certificates should be created
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        certs_dir.mkdir(parents=True, exist_ok=True)
+        privkey_path = certs_dir / "privkey.pem"
+        fullchain_path = certs_dir / "fullchain.pem"
+        if not privkey_path.exists():
+            create_dummy_cert(privkey_path)
+        if not fullchain_path.exists():
+            create_dummy_cert(fullchain_path)
+        return True, f"Created dummy certificates in {certs_dir} for CI testing"
+    except OSError as e:
+        return False, f"Source directory error creating dummy certificates: {e}"
+
+
+def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
+    """Copy certificate files from source to destination directory.
+    Args:
+        source_dir: Source directory containing certificates
+        certs_dir: Destination directory
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        certs_dir.mkdir(parents=True, exist_ok=True)
+        for path in source_dir.glob("*"):
+            if path.is_file():
+                dest = certs_dir / path.name
+                if path.resolve() == dest.resolve():
+                    print("Source and destination are the same, skipping copy.")
+                    continue
+                shutil.copy2(path, dest)
+        normalize_cert_candidates(certs_dir, "privkey")
+        normalize_cert_candidates(certs_dir, "fullchain")
+        return True, f"Certificates copied and normalized in {certs_dir}"
+    except OSError as e:
+        return False, f"Error copying certificates: {e}"
+
+
 def copy_certs() -> Tuple[bool, str]:
     """Obtain TLS certificates for services.
 
@@ -63,40 +115,12 @@ def copy_certs() -> Tuple[bool, str]:
     certs_dir = base_dir / "certs" / host_name
     source_dir = Path(config.get_value("CERTS_SRC"))
 
-    # In CI/test environments, create dummy certificates if source doesn't exist
-    is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
+    # Handle missing source directory
     if not source_dir.exists():
-        if is_ci:
-            # In CI, create dummy certificates for testing
-            try:
-                certs_dir.mkdir(parents=True, exist_ok=True)
-                # Create dummy private key and certificate
-                privkey_path = certs_dir / "privkey.pem"
-                fullchain_path = certs_dir / "fullchain.pem"
+        if _is_ci():
+            return _create_dummy_certs(certs_dir)
+        return False, f"Source directory for certs not found: {source_dir}"
 
-                if not privkey_path.exists():
-                    create_dummy_cert(privkey_path)
-                if not fullchain_path.exists():
-                    create_dummy_cert(fullchain_path)
-
-                return True, f"Created dummy certificates in {certs_dir} for CI testing"
-            except OSError as e:
-                return False, f"Source directory error creating dummy certificates: {e}"
-        else:
-            return False, f"Source directory for certs not found: {source_dir}"
-
-    certs_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        for path in source_dir.glob("*"):
-            if path.is_file():
-                dest = certs_dir / path.name
-                if path.resolve() == dest.resolve():
-                    print("Source and destination are the same, skipping copy.")
-                    continue
-                shutil.copy2(path, dest)
-        normalize_cert_candidates(certs_dir, "privkey")
-        normalize_cert_candidates(certs_dir, "fullchain")
-        return True, f"Certificates copied and normalized in {certs_dir}"
-    except OSError as e:
-        return False, f"Error copying certificates: {e}"
+    # Copy certificates from source
+    return _copy_cert_files(source_dir, certs_dir)
 
