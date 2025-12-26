@@ -79,7 +79,7 @@ jobs:
 
       - name: Start http mode
         env:
-          LIBMS_CONFIG_PATH: ${{env.LIBMS_CONFIG_PATH}}
+          LIBMS_CONFIG_PATH: ${{ env.LIBMS_CONFIG_PATH }}
         run: |
           yarn build
           yarn start:pm2

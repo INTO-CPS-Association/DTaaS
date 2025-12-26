@@ -15,8 +15,8 @@ jobs:
   client:
     name: Test react website
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      actions: write  # ✅ Required for uploading artifacts
+      contents: read  # Required for checking out the code
+      actions: write  # Required for uploading artifacts
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -76,7 +76,7 @@ jobs:
       - name: Upload Playwright Report (Linux)
         # v6.0.0
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        if: ${{ !cancelled() && runner.os == 'Linux'}}
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
         with:
           name: playwright-report-linux
           path: client/playwright-report/**
@@ -84,7 +84,7 @@ jobs:
       - name: Upload Playwright Report (Windows)
         # v6.0.0
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        if: ${{ !cancelled() && runner.os == 'Windows'}}
+        if: ${{ !cancelled() && runner.os == 'Windows' }}
         with:
           name: playwright-report-windows
           path: client/playwright-report/**
@@ -99,7 +99,7 @@ jobs:
   get-version:
     name: Get version
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -117,8 +117,8 @@ jobs:
 
   publish-docker-image-ghcr:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Push to github package registry
+      contents: read  # Required for checking out the code
+      packages: write # Push to github package registry
     if: |
       github.event_name == 'push' &&
       (
@@ -137,8 +137,8 @@ jobs:
 
   publish-docker-image-dockerhub:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Required for publishing to registry
+      contents: read  # Required for checking out the code
+      packages: write # Required for publishing to registry
     if: |
       github.event_name == 'push' &&
       (

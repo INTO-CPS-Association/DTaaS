@@ -74,6 +74,7 @@ jobs:
           pylint cli/ servers/ script/ deploy/services/cli/ \
             --rcfile='${{ github.workspace }}/.pylintrc' \
             --fail-under=9 --recursive=y || echo "No Python files to lint"
+
   yaml-lint:
     name: Lint YAML Files
     runs-on: ubuntu-latest
@@ -83,7 +84,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Set up Python
-        #v5.3.0
+        # v5.3.0
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
         with:
           python-version: '3.12'

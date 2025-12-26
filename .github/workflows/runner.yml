@@ -15,8 +15,8 @@ env:
   NODE_VERSION: 24
 
 permissions:
-  contents: read  # ✅ Required for checking out the code
-  packages: write  # ✅ Push to github package registry
+  contents: read   # Required for checking out the code
+  packages: write  # Push to github package registry
 
 jobs:
   test-runner:
