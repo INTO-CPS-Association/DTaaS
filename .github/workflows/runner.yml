@@ -21,7 +21,7 @@ permissions:
 jobs:
   test-runner:
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     name: Test digital twin runner
     runs-on: ubuntu-latest
     defaults:
@@ -69,7 +69,7 @@ jobs:
 
   get-version:
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
     steps:
@@ -90,8 +90,8 @@ jobs:
 
   publish-package-github:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Push to github package registry
+      contents: read  # Required for checking out the code
+      packages: write  # Push to github package registry
 
     if: |
       github.event_name == 'push' &&
@@ -114,8 +114,8 @@ jobs:
 
   publish-package-npm:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Push to github package registry
+      contents: read  # Required for checking out the code
+      packages: write  # Push to github package registry
     if: |
       github.event_name == 'push' &&
       (

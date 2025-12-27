@@ -19,7 +19,7 @@ env:
 jobs:
   test-lib-ms:
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     name: Test library microservice
     strategy:
       matrix:
@@ -70,6 +70,7 @@ jobs:
         with:
           files: servers/lib/coverage/clover.xml
           flags: lib-microservice-tests
+
       - name: Update configuration
         env:
           LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
@@ -126,7 +127,7 @@ jobs:
 
   get-version:
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
     steps:
@@ -137,7 +138,7 @@ jobs:
         run: sudo apt-get install -y jq
       - name: get version
         id: get-version
-        run: |
+        run: | 
           version=$(jq -r '.version' ./servers/lib/package.json)
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
@@ -147,8 +148,8 @@ jobs:
 
   publish-package-github:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Required for github package registry
+      contents: read  # Required for checking out the code
+      packages: write  # Required for github package registry
     if: |
       github.event_name == 'push' &&
       (
@@ -169,8 +170,8 @@ jobs:
 
   publish-package-npm:
     permissions:
-      packages: write  # ✅ Push to github package registry
-      contents: read  # ✅ Required for checking out the code
+      packages: write  # Push to github package registry
+      contents: read  # Required for checking out the code
     if: |
       github.event_name == 'push' &&
       (
@@ -191,8 +192,8 @@ jobs:
 
   publish-docker-image-ghcr:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Required for publishing to github package registry
+      contents: read  # Required for checking out the code
+      packages: write  # Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (
@@ -211,8 +212,8 @@ jobs:
 
   publish-docker-image-dockerhub:
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Required for publishing to github package registry
+      contents: read  # Required for checking out the code
+      packages: write  # Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (

@@ -197,7 +197,8 @@ Docker Compose variables are properly configured without additional setup.
 #### RabbitMQ Users
 
 * **Vhost Isolation**: Each user only has access to their own vhost (username-based).
-  The default "/" vhost is NOT accessib, argument parsing, and command integration
+  The default "/" vhost is NOT accessible to regular users;
+  only administrators should use it.
 * `test_config.py`: Tests for configuration loading and validation
 * `test_service.py`: Tests for Docker Compose service management operations
 * `test_cert.py`: Tests for certificate copying and normalization

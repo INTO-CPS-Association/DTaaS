@@ -11,10 +11,16 @@ on:
 
 
 jobs:
-  test-cli:
+  test-services-cli:
+    name: Test and Build Platform Services CLI
+    permissions:
+      contents: read  # Required for checking out the code
+      actions: write  # Required for uploading artifacts
     uses: ./.github/workflows/python-reusable.yml
     with:
       working-directory: deploy/services/cli
+      src-directory: dtaas_services
+      tests-directory: tests
       coverage-file: deploy/services/cli/coverage.xml
       artifact-name: dtaas-cli
       artifact-path: |

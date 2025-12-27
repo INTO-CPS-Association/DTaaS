@@ -12,14 +12,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read  # ✅ Required for checking out the code
+  contents: read  # Required for checking out the code
 
 jobs:
   docs:
     name: Build html docs only
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # ✅ Required for checking out the code
+      contents: read  # Required for checking out the code
     steps:
       - name: Checkout
         # v6.0.1

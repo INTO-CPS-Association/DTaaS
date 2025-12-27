@@ -13,8 +13,8 @@
 name: Build and Push Docker Image (DockerHub)
 
 permissions:
-  contents: read  # ✅ Required for checking out the code
-  packages: write  # ✅ Push to github package registry
+  contents: read  # Required for checking out the code
+  packages: write  # Push to github package registry
 
 on:
   workflow_call:
@@ -55,9 +55,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read  # ✅ Required for checking out the code
-      packages: write  # ✅ Required for publishing to github package registry
-
+      contents: read  # Required for checking out the code
+      packages: write  # Required for publishing to github package registry
     steps:
       - name: Checkout Repository
         # v6.0.1
@@ -90,8 +89,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         env:
-          IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{
-            inputs.image-name }}:${{ inputs.version }}"
+          IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}"
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
@@ -110,10 +108,8 @@ jobs:
           file: ./docker/${{ inputs.dockerfile }}
           push: true
           tags: |
-            ${{ env.registry }}/${{ env.dockerhub-scope }}/
-            ${{ inputs.image-name }}:${{ inputs.version }}
-            ${{ env.registry }}/${{ env.dockerhub-scope }}/
-            ${{ inputs.image-name }}:latest
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
+            ${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:latest
 
       - name: Docker Hub Description
         # v5.0.0

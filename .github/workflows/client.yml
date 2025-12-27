@@ -81,14 +81,16 @@ jobs:
           name: playwright-report-linux
           path: client/playwright-report/**
           retention-days: 5
+
       - name: Upload Playwright Report (Windows)
         # v6.0.0
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        if: ${{ !cancelled() && runner.os == 'Windows' }}
+        if: ${{ !cancelled() && runner.os == 'Windows'}}
         with:
           name: playwright-report-windows
           path: client/playwright-report/**
           retention-days: 5
+
       - name: Upload e2e test coverage to Codecov
         # v5.5.2
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
@@ -102,16 +104,16 @@ jobs:
       contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-      - name: Install jq
-        run: sudo apt-get install -y jq
-      - name: get version
-        id: get-version
-        run: |
-          version=$(jq -r '.version' ./client/package.json)
-          echo "version=$version" >> $GITHUB_OUTPUT
+        - name: Checkout Repository
+          # v6.0.1
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        - name: Install jq
+          run: sudo apt-get install -y jq
+        - name: get version
+          id: get-version
+          run: |
+            version=$(jq -r '.version' ./client/package.json)
+            echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get-version.outputs.version }}
 
@@ -119,7 +121,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
       packages: write  # Push to github package registry
-    if: |
+    if: | 
       github.event_name == 'push' &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||
@@ -138,7 +140,7 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write  # Required for publishing to registry
+      packages: write  # Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (
@@ -150,6 +152,9 @@ jobs:
     needs: [client, get-version]
     uses: ./.github/workflows/docker-dockerhub.yml
     with:
+      image-name: dtaas-web
+      version: ${{ needs.get-version.outputs.version }}
+      dockerfile: client.built.dockerfile
       readme-file: client/DOCKER.md
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
