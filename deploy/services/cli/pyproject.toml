@@ -1,10 +1,10 @@
-[tool.poetry]  
-name = "dtaas-services"  
-version = "0.1.0"  
-description = "DTaaS Platform Services Management CLI"  
-authors = ["Mohamed Abdulkarim"]  
-license = "INTO-CPS-Association"  
-readme = "README.md"  
+[tool.poetry]
+name = "dtaas-services"
+version = "0.1.0"
+description = "DTaaS Platform Services Management CLI"
+authors = ["Mohamed Abdulkarim"]
+license = "INTO-CPS-Association"
+readme = "README.md"
 packages = [{include = "dtaas_services"}]
 include = [
     { path = "dtaas_services/config", format = ["sdist", "wheel"] },
@@ -15,9 +15,9 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.10"
 click = "^8.1.7"
-python-dotenv = "^1.0.0"
+python-dotenv = "^1.0.1"
 python-on-whales = "^0.75.0"
-rich = "^13.9.4"
+rich = "^13.10.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
