@@ -75,6 +75,25 @@ This command will:
 * Set up InfluxDB certificates and permissions
 * Set up RabbitMQ certificates and permissions
 
+**Permission Requirements:**
+
+This command requires access to the Docker daemon. You have two options:
+
+1. **Recommended:** Add your user to the docker group (run once):
+   ```bash
+   sudo usermod -aG docker $USER
+   newgrp docker
+   ```
+   Then run the command without sudo:
+   ```bash
+   dtaas-services setup
+   ```
+
+2. **Alternative:** Run with sudo:
+   ```bash
+   sudo dtaas-services setup
+   ```
+
 ### Service Management
 
 Start all services:

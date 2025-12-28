@@ -4,9 +4,6 @@ These tests execute real commands with actual services and verify expected behav
 """
 import subprocess
 import pytest
-import os
-import platform
-import shutil
 from dtaas_services.pkg.service import Service
 
 pytestmark = pytest.mark.system
@@ -39,26 +36,6 @@ def run_command(cmd_list, check=True):
     Returns:
         subprocess.CompletedProcess with stdout, stderr, and returncode
     """
-    # For setup command on Linux/macOS, use sudo if not already root
-    in_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
-
-    if (not in_ci and cmd_list and cmd_list[0] == "dtaas-services" and len(cmd_list) > 1 and
-        cmd_list[1] == "setup" and
-        platform.system().lower() in ['linux', 'darwin']):
-        try:
-            is_root = os.geteuid() == 0
-        except AttributeError:
-            is_root = False
-        if not is_root:
-            # Use poetry run with sudo to ensure the command is found in the venv
-            # sudo -E preserves environment variables needed for poetry
-            poetry_path = shutil.which("poetry")
-            if poetry_path:
-                cmd_list = ["sudo", "-E", poetry_path, "run"] + cmd_list
-            else:
-                # Fallback to poetry in PATH if which fails
-                cmd_list = ["sudo", "-E", "poetry", "run"] + cmd_list
-
     try:
         result = subprocess.run(
             cmd_list,
@@ -68,7 +45,16 @@ def run_command(cmd_list, check=True):
         )
         return result
     except subprocess.CalledProcessError as e:
-        # Print detailed error information for debugging
+        # Check if it's a permission error
+        if e.returncode == 1 and "permission denied" in e.stderr.lower():
+            error_msg = (
+                f"Permission denied when running: {' '.join(cmd_list)}\n"
+                f"Your user may not have access to the Docker daemon.\n"
+            )
+            print(error_msg)
+            raise subprocess.CalledProcessError(e.returncode, e.cmd, e.output, e.stderr) from e
+
+        # Print detailed error information for other failures
         print(f"Command failed: {' '.join(cmd_list)}")
         print(f"Exit code: {e.returncode}")
         print(f"STDOUT: {e.stdout}")
