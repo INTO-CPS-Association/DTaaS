@@ -9,6 +9,7 @@ from dtaas_services.pkg.service import Service
 # Patch Config and DockerClient for all tests in this module
 @pytest.fixture(autouse=True)
 def patch_service_deps():
+    """Patch dependencies for Service tests"""
     with patch("dtaas_services.pkg.service.Config") as mock_config, \
          patch("dtaas_services.pkg.service.DockerClient") as mock_docker_client:
         yield mock_docker_client, mock_config

@@ -104,9 +104,7 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         # Skip permission changes in CI environments (they're read-only)
         if os_type in ("linux", "darwin") and not is_ci():
             shutil.chown(rabbit_key_path, user=rabbit_uid)
-            msg = (
-                f"{rabbit_key_path} created and ownership set to user " f"{rabbit_uid}."
-            )
+            msg = f"{rabbit_key_path} created and ownership set to user {rabbit_uid}."
         else:
             msg = f"{rabbit_key_path} created (permission changes skipped in CI)."
         return True, msg

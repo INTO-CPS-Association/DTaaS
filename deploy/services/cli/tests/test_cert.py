@@ -1,7 +1,12 @@
 """Tests for certificate management module"""
 import time
 from unittest.mock import patch, Mock
-from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs, _create_dummy_certs, _copy_cert_files
+from dtaas_services.pkg.cert import (
+    normalize_cert_candidates,
+    copy_certs,
+    _create_dummy_certs,
+    _copy_cert_files,
+)
 
 
 class TestNormalizeCertCandidates:
@@ -42,7 +47,10 @@ class TestNormalizeCertCandidates:
         assert (certs_dir / "privkey.pem").exists()
         assert not old_cert.exists()
         assert not new_cert.exists()
-        assert (certs_dir / "privkey.pem").read_text() == "new cert"
+        # Line break to fix line-too-long
+        assert (
+            certs_dir / "privkey.pem"
+        ).read_text() == "new cert"
 
     def test_normalize_cert_candidates_target_already_exists(self, tmp_path):
         """Test when target file already exists as latest"""
@@ -114,13 +122,16 @@ class TestCopyCerts:
     """Tests for copy_certs function"""
     @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
     @patch("dtaas_services.pkg.cert.Config")
-    def test_copy_certs_source_not_found(self, mock_config_class, mock_is_ci, tmp_path):
+    def test_copy_certs_source_not_found(self, mock_config_class, _, tmp_path):
         """Test when source directory does not exist"""
         mock_config = Mock()
-        mock_config.get_value.side_effect = lambda key: {
-            "HOSTNAME": "localhost",
-            "CERTS_SRC": "/nonexistent/path"
-        }.get(key)
+        def get_value(key):
+            if key == "HOSTNAME":
+                return "localhost"
+            if key == "CERTS_SRC":
+                return "/nonexistent/path"
+            return None
+        mock_config.get_value.side_effect = get_value
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = tmp_path
         success, message = copy_certs()
@@ -131,13 +142,16 @@ class TestCopyCerts:
 
     @patch("dtaas_services.pkg.cert.is_ci", return_value=True)
     @patch("dtaas_services.pkg.cert.Config")
-    def test_copy_certs_source_not_found_ci(self, mock_config_class, mock_is_ci, tmp_path):
+    def test_copy_certs_source_not_found_ci(self, mock_config_class, _, tmp_path):
         """Test when source directory does not exist in CI (should create dummy certs)"""
         mock_config = Mock()
-        mock_config.get_value.side_effect = lambda key: {
-            "HOSTNAME": "localhost",
-            "CERTS_SRC": "/nonexistent/path"
-        }.get(key)
+        def get_value(key):
+            if key == "HOSTNAME":
+                return "localhost"
+            if key == "CERTS_SRC":
+                return "/nonexistent/path"
+            return None
+        mock_config.get_value.side_effect = get_value
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = tmp_path
         success, message = copy_certs()
@@ -163,10 +177,13 @@ class TestCopyCerts:
         (source_dir / "privkey1.pem").write_text("privkey content")
         (source_dir / "fullchain1.pem").write_text("fullchain content")
         mock_config = Mock()
-        mock_config.get_value.side_effect = lambda key: {
-            "HOSTNAME": "localhost",
-            "CERTS_SRC": str(source_dir)
-        }.get(key)
+        def get_value(key):
+            if key == "HOSTNAME":
+                return "localhost"
+            if key == "CERTS_SRC":
+                return str(source_dir)
+            return None
+        mock_config.get_value.side_effect = get_value
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = base_dir
         success, message = copy_certs()
@@ -189,10 +206,13 @@ class TestCopyCerts:
         cert_file = certs_dir / "privkey.pem"
         cert_file.write_text("cert content")
         mock_config = Mock()
-        mock_config.get_value.side_effect = lambda key: {
-            "HOSTNAME": "localhost",
-            "CERTS_SRC": str(certs_dir)
-        }.get(key)
+        def get_value(key):
+            if key == "HOSTNAME":
+                return "localhost"
+            if key == "CERTS_SRC":
+                return str(certs_dir)
+            return None
+        mock_config.get_value.side_effect = get_value
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = tmp_path
         success, _ = copy_certs()
@@ -209,10 +229,13 @@ class TestCopyCerts:
         base_dir = tmp_path / "base"
         base_dir.mkdir()
         mock_config = Mock()
-        mock_config.get_value.side_effect = lambda key: {
-            "HOSTNAME": "localhost",
-            "CERTS_SRC": str(source_dir)
-        }.get(key)
+        def get_value(key):
+            if key == "HOSTNAME":
+                return "localhost"
+            if key == "CERTS_SRC":
+                return str(source_dir)
+            return None
+        mock_config.get_value.side_effect = get_value
         mock_config_class.return_value = mock_config
         mock_config_class.get_base_dir.return_value = base_dir
         # Make copy2 raise OSError

@@ -168,7 +168,7 @@ def assert_service_states(status, expected_states):
             border_style="red"
         )
         console.print(error_panel)
-        raise AssertionError(f"Service state assertion failed")
+        raise AssertionError("Service state assertion failed")
 
 
 def test_setup_start_status_all_services(ensure_services_stopped):

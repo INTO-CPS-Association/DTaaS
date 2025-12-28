@@ -115,4 +115,3 @@ class TestIsCi:
         """Test when no CI environment variables are set"""
         mock_getenv.return_value = None
         assert is_ci() is False
-

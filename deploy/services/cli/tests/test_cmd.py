@@ -72,7 +72,8 @@ def test_setup_cert_copy_fails(runner, mock_service_setup):
 
 def test_setup_config_not_found(runner):
     """Test setup fails when config not found"""
-    with patch("dtaas_services.pkg.utils.os.geteuid", return_value=0, create=True):  # Pretend to be root
+    with patch("dtaas_services.pkg.utils.os.geteuid"
+               , return_value=0, create=True):  # Pretend to be root
         with patch(
             "dtaas_services.pkg.config.Config.__init__",
             side_effect=FileNotFoundError("Config not found")
