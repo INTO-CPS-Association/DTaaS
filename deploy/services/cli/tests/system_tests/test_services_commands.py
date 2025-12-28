@@ -4,8 +4,11 @@ These tests execute real commands with actual services and verify expected behav
 """
 import subprocess
 import pytest
+from rich.console import Console
+from rich.panel import Panel
 from dtaas_services.pkg.service import Service
 
+console = Console()
 pytestmark = pytest.mark.system
 AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana", "influxdb"]
 
@@ -47,18 +50,39 @@ def run_command(cmd_list, check=True):
     except subprocess.CalledProcessError as e:
         # Check if it's a permission error
         if e.returncode == 1 and "permission denied" in e.stderr.lower():
-            error_msg = (
-                f"Permission denied when running: {' '.join(cmd_list)}\n"
-                f"Your user may not have access to the Docker daemon.\n"
+            error_panel = Panel(
+                "[bold red]Permission Denied[/bold red]\n\n"
+                f"[yellow]Command:[/yellow] {' '.join(cmd_list)}\n\n"
+                "[yellow]Cause:[/yellow] Your user may not have access to the Docker daemon.\n\n"
+                "[bold]Solutions:[/bold]\n\n"
+                "[cyan]1. Recommended - Add user to docker group:[/cyan]\n"
+                "   [dim]$ sudo usermod -aG docker $USER[/dim]\n"
+                "   [dim]$ newgrp docker[/dim]\n"
+                "   Then run without sudo:\n"
+                "   [dim]$ {0}[/dim]\n\n"
+                "[cyan]2. Alternative - Use sudo:[/cyan]\n"
+                "   [dim]$ sudo {0}[/dim]".format(' '.join(cmd_list)),
+                title="[bold red]❌ Docker Permission Error[/bold red]",
+                border_style="red",
+                expand=False
             )
-            print(error_msg)
+            console.print(error_panel)
             raise subprocess.CalledProcessError(e.returncode, e.cmd, e.output, e.stderr) from e
 
         # Print detailed error information for other failures
-        print(f"Command failed: {' '.join(cmd_list)}")
-        print(f"Exit code: {e.returncode}")
-        print(f"STDOUT: {e.stdout}")
-        print(f"STDERR: {e.stderr}")
+        stdout_text = f"[dim]{e.stdout[:500]}[/dim]" if e.stdout else "[dim]None[/dim]"
+        stderr_text = f"[dim]{e.stderr[:500]}[/dim]" if e.stderr else "[dim]None[/dim]"
+
+        error_panel = Panel(
+            f"[yellow]Command:[/yellow] {' '.join(cmd_list)}\n"
+            f"[yellow]Exit Code:[/yellow] [bold red]{e.returncode}[/bold red]\n\n"
+            f"[yellow]STDOUT:[/yellow]\n{stdout_text}\n\n"
+            f"[yellow]STDERR:[/yellow]\n{stderr_text}",
+            title="[bold red]❌ Command Failed[/bold red]",
+            border_style="red",
+            expand=False
+        )
+        console.print(error_panel)
         raise
 
 
@@ -75,6 +99,13 @@ def get_service_status(service_names=None):
     err, containers = service.get_status(service_names)
 
     if err is not None:
+        error_panel = Panel(
+            "[yellow]Failed to retrieve service status from Service class[/yellow]\n\n"
+            f"[yellow]Error:[/yellow] {err}",
+            title="[bold red]❌ Service Status Retrieval Failed[/bold red]",
+            border_style="red"
+        )
+        console.print(error_panel)
         return {}
 
     status_dict = {}
@@ -91,62 +122,95 @@ def get_service_status(service_names=None):
     return status_dict
 
 
+def assert_command_success(result, operation_name):
+    """
+    Assert command succeeded, with rich output on failure
+    Args:
+        result: subprocess.CompletedProcess object
+        operation_name: Human-readable name of the operation
+    """
+    if result.returncode != 0:
+        stderr_text = f"[dim]{result.stderr[:500]}[/dim]" if result.stderr else "[dim]None[/dim]"
+        error_panel = Panel(
+            f"[yellow]Operation:[/yellow] {operation_name}\n"
+            f"[yellow]Exit Code:[/yellow] [bold red]{result.returncode}[/bold red]\n\n"
+            f"[yellow]STDERR:[/yellow]\n{stderr_text}",
+            title=f"[bold red]❌ {operation_name} Failed[/bold red]",
+            border_style="red"
+        )
+        console.print(error_panel)
+        raise AssertionError(f"{operation_name} failed: {result.stderr}")
+
+
+def assert_service_states(status, expected_states):
+    """
+    Assert services are in expected states, with rich output on failure
+    Args:
+        status: dict of service_name -> state
+        expected_states: dict of service_name -> [expected_state_list]
+    """
+    failures = []
+    for service_name, valid_states in expected_states.items():
+        if service_name not in status:
+            failures.append(
+                f"[yellow]{service_name}:[/yellow] [bold red]NOT FOUND[/bold red] "
+                f"(expected: {'/'.join(valid_states)})"
+            )
+        elif status[service_name] not in valid_states:
+            failures.append(
+                f"[yellow]{service_name}:[/yellow] [bold red]{status[service_name]}[/bold red] "
+                f"(expected: {'/'.join(valid_states)})"
+            )
+    if failures:
+        error_panel = Panel(
+            "[yellow]Service State Assertion Failed[/yellow]\n\n" + "\n".join(failures),
+            title="[bold red]❌ Service State Mismatch[/bold red]",
+            border_style="red"
+        )
+        console.print(error_panel)
+        raise AssertionError(f"Service state assertion failed")
+
+
 def test_setup_start_status_all_services(ensure_services_stopped):
     """Test full workflow: setup, start all, check all running"""
     # Step 1: Run setup
     result = run_command(["dtaas-services", "setup"])
-    assert result.returncode == 0, f"Setup failed: {result.stderr}"
-    assert "completed" in result.stdout.lower() or "success" in result.stdout.lower()
+    assert_command_success(result, "Setup")
 
     # Step 2: Start all services
     result = run_command(["dtaas-services", "start"])
-    assert result.returncode == 0, f"Start failed: {result.stderr}\nOutput: {result.stdout}"
-
-    # Check for success indicators - can be "started", "restarted", "starting", or "success"
-    output_lower = result.stdout.lower()
-    assert any(keyword in output_lower for keyword in ["success", "started", "starting", "restarted"]), \
-        f"Expected start success message, got: {result.stdout}"
+    assert_command_success(result, "Start all services")
 
     # Step 3: Check status of all services
     status = get_service_status()
-
     # Verify all services are running
-    for service in AVAILABLE_SERVICES:
-        assert service in status, f"Service {service} not found in status output. Got: {status}"
-        print(f"  {service}: {status[service]}")
-        # Accept both "running" and "restarting" as valid running states
-        assert status[service] in ["running", "restarting"], \
-            f"Service {service} should be running or restarting. Expected: 'running'/'restarting', Got: '{status[service]}'"
+    expected_states = {service: ["running", "restarting"] for service in AVAILABLE_SERVICES}
+    assert_service_states(status, expected_states)
 
 
 def test_stop_influxdb_service(ensure_services_stopped):
     """Test stopping influxdb while keeping other services running"""
     # Step 1: Run setup
     result = run_command(["dtaas-services", "setup"])
-    assert result.returncode == 0, f"Setup failed: {result.stderr}"
+    assert_command_success(result, "Setup")
 
     # Step 2: Start all services
     result = run_command(["dtaas-services", "start"])
-    assert result.returncode == 0, f"Start failed: {result.stderr}"
+    assert_command_success(result, "Start all services")
 
     # Step 3: Stop influxdb specifically
     result = run_command(["dtaas-services", "stop", "-s", "influxdb"])
-    assert result.returncode == 0, f"Stop influxdb failed: {result.stderr}"
+    assert_command_success(result, "Stop influxdb")
 
-    # Step 4: Check status, only influxdb should be stopped
+    # Step 4: Check status
     status = get_service_status()
-
-    assert "influxdb" in status, f"InfluxDB not found in status. Got: {status}"
-    print(f"  influxdb: {status['influxdb']} (expected: stopped/exited)")
-    assert status["influxdb"] in ["stopped", "exited"], \
-        f"InfluxDB should be stopped but is: {status['influxdb']}"
-
-    # Verify other services are still running
-    for service in ["rabbitmq", "mongodb", "grafana"]:
-        assert service in status, f"Service {service} not found. Got: {status}"
-        print(f"  {service}: {status[service]} (expected: running/restarting)")
-        assert status[service] in ["running", "restarting"], \
-            f"Service {service} should still be running but is: {status[service]}"
+    expected_states = {
+        "influxdb": ["stopped", "exited"],
+        "rabbitmq": ["running", "restarting"],
+        "mongodb": ["running", "restarting"],
+        "grafana": ["running", "restarting"]
+    }
+    assert_service_states(status, expected_states)
 
 
 def test_stop_multiple_services(ensure_services_stopped):
@@ -160,22 +224,17 @@ def test_stop_multiple_services(ensure_services_stopped):
 
     # Stop rabbitmq and mongodb
     result = run_command(["dtaas-services", "stop", "-s", "rabbitmq,mongodb"])
-    assert result.returncode == 0, f"Stop multiple services failed: {result.stderr}"
+    assert_command_success(result, "Stop rabbitmq and mongodb")
 
     # Check status
     status = get_service_status()
-
-    # Verify stopped services
-    print(f"  rabbitmq: {status.get('rabbitmq')} (expected: stopped/exited)")
-    assert status.get("rabbitmq") in ["stopped", "exited"], f"RabbitMQ should be stopped but is: {status.get('rabbitmq')}"
-    print(f"  mongodb: {status.get('mongodb')} (expected: stopped/exited)")
-    assert status.get("mongodb") in ["stopped", "exited"], f"MongoDB should be stopped but is: {status.get('mongodb')}"
-
-    # Verify running services
-    print(f"  grafana: {status.get('grafana')} (expected: running/restarting)")
-    assert status.get("grafana") in ["running", "restarting"], f"Grafana should still be running but is: {status.get('grafana')}"
-    print(f"  influxdb: {status.get('influxdb')} (expected: running/restarting)")
-    assert status.get("influxdb") in ["running", "restarting"], f"InfluxDB should still be running but is: {status.get('influxdb')}"
+    expected_states = {
+        "rabbitmq": ["stopped", "exited"],
+        "mongodb": ["stopped", "exited"],
+        "grafana": ["running", "restarting"],
+        "influxdb": ["running", "restarting"]
+    }
+    assert_service_states(status, expected_states)
 
 
 def test_start_single_service(ensure_services_stopped):
@@ -185,22 +244,19 @@ def test_start_single_service(ensure_services_stopped):
 
     # Start with -s rabbitmq flag
     result = run_command(["dtaas-services", "start", "-s", "rabbitmq"])
-    assert result.returncode == 0, f"Start with -s flag failed: {result.stderr}"
+    assert_command_success(result, "Start rabbitmq service")
 
     # Stop the other services that may have been started
     run_command(["dtaas-services", "stop", "-s", "mongodb,grafana,influxdb"])
 
     status = get_service_status()
-    # RabbitMQ should be running
-    print(f"  rabbitmq: {status.get('rabbitmq')} (expected: running/restarting)")
-    assert status.get("rabbitmq") in ["running", "restarting"], f"RabbitMQ should be running but is: {status.get('rabbitmq')}"
-
-    # Other services should not be running
-    for service in ["mongodb", "grafana", "influxdb"]:
-        if service in status:
-            print(f"  {service}: {status[service]} (expected: stopped/exited)")
-            assert status[service] in ["stopped", "exited"], \
-                f"{service} should not be running but is: {status[service]}"
+    expected_states = {
+        "rabbitmq": ["running", "restarting"],
+        "mongodb": ["stopped", "exited"],
+        "grafana": ["stopped", "exited"],
+        "influxdb": ["stopped", "exited"]
+    }
+    assert_service_states(status, expected_states)
 
 
 def test_start_stop_start_cycle(ensure_services_stopped):
@@ -210,25 +266,18 @@ def test_start_stop_start_cycle(ensure_services_stopped):
 
     # First start
     result = run_command(["dtaas-services", "start"])
-    assert result.returncode == 0
+    assert_command_success(result, "Start all services")
 
     # Verify running
     status = get_service_status()
-    print("\n[DEBUG] Service status after first start")
-    for service in AVAILABLE_SERVICES:
-        print(f"  {service}: {status.get(service)}")
-    assert all(status.get(s) in ["running", "restarting"] for s in AVAILABLE_SERVICES), \
-        f"All services should be running. Got: {status}"
+    expected_states = {service: ["running", "restarting"] for service in AVAILABLE_SERVICES}
+    assert_service_states(status, expected_states)
     # Stop all
     result = run_command(["dtaas-services", "stop"])
-    assert result.returncode == 0
+    assert_command_success(result, "Stop all services")
     # Start again
     result = run_command(["dtaas-services", "start"])
-    assert result.returncode == 0
+    assert_command_success(result, "Start all services (second time)")
     # Verify running again
     status = get_service_status()
-    print("\n[DEBUG] Service status after second start")
-    for service in AVAILABLE_SERVICES:
-        print(f"  {service}: {status.get(service)}")
-    assert all(status.get(s) in ["running", "restarting"] for s in AVAILABLE_SERVICES), \
-        f"All services should be running again. Got: {status}"
+    assert_service_states(status, expected_states)
