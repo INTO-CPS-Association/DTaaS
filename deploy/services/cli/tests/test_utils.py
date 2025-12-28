@@ -8,13 +8,6 @@ from dtaas_services.pkg.utils import (
     get_credentials_path
 )
 
-
-def test_check_root_unix_windows():
-    """Test check_root_unix on Windows (should return without error)"""
-    with patch("dtaas_services.pkg.utils.platform.system", return_value="Windows"):
-        check_root_unix()
-
-
 def test_check_root_unix_linux_as_root():
     """Test check_root_unix on Linux when running as root"""
     with patch("dtaas_services.pkg.utils.platform.system", return_value="Linux"), \

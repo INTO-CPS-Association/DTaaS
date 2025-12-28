@@ -6,8 +6,8 @@ from typing import Tuple
 from .config import Config
 
 
-def create_dummy_cert(cert_path: Path) -> bool:
-    """Create a dummy self-signed certificate for testing/CI.
+def _create_dummy_cert_file(cert_path: Path) -> bool:
+    """Create a dummy self-signed certificate for testing/CI (internal use).
 
     Args:
         cert_path: Path where certificate should be created
@@ -17,7 +17,7 @@ def create_dummy_cert(cert_path: Path) -> bool:
     """
     try:
         cert_path.parent.mkdir(parents=True, exist_ok=True)
-        # Create a minimal PEM file (dummy certificate for testing)
+        # Dummy certificate for testing only, not a real secret
         cert_path.write_text("""-----BEGIN CERTIFICATE-----
 MIICpDCCAYwCCQC0kWW3fOkRgzANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls
 b2NhbGhvc3QwHhcNMjQwMTAxMDAwMDAwWhcNMjUwMTAxMDAwMDAwWjAUMRIwEAYD
@@ -68,9 +68,9 @@ def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
         privkey_path = certs_dir / "privkey.pem"
         fullchain_path = certs_dir / "fullchain.pem"
         if not privkey_path.exists():
-            create_dummy_cert(privkey_path)
+            _create_dummy_cert_file(privkey_path)
         if not fullchain_path.exists():
-            create_dummy_cert(fullchain_path)
+            _create_dummy_cert_file(fullchain_path)
         return True, f"Created dummy certificates in {certs_dir} for CI testing"
     except OSError as e:
         return False, f"Source directory error creating dummy certificates: {e}"
