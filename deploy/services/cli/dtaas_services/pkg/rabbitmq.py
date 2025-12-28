@@ -1,5 +1,4 @@
 """RabbitMQ user management for DTaaS services"""
-import os
 import csv
 import shutil
 import platform

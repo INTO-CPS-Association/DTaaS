@@ -1,5 +1,4 @@
 """MongoDB user management for DTaaS services"""
-import os
 import shutil
 import platform
 from pathlib import Path

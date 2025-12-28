@@ -1,5 +1,4 @@
 """InfluxDB user management for DTaaS services"""
-import os
 import csv
 import json
 import shutil
