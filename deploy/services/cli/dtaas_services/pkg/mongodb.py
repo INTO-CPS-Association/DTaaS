@@ -5,6 +5,7 @@ import platform
 from pathlib import Path
 from typing import Tuple
 from .config import Config
+from .utils import is_ci
 
 
 def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path: Path) -> None:
@@ -46,8 +47,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
         create_combined_cert(privkey_path, fullchain_path, combined_path)
 
         # Skip permission changes in CI environments (they're read-only)
-        is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
-        if os_type in ("linux", "darwin") and not is_ci:
+        if os_type in ("linux", "darwin") and not is_ci():
             combined_path.chmod(0o600)
             shutil.chown(
                 combined_path,

@@ -189,9 +189,17 @@ class Service:
             if remove_volumes:
                 base_dir = Config.get_base_dir()
                 data_dir = base_dir / "data"
-                data_subdirs = [
-                    'grafana', 'influxdb', 'mongodb',
-                    'rabbitmq']
+
+                # Determine which subdirectories to clean based on service_list
+                if service_list:
+                    # Only clean data for specified services
+                    data_subdirs = service_list
+                else:
+                    # Clean all data directories
+                    data_subdirs = [
+                        'grafana', 'influxdb', 'mongodb',
+                        'rabbitmq']
+
                 for subdir in data_subdirs:
                     subdir_path = data_dir / subdir
                     # Remove the directory and all its contents

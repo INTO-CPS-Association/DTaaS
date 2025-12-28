@@ -7,6 +7,7 @@ import platform
 from typing import Tuple
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
+from .utils import is_ci
 
 
 def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
@@ -172,9 +173,9 @@ def setup_influxdb_users() -> tuple[bool, str]:
 
 def permissions_influxdb() -> Tuple[bool, str]:
     """Copy privkey.pem -> privkey-influxdb.pem and change owner.
-    
+
     Skips permission changes in CI environments (GITHUB_ACTIONS, GITLAB_CI, CI env vars).
-    
+
     Returns:
         Tuple of (success, message)
     """
@@ -190,10 +191,9 @@ def permissions_influxdb() -> Tuple[bool, str]:
         influx_gid = int(config.get_value("INFLUX_GID"))
 
         shutil.copy2(privkey_path, influx_key_path)
-        
+
         # Skip permission changes in CI environments (they're read-only)
-        is_ci = os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI')
-        if os_type in ("linux", "darwin") and not is_ci:
+        if os_type in ("linux", "darwin") and not is_ci():
             shutil.chown(
                 influx_key_path,
                 user=influx_uid,

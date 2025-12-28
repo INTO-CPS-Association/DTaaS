@@ -67,3 +67,9 @@ def check_root_unix() -> None:
         )
         sys.exit(1)
 
+def is_ci() -> bool:
+    """Check if running in CI environment.
+    Returns:
+        True if CI environment variables are set
+    """
+    return bool(os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'))

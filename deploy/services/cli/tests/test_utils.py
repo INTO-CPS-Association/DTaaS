@@ -5,7 +5,8 @@ from python_on_whales.exceptions import DockerException
 from dtaas_services.pkg.utils import (
     check_root_unix,
     execute_docker_command,
-    get_credentials_path
+    get_credentials_path,
+    is_ci
 )
 
 def test_check_root_unix_linux_as_root():
@@ -87,3 +88,31 @@ def test_get_credentials_path(mock_get_base_dir):
     mock_get_base_dir.return_value = Path("/path/to/base")
     path = get_credentials_path()
     assert path == Path("/path/to/base") / "config" / "credentials.csv"
+
+
+class TestIsCi:
+    """Tests for _is_ci helper function"""
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_ci_env(self, mock_getenv):
+        """Test detection of CI environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "CI" else None
+        assert is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_github_actions_env(self, mock_getenv):
+        """Test detection of GITHUB_ACTIONS environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "GITHUB_ACTIONS" else None
+        assert is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_with_gitlab_ci_env(self, mock_getenv):
+        """Test detection of GITLAB_CI environment variable"""
+        mock_getenv.side_effect = lambda key: "true" if key == "GITLAB_CI" else None
+        assert is_ci() is True
+
+    @patch("dtaas_services.pkg.cert.os.getenv")
+    def test_is_ci_no_ci_env(self, mock_getenv):
+        """Test when no CI environment variables are set"""
+        mock_getenv.return_value = None
+        assert is_ci() is False
+

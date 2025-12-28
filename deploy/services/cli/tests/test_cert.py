@@ -1,8 +1,7 @@
 """Tests for certificate management module"""
-from pathlib import Path
 import time
 from unittest.mock import patch, Mock
-from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs, _is_ci, _create_dummy_certs, _copy_cert_files
+from dtaas_services.pkg.cert import normalize_cert_candidates, copy_certs, _create_dummy_certs, _copy_cert_files
 
 
 class TestNormalizeCertCandidates:
@@ -56,32 +55,6 @@ class TestNormalizeCertCandidates:
         assert target.exists()
         assert target.read_text() == "target cert"
 
-
-class TestIsCi:
-    """Tests for _is_ci helper function"""
-    @patch("dtaas_services.pkg.cert.os.getenv")
-    def test_is_ci_with_ci_env(self, mock_getenv):
-        """Test detection of CI environment variable"""
-        mock_getenv.side_effect = lambda key: "true" if key == "CI" else None
-        assert _is_ci() is True
-
-    @patch("dtaas_services.pkg.cert.os.getenv")
-    def test_is_ci_with_github_actions_env(self, mock_getenv):
-        """Test detection of GITHUB_ACTIONS environment variable"""
-        mock_getenv.side_effect = lambda key: "true" if key == "GITHUB_ACTIONS" else None
-        assert _is_ci() is True
-
-    @patch("dtaas_services.pkg.cert.os.getenv")
-    def test_is_ci_with_gitlab_ci_env(self, mock_getenv):
-        """Test detection of GITLAB_CI environment variable"""
-        mock_getenv.side_effect = lambda key: "true" if key == "GITLAB_CI" else None
-        assert _is_ci() is True
-
-    @patch("dtaas_services.pkg.cert.os.getenv")
-    def test_is_ci_no_ci_env(self, mock_getenv):
-        """Test when no CI environment variables are set"""
-        mock_getenv.return_value = None
-        assert _is_ci() is False
 
 
 class TestCreateDummyCerts:

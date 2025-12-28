@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 from .config import Config
+from .utils import is_ci
 
 
 def _create_dummy_cert_file(cert_path: Path) -> bool:
@@ -46,14 +47,6 @@ def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
     for p in candidates:
         if p.resolve() != target.resolve():
             p.unlink(missing_ok=True)
-
-
-def _is_ci() -> bool:
-    """Check if running in CI environment.
-    Returns:
-        True if CI environment variables are set
-    """
-    return bool(os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'))
 
 
 def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
@@ -117,7 +110,7 @@ def copy_certs() -> Tuple[bool, str]:
 
     # Handle missing source directory
     if not source_dir.exists():
-        if _is_ci():
+        if is_ci():
             return _create_dummy_certs(certs_dir)
         return False, f"Source directory for certs not found: {source_dir}"
 
