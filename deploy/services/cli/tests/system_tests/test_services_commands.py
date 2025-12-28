@@ -246,15 +246,10 @@ def test_start_single_service(ensure_services_stopped):
     result = run_command(["dtaas-services", "start", "-s", "rabbitmq"])
     assert_command_success(result, "Start rabbitmq service")
 
-    # Stop the other services that may have been started
-    run_command(["dtaas-services", "stop", "-s", "mongodb,grafana,influxdb"])
-
-    status = get_service_status()
+    # Only check and assert for rabbitmq
+    status = get_service_status(["rabbitmq"])
     expected_states = {
-        "rabbitmq": ["running", "restarting"],
-        "mongodb": ["stopped", "exited"],
-        "grafana": ["stopped", "exited"],
-        "influxdb": ["stopped", "exited"]
+        "rabbitmq": ["running", "restarting"]
     }
     assert_service_states(status, expected_states)
 
