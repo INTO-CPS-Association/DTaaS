@@ -1105,9 +1105,9 @@
     lodash "4.17.21"
 
 "@nestjs/core@^11.1.9":
-  version "11.1.9"
-  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-11.1.9.tgz#7a77ded789709e194c4f118e3d9bf5182136b076"
-  integrity sha512-a00B0BM4X+9z+t3UxJqIZlemIwCQdYoPKrMcM+ky4z3pkqqG1eTWexjs+YXpGObnLnjtMPVKWlcZHp3adDYvUw==
+  version "11.1.10"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-11.1.10.tgz#c07f602fe270a28a2a77cfc4c7a93badea582a70"
+  integrity sha512-LYpaacSb8X9dcRpeZxA7Mvi5Aozv11s6028ZNoVKY2j/fyThLd+xrkksg3u+sw7F8mipFaxS/LuVpoHQ/MrACg==
   dependencies:
     uid "2.0.2"
     "@nuxt/opencollective" "0.4.1"
