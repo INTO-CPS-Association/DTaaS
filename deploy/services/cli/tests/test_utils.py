@@ -91,26 +91,26 @@ def test_get_credentials_path(mock_get_base_dir):
 
 
 class TestIsCi:
-    """Tests for _is_ci helper function"""
-    @patch("dtaas_services.pkg.cert.os.getenv")
+    """Tests for is_ci function"""
+    @patch("dtaas_services.pkg.utils.os.getenv")
     def test_is_ci_with_ci_env(self, mock_getenv):
         """Test detection of CI environment variable"""
         mock_getenv.side_effect = lambda key: "true" if key == "CI" else None
         assert is_ci() is True
 
-    @patch("dtaas_services.pkg.cert.os.getenv")
+    @patch("dtaas_services.pkg.utils.os.getenv")
     def test_is_ci_with_github_actions_env(self, mock_getenv):
         """Test detection of GITHUB_ACTIONS environment variable"""
         mock_getenv.side_effect = lambda key: "true" if key == "GITHUB_ACTIONS" else None
         assert is_ci() is True
 
-    @patch("dtaas_services.pkg.cert.os.getenv")
+    @patch("dtaas_services.pkg.utils.os.getenv")
     def test_is_ci_with_gitlab_ci_env(self, mock_getenv):
         """Test detection of GITLAB_CI environment variable"""
         mock_getenv.side_effect = lambda key: "true" if key == "GITLAB_CI" else None
         assert is_ci() is True
 
-    @patch("dtaas_services.pkg.cert.os.getenv")
+    @patch("dtaas_services.pkg.utils.os.getenv")
     def test_is_ci_no_ci_env(self, mock_getenv):
         """Test when no CI environment variables are set"""
         mock_getenv.return_value = None

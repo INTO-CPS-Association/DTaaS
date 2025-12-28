@@ -21,7 +21,7 @@ class TestCopyFunctions:
         assert "Created test_dir/" in result
 
 
-    def test_copy_directory_or_file_file(self, tmp_path):
+    def test_copy_directory_or_file(self, tmp_path):
         """Test copying a file"""
         src_file = tmp_path / "source.txt"
         src_file.write_text("content")

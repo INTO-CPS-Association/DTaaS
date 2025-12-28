@@ -72,18 +72,20 @@ def test_setup_cert_copy_fails(runner, mock_service_setup):
 
 def test_setup_config_not_found(runner):
     """Test setup fails when config not found"""
-    with patch(
-        "dtaas_services.pkg.config.Config.__init__",
-        side_effect=FileNotFoundError("Config not found")
-    ):
-        result = runner.invoke(services, ['setup'])
-        assert result.exit_code != 0
-        assert "Config not found" in result.output
+    with patch("dtaas_services.pkg.utils.os.geteuid", return_value=0, create=True):  # Pretend to be root
+        with patch(
+            "dtaas_services.pkg.config.Config.__init__",
+            side_effect=FileNotFoundError("Config not found")
+        ):
+            result = runner.invoke(services, ['setup'])
+            assert result.exit_code != 0
+            assert "Config not found" in result.output
 
 
 def test_start_success(runner, mock_service_setup):
     """Test successful service start"""
-    mock_service_setup["service_instance"].start_services.return_value = (None, "Services started")
+    mock_service_setup["service_instance"].start_services.return_value = (
+        None, "Services started")
     result = runner.invoke(services, ['start'])
     assert result.exit_code == 0
     assert "Services started" in result.output
@@ -101,7 +103,8 @@ def test_start_failure(runner, mock_service_setup):
 
 def test_stop_success(runner, mock_service_setup):
     """Test successful service stop"""
-    mock_service_setup["service_instance"].stop_services.return_value = (None, "Services stopped")
+    mock_service_setup["service_instance"].stop_services.return_value = (
+        None, "Services stopped")
     result = runner.invoke(services, ['stop'])
     assert result.exit_code == 0
     assert "Services stopped" in result.output
@@ -231,7 +234,8 @@ def test_restart_failure(runner, mock_service_setup):
 
 def test_remove_success(runner, mock_service_setup):
     """Test successful service removal"""
-    mock_service_setup["service_instance"].remove_services.return_value = (None, "Services removed")
+    mock_service_setup["service_instance"].remove_services.return_value = (
+        None, "Services removed")
     result = runner.invoke(services, ['remove'])
     assert result.exit_code == 0
     assert "Services removed" in result.output
@@ -250,7 +254,8 @@ def test_remove_with_volumes(runner, mock_service_setup):
 
 def test_remove_specific_services(runner, mock_service_setup):
     """Test removing specific services"""
-    mock_service_setup["service_instance"].remove_services.return_value = (None, "Services removed")
+    mock_service_setup["service_instance"].remove_services.return_value = (
+        None, "Services removed")
     result = runner.invoke(services, ['remove', '--services', 'grafana,influxdb'])
     assert result.exit_code == 0
 
@@ -291,4 +296,3 @@ def test_generate_project_failure(runner):
         result = runner.invoke(services, ['generate-project'])
         assert result.exit_code != 0
         assert "Failed to generate project" in result.output
-

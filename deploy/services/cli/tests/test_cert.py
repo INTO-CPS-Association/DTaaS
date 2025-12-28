@@ -112,13 +112,10 @@ class TestCopyCertFiles:
 
 class TestCopyCerts:
     """Tests for copy_certs function"""
-    @patch("dtaas_services.pkg.cert.os.getenv")
+    @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
     @patch("dtaas_services.pkg.cert.Config")
-    def test_copy_certs_source_not_found(self, mock_config_class, mock_getenv, tmp_path):
+    def test_copy_certs_source_not_found(self, mock_config_class, mock_is_ci, tmp_path):
         """Test when source directory does not exist"""
-        # Mock os.getenv to return None (not in CI)
-        mock_getenv.return_value = None
-
         mock_config = Mock()
         mock_config.get_value.side_effect = lambda key: {
             "HOSTNAME": "localhost",
@@ -131,17 +128,11 @@ class TestCopyCerts:
         assert "Source directory" in message
         assert "not found" in message
 
-    @patch("dtaas_services.pkg.cert.os.getenv")
-    @patch("dtaas_services.pkg.cert.Config")
-    def test_copy_certs_source_not_found_ci(self, mock_config_class, mock_getenv, tmp_path):
-        """Test when source directory does not exist in CI (should create dummy certs)"""
-        # Mock os.getenv to return 'true' for CI environment variable
-        def getenv_side_effect(key):
-            if key == 'CI':
-                return 'true'
-            return None
-        mock_getenv.side_effect = getenv_side_effect
 
+    @patch("dtaas_services.pkg.cert.is_ci", return_value=True)
+    @patch("dtaas_services.pkg.cert.Config")
+    def test_copy_certs_source_not_found_ci(self, mock_config_class, mock_is_ci, tmp_path):
+        """Test when source directory does not exist in CI (should create dummy certs)"""
         mock_config = Mock()
         mock_config.get_value.side_effect = lambda key: {
             "HOSTNAME": "localhost",
@@ -158,6 +149,7 @@ class TestCopyCerts:
         assert certs_dir.exists()
         assert (certs_dir / "privkey.pem").exists()
         assert (certs_dir / "fullchain.pem").exists()
+
 
     @patch("dtaas_services.pkg.cert.Config")
     def test_copy_certs_success(self, mock_config_class, tmp_path):
