@@ -1,4 +1,5 @@
 """Output formatting utilities using rich library"""
+
 from typing import List
 from rich.console import Console
 from rich.table import Table
@@ -7,25 +8,38 @@ from python_on_whales import Container
 
 # Service name mapping for display
 SERVICE_DISPLAY_NAMES = {
-    'rabbitmq': 'RabbitMQ',
-    'mongodb': 'MongoDB',
-    'grafana': 'Grafana',
-    'influxdb': 'InfluxDB',
-    'postgres': 'PostgreSQL'
+    "rabbitmq": "RabbitMQ",
+    "mongodb": "MongoDB",
+    "grafana": "Grafana",
+    "influxdb": "InfluxDB",
+    "postgres": "PostgreSQL",
 }
 
 # Status emoji and text mapping
 STATUS_INFO = {
-    'running': ('✅', 'running', 'green'),
-    'restarting': ('🔃', 'restarting', 'yellow'),
-    'paused': ('⏸️', 'paused', 'yellow'),
-    'exited': ('🔴', 'stopped', 'red'),
-    'dead': ('💀', 'dead', 'red'),
-    'created': ('⚪', 'created', 'blue'),
+    "running": ("✅", "running", "green"),
+    "restarting": ("🔃", "restarting", "yellow"),
+    "paused": ("⏸️", "paused", "yellow"),
+    "exited": ("🔴", "stopped", "red"),
+    "dead": ("💀", "dead", "red"),
+    "created": ("⚪", "created", "blue"),
 }
 
 
-def format_container_status(containers: List[Container], console: Console = None) -> None:
+def _get_display_name(service_name: str) -> str:
+    """Get display name for a service."""
+    return SERVICE_DISPLAY_NAMES.get(service_name, service_name.title())
+
+
+def _format_status_display(state: str) -> str:
+    """Format status with emoji and colored text."""
+    emoji, status_text, color = STATUS_INFO.get(state, ("❓", state, "white"))
+    return f"{emoji} [{color}]{status_text}[/{color}]"
+
+
+def format_container_status(
+    containers: List[Container], console: Console = None
+) -> None:
     """
     Format and display container status in a nice table.
     Args:
@@ -44,21 +58,16 @@ def format_container_status(containers: List[Container], console: Console = None
     # Sort containers by name for consistent output
     sorted_containers = sorted(containers, key=lambda c: c.name)
     for container in sorted_containers:
-        # Get display name
-        service_name = container.name
-        display_name = SERVICE_DISPLAY_NAMES.get(service_name, service_name.title())
-        # Get container state
+        display_name = _get_display_name(container.name)
         state = container.state.status
-        # Get status display info
-        emoji, status_text, color = STATUS_INFO.get(state, ('❓', state, 'white'))
-        # Format status with emoji and colored text
-        status_display = f"{emoji} [{color}]{status_text}[/{color}]"
+        status_display = _format_status_display(state)
         table.add_row(display_name, status_display)
     console.print(table)
 
 
-def format_service_list_status(services: dict, all_services: List[str],
-                               console: Console = None) -> None:
+def format_service_list_status(
+    services: dict, all_services: List[str], console: Console = None
+) -> None:
     """
     Format and display status of specific services, showing which are installed and their status.
     Args:
@@ -75,18 +84,13 @@ def format_service_list_status(services: dict, all_services: List[str],
     # Sort services by name for consistent output
     sorted_services = sorted(all_services)
     for service_name in sorted_services:
-        # Get display name
-        display_name = SERVICE_DISPLAY_NAMES.get(service_name, service_name.title())
+        display_name = _get_display_name(service_name)
         container = services.get(service_name)
         if container is None:
             # Service not found/installed
             status_display = "❌ [red]not installed[/red]"
         else:
-            # Get container state
             state = container.state.status
-            # Get status display info
-            emoji, status_text, color = STATUS_INFO.get(state, ('❓', state, 'white'))
-            # Format status with emoji and colored text
-            status_display = f"{emoji} [{color}]{status_text}[/{color}]"
+            status_display = _format_status_display(state)
         table.add_row(display_name, status_display)
     console.print(table)

@@ -1,4 +1,5 @@
 """RabbitMQ user management for DTaaS services"""
+
 import csv
 import shutil
 import platform
@@ -6,6 +7,7 @@ from typing import Tuple
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
 from .utils import is_ci
+
 
 def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     """
@@ -20,16 +22,14 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
 
     # Add user
     success, output = execute_docker_command(
-        "rabbitmq",
-        ["rabbitmqctl", "add_user", username, password]
+        "rabbitmq", ["rabbitmqctl", "add_user", username, password]
     )
     if not success:
         return False, f"Failed to add user {username}: {output}"
 
     # Add vhost
     success, output = execute_docker_command(
-        "rabbitmq",
-        ["rabbitmqctl", "add_vhost", vhost]
+        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost]
     )
     if not success:
         return False, f"Failed to add vhost {vhost}: {output}"
@@ -37,11 +37,23 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     # Set permissions on user's own vhost only
     success, output = execute_docker_command(
         "rabbitmq",
-        ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"]
+        ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"],
     )
     if not success:
         return False, f"Failed to set permissions on vhost {vhost}: {output}"
 
+    return True, ""
+
+
+def _create_users_from_credentials(credentials_file) -> tuple[bool, str]:
+    """Create all users from credentials file."""
+    credentials = csv.DictReader(credentials_file, delimiter=",")
+    for credential in credentials:
+        username = credential["username"]
+        password = credential["password"]
+        success, error_msg = _add_rabbitmq_user(username, password)
+        if not success:
+            return False, error_msg
     return True, ""
 
 
@@ -60,14 +72,9 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
         with credentials_file.open(
             mode="r", newline="", encoding="utf-8"
         ) as creds_file:
-            credentials = csv.DictReader(creds_file, delimiter=",")
-
-            for credential in credentials:
-                username = credential["username"]
-                password = credential["password"]
-                success, error_msg = _add_rabbitmq_user(username, password)
-                if not success:
-                    return False, error_msg
+            success, error_msg = _create_users_from_credentials(creds_file)
+            if not success:
+                return False, error_msg
 
         return True, "RabbitMQ users created successfully"
 
@@ -98,8 +105,7 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         if os_type in ("linux", "darwin") and not is_ci():
             shutil.chown(rabbit_key_path, user=rabbit_uid)
             msg = (
-                f"{rabbit_key_path} created and ownership set to user "
-                f"{rabbit_uid}."
+                f"{rabbit_key_path} created and ownership set to user " f"{rabbit_uid}."
             )
         else:
             msg = f"{rabbit_key_path} created (permission changes skipped in CI)."

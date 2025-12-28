@@ -1,4 +1,5 @@
 """Build script to copy external files into the package."""
+
 from pathlib import Path
 import shutil
 
@@ -45,6 +46,26 @@ def copy_external_files():
     create_data_structure(pkg_dir)
 
 
+def _copy_config_file(src_file: Path, dst_file: Path, filename: str) -> None:
+    """Copy a single config file if it exists."""
+    if src_file.exists():
+        shutil.copy2(src_file, dst_file)
+        print(f"Copied: config/{filename}")
+    else:
+        print(f"Warning: config/{filename} not found, skipping...")
+
+
+def _copy_config_subdirs(src_config: Path, dst_config: Path) -> None:
+    """Copy config subdirectories."""
+    for subdir in ["influxdb"]:
+        src_subdir = src_config / subdir
+        dst_subdir = dst_config / subdir
+
+        if src_subdir.exists() and src_subdir.is_dir():
+            shutil.copytree(src_subdir, dst_subdir)
+            print(f"Copied: config/{subdir}/")
+
+
 def copy_config_templates(parent_dir: Path, pkg_dir: Path):
     """
     Copy only template files and required static configs from config directory.
@@ -76,23 +97,11 @@ def copy_config_templates(parent_dir: Path, pkg_dir: Path):
     for filename in files_to_copy:
         src_file = src_config / filename
         dst_file = dst_config / filename
+        _copy_config_file(src_file, dst_file, filename)
 
-        if src_file.exists():
-            shutil.copy2(src_file, dst_file)
-            print(f"Copied: config/{filename}")
-        else:
-            print(f"Warning: config/{filename} not found, skipping...")
+    # Copy subdirectories
+    _copy_config_subdirs(src_config, dst_config)
 
-    # Copy subdirectories if they exist
-    subdirs_to_copy = ["influxdb"]
-
-    for subdir in subdirs_to_copy:
-        src_subdir = src_config / subdir
-        dst_subdir = dst_config / subdir
-
-        if src_subdir.exists() and src_subdir.is_dir():
-            shutil.copytree(src_subdir, dst_subdir)
-            print(f"Copied: config/{subdir}/")
 
 def create_data_structure(pkg_dir: Path):
     """
@@ -111,13 +120,7 @@ def create_data_structure(pkg_dir: Path):
     dst_data.mkdir(parents=True, exist_ok=True)
 
     # Subdirectories to create (empty)
-    data_subdirs = [
-        "grafana",
-        "influxdb",
-        "mongodb",
-        "postgres",
-        "rabbitmq"
-    ]
+    data_subdirs = ["grafana", "influxdb", "mongodb", "postgres", "rabbitmq"]
 
     for subdir in data_subdirs:
         subdir_path = dst_data / subdir

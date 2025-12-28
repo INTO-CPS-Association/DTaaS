@@ -1,4 +1,5 @@
 """Template and project structure management for DTaaS services"""
+
 import shutil
 from pathlib import Path
 from typing import Tuple
@@ -27,7 +28,9 @@ def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> s
     return f"  Created {item_name}"
 
 
-def copy_template_to_config(config_dir: Path, template_name: str, actual_name: str) -> str:
+def copy_template_to_config(
+    config_dir: Path, template_name: str, actual_name: str
+) -> str:
     """
     Copy a template file to its actual config file if it doesn't exist.
     Args:
@@ -45,7 +48,45 @@ def copy_template_to_config(config_dir: Path, template_name: str, actual_name: s
     return ""
 
 
-def generate_project_structure(target_dir: Path, package_root: Path) -> Tuple[bool, str]:
+def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -> None:
+    """Copy template directories and files to target."""
+    items_to_copy = [
+        ("config", "config"),
+        ("data", "data"),
+        ("compose.services.secure.yml", "compose.services.secure.yml"),
+    ]
+    for src_item, dest_item in items_to_copy:
+        src_path = package_root / src_item
+        dest_path = target_dir / dest_item
+        msg = copy_directory_or_file(src_path, dest_path, dest_item)
+        if msg:
+            messages.append(msg)
+
+
+def _copy_template_configs(target_dir: Path, messages: list) -> None:
+    """Copy template files to actual config files."""
+    config_dir = target_dir / "config"
+    template_mappings = [
+        ("services.env.template", "services.env"),
+        ("credentials.csv.template", "credentials.csv"),
+    ]
+    for template_name, actual_name in template_mappings:
+        msg = copy_template_to_config(config_dir, template_name, actual_name)
+        if msg:
+            messages.append(msg)
+
+
+def _create_data_subdirs(target_dir: Path) -> None:
+    """Create data subdirectories for services."""
+    data_dir = target_dir / "data"
+    data_subdirs = ["grafana", "influxdb", "mongodb", "rabbitmq"]
+    for subdir in data_subdirs:
+        (data_dir / subdir).mkdir(parents=True, exist_ok=True)
+
+
+def generate_project_structure(
+    target_dir: Path, package_root: Path
+) -> Tuple[bool, str]:
     """
     Generate project structure with template config, data directories, and compose file.
     Args:
@@ -56,35 +97,14 @@ def generate_project_structure(target_dir: Path, package_root: Path) -> Tuple[bo
     """
     try:
         target_dir.mkdir(parents=True, exist_ok=True)
-        # Copy directories and files
-        items_to_copy = [
-            ('config', 'config'),
-            ('data', 'data'),
-            ('compose.services.secure.yml', 'compose.services.secure.yml')
-        ]
         messages = [f"Generating project structure in {target_dir}..."]
-        for src_item, dest_item in items_to_copy:
-            src_path = package_root / src_item
-            dest_path = target_dir / dest_item
-            msg = copy_directory_or_file(src_path, dest_path, dest_item)
-            if msg:
-                messages.append(msg)
+        # Copy directories and files
+        _copy_template_items(target_dir, package_root, messages)
         # Copy template files to actual config files
-        config_dir = target_dir / "config"
-        template_mappings = [
-            ('services.env.template', 'services.env'),
-            ('credentials.csv.template', 'credentials.csv')
-        ]
-        for template_name, actual_name in template_mappings:
-            msg = copy_template_to_config(config_dir, template_name, actual_name)
-            if msg:
-                messages.append(msg)
+        _copy_template_configs(target_dir, messages)
         # Create data subdirectories for services
-        data_dir = target_dir / "data"
-        data_subdirs = ['grafana', 'influxdb', 'mongodb', 'rabbitmq']
-        for subdir in data_subdirs:
-            (data_dir / subdir).mkdir(parents=True, exist_ok=True)
+        _create_data_subdirs(target_dir)
         messages.append(f"\nProject structure generated successfully in {target_dir}!")
         return True, "\n".join(messages)
-    except Exception as e:
+    except OSError as e:
         return False, f"Failed to generate project: {e}"

@@ -1,4 +1,5 @@
 """Utility functions for DTaaS services CLI"""
+
 from pathlib import Path
 import sys
 import os
@@ -19,8 +20,9 @@ def get_credentials_path() -> Path:
     return base_dir / "config" / "credentials.csv"
 
 
-def execute_docker_command(container_name: str,
-    exec_cmd: list[str], verbose: bool = True) -> tuple[bool, str]:
+def execute_docker_command(
+    container_name: str, exec_cmd: list[str], verbose: bool = True
+) -> tuple[bool, str]:
     """
     Execute a command in a Docker container.
 
@@ -44,6 +46,26 @@ def execute_docker_command(container_name: str,
         return False, error_msg
 
 
+def _is_running_unix_system() -> bool:
+    """Check if running on Unix system (Linux or macOS)."""
+    return platform.system().lower() in ["linux", "darwin"]
+
+
+def _is_current_user_root() -> bool:
+    """Check if current user is root."""
+    try:
+        return os.geteuid() == 0
+    except AttributeError:
+        return False
+
+
+def _should_skip_root_check() -> bool:
+    """Check if root check should be skipped (CI environment)."""
+    return bool(
+        os.getenv("CI") or os.getenv("GITHUB_ACTIONS") or os.getenv("GITLAB_CI")
+    )
+
+
 def check_root_unix() -> None:
     """Check if script is run as root on Unix systems.
 
@@ -51,25 +73,23 @@ def check_root_unix() -> None:
     to allow tests to run without requiring elevated privileges.
     """
     # Skip root check in CI environments
-    if os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'):
+    if _should_skip_root_check():
         return
 
-    if platform.system().lower() not in ['linux', 'darwin']:
+    if not _is_running_unix_system():
         return
-    try:
-        is_root = os.geteuid() == 0
-    except AttributeError:
-        is_root = False
-    if not is_root:
+
+    if not _is_current_user_root():
         print(
             "This script must be run as root (Linux/MacOS). "
-            "Try: sudo -E env PATH=\"$PATH\" dtaas-services setup"
+            'Try: sudo -E env PATH="$PATH" dtaas-services setup'
         )
         sys.exit(1)
+
 
 def is_ci() -> bool:
     """Check if running in CI environment.
     Returns:
         True if CI environment variables are set
     """
-    return bool(os.getenv('CI') or os.getenv('GITHUB_ACTIONS') or os.getenv('GITLAB_CI'))
+    return _should_skip_root_check()

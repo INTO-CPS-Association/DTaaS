@@ -1,4 +1,5 @@
 """TLS certificate management for DTaaS services"""
+
 import shutil
 from pathlib import Path
 from typing import Tuple
@@ -25,8 +26,31 @@ VQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDI
 -----END CERTIFICATE-----
 """)
         return True
-    except Exception:
+    except (IOError, OSError):
         return False
+
+
+def _find_latest_cert(certs_dir: Path, prefix: str) -> Path | None:
+    """Find the latest certificate file for a given prefix."""
+    candidates = list(certs_dir.glob(f"{prefix}*.pem"))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: p.stat().st_mtime)
+
+
+def _rename_and_cleanup_certs(certs_dir: Path, prefix: str) -> None:
+    """Rename latest cert to standard name and remove others."""
+    latest = _find_latest_cert(certs_dir, prefix)
+    if not latest:
+        return
+    target = certs_dir / f"{prefix}.pem"
+    if latest.resolve() != target.resolve():
+        target.unlink(missing_ok=True)
+        latest.rename(target)
+    # Remove remaining candidates
+    for p in certs_dir.glob(f"{prefix}*.pem"):
+        if p.resolve() != target.resolve():
+            p.unlink(missing_ok=True)
 
 
 def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
@@ -35,17 +59,9 @@ def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
         certs_dir: Directory containing certificates
         prefix: Certificate prefix (e.g., 'privkey', 'fullchain')
     """
-    candidates = list(certs_dir.glob(f"{prefix}*.pem"))
-    if not candidates:
+    if not certs_dir.exists():
         return
-    latest = max(candidates, key=lambda p: p.stat().st_mtime)
-    target = certs_dir / f"{prefix}.pem"
-    if latest.resolve() != target.resolve():
-        target.unlink(missing_ok=True)
-        latest.rename(target)
-    for p in candidates:
-        if p.resolve() != target.resolve():
-            p.unlink(missing_ok=True)
+    _rename_and_cleanup_certs(certs_dir, prefix)
 
 
 def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:

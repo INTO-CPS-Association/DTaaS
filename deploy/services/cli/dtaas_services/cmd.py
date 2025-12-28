@@ -1,5 +1,7 @@
 """DTaaS Services CLI commands"""
+
 from pathlib import Path
+from typing import Optional, Callable
 
 import click
 from rich.console import Console
@@ -16,6 +18,46 @@ from .pkg.formatter import format_container_status
 from .pkg import influxdb, rabbitmq
 
 
+def _parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
+    """Parse comma-separated service names into a list."""
+    if not service_names:
+        return None
+    return [s.strip() for s in service_names.split(",")]
+
+
+def _handle_service_command(
+    operation_name: str,
+    operation_func: Callable,
+    service_list: Optional[list[str]],
+    color: str,
+    status_msg: str,
+) -> None:
+    """Handle common service command logic."""
+    try:
+        Service()
+        console = Console()
+
+        if service_list:
+            console.print(
+                f"[{color}]{operation_name} services:[/{color}] {', '.join(service_list)}..."
+            )
+        else:
+            console.print(f"[{color}]{operation_name} all services....[/{color}]")
+
+        with console.status(
+            f"[bold {color}]{status_msg}[/bold {color}]", spinner="dots"
+        ):
+            err, msg = operation_func(service_list)
+
+        if err is not None:
+            raise click.ClickException(msg)
+
+        console.print(f"[green]✅ {msg}[/green]")
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except RuntimeError as e:
+        raise click.ClickException(str(e)) from e
+
 
 @click.group()
 def services():
@@ -23,7 +65,7 @@ def services():
 
 
 @services.command()
-@click.option('--path', default='.', help='Directory to generate project structure')
+@click.option("--path", default=".", help="Directory to generate project structure")
 def generate_project(path):
     """
     Generate project structure with template config, data directories, and compose file.
@@ -78,68 +120,54 @@ def setup():
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to start')
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to start",
+)
 def start(service_names):
     """Start the platform services."""
-    try:
-        setup_obj = Service()
-        console = Console()
-        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
-
-        if service_list:
-            console.print(f"[cyan]Starting services:[/cyan] {', '.join(service_list)}...")
-        else:
-            console.print("[cyan]Starting all services...[/cyan]")
-        with console.status("[bold cyan]Starting containers...[/bold cyan]", spinner="dots"):
-            err, msg = setup_obj.start_services(service_list)
-
-        if err is not None:
-            raise click.ClickException(msg)
-
-        console.print(f"[green]✅ {msg}[/green]")
-    except FileNotFoundError as e:
-        raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
-        raise click.ClickException(str(e)) from e
+    service_list = _parse_service_list(service_names)
+    _handle_service_command(
+        "Starting",
+        Service().start_services,
+        service_list,
+        "cyan",
+        "Starting containers...",
+    )
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to stop')
+@click.option(
+    "--services", "-s", "service_names", help="Comma-separated list of services to stop"
+)
 def stop(service_names):
     """Stop the platform services."""
-    try:
-        setup_obj = Service()
-        console = Console()
-
-        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
-
-        if service_list:
-            console.print(f"[yellow]Stopping services:[/yellow] {', '.join(service_list)}...")
-        else:
-            console.print("[yellow]Stopping all services...[/yellow]")
-
-        with console.status("[bold yellow]Stopping containers...[/bold yellow]", spinner="dots"):
-            err, msg = setup_obj.stop_services(service_list)
-
-        if err is not None:
-            raise click.ClickException(msg)
-        console.print(f"[green]✅ {msg}[/green]")
-
-    except FileNotFoundError as e:
-        raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
-        raise click.ClickException(str(e)) from e
+    service_list = _parse_service_list(service_names)
+    _handle_service_command(
+        "Stopping",
+        Service().stop_services,
+        service_list,
+        "yellow",
+        "Stopping containers...",
+    )
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to check')
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to check",
+)
 def status(service_names):
     """Show the status of the platform services."""
     try:
         setup_obj = Service()
         console = Console()
 
-        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
+        service_list = _parse_service_list(service_names)
 
         err, containers = setup_obj.get_status(service_list)
         if err is not None:
@@ -156,43 +184,39 @@ def status(service_names):
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to restart')
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to restart",
+)
 def restart(service_names):
     """Restart the platform services."""
-    try:
-        setup_obj = Service()
-        console = Console()
-
-        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
-
-        if service_list:
-            console.print(f"[blue]Restarting services:[/blue] {', '.join(service_list)}...")
-        else:
-            console.print("[blue]Restarting all services...[/blue]")
-
-        with console.status("[bold blue]Restarting containers...[/bold blue]", spinner="dots"):
-            err, msg = setup_obj.restart_services(service_list)
-
-        if err is not None:
-            raise click.ClickException(msg)
-        console.print(f"[green]✅ {msg}[/green]")
-
-    except FileNotFoundError as e:
-        raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
-        raise click.ClickException(str(e)) from e
+    service_list = _parse_service_list(service_names)
+    _handle_service_command(
+        "Restarting",
+        Service().restart_services,
+        service_list,
+        "blue",
+        "Restarting containers...",
+    )
 
 
 @services.command()
-@click.option('--services', '-s', 'service_names', help='Comma-separated list of services to remove')
-@click.option('--volumes', '-v', is_flag=True, help='Remove volumes as well')
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to remove",
+)
+@click.option("--volumes", "-v", is_flag=True, help="Remove volumes as well")
 def remove(service_names, volumes):
     """Remove the platform services and optionally their volumes."""
     try:
         setup_obj = Service()
         console = Console()
 
-        service_list = [s.strip() for s in service_names.split(',')] if service_names else None
+        service_list = _parse_service_list(service_names)
 
         if service_list:
             console.print(f"[red]Removing services:[/red] {', '.join(service_list)}...")
@@ -202,9 +226,7 @@ def remove(service_names, volumes):
         with console.status(
             "[bold red]Removing containers...[/bold red]", spinner="dots"
         ):
-            err, msg = setup_obj.remove_services(
-                service_list, remove_volumes=volumes
-            )
+            err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
 
         if err is not None:
             raise click.ClickException(msg)
