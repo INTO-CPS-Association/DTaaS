@@ -4756,9 +4756,9 @@ clone@^1.0.2:
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
 cloudcmd@^19.0.17:
-  version "19.0.17"
-  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.0.17.tgz#f016481f4951250561c90b2f2bd7a1d3d9166edd"
-  integrity sha512-6vbIYu/jvu8T3zjNVcZKXjR763AZ6k5mzj6WDjbPwfM17DZGIeuD9FnFv/k2aMZ15K7VB8W2rR5WSVjplZrcKQ==
+  version "19.1.0"
+  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.1.0.tgz#0376dd24c1ad420331af81fd4c606ee29cc647ae"
+  integrity sha512-t2cnNGSI2l6PG3pPbdRP1eN+UnFdbVgsHrSflCiVi62hA3fpCXJxj1ylzu3XoG4QG6ovlhWFLHHT+GZN7E8zQw==
   dependencies:
     "@babel/plugin-transform-optional-chaining" "^7.21.0"
     "@cloudcmd/dropbox" "^5.0.1"
@@ -4817,8 +4817,8 @@ cloudcmd@^19.0.17:
     socket.io-client "^4.0.1"
     squad "^3.0.0"
     table "^6.0.1"
-    try-catch "^3.0.0"
-    try-to-catch "^3.0.0"
+    try-catch "^4.0.4"
+    try-to-catch "^4.0.0"
     tryrequire "^3.0.0"
     win32 "^7.0.0"
     wraptile "^3.0.0"
@@ -11603,10 +11603,20 @@ try-catch@^3.0.0, try-catch@^3.0.1:
   resolved "https://registry.yarnpkg.com/try-catch/-/try-catch-3.0.1.tgz#93abdca71ce148a08adb49e08dbd491cd485164d"
   integrity sha512-91yfXw1rr/P6oLpHSyHDOHm0vloVvUoo9FVdw8YwY05QjJQG9OT0LUxe2VRAzmHG+0CUOmI3nhxDUMLxDN/NEQ==
 
+try-catch@^4.0.4:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/try-catch/-/try-catch-4.0.6.tgz#5f46df9a1721cf0408e4ca095ac144207e90fb45"
+  integrity sha512-45imZm6gMGInbqlgWSnlC1+xXEkqb5Aqh4jr/pBZyFyGF0QVr+14Qei0xe1yHqsYFurEFSJ0nDNxu1Bdic6Dnw==
+
 try-to-catch@^3.0.0, try-to-catch@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/try-to-catch/-/try-to-catch-3.0.1.tgz#81ccacb2abd9ef0f313a99eae7752fccf1d17c09"
   integrity sha512-hOY83V84Hx/1sCzDSaJA+Xz2IIQOHRvjxzt+F0OjbQGPZ6yLPLArMA0gw/484MlfUkQbCpKYMLX3VDCAjWKfzQ==
+
+try-to-catch@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/try-to-catch/-/try-to-catch-4.0.2.tgz#c897c6c890e69819561ec2ec49a2162be1369785"
+  integrity sha512-pEWbNQBEiMiHFLNd5G5boMiuNz0j/br3yVKuucatezNxzXP2VE/97/8f/aqBCH6rTx/q/LJTcKabmiarmTnGWA==
 
 tryrequire@^3.0.0:
   version "3.0.0"
