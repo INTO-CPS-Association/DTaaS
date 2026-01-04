@@ -1,9 +1,7 @@
-"""Tests for utils module."""
 from src.pkg import utils
 
 
 def test_import_yaml_users():
-    """Test importing YAML user configuration template"""
     expected = {
         "image": "mltooling/ml-workspace-minimal:0.13.2",
         "restart": "unless-stopped",
@@ -27,26 +25,24 @@ def test_import_yaml_users():
 
     template, err = utils.import_yaml("users.local.yml")
     if err is not None:
-        raise AssertionError(err)
+        raise Exception(err)
 
     assert template == expected
 
 
 def test_import_yaml_compose():
-    """Test importing YAML compose configuration"""
     expected = get_test_compose_object()
 
     compose, err = utils.import_yaml("tests/data/compose.users.test.yml")
     if err is not None:
-        raise AssertionError(err)
+        raise Exception(err)
     assert expected == compose
 
 
 def test_import_toml():
-    """Test importing TOML configuration file"""
     toml, err = utils.import_toml("tests/dtaas.test.toml")
     if err is not None:
-        raise AssertionError(err)
+        raise Exception(err)
 
     expected = {
         "name": "Digital Twin as a Service (DTaaS)",
@@ -73,8 +69,7 @@ def test_import_toml():
 
 
 def test_replace_all():
-    """Test replacing all values in a nested structure"""
-    template_random_vals = [
+    templateRandomVals = [
         "stringval1",
         "stringval2",
         "stringval3",
@@ -82,43 +77,41 @@ def test_replace_all():
         "listval2",
         "listval3",
     ]
-    template = get_replace_all_object(template_random_vals)
+    template = get_replace_all_object(templateRandomVals)
 
-    expected_random_vals = ["one", "two", "three", "foo", "bar", "qux"]
-    expected = get_replace_all_object(expected_random_vals)
+    expectedRandomVals = ["one", "two", "three", "foo", "bar", "qux"]
+    expected = get_replace_all_object(expectedRandomVals)
 
     mapping = {}
-    for i, template_val in enumerate(template_random_vals):
-        mapping[template_val] = expected_random_vals[i]
+    for i in range(len(templateRandomVals)):
+        mapping[templateRandomVals[i]] = expectedRandomVals[i]
 
     ans, err = utils.replace_all(template, mapping)
     if err is not None:
-        raise AssertionError(err)
+        raise Exception(err)
 
     assert ans == expected
 
 
 def test_export_yaml():
-    """Test exporting data to YAML file"""
     data = get_test_compose_object()
 
     err = utils.export_yaml(data, "tests/data/compose.users.exp.yml")
     if err is not None:
-        raise AssertionError(err)
+        raise Exception(err)
 
     expected, err1 = utils.import_yaml("tests/data/compose.users.test.yml")
     actual, err2 = utils.import_yaml("tests/data/compose.users.exp.yml")
 
     if err1:
-        raise AssertionError(err1)
+        raise Exception(err1)
     if err2:
-        raise AssertionError(err2)
+        raise Exception(err2)
 
     assert expected == actual
 
 
 def get_replace_all_object(random_vals):
-    """Create a nested structure for testing replace_all functionality"""
     obj = {
         "key1": random_vals[0],
         "key2": [random_vals[3], random_vals[4], random_vals[5]],
@@ -141,7 +134,6 @@ def get_replace_all_object(random_vals):
 
 
 def get_test_compose_object():
-    """Create a test compose object for testing"""
     test_compose = {
         "version": "3",
         "services": {

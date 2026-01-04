@@ -1,10 +1,8 @@
-"""Tests for users module."""
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from unittest.mock import patch, MagicMock
 import pytest
+from pathlib import Path
 from src.pkg import users
-# pylint: disable=redefined-outer-name,unused-argument
+from unittest.mock import patch, MagicMock
+import tempfile
 
 
 @pytest.fixture
@@ -51,7 +49,7 @@ def mock_user_operations():
 @pytest.fixture
 def temp_dir_with_template():
     """Temporary directory with template folder"""
-    with TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory() as tmpdir:
         (Path(tmpdir) / "template").mkdir(parents=True, exist_ok=True)
         (Path(tmpdir) / "template" / "test.txt").write_text("test")
         yield tmpdir
@@ -59,13 +57,11 @@ def temp_dir_with_template():
 
 @pytest.mark.parametrize("usernames", [["testuser"], ["user1", "user2", "user3"], []])
 def test_create_user_files(temp_dir_with_template, usernames):
-    """Test create_user_files creates user directories"""
     assert users.create_user_files(usernames, temp_dir_with_template) is None
     assert all(Path(temp_dir_with_template, u).exists() for u in usernames)
 
 
 def test_create_user_files_already_exists(temp_dir_with_template):
-    """Test create_user_files when directory already exists"""
     Path(temp_dir_with_template, "testuser").mkdir(parents=True)
     assert users.create_user_files(["testuser"], temp_dir_with_template) is None
 
@@ -78,7 +74,7 @@ def test_add_users_to_compose(mock_utils):
         "pids_limit": 4960,
         "shm_size": "512m"
     }
-
+    
     users.add_users_to_compose(
         ["user1", "user2", "user3"], {"services": {}}, "localhost", "/test", resources
     )
@@ -137,7 +133,6 @@ def test_get_compose_config_error():
 @pytest.mark.parametrize("func", [users.start_user_containers, users.stop_user_containers])
 @patch("src.pkg.users.subprocess.run", return_value=MagicMock(returncode=0))
 def test_container_operations(mock_run, func):
-    """Test start and stop container operations"""
     func(["user1", "user2"])
     assert mock_run.called
 
@@ -145,7 +140,6 @@ def test_container_operations(mock_run, func):
 @pytest.mark.parametrize("returncode,has_error", [(0, False), (1, True)])
 @patch("src.pkg.users.subprocess.run")
 def test_run_command_for_containers(mock_run, returncode, has_error):
-    """Test run_command_for_containers with different return codes"""
     mock_run.return_value = MagicMock(
         returncode=returncode, stderr="Error" if has_error else ""
     )
@@ -159,14 +153,11 @@ def test_run_command_for_containers(mock_run, returncode, has_error):
 def test_add_users_missing_fields(
     mock_config, mock_utils, mock_user_operations, compose, field
 ):
-    """Test add_users adds missing fields to compose"""
     mock_utils["import"].return_value = (compose, None)
     assert users.add_users(mock_config) is None and field in compose
 
 
 def test_add_users_export_error(mock_config, mock_utils, mock_user_operations):
-    """Test add_users handles export errors"""
-    del mock_user_operations  # Fixture present but unused
     mock_utils["export"].return_value = Exception("Export failed")
     assert users.add_users(mock_config) is not None
 
@@ -174,8 +165,6 @@ def test_add_users_export_error(mock_config, mock_utils, mock_user_operations):
 # deleteUser tests
 @pytest.mark.parametrize("export_error", [False, True])
 def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error):
-    """Test delete_user removes users from compose"""
-    del mock_user_operations  # Fixture present but unused
     compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
     mock_config.get_delete_users_list.return_value = (["user1"], None)
     mock_utils["import"].return_value = (compose, None)

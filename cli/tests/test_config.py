@@ -1,10 +1,8 @@
-"""Tests for config module."""
 from unittest.mock import patch
 import pytest
 import click
 from src.pkg import config
 from src.pkg.config import Config
-# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -19,15 +17,15 @@ def mock_toml_data():
 @pytest.fixture
 def mock_utils():
     """Mock utils.import_toml"""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        yield mock_import
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
+        yield mockImport
 
 
 @pytest.fixture
 def mock_config():
     """Create a mock config object with test data"""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        mock_import.return_value = ({
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
+        mockImport.return_value = ({
             "common": {
                 "server-dns": "localhost",
                 "path": "/test/path",
@@ -170,8 +168,8 @@ def test_get_resources_success(mock_config):
 
 def test_get_resource_limits_missing():
     """Test getting resource limits when resources section is missing"""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        mock_import.return_value = ({"common": {}}, None)
+    with patch("src.pkg.config.utils.import_toml") as mockImport:
+        mockImport.return_value = ({"common": {}}, None)
         cfg = Config()
         result, err = cfg.get_resource_limits()
         assert result is None

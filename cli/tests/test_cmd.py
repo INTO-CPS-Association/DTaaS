@@ -1,9 +1,7 @@
-"""Tests for admin user commands in the CLI."""
-from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
-# pylint: disable=redefined-outer-name
+from unittest.mock import patch
 
 
 @pytest.fixture
