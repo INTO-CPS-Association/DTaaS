@@ -102,7 +102,7 @@ usage scenarios are:
 👍 code reviews
 👍 draft pull requests to prototype ideas
 
-This monorepo has [copilot instructions](.github/copilot-instructions.md)
+This monorepo has [copilot instructions](copilot-instructions.md)
 to inform github copilot about the project structure and software
 development conventions.
 
