@@ -206,7 +206,7 @@ def test_stop_services_docker_error(patch_service_deps):
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.down.side_effect = OSError("Docker stop error")
+    mock_docker.compose.stop.side_effect = OSError("Docker stop error")
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
@@ -278,7 +278,12 @@ def test_get_status_success(patch_service_deps):
     mock_container2 = Mock()
     mock_container2.name = "influxdb"
     mock_docker = MagicMock()
-    mock_docker.compose.ps.return_value = [mock_container1, mock_container2]
+    # Mock the container.list() call to return all containers
+    mock_docker.container.list.return_value = [mock_container1, mock_container2]
+    # Mock the config call to return services
+    mock_config_obj = MagicMock()
+    mock_config_obj.services = {"grafana": {}, "influxdb": {}}
+    mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
@@ -292,14 +297,21 @@ def test_get_status_with_service_list(patch_service_deps):
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_container = Mock()
+    mock_container.name = "grafana"
     mock_docker = MagicMock()
-    mock_docker.compose.ps.return_value = [mock_container]
+    # Mock the container.list() call to return containers
+    mock_docker.container.list.return_value = [mock_container]
+    # Mock the config call to return services
+    mock_config_obj = MagicMock()
+    mock_config_obj.services = {"grafana": {}, "mongodb": {}}
+    mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.get_status(['grafana'])
+        err, containers = service.get_status(['grafana'])
     assert err is None
-    mock_docker.compose.ps.assert_called_once_with(['grafana'], all=True)
+    # Should contain the grafana container
+    assert any(c.name == "grafana" for c in containers)
 
 
 def test_get_status_compose_file_not_found(patch_service_deps):
@@ -321,7 +333,12 @@ def test_get_status_docker_error(patch_service_deps):
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.compose.ps.side_effect = OSError("Status error")
+    # Mock container.list to raise an error
+    mock_docker.container.list.side_effect = OSError("Status error")
+    # Mock config to return services
+    mock_config_obj = MagicMock()
+    mock_config_obj.services = {"grafana": {}, "influxdb": {}}
+    mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):

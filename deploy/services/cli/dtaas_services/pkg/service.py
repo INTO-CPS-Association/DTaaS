@@ -3,10 +3,12 @@
 import os
 import shutil
 import subprocess
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Set
 from pathlib import Path
 from python_on_whales import DockerClient
 from .config import Config
+from .formatter import RemovedService
+
 
 
 class Service:
@@ -35,6 +37,7 @@ class Service:
                 os.environ[key] = str(value)
         self.docker = DockerClient(compose_files=[self.compose_file])
 
+
     def _check_compose_file(self) -> Tuple[Optional[Exception], bool]:
         """Check if compose file exists.
         Returns:
@@ -46,6 +49,7 @@ class Service:
             )
             return err, False
         return None, True
+
 
     def _handle_docker_error(
         self, operation: str, exc: Exception
@@ -64,6 +68,7 @@ class Service:
             return exc, f"Invalid configuration for {operation}: {str(exc)}"
         # For other exceptions, include type information
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
+
 
     def start_services(
         self, service_list: Optional[list] = None
@@ -85,14 +90,10 @@ class Service:
             else:
                 self.docker.compose.up(detach=True)
             return None, "Docker Compose started successfully"
-        except (
-            subprocess.CalledProcessError,
-            OSError,
-            KeyError,
-            ValueError,
-            TypeError,
-        ) as e:
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
             return self._handle_docker_error("start Docker Compose", e)
+
 
     def stop_services(
         self, service_list: Optional[list] = None
@@ -112,16 +113,12 @@ class Service:
             if service_list:
                 self.docker.compose.stop(service_list)
             else:
-                self.docker.compose.down()
+                self.docker.compose.stop()
             return None, "Services stopped successfully"
-        except (
-            subprocess.CalledProcessError,
-            OSError,
-            KeyError,
-            ValueError,
-            TypeError,
-        ) as e:
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
             return self._handle_docker_error("stop services", e)
+
 
     def restart_services(
         self, service_list: Optional[list] = None
@@ -143,14 +140,83 @@ class Service:
             else:
                 self.docker.compose.restart()
             return None, "Services restarted successfully"
-        except (
-            subprocess.CalledProcessError,
-            OSError,
-            KeyError,
-            ValueError,
-            TypeError,
-        ) as e:
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
             return self._handle_docker_error("restart services", e)
+
+
+    def _get_all_service_names(self) -> Tuple[Optional[Exception], Set[str]]:
+        """
+        Get all service names defined in the compose file.
+
+        Returns:
+            Tuple of (Exception or None, set of service names)
+        """
+        try:
+            services = self.docker.compose.config().services
+            if services:
+                return None, set(services.keys())
+            return None, set()
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
+            err_exc, _ = self._handle_docker_error("get service names", e)
+            return err_exc, set()
+
+
+    def _get_all_containers(self) -> Tuple[Optional[Exception], dict]:
+        """
+        Get all containers belonging to this compose project and create a mapping by name.
+        Returns:
+            Tuple of (Exception or None, dict mapping container name to container object)
+        """
+        try:
+            # Get all containers
+            all_containers = self.docker.container.list(all=True)
+            # Get service names from compose file to filter relevant containers
+            err, all_services = self._get_all_service_names()
+            if err is not None:
+                return err, {}
+            # Filter containers to only include those matching service names
+            # This works because compose uses container_name which matches service names
+
+            container_map = {
+                container.name: container
+                for container in all_containers
+                if container.name in all_services
+            }
+            return None, container_map
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
+            err_exc, _ = self._handle_docker_error("get containers", e)
+            return err_exc, {}
+
+
+    def _build_status_result(
+        self, all_services: set, container_map: dict, service_list: Optional[list] = None
+    ) -> list:
+        """
+        Build the status result list for services.
+        Args:
+            all_services: Set of all service names from compose file
+            container_map: Dict mapping container names to container objects
+            service_list: Optional list of specific services to check
+        Returns:
+            List of container objects and RemovedService objects
+        """
+        result = []
+        # Determine which services to include
+        if service_list:
+            services_to_check = set(service_list) & all_services
+        else:
+            services_to_check = all_services
+        # Build result with containers or RemovedService placeholders
+        for service_name in services_to_check:
+            if service_name in container_map:
+                result.append(container_map[service_name])
+            else:
+                result.append(RemovedService(service_name))
+        return result
+
 
     def get_status(
         self, service_list: Optional[list] = None
@@ -161,26 +227,30 @@ class Service:
             service_list: Optional list of specific services to check
 
         Returns:
-            Tuple of (Exception or None, list of Container objects)
+            Tuple of (Exception or None, list of Container objects and RemovedService objects)
         """
         err, exists = self._check_compose_file()
         if not exists:
             return err, []
         try:
-            if service_list:
-                result = self.docker.compose.ps(service_list, all=True)
-            else:
-                result = self.docker.compose.ps(all=True)
+            # Get all services from compose file
+            err, all_services = self._get_all_service_names()
+            if err is not None:
+                return err, []
+
+            # Get all containers
+            err, container_map = self._get_all_containers()
+            if err is not None:
+                return err, []
+
+            # Build and return status result
+            result = self._build_status_result(all_services, container_map, service_list)
             return None, result
-        except (
-            subprocess.CalledProcessError,
-            OSError,
-            KeyError,
-            ValueError,
-            TypeError,
-        ) as e:
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
             err_exc, _ = self._handle_docker_error("get service status", e)
             return err_exc, []
+
 
     def _clean_data_directories(self, service_list: Optional[list] = None) -> None:
         """Clean and recreate data directories for services.
@@ -205,6 +275,7 @@ class Service:
                 shutil.rmtree(subdir_path, ignore_errors=True)
             # Recreate empty directory
             subdir_path.mkdir(parents=True, exist_ok=True)
+
 
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
@@ -237,11 +308,6 @@ class Service:
                 return None, "Services and data removed successfully"
 
             return None, "Services removed successfully"
-        except (
-            subprocess.CalledProcessError,
-            OSError,
-            KeyError,
-            ValueError,
-            TypeError,
-        ) as e:
+        except (subprocess.CalledProcessError, OSError,
+            KeyError, ValueError, TypeError,) as e:
             return self._handle_docker_error("remove services", e)
