@@ -4,7 +4,6 @@ The microservices requires config specified in yaml format.
 The template configuration file is:
 
 ```yaml
-
 port: '4001'
 mode: 'local' or 'git'
 local-path: '/Users/<Username>/DTaaS/files'
@@ -22,16 +21,44 @@ git-repos:
 
 ```
 
-The `LOCAL_PATH` variable is the absolute filepath to the
+The `local-path` variable is the relative filepath to the
 location of the local directory which will be served to users
 by the Library microservice.
 
-The `MODE` variable sets the mode for which and how the files should be served. If `git` mode is chosen, the following is required.
+Replace the default values the appropriate values for your setup.
+Please save this config in a file as a yaml file, for example as `libms.yaml`.
 
-| Variable       | Description                                                                            |
-| -------------- | -------------------------------------------------------------------------------------- |
-| `username`     | Username in which folder the repos will be cloned.                                     |
-| `git repo url` | HTTP URL of the git repository to clone. Optional to add `.git` to the end of the URL. |
+## Operation Modes
+
+The mode indicates the backend storage for the files.
+There are two possible modes - `local` and `git`.
+The files available in the `local-path` are served to users in `local` mode.
+In the `git` mode, the remote git repos are cloned and they are
+served to users as local files.
+
+### git mode
+
+A fragment of the config for `git` mode is:
+
+```yaml
+...
+git-repos:
+  - user1:
+      repo-url: 'https://gitlab.com/dtaas/user1.git'
+  - user2:
+      repo-url: 'https://gitlab.com/dtaas/user2.git'
+  - common:
+      repo-url: 'https://gitlab.com/dtaas/common.git'
+```
+
+Here, `user1`, `user2` and `common` are the local directories into which
+the remote git repositories get cloned. The name of the repository need not
+match with the local directory name. For example, the above configuration
+enables library microservice to clone
+`https://gitlab.com/dtaas/user1.git` repository into
+`user1` directory. Any git server accessible over
+HTTP(S) protocol is supported.
+The `.git` suffix is optional.
 
 Replace the default values the appropriate values for your setup.
 

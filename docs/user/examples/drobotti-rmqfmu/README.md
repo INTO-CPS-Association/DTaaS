@@ -46,7 +46,7 @@ This example uses two models, one tool, one data, and two scripts to create
 mock physical twin. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | distance-from-zero.fmu | Private | No |
 |  | rmq-vhost.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |

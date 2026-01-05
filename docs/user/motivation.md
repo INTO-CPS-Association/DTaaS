@@ -8,9 +8,9 @@ the DTaaS platform. The easiest is
 [localhost](../admin/localhost.md) installation scenario.
 
 Please see user-specific
-[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20240917-Users.pdf)
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
 and
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20240917-Users-Recorded-web.mp4)
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
 to get the conceptual framework behind composable digital twins in the DTaaS platform.
 
 ## Motivation

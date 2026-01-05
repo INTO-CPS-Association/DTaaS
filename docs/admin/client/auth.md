@@ -50,7 +50,7 @@ Here are the steps to get started:
   registered on GitLab:
 
 |GitLab Variable Name|Variable Name in Client env.js|Default Value|
-|---|---|---|
+|--- |--- |--- |
 |OAuth Provider|REACT_APP_AUTH_AUTHORITY|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
 |Application ID|REACT_APP_CLIENT_ID||
 |Callback URL|REACT_APP_REDIRECT_URI|[https://foo.com/Library](https://foo.com/Library)|

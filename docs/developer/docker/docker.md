@@ -8,10 +8,14 @@ for using docker workflows.
 
 ## Folder Structure
 
-There are two dockerfiles for building the containers:
+There are four dockerfiles for building the containers:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
+- **client.built.dockerfile**: Dockerfile for copying
+  an already built client application into docker image.
+  This dockerfile copies `client/build` directory and serves it from
+  inside the docker container.
 - **libms.dockerfile**: Dockerfile for building the library
   microservice container from source code.
 - **libms.npm.dockerfile**: Dockerfile for building the library
@@ -19,10 +23,13 @@ There are two dockerfiles for building the containers:
   This Dockerfile is only used during publishing. It is used neither
   in the development builds nor in Github actions.
 
-There is a specific compose file for development:
+In addition, there are docker compose and configuration files.
 
-The **compose.dev.yml:** file is the docker compose file
-for development environment.
+- **compose.dev.yml:** Docker Compose configuration for
+  development environment.
+- **.env**: environment variables for docker compose file
+- **conf.dev** OAuth2 configuration required by
+  the Traefik forward-auth service
 
 ## Build and Publish Docker Images
 

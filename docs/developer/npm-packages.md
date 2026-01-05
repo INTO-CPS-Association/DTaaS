@@ -20,9 +20,10 @@ yarn publish --registry="https://registry.npmjs.org" \
 At least one version of runner package is published to this registry
 for each release of DTaaS.
 
-The publication step for
-[library microservice](../admin/servers/lib/npm.md) is automated via
-github actions.
+The publication steps for
+[library microservice](../admin/servers/lib/npm.md) and
+[runner](../user/servers/execution/runner/README.md)
+are automated via github actions.
 
 ## Github  npm registry
 

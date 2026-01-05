@@ -93,7 +93,7 @@ After the services are up and running,
 you can see the following services active within server2 (_services.foo.com_).
 
 | service | external url |
-|:---|:---|
+| :--- | :--- |
 | InfluxDB database | services.foo.com |
 | Grafana visualization service | services.foo.com:3000 |
 | MQTT Broker | services.foo.com:1883 |

@@ -122,7 +122,7 @@ compose file. Portainer allows you to modify them as shown in the screenshot
 above, here is a summary:
 
   | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
+  | :------------ | :--------------- | :--------------- |
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
 

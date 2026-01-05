@@ -15,11 +15,22 @@ for Gitlab DevOps service inside the DTaaS.
 The first step is to create a gitlab project with *username*
 in gitlab user group named *dtaas*.
 
-![Gitlab project create](./create-repo.png)
+![Gitlab project create](create-repo.png)
 
 This user needs to have ownership permissions over the project.
 
-![Project ownership](./repo-ownership.png)
+![Project ownership](repo-ownership.png)
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The DTaaS website expects a default branch named
+    `main` to exist. The website client performs all the git
+    operations on this branch.
+<!-- markdownlint-enable MD046 -->
+
+You can change name of the default branch in
+the [settings](../website/settings.md) page.
 
 ## Git commands
 

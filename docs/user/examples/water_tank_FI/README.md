@@ -30,7 +30,7 @@ This example uses two models and one tool.
 The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | watertankcontroller-c.fmu | Private | Yes |
 |  | singlewatertank-20sim.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |

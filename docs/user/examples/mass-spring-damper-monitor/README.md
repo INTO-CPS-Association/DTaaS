@@ -32,7 +32,7 @@ whether the displacement of the two masses stays below a maximum threshold.
 This example uses two models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | MassSpringDamper1.fmu | Private | Yes |
 |        | MassSpringDamper2.fmu | Private | Yes |
 |        | m2.fmu | Private | No |

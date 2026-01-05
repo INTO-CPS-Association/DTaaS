@@ -68,7 +68,7 @@ your RabbitMQ credentials.
 The example uses the following assets:
 
 | Asset Type | Names of Assets | Visibility | Reuse in other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Service | common/services/NuRV_orbit | Common | Yes |
 | DT | common/digital_twins/incubator | Common | Yes |
 | Specification | safe-operation.smv | Private | No |

@@ -25,7 +25,7 @@ Valdemar Tang
 ## Example Contributors
 
 | Example Name | Contributors |
-|:---|:---|
+| :--- | :--- |
 | Mass Spring Damper | Prasad Talasila |
 | Water Tank Fault Injection | Henrik Ejersbo and Mirgita Frasheri |
 | Water Tank Model Swap | Henrik Ejersbo and Mirgita Frasheri |

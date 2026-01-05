@@ -44,7 +44,7 @@ the two following commands
 ### npmjs
 
 ``` bash
-sudo npm install -g @into-cps-association/libms  # requires no login
+$sudo npm install -g @into-cps-association/libms  # requires no login
 ```
 
 ### Github
@@ -65,40 +65,58 @@ needs to have _read:packages_ scope.
 Display help.
 
 ```bash
-libms -h
+$libms -h
+Usage: libms [options]
+
+The lib microservice is a file server. It supports file transfer
+over GraphQL and HTTP protocols.
+
+Options:
+  -c, --config <file>  provide the config file (default libms.yaml)
+  -H, --http <file>    enable the HTTP server with the specified config
+  -h, --help           display help for libms
 ```
+
+Both the options are not mandatory.
 
 Please see [configuration](config.md) for explanation of
 configuration conventions.
-To use `.env` as configuration file, run
+The config is saved `libms.yaml` file by convention. If `-c` is not specified
+The **libms** looks for
+`libms.yaml` file in the working directory from which it is run.
+If you want to run **libms** without explicitly specifying the configuration
+file, run
 
 ```bash
-libms
+$libms
 ```
 
 To run **libms** with a custom config file,
 
 ```bash
-libms -c FILE-PATH
-libms --config FILE-PATH
+$libms -c FILE-PATH
+$libms --config FILE-PATH
 ```
 
-If the environment file is named something other than `.env`,
-for example as `.env.libms`, you can run
+If the environment file is named something other than `libms.yaml`,
+for example as `libms-config.yaml`, you can run
 
 ```sh
-libms -c ".env.libms"
+$libms -c "config/libms-config.yaml"
 ```
 
 You can press `Ctl+C` to halt the application.
 If you wish to run the microservice in the background, use
 
 ```bash
-nohup libms [-c FILE-PATH] & disown
+$nohup libms [-c FILE-PATH] & disown
 ```
 
 The lib microservice is now running and ready to serve files.
 
+### Protocol Support
+
+The **libms** supports GraphQL protocol by default.
 This microservice can also serve files in a browser with files transferred
 over HTTP protocol.
 
@@ -106,7 +124,7 @@ This option needs to be enabled with `-H http.json` flag.
 A sample [http config](http.json) provided here can be used.
 
 ```bash
-nohup libms [-H http.json] & disown
+$nohup libms [-H http.json] & disown
 ```
 
 The regular file upload and download options become available.

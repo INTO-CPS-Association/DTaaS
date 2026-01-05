@@ -15,9 +15,10 @@ from opening an issue, creating a PR, reviewing, and merging the PR.
 It helps development team members get familiar with
 the DTaaS project software design, and development processes.
 Please see developer-specific
-[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-developer-overview_march2024.pdf),
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-developer-overview_march2024.mp4),
-and [Research paper](https://arxiv.org/abs/2305.07244).
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605_Developer.pdf),
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605_Developer-recorded_web.mp4),
+and
+[Research paper](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-journal-paper.pdf).
 
 ## :computer: Development Environment
 
@@ -72,15 +73,17 @@ a development workflow is in place. Each developer should follow these steps:
    [Qlty](https://docs.qlty.sh/cloud/quickstart)
    and
    [Codecov](https://docs.codecov.com/docs/quick-start)
+   and
+   [sonarcube](https://docs.sonarsource.com/sonarqube-cloud/)
    for your fork. The codecov does not require secret token
    for public repositories.
-1. Use NodeJS 22 and Python 3.12 development environments
+1. Use NodeJS 24 and Python 3.12 development environments
 1. Use
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow.
 1. Work in your fork and open a PR from your working
    branch to your `feature/distributed-demo` branch.
-   The PR will run all the github actions, qlty and codecov checks.
+   The PR will run all the github actions, qlty, sonarcube and codecov checks.
 1. Resolve all the issues identified in the previous step.
 1. Once changes are verified, a PR should be made to
    the `feature/distributed-demo` branch of
@@ -102,8 +105,9 @@ usage scenarios are:
 👍 code reviews
 👍 draft pull requests to prototype ideas
 
-This monorepo has [copilot instructions](copilot-instructions.md)
-to inform github copilot about the project structure and software
+This project is a monorepo and it has
+[copilot instructions](copilot-instructions.md) to inform
+github copilot about the project structure and software
 development conventions.
 
 Most Code IDEs like VSCode and Cursor have native integration of
@@ -131,6 +135,8 @@ The project code qualities are measured based on:
   any issues identified by the **qlty**.
   (Please note that qlty only checks the files that changed from
   the default branch, i.e., `feature/distributed-demo`).
+- Security scans and code quality issues identified by
+  [sonarcube](https://sonarcloud.io/project/overview?id=INTO-CPS-Association_DTaaS).
 - Test coverage report collected by
   [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
 - Successful [github actions](https://github.com/INTO-CPS-Association/DTaaS/actions)

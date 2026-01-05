@@ -42,7 +42,7 @@ This example uses two models, two tools, one data, and one script.
 The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Model | Linear.fmu | Private | No |
 |  | TankSystem.aasx | Private | No |
 | Tool | DTManager-0.0.1-Maestro.jar (wraps Maestro) | Common | Yes |

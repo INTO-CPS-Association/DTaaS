@@ -53,7 +53,8 @@ you need two URLs: a _callback URL_ and a _logout URL_.
 
 **4. Create OAuth Application:**
 
-Oauth application setup on GitLab can be located on Edit Profile -> Application <https://gitlab.foo.com/-/profile/applications>.
+Oauth application setup on GitLab can be located on Edit **Profile** ->
+**Application** <https://gitlab.foo.com/-/profile/applications>.
 
 During the creation of the OAuth application on GitLab, you need to specify
 the scope. Choose **_read_user_** scope.
@@ -77,13 +78,13 @@ the OAuth application registered on GitLab:
 
 <!-- markdownlint-disable MD013 -->
 | GitLab Variable Name | Variable Name in .env of docker compose file | Default Value |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 |OAuth Provider|OAUTH_URL|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
-|Application ID|OAUTH_CLIENT_ID| _xx_ |
-|Application Secret|OAUTH_CLIENT_SECRET| _xx_ |
+|Application ID|OAUTH_CLIENT_ID |_xx_|
+|Application Secret|OAUTH_CLIENT_SECRET|_xx_|
 |Callback URL|(to be directly entered in Gitlab OAuth registration)||
-|Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
-|Scopes| read_user ||
+|Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string)|
+|Scopes|read_user||
 <!-- markdownlint-enable MD013 -->
 
 ## Development Environment
@@ -168,11 +169,20 @@ Use a simple command on the terminal.
 - For a local instance:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+docker compose -f compose.local.yml --env-file .env up \
+  -d --force-recreate traefik-forward-auth
 ```
 
-- For a server instance:
+- For a server instance running in HTTP mode:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+docker compose -f compose.server.yml --env-file .env.server up -d \
+  --force-recreate traefik-forward-auth
+```
+
+- For a server instance running in HTTPS mode:
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server up -d \
+  --force-recreate traefik-forward-auth
 ```

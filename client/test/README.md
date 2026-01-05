@@ -40,7 +40,7 @@ application. Depending the location of the client website,
 one of the following URLs must be registered as callback URL.
 
 | Location of client application | URL |
-|:---|:---|
+| : --- | : --- |
 | Localhost | `http://localhost:4000` |
 | External / Integration server | `https://foo.com` |
 

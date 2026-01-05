@@ -4,7 +4,7 @@ The Github actions require the following secrets to be obtained
 from [docker hub](https://hub.docker.com):
 
 | Secret Name | Explanation |
-|:---|:---|
+| :--- | :--- |
 | `CODECOV_TOKEN` | Token to upload code coverage to Codecov |
 | `DOCKERHUB_SCOPE` | Username or organization name on docker hub |
 | `DOCKERHUB_USERNAME` | Username on docker hub |

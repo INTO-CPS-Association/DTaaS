@@ -27,7 +27,7 @@ undertaken in each phase are outlined in this section.
  and **terminate** phases.
 
 | Phase | Main Activities |
-|:----|:----|
+| :---- | :---- |
 | **explore** | selection of suitable assets based on the user needs and checking their compatibility for the purposes of creating a DT. |
 | **create** | specification of DT configuration. If DT already exists, there is no creation phase at the time of reuse. |
 | **execute** | automated / manual execution of a DT based on its configuration. The DT configuration must checked before starting the execution phase. |

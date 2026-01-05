@@ -69,6 +69,15 @@ There are two icons on the top-right of the webpage. The hyperlink on
 **question mark icon** redirects to help page while the hyperlink on
 **github icon** redirects to github code repository.
 
+## Check Website Access
+
+If you have trouble logging into the application, please check for
+the correct configuration of the website by going to
+<https://foo.com/config/user>. The following display must appear
+for correctly configured application.
+
+![Configuration Check](config.png)
+
 ## Overview of menu items
 
 The menu is hidden by default. Only the icons of menu items are visible.

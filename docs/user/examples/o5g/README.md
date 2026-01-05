@@ -177,7 +177,7 @@ To detatch press `Ctrl-b` followed by `d`.
 The _tmux_ session contains 4 components of the digital twin:
 
 | Panel location | Purpose |
-|:---|:---|
+| :--- | :--- |
 | Top Left | Sensor simulator generating random location and O2-level data |
 | Top Right | Main Digital Twin receives the sensor data and calculates an estimate of how many minutes of air remain |
 | Bottom Left | Telegraf to convert between different message formats, also displays all messages between components |

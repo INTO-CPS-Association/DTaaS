@@ -3,7 +3,7 @@
 ## Abreviations
 
 | Term | Full Form |
-|:---|:---|
+| :--- | :--- |
 | DT | Digital Twin |
 | DTaaS | Digital Twin as a Service |
 | PT | Physical Twin |
@@ -167,6 +167,27 @@
     a Linux desktop / commandline, the tool can be supported within DTaaS.
     The tool (ex. Matlab) itself can take care of the metadata requirements.
 
+## Digital Twin DevOps Automation
+
+??? Question "Can a DT execute forever?"
+
+    The web UI imposes a 10-minute timeout. The users can manually
+    terminate an ongoing execution. The best choice would be for
+    a DT to execute terminate script which consequently concludes
+    the execution and returns the logs.
+
+??? Question "Is the DT execution really scalable?"
+
+    This capacity of DT execution infrastructure is dependent on
+    Gitlab and the available compute power available to runners of
+    Gitlab. Gitlab itself does not impose limits on the maximum
+    number of runners.
+
+??? Question "I have many Gitlab runners attached with my Gitlab repository? Which one is used?"
+
+    This is indeterminate. You can't rely on the order and location
+    of execution for a DT.
+
 ## Data Management
 
 ??? Question "Can DTaaS collect data directly from sensors?"
@@ -221,7 +242,7 @@
     and low performance (**L**)
 
     | DT Platforms | License | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualization | Modeling and Simulation |
-    |:---|:---|:---|:---|:---|:---|:---|:---|:---|
+    | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
     | Microsoft Azure DT | Commercial Cloud | H | H | H | M | H | H | H |
     | AWS IOT Greengrass | Open source commercial | H | H | H | M | H | H | H |
     | Eclipse Ditto | Open source | M | H | M | H | H | L | L |

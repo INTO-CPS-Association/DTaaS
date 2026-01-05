@@ -18,7 +18,7 @@ Each version serves a different purpose.
 Otherwise, use the installation setup that fits your needs.
 
 | Installation Setup | Purpose |
-|:-----|:-----|
+| :----- | :----- |
 | [localhost](./localhost.md) | Install DTaaS on your computer for a single user; does not need a web server. _This setup does not require domain name._ |
 | [secure localhost](./localhost-secure.md) | Install DTaaS on your computer for a single user over HTTPS with integrated [gitlab installation](gitlab/index.md); does not need a web server. _This setup does not require domain name._ |
 | [Server](./host.md) | Install DTaaS on server for multiple users. Please check the [requirements](requirements.md). It is also possible to host the application over HTTPS with integrated [gitlab installation](gitlab/index.md)|

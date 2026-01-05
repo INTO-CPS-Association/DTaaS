@@ -54,7 +54,7 @@ data model (twin schema).
 The current endpoints used in this implementation are:
 
 | Digital or Physical Twin | Endpoint |
-|:---|:---|
+| :--- | :--- |
 | Flex-cell DT System | MaestroEndpoint |
 | DT UR5e | FMIEndpoint |
 | DT Kuka lbr iiwa 7 | FMIEndpoint |
@@ -79,7 +79,7 @@ This example uses seven models, five tools, six data files, two functions,
 and one script. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Model | kukalbriiwa_model.fmu | Private | No |
 |  | kuka_irw_gripper_rg6.urdf | Private | No |
 |  | kuka.aasx | Private | No |

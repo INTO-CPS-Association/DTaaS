@@ -113,7 +113,7 @@ sub-commands to switch between them.
 The purpose of different configuration files are given in the table below.
 
 | Configuration File Name | Usage Scenario |
-|:--------|:--------|
+| :-------- | :-------- |
 | `dev.js` | Check functionality of the client application without using any other parts of the DTaaS software |
 | `gitlab.js` | Used for testing the gitlab code written in `src/utils/gitlab.ts`. These credentials are not used by the client application |
 | `local.js` | Used by the `docker/compose.dev.yml` to setup a check the complete DTaaS application on the developer computer |

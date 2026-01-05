@@ -35,7 +35,7 @@ A diagram depicting the logical software structure of the example can be seen be
 The example uses the following assets:
 
 | Asset Type | Names of Assets | Visibility | Reuse in other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | anomaly_detection.fmu | Private | No |
 |        | energy_saver.fmu      | Private | No |
 |        | Source.fmu            | Private | No |

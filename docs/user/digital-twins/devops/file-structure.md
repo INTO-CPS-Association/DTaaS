@@ -17,6 +17,16 @@ https://foo.com/gitlab/dtaas/user1.git
 https://foo.com/gitlab/dtaas/user2.git
 ```
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The assets being displayed on the Library preview page come from
+    the default branch of the backing gitlab project. Please create
+    a branch named `main` and make it the default
+    branch. This must be done for all the user repositories including
+    the common repository.
+<!-- markdownlint-enable MD046 -->
+
 Each user repository must also have a specific structure. The required structure
 is as follows.
 

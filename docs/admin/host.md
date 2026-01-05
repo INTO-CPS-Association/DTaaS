@@ -109,7 +109,7 @@ It contains the following environment variables.
 Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
+  | :------------ | :--------------- | :--------------- |
   | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
@@ -230,7 +230,7 @@ please change,
     image: intocps/libms:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/deploy/config/lib.env:/dtaas/libms/.env
+      - ${DTAAS_DIR}/deploy/config/libms.yaml:/dtaas/libms/libms.yaml
       - ${DTAAS_DIR}/files/common:/dtaas/libms/files
 ```
 
@@ -278,7 +278,7 @@ docker compose -f compose.server.yml --env-file .env.server up -d
 docker compose -f compose.server.yml --env-file .env.server down
 ```
 
-To restart only a specific container, for example `client``
+To restart only a specific container, for example `client`
 
 ```bash
 docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
@@ -295,7 +295,7 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d
 docker compose -f compose.server.secure.yml --env-file .env.server down
 ```
 
-To restart only a specific container, for example `client``
+To restart only a specific container, for example `client`
 
 ```bash
 docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client

@@ -1,4 +1,4 @@
-# Install Gitlab
+# Local Gitlab Instance
 
 This guide helps with installation of a dedicated
 [Gitlab](https://gitlab.com) service. This Gitlab installation can be used
@@ -17,15 +17,11 @@ adapted to install Gitlab at a dedicated domain name.
 
 ## Configure and Install
 
-If you have not cloned the DTaaS git repository, cloning would be
-the first step.
-In case you already have the codebase, you can skip the cloning step.
-To clone, do:
-
-```bash
-git clone https://github.com/into-cps-association/DTaaS.git
-cd DTaaS/deploy/services/gitlab
-```
+The software is available for as
+[zip package](https://github.com/INTO-CPS-Association/DTaaS/releases/download/v0.7.0/DTaaS-v0.7.0.zip).
+Please download and unzip the same. A new **DTaaS-v0.7.0** folder gets created.
+The rest of the installation instructions assume that you are using
+Windows/Linux/MacOS terminal in **DTaaS-v0.7.0/deploy/services/gitlab** folder.
 
 This directory contains files
 needed to set up the docker container containing the local GitLab instance.
@@ -51,7 +47,7 @@ Edit the `.env` file available in this directory to contain the following variab
 
 | Variable    | Example Value                                | Explanation                                                                                                                  |
 | :---------- | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| GITLAB_HOME | '/home/Desktop/DTaaS/deploy/services/gitlab' | Full path to the DTaaS gitlab directory. This is an absolute path with no trailing slash.                                    |
+| DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash.                                    |
 | SERVER_DNS  | either `foo.com` or `localhost`                               | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
 
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which
@@ -82,50 +78,15 @@ the progress with `watch docker ps` and check if the gitlab container is
 
 ### Post-install Configuration
 
-Gitlab also requires post-installation configuration.
-
-!!! Information
-    <!-- markdownlint-disable-file MD013 -->
-    This configuration needs to be done from within the running container.
-
-```bash
-docker exec -it gitlab bash
-```
-
-The configuration file to change is _/etc/gitlab/gitlab.rb_.
-The variables to change are:
-
-```ini
-external_url 'http(s)://foo.com/gitlab'
-nginx['listen_port'] = 80
-nginx['enable'] = true
-
-nginx['listen_https'] = false
-nginx['redirect_http_to_https'] = false
-letsencrypt['enable'] = false
-```
-
-The `external_url` mentioned about indicates hosting of gitlab at
-<https://foo.com/gitlab>.
-If the gitlab needs to be available at <https://localhost/gitlab>, then
-the `external_url` should be <https://localhost/gitlab>.
-
-Save the changes and reconfigure gitlab by running:
-
-```bash
-# inside the gitlab docker container
-gitlab-ctl reconfigure
-exit
-```
-
 The administrator username for GitLab is: `root`. The password for this user
-account will be available in: _/etc/gitlab/initial_root_password_. Be sure to
+account will be available in: `config/initial_root_password`. Be sure to
 save this password somewhere, as **this file will be deleted after 24 hours**
 from the first time you start the local instance.
 
+## Use
+
 After running the container, your local GitLab instance will be available at
-`external_url` specified in _gitlab.rb_, i.e., either at
-<https://foo.com/gitlab> or at <https://localhost/gitlab>.
+either at <https://foo.com/gitlab> or at <https://localhost/gitlab>.
 
 ### Create Users
 

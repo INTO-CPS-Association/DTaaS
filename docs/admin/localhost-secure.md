@@ -41,7 +41,7 @@ cd DTaaS
    paths mentioned below are relatively to the top-level
    **DTaaS** directory.
 
-## Configure and Run
+## Configure
 
 ### Create User Workspace
 
@@ -79,7 +79,7 @@ Copy the two certificate files into:
 Traefik will run with self-issued certificates if the above two certificates
 are either not found or found invalid.
 
-### Configure Docker Compose
+### Docker Compose
 
 The docker compose configuration is in `deploy/docker/.env.local`;
 it is a sample file.
@@ -91,7 +91,7 @@ It contains the following environment variables.
 Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
+  | :------------ | :--------------- | :--------------- |
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
 
@@ -104,12 +104,22 @@ Edit all the fields according to your specific case.
    Edit the URLs in this file by replacing `http` with `https`.
    Beyond this, it is not necessary to modify this file.
 
+## Run
+
 ### Start DTaaS to Integrate Gitlab
 
-Start the appliation with
+The commands to start and stop the appliation are:
 
 ```bash
 docker compose -f compose.local.secure.yml --env-file .env.local up -d
+docker compose -f compose.local.secure.yml --env-file .env.local down
+```
+
+To restart only a specific container, for example `client`
+
+```bash
+docker compose -f compose.local.secure.yml --env-file .env.local up \
+ -d --force-recreate client
 ```
 
 ### Start Gitlab
@@ -120,7 +130,8 @@ Gitlab on localhost and the Gitlab service will be available at <https://localho
 
 ### Register OAuth2 Application
 
-The frontend website requires OAuth2 application registration on the integrated Gitlab.
+The frontend website requires OAuth2 application registration on
+the integrated Gitlab.
 The details of Oauth2 app for the frontend website are in
 [client docs](client/auth.md).
 
@@ -152,6 +163,8 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: 'xxxxxx',
     REACT_APP_AUTH_AUTHORITY: 'https://localhost/gitlab/',

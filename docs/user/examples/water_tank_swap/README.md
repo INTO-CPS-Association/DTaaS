@@ -19,7 +19,7 @@ The co-simulation methodology is used to construct this DT.
 This example uses four models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | Watertankcontroller-c.fmu | Private | Yes |
 |  | Singlewatertank-20sim.fmu | Private | Yes |
 |  | Leak_detector.fmu | Private | No |
@@ -31,7 +31,7 @@ There exist separate DT configuration files for each stage.
 The following table shows the configuration files and their purpose.
 
 | Configuration file name | Execution Stage | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | mm1. json | stage-1 | DT configuration |
 | wt_fault.xml, FaultInject.mabl | stage-1 | faults injected into DT during stage-1 |
 | mm2.json | stage-2 | DT configuration |

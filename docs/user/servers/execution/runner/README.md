@@ -10,6 +10,12 @@ Multiple runners can be active simultaneously on one computer.
 The commands are sent via the REST API and are executed on the computer
 with active runner.
 
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    This npm package works only on Linux platforms
+<!-- markdownlint-enable MD046 -->
+
 ## :arrow_down: Install
 
 ### NPM Registry
@@ -116,7 +122,7 @@ Three REST API methods are active. The route paths and the responses given
 for these two sources are:
 
 | REST API Route                 | HTTP Method | Return Value | Comment |
-| :----------------------------- |:--------|:----------- | :------ |
+| :----------------------------- | :-------- | :----------- | :------ |
 | localhost:port | POST  | Returns the execution status of command | Executes the command provided. Each invocation appends to _array_ of commands executed so far. |
 | localhost:port | GET |  Returns the execution status of the last command sent via POST request. |  |
 | localhost:port/history | GET | Returns the array of POST requests received so far. |  |
@@ -217,7 +223,7 @@ Shows the status of the command last executed.
     X-Powered-By: Express
 
     {
-      "name": "<command-name",
+      "name": "<command-name>",
       "status": "invalid",
       "logs": {
         "stdout": "",

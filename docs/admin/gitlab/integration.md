@@ -37,14 +37,21 @@ a [custom domain](../host.md) (<https://foo.com>).
 
 Follow the [guide](index.md) to set up a GitLab instance.
 
-After this step, and once you run `gitlab-ctl reconfigure`, you will have a
+After this step, you will have a
 functioning GitLab instance (at either <https://localhost/gitlab>
 or <https://foo.com/gitlab>).
 Login credentials of the root user.
 
-### 3. Create OAuth Tokens in GitLab
+### 3. Create Users
 
-Follow these guides to create OAuth Application Tokens for -
+The newly installed gitlab only contains `root` user. The users specified
+in ìnstallation configuration files (`.env.local` / `.env.server`) need
+to be created in this integrated Gitlab server.
+
+### 4. Create OAuth Tokens in GitLab
+
+Login as a non-root user and
+follow these guides to create OAuth Application Tokens for -
 [backend](../servers/auth.md) and
 [client](../client/auth.md). Please note that
 [backend](../servers/auth.md) is not required
@@ -54,7 +61,7 @@ After this step you will have credentials for the application tokens titled
 "DTaaS Server Authorization" and "DTaaS Client Authorization", which we will use
 in the next step.
 
-### 4. Use Valid Oauth Application Tokens
+### 5. Use Valid Oauth Application Tokens
 
 We can now use the OAuth tokens generated on the GitLab instance to enable
 authorization.
@@ -124,3 +131,14 @@ If you have set up everything correctly:
 1. Traefik Forward Auth will use the path-prefixed GitLab instance for
    authorization on the multi-user installation scenario i.e.
    `foo.com` (but not on `localhost`).
+
+## Federation of DTaaS
+
+It is possible to use a single Gitlab to serve multiple instances of DTaaS.
+Please see
+[DTaaS and DevOps](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_DTaaS-and-DevOps.mp4)
+video for an overview of
+
+* Features in DTaaS v0.7 (Timestamps: 00:00 to 10:24)
+* DTaaS and DevOps (Timestamps: 10:25 to 16:04)
+* Federation of DTaaS (Timestamps: 16:05 till the end)
