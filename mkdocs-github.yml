@@ -68,7 +68,7 @@ nav:
         - Docker:
           - Localhost: admin/localhost.md
           - Secure Localhost: admin/localhost-secure.md
-          - Production: admin/host.md
+          - Production: admin/server.md
         - Vagrant:
           - Base Box: admin/vagrant/base-box.md
           - Single Machine: admin/vagrant/single-machine.md

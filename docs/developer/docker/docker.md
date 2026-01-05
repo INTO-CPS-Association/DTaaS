@@ -62,10 +62,10 @@ This scenario is for software developers.
 The configuration files to be updated are:
 
 1. **docker/.env** :
-   please see [docker installation docs](../../admin/host.md) for help
+   please see [docker installation docs](../../admin/server.md) for help
    with updating this config file
 1. **docker/conf.dev** :
-   please see  [docker installation docs](../../admin/host.md) for help
+   please see  [docker installation docs](../../admin/server.md) for help
    with updating this config file
 1. **client/config/local.js**
    please see [client config](../../admin/client/config.md) for help

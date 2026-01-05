@@ -91,8 +91,8 @@ the documentation is available in the table.
 | Web Application | [React Webapplication](../client/client.md)                                                                                              |
 | Reusable Assets   | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
 | Digital Twins and DevOps   | [Integrated Gitlab](../../admin/gitlab/index.md)                                                                                         |
-| Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB)                                                       |
-| DT Lifecycle      | Not available yet                                                                                      |
+| Platform Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana, PostgreSQL, and ThingsBoard                    |
+| DT Lifecycle Manager | Not available yet                                                                                      |
 | Security          | Gitlab [client OAuth](../../admin/client/auth.md) and [server OAuth](../../admin/servers/auth.md)                                                                                               |
 | Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/README.md)                                                                          |
 | Accounting        | Not available yet                                                                                                                                     |

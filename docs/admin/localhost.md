@@ -12,6 +12,10 @@ setup is shown here.
 
 ![Traefik OAuth](./localhost.png)
 
+🗒️ The text starting with `/` at the beginning indicates the URL route
+at which a certain service is available. For example, user workspace
+is available at <https://localhost/user1>.
+
 ## Requirements
 
 The installation requirements to run this docker version of the DTaaS are:

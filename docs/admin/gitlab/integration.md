@@ -25,7 +25,7 @@ Traefik Forward Auth backend authorization.
 Follow the existing guides
 to set up the DTaaS web application over HTTPS connection on either
 [localhost](../localhost-secure.md) (<https://localhost>) or
-a [custom domain](../host.md) (<https://foo.com>).
+a [custom domain](../server.md) (<https://foo.com>).
 
 !!! note
     You may ignore steps related to configuring OAuth application tokens

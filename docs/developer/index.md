@@ -102,7 +102,9 @@ We make extensive use of coding agents. A non-exhaustive list of
 usage scenarios are:
 
 👍 co-development
+
 👍 code reviews
+
 👍 draft pull requests to prototype ideas
 
 This project is a monorepo and it has
@@ -119,7 +121,8 @@ programming logic.
 Having said that, the following are a strict NO-NO:
 
 👎Contributing unknown code
-👎Not knowing the generated code
+
+👎Not knowing the implications of generated code
 
 **TLDR**: Know your contributions and do not outsource your thinking
 to coding agents.

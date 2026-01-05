@@ -19,7 +19,7 @@ There is a default frontend authorization application setup
 for all [localhost](localhost.md) and backend authorization is not required
 for localhost installation.
 
-The [production server](host.md) installation requires both
+The [production server](server.md) installation requires both
 [react client frontend](client/auth.md) and
 [backend services](servers/auth.md) applications.
 
@@ -33,9 +33,9 @@ four docker compose files
 1. `compose.local.secure.yml` for
    [secure localhost](localhost-secure.md) installation
    served over HTTPS connection.
-1. `compose.server.yml` for [production server](host.md) installation
+1. `compose.server.yml` for [production server](server.md) installation
    served over HTTP connection.
-1. `compose.server.secure.yml` for [production server](host.md) installation
+1. `compose.server.secure.yml` for [production server](server.md) installation
    served over HTTPS connection.
 
 These four compose files require environment configuration files.
@@ -48,9 +48,9 @@ explained on [this page](client/config.md).
 ### Install
 
 Follow installation instructions given on either [localhost](localhost.md)
-or [production server](host.md) pages.
+or [production server](server.md) pages.
 
 ## Independent Packages
 
-Each release of DTaaS also comes with release of three reusable
+Each release of DTaaS also comes with release of four reusable
 packages. These packages have [dedicated documentation](packages.md).

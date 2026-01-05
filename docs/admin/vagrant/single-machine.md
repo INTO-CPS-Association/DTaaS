@@ -74,7 +74,7 @@ the following command.
 sudo bash route.sh
 ```
 
-Please follow the instructions of [regular server installation](../host.md)
+Please follow the instructions of [regular server installation](../server.md)
 setup to complete the installation.
 
 ## References

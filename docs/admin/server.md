@@ -9,7 +9,11 @@ for multiple users.
 An illustration of the docker containers used and the authorization
 setup is shown here.
 
-![Traefik OAuth](./server.png)
+![Traefik OAuth](server.png)
+
+🗒️ The text starting with `/` at the beginning indicates the URL route
+at which a certain service is available. For example, user workspace
+is available at <https://localhost/user1>.
 
 In the new application configuration, there are two OAuth2 applications.
 

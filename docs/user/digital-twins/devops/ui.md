@@ -39,7 +39,7 @@ _mass-spring-damper_ as a reusable asset for the new DT.
 
 The left-side menu shows the possibility of creating
 [necessary structure](../../digital-twins/devops/file-structure.md)
-and elements for a new DT. Each reusable asset selected for this new DT'
+and elements for a new DT. Each reusable asset selected for this new DT
 appears on the left menu. Its configuration can be updated as well.
 
 These files on the left menu correspond to three categories.

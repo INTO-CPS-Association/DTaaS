@@ -8,8 +8,8 @@ configurations on one page for both of these scenarios.
 
 You will want to adjust the parameters used for sending and receiving information
 to the storage and execution services, e.g. GitLab, so it matches your infrastructure.
-Navigate to *Account* using the top-right purple "A" icon ![A](images/A.png) and
-select the *Settings* tab from there. You will be greeted by the following
+Navigate to **Account** using the top-right purple  🅰️ icon and
+select the **Settings** tab from there. You will be greeted by the following
 changeable parameters:
 
 ![Settings Overview](images/settings-overview.png)
