@@ -19,7 +19,9 @@ nav:
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
-      - Website: user/website/index.md
+      - Website:
+        - Overview: user/website/index.md
+        - Settings: user/website/settings.md
       - Reusable Assets: 
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
@@ -29,6 +31,9 @@ nav:
           - DevOps Preview:
               - Digital Twin Structure: user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md
+              - Settings: user/digital-twins/devops/execution-settings.md
+              - Capabilities: user/digital-twins/devops/capabilities.md
+              - Concurrent Execution: user/digital-twins/devops/concurrent-execution.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
       - Runner: user/servers/execution/runner/README.md
       - Examples:
@@ -71,7 +76,9 @@ nav:
       - Integrated Gitlab:
         - Installation: admin/gitlab/index.md
         - Integration: admin/gitlab/integration.md
-        - Gitlab Runner: admin/gitlab/runner.md
+        - Gitlab Runner:
+          - Linux: admin/gitlab/runner.md
+          - Windows: admin/gitlab/runner-windows.md
       - CLI: admin/cli.md
       - Independent Packages:
         - Listing: admin/packages.md
