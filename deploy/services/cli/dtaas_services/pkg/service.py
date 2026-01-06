@@ -35,6 +35,13 @@ class Service:
         for key, value in config.env.items():
             if value is not None:
                 os.environ[key] = str(value)
+        # Set explicit project name to ensure docker compose operates on correct containers
+        hostname = os.environ.get("HOSTNAME")
+        if not hostname:
+            raise RuntimeError("HOSTNAME environment variable must be set in services.env")
+        # Create a valid project name from hostname (lowercase, replace dots with hyphens)
+        project_name = hostname.lower().replace(".", "-").replace("_", "-")
+        os.environ["COMPOSE_PROJECT_NAME"] = project_name
         self.docker = DockerClient(compose_files=[self.compose_file])
 
 
