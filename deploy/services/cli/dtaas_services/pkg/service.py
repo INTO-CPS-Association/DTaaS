@@ -9,7 +9,10 @@ from python_on_whales import DockerClient
 from .config import Config
 from .formatter import RemovedService
 
-
+DOCKER_OPERATION_EXCEPTIONS = (
+    subprocess.CalledProcessError,
+    OSError, KeyError,
+    ValueError, TypeError,)
 
 class Service:
     """
@@ -19,29 +22,40 @@ class Service:
     of platform services using Docker Compose.
     """
 
-    def __init__(self) -> None:
-        """
-        Initialize service setup.
-        """
+    def _resolve_compose_file(self) -> Path:
+        """Resolve compose file path with fallback to package location."""
         base_dir = Config.get_base_dir()
         compose_file = base_dir / "compose.services.secure.yml"
-        # If compose file not in base_dir, look in package location
         if not compose_file.exists():
             package_dir = Path(__file__).parent.parent
             compose_file = package_dir / "compose.services.secure.yml"
-        self.compose_file = compose_file
-        # Load environment variables from config and set them in os.environ
+        return compose_file
+
+
+    def _setup_environment_variables(self) -> None:
+        """Load environment variables from config and set them in os.environ."""
         config = Config()
         for key, value in config.env.items():
             if value is not None:
                 os.environ[key] = str(value)
-        # Set explicit project name to ensure docker compose operates on correct containers
+
+
+    def _setup_project_name(self) -> None:
+        """Set explicit project name from hostname for docker compose."""
         hostname = os.environ.get("HOSTNAME")
         if not hostname:
             raise RuntimeError("HOSTNAME environment variable must be set in services.env")
-        # Create a valid project name from hostname (lowercase, replace dots with hyphens)
         project_name = hostname.lower().replace(".", "-").replace("_", "-")
         os.environ["COMPOSE_PROJECT_NAME"] = project_name
+
+
+    def __init__(self) -> None:
+        """
+        Initialize service setup.
+        """
+        self.compose_file = self._resolve_compose_file()
+        self._setup_environment_variables()
+        self._setup_project_name()
         self.docker = DockerClient(compose_files=[self.compose_file])
 
 
@@ -77,13 +91,14 @@ class Service:
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
 
 
-    def start_services(
-        self, service_list: Optional[list] = None
+    def manage_services(
+        self, action: str, service_list: Optional[list] = None
     ) -> Tuple[Optional[Exception], str]:
         """
-        Start the platform services using docker compose.
+        Manage platform services using Docker Compose.
         Args:
-            service_list: Optional list of specific services to start
+            action: Action to perform ('start', 'stop', 'restart')
+            service_list: Optional list of specific services to manage
 
         Returns:
             Tuple of (Exception or None, message)
@@ -92,64 +107,49 @@ class Service:
         if not exists:
             return err, str(err)
         try:
-            if service_list:
-                self.docker.compose.up(service_list, detach=True)
+            if action == "start":
+                if service_list:
+                    self.docker.compose.up(service_list, detach=True)
+                else:
+                    self.docker.compose.up(detach=True)
+                return None, "Docker Compose started successfully"
+            elif action == "stop":
+                if service_list:
+                    self.docker.compose.stop(service_list)
+                else:
+                    self.docker.compose.stop()
+                return None, "Services stopped successfully"
+            elif action == "restart":
+                if service_list:
+                    self.docker.compose.restart(service_list)
+                else:
+                    self.docker.compose.restart()
+                return None, "Services restarted successfully"
             else:
-                self.docker.compose.up(detach=True)
-            return None, "Docker Compose started successfully"
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
-            return self._handle_docker_error("start Docker Compose", e)
+                return ValueError(f"Invalid action: {action}"), f"Invalid action: {action}"
+        except DOCKER_OPERATION_EXCEPTIONS as e:
+            return self._handle_docker_error(f"{action} services", e)
+
+
+    def start_services(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
+        """Start platform services using Docker Compose."""
+        return self.manage_services("start", service_list)
 
 
     def stop_services(
         self, service_list: Optional[list] = None
     ) -> Tuple[Optional[Exception], str]:
-        """
-        Stop platform services using Docker Compose.
-        Args:
-            service_list: Optional list of specific services to stop
-
-        Returns:
-            Tuple of (Exception or None, message)
-        """
-        err, exists = self._check_compose_file()
-        if not exists:
-            return err, str(err)
-        try:
-            if service_list:
-                self.docker.compose.stop(service_list)
-            else:
-                self.docker.compose.stop()
-            return None, "Services stopped successfully"
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
-            return self._handle_docker_error("stop services", e)
+        """Stop platform services using Docker Compose."""
+        return self.manage_services("stop", service_list)
 
 
     def restart_services(
         self, service_list: Optional[list] = None
     ) -> Tuple[Optional[Exception], str]:
-        """
-        Restart platform services using Docker Compose.
-        Args:
-            service_list: Optional list of specific services to restart
-
-        Returns:
-            Tuple of (Exception or None, message)
-        """
-        err, exists = self._check_compose_file()
-        if not exists:
-            return err, str(err)
-        try:
-            if service_list:
-                self.docker.compose.restart(service_list)
-            else:
-                self.docker.compose.restart()
-            return None, "Services restarted successfully"
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
-            return self._handle_docker_error("restart services", e)
+        """Restart platform services using Docker Compose."""
+        return self.manage_services("restart", service_list)
 
 
     def _get_all_service_names(self) -> Tuple[Optional[Exception], Set[str]]:
@@ -164,8 +164,7 @@ class Service:
             if services:
                 return None, set(services.keys())
             return None, set()
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
+        except DOCKER_OPERATION_EXCEPTIONS as e:
             err_exc, _ = self._handle_docker_error("get service names", e)
             return err_exc, set()
 
@@ -192,10 +191,16 @@ class Service:
                 if container.name in all_services
             }
             return None, container_map
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
+        except DOCKER_OPERATION_EXCEPTIONS as e:
             err_exc, _ = self._handle_docker_error("get containers", e)
             return err_exc, {}
+
+
+    def _get_services_to_check(self, all_services: set, service_list: Optional[list] = None) -> set:
+        """Determine which services to check based on filter."""
+        if service_list:
+            return set(service_list) & all_services
+        return all_services
 
 
     def _build_status_result(
@@ -210,19 +215,10 @@ class Service:
         Returns:
             List of container objects and RemovedService objects
         """
-        result = []
-        # Determine which services to include
-        if service_list:
-            services_to_check = set(service_list) & all_services
-        else:
-            services_to_check = all_services
-        # Build result with containers or RemovedService placeholders
-        for service_name in services_to_check:
-            if service_name in container_map:
-                result.append(container_map[service_name])
-            else:
-                result.append(RemovedService(service_name))
-        return result
+        services_to_check = self._get_services_to_check(all_services, service_list)
+        return [
+            container_map.get(service_name) or RemovedService(service_name)
+            for service_name in services_to_check]
 
 
     def get_status(
@@ -240,23 +236,31 @@ class Service:
         if not exists:
             return err, []
         try:
-            # Get all services from compose file
             err, all_services = self._get_all_service_names()
-            if err is not None:
+            if err:
                 return err, []
-
-            # Get all containers
             err, container_map = self._get_all_containers()
-            if err is not None:
+            if err:
                 return err, []
-
-            # Build and return status result
             result = self._build_status_result(all_services, container_map, service_list)
             return None, result
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
+        except DOCKER_OPERATION_EXCEPTIONS as e:
             err_exc, _ = self._handle_docker_error("get service status", e)
             return err_exc, []
+
+
+    def _get_data_subdirectories(self, service_list: Optional[list] = None) -> list:
+        """Get list of data subdirectories to clean."""
+        if service_list:
+            return service_list
+        return ["grafana", "influxdb", "mongodb", "rabbitmq"]
+
+
+    def _remove_and_recreate_directory(self, path: Path) -> None:
+        """Remove directory and recreate it empty."""
+        if path.exists():
+            shutil.rmtree(path, ignore_errors=True)
+        path.mkdir(parents=True, exist_ok=True)
 
 
     def _clean_data_directories(self, service_list: Optional[list] = None) -> None:
@@ -266,22 +270,17 @@ class Service:
         """
         base_dir = Config.get_base_dir()
         data_dir = base_dir / "data"
-
-        # Determine which subdirectories to clean based on service_list
-        if service_list:
-            # Only clean data for specified services
-            data_subdirs = service_list
-        else:
-            # Clean all data directories
-            data_subdirs = ["grafana", "influxdb", "mongodb", "rabbitmq"]
-
+        data_subdirs = self._get_data_subdirectories(service_list)
         for subdir in data_subdirs:
-            subdir_path = data_dir / subdir
-            # Remove the directory and all its contents
-            if subdir_path.exists():
-                shutil.rmtree(subdir_path, ignore_errors=True)
-            # Recreate empty directory
-            subdir_path.mkdir(parents=True, exist_ok=True)
+            self._remove_and_recreate_directory(data_dir / subdir)
+
+
+    def _remove_docker_services(self, service_list: Optional[list] = None, remove_volumes: bool = False) -> None:
+        """Execute docker compose remove/down command."""
+        if service_list:
+            self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
+        else:
+            self.docker.compose.down(volumes=remove_volumes)
 
 
     def remove_services(
@@ -301,20 +300,12 @@ class Service:
         err, exists = self._check_compose_file()
         if not exists:
             return err, str(err)
-        try:
-            if service_list:
-                # Remove specific services
-                self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
-            else:
-                # Remove all services using down
-                self.docker.compose.down(volumes=remove_volumes)
 
-            # If volumes were requested to be removed, delete and recreate data directories
+        try:
+            self._remove_docker_services(service_list, remove_volumes)
             if remove_volumes:
                 self._clean_data_directories(service_list)
                 return None, "Services and data removed successfully"
-
             return None, "Services removed successfully"
-        except (subprocess.CalledProcessError, OSError,
-            KeyError, ValueError, TypeError,) as e:
+        except DOCKER_OPERATION_EXCEPTIONS as e:
             return self._handle_docker_error("remove services", e)
