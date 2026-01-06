@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import Optional, Callable
+from dataclasses import dataclass
 
 import click
 from rich.console import Console
@@ -17,6 +18,23 @@ from .pkg.template import generate_project_structure
 from .pkg.formatter import format_container_status
 from .pkg import influxdb, rabbitmq
 
+@dataclass
+class OperationMeta:
+    """Metadata for service operations."""
+    name: str
+    color: str
+    status_msg: str
+
+
+def _print_operation_status(console: Console, meta: OperationMeta,
+                            service_list: Optional[list[str]]):
+    """Print operation status message."""
+    if service_list:
+        console.print(f"[{meta.color}]{meta.name} "
+                      f"services:[/{meta.color}] {', '.join(service_list)}...")
+    else:
+        console.print(f"[{meta.color}]{meta.name} all services....[/{meta.color}]")
+
 
 def _parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
     """Parse comma-separated service names into a list."""
@@ -26,27 +44,17 @@ def _parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
 
 
 def _handle_service_command(
-    operation_name: str,
     operation_func: Callable,
     service_list: Optional[list[str]],
-    color: str,
-    status_msg: str,
+    meta: OperationMeta,
 ) -> None:
     """Handle common service command logic."""
     try:
         Service()
         console = Console()
-
-        if service_list:
-            console.print(
-                f"[{color}]{operation_name} services:[/{color}] {', '.join(service_list)}..."
-            )
-        else:
-            console.print(f"[{color}]{operation_name} all services....[/{color}]")
-
-        with console.status(
-            f"[bold {color}]{status_msg}[/bold {color}]", spinner="dots"
-        ):
+        _print_operation_status(console, meta, service_list)
+        with console.status(f"[bold {meta.color}]{meta.status_msg}"
+                            f"[/bold {meta.color}]", spinner="dots"):
             err, msg = operation_func(service_list)
 
         if err is not None:
@@ -54,8 +62,6 @@ def _handle_service_command(
 
         console.print(f"[green]✅ {msg}[/green]")
     except FileNotFoundError as e:
-        raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
         raise click.ClickException(str(e)) from e
 
 
@@ -86,6 +92,15 @@ def generate_project(path):
     click.echo(message)
 
 
+def _run_setup_step(console: Console, step_name: str, step_func: Callable):
+    """Helper to run a setup step with console output."""
+    console.print(f"\n[cyan]{step_name}...[/cyan]")
+    success, msg = step_func()
+    if not success:
+        raise click.ClickException(f"{step_name} failed: {msg}")
+    console.print(f"[green]✅ {step_name} completed:[/green] {msg}")
+
+
 @services.command()
 def setup():
     """
@@ -108,15 +123,25 @@ def setup():
         ]
 
         for step_name, step_func in steps:
-            console.print(f"\n[cyan]{step_name}...[/cyan]")
-            success, msg = step_func()
-            if not success:
-                raise click.ClickException(f"{step_name} failed: {msg}")
-            console.print(f"[green]✅ {step_name} completed:[/green] {msg}")
+            _run_setup_step(console, step_name, step_func)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
-        raise click.ClickException(str(e)) from e
+
+
+def _services_command_runner(command: str, service_name) -> None:
+    """Run start/stop/restart service commands."""
+    service_list = _parse_service_list(service_name)
+    commands_map = {
+        "start": (Service().start_services, OperationMeta("Starting", "cyan", "Starting containers...")),
+        "stop": (Service().stop_services, OperationMeta("Stopping", "yellow", "Stopping containers...")),
+        "restart": (Service().restart_services, OperationMeta("Restarting", "blue", "Restarting containers...")),
+    }
+
+    if command in commands_map:
+        operation_func, meta = commands_map[command]
+        _handle_service_command(operation_func, service_list, meta)
+    else:
+        raise click.ClickException(f"Unknown command: {command}")
 
 
 @services.command()
@@ -128,14 +153,7 @@ def setup():
 )
 def start(service_names):
     """Start the platform services."""
-    service_list = _parse_service_list(service_names)
-    _handle_service_command(
-        "Starting",
-        Service().start_services,
-        service_list,
-        "cyan",
-        "Starting containers...",
-    )
+    _services_command_runner("start", service_names)
 
 
 @services.command()
@@ -144,14 +162,19 @@ def start(service_names):
 )
 def stop(service_names):
     """Stop the platform services."""
-    service_list = _parse_service_list(service_names)
-    _handle_service_command(
-        "Stopping",
-        Service().stop_services,
-        service_list,
-        "yellow",
-        "Stopping containers...",
-    )
+    _services_command_runner("stop", service_names)
+
+
+@services.command()
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to restart",
+)
+def restart(service_names):
+    """Restart the platform services."""
+    _services_command_runner("restart", service_names)
 
 
 @services.command()
@@ -183,23 +206,12 @@ def status(service_names):
         raise click.ClickException(str(e)) from e
 
 
-@services.command()
-@click.option(
-    "--services",
-    "-s",
-    "service_names",
-    help="Comma-separated list of services to restart",
-)
-def restart(service_names):
-    """Restart the platform services."""
-    service_list = _parse_service_list(service_names)
-    _handle_service_command(
-        "Restarting",
-        Service().restart_services,
-        service_list,
-        "blue",
-        "Restarting containers...",
-    )
+def _print_remove_status(console: Console, service_list: Optional[list[str]]):
+    """Print remove operation status message."""
+    if service_list:
+        console.print(f"[red]Removing services:[/red] {', '.join(service_list)}...")
+    else:
+        console.print("[red]Removing all services...[/red]")
 
 
 @services.command()
@@ -209,32 +221,25 @@ def restart(service_names):
     "service_names",
     help="Comma-separated list of services to remove",
 )
+
+
 @click.option("--volumes", "-v", is_flag=True, help="Remove volumes as well")
 def remove(service_names, volumes):
     """Remove the platform services and optionally their volumes."""
     try:
         setup_obj = Service()
         console = Console()
-
         service_list = _parse_service_list(service_names)
-
-        if service_list:
-            console.print(f"[red]Removing services:[/red] {', '.join(service_list)}...")
-        else:
-            console.print("[red]Removing all services...[/red]")
-
+        _print_remove_status(console, service_list)
         with console.status(
             "[bold red]Removing containers...[/bold red]", spinner="dots"
         ):
             err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
-
         if err is not None:
             raise click.ClickException(msg)
         console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:
-        raise click.ClickException(str(e)) from e
-    except RuntimeError as e:
         raise click.ClickException(str(e)) from e
 
 

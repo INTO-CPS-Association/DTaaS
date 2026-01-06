@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Tests for Service class and Docker operations"""
+import os
 import subprocess
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
@@ -8,11 +9,18 @@ from dtaas_services.pkg.service import Service
 
 # Patch Config and DockerClient for all tests in this module
 @pytest.fixture(autouse=True)
-def patch_service_deps():
+def patch_service_deps(monkeypatch):
     """Patch dependencies for Service tests"""
+    # Set HOSTNAME environment variable for Service class
+    monkeypatch.setenv("HOSTNAME", "test-hostname")
     with patch("dtaas_services.pkg.service.Config") as mock_config, \
          patch("dtaas_services.pkg.service.DockerClient") as mock_docker_client:
+        # Mock Config instance and its env attribute
+        mock_config_instance = Mock()
+        mock_config_instance.env = {}
+        mock_config.return_value = mock_config_instance
         yield mock_docker_client, mock_config
+
 
 def test_service_init(patch_service_deps):
     """Test Service initialization"""

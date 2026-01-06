@@ -180,7 +180,7 @@ keeping each module self-contained and independent.
 ### Service Configuration
 
 The `Service` class automatically loads environment variables from `config/services.env`
-and sets them in `os.environ` before calling Docker Compose. This ensures all 
+and sets them in `os.environ` before calling Docker Compose. This ensures all
 Docker Compose variables are properly configured without additional setup.
 
 ### User Management Best Practices
@@ -189,7 +189,7 @@ Docker Compose variables are properly configured without additional setup.
 
 * **Organization Management**: Always check for existing organizations before creating
   new ones to avoid conflicts. Use `_get_existing_orgs()` before creating.
-* **User Ownership**: Users are added as **owners** (not members) of their 
+* **User Ownership**: Users are added as **owners** (not members) of their
   organizations using the `--owner` flag, giving them full administrative rights.
 * **User-specific Resources**: Each user gets their own organization and bucket
   with the same name as their username.
@@ -204,7 +204,8 @@ Docker Compose variables are properly configured without additional setup.
 * `test_cert.py`: Tests for certificate copying and normalization
 * `test_formatter.py`: Tests for output formatting utilities
 * `test_template.py`: Tests for project structure generation and template file management
-* `test_utils.py`: Tests for shared utility functions (Docker operations, credentials path)
+* `test_utils.py`: Tests for shared utility functions
+  (Docker operations, credentials path)
 
 ### Error Handling Pattern
 
@@ -285,9 +286,12 @@ poetry run pytest -v
 
 The test suite covers critical workflows:
 
-* **Full Setup and Start**: Verify all services start correctly with setup → start → status
-* **Selective Service Operations**: Start/stop individual services while keeping others running
-* **Multiple Service Operations**: Stop multiple services simultaneously and verify isolation
+* **Full Setup and Start**: Verify all services start correctly
+  with setup → start → status
+* **Selective Service Operations**: Start/stop individual services
+  while keeping others running
+* **Multiple Service Operations**: Stop multiple services simultaneously
+  and verify isolation
 * **Service Cycling**: Complete start → stop → start workflow for service restarts
 
 #### Key Characteristics
@@ -303,7 +307,7 @@ The test suite covers critical workflows:
 
 System tests use the actual `services.env` configuration file located at:
 
-```
+```bash
 deploy/services/config/services.env
 ```
 
@@ -317,7 +321,7 @@ Run all tests with coverage reports:
 poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
 ```
 
-#### Test Coverage
+### Test Coverage
 
 Aim for high test coverage, especially for:
 
@@ -326,4 +330,3 @@ Aim for high test coverage, especially for:
 * Docker command execution
 * Configuration parsing
 * File operations
-
