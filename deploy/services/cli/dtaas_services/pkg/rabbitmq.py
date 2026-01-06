@@ -9,6 +9,21 @@ from .config import Config
 from .utils import is_ci
 
 
+def _execute_rabbitmq_command(container: str, command: list, error_context: str) -> tuple[bool, str]:
+    """Execute a RabbitMQ docker command and return error if it fails.
+    Args:
+        container: Container name
+        command: Command list to execute
+        error_context: Error message context
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    success, output = execute_docker_command(container, command)
+    if not success:
+        return False, f"{error_context}: {output}"
+    return True, ""
+
+
 def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     """
     Add a user to RabbitMQ with vhost and permissions.
@@ -19,30 +34,24 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
         Tuple of (success, error message if any)
     """
     vhost = username
-
     # Add user
-    success, output = execute_docker_command(
-        "rabbitmq", ["rabbitmqctl", "add_user", username, password]
-    )
+    success, error_msg = _execute_rabbitmq_command(
+        "rabbitmq", ["rabbitmqctl", "add_user", username, password],
+        f"Failed to add user {username}")
     if not success:
-        return False, f"Failed to add user {username}: {output}"
-
+        return False, error_msg
     # Add vhost
-    success, output = execute_docker_command(
-        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost]
-    )
+    success, error_msg = _execute_rabbitmq_command(
+        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost],
+        f"Failed to add vhost {vhost}")
     if not success:
-        return False, f"Failed to add vhost {vhost}: {output}"
-
+        return False, error_msg
     # Set permissions on user's own vhost only
-    success, output = execute_docker_command(
+    success, error_msg = _execute_rabbitmq_command(
         "rabbitmq",
         ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"],
-    )
-    if not success:
-        return False, f"Failed to set permissions on vhost {vhost}: {output}"
-
-    return True, ""
+        f"Failed to set permissions on vhost {vhost}")
+    return success, error_msg
 
 
 def _create_users_from_credentials(credentials_file) -> tuple[bool, str]:
@@ -73,11 +82,7 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
             mode="r", newline="", encoding="utf-8"
         ) as creds_file:
             success, error_msg = _create_users_from_credentials(creds_file)
-            if not success:
-                return False, error_msg
-
-        return True, "RabbitMQ users created successfully"
-
+            return (True, "RabbitMQ users created successfully") if success else (False, error_msg)
     except (OSError, KeyError) as e:
         return False, f"Error adding RabbitMQ users: {e}"
 

@@ -17,15 +17,16 @@ def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> s
     """
     if not src_path.exists():
         return f"  Warning: {item_name} not found in package"
-
     if dest_path.exists():
         return f"  Skipping {item_name} (already exists)"
-
+    # Perform copy and determine suffix
     if src_path.is_dir():
         shutil.copytree(src_path, dest_path)
-        return f"  Created {item_name}/"
-    shutil.copy2(src_path, dest_path)
-    return f"  Created {item_name}"
+        suffix = "/"
+    else:
+        shutil.copy2(src_path, dest_path)
+        suffix = ""
+    return f"  Created {item_name}{suffix}"
 
 
 def copy_template_to_config(

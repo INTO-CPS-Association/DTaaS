@@ -10,6 +10,37 @@ from .config import Config
 from .utils import is_ci
 
 
+def _parse_json_response(json_str: str, expected_keys: list) -> tuple[bool, any, str]:
+    """Parse JSON response and extract expected fields.
+    Args:
+        json_str: JSON string to parse
+        expected_keys: List of expected keys to extract
+    Returns:
+        Tuple of (success, parsed data, error message)
+    """
+    try:
+        data = json.loads(json_str)
+        return True, data, ""
+    except json.JSONDecodeError as e:
+        return False, None, f"Failed to parse JSON: {str(e)}"
+    except (KeyError, TypeError) as e:
+        return False, None, f"Unexpected data format: {str(e)}"
+
+
+def _execute_influxdb_command(command: list, error_context: str) -> tuple[bool, str]:
+    """Execute an InfluxDB docker command and return error if it fails.
+    Args:
+        command: Command list to execute
+        error_context: Error message context
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    success, output = execute_docker_command("influxdb", command)
+    if not success:
+        return False, f"{error_context}: {output}"
+    return True, ""
+
+
 def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     """
     Create a single InfluxDB user.
@@ -37,20 +68,14 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
         Tuple of (success, users dict, error message if any)
     """
     success, users_json_str = execute_docker_command(
-        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False
-    )
-
+        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False)
     if not success:
         return False, {}, f"Failed to retrieve user list: {users_json_str}"
-
-    try:
-        users_json_list = json.loads(users_json_str)
-        users_dict = {user["name"]: user["id"] for user in users_json_list}
-        return True, users_dict, ""
-    except json.JSONDecodeError as e:
-        return False, {}, f"Failed to parse user list JSON: {str(e)}"
-    except (KeyError, TypeError) as e:
-        return False, {}, f"Unexpected user list format: {str(e)}"
+    success, users_json_list, error_msg = _parse_json_response(users_json_str, ["name", "id"])
+    if not success:
+        return False, {}, error_msg
+    users_dict = {user["name"]: user["id"] for user in users_json_list}
+    return True, users_dict, ""
 
 
 def _get_existing_orgs() -> tuple[bool, set, str]:
@@ -61,20 +86,14 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
         Tuple of (success, set of org names, error message if any)
     """
     success, orgs_json_str = execute_docker_command(
-        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False
-    )
-
+        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False)
     if not success:
         return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
-
-    try:
-        orgs_json_list = json.loads(orgs_json_str)
-        org_names = {org["name"] for org in orgs_json_list}
-        return True, org_names, ""
-    except json.JSONDecodeError as e:
-        return False, set(), f"Failed to parse org list JSON: {str(e)}"
-    except (KeyError, TypeError) as e:
-        return False, set(), f"Unexpected org list format: {str(e)}"
+    success, orgs_json_list, error_msg = _parse_json_response(orgs_json_str, ["name"])
+    if not success:
+        return False, set(), error_msg
+    org_names = {org["name"] for org in orgs_json_list}
+    return True, org_names, ""
 
 
 def _setup_user_org_bucket(
@@ -93,50 +112,23 @@ def _setup_user_org_bucket(
     """
     # Create organization only if it doesn't exist
     if name not in existing_orgs:
-        success, output = execute_docker_command(
-            "influxdb",
-            [
-                "influx",
-                "org",
-                "create",
-                "--skip-verify",
-                "--name",
-                name,
-                "--description",
-                name,
-            ],
-        )
+        success, error_msg = _execute_influxdb_command(
+            ["influx", "org", "create", "--skip-verify", "--name", name, "--description", name],
+            f"Failed to create organization {name}")
         if not success:
-            return False, f"Failed to create organization {name}: {output}"
-
+            return False, error_msg
     # Add user as owner to organization
-    success, output = execute_docker_command(
-        "influxdb",
-        [
-            "influx",
-            "org",
-            "members",
-            "add",
-            "--skip-verify",
-            "--name",
-            name,
-            "--owner",
-            "-m",
-            user_id,
-        ],
-    )
+    success, error_msg = _execute_influxdb_command(
+        ["influx", "org", "members", "add", "--skip-verify", "--name",
+         name, "--owner", "-m", user_id],
+        f"Failed to add user {user_id} as owner to {name}")
     if not success:
-        return False, f"Failed to add user {user_id} as owner to {name}: {output}"
-
+        return False, error_msg
     # Create bucket
-    success, output = execute_docker_command(
-        "influxdb",
+    success, error_msg = _execute_influxdb_command(
         ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
-    )
-    if not success:
-        return False, f"Failed to create bucket {name}: {output}"
-
-    return True, ""
+        f"Failed to create bucket {name}")
+    return success, error_msg
 
 
 def _create_users_from_credentials(credentials_file) -> tuple[bool, str]:
@@ -173,23 +165,16 @@ def _execute_setup_steps(creds_file) -> tuple[bool, str]:
     success, error_msg = _create_users_from_credentials(creds_file)
     if not success:
         return False, error_msg
-
     # Get user list
     success, users_dict, error_msg = _get_influxdb_users()
     if not success:
         return False, error_msg
-
     # Get existing organizations to avoid conflicts
     success, existing_orgs, error_msg = _get_existing_orgs()
     if not success:
         return False, error_msg
-
     # Set up org and bucket for each user
-    success, error_msg = _setup_user_organizations(users_dict, existing_orgs)
-    if not success:
-        return False, error_msg
-
-    return True, ""
+    return _setup_user_organizations(users_dict, existing_orgs)
 
 
 def setup_influxdb_users() -> tuple[bool, str]:
@@ -202,15 +187,12 @@ def setup_influxdb_users() -> tuple[bool, str]:
     credentials_file = get_credentials_path()
     if not credentials_file.exists():
         return False, f"Credentials file not found: {credentials_file}"
-
     try:
         with credentials_file.open(
             mode="r", newline="", encoding="utf-8"
         ) as creds_file:
             success, error_msg = _execute_setup_steps(creds_file)
-            if not success:
-                return False, error_msg
-            return True, "InfluxDB users created successfully"
+            return (True, "InfluxDB users created successfully") if success else (False, error_msg)
     except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding InfluxDB users: {e}"
 
