@@ -144,7 +144,7 @@ def test_add_users_influxdb_fails(runner, mock_user_pkg):
     mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (True, "Added to RabbitMQ")
     result = runner.invoke(services, ['user', 'add'])
     assert result.exit_code == 0
-    assert "InfluxDB: Failed InfluxDB error" in result.output
+    assert "InfluxDB: InfluxDB error" in result.output
     assert "RabbitMQ: Added to RabbitMQ" in result.output
 
 
@@ -154,8 +154,8 @@ def test_add_users_both_fail(runner, mock_user_pkg):
     mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (False, "RabbitMQ failed")
     result = runner.invoke(services, ['user', 'add'])
     assert result.exit_code == 0
-    assert "InfluxDB: Failed InfluxDB failed" in result.output
-    assert "RabbitMQ: Failed RabbitMQ failed" in result.output
+    assert "InfluxDB: InfluxDB failed" in result.output
+    assert "RabbitMQ: RabbitMQ failed" in result.output
 
 
 def test_status_success(runner, mock_service_setup):

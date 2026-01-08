@@ -10,7 +10,7 @@ from .config import Config
 from .utils import is_ci
 
 
-def _parse_json_response(json_str: str, expected_keys: list) -> tuple[bool, any, str]:
+def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
     """Parse JSON response and extract expected fields.
     Args:
         json_str: JSON string to parse
