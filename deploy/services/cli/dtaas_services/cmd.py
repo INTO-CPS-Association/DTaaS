@@ -261,14 +261,18 @@ def add():
     console.print("\n[cyan]Adding users to InfluxDB...[/cyan]")
     success, msg = influxdb.setup_influxdb_users()
     if not success:
-        console.print(f"[red]InfluxDB: Failed {msg}[/red]", style="bold")
+        # Show only first line of error for readability
+        error_line = msg.split('\n')[0]
+        console.print(f"[red]InfluxDB: {error_line}[/red]", style="bold")
     else:
         console.print(f"[green]✅ InfluxDB: {msg}[/green]")
 
     console.print("\n[cyan]Adding users to RabbitMQ...[/cyan]")
     success, msg = rabbitmq.setup_rabbitmq_users()
     if not success:
-        console.print(f"[red]RabbitMQ: Failed {msg}[/red]", style="bold")
+        # Show only first line of error for readability
+        error_line = msg.split('\n')[0]
+        console.print(f"[red]RabbitMQ: {error_line}[/red]", style="bold")
     else:
         console.print(f"[green]✅ RabbitMQ: {msg}[/green]")
 

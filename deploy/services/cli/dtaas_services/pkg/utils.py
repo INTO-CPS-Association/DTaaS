@@ -20,6 +20,25 @@ def get_credentials_path() -> Path:
     return base_dir / "config" / "credentials.csv"
 
 
+def _extract_stderr_line(error_str: str) -> str:
+    """Extract just the stderr line from Docker error for cleaner display.
+    Args:
+        error_str: Full error string from DockerException
+    Returns:
+        Clean error message (stderr line or first line if not found)
+    """
+    # Look for stderr content between "stderr is '" and the closing quote
+    if "stderr is '" in error_str:
+        parts = error_str.split("stderr is '", 1)
+        if len(parts) > 1:
+            stderr_part = parts[1].split("'")[0]
+            # Get just the first meaningful line of stderr
+            first_line = stderr_part.strip().split('\n')[0]
+            return first_line
+    # Fallback to first line if no stderr found
+    return error_str.split('\n')[0]
+
+
 def execute_docker_command(
     container_name: str, exec_cmd: list[str], verbose: bool = True
 ) -> tuple[bool, str]:
@@ -40,7 +59,17 @@ def execute_docker_command(
             print("Output:", result)
         return True, result
     except DockerException as e:
-        error_msg = f"Docker error: {str(e)}"
+        error_str = str(e)
+        # Check if container doesn't exist (more friendly error)
+        if "No such container" in error_str:
+            error_msg = (
+                f"Container '{container_name}' is not running. "
+                f"Please start services first with: dtaas-services start"
+            )
+        else:
+            # Extract just the key error info for cleaner display
+            clean_error = _extract_stderr_line(error_str)
+            error_msg = f"Docker error: {clean_error}"
         if verbose:
             print(error_msg)
         return False, error_msg

@@ -152,6 +152,23 @@ def _setup_user_organizations(users_dict: dict, existing_orgs: set) -> tuple[boo
     return True, ""
 
 
+def _fetch_influxdb_data() -> tuple[bool, dict, set, str]:
+    """Fetch user and organization data from InfluxDB.
+
+    Returns:
+        Tuple of (success, users_dict, existing_orgs, error message if any)
+    """
+    # Get user list
+    success, users_dict, error_msg = _get_influxdb_users()
+    if not success:
+        return False, {}, set(), error_msg
+    # Get existing organizations to avoid conflicts
+    success, existing_orgs, error_msg = _get_existing_orgs()
+    if not success:
+        return False, {}, set(), error_msg
+    return True, users_dict, existing_orgs, ""
+
+
 def _execute_setup_steps(creds_file) -> tuple[bool, str]:
     """Execute all setup steps for InfluxDB users.
 
@@ -165,12 +182,8 @@ def _execute_setup_steps(creds_file) -> tuple[bool, str]:
     success, error_msg = _create_users_from_credentials(creds_file)
     if not success:
         return False, error_msg
-    # Get user list
-    success, users_dict, error_msg = _get_influxdb_users()
-    if not success:
-        return False, error_msg
-    # Get existing organizations to avoid conflicts
-    success, existing_orgs, error_msg = _get_existing_orgs()
+    # Fetch user and org data
+    success, users_dict, existing_orgs, error_msg = _fetch_influxdb_data()
     if not success:
         return False, error_msg
     # Set up org and bucket for each user

@@ -22,6 +22,23 @@ class Config:
         load_dotenv(dotenv_path=self.env_path, override=True)
         self.env = dict(os.environ)
 
+
+    @staticmethod
+    def _is_running_from_venv() -> bool:
+        """Check if running from a virtual environment (venv or site-packages)."""
+        file_path = Path(__file__).resolve()
+        return 'site-packages' in str(file_path) or 'venv' in str(file_path)
+
+
+    @staticmethod
+    def _get_windows_base_dir() -> Path:
+        """Get base directory for Windows development environment."""
+        if Config._is_running_from_venv():
+            return Path.cwd().parent
+        # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
+        return Path(__file__).parent.parent.parent.parent
+
+
     @staticmethod
     def get_base_dir() -> Path:
         """
@@ -41,18 +58,10 @@ class Config:
 
         # Running from source in DTaaS repository (development workflow)
         if platform.system().lower() in ['linux', 'darwin']:
-            # Linux/MacOS: Use parent of current working directory
             return Path.cwd().parent
 
-        # Windows: Check if running from venv or source
-        file_path = Path(__file__).resolve()
-
-        # If running from venv (site-packages), use cwd.parent
-        if 'site-packages' in str(file_path) or 'venv' in str(file_path):
-            return Path.cwd().parent
-
-        # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
-        return Path(__file__).parent.parent.parent.parent
+        # Windows: Use helper to determine correct path
+        return Config._get_windows_base_dir()
 
 
     def get_value(self, key: str) -> str:

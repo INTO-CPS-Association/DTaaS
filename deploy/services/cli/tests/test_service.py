@@ -1,6 +1,5 @@
 # pylint: disable=redefined-outer-name
 """Tests for Service class and Docker operations"""
-import os
 import subprocess
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock

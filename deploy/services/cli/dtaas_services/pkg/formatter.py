@@ -73,6 +73,21 @@ def format_container_status(
     console.print(table)
 
 
+def _sort_service_names(services: dict, all_services: List[str], table: Table) -> List[str]:
+    """Return a sorted list of service names."""
+    sorted_services = sorted(all_services)
+    for service_name in sorted_services:
+        display_name = _get_display_name(service_name)
+        container = services.get(service_name)
+        if container is None:
+            # Service not found/installed
+            status_display = "❌ [red]not installed[/red]"
+        else:
+            state = container.state.status
+            status_display = _format_status_display(state)
+        table.add_row(display_name, status_display)
+
+
 def format_service_list_status(
     services: dict, all_services: List[str], console: Console = None
 ) -> None:
@@ -90,15 +105,5 @@ def format_service_list_status(
     table.add_column("Service", style="cyan", width=15)
     table.add_column("Status", width=20)
     # Sort services by name for consistent output
-    sorted_services = sorted(all_services)
-    for service_name in sorted_services:
-        display_name = _get_display_name(service_name)
-        container = services.get(service_name)
-        if container is None:
-            # Service not found/installed
-            status_display = "❌ [red]not installed[/red]"
-        else:
-            state = container.state.status
-            status_display = _format_status_display(state)
-        table.add_row(display_name, status_display)
+    _sort_service_names(services, all_services, table)
     console.print(table)

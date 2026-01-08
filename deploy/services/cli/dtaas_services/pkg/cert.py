@@ -38,6 +38,13 @@ def _find_latest_cert(certs_dir: Path, prefix: str) -> Path | None:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
+def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
+    """Remove all cert files with the given prefix except the target."""
+    for p in certs_dir.glob(f"{prefix}*.pem"):
+        if p.resolve() != target.resolve():
+            p.unlink(missing_ok=True)
+
+
 def _rename_and_cleanup_certs(certs_dir: Path, prefix: str) -> None:
     """Rename latest cert to standard name and remove others."""
     latest = _find_latest_cert(certs_dir, prefix)
@@ -47,10 +54,7 @@ def _rename_and_cleanup_certs(certs_dir: Path, prefix: str) -> None:
     if latest.resolve() != target.resolve():
         target.unlink(missing_ok=True)
         latest.rename(target)
-    # Remove remaining candidates
-    for p in certs_dir.glob(f"{prefix}*.pem"):
-        if p.resolve() != target.resolve():
-            p.unlink(missing_ok=True)
+    _remove_remaining_certs(certs_dir, prefix, target)
 
 
 def normalize_cert_candidates(certs_dir: Path, prefix: str) -> None:
@@ -84,6 +88,22 @@ def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
         return False, f"Source directory error creating dummy certificates: {e}"
 
 
+def _copy_files(source_dir: Path, certs_dir: Path) -> None:
+    """Helper to copy files from source to destination directory.
+    Args:
+        source_dir: Source directory
+        certs_dir: Destination directory
+        """
+    certs_dir.mkdir(parents=True, exist_ok=True)
+    for path in source_dir.glob("*"):
+        if path.is_file():
+            dest = certs_dir / path.name
+            if path.resolve() == dest.resolve():
+                print("Source and destination are the same, skipping copy.")
+                continue
+            shutil.copy2(path, dest)
+
+
 def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
     """Copy certificate files from source to destination directory.
     Args:
@@ -93,14 +113,7 @@ def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        certs_dir.mkdir(parents=True, exist_ok=True)
-        for path in source_dir.glob("*"):
-            if path.is_file():
-                dest = certs_dir / path.name
-                if path.resolve() == dest.resolve():
-                    print("Source and destination are the same, skipping copy.")
-                    continue
-                shutil.copy2(path, dest)
+        _copy_files(source_dir, certs_dir)
         normalize_cert_candidates(certs_dir, "privkey")
         normalize_cert_candidates(certs_dir, "fullchain")
         return True, f"Certificates copied and normalized in {certs_dir}"
