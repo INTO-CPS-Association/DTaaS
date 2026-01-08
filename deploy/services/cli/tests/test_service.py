@@ -133,7 +133,7 @@ def test_start_services_success(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.start_services()
+        err, message = service.manage_services("start")
 
     assert err is None
     assert "started" in message.lower()
@@ -147,7 +147,7 @@ def test_start_services_compose_file_not_found(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=False):
-        err, _ = service.start_services()
+        err, _ = service.manage_services("start")
 
     assert err is not None
     assert isinstance(err, FileNotFoundError)
@@ -162,7 +162,7 @@ def test_start_services_docker_error(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.start_services()
+        err, message = service.manage_services("start")
 
     assert err is not None
     assert isinstance(err, OSError)
@@ -177,7 +177,7 @@ def test_stop_services_success(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.stop_services()
+        err, message = service.manage_services("stop")
     assert err is None
     assert "stopped" in message.lower()
 
@@ -190,7 +190,7 @@ def test_stop_services_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.stop_services(['grafana', 'influxdb'])
+        err, _ = service.manage_services("stop", ['grafana', 'influxdb'])
     assert err is None
     mock_docker.compose.stop.assert_called_once_with(['grafana', 'influxdb'])
 
@@ -203,7 +203,7 @@ def test_stop_services_compose_file_not_found(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=False):
-        err, _ = service.stop_services()
+        err, _ = service.manage_services("stop")
     assert err is not None
     assert isinstance(err, FileNotFoundError)
 
@@ -217,7 +217,7 @@ def test_stop_services_docker_error(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.stop_services()
+        err, message = service.manage_services("stop")
     assert err is not None
     assert "docker stop error" in message.lower()
 
@@ -230,7 +230,7 @@ def test_restart_services_success(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.restart_services()
+        err, message = service.manage_services("restart")
     assert err is None
     assert "restarted" in message.lower()
     mock_docker.compose.restart.assert_called_once()
@@ -244,7 +244,7 @@ def test_restart_services_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.restart_services(['grafana'])
+        err, _ = service.manage_services("restart", ['grafana'])
     assert err is None
     mock_docker.compose.restart.assert_called_once_with(['grafana'])
 
@@ -257,7 +257,7 @@ def test_restart_services_compose_file_not_found(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=False):
-        err, _ = service.restart_services()
+        err, _ = service.manage_services("restart")
     assert err is not None
     assert isinstance(err, FileNotFoundError)
 
@@ -271,7 +271,7 @@ def test_restart_services_docker_error(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, message = service.restart_services()
+        err, message = service.manage_services("restart")
     assert err is not None
     assert "restart error" in message.lower()
 

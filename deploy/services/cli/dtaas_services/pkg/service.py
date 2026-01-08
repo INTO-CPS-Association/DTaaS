@@ -92,6 +92,30 @@ class Service:
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
 
 
+    def _start_services(self, service_list: Optional[list]) -> None:
+        """Start services or all if service_list is None."""
+        if service_list:
+            self.docker.compose.up(service_list, detach=True)
+        else:
+            self.docker.compose.up(detach=True)
+
+
+    def _stop_services(self, service_list: Optional[list]) -> None:
+        """Stop services or all if service_list is None."""
+        if service_list:
+            self.docker.compose.stop(service_list)
+        else:
+            self.docker.compose.stop()
+
+
+    def _restart_services(self, service_list: Optional[list]) -> None:
+        """Restart services or all if service_list is None."""
+        if service_list:
+            self.docker.compose.restart(service_list)
+        else:
+            self.docker.compose.restart()
+
+
     def _execute_compose_action(
         self, action: str, service_list: Optional[list]
     ) -> None:
@@ -101,25 +125,13 @@ class Service:
             service_list: Optional list of services to target
         """
         action_handlers = {
-            "start": lambda: (
-                self.docker.compose.up(service_list, detach=True)
-                if service_list
-                else self.docker.compose.up(detach=True)
-            ),
-            "stop": lambda: (
-                self.docker.compose.stop(service_list)
-                if service_list
-                else self.docker.compose.stop()
-            ),
-            "restart": lambda: (
-                self.docker.compose.restart(service_list)
-                if service_list
-                else self.docker.compose.restart()
-            ),
+            "start": self._start_services,
+            "stop": self._stop_services,
+            "restart": self._restart_services,
         }
         if action not in action_handlers:
             raise ValueError(f"Invalid action: {action}")
-        action_handlers[action]()
+        action_handlers[action](service_list)
 
 
     def _get_success_message(self, action: str) -> str:
@@ -130,6 +142,13 @@ class Service:
             "restart": "Services restarted successfully",
         }
         return messages.get(action, "Operation completed successfully")
+
+
+    def _handle_service_action_error(self, action: str, exc: Exception) -> Tuple[Optional[Exception], str]:
+        """Handle errors from service action execution."""
+        if isinstance(exc, ValueError):
+            return exc, str(exc)
+        return self._handle_docker_error(f"{action} services", exc)
 
 
     def manage_services(
@@ -150,31 +169,8 @@ class Service:
         try:
             self._execute_compose_action(action, service_list)
             return None, self._get_success_message(action)
-        except ValueError as e:
-            return e, str(e)
-        except DOCKER_OPERATION_EXCEPTIONS as e:
-            return self._handle_docker_error(f"{action} services", e)
-
-
-    def start_services(
-        self, service_list: Optional[list] = None
-    ) -> Tuple[Optional[Exception], str]:
-        """Start platform services using Docker Compose."""
-        return self.manage_services("start", service_list)
-
-
-    def stop_services(
-        self, service_list: Optional[list] = None
-    ) -> Tuple[Optional[Exception], str]:
-        """Stop platform services using Docker Compose."""
-        return self.manage_services("stop", service_list)
-
-
-    def restart_services(
-        self, service_list: Optional[list] = None
-    ) -> Tuple[Optional[Exception], str]:
-        """Restart platform services using Docker Compose."""
-        return self.manage_services("restart", service_list)
+        except (ValueError, *DOCKER_OPERATION_EXCEPTIONS) as e:
+            return self._handle_service_action_error(action, e)
 
 
     def _get_all_service_names(self) -> Tuple[Optional[Exception], Set[str]]:
@@ -194,6 +190,15 @@ class Service:
             return err_exc, set()
 
 
+    def _filter_containers_by_service(self, all_containers, all_services: set) -> dict:
+        """Filter containers to only include those matching service names."""
+        return {
+            container.name: container
+            for container in all_containers
+            if container.name in all_services
+        }
+
+
     def _get_all_containers(self) -> Tuple[Optional[Exception], dict]:
         """
         Get all containers belonging to this compose project and create a mapping by name.
@@ -201,20 +206,11 @@ class Service:
             Tuple of (Exception or None, dict mapping container name to container object)
         """
         try:
-            # Get all containers
             all_containers = self.docker.container.list(all=True)
-            # Get service names from compose file to filter relevant containers
             err, all_services = self._get_all_service_names()
             if err is not None:
                 return err, {}
-            # Filter containers to only include those matching service names
-            # This works because compose uses container_name which matches service names
-
-            container_map = {
-                container.name: container
-                for container in all_containers
-                if container.name in all_services
-            }
+            container_map = self._filter_containers_by_service(all_containers, all_services)
             return None, container_map
         except DockerException:
             err = RuntimeError(

@@ -11,10 +11,9 @@ from .utils import is_ci
 
 
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
-    """Parse JSON response and extract expected fields.
+    """Parse JSON response.
     Args:
         json_str: JSON string to parse
-        expected_keys: List of expected keys to extract
     Returns:
         Tuple of (success, parsed data, error message)
     """
@@ -71,7 +70,7 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
         "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False)
     if not success:
         return False, {}, f"Failed to retrieve user list: {users_json_str}"
-    success, users_json_list, error_msg = _parse_json_response(users_json_str, ["name", "id"])
+    success, users_json_list, error_msg = _parse_json_response(users_json_str)
     if not success:
         return False, {}, error_msg
     users_dict = {user["name"]: user["id"] for user in users_json_list}
@@ -89,7 +88,7 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
         "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False)
     if not success:
         return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
-    success, orgs_json_list, error_msg = _parse_json_response(orgs_json_str, ["name"])
+    success, orgs_json_list, error_msg = _parse_json_response(orgs_json_str)
     if not success:
         return False, set(), error_msg
     org_names = {org["name"] for org in orgs_json_list}
