@@ -132,14 +132,16 @@ def _services_command_runner(command: str, service_name) -> None:
     """Run start/stop/restart service commands."""
     service_list = _parse_service_list(service_name)
     commands_map = {
-        "start": (Service().start_services, OperationMeta("Starting", "cyan", "Starting containers...")),
-        "stop": (Service().stop_services, OperationMeta("Stopping", "yellow", "Stopping containers...")),
-        "restart": (Service().restart_services, OperationMeta("Restarting", "blue", "Restarting containers...")),
+        "start": OperationMeta("Starting", "cyan", "Starting containers..."),
+        "stop": OperationMeta("Stopping", "yellow", "Stopping containers..."),
+        "restart": OperationMeta("Restarting", "blue", "Restarting containers..."),
     }
 
     if command in commands_map:
-        operation_func, meta = commands_map[command]
-        _handle_service_command(operation_func, service_list, meta)
+        meta = commands_map[command]
+        service = Service()
+        # Lambda receives service_list from _handle_service_command
+        _handle_service_command(lambda sl: service.manage_services(command, sl), service_list, meta)
     else:
         raise click.ClickException(f"Unknown command: {command}")
 

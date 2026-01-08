@@ -85,16 +85,16 @@ def test_setup_config_not_found(runner):
 
 def test_start_success(runner, mock_service_setup):
     """Test successful service start"""
-    mock_service_setup["service_instance"].start_services.return_value = (
-        None, "Services started")
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None, "Docker Compose started successfully")
     result = runner.invoke(services, ['start'])
     assert result.exit_code == 0
-    assert "Services started" in result.output
+    assert "Docker Compose started successfully" in result.output
 
 
 def test_start_failure(runner, mock_service_setup):
     """Test service start failure"""
-    mock_service_setup["service_instance"].start_services.return_value = (
+    mock_service_setup["service_instance"].manage_services.return_value = (
         FileNotFoundError("Docker not found"), "Docker not found"
     )
     result = runner.invoke(services, ['start'])
@@ -104,16 +104,16 @@ def test_start_failure(runner, mock_service_setup):
 
 def test_stop_success(runner, mock_service_setup):
     """Test successful service stop"""
-    mock_service_setup["service_instance"].stop_services.return_value = (
-        None, "Services stopped")
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None, "Services stopped successfully")
     result = runner.invoke(services, ['stop'])
     assert result.exit_code == 0
-    assert "Services stopped" in result.output
+    assert "Services stopped successfully" in result.output
 
 
 def test_stop_failure(runner, mock_service_setup):
     """Test service stop failure"""
-    mock_service_setup["service_instance"].stop_services.return_value = (
+    mock_service_setup["service_instance"].manage_services.return_value = (
         Exception("Stop failed"), "Stop failed"
     )
     result = runner.invoke(services, ['stop'])
@@ -206,18 +206,18 @@ def test_status_with_service_filter(runner, mock_service_setup):
 
 def test_restart_success(runner, mock_service_setup):
     """Test successful service restart"""
-    mock_service_setup["service_instance"].restart_services.return_value = (
-        None, "Services restarted"
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None, "Services restarted successfully"
     )
     result = runner.invoke(services, ['restart'])
     assert result.exit_code == 0
-    assert "Services restarted" in result.output
+    assert "Services restarted successfully" in result.output
 
 
 def test_restart_specific_services(runner, mock_service_setup):
     """Test restart with specific services"""
-    mock_service_setup["service_instance"].restart_services.return_value = (
-        None, "Services restarted"
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None, "Services restarted successfully"
     )
     result = runner.invoke(services, ['restart', '--services', 'grafana'])
     assert result.exit_code == 0
@@ -225,7 +225,7 @@ def test_restart_specific_services(runner, mock_service_setup):
 
 def test_restart_failure(runner, mock_service_setup):
     """Test restart failure"""
-    mock_service_setup["service_instance"].restart_services.return_value = (
+    mock_service_setup["service_instance"].manage_services.return_value = (
         RuntimeError("Restart failed"), "Restart failed"
     )
     result = runner.invoke(services, ['restart'])
