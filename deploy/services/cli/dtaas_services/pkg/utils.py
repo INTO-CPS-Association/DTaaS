@@ -39,6 +39,16 @@ def _extract_stderr_line(error_str: str) -> str:
     return error_str.split('\n')[0]
 
 
+def _format_docker_error(container: str, error_str: str) -> str:
+    if "No such container" in error_str:
+        return (
+            f"Container '{container}' is not running. "
+            f"Please start services first with: dtaas-services start"
+        )
+    clean_error = _extract_stderr_line(error_str)
+    return f"Docker error: {clean_error}"
+
+
 def execute_docker_command(
     container_name: str, exec_cmd: list[str], verbose: bool = True
 ) -> tuple[bool, str]:
@@ -52,27 +62,18 @@ def execute_docker_command(
     Returns:
         Tuple of (success, output/error message)
     """
+    docker = DockerClient()
     try:
-        docker = DockerClient()
         result = docker.execute(container_name, exec_cmd)
-        if verbose:
-            print("Output:", result)
-        return True, result
     except DockerException as e:
         error_str = str(e)
-        # Check if container doesn't exist (more friendly error)
-        if "No such container" in error_str:
-            error_msg = (
-                f"Container '{container_name}' is not running. "
-                f"Please start services first with: dtaas-services start"
-            )
-        else:
-            # Extract just the key error info for cleaner display
-            clean_error = _extract_stderr_line(error_str)
-            error_msg = f"Docker error: {clean_error}"
+        error_msg = _format_docker_error(container_name, error_str)
         if verbose:
             print(error_msg)
         return False, error_msg
+    if verbose:
+        print("Output:", result)
+    return True, result
 
 
 def _is_running_unix_system() -> bool:

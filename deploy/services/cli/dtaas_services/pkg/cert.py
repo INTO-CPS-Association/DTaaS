@@ -98,10 +98,8 @@ def _copy_files(source_dir: Path, certs_dir: Path) -> None:
     for path in source_dir.glob("*"):
         if path.is_file():
             dest = certs_dir / path.name
-            if path.resolve() == dest.resolve():
-                print("Source and destination are the same, skipping copy.")
-                continue
-            shutil.copy2(path, dest)
+            if path.resolve() != dest.resolve():
+                shutil.copy2(path, dest)
 
 
 def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
