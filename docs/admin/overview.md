@@ -7,8 +7,10 @@ The goal is to install and administer the DTaaS application for users.
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
 !!! warning
-    The DTaaS has been developed and tested on docker ce v28.
-    The software does not work on docker ce v29 yet.
+    The DTaaS has been developed and tested on
+    [docker CE v28](https://docs.docker.com/engine/release-notes/28/).
+    The software does not work on
+    [docker CE v29](https://docs.docker.com/engine/release-notes/29/) yet.
 <!-- markdownlint-enable MD046 -->
 
 The DTaaS can be installed in different ways.

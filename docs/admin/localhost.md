@@ -20,14 +20,14 @@ is available at <http://localhost/user1>.
 
 The installation requirements to run this docker version of the DTaaS are:
 
-- docker desktop / docker CLI with compose plugin
-- User account on _gitlab.com_
+- docker desktop / docker CE v28.
+- User account on [GitLab](https://gitlab.com)
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
 !!! tip
     The frontend website requires authorization.
-    The default authorization configuration works for _gitlab.com_.
+    The default authorization configuration works for <https://gitlab.com>.
     If you desire to use locally hosted GitLab instance, please see
     the [client docs](client/auth.md).
 <!-- markdownlint-enable MD046 -->
@@ -89,7 +89,8 @@ of the DTaaS project.
 cp -R files/user1 files/username
 ```
 
-where _username_ is the selected username registered on <https://gitlab.com>.
+where _username_ is the selected username registered on
+[GitLab](https://gitlab.com).
 
 ## Run
 
@@ -111,7 +112,7 @@ docker compose -f compose.local.yml --env-file .env.local up \
 
 The application will be accessible at:
 <http://localhost> from web browser.
-Sign in using your <https://gitlab.com> account.
+Sign in using your [GitLab](https://gitlab.com) account.
 
 All the functionality of DTaaS should be available to you
 through the single page client now.
