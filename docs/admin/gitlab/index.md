@@ -15,6 +15,18 @@ This guide illustrates the installation of GitLab at:
 <http:>foo.com/gitlab</http>. But the instructions and `compose.gitlab.yml`
 can be adapted to install GitLab at a dedicated domain name.
 
+## Clone Codebase
+
+If you have not cloned the DTaaS git repository, cloning would be
+the first step.
+In case you already have the codebase, you can skip the cloning step.
+To clone, do:
+
+```bash
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
+cd DTaaS/deploy/services/gitlab
+```
+
 ## Configure and Install
 
 If you have not cloned the DTaaS git repository, cloning would be
