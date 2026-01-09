@@ -43,10 +43,10 @@ and provide raw TCP/UDP access to these services from the Internet.
 * _compose.thingsboard.secure.yml_ helps with installation of PostgreSQL, and
   ThingsBoard services.
 
-There are two additional directories, namely **gitlab** and **runner**.
+There are two additional directories, namely **GitLab** and **runner**.
 These directories are related to installation of
 [integrated GitLab](gitlab/index.md) and its [runner](gitlab/runner.md).
-The instructions in this page are not related to **gitlab** and **runner**
+The instructions in this page are not related to **GitLab** and **runner**
 installation.
 
 ## Clone Codebase

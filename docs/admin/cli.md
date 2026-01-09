@@ -78,7 +78,7 @@ This will change the user template from insecure to secure.
 
 To add new users using the CLI, fill in the
 _users.add_ list in
-_dtaas.toml_ with the Gitlab instance
+_dtaas.toml_ with the GitLab instance
 usernames of the users to be added
 
 ```toml
@@ -138,7 +138,7 @@ instance, with authorization enabled.
 ### Delete users
 
 - To delete existing users, fill in the _users.delete_ list in
-  _dtaas.toml_ with the Gitlab instance
+  _dtaas.toml_ with the GitLab instance
   usernames of the users to be deleted.
 
 ```toml

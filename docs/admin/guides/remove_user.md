@@ -32,10 +32,10 @@ Please do the following:
 
 The extra users now have no backend authorization.
 
-**3. Remove users to Gitlab instance (optional):**
+**3. Remove users to GitLab instance (optional):**
 
 Please see
-[gitlab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
+[GitLab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
 for more help.
 
 **4. The user account is now deleted.**

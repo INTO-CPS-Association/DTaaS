@@ -6,9 +6,9 @@ removing a user account.
 
 Please do the following:
 
-**1. Add user to Gitlab instance:**
+**1. Add user to GitLab instance:**
 
-Add a new account for the new user on the Gitlab instance.
+Add a new account for the new user on the GitLab instance.
 Note the username and email of the new account.
 
 **2. Create User Workspace:**

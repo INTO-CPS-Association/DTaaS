@@ -60,7 +60,7 @@ Here are the steps to get started:
 
 **7. Create User Accounts:**
 
-Create user accounts in gitlab for all the usernames chosen during
+Create user accounts in GitLab for all the usernames chosen during
 installation. The _trial_ installation script comes with two default
 usernames - _user1_ and _user2_. For all other installation scenarios,
-accounts with specific usernames need to be created on gitlab.
+accounts with specific usernames need to be created on GitLab.

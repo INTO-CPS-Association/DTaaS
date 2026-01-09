@@ -45,7 +45,7 @@ the concepts of BDD.
 
 ## :building_construction: Testing workflow
 
-![Gitlab signin button](testPyramid.png)
+![GitLab signin button](testPyramid.png)
 
 (Ref: Ham Vocke,
 [The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html))

@@ -1,19 +1,19 @@
-# Local Gitlab Instance
+# Local GitLab Instance
 
 This guide helps with installation of a dedicated
-[Gitlab](https://gitlab.com) service. This Gitlab installation can be used
+[GitLab](https://gitlab.com) service. This GitLab installation can be used
 as OAuth2 authorization provider to the DTaaS software.
-In addition, it is also possible to use the integrated Gitlab for
+In addition, it is also possible to use the integrated GitLab for
 enabling the digital twin DevOps experimental features of the DTaaS.
 
-There are two possible ways you can install Gitlab:
+There are two possible ways you can install GitLab:
 
 * At dedicated domain name (ex: <http:>_gitlab.foo.com_</http:>)
 * At a URL path on existing WWW server (ex: <http:>foo.com/gitlab</http>)
 
-This guide illustrates the installation of Gitlab at:
+This guide illustrates the installation of GitLab at:
 <http:>foo.com/gitlab</http>. But the instructions and `compose.gitlab.yml`
-can be adapted to install Gitlab at a dedicated domain name.
+can be adapted to install GitLab at a dedicated domain name.
 
 ## Configure and Install
 
@@ -33,25 +33,25 @@ needed to set up the docker container containing the local GitLab instance.
 1. `./data`, `./config`, `./logs` are the directories that will contain data for
    the GitLab instance
 1. `compose.gitlab.yml` and `.env` are the Docker compose and environment files
-   to manage the containerized instance of gitlab
+   to manage the containerized instance of GitLab
 
-If the DTaaS application and gitlab are to be hosted at <https://foo.com>, then
+If the DTaaS application and GitLab are to be hosted at <https://foo.com>, then
 the client config file (`deploy/config/client/env.js`)
 needs to use the <https://foo.com/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 In addition, this hosting at <https://foo.com> also requires changes to
 config file (`.env.server`).
 
-If the DTaaS application and gitlab are to be hosted at <https://localhost>, then
+If the DTaaS application and GitLab are to be hosted at <https://localhost>, then
 the client config file (`deploy/config/client/env.local.js`)
 needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
-If the application and the integrated gitlab are to be hosted at
+If the application and the integrated GitLab are to be hosted at
 `https://localhost/gitlab`, then `.env.server` need not be modified.
 
 Edit the `.env` file available in this directory to contain the following variables:
 
 | Variable    | Example Value                                | Explanation                                                                                                                  |
 | :---------- | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash.                                    |
+| DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash.                                    |
 | SERVER_DNS  | either `foo.com` or `localhost`                               | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
 
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which
@@ -59,7 +59,7 @@ incorrectly causes redirects to use the `HTTPS` URL scheme. This is a
 [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
 and forces us to use `HTTPS` for the DTaaS server. If you are hosting the DTaaS
 locally, your GitLab instance should be available at <https://localhost/gitlab>.
-If you are hosting the DTaaS at <https://foo.com>, then you Gitlab instance
+If you are hosting the DTaaS at <https://foo.com>, then you GitLab instance
 should be available at <https://foo.com/gitlab>.
 
 ## Run
@@ -77,7 +77,7 @@ docker compose -f compose.gitlab.yml down
 ```
 
 Each time you start the container, it may take a few minutes. You can monitor
-the progress with `watch docker ps` and check if the gitlab container is
+the progress with `watch docker ps` and check if the GitLab container is
 `healthy`.
 
 ### Post-install Configuration
@@ -94,14 +94,14 @@ either at <https://foo.com/gitlab> or at <https://localhost/gitlab>.
 
 ### Create Users
 
-The newly installed gitlab only contains `root` user. More users need
+The newly installed GitLab only contains `root` user. More users need
 to be created for use with DTaaS. Please see the
-[Gitlab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)
+[GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)
 for further help.
 
 ## Pending Tasks
 
-This README helps with installation of Gitlab along side DTaaS application.
-But the OAuth2 integration between Gitlab and DTaaS will still be pending.
+This README helps with installation of GitLab along side DTaaS application.
+But the OAuth2 integration between GitLab and DTaaS will still be pending.
 Follow the [integration guide](integration.md) and the
-[runner setup guide](runner.md) to setup the Gitlab integration.
+[runner setup guide](runner.md) to setup the GitLab integration.

@@ -31,12 +31,10 @@ The used packages/docker containers are highlighed in blue color.
 <!-- markdownlint-disable MD046 -->
 
 !!! tip
-    The illustration shows hosting of gitlab on the same
+    The illustration shows hosting of GitLab on the same
     vagrant machine with <http:>_http(s)://gitlab.foo.com_</http:>
-    The gitlab setup is outside the scope this installation
-    guide. Please refer to
-    [gitlab docker install](https://docs.gitlab.com/ee/install/docker.html)
-    for gitlab installation.
+    The integrated GitLab setup is documented on
+    [this page](../gitlab/integration.md).
 
 <!-- markdownlint-enable MD046 -->
 

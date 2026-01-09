@@ -6,7 +6,7 @@ The template configuration file is:
 ```yaml
 port: '4001'
 mode: 'local' or 'git'
-local-path: '/Users/<Username>/DTaaS/files'
+local-path: '/home/Desktop/files'
 log-level: 'debug'
 apollo-path: '/lib' or ''
 graphql-playground: 'false' or 'true'

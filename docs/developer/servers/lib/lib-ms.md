@@ -2,8 +2,8 @@
 
 [The Library Microservices](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/lib#readme)
 provides users with access to files in user workspaces via API.
-This microservice will interface with local file system and Gitlab
-to provide uniform Gitlab-compliant API access to files.
+This microservice will interface with local file system and GitLab
+to provide uniform GitLab-compliant API access to files.
 
 !!! warning
     This microservice is still under heavy development. It is still not
@@ -16,7 +16,7 @@ The C4 level 2 diagram of this microservice is:
 <img src="lib-ms.png" alt="Library Microservice" width="70%"/>
 
 The GraphQL API provided by the library microservice shall be compliant
-with the Gitlab GraphQL service.
+with the GitLab GraphQL service.
 
 ## UML Diagrams
 

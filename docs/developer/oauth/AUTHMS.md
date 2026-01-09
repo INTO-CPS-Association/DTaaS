@@ -32,7 +32,7 @@ A successful OAuth2 workflow (Figure 3.3) has the following steps:
 
 - The user requests a resource, say _GET/BackendMS_
 - The Auth MS intercepts this request, and starts the OAuth2 process.
-- The Auth MS sends a authorization request to the Gitlab instance.
+- The Auth MS sends a authorization request to the GitLab instance.
 
 This is written in shorthand as _GET/authcode_. The
 actual request (a user redirect) looks like:
@@ -48,7 +48,7 @@ scope=read_user&state = STATE
 
 Here the gitlab.foo.com/oauth/authorize
 is the specific
-endpoint of the Gitlab instance that handles
+endpoint of the GitLab instance that handles
 authorisation code requests.
 
 The query parameters in the request include
@@ -78,7 +78,7 @@ REDIRECT_URI?code=AUTHCODE&state=STATE
   The REDIRECT URI is as defined previously, during the OAuth2
   Client initialisation, i.e. the same as the one provided in the ”GET
   authcode” request by the Auth MS.
-  The query parameters are provided by the Gitlab instance.
+  The query parameters are provided by the GitLab instance.
   These include the AUTHCODE which is
   the authoriation code that the Auth MS had requested, and the STATE
   which is the same random string in the ”GET authcode” request.
@@ -113,7 +113,7 @@ redirect uri. The grant type parameter is always set to the string
 ”authorization code”, which conveys that we will be exchanging an
 authentication code for an access token.
 
-- The Gitlab instance exchanges a valid AUTHCODE for an Access Token.
+- The GitLab instance exchanges a valid AUTHCODE for an Access Token.
   This is sent as a response to the Auth MS. An example response
   is of the following form:
 
@@ -147,7 +147,7 @@ authentication code for an access token.
   Auth MS. The steps till now in the sequence diagram are simply to get
   a valid access token for the user information.
 
-- The Auth MS makes a final request to the Gitlab instance, shorthanded
+- The Auth MS makes a final request to the GitLab instance, shorthanded
   as _GET user\_details_ in the sequence diagram. The actual request is
   of the form:
 
@@ -162,7 +162,7 @@ An authorization header is required on the request,
 with a valid access token. The required header
 is added here, and TOKEN is the access token that the Auth MS holds.
 
-- The Gitlab instance verifies the access token, and if it is valid, responds
+- The GitLab instance verifies the access token, and if it is valid, responds
   with the required user information. This includes username, email ID,
   etc. An example response looks like:
 
@@ -258,7 +258,7 @@ the user access based on that.
 In the sequence diagram, the Auth MS has a self-request
 marked as ”Checks user permissions” after receiving
 the user identity from
-the Gitlab instance. This is when the Auth MS
+the GitLab instance. This is when the Auth MS
 compares the identity of the
 user to the rules and/or database it has for
 the requested service. Based on
@@ -310,7 +310,7 @@ There are three main steps of configuring the Auth MS properly.
 - The traefik-forward-auth service needs to be configured carefully.
   Firstly,
   we set the environment variables for our specific case.
-  Since, we are using Gitlab, we use the
+  Since, we are using GitLab, we use the
   generic-oauth provider configuration.
   Some important variables that are required are
   the OAuth2 Client ID, Client Secret, Scope.

@@ -29,7 +29,7 @@ a [custom domain](../server.md) (<https://foo.com>).
 
 !!! note
     You may ignore steps related to configuring OAuth application tokens
-    at <https://gitlab.com>. We will be using the initial installation to host
+    at <https://GitLab.com>. We will be using the initial installation to host
     the local GitLab instance, on which we will later create the OAuth
     application tokens.
 
@@ -44,9 +44,9 @@ Login credentials of the root user.
 
 ### 3. Create Users
 
-The newly installed gitlab only contains `root` user. The users specified
+The newly installed GitLab only contains `root` user. The users specified
 in ìnstallation configuration files (`.env.local` / `.env.server`) need
-to be created in this integrated Gitlab server.
+to be created in this integrated GitLab server.
 
 ### 4. Create OAuth Tokens in GitLab
 
@@ -134,7 +134,7 @@ If you have set up everything correctly:
 
 ## Federation of DTaaS
 
-It is possible to use a single Gitlab to serve multiple instances of DTaaS.
+It is possible to use a single GitLab to serve multiple instances of DTaaS.
 Please see
 [DTaaS and DevOps](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_DTaaS-and-DevOps.mp4)
 video for an overview of

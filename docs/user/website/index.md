@@ -12,10 +12,10 @@ of the DTaaS instance for which you are a user.
 
 ## Redirected to Authorization Provider
 
-You will be redirected to the Gitlab
+You will be redirected to the GitLab
 Authorization for DTaaS.
 
-![Gitlab Sign on](gitlab-auth-1.png)
+![GitLab Sign on](gitlab-auth-1.png)
 
 Enter your email/username and password.
 If the email ID registered with DTaaS, is
@@ -25,13 +25,13 @@ can also opt to sign in using Google.
 You will be redirected to the OAuth
 Application page.
 
-## Permit DTaaS Server to Use Gitlab
+## Permit DTaaS Server to Use GitLab
 
 ![Server Auth Permission](gitlab-auth-2.png)
 
 Click on Authorize to allow the OAuth
 application to access the information
-connected to your Gitlab account. This
+connected to your GitLab account. This
 is a necessary step.
 
 You are now logged into the DTaaS server.
@@ -45,22 +45,21 @@ protocol known as
 [OAuth](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce).
 This protocol provides secure access to a DTaaS
 installation if users have a working active accounts at the selected OAuth
-service provider. This also uses Gitlab as OAuth provider.
+service provider. This also uses GitLab as OAuth provider.
 
-![Gitlab signin button](gitlab-sso-1.png)
+![GitLab signin button](gitlab-sso-1.png)
 
-You can see the Gitlab signin button. A click on this button takes you to
-Gitlab instance providing authorization for DTaaS. You will not need to sign in to
-Gitlab again, unless you have explicitly
-logged out
-of your Gitlab account.
+You can see the GitLab signin button. A click on this button takes you to
+GitLab instance providing authorization for DTaaS. You will not need to
+sign in to GitLab again, unless you have explicitly logged out
+of your GitLab account.
 
-## Permit DTaaS Website to Use Gitlab
+## Permit DTaaS Website to Use GitLab
 
-The DTaaS website needs your permission to use your Gitlab account for
+The DTaaS website needs your permission to use your GitLab account for
 authorization. Click on **Authorize** button.
 
-![Gitlab OAuth permission](gitlab-sso-2.png)
+![GitLab OAuth permission](gitlab-sso-2.png)
 
 After successful authorization, you will be redirected to the **Library**
 page of the DTaaS website.
@@ -254,7 +253,7 @@ There are two tabs, namely **Manage** and **Execute**.
     also reconfigure the digital twin.
 
 ??? Execute tip
-    Execute the Digital Twins using Gitlab CI/CD workflows.
+    Execute the Digital Twins using GitLab CI/CD workflows.
 
 ## Finally logout
 

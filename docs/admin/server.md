@@ -41,14 +41,14 @@ Creation of the required TLS certificates is possible through
 
 ### OAuth Provider
 
-**[Gitlab Instance](https://about.gitlab.com/install/)** -
-The DTaaS uses Gitlab OAuth2.0 authorization for user authorization.
-You can either have an on-premise instance of gitlab, or
+**[GitLab Instance](https://about.GitLab.com/install/)** -
+The DTaaS uses GitLab OAuth2.0 authorization for user authorization.
+You can either have an on-premise instance of GitLab, or
 use [gitlab.com](https://gitlab.com) itself.
 
 ### User Accounts
 
-Create user accounts in a linked gitlab instance for all the users.
+Create user accounts in a linked GitLab instance for all the users.
 
 The default docker compose file contains two - _user1_ and _user2_.
 These names need to be changed to suitable usernames.
@@ -69,13 +69,13 @@ using OAuth2 protocol.
   [server docs](servers/auth.md).
 
 It is possible to use <https://gitlab.com> or a local installation
-of Gitlab can be used for this purpose.
+of GitLab can be used for this purpose.
 Based on your selection of gitlab instance, it is necessary
 to register these two OAuth2 applications and link them
 to your intended DTaaS installation.
 
 Please see
-[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+[GitLab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 documentation for further help with creating these two OAuth applications.
 
 ## Clone Codebase
@@ -114,14 +114,14 @@ Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
-  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
-  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
+  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your GitLab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
   | OAUTH_CLIENT_ID | 'xx' | The ID of your server OAuth application |
   | OAUTH_CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
   | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |
-  | username1 | 'user1' | The gitlab instance username of a user of DTaaS |
-  | username2 | 'user2' | The gitlab instance username of a user of DTaaS |
+  | username1 | 'user1' | The GitLab instance username of a user of DTaaS |
+  | username2 | 'user2' | The GitLab instance username of a user of DTaaS |
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
@@ -310,12 +310,12 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d --force
 The application will be accessible at:
 <http(s)://foo.com> from web browser.
 Sign in using your account linked to
-either _gitlab.com_ or your local gitlab instance.
+either _gitlab.com_ or your local GitLab instance.
 
 All the functionality of DTaaS should be available to your users
 through the single page client now.
 
-You may have to click Sign in to Gitlab on the Client page
+You may have to click Sign in to GitLab on the Client page
 and authorize access to the shown application.
 
 ### Adding a new user
@@ -328,4 +328,4 @@ Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
 [reactjs](https://krify.co/about-reactjs/),
-[gitlab](https://gitlab.com)
+[GitLab](https://gitlab.com)

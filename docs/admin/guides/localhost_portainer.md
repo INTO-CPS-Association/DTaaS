@@ -42,12 +42,12 @@ cd DTaaS/deploy/services/gitlab
 ```
 
 In this guide we will assume the contents of the zip file have been extracted
-to the directory: `/home/DTaaS`.
+to the directory: `/home/Desktop/DTaaS`.
 
 !!! tip
     The path given here is for Linux OS.
        It can be Windows compatible as well, for example: `C:\\DTaaS`. Make
-       sure to use this path and format in place of `/home/DTaaS` in this
+       sure to use this path and format in place of `/home/Desktop/DTaaS` in this
        guide.
 
 ## Starting Portainer
@@ -64,7 +64,9 @@ Powershell on Windows, etc) and copy the following commands into it:
 
 ```bash
 docker volume create portainer_data
-docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:2.21.4
+docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data portainer/portainer-ce:2.21.4
 ```
 
 This will start the Portainer server on your system, which will host its

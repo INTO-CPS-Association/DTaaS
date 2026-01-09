@@ -47,12 +47,12 @@ In this case, both the vagrant boxes are spawed on one server using
 two vagrant configuration files, namely _boxes.json_ and _Vagrantfile_.
 
 !!! tip
-    The illustration shows hosting of gitlab on the same
+    The illustration shows hosting of GitLab on the same
     vagrant machine with <http:>_http(s)://gitlab.foo.com_</http:>
-    The gitlab setup is outside the scope this installation
+    The GitLab setup is outside the scope this installation
     guide. Please refer to
-    [gitlab docker install](https://docs.gitlab.com/ee/install/docker.html)
-    for gitlab installation.
+    [GitLab docker install](https://docs.gitlab.com/ee/install/docker.html)
+    for GitLab installation.
 
 ## Configure Server Settings
 

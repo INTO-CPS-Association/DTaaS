@@ -10,7 +10,7 @@ setup is shown here.
 ![traefik oauth](./traefik-oauth.png)
 
 The **traefik forward-auth** can use any OAuth2 provider, but within the DTaaS
-gitlab is used as authorization provider.
+GitLab is used as authorization provider.
 You will use
 the OAuth the web / server application
 authorization flow.
@@ -49,7 +49,7 @@ you need two URLs: a _callback URL_ and a _logout URL_.
   within traefik-forward auth.
   (either <http://foo.com/_oauth/logout> or <http://localhost/_oauth/logout>).
   The logout URL is to help users logout of traefik forward-auth. The logout
-  URL should not be entered into Gitlab OAuth application setup.
+  URL should not be entered into GitLab OAuth application setup.
 
 **4. Create OAuth Application:**
 
@@ -82,7 +82,7 @@ the OAuth application registered on GitLab:
 |OAuth Provider|OAUTH_URL|[https://gitlab.foo.com/](https://gitlab.foo.com/)|
 |Application ID|OAUTH_CLIENT_ID |_xx_|
 |Application Secret|OAUTH_CLIENT_SECRET|_xx_|
-|Callback URL|(to be directly entered in Gitlab OAuth registration)||
+|Callback URL|(to be directly entered in GitLab OAuth registration)||
 |Forward-auth secret|OAUTH_SECRET|_random-secret-string_ (password for forward-auth, can be changed to your preferred string)|
 |Scopes|read_user||
 <!-- markdownlint-enable MD013 -->
@@ -115,15 +115,15 @@ The 'rule' property defines the path/route to reach the resource.
 
 ### Common to All Users
 
-To setup a common page that requires Gitlab OAuth,
-but is available to all users of the Gitlab instance:
+To setup a common page that requires GitLab OAuth,
+but is available to all users of the GitLab instance:
 
 ```text
 rule.all.action=auth
 rule.all.rule=Path(`/common`)
 ```
 
-The 'action' property is set to "auth", to enable Gitlab
+The 'action' property is set to "auth", to enable GitLab
 OAuth before the resource can be accessed.
 
 ### Selective Access

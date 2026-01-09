@@ -7,11 +7,11 @@ in the DTaaS.
 
 This feature requires specific installation setup.
 
-1. [Integrated gitlab installation](../../../admin/gitlab/integration.md)
-1. A valid gitlab repository for the logged in user. Please see
+1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
+1. A valid GitLab repository for the logged in user. Please see
    an [example repository](https://gitlab.com/dtaas/user1). You can clone
    this repository and customize to your needs.
-1. [A linked Gitlab Runner](../../../admin/gitlab/runner.md)
+1. [A linked GitLab Runner](../../../admin/gitlab/runner.md)
    to the user gitlab repository.
 
 ## DT Lifecycle

@@ -179,11 +179,11 @@
 ??? Question "Is the DT execution really scalable?"
 
     This capacity of DT execution infrastructure is dependent on
-    Gitlab and the available compute power available to runners of
-    Gitlab. Gitlab itself does not impose limits on the maximum
+    GitLab and the available compute power available to runners of
+    GitLab. GitLab itself does not impose limits on the maximum
     number of runners.
 
-??? Question "I have many Gitlab runners attached with my Gitlab repository? Which one is used?"
+??? Question "I have many GitLab runners attached with my GitLab repository? Which one is used?"
 
     This is indeterminate. You can't rely on the order and location
     of execution for a DT.
@@ -300,7 +300,7 @@
     installation of DTaaS. The first-level is HTTP basic authorization
     over secure HTTPS connection. The second-level is the OAuth PKCE
     authorization flow for each user. The OAuth authorization is provider
-    by a Gitlab instance. The DTaaS does not store the account and
+    by a GitLab instance. The DTaaS does not store the account and
     authorization information of users.
 
 ??? Question "Does you platform manage personal data? How is data classified and tagged based on the sensitivity? Who has access to the critical data?"

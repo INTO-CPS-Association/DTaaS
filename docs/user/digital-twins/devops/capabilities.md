@@ -24,7 +24,7 @@ Following every table, there is a summary and list of potential problems.
 | Runner tag **valid** | Job is picked up by runner with relevant tag and completes without error. | ✅ Same as expected. | Goto Preview page. Go to Account. Change Runner Tag. Go back one page. Execute Hello world twin. Verify runner name based on tag (repeat with 2nd runner) |
 | Runner tag **invalid** | Job is never picked up. Runner times out after 10 minutes. | ✅ Same as expected. | Change Runner Tag to "foo" (inexistent). Run Hello World twin. |
 | Runner Tag **no value** | Configuration saves. Running a twin succeeds if appropriate runner exists. | ❌ Not picked up, times out. | Set `run_untagged = false` in local gitlab runner config. Mark "Run untagged jobs" as true in gitlab instance (<https://dtaas-digitaltwin.com/gitlab>). Change Runner Tag to the empty string on app. Run Hello world twin. |
-| Branch **valid** | Job runs with the correct branch and completes without error. | ✅ Same as expected. | Make new branch in gitlab instance project. Change Branch name to "master-2". Execute Hello world twin. Verify ref matches branch in execution log. |
+| Branch **valid** | Job runs with the correct branch and completes without error. | ✅ Same as expected. | Make new branch in GitLab instance project. Change Branch name to "master-2". Execute Hello world twin. Verify ref matches branch in execution log. |
 | Branch **invalid** | Execution tab gracefully displays no twins as branch doesn't exist. | ❌ IF twins are not cached: Throws an error displayed to user: An error occurred while fetching assets: GitbeakerRequestError. IF twins are cached: Job fails. Snackbar says "Execution error for [twin name]". No log available in execution history. | Change Branch name to "master-1" (inexistent). IF twins are cached: Execute Hello world twin. |
 | Group name **valid** | The twin is runnable. | ✅ Same as expected. | Click "reset to defaults". Run twin. |
 | Group name **invalid** | Execution tab gracefully displays no twins as group doesn't exist. | ❌ Same as Branch invalid case. | Change group name to "Foo" (inexistent). IF twins are cached: Execute Hello world twin. |
@@ -57,7 +57,7 @@ error in the HTML (no cache) and otherwise shows stale twins.
 
 | Expected behaviour | Observed behaviour | Test method |
 | ------------------- | ------------------- | ------------- |
-| Both twins run successfully simultaneously. They report the correct runner name in the Execution logs. | ✅ Same as expected. | Set up 2 ubuntu gitlab runners with different tags. Change Runner Tag to first runner's tag. Execute twin. Change Runner Tag to second runner tag. Execute another twin. |
+| Both twins run successfully simultaneously. They report the correct runner name in the Execution logs. | ✅ Same as expected. | Set up 2 ubuntu GitLab runners with different tags. Change Runner Tag to first runner's tag. Execute twin. Change Runner Tag to second runner tag. Execute another twin. |
 | History stays after editing, it is still executing. | ✅ Same as expected. | Execute → Edit settings → Execute. Check – is history still there? Does it look correct? |
 
 **Summary:**

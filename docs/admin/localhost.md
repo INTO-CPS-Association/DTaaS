@@ -14,7 +14,7 @@ setup is shown here.
 
 🗒️ The text starting with `/` at the beginning indicates the URL route
 at which a certain service is available. For example, user workspace
-is available at <https://localhost/user1>.
+is available at <http://localhost/user1>.
 
 ## Requirements
 
@@ -28,7 +28,7 @@ The installation requirements to run this docker version of the DTaaS are:
 !!! tip
     The frontend website requires authorization.
     The default authorization configuration works for _gitlab.com_.
-    If you desire to use locally hosted gitlab instance, please see
+    If you desire to use locally hosted GitLab instance, please see
     the [client docs](client/auth.md).
 <!-- markdownlint-enable MD046 -->
 
@@ -67,7 +67,7 @@ Edit all the fields according to your specific case.
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | username1 | 'user1' | Your gitlab username |
+  | username1 | 'user1' | Your GitLab username |
 
 :clipboard: Important points to note:
 
@@ -127,4 +127,4 @@ Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
 [reactjs](https://krify.co/about-reactjs/),
-[gitlab](https://gitlab.com)
+[GitLab](https://gitlab.com)

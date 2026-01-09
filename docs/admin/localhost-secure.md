@@ -1,14 +1,14 @@
-# Install DTaaS on localhost with Gitlab Integration
+# Install DTaaS on localhost with GitLab Integration
 
 This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
 The installation instructions provided in this README are
 ideal for running the **DTaaS on localhost served over HTTPS connection**.
-**The intention is to integrate Gitlab into DTaaS so that both**
+**The intention is to integrate GitLab into DTaaS so that both**
 **are running on localhost.**
 
-If you do not need gitlab running on localhost, please use
+If you do not need GitLab running on localhost, please use
 the simpler [localhost setup](localhost.md).
 
 ## Design
@@ -60,7 +60,7 @@ cp -R files/user1 files/username
 ```
 
 where _username_ is the selected username to be created (in next steps)
-on Gitlab running at <https://localhost/gitlab>.
+on GitLab running at <https://localhost/gitlab>.
 
 ### Obtain TLS / HTTPS Certificate
 
@@ -97,7 +97,7 @@ Edit all the fields according to your specific case.
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
   | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | username1 | 'user1' | Your gitlab username |
+  | username1 | 'user1' | Your GitLab username |
 
 :clipboard: Important points to note:
 
@@ -110,7 +110,7 @@ Edit all the fields according to your specific case.
 
 ## Run
 
-### Start DTaaS to Integrate Gitlab
+### Start DTaaS to Integrate GitLab
 
 The commands to start and stop the appliation are:
 
@@ -126,28 +126,28 @@ docker compose -f compose.local.secure.yml --env-file .env.local up \
  -d --force-recreate client
 ```
 
-### Start Gitlab
+### Start GitLab
 
 Use the instructions provided in
-[gitlab integration](gitlab/index.md) to bring up
-Gitlab on localhost and the Gitlab service will be available at <https://localhost/gitlab>
+[GitLab integration](gitlab/index.md) to bring up
+GitLab on localhost and the GitLab service will be available at <https://localhost/gitlab>
 
 ### Register OAuth2 Application
 
 The frontend website requires OAuth2 application registration on
-the integrated Gitlab.
+the integrated GitLab.
 The details of Oauth2 app for the frontend website are in
 [client docs](client/auth.md).
 
 The default OAuth client application provided in `env.local.js` works.
 However, if you intend to run an
-[integrated gitlab instance](gitlab/index.md), then
-this application needs to be created on gitlab running at <https://localhost/gitlab>.
+[integrated GitLab instance](gitlab/index.md), then
+this application needs to be created on GitLab running at <https://localhost/gitlab>.
 
 Remember to use <https://localhost/Library> as the Callback URL (`REACT_APP_REDIRECT_URI`).
 
 Please see
-[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+[GitLab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
 documentation for further help with creating this OAuth application.
 
 ### Update Client Website Configuration
@@ -225,4 +225,4 @@ Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
 [reactjs](https://krify.co/about-reactjs/),
-[gitlab](https://gitlab.com)
+[GitLab](https://gitlab.com)

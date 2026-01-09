@@ -13,7 +13,7 @@ has 3 main entities:
   we are trying to verify/know. In our case,
   this is the same as the user of the DTaaS software.
 - **The Client:** This is the entity that wishes to know/verify the identity
-  of a user. In our case, this is the Auth MS (initialised with a Gitlab
+  of a user. In our case, this is the Auth MS (initialised with a GitLab
   application). This shouldn’t be confused with the frontend website of
   DTaaS (referred to as Client in the previous section).
 - **The OAuth2 Identity Provider:** This is the entity that allows the client
@@ -33,25 +33,25 @@ Note: In general, it is possible for the
 Authorization server (which asks
 user for approval) and the Resource (User Identity)
 provider to be 2 different
-servers. However, in our case the Gitlab instance
+servers. However, in our case the GitLab instance
 itself handles both the
 functions, through different API endpoints.
 The concepts remain the same.
 Thus, we only discuss the 3 main entities, the User,
 the OAuth2 Client and
-the Gitlab instance in our discussion.
+the GitLab instance in our discussion.
 
 ### The OAuth2 Client
 
 Many sites allow you to initialise
 an OAuth2 client. For our purposes,
-we will use Gitlab itself, by making
-an ”application” in Gitlab. However,
+we will use GitLab itself, by making
+an ”application” in GitLab. However,
 it is not necessary to initialise a client
 using the same website as the identity provider.
 These are separate things.
 Our OAuth2 client is initialized by creating
-and configuring a Gitlab
+and configuring a GitLab
 instance-wide application.
 There are two main things in this configuration:
 
@@ -98,7 +98,7 @@ The OAuth2 workflow is initiated by the
 Client (Auth MS) whenever it
 requires knowing the identity of the user.
 Briefly, the flow starts when the
-Auth MS sends an authorization request to Gitlab.
+Auth MS sends an authorization request to GitLab.
 The Auth MS tries to
 obtain an access token, using which it can gather
 user information. Once it

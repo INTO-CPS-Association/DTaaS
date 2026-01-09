@@ -14,7 +14,7 @@ A C4 representation of the same diagram is also [available](current-status-devel
 There is a two-level authorization mechanisms in place for the react website
 and the Traefik gateway.
 
-The react website component uses Gitlab for user authorization using
+The react website component uses GitLab for user authorization using
 OAuth protocol.
 
 ### Gateway Authorization

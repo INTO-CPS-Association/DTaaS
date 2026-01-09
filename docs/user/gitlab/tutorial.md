@@ -1,6 +1,6 @@
-# Working with Gitlab
+# Working with GitLab
 
-The DTaaS relies on Gitlab for two purposes.
+The DTaaS relies on GitLab for two purposes.
 
 1. OAuth2 authorisation service
 1. DevOps service
@@ -8,14 +8,14 @@ The DTaaS relies on Gitlab for two purposes.
 The [admin](../../admin/overview.md) documentation covers
 the OAuth2 authorisation configuration.
 This guide covers the use of git commands and project structure
-for Gitlab DevOps service inside the DTaaS.
+for GitLab DevOps service inside the DTaaS.
 
 ## Preparation
 
-The first step is to create a gitlab project with *username*
-in gitlab user group named *dtaas*.
+The first step is to create a GitLab project with *username*
+in GitLab user group named *dtaas*.
 
-![Gitlab project create](create-repo.png)
+![GitLab project create](create-repo.png)
 
 This user needs to have ownership permissions over the project.
 
@@ -35,13 +35,13 @@ the [settings](../website/settings.md) page.
 ## Git commands
 
 The usual git commands and workflows should be used. There are two ways to
-use Gitlab project as a remote git server.
+use GitLab project as a remote git server.
 
 1. Over SSH using personal SSH key
 1. Over HTTPS using
    [personal access tokens (PAT)](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
 
-This tutorial shows use of PAT for working with Gitlab server.
+This tutorial shows use of PAT for working with GitLab server.
 
 First step is to create PAT.
 
@@ -51,16 +51,16 @@ Copy this token and use it to clone the git repository.
 
 ## Library Assets
 
-The Gitlab is used to store the reusable **Library**
+The GitLab is used to store the reusable **Library**
 assets of all users.
 There is a [mandatory structure](../servers/lib/assets.md) for storing and
 using Library assets including digital twins. A properly initialised
-gitlab project should have the following structure.
+GitLab project should have the following structure.
 
 ![Project structure](./user-repo.png)
 
 Please pay special attention to `.gitlab-ci.yml`. It must be a valid
-Gitlab DevOps configuration. You can also check
+GitLab DevOps configuration. You can also check
 [example repo](https://gitlab.com/dtaas/user1) for a sample structure.
 
 For example, with `PAT1` as PAT of
@@ -79,7 +79,7 @@ $git push origin
 
 ## Next Steps
 
-Remember to have a [gitlab runner](../../admin/gitlab/runner.md) integrated
+Remember to have a [GitLab runner](../../admin/gitlab/runner.md) integrated
 with your project repository. There might already be some runners installed
 with your DTaaS application. You can check them on the runners page.
 In addition, you can install your
