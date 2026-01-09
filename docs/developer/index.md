@@ -88,7 +88,7 @@ a development workflow is in place. Each developer should follow these steps:
 1. Once changes are verified, a PR should be made to
    the `feature/distributed-demo` branch of
    the upstream
-   [DTaaS repository](https://github.com/into-cps-association/DTaaS).
+   [DTaaS repository](https://github.com/INTO-CPS-Association/DTaaS).
 1. The PR will be merged after checks by either the
    project administrators or the maintainers.
 
