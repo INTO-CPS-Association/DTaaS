@@ -8,7 +8,8 @@ InfluxDB, RabbitMQ, and Grafana.
 * **Project Initialization:** Generate project structure with config and data directories
 * **Automated Setup:** One command setup of TLS certificates and permissions
 * **Service Management:** Start, stop, and check status of all services
-* **User Management:** Easy creation of user accounts in InfluxDB and RabbitMQ
+* **User Management:** Easy creation of user accounts in InfluxDB,
+RabbitMQ, and ThingsBoard
 * **Cross platform:** Works on Linux, macOS, and Windows
 * **Configuration-driven:** Reads settings from `config/services.env`
 
@@ -48,7 +49,8 @@ structure and run:
    This creates:
    * `config/` directory with configuration templates
    * `data/` directory for service data
-   * `compose.services.secure.yml` for Docker Compose
+   * `compose.services.secure.yml` for main services
+   * `compose.thingsboard.secure.yml` for ThingsBoard and PostgreSQL
 
 2. Update `config/services.env` with your environment values:
    * `SERVICES_UID` - User ID for service file ownership
@@ -74,6 +76,20 @@ This command will:
 * Set up MongoDB certificates and permissions
 * Set up InfluxDB certificates and permissions
 * Set up RabbitMQ certificates and permissions
+* Set up PostgreSQL and ThingsBoard certificates and permissions
+
+### ThingsBoard Database Installation
+
+If you are using ThingsBoard, you need to install its database schema separately.
+This must be done after `setup` and requires PostgreSQL to be running.
+
+```bash
+# 1. Start PostgreSQL
+dtaas-services start -s postgresql
+
+# 2. Wait a moment for PostgreSQL to be ready, then install ThingsBoard
+dtaas-services install-thingsboard
+```
 
 **Permission Requirements:**
 
@@ -166,12 +182,27 @@ dtaas-services generate-project --path /path/to/project
 
 ### `dtaas-services setup`
 
-Performs complete service setup including certificates and permissions.
-
+Performs service setup including certificate copying and permission configuration.
 **Example:**
 
 ```bash
 dtaas-services setup
+```
+
+### `dtaas-services install-thingsboard`
+
+Installs the ThingsBoard database schema. Must be run after `setup` and requires
+PostgreSQL to be running.
+
+**Prerequisites:**
+
+* `dtaas-services setup` must be completed
+* PostgreSQL must be running: `dtaas-services start -s postgresql`
+
+**Example:**
+
+```bash
+dtaas-services install-thingsboard
 ```
 
 ### `dtaas-services start`
@@ -182,6 +213,12 @@ Starts all platform services using Docker Compose.
 
 * `-s, --services` - Comma-separated list of specific services to start
 
+**Service Names:**
+
+* Main platform services: `mongodb`, `grafana`, `influxdb`, `rabbitmq`
+* PostgreSQL database: `postgres` or `postgresql`
+* ThingsBoard IoT platform: `thingsboard` or `thingsboard-ce`
+
 **Examples:**
 
 ```bash
@@ -189,7 +226,10 @@ Starts all platform services using Docker Compose.
 dtaas-services start
 
 # Start specific services
-dtaas-services start --services influxdb,rabbitmq
+dtaas-services start -s influxdb,rabbitmq,thingsboard
+
+# Start PostgreSQL
+dtaas-services start -s postgresql
 ```
 
 ### `dtaas-services stop`
@@ -207,7 +247,7 @@ Stops all running platform services.
 dtaas-services stop
 
 # Stop specific services
-dtaas-services stop -s mongodb,grafana
+dtaas-services stop -s mongodb,grafana,postgresql
 ```
 
 ### `dtaas-services restart`
@@ -225,7 +265,7 @@ Restarts platform services.
 dtaas-services restart
 
 # Restart specific services
-dtaas-services restart --services influxdb
+dtaas-services restart --services influxdb,thingsboard
 ```
 
 ### `dtaas-services remove`
@@ -249,13 +289,13 @@ but directories preserved)
 dtaas-services remove
 
 # Remove specific services
-dtaas-services remove --services influxdb,rabbitmq
+dtaas-services remove --services influxdb,rabbitmq,thingsboard
 
 # Remove all services and their volumes
 dtaas-services remove --volumes
 
 # Remove specific services with volumes
-dtaas-services remove -s mongodb -v
+dtaas-services remove -s mongodb,postgresql -v
 ```
 
 ### `dtaas-services status`
@@ -273,12 +313,12 @@ Shows the current status of all services.
 dtaas-services status
 
 # Show status of specific services
-dtaas-services status --services influxdb
+dtaas-services status --services influxdb,thingsboard
 ```
 
 ### `dtaas-services user add`
 
-Adds user accounts to InfluxDB and RabbitMQ from `config/credentials.csv`.
+Adds user accounts to InfluxDB, RabbitMQ, and ThingsBoard from `config/credentials.csv`.
 
 **Example:**
 

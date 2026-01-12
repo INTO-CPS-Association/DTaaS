@@ -9,7 +9,9 @@ from .config import Config
 from .utils import is_ci
 
 
-def _execute_rabbitmq_command(container: str, command: list, error_context: str) -> tuple[bool, str]:
+def _execute_rabbitmq_command(
+    container: str, command: list, error_context: str
+) -> tuple[bool, str]:
     """Execute a RabbitMQ docker command and return error if it fails.
     Args:
         container: Container name
@@ -36,21 +38,24 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     vhost = username
     # Add user
     success, error_msg = _execute_rabbitmq_command(
-        "rabbitmq", ["rabbitmqctl", "add_user", username, password],
-        f"Failed to add user {username}")
+        "rabbitmq",
+        ["rabbitmqctl", "add_user", username, password],
+        f"Failed to add user {username}",
+    )
     if not success:
         return False, error_msg
     # Add vhost
     success, error_msg = _execute_rabbitmq_command(
-        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost],
-        f"Failed to add vhost {vhost}")
+        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost], f"Failed to add vhost {vhost}"
+    )
     if not success:
         return False, error_msg
     # Set permissions on user's own vhost only
     success, error_msg = _execute_rabbitmq_command(
         "rabbitmq",
         ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"],
-        f"Failed to set permissions on vhost {vhost}")
+        f"Failed to set permissions on vhost {vhost}",
+    )
     return success, error_msg
 
 
@@ -82,7 +87,11 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
             mode="r", newline="", encoding="utf-8"
         ) as creds_file:
             success, error_msg = _create_users_from_credentials(creds_file)
-            return (True, "RabbitMQ users created successfully") if success else (False, error_msg)
+            return (
+                (True, "RabbitMQ users created successfully")
+                if success
+                else (False, error_msg)
+            )
     except (OSError, KeyError) as e:
         return False, f"Error adding RabbitMQ users: {e}"
 

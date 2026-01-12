@@ -33,10 +33,10 @@ def _extract_stderr_line(error_str: str) -> str:
         if len(parts) > 1:
             stderr_part = parts[1].split("'")[0]
             # Get just the first meaningful line of stderr
-            first_line = stderr_part.strip().split('\n')[0]
+            first_line = stderr_part.strip().split("\n")[0]
             return first_line
     # Fallback to first line if no stderr found
-    return error_str.split('\n')[0]
+    return error_str.split("\n")[0]
 
 
 def _format_docker_error(container: str, error_str: str) -> str:

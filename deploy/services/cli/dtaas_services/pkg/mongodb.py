@@ -1,4 +1,5 @@
 """MongoDB user management for DTaaS services"""
+
 import shutil
 import platform
 from pathlib import Path
@@ -7,7 +8,9 @@ from .config import Config
 from .utils import is_ci
 
 
-def create_combined_cert(privkey_path: Path, fullchain_path: Path, combined_path: Path) -> None:
+def create_combined_cert(
+    privkey_path: Path, fullchain_path: Path, combined_path: Path
+) -> None:
     """Create combined.pem from privkey.pem and fullchain.pem.
     Args:
         privkey_path: Path to privkey.pem
@@ -48,11 +51,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
         # Skip permission changes in CI environments (they're read-only)
         if os_type in ("linux", "darwin") and not is_ci():
             combined_path.chmod(0o600)
-            shutil.chown(
-                combined_path,
-                user=mongo_uid,
-                group=mongo_gid
-            )
+            shutil.chown(combined_path, user=mongo_uid, group=mongo_gid)
             msg = (
                 f"combined.pem created with mode 600 and ownership set to "
                 f"{mongo_uid}:{mongo_gid}."

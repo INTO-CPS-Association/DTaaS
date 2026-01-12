@@ -1,14 +1,16 @@
 """Tests for template and project structure functions"""
+
 from unittest.mock import patch
 from dtaas_services.pkg.template import (
     copy_directory_or_file,
     copy_template_to_config,
-    generate_project_structure
+    generate_project_structure,
 )
 
 
 class TestCopyFunctions:
     """Tests for file and directory copy functions"""
+
     def test_copy_directory_or_file_directory(self, tmp_path):
         """Test copying a directory"""
         src_dir = tmp_path / "source"
@@ -20,7 +22,6 @@ class TestCopyFunctions:
         assert (dest_dir / "file.txt").exists()
         assert "Created test_dir/" in result
 
-
     def test_copy_directory_or_file(self, tmp_path):
         """Test copying a file"""
         src_file = tmp_path / "source.txt"
@@ -31,7 +32,6 @@ class TestCopyFunctions:
         assert dest_file.read_text() == "content"
         assert "Created test_file" in result
 
-
     def test_copy_directory_or_file_not_exists(self, tmp_path):
         """Test when source doesn't exist"""
         src_path = tmp_path / "nonexistent"
@@ -39,7 +39,6 @@ class TestCopyFunctions:
         result = copy_directory_or_file(src_path, dest_path, "test")
         assert "Warning" in result
         assert "not found" in result
-
 
     def test_copy_directory_or_file_already_exists(self, tmp_path):
         """Test when destination already exists"""
@@ -50,19 +49,19 @@ class TestCopyFunctions:
         result = copy_directory_or_file(src_dir, dest_dir, "test_dir")
         assert "Skipping" in result
 
-
     def test_copy_template_to_config(self, tmp_path):
         """Test copying template to config"""
         config_dir = tmp_path / "config"
         config_dir.mkdir()
         template_file = config_dir / "services.env.template"
         template_file.write_text("TEMPLATE=value")
-        result = copy_template_to_config(config_dir, "services.env.template", "services.env")
+        result = copy_template_to_config(
+            config_dir, "services.env.template", "services.env"
+        )
         actual_file = config_dir / "services.env"
         assert actual_file.exists()
         assert actual_file.read_text() == "TEMPLATE=value"
         assert "Created config/services.env" in result
-
 
     def test_copy_template_to_config_already_exists(self, tmp_path):
         """Test when actual config already exists"""
@@ -72,7 +71,9 @@ class TestCopyFunctions:
         template_file.write_text("TEMPLATE=value")
         actual_file = config_dir / "services.env"
         actual_file.write_text("EXISTING=value")
-        result = copy_template_to_config(config_dir, "services.env.template", "services.env")
+        result = copy_template_to_config(
+            config_dir, "services.env.template", "services.env"
+        )
         # Should not overwrite existing file
         assert actual_file.read_text() == "EXISTING=value"
         assert result == ""
@@ -102,9 +103,8 @@ class TestGenerateProjectStructure:
         assert (target_dir / "config" / "services.env").exists()
         assert (target_dir / "config" / "credentials.csv").exists()
         # Check data subdirectories
-        for subdir in ['grafana', 'influxdb', 'mongodb', 'rabbitmq']:
+        for subdir in ["grafana", "influxdb", "mongodb", "rabbitmq"]:
             assert (target_dir / "data" / subdir).exists()
-
 
     def test_generate_project_structure_missing_sources(self, tmp_path):
         """Test when source files don't exist"""
@@ -116,7 +116,6 @@ class TestGenerateProjectStructure:
         assert "Warning" in message
         assert target_dir.exists()
 
-
     def test_generate_project_structure_failure(self, tmp_path):
         """Test project generation failure"""
         target_dir = tmp_path / "project"
@@ -124,10 +123,8 @@ class TestGenerateProjectStructure:
         package_root = tmp_path / "nonexistent"
         with patch(
             "dtaas_services.pkg.template.Path.mkdir",
-            side_effect=PermissionError("No permission")
+            side_effect=PermissionError("No permission"),
         ):
-            success, message = generate_project_structure(
-                target_dir, package_root
-            )
+            success, message = generate_project_structure(target_dir, package_root)
             assert success is False
             assert "Failed to generate project" in message

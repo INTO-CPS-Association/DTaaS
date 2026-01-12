@@ -1,4 +1,5 @@
 """Tests for the formatter module"""
+
 from io import StringIO
 from unittest.mock import Mock
 
@@ -8,7 +9,7 @@ from dtaas_services.pkg.formatter import (
     format_container_status,
     format_service_list_status,
     SERVICE_DISPLAY_NAMES,
-    STATUS_INFO
+    STATUS_INFO,
 )
 
 

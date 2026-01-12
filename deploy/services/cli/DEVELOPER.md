@@ -60,7 +60,8 @@ cli/
 ├── dtaas_services/         # Main package directory
 │   ├── __init__.py
 │   ├── cmd.py              # Main CLI commands
-│   ├── compose.services.secure.yml  # Docker Compose configuration (copied by build.py)
+│   ├── compose.services.secure.yml  # Main services Docker Compose configuration (copied by build.py)
+│   ├── compose.thingsboard.secure.yml  # ThingsBoard and PostgreSQL Docker Compose configuration (copied by build.py)
 │   ├── config/             # Configuration files (copied by build.py)
 │   │   ├── services.env.template
 │   │   ├── credentials.csv.template
@@ -69,7 +70,9 @@ cli/
 │   │   ├── grafana/
 │   │   ├── influxdb/
 │   │   ├── mongodb/
-│   │   └── rabbitmq/
+│   │   ├── postgres/
+│   │   ├── rabbitmq/
+│   │   └── thingsboard/
 │   └── pkg/
 │       ├── __init__.py
 │       ├── config.py       # Configuration loader
@@ -133,6 +136,14 @@ The package uses a modular architecture where each service has its own module:
   * `setup_rabbitmq_users()`: Create users and vhosts (user-specific only)
   * `_add_rabbitmq_user()`: Add a user to RabbitMQ with vhost and permissions
 
+* **`thingsboard.py`**: ThingsBoard setup and installation:
+  * `login()`: Authenticate with ThingsBoard API
+  * `change_sysadmin_password_if_needed()`: Update default sysadmin password
+  * `setup_thingsboard_users()`: Create tenants and tenant admins from credentials.csv
+  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates
+    and permissions
+  * `thingsboard_configure()`: Main configuration function for user setup
+
 ### Shared Utilities
 
 #### System & Docker Operations (`pkg/utils.py`)
@@ -183,6 +194,25 @@ The `Service` class automatically loads environment variables from `config/servi
 and sets them in `os.environ` before calling Docker Compose. This ensures all
 Docker Compose variables are properly configured without additional setup.
 
+### Setup Workflow
+
+The CLI provides a two-phase setup workflow:
+
+#### Phase 1: Setup (`dtaas-services setup`)
+
+* Copies and normalizes TLS certificates
+* Sets up certificate permissions and ownership
+* Creates required data and log directories
+* Configures all services (MongoDB, InfluxDB, RabbitMQ, ThingsBoard, PostgreSQL)
+* No service startup or database initialization
+
+#### Phase 2: ThingsBoard Installation (Optional, `dtaas-services install-thingsboard`)
+
+* Requires PostgreSQL to be running (must be started manually)
+* Initializes ThingsBoard database schema (one-time operation)
+* Creates default system administrator account
+* Separate command to ensure PostgreSQL is healthy before initialization
+
 ### User Management Best Practices
 
 #### InfluxDB Users
@@ -199,6 +229,14 @@ Docker Compose variables are properly configured without additional setup.
 * **Vhost Isolation**: Each user only has access to their own vhost (username-based).
   The default "/" vhost is NOT accessible to regular users;
   only administrators should use it.
+
+#### ThingsBoard Users
+
+* **Tenant Management**: Each credential entry creates a separate tenant in ThingsBoard
+* **Admin Creation**: A tenant admin user is created for each tenant using the provided
+  credentials
+* **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
+  using the `dtaas-services user add` command
 * `test_config.py`: Tests for configuration loading and validation
 * `test_service.py`: Tests for Docker Compose service management operations
 * `test_cert.py`: Tests for certificate copying and normalization

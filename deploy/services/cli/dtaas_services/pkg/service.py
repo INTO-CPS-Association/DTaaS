@@ -8,12 +8,16 @@ from pathlib import Path
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
 from .config import Config
-from .formatter import RemovedService
+from .formatter import RemovedService, normalize_service_name
 
 DOCKER_OPERATION_EXCEPTIONS = (
     subprocess.CalledProcessError,
-    OSError, KeyError,
-    ValueError, TypeError,)
+    OSError,
+    KeyError,
+    ValueError,
+    TypeError,
+)
+
 
 class Service:
     """
@@ -32,6 +36,14 @@ class Service:
             compose_file = package_dir / "compose.services.secure.yml"
         return compose_file
 
+    def _resolve_thingsboard_compose_file(self) -> Path:
+        """Resolve ThingsBoard compose file path with fallback to package location."""
+        base_dir = Config.get_base_dir()
+        compose_file = base_dir / "compose.thingsboard.secure.yml"
+        if not compose_file.exists():
+            package_dir = Path(__file__).parent.parent
+            compose_file = package_dir / "compose.thingsboard.secure.yml"
+        return compose_file
 
     def _setup_environment_variables(self) -> None:
         """Load environment variables from config and set them in os.environ."""
@@ -40,25 +52,31 @@ class Service:
             if value is not None:
                 os.environ[key] = str(value)
 
-
     def _setup_project_name(self) -> None:
         """Set explicit project name from hostname for docker compose."""
         hostname = os.environ.get("HOSTNAME")
         if not hostname:
-            raise RuntimeError("HOSTNAME environment variable must be set in services.env")
+            raise RuntimeError(
+                "HOSTNAME environment variable must be set in services.env"
+            )
         project_name = hostname.lower().replace(".", "-").replace("_", "-")
         os.environ["COMPOSE_PROJECT_NAME"] = project_name
-
 
     def __init__(self) -> None:
         """
         Initialize service setup.
         """
         self.compose_file = self._resolve_compose_file()
+        self.thingsboard_compose_file = self._resolve_thingsboard_compose_file()
         self._setup_environment_variables()
         self._setup_project_name()
-        self.docker = DockerClient(compose_files=[self.compose_file])
 
+        # Use both compose files
+        compose_files = [self.compose_file]
+        if self.thingsboard_compose_file.exists():
+            compose_files.append(self.thingsboard_compose_file)
+
+        self.docker = DockerClient(compose_files=compose_files)
 
     def _check_compose_file(self) -> Tuple[Optional[Exception], bool]:
         """Check if compose file exists.
@@ -71,7 +89,6 @@ class Service:
             )
             return err, False
         return None, True
-
 
     def _handle_docker_error(
         self, operation: str, exc: Exception
@@ -91,14 +108,12 @@ class Service:
         # For other exceptions, include type information
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
 
-
     def _start_services(self, service_list: Optional[list]) -> None:
         """Start services or all if service_list is None."""
         if service_list:
             self.docker.compose.up(service_list, detach=True)
         else:
             self.docker.compose.up(detach=True)
-
 
     def _stop_services(self, service_list: Optional[list]) -> None:
         """Stop services or all if service_list is None."""
@@ -107,14 +122,12 @@ class Service:
         else:
             self.docker.compose.stop()
 
-
     def _restart_services(self, service_list: Optional[list]) -> None:
         """Restart services or all if service_list is None."""
         if service_list:
             self.docker.compose.restart(service_list)
         else:
             self.docker.compose.restart()
-
 
     def _execute_compose_action(
         self, action: str, service_list: Optional[list]
@@ -133,7 +146,6 @@ class Service:
             raise ValueError(f"Invalid action: {action}")
         action_handlers[action](service_list)
 
-
     def _get_success_message(self, action: str) -> str:
         """Get success message for an action."""
         messages = {
@@ -143,13 +155,13 @@ class Service:
         }
         return messages.get(action, "Operation completed successfully")
 
-
-    def _handle_service_action_error(self, action: str, exc: Exception) -> Tuple[Optional[Exception], str]:
+    def _handle_service_action_error(
+        self, action: str, exc: Exception
+    ) -> Tuple[Optional[Exception], str]:
         """Handle errors from service action execution."""
         if isinstance(exc, ValueError):
             return exc, str(exc)
         return self._handle_docker_error(f"{action} services", exc)
-
 
     def manage_services(
         self, action: str, service_list: Optional[list] = None
@@ -166,12 +178,16 @@ class Service:
         err, exists = self._check_compose_file()
         if not exists:
             return err, str(err)
+
+        # Normalize service names if provided
+        if service_list:
+            service_list = [normalize_service_name(s) for s in service_list]
+
         try:
             self._execute_compose_action(action, service_list)
             return None, self._get_success_message(action)
         except (ValueError, *DOCKER_OPERATION_EXCEPTIONS) as e:
             return self._handle_service_action_error(action, e)
-
 
     def _get_all_service_names(self) -> Tuple[Optional[Exception], Set[str]]:
         """
@@ -189,15 +205,28 @@ class Service:
             err_exc, _ = self._handle_docker_error("get service names", e)
             return err_exc, set()
 
-
     def _filter_containers_by_service(self, all_containers, all_services: set) -> dict:
-        """Filter containers to only include those matching service names."""
-        return {
-            container.name: container
-            for container in all_containers
-            if container.name in all_services
-        }
+        """Filter containers to only include those matching service names.
 
+        Matches containers by either:
+        1. Container name matches service name
+        2. Container has a com.docker.compose.service label matching the service name
+        """
+        container_map = {}
+        for container in all_containers:
+            # Check if container name matches a service name
+            if container.name in all_services:
+                container_map[container.name] = container
+            # Check if container has a compose service label
+            elif hasattr(container, "config") and container.config.labels:
+                service_label = container.config.labels.get(
+                    "com.docker.compose.service"
+                )
+                if service_label and service_label in all_services:
+                    # Use the service name as the key, not container name
+                    container_map[service_label] = container
+
+        return container_map
 
     def _get_all_containers(self) -> Tuple[Optional[Exception], dict]:
         """
@@ -210,7 +239,9 @@ class Service:
             err, all_services = self._get_all_service_names()
             if err is not None:
                 return err, {}
-            container_map = self._filter_containers_by_service(all_containers, all_services)
+            container_map = self._filter_containers_by_service(
+                all_containers, all_services
+            )
             return None, container_map
         except DockerException:
             err = RuntimeError(
@@ -221,17 +252,19 @@ class Service:
             err_exc, _ = self._handle_docker_error("get containers", e)
             return err_exc, {}
 
-
-    def _get_services_to_check(self, all_services: set,
-                               service_list: Optional[list] = None) -> set:
+    def _get_services_to_check(
+        self, all_services: set, service_list: Optional[list] = None
+    ) -> set:
         """Determine which services to check based on filter."""
         if service_list:
             return set(service_list) & all_services
         return all_services
 
-
     def _build_status_result(
-        self, all_services: set, container_map: dict, service_list: Optional[list] = None
+        self,
+        all_services: set,
+        container_map: dict,
+        service_list: Optional[list] = None,
     ) -> list:
         """
         Build the status result list for services.
@@ -245,8 +278,8 @@ class Service:
         services_to_check = self._get_services_to_check(all_services, service_list)
         return [
             container_map.get(service_name) or RemovedService(service_name)
-            for service_name in services_to_check]
-
+            for service_name in services_to_check
+        ]
 
     def _fetch_status_data(
         self, service_list: Optional[list] = None
@@ -263,7 +296,6 @@ class Service:
             return err, []
         result = self._build_status_result(all_services, container_map, service_list)
         return None, result
-
 
     def get_status(
         self, service_list: Optional[list] = None
@@ -286,20 +318,17 @@ class Service:
             err_exc, _ = self._handle_docker_error("get service status", e)
             return err_exc, []
 
-
     def _get_data_subdirectories(self, service_list: Optional[list] = None) -> list:
         """Get list of data subdirectories to clean."""
         if service_list:
             return service_list
-        return ["grafana", "influxdb", "mongodb", "rabbitmq"]
-
+        return ["grafana", "influxdb", "mongodb", "postgres", "rabbitmq", "thingsboard"]
 
     def _remove_and_recreate_directory(self, path: Path) -> None:
         """Remove directory and recreate it empty."""
         if path.exists():
             shutil.rmtree(path, ignore_errors=True)
         path.mkdir(parents=True, exist_ok=True)
-
 
     def _clean_data_directories(self, service_list: Optional[list] = None) -> None:
         """Clean and recreate data directories for services.
@@ -312,22 +341,20 @@ class Service:
         for subdir in data_subdirs:
             self._remove_and_recreate_directory(data_dir / subdir)
 
-
-    def _remove_docker_services(self, service_list: Optional[list] = None,
-                                remove_volumes: bool = False) -> None:
+    def _remove_docker_services(
+        self, service_list: Optional[list] = None, remove_volumes: bool = False
+    ) -> None:
         """Execute docker compose remove/down command."""
         if service_list:
             self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
         else:
             self.docker.compose.down(volumes=remove_volumes)
 
-
     def _get_remove_message(self, remove_volumes: bool) -> str:
         """Get success message for remove operation."""
         if remove_volumes:
             return "Services and data removed successfully"
         return "Services removed successfully"
-
 
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
@@ -346,6 +373,10 @@ class Service:
         err, exists = self._check_compose_file()
         if not exists:
             return err, str(err)
+
+        # Normalize service names if provided
+        if service_list:
+            service_list = [normalize_service_name(s) for s in service_list]
 
         try:
             self._remove_docker_services(service_list, remove_volumes)

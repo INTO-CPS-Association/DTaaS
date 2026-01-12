@@ -18,6 +18,7 @@ click = "^8.1.7"
 python-dotenv = "^1.0.1"
 python-on-whales = "^0.75.0"
 rich = "^14.2.0"
+requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

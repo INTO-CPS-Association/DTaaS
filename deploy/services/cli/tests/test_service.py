@@ -1,10 +1,12 @@
 # pylint: disable=redefined-outer-name
 """Tests for Service class and Docker operations"""
+
 import subprocess
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 import pytest
 from dtaas_services.pkg.service import Service
+
 
 # Patch Config and DockerClient for all tests in this module
 @pytest.fixture(autouse=True)
@@ -12,8 +14,9 @@ def patch_service_deps(monkeypatch):
     """Patch dependencies for Service tests"""
     # Set HOSTNAME environment variable for Service class
     monkeypatch.setenv("HOSTNAME", "test-hostname")
-    with patch("dtaas_services.pkg.service.Config") as mock_config, \
-         patch("dtaas_services.pkg.service.DockerClient") as mock_docker_client:
+    with patch("dtaas_services.pkg.service.Config") as mock_config, patch(
+        "dtaas_services.pkg.service.DockerClient"
+    ) as mock_docker_client:
         # Mock Config instance and its env attribute
         mock_config_instance = Mock()
         mock_config_instance.env = {}
@@ -190,9 +193,9 @@ def test_stop_services_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.manage_services("stop", ['grafana', 'influxdb'])
+        err, _ = service.manage_services("stop", ["grafana", "influxdb"])
     assert err is None
-    mock_docker.compose.stop.assert_called_once_with(['grafana', 'influxdb'])
+    mock_docker.compose.stop.assert_called_once_with(["grafana", "influxdb"])
 
 
 def test_stop_services_compose_file_not_found(patch_service_deps):
@@ -244,9 +247,9 @@ def test_restart_services_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.manage_services("restart", ['grafana'])
+        err, _ = service.manage_services("restart", ["grafana"])
     assert err is None
-    mock_docker.compose.restart.assert_called_once_with(['grafana'])
+    mock_docker.compose.restart.assert_called_once_with(["grafana"])
 
 
 def test_restart_services_compose_file_not_found(patch_service_deps):
@@ -315,7 +318,7 @@ def test_get_status_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, containers = service.get_status(['grafana'])
+        err, containers = service.get_status(["grafana"])
     assert err is None
     # Should contain the grafana container
     assert any(c.name == "grafana" for c in containers)
@@ -396,11 +399,11 @@ def test_remove_services_with_service_list(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True):
-        err, _ = service.remove_services(['grafana', 'influxdb'])
+        err, _ = service.remove_services(["grafana", "influxdb"])
 
     assert err is None
     mock_docker.compose.rm.assert_called_once_with(
-        ['grafana', 'influxdb'], stop=True, volumes=False
+        ["grafana", "influxdb"], stop=True, volumes=False
     )
 
 

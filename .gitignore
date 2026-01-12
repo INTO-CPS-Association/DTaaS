@@ -223,7 +223,11 @@ docker/conf.dev
 deploy/services/data
 deploy/services/config
 deploy/services/cli/compose.services.secure.yml
+deploy/services/cli/compose.thingsboard.secure.yml
+
 
 deploy/services/cli/data
 deploy/services/cli/config
 deploy/services/cli/test-output
+deploy/services/cli/log
+

@@ -8,9 +8,10 @@ from python_on_whales import Container
 
 class RemovedService:
     """Placeholder class for removed services to show in status."""
+
     def __init__(self, name: str) -> None:
         self.name = name
-        self.state = type('obj', (object,), {'status': 'removed'})
+        self.state = type("obj", (object,), {"status": "removed"})
 
 
 # Service name mapping for display
@@ -20,6 +21,13 @@ SERVICE_DISPLAY_NAMES = {
     "grafana": "Grafana",
     "influxdb": "InfluxDB",
     "postgres": "PostgreSQL",
+    "thingsboard-ce": "Thingsboard",
+}
+
+# User input to actual service name mapping
+USER_TO_SERVICE_NAME = {
+    "thingsboard": "thingsboard-ce",
+    "postgresql": "postgres",
 }
 
 # Status emoji and text mapping
@@ -37,6 +45,18 @@ STATUS_INFO = {
 def _get_display_name(service_name: str) -> str:
     """Get display name for a service."""
     return SERVICE_DISPLAY_NAMES.get(service_name, service_name.title())
+
+
+def normalize_service_name(user_input: str) -> str:
+    """Convert user input service name to actual compose service name.
+
+    Args:
+        user_input: Service name as typed by user (e.g., 'thingsboard')
+
+    Returns:
+        Actual service name in compose file (e.g., 'thingsboard-ce')
+    """
+    return USER_TO_SERVICE_NAME.get(user_input.lower(), user_input.lower())
 
 
 def _format_status_display(state: str) -> str:
@@ -73,7 +93,9 @@ def format_container_status(
     console.print(table)
 
 
-def _sort_service_names(services: dict, all_services: List[str], table: Table) -> List[str]:
+def _sort_service_names(
+    services: dict, all_services: List[str], table: Table
+) -> List[str]:
     """Return a sorted list of service names."""
     sorted_services = sorted(all_services)
     for service_name in sorted_services:

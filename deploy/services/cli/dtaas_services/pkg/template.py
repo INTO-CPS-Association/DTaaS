@@ -55,6 +55,7 @@ def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -
         ("config", "config"),
         ("data", "data"),
         ("compose.services.secure.yml", "compose.services.secure.yml"),
+        ("compose.thingsboard.secure.yml", "compose.thingsboard.secure.yml"),
     ]
     for src_item, dest_item in items_to_copy:
         src_path = package_root / src_item
@@ -80,7 +81,14 @@ def _copy_template_configs(target_dir: Path, messages: list) -> None:
 def _create_data_subdirs(target_dir: Path) -> None:
     """Create data subdirectories for services."""
     data_dir = target_dir / "data"
-    data_subdirs = ["grafana", "influxdb", "mongodb", "rabbitmq"]
+    data_subdirs = [
+        "grafana",
+        "influxdb",
+        "mongodb",
+        "postgres",
+        "rabbitmq",
+        "thingsboard",
+    ]
     for subdir in data_subdirs:
         (data_dir / subdir).mkdir(parents=True, exist_ok=True)
 

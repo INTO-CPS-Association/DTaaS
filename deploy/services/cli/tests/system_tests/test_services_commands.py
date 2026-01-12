@@ -2,6 +2,7 @@
 This file runs end-to-end tests for services commands.
 These tests execute real commands with actual services and verify expected behavior.
 """
+
 import subprocess
 import pytest
 from rich.console import Console
@@ -12,13 +13,16 @@ console = Console()
 pytestmark = pytest.mark.system
 AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana", "influxdb"]
 
+
 @pytest.fixture(scope="module")
 def ensure_services_stopped():
     """Clean up services after all tests complete"""
     yield
     # Final cleanup after all tests
     for service in AVAILABLE_SERVICES:
-        subprocess.run(["docker", "rm", "-f", service], check=False, capture_output=True)
+        subprocess.run(
+            ["docker", "rm", "-f", service], check=False, capture_output=True
+        )
 
 
 @pytest.fixture(autouse=True)
@@ -27,7 +31,9 @@ def cleanup_between_tests():
     yield
     # After each test, force remove only our service containers
     for service in AVAILABLE_SERVICES:
-        subprocess.run(["docker", "rm", "-f", service], check=False, capture_output=True)
+        subprocess.run(
+            ["docker", "rm", "-f", service], check=False, capture_output=True
+        )
 
 
 def run_command(cmd_list, check=True):
@@ -40,12 +46,7 @@ def run_command(cmd_list, check=True):
         subprocess.CompletedProcess with stdout, stderr, and returncode
     """
     try:
-        result = subprocess.run(
-            cmd_list,
-            capture_output=True,
-            text=True,
-            check=check
-        )
+        result = subprocess.run(cmd_list, capture_output=True, text=True, check=check)
         return result
     except subprocess.CalledProcessError as e:
         # Check if it's a permission error
@@ -61,13 +62,15 @@ def run_command(cmd_list, check=True):
                 "   Then run without sudo:\n"
                 "   [dim]$ {0}[/dim]\n\n"
                 "[cyan]2. Alternative - Use sudo:[/cyan]\n"
-                "   [dim]$ sudo {0}[/dim]".format(' '.join(cmd_list)),
+                "   [dim]$ sudo {0}[/dim]".format(" ".join(cmd_list)),
                 title="[bold red]❌ Docker Permission Error[/bold red]",
                 border_style="red",
-                expand=False
+                expand=False,
             )
             console.print(error_panel)
-            raise subprocess.CalledProcessError(e.returncode, e.cmd, e.output, e.stderr) from e
+            raise subprocess.CalledProcessError(
+                e.returncode, e.cmd, e.output, e.stderr
+            ) from e
 
         # Print detailed error information for other failures
         stdout_text = f"[dim]{e.stdout[:500]}[/dim]" if e.stdout else "[dim]None[/dim]"
@@ -80,7 +83,7 @@ def run_command(cmd_list, check=True):
             f"[yellow]STDERR:[/yellow]\n{stderr_text}",
             title="[bold red]❌ Command Failed[/bold red]",
             border_style="red",
-            expand=False
+            expand=False,
         )
         console.print(error_panel)
         raise
@@ -103,7 +106,7 @@ def get_service_status(service_names=None):
             "[yellow]Failed to retrieve service status from Service class[/yellow]\n\n"
             f"[yellow]Error:[/yellow] {err}",
             title="[bold red]❌ Service Status Retrieval Failed[/bold red]",
-            border_style="red"
+            border_style="red",
         )
         console.print(error_panel)
         return {}
@@ -130,13 +133,15 @@ def assert_command_success(result, operation_name):
         operation_name: Human-readable name of the operation
     """
     if result.returncode != 0:
-        stderr_text = f"[dim]{result.stderr[:500]}[/dim]" if result.stderr else "[dim]None[/dim]"
+        stderr_text = (
+            f"[dim]{result.stderr[:500]}[/dim]" if result.stderr else "[dim]None[/dim]"
+        )
         error_panel = Panel(
             f"[yellow]Operation:[/yellow] {operation_name}\n"
             f"[yellow]Exit Code:[/yellow] [bold red]{result.returncode}[/bold red]\n\n"
             f"[yellow]STDERR:[/yellow]\n{stderr_text}",
             title=f"[bold red]❌ {operation_name} Failed[/bold red]",
-            border_style="red"
+            border_style="red",
         )
         console.print(error_panel)
         raise AssertionError(f"{operation_name} failed: {result.stderr}")
@@ -165,7 +170,7 @@ def assert_service_states(status, expected_states):
         error_panel = Panel(
             "[yellow]Service State Assertion Failed[/yellow]\n\n" + "\n".join(failures),
             title="[bold red]❌ Service State Mismatch[/bold red]",
-            border_style="red"
+            border_style="red",
         )
         console.print(error_panel)
         raise AssertionError("Service state assertion failed")
@@ -184,7 +189,9 @@ def test_setup_start_status_all_services(ensure_services_stopped):
     # Step 3: Check status of all services
     status = get_service_status()
     # Verify all services are running
-    expected_states = {service: ["running", "restarting"] for service in AVAILABLE_SERVICES}
+    expected_states = {
+        service: ["running", "restarting"] for service in AVAILABLE_SERVICES
+    }
     assert_service_states(status, expected_states)
 
 
@@ -208,7 +215,7 @@ def test_stop_influxdb_service(ensure_services_stopped):
         "influxdb": ["stopped", "exited"],
         "rabbitmq": ["running", "restarting"],
         "mongodb": ["running", "restarting"],
-        "grafana": ["running", "restarting"]
+        "grafana": ["running", "restarting"],
     }
     assert_service_states(status, expected_states)
 
@@ -232,7 +239,7 @@ def test_stop_multiple_services(ensure_services_stopped):
         "rabbitmq": ["stopped", "exited"],
         "mongodb": ["stopped", "exited"],
         "grafana": ["running", "restarting"],
-        "influxdb": ["running", "restarting"]
+        "influxdb": ["running", "restarting"],
     }
     assert_service_states(status, expected_states)
 
@@ -248,9 +255,7 @@ def test_start_single_service(ensure_services_stopped):
 
     # Only check and assert for rabbitmq
     status = get_service_status(["rabbitmq"])
-    expected_states = {
-        "rabbitmq": ["running", "restarting"]
-    }
+    expected_states = {"rabbitmq": ["running", "restarting"]}
     assert_service_states(status, expected_states)
 
 
@@ -265,7 +270,9 @@ def test_start_stop_start_cycle(ensure_services_stopped):
 
     # Verify running
     status = get_service_status()
-    expected_states = {service: ["running", "restarting"] for service in AVAILABLE_SERVICES}
+    expected_states = {
+        service: ["running", "restarting"] for service in AVAILABLE_SERVICES
+    }
     assert_service_states(status, expected_states)
     # Stop all
     result = run_command(["dtaas-services", "stop"])

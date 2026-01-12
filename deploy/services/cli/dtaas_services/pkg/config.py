@@ -1,4 +1,5 @@
 """Configuration management for DTaaS services"""
+
 import os
 import platform
 from pathlib import Path
@@ -22,13 +23,11 @@ class Config:
         load_dotenv(dotenv_path=self.env_path, override=True)
         self.env = dict(os.environ)
 
-
     @staticmethod
     def _is_running_from_venv() -> bool:
         """Check if running from a virtual environment (venv or site-packages)."""
         file_path = Path(__file__).resolve()
-        return 'site-packages' in str(file_path) or 'venv' in str(file_path)
-
+        return "site-packages" in str(file_path) or "venv" in str(file_path)
 
     @staticmethod
     def _get_windows_base_dir() -> Path:
@@ -37,7 +36,6 @@ class Config:
             return Path.cwd().parent
         # Running from source: Go up from dtaas_services/pkg/config.py to deploy/services/
         return Path(__file__).parent.parent.parent.parent
-
 
     @staticmethod
     def get_base_dir() -> Path:
@@ -57,12 +55,11 @@ class Config:
             return Path.cwd()
 
         # Running from source in DTaaS repository (development workflow)
-        if platform.system().lower() in ['linux', 'darwin']:
+        if platform.system().lower() in ["linux", "darwin"]:
             return Path.cwd().parent
 
         # Windows: Use helper to determine correct path
         return Config._get_windows_base_dir()
-
 
     def get_value(self, key: str) -> str:
         """Gets a required configuration value from the environment file."""

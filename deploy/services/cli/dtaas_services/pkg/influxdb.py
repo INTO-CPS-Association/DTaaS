@@ -67,7 +67,8 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
         Tuple of (success, users dict, error message if any)
     """
     success, users_json_str = execute_docker_command(
-        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False)
+        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False
+    )
     if not success:
         return False, {}, f"Failed to retrieve user list: {users_json_str}"
     success, users_json_list, error_msg = _parse_json_response(users_json_str)
@@ -85,7 +86,8 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
         Tuple of (success, set of org names, error message if any)
     """
     success, orgs_json_str = execute_docker_command(
-        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False)
+        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False
+    )
     if not success:
         return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
     success, orgs_json_list, error_msg = _parse_json_response(orgs_json_str)
@@ -112,21 +114,43 @@ def _setup_user_org_bucket(
     # Create organization only if it doesn't exist
     if name not in existing_orgs:
         success, error_msg = _execute_influxdb_command(
-            ["influx", "org", "create", "--skip-verify", "--name", name, "--description", name],
-            f"Failed to create organization {name}")
+            [
+                "influx",
+                "org",
+                "create",
+                "--skip-verify",
+                "--name",
+                name,
+                "--description",
+                name,
+            ],
+            f"Failed to create organization {name}",
+        )
         if not success:
             return False, error_msg
     # Add user as owner to organization
     success, error_msg = _execute_influxdb_command(
-        ["influx", "org", "members", "add", "--skip-verify", "--name",
-         name, "--owner", "-m", user_id],
-        f"Failed to add user {user_id} as owner to {name}")
+        [
+            "influx",
+            "org",
+            "members",
+            "add",
+            "--skip-verify",
+            "--name",
+            name,
+            "--owner",
+            "-m",
+            user_id,
+        ],
+        f"Failed to add user {user_id} as owner to {name}",
+    )
     if not success:
         return False, error_msg
     # Create bucket
     success, error_msg = _execute_influxdb_command(
         ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
-        f"Failed to create bucket {name}")
+        f"Failed to create bucket {name}",
+    )
     return success, error_msg
 
 
@@ -204,7 +228,11 @@ def setup_influxdb_users() -> tuple[bool, str]:
             mode="r", newline="", encoding="utf-8"
         ) as creds_file:
             success, error_msg = _execute_setup_steps(creds_file)
-            return (True, "InfluxDB users created successfully") if success else (False, error_msg)
+            return (
+                (True, "InfluxDB users created successfully")
+                if success
+                else (False, error_msg)
+            )
     except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding InfluxDB users: {e}"
 

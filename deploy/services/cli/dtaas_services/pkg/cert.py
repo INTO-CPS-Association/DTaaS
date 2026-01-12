@@ -93,7 +93,7 @@ def _copy_files(source_dir: Path, certs_dir: Path) -> None:
     Args:
         source_dir: Source directory
         certs_dir: Destination directory
-        """
+    """
     certs_dir.mkdir(parents=True, exist_ok=True)
     for path in source_dir.glob("*"):
         if path.is_file():
