@@ -32,9 +32,9 @@ def add():
     Specify the list in dtaas.toml [users].add\n
     """
 
-    configObj = configPkg.Config()
+    config_obj = configPkg.Config()
 
-    err = userPkg.add_users(configObj)
+    err = userPkg.add_users(config_obj)
     if err is not None:
         raise click.ClickException("Error while adding users: " + str(err))
     click.echo("Users added successfully")
@@ -47,9 +47,9 @@ def delete():
     Specify the users in dtaas.toml [users].delete\n
     """
 
-    configObj = configPkg.Config()
+    config_obj = configPkg.Config()
 
-    err = userPkg.delete_user(configObj)
+    err = userPkg.delete_user(config_obj)
     if err is not None:
         raise click.ClickException("Error while deleting users: " + str(err))
     click.echo("User deleted successfully")

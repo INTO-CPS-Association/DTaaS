@@ -61,12 +61,14 @@ def replace_all(obj, mapping):
 
 
 def replace_string(s, mapping):
+    """Replaces all placeholders in the string with values from the mapping"""
     for key in mapping:
         s = s.replace(key, mapping[key])
     return s, None
 
 
 def replace_list(arr, mapping):
+    """Replaces all placeholders in the list with values from the mapping"""
     for ind, val in enumerate(arr):
         arr[ind], err = replace_all(val, mapping)
         if err is not None:
@@ -75,6 +77,7 @@ def replace_list(arr, mapping):
 
 
 def replace_dict(dictionary, mapping):
+    """Replaces all placeholders in the dictionary with values from the mapping"""
     for key in dictionary:
         if not isinstance(key, str):
             return None, Exception("Config substitution failed: Key is not a string")
@@ -85,5 +88,6 @@ def replace_dict(dictionary, mapping):
 
 
 def check_error(err):
+    """Checks if error is not None and raises it"""
     if err is not None:
         raise err

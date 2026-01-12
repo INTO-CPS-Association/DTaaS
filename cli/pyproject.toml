@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas"
-version = "0.2.0"
+version = "0.2.1"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
@@ -9,17 +9,17 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-PyYAML = "^6.0.2"
-click = "^8.1.7"
-tomlkit = "^0.13.2"
+PyYAML = "^6.0.3"
+click = "^8.3.1"
+tomlkit = "^0.13.3"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
-pylint = "^3.3.1"
-pytest-cov = "^6.0.0"
-setuptools = "^80.0.0"
-zipp = "^3.19.1"
-safety = "^3.6.2"
+pytest = "^9.0.2"
+pylint = "^4.0.4"
+pytest-cov = "^7.0.0"
+setuptools = "^80.9.0"
+zipp = "^3.23.0"
+safety = "^3.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=80.0.0"]
