@@ -61,7 +61,7 @@ def _handle_service_command(
         console = Console()
         _print_operation_status(console, meta, service_list)
         with console.status(
-            f"[bold {meta.color}]{meta.status_msg}" f"[/bold {meta.color}]",
+            f"[bold {meta.color}]{meta.status_msg} [/bold {meta.color}]",
             spinner="dots",
         ):
             err, msg = operation_func(service_list)
@@ -190,7 +190,7 @@ def install_thingsboard():
                 "(this may take a few minutes)...[/cyan]"
             )
             with console.status(
-                "[bold cyan]Installing ThingsBoard " "schema...[/bold cyan]",
+                "[bold cyan]Installing ThingsBoard schema...[/bold cyan]",
                 spinner="dots",
             ):
                 docker.compose.run(

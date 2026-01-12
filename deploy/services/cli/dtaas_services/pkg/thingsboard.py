@@ -14,6 +14,8 @@ from .config import Config
 from .cert import copy_certs
 from .utils import is_ci
 
+PRIV_KEY_FILENAME = "privkey.pem"
+FULLCHAIN_FILENAME = "fullchain.pem"
 
 def build_base_url() -> str:
     """Build ThingsBoard base URL from environment variables."""
@@ -421,8 +423,8 @@ def _setup_postgres_certs(
 ) -> Tuple[bool, str]:
     """Set up PostgreSQL certificates with proper permissions."""
     try:
-        privkey_path = certs_dir / "privkey.pem"
-        fullchain_path = certs_dir / "fullchain.pem"
+        privkey_path = certs_dir / PRIV_KEY_FILENAME
+        fullchain_path = certs_dir / FULLCHAIN_FILENAME
         postgres_key_path = certs_dir / "postgres.key"
         postgres_crt_path = certs_dir / "postgres.crt"
 
@@ -443,8 +445,8 @@ def _setup_thingsboard_certs(
 ) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
     try:
-        privkey_path = certs_dir / "privkey.pem"
-        fullchain_path = certs_dir / "fullchain.pem"
+        privkey_path = certs_dir / PRIV_KEY_FILENAME
+        fullchain_path = certs_dir / FULLCHAIN_FILENAME
         tb_privkey_path = certs_dir / "thingsboard-privkey.pem"
         tb_fullchain_path = certs_dir / "thingsboard-fullchain.pem"
 
@@ -520,8 +522,8 @@ def _get_config_values() -> Tuple[Config, Path, str, Path, int, int, int, int]:
 
 def _verify_certificates_exist(certs_dir: Path) -> Tuple[bool, str]:
     """Verify normalized certificates exist."""
-    privkey_path = certs_dir / "privkey.pem"
-    fullchain_path = certs_dir / "fullchain.pem"
+    privkey_path = certs_dir / PRIV_KEY_FILENAME
+    fullchain_path = certs_dir / FULLCHAIN_FILENAME
 
     if not privkey_path.exists() or not fullchain_path.exists():
         return False, f"Normalized certificates not found in {certs_dir}"
