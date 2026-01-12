@@ -26,7 +26,9 @@ def mock_service_setup():
         "dtaas_services.cmd.permissions_influxdb"
     ) as mock_influxdb, patch(
         "dtaas_services.cmd.permissions_rabbitmq"
-    ) as mock_rabbitmq, patch("dtaas_services.cmd.check_root_unix") as mock_check_root:
+    ) as mock_rabbitmq, patch(
+        "dtaas_services.cmd.permissions_thingsboard"
+    ) as mock_thingsboard, patch("dtaas_services.cmd.check_root_unix") as mock_check_root:
         service_instance = Mock()
         mock_service_class.return_value = service_instance
         yield {
@@ -36,6 +38,7 @@ def mock_service_setup():
             "mongodb": mock_mongodb,
             "influxdb": mock_influxdb,
             "rabbitmq": mock_rabbitmq,
+            "thingsboard": mock_thingsboard,
             "check_root": mock_check_root,
         }
 
@@ -62,6 +65,7 @@ def test_setup_success(runner, mock_service_setup):
     mock_service_setup["mongodb"].return_value = (True, "MongoDB OK")
     mock_service_setup["influxdb"].return_value = (True, "InfluxDB OK")
     mock_service_setup["rabbitmq"].return_value = (True, "RabbitMQ OK")
+    mock_service_setup["thingsboard"].return_value = (True, "ThingsBoard OK")
     result = runner.invoke(services, ["setup"])
     assert result.exit_code == 0
     assert "Configuring RabbitMQ completed" in result.output

@@ -173,10 +173,10 @@ def _check_existing_tenant(
                 logger.info(f"  Tenant '{tenant_name}' already exists")
                 return tenant, ""
         return None, ""
-    except requests.exceptions.RequestException as e:
-        return None, f"Network error checking tenant: {e}"
     except requests.exceptions.JSONDecodeError as e:
         return None, f"Invalid JSON response checking tenant: {e}"
+    except requests.exceptions.RequestException as e:
+        return None, f"Network error checking tenant: {e}"
 
 
 def _create_new_tenant(
@@ -195,10 +195,10 @@ def _create_new_tenant(
         tenant = resp.json()
         logger.info(f"  Tenant '{tenant_name}' created")
         return True, tenant, ""
-    except requests.exceptions.RequestException as e:
-        return False, {}, f"Network error creating tenant: {e}"
     except requests.exceptions.JSONDecodeError as e:
         return False, {}, f"Invalid JSON response creating tenant: {e}"
+    except requests.exceptions.RequestException as e:
+        return False, {}, f"Network error creating tenant: {e}"
 
 
 def _get_or_create_tenant(
@@ -255,10 +255,10 @@ def _create_tenant_admin_user(
             return False, "", "Created user response missing id"
 
         return True, user_id, ""
-    except requests.exceptions.RequestException as e:
-        return False, "", f"Network error creating tenant admin: {e}"
     except requests.exceptions.JSONDecodeError as e:
         return False, "", f"Invalid JSON response creating tenant admin: {e}"
+    except requests.exceptions.RequestException as e:
+        return False, "", f"Network error creating tenant admin: {e}"
 
 
 def _get_activation_token(
@@ -456,8 +456,10 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
             return False, error_msg
 
         return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, ValueError, KeyError, requests.exceptions.RequestException) as e:
+    except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding ThingsBoard users: {e}"
+    except requests.exceptions.RequestException as e:
+        return False, f"Network error adding ThingsBoard users: {e}"
 
 
 def _copy_and_chmod_cert(src: Path, dest: Path, mode: int) -> None:
