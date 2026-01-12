@@ -4,7 +4,6 @@ from pathlib import Path
 
 from typing import Optional, Callable
 from dataclasses import dataclass
-import time
 import click
 from rich.console import Console
 

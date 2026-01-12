@@ -2,6 +2,7 @@
 """ThingsBoard setup and configuration utilities."""
 
 import csv
+import logging
 import os
 import sys
 import shutil
@@ -10,12 +11,16 @@ from typing import Tuple
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 import requests
+import requests.exceptions
 from .config import Config
 from .cert import copy_certs
 from .utils import is_ci
 
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 def build_base_url() -> str:
     """Build ThingsBoard base URL from environment variables."""
@@ -28,29 +33,37 @@ def build_base_url() -> str:
 def _handle_login_response(resp: requests.Response) -> str | None:
     """Handle login response and extract token."""
     if resp.status_code == 200:
-        data = resp.json()
-        return data.get("token")
+        try:
+            data = resp.json()
+            return data.get("token")
+        except requests.exceptions.JSONDecodeError as e:
+            logger.error(f"Invalid JSON response during login: {e}")
+            return None
     if resp.status_code != 401:
-        print(f"Unexpected login response {resp.status_code}: {resp.text}")
+        logger.warning(f"Unexpected login response {resp.status_code}")
     return None
 
 
 def login(base_url: str, email: str, password: str) -> str | None:
     """Authenticate with ThingsBoard and return a JWT token."""
     url = f"{base_url}/api/auth/login"
-    resp = requests.post(
-        url,
-        json={"username": email, "password": password},
-        timeout=10,
-    )
-    return _handle_login_response(resp)
+    try:
+        resp = requests.post(
+            url,
+            json={"username": email, "password": password},
+            timeout=10,
+        )
+        return _handle_login_response(resp)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Network error during login: {e}")
+        return None
 
 
 def _check_password_configured() -> str | None:
     """Check if new password is configured."""
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
     if not new_pw:
-        print(
+        logger.info(
             "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
             "Skipping sysadmin password change."
         )
@@ -59,7 +72,7 @@ def _check_password_configured() -> str | None:
 
 def _try_login_with_new_password(base_url: str, email: str, new_pw: str) -> str | None:
     """Try logging in with new password."""
-    print(f"Logging in as sysadmin '{email}' with new password...")
+    logger.info("Attempting login as sysadmin with new password...")
     return login(base_url, email, new_pw)
 
 
@@ -73,16 +86,20 @@ def _change_password_api_call(
 ) -> bool:
     """Call API to change password."""
     url = f"{base_url}/api/auth/changePassword"
-    resp = session.post(
-        url,
-        json={"currentPassword": default_pw, "newPassword": new_pw},
-        timeout=10,
-    )
-    if resp.status_code == 200:
-        print("Sysadmin password changed successfully.")
-        return True
-    print(f"Failed to change sysadmin password: {resp.status_code} {resp.text}")
-    return False
+    try:
+        resp = session.post(
+            url,
+            json={"currentPassword": default_pw, "newPassword": new_pw},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            logger.info("Sysadmin password changed successfully.")
+            return True
+        logger.error(f"Failed to change sysadmin password: {resp.status_code}")
+        return False
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Network error during password change: {e}")
+        return False
 
 
 def _perform_password_change(
@@ -91,88 +108,97 @@ def _perform_password_change(
     sys_email: str,
     default_pw: str,
     new_pw: str,
-) -> None:
+) -> Tuple[bool, str]:
     """Perform the password change operation."""
-    print("Logged in with default sysadmin password. Changing to new password...")
+    logger.info("Logged in with default sysadmin password. Changing to new password...")
 
     if not _change_password_api_call(base_url, session, default_pw, new_pw):
-        sys.exit(1)
+        return False, "Failed to change sysadmin password"
 
     # Log in again with new password
     token = login(base_url, sys_email, new_pw)
     if not token:
-        print("Changed password but failed to log in with new sysadmin password.")
-        sys.exit(1)
+        return False, "Changed password but failed to log in with new sysadmin password"
 
     _update_session_token(session, token)
-    print("Re-logged in as sysadmin with new password.")
+    logger.info("Re-logged in as sysadmin with new password.")
+    return True, ""
 
 
 def change_sysadmin_password_if_needed(
     base_url: str,
     session: requests.Session,
-) -> None:
+) -> Tuple[bool, str]:
     """Change the sysadmin password if configured."""
     sys_email = "sysadmin@thingsboard.org"
     default_pw = "sysadmin"
 
     new_pw = _check_password_configured()
     if not new_pw:
-        return
+        return True, "No new password configured"
 
     # Try login with new password first
     token = _try_login_with_new_password(base_url, sys_email, new_pw)
     if token:
-        print("Sysadmin already uses the new password. No change needed.")
+        logger.info("Sysadmin already uses the new password. No change needed.")
         _update_session_token(session, token)
-        return
+        return True, "Password already updated"
 
     # Try with default password
-    print("New password did not work, trying default sysadmin password...")
+    logger.info("New password did not work, trying default sysadmin password...")
     token = login(base_url, sys_email, default_pw)
     if not token:
-        print(
-            "Unable to log in as sysadmin with either new or default password.\n"
+        return False, (
+            "Unable to log in as sysadmin with either new or default password. "
             "Check configuration in config/services.env and ensure ThingsBoard is running."
         )
-        sys.exit(1)
 
     _update_session_token(session, token)
-    _perform_password_change(base_url, session, sys_email, default_pw, new_pw)
+    return _perform_password_change(base_url, session, sys_email, default_pw, new_pw)
 
 
 def _check_existing_tenant(
     params: dict, base_url: str, session: requests.Session
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
-    resp = session.get(f"{base_url}/api/tenants", params=params, timeout=10)
-    if resp.status_code != 200:
-        return None, ""
+    try:
+        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=10)
+        if resp.status_code != 200:
+            return None, f"Failed to get tenants: {resp.status_code}"
 
-    body = resp.json()
-    tenant_name = params.get("textSearch", "")
-    for tenant in body.get("data", []):
-        if tenant.get("title") == tenant_name:
-            print(f"  Tenant '{tenant_name}' already exists")
-            return tenant, ""
-    return None, ""
+        body = resp.json()
+        tenant_name = params.get("textSearch", "")
+        for tenant in body.get("data", []):
+            if tenant.get("title") == tenant_name:
+                logger.info(f"  Tenant '{tenant_name}' already exists")
+                return tenant, ""
+        return None, ""
+    except requests.exceptions.RequestException as e:
+        return None, f"Network error checking tenant: {e}"
+    except requests.exceptions.JSONDecodeError as e:
+        return None, f"Invalid JSON response checking tenant: {e}"
 
 
 def _create_new_tenant(
     base_url: str, session: requests.Session, tenant_name: str
 ) -> Tuple[bool, dict, str]:
     """Create a new tenant."""
-    print(f"  Creating tenant '{tenant_name}'...")
+    logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
-    resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=10)
+    try:
+        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=10)
 
-    if resp.status_code not in (200, 201):
-        error_msg = f"Failed to create tenant: {resp.status_code} {resp.text}"
-        return False, {}, error_msg
+        if resp.status_code not in (200, 201):
+            error_msg = f"Failed to create tenant: {resp.status_code}"
+            return False, {}, error_msg
 
-    tenant = resp.json()
-    print(f"  Tenant '{tenant_name}' created")
-    return True, tenant, ""
+        tenant = resp.json()
+        logger.info(f"  Tenant '{tenant_name}' created")
+        return True, tenant, ""
+    except requests.exceptions.RequestException as e:
+        return False, {}, f"Network error creating tenant: {e}"
+    except requests.exceptions.JSONDecodeError as e:
+        return False, {}, f"Invalid JSON response creating tenant: {e}"
 
 
 def _get_or_create_tenant(
@@ -193,10 +219,10 @@ def _get_or_create_tenant(
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
     """Check if admin already exists."""
-    print(f"  Checking if admin '{admin_email}' exists...")
+    logger.info(f"  Checking if admin '{admin_email}' exists...")
     token = login(base_url, admin_email, admin_password)
     if token:
-        print(f"  Admin '{admin_email}' already exists and password matches")
+        logger.info(f"  Admin '{admin_email}' already exists and credentials match")
         return True
     return False
 
@@ -205,49 +231,57 @@ def _create_tenant_admin_user(
     base_url: str, session: requests.Session, admin_email: str, tenant_id: str
 ) -> Tuple[bool, str, str]:
     """Create tenant admin user."""
-    print(f"  Creating tenant admin '{admin_email}'...")
+    logger.info(f"  Creating tenant admin '{admin_email}'...")
     user_payload = {
         "email": admin_email,
         "authority": "TENANT_ADMIN",
         "tenantId": {"id": tenant_id, "entityType": "TENANT"},
     }
-    resp = session.post(
-        f"{base_url}/api/user",
-        params={"sendActivationMail": "false"},
-        json=user_payload,
-        timeout=10,
-    )
+    try:
+        resp = session.post(
+            f"{base_url}/api/user",
+            params={"sendActivationMail": "false"},
+            json=user_payload,
+            timeout=10,
+        )
 
-    if resp.status_code not in (200, 201):
-        error_msg = f"Failed to create tenant admin: {resp.status_code} {resp.text}"
-        return False, "", error_msg
+        if resp.status_code not in (200, 201):
+            error_msg = f"Failed to create tenant admin: {resp.status_code}"
+            return False, "", error_msg
 
-    user = resp.json()
-    user_id = user.get("id", {}).get("id")
-    if not user_id:
-        return False, "", "Created user response missing id"
+        user = resp.json()
+        user_id = user.get("id", {}).get("id")
+        if not user_id:
+            return False, "", "Created user response missing id"
 
-    return True, user_id, ""
+        return True, user_id, ""
+    except requests.exceptions.RequestException as e:
+        return False, "", f"Network error creating tenant admin: {e}"
+    except requests.exceptions.JSONDecodeError as e:
+        return False, "", f"Invalid JSON response creating tenant admin: {e}"
 
 
 def _get_activation_token(
     base_url: str, session: requests.Session, user_id: str
 ) -> Tuple[bool, str, str]:
     """Get activation token for user."""
-    resp = session.get(f"{base_url}/api/user/{user_id}/activationLink", timeout=10)
-    if resp.status_code != 200:
-        error_msg = f"Failed to get activation link: {resp.status_code} {resp.text}"
-        return False, "", error_msg
+    try:
+        resp = session.get(f"{base_url}/api/user/{user_id}/activationLink", timeout=10)
+        if resp.status_code != 200:
+            error_msg = f"Failed to get activation link: {resp.status_code}"
+            return False, "", error_msg
 
-    activation_link = resp.text.strip().strip('"')
-    parsed = urlparse(activation_link)
-    qs = parse_qs(parsed.query)
-    tokens = qs.get("activateToken") or qs.get("activateToken".lower())
+        activation_link = resp.text.strip().strip('"')
+        parsed = urlparse(activation_link)
+        qs = parse_qs(parsed.query)
+        tokens = qs.get("activateToken") or qs.get("activateToken".lower())
 
-    if not tokens:
-        return False, "", "Could not extract activateToken from activation link"
+        if not tokens:
+            return False, "", "Could not extract activateToken from activation link"
 
-    return True, tokens[0], ""
+        return True, tokens[0], ""
+    except requests.exceptions.RequestException as e:
+        return False, "", f"Network error getting activation token: {e}"
 
 
 def _activate_user(
@@ -258,17 +292,20 @@ def _activate_user(
         "activateToken": activate_token,
         "password": admin_password,
     }
-    resp = requests.post(
-        f"{base_url}/api/noauth/activate",
-        json=activate_payload,
-        timeout=10,
-    )
+    try:
+        resp = requests.post(
+            f"{base_url}/api/noauth/activate",
+            json=activate_payload,
+            timeout=10,
+        )
 
-    if resp.status_code != 200:
-        error_msg = f"Failed to activate tenant admin: {resp.status_code} {resp.text}"
-        return False, error_msg
+        if resp.status_code != 200:
+            error_msg = f"Failed to activate tenant admin: {resp.status_code}"
+            return False, error_msg
 
-    return True, ""
+        return True, ""
+    except requests.exceptions.RequestException as e:
+        return False, f"Network error activating user: {e}"
 
 
 def _verify_admin_login(
@@ -308,7 +345,7 @@ def _create_and_activate_admin(
     if not success:
         return False, error_msg
 
-    print(f"  Admin '{admin_email}' created and activated")
+    logger.info(f"  Admin '{admin_email}' created and activated")
     return _verify_admin_login(base_url, admin_email, admin_password)
 
 
@@ -354,14 +391,23 @@ def _create_tenant_and_admin(
 
 
 def _process_credentials_row(
-    base_url: str, session: requests.Session, credential: dict
+    base_url: str, session: requests.Session, credential: dict, seen_emails: set
 ) -> Tuple[bool, str]:
     """Process a single credential row."""
     username = credential["username"]
     password = credential["password"]
-    email = credential.get("email", f"{username}@example.org")
+    email = credential.get("email", "").strip()
 
-    print(f"\nProcessing user '{username}'...")
+    # Validate email field
+    if not email:
+        return False, f"Email field is required for user {username}"
+
+    # Check for duplicate emails
+    if email in seen_emails:
+        return False, f"Duplicate email '{email}' found for user {username}"
+    seen_emails.add(email)
+
+    logger.info(f"\nProcessing user '{username}'...")
     success, error_msg = _create_tenant_and_admin(
         base_url, session, username, email, password
     )
@@ -375,10 +421,16 @@ def _process_credentials_file(
     base_url: str, session: requests.Session, credentials_file: Path
 ) -> Tuple[bool, str]:
     """Process credentials file and create tenants."""
+    seen_emails = set()
     with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
         credentials = csv.DictReader(creds_file, delimiter=",")
+
+        # Validate required columns
+        if 'email' not in credentials.fieldnames:
+            return False, "Email column is required in credentials.csv"
+
         for credential in credentials:
-            success, error_msg = _process_credentials_row(base_url, session, credential)
+            success, error_msg = _process_credentials_row(base_url, session, credential, seen_emails)
             if not success:
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
@@ -396,13 +448,15 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         # Initialize Config to load environment variables
         Config()
         base_url = build_base_url()
-        print(f"Using ThingsBoard URL: {base_url}")
+        logger.info(f"Using ThingsBoard URL: {base_url}")
 
         session = requests.Session()
-        change_sysadmin_password_if_needed(base_url, session)
+        success, error_msg = change_sysadmin_password_if_needed(base_url, session)
+        if not success:
+            return False, error_msg
 
         return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, ValueError, KeyError) as e:
+    except (OSError, ValueError, KeyError, requests.exceptions.RequestException) as e:
         return False, f"Error adding ThingsBoard users: {e}"
 
 
@@ -621,12 +675,12 @@ def permissions_thingsboard() -> Tuple[bool, str]:
 
 def thingsboard_configure() -> Tuple[bool, str]:
     """Configure ThingsBoard users from credentials.csv."""
-    print("Configuring ThingsBoard users...")
+    logger.info("Configuring ThingsBoard users...")
     success, msg = setup_thingsboard_users()
 
     if not success:
         return False, f"Error: {msg}"
 
-    print(f"\n{msg}")
-    print("ThingsBoard configuration complete!")
+    logger.info(f"\n{msg}")
+    logger.info("ThingsBoard configuration complete!")
     return True, msg
