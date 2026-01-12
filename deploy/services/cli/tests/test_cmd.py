@@ -48,8 +48,14 @@ def mock_user_pkg():
     """Mock user management modules"""
     with patch("dtaas_services.cmd.influxdb") as mock_influx, patch(
         "dtaas_services.cmd.rabbitmq"
-    ) as mock_rabbit:
-        yield {"influxdb": mock_influx, "rabbitmq": mock_rabbit}
+    ) as mock_rabbit, patch(
+        "dtaas_services.cmd.thingsboard"
+    ) as mock_thingsboard:
+        yield {
+            "influxdb": mock_influx,
+            "rabbitmq": mock_rabbit,
+            "thingsboard": mock_thingsboard,
+        }
 
 
 def test_services_help(runner):
@@ -153,6 +159,10 @@ def test_add_users_success(runner, mock_user_pkg):
         True,
         "Added to RabbitMQ",
     )
+    mock_user_pkg["thingsboard"].setup_thingsboard_users.return_value = (
+        True,
+        "Added to ThingsBoard",
+    )
     result = runner.invoke(services, ["user", "add"])
     assert result.exit_code == 0
     assert "Adding users from CSV file" in result.output
@@ -170,6 +180,10 @@ def test_add_users_influxdb_fails(runner, mock_user_pkg):
         True,
         "Added to RabbitMQ",
     )
+    mock_user_pkg["thingsboard"].setup_thingsboard_users.return_value = (
+        True,
+        "Added to ThingsBoard",
+    )
     result = runner.invoke(services, ["user", "add"])
     assert result.exit_code == 0
     assert "InfluxDB: InfluxDB error" in result.output
@@ -185,6 +199,10 @@ def test_add_users_both_fail(runner, mock_user_pkg):
     mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (
         False,
         "RabbitMQ failed",
+    )
+    mock_user_pkg["thingsboard"].setup_thingsboard_users.return_value = (
+        False,
+        "ThingsBoard failed",
     )
     result = runner.invoke(services, ["user", "add"])
     assert result.exit_code == 0

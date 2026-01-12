@@ -4,7 +4,6 @@
 import csv
 import logging
 import os
-import sys
 import shutil
 import platform
 from typing import Tuple
@@ -52,6 +51,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
             url,
             json={"username": email, "password": password},
             timeout=10,
+            verify=True,
         )
         return _handle_login_response(resp)
     except requests.exceptions.RequestException as e:
@@ -91,6 +91,7 @@ def _change_password_api_call(
             url,
             json={"currentPassword": default_pw, "newPassword": new_pw},
             timeout=10,
+            verify=True,
         )
         if resp.status_code == 200:
             logger.info("Sysadmin password changed successfully.")
@@ -150,7 +151,7 @@ def change_sysadmin_password_if_needed(
     if not token:
         return False, (
             "Unable to log in as sysadmin with either new or default password. "
-            "Check configuration in config/services.env and ensure ThingsBoard is running."
+            "Check configuration in config/services.env ensure ThingsBoard is running."
         )
 
     _update_session_token(session, token)
@@ -162,7 +163,8 @@ def _check_existing_tenant(
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
     try:
-        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=10)
+        resp = session.get(f"{base_url}/api/tenants", params=params,
+                            timeout=10, verify=True)
         if resp.status_code != 200:
             return None, f"Failed to get tenants: {resp.status_code}"
 
@@ -186,7 +188,8 @@ def _create_new_tenant(
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
     try:
-        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=10)
+        resp = session.post(f"{base_url}/api/tenant", json=create_payload,
+                            timeout=10, verify=True)
 
         if resp.status_code not in (200, 201):
             error_msg = f"Failed to create tenant: {resp.status_code}"
@@ -243,6 +246,7 @@ def _create_tenant_admin_user(
             params={"sendActivationMail": "false"},
             json=user_payload,
             timeout=10,
+            verify=True,
         )
 
         if resp.status_code not in (200, 201):
@@ -266,7 +270,8 @@ def _get_activation_token(
 ) -> Tuple[bool, str, str]:
     """Get activation token for user."""
     try:
-        resp = session.get(f"{base_url}/api/user/{user_id}/activationLink", timeout=10)
+        resp = session.get(f"{base_url}/api/user/{user_id}/activationLink",
+                            timeout=10, verify=True)
         if resp.status_code != 200:
             error_msg = f"Failed to get activation link: {resp.status_code}"
             return False, "", error_msg
@@ -297,6 +302,7 @@ def _activate_user(
             f"{base_url}/api/noauth/activate",
             json=activate_payload,
             timeout=10,
+            verify=True,
         )
 
         if resp.status_code != 200:
@@ -430,7 +436,8 @@ def _process_credentials_file(
             return False, "Email column is required in credentials.csv"
 
         for credential in credentials:
-            success, error_msg = _process_credentials_row(base_url, session, credential, seen_emails)
+            success, error_msg = _process_credentials_row(base_url, session,
+                                                           credential, seen_emails)
             if not success:
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
@@ -458,8 +465,6 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         return _process_credentials_file(base_url, session, credentials_file)
     except (OSError, ValueError, KeyError) as e:
         return False, f"Error adding ThingsBoard users: {e}"
-    except requests.exceptions.RequestException as e:
-        return False, f"Network error adding ThingsBoard users: {e}"
 
 
 def _copy_and_chmod_cert(src: Path, dest: Path, mode: int) -> None:
