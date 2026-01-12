@@ -1,4 +1,5 @@
 """Tests for utils module."""
+
 from src.pkg import utils
 
 
@@ -104,16 +105,18 @@ def test_replace_all():
     assert ans == expected
 
 
-def test_export_yaml():
+def test_export_yaml(tmp_path):
     """Test exporting data to YAML file"""
     data = get_test_compose_object()
 
-    err = utils.export_yaml(data, "tests/data/compose.users.exp.yml")
+    # Use a temporary file for export testing to avoid modifying committed files
+    temp_file = tmp_path / "compose.users.exp.yml"
+    err = utils.export_yaml(data, str(temp_file))
     if err is not None:
         raise AssertionError(err)
 
     expected, err1 = utils.import_yaml("tests/data/compose.users.test.yml")
-    actual, err2 = utils.import_yaml("tests/data/compose.users.exp.yml")
+    actual, err2 = utils.import_yaml(str(temp_file))
 
     if err1:
         raise AssertionError(err1)
@@ -131,7 +134,10 @@ def get_replace_all_object(random_vals):
         "dictkey1": {
             "dict1key1": random_vals[1],
             "dict2key2": [random_vals[3], random_vals[5]],
-            "dict3key3": {"key3": random_vals[0], "key4": {"listkey": [random_vals[4]]}},
+            "dict3key3": {
+                "key3": random_vals[0],
+                "key4": {"listkey": [random_vals[4]]},
+            },
         },
         "dictkey2": {
             "dict2key1": {

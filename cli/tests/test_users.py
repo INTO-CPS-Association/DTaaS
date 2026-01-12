@@ -1,4 +1,5 @@
 """Tests for users module."""
+
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
@@ -15,12 +16,10 @@ def mock_config():
     mock.get_delete_users_list.return_value = (["user1"], None)
     mock.get_server_dns.return_value = ("localhost", None)
     mock.get_path.return_value = ("/test/path", None)
-    mock.get_resource_limits.return_value = ({
-        "cpus": 4,
-        "mem_limit": "4G",
-        "pids_limit": 4960,
-        "shm_size": "512m"
-    }, None)
+    mock.get_resource_limits.return_value = (
+        {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
+        None,
+    )
     return mock
 
 
@@ -72,36 +71,22 @@ def test_create_user_files_already_exists(temp_dir_with_template):
 
 def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
-    resources = {
-        "cpus": 4,
-        "mem_limit": "4G",
-        "pids_limit": 4960,
-        "shm_size": "512m"
-    }
+    resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
     config = {"server": "localhost", "path": "/test", "resources": resources}
 
-    users.add_users_to_compose(
-        ["user1", "user2", "user3"], {"services": {}}, config
-    )
+    users.add_users_to_compose(["user1", "user2", "user3"], {"services": {}}, config)
     assert mock_utils["replace"].call_count == 3
-
 
 
 def test_add_users_to_compose_config_error():
     """Test addUsersToCompose with config error"""
-    resources = {
-        "cpus": 4,
-        "mem_limit": "4G",
-        "pids_limit": 4960,
-        "shm_size": "512m"
-    }
+    resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
     config = {"server": "localhost", "path": "/test", "resources": resources}
     with patch(
         "src.pkg.users.get_compose_config", return_value=(None, Exception("Error"))
     ):
         assert (
-            users.add_users_to_compose(["user1"], {"services": {}}, config)
-            is not None
+            users.add_users_to_compose(["user1"], {"services": {}}, config) is not None
         )
 
 
@@ -110,12 +95,7 @@ def test_add_users_to_compose_config_error():
 )
 def test_get_compose_config(mock_utils, server, file):
     """Test getComposeConfig with resources parameter"""
-    resources = {
-        "cpus": 4,
-        "mem_limit": "4G",
-        "pids_limit": 4960,
-        "shm_size": "512m"
-    }
+    resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
     config = {"server": server, "path": "/test", "resources": resources}
     _, _ = users.get_compose_config("testuser", config)
     assert mock_utils["import"].called
@@ -124,12 +104,7 @@ def test_get_compose_config(mock_utils, server, file):
 
 def test_get_compose_config_error():
     """Test getComposeConfig with error"""
-    resources = {
-        "cpus": 4,
-        "mem_limit": "4",
-        "pids_limit": 4960,
-        "shm_size": "512m"
-    }
+    resources = {"cpus": 4, "mem_limit": "4", "pids_limit": 4960, "shm_size": "512m"}
     config = {"server": "localhost", "path": "/test", "resources": resources}
     with patch(
         "src.pkg.users.utils.import_yaml", return_value=(None, Exception("Error"))
@@ -138,7 +113,9 @@ def test_get_compose_config_error():
         assert (result, isinstance(err, Exception)) == (None, True)
 
 
-@pytest.mark.parametrize("func", [users.start_user_containers, users.stop_user_containers])
+@pytest.mark.parametrize(
+    "func", [users.start_user_containers, users.stop_user_containers]
+)
 @patch("src.pkg.users.subprocess.run", return_value=MagicMock(returncode=0))
 def test_container_operations(mock_run, func):
     """Test start and stop container operations"""

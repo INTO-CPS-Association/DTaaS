@@ -25,7 +25,14 @@ def export_yaml(data, filename):
     """This function is used to export to a yaml file safely"""
     try:
         with open(filename, "w") as file:
-            yaml.safe_dump(data, file, sort_keys=False)
+            yaml.safe_dump(
+                data,
+                file,
+                sort_keys=False,
+                default_flow_style=False,
+                allow_unicode=True,
+                indent=2,
+            )
     except Exception as err:
         return Exception(f"Error while writing yaml to file: {filename}, " + str(err))
     return None

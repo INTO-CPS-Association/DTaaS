@@ -1,4 +1,5 @@
 """Integration tests for DTaaS CLI commands."""
+
 import subprocess
 from pathlib import Path
 import sys
