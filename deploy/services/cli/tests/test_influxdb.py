@@ -286,8 +286,6 @@ def test_setup_user_organizations_failure():
 
 def test_fetch_influxdb_data_success():
     """Test successful data fetching"""
-    users_data = [{"name": "user1", "id": "id1"}]
-    orgs_data = [{"name": "org1"}]
 
     with patch("dtaas_services.pkg.influxdb._get_influxdb_users") as mock_users, patch(
         "dtaas_services.pkg.influxdb._get_existing_orgs"
@@ -305,7 +303,7 @@ def test_fetch_influxdb_data_users_failure():
     """Test data fetching when get users fails"""
     with patch("dtaas_services.pkg.influxdb._get_influxdb_users") as mock_users:
         mock_users.return_value = (False, {}, "failed to get users")
-        success, users_dict, existing_orgs, error = _fetch_influxdb_data()
+        success, _, _, error = _fetch_influxdb_data()
         assert success is False
         assert "failed to get users" in error
 
@@ -317,7 +315,7 @@ def test_fetch_influxdb_data_orgs_failure():
     ) as mock_orgs:
         mock_users.return_value = (True, {"user1": "id1"}, "")
         mock_orgs.return_value = (False, set(), "failed to get orgs")
-        success, users_dict, existing_orgs, error = _fetch_influxdb_data()
+        success, _, _, error = _fetch_influxdb_data()
         assert success is False
         assert "failed to get orgs" in error
 

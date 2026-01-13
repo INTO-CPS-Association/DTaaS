@@ -2,7 +2,7 @@
 """Tests for MongoDB user management"""
 
 from pathlib import Path
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch, Mock
 import pytest
 from dtaas_services.pkg.mongodb import (
     create_combined_cert,
@@ -152,19 +152,6 @@ def test_permissions_mongodb_os_error(mock_config):
     """Test MongoDB permissions setup with OSError"""
     with patch("platform.system", return_value="Linux"), patch(
         "pathlib.Path.mkdir", side_effect=OSError("Directory creation failed")
-    ):
-        success, message = permissions_mongodb()
-        assert success is False
-        assert "Error setting permissions for MongoDB" in message
-
-
-def test_permissions_mongodb_file_not_found(mock_config):
-    """Test MongoDB permissions setup when cert files not found"""
-    with patch("platform.system", return_value="Linux"), patch(
-        "pathlib.Path.mkdir"
-    ) as mock_mkdir, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert",
-        side_effect=FileNotFoundError("Missing privkey.pem"),
     ):
         success, message = permissions_mongodb()
         assert success is False

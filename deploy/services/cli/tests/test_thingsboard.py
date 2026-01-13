@@ -271,7 +271,7 @@ def test_create_new_tenant_scenarios():
     session.post.return_value = Mock(
         status_code=200, json=lambda: {"id": {"id": "123"}, "title": "new"}
     )
-    success, tenant, _ = th._create_new_tenant(base_url, session, "new")
+    success, _, _ = th._create_new_tenant(base_url, session, "new")
     assert success is True
     # Failure
     session.post.return_value = Mock(status_code=400, text="Error")
@@ -299,7 +299,7 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard._check_existing_tenant",
         return_value=({"name": "test"}, ""),
     ):
-        success, tenant, _ = th._get_or_create_tenant(base_url, session, "test")
+        success, _, _ = th._get_or_create_tenant(base_url, session, "test")
         assert success is True
     # Create new
     with patch(
@@ -308,7 +308,7 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard._create_new_tenant",
         return_value=(True, {"title": "new"}, ""),
     ):
-        success, tenant, _ = th._get_or_create_tenant(base_url, session, "new")
+        success, _, _ = th._get_or_create_tenant(base_url, session, "new")
         assert success is True
     # Exception
     with patch(
@@ -755,7 +755,7 @@ def test_setup_thingsboard_directories_scenarios():
 
 def test_get_config_values(mock_config):
     """Test getting configuration values"""
-    config, base_dir, os_type, certs_dir, pg_uid, pg_gid, tb_uid, tb_gid = (
+    _, base_dir, _, _, pg_uid, _, tb_uid, _ = (
         th._get_config_values()
     )
     assert base_dir == Path("/test/base")

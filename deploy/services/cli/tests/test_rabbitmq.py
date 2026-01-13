@@ -1,7 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Tests for RabbitMQ user management"""
 
-import csv
 from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
 import pytest

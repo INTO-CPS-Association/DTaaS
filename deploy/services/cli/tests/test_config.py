@@ -66,7 +66,7 @@ def test_config_get_base_dir_windows(mock_platform):
     ) as mock_win:
         mock_cwd.return_value = Path("C:\\Users\\user\\project\\deploy\\services\\cli")
         mock_win.return_value = Path("C:\\Users\\user\\project\\deploy\\services")
-        result = Config.get_base_dir()
+        _ = Config.get_base_dir()
         mock_win.assert_called_once()
 
 
