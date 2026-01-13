@@ -63,6 +63,7 @@ class CertCandidateNormalizationTest:
         assert target.exists()
         assert target.read_text() == "target cert"
 
+
 class DummyCertCreationTest:
     """Tests for _create_dummy_certs helper function"""
 

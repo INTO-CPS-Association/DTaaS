@@ -1,12 +1,9 @@
-"""RabbitMQ user management for DTaaS services"""
-
 import csv
 import shutil
-import platform
 from typing import Tuple
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
-from .utils import is_ci
+from .cert import set_service_cert_permissions
 
 
 def _execute_rabbitmq_command(
@@ -107,20 +104,17 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        os_type = platform.system().lower()
         host_name = config.get_value("HOSTNAME")
         certs_dir = base_dir / "certs" / host_name
         privkey_path = certs_dir / "privkey.pem"
         rabbit_key_path = certs_dir / "privkey-rabbitmq.pem"
         rabbit_uid = int(config.get_value("RABBIT_UID"))
+
         shutil.copy2(privkey_path, rabbit_key_path)
 
-        # Skip permission changes in CI environments (they're read-only)
-        if os_type in ("linux", "darwin") and not is_ci():
-            shutil.chown(rabbit_key_path, user=rabbit_uid)
-            msg = f"{rabbit_key_path} created and ownership set to user {rabbit_uid}."
-        else:
-            msg = f"{rabbit_key_path} created (permission changes skipped in CI)."
-        return True, msg
+        # Set permissions on RabbitMQ private key (no group)
+        return set_service_cert_permissions(
+            "RabbitMQ", rabbit_key_path, rabbit_uid, None, 0o600
+        )
     except OSError as e:
         return False, f"Error setting permissions for RabbitMQ: {e}"

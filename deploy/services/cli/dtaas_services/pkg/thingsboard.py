@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""ThingsBoard setup and configuration utilities."""
-
 import csv
 import logging
 import os
@@ -12,7 +10,7 @@ from pathlib import Path
 import requests
 import requests.exceptions
 from .config import Config
-from .cert import copy_certs
+from .cert import copy_certs, set_service_cert_permissions
 from .utils import is_ci
 
 PRIV_KEY_FILENAME = "privkey.pem"
@@ -20,6 +18,7 @@ FULLCHAIN_FILENAME = "fullchain.pem"
 
 # Set up logger
 logger = logging.getLogger(__name__)
+
 
 def build_base_url() -> str:
     """Build ThingsBoard base URL from environment variables."""
@@ -163,8 +162,9 @@ def _check_existing_tenant(
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
     try:
-        resp = session.get(f"{base_url}/api/tenants", params=params,
-                            timeout=10, verify=True)
+        resp = session.get(
+            f"{base_url}/api/tenants", params=params, timeout=10, verify=True
+        )
         if resp.status_code != 200:
             return None, f"Failed to get tenants: {resp.status_code}"
 
@@ -188,8 +188,9 @@ def _create_new_tenant(
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
     try:
-        resp = session.post(f"{base_url}/api/tenant", json=create_payload,
-                            timeout=10, verify=True)
+        resp = session.post(
+            f"{base_url}/api/tenant", json=create_payload, timeout=10, verify=True
+        )
 
         if resp.status_code not in (200, 201):
             error_msg = f"Failed to create tenant: {resp.status_code}"
@@ -270,8 +271,9 @@ def _get_activation_token(
 ) -> Tuple[bool, str, str]:
     """Get activation token for user."""
     try:
-        resp = session.get(f"{base_url}/api/user/{user_id}/activationLink",
-                            timeout=10, verify=True)
+        resp = session.get(
+            f"{base_url}/api/user/{user_id}/activationLink", timeout=10, verify=True
+        )
         if resp.status_code != 200:
             error_msg = f"Failed to get activation link: {resp.status_code}"
             return False, "", error_msg
@@ -432,12 +434,13 @@ def _process_credentials_file(
         credentials = csv.DictReader(creds_file, delimiter=",")
 
         # Validate required columns
-        if 'email' not in credentials.fieldnames:
+        if "email" not in credentials.fieldnames:
             return False, "Email column is required in credentials.csv"
 
         for credential in credentials:
-            success, error_msg = _process_credentials_row(base_url, session,
-                                                           credential, seen_emails)
+            success, error_msg = _process_credentials_row(
+                base_url, session, credential, seen_emails
+            )
             if not success:
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
@@ -467,18 +470,6 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         return False, f"Error adding ThingsBoard users: {e}"
 
 
-def _copy_and_chmod_cert(src: Path, dest: Path, mode: int) -> None:
-    """Copy certificate and set permissions."""
-    shutil.copy2(src, dest)
-    os.chmod(dest, mode)
-
-
-def _set_cert_ownership(cert_path: Path, os_type: str, uid: int, gid: int) -> None:
-    """Set certificate ownership if on Unix."""
-    if os_type in ("linux", "darwin"):
-        shutil.chown(cert_path, user=uid, group=gid)
-
-
 def _setup_postgres_certs(
     certs_dir: Path, os_type: str, uid: int, gid: int
 ) -> Tuple[bool, str]:
@@ -489,14 +480,21 @@ def _setup_postgres_certs(
         postgres_key_path = certs_dir / "postgres.key"
         postgres_crt_path = certs_dir / "postgres.crt"
 
-        _copy_and_chmod_cert(privkey_path, postgres_key_path, 0o600)
-        _copy_and_chmod_cert(fullchain_path, postgres_crt_path, 0o644)
-        _set_cert_ownership(postgres_key_path, os_type, uid, gid)
-        _set_cert_ownership(postgres_crt_path, os_type, uid, gid)
+        shutil.copy2(privkey_path, postgres_key_path)
+        shutil.copy2(fullchain_path, postgres_crt_path)
 
-        if os_type in ("linux", "darwin"):
-            return True, f"PostgreSQL certificates created with ownership {uid}:{gid}"
-        return True, "PostgreSQL certificates created (ownership not set on Windows)"
+        # Set permissions on private key
+        success, msg = set_service_cert_permissions(
+            "PostgreSQL", postgres_key_path, uid, gid, 0o600
+        )
+        if not success:
+            return False, msg
+
+        # Set permissions on certificate (readable)
+        success, msg = set_service_cert_permissions(
+            "PostgreSQL", postgres_crt_path, uid, gid, 0o644
+        )
+        return success, msg
     except OSError as e:
         return False, f"Error setting up PostgreSQL certificates: {e}"
 
@@ -511,14 +509,21 @@ def _setup_thingsboard_certs(
         tb_privkey_path = certs_dir / "thingsboard-privkey.pem"
         tb_fullchain_path = certs_dir / "thingsboard-fullchain.pem"
 
-        _copy_and_chmod_cert(privkey_path, tb_privkey_path, 0o600)
-        _copy_and_chmod_cert(fullchain_path, tb_fullchain_path, 0o644)
-        _set_cert_ownership(tb_privkey_path, os_type, uid, gid)
-        _set_cert_ownership(tb_fullchain_path, os_type, uid, gid)
+        shutil.copy2(privkey_path, tb_privkey_path)
+        shutil.copy2(fullchain_path, tb_fullchain_path)
 
-        if os_type in ("linux", "darwin"):
-            return True, f"ThingsBoard certificates created with ownership {uid}:{gid}"
-        return True, "ThingsBoard certificates created (ownership not set on Windows)"
+        # Set permissions on private key
+        success, msg = set_service_cert_permissions(
+            "ThingsBoard", tb_privkey_path, uid, gid, 0o600
+        )
+        if not success:
+            return False, msg
+
+        # Set permissions on certificate (readable)
+        success, msg = set_service_cert_permissions(
+            "ThingsBoard", tb_fullchain_path, uid, gid, 0o644
+        )
+        return success, msg
     except OSError as e:
         return False, f"Error setting up ThingsBoard certificates: {e}"
 

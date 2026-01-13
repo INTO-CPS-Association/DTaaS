@@ -1,13 +1,10 @@
-"""InfluxDB user management for DTaaS services"""
-
 import csv
 import json
 import shutil
-import platform
 from typing import Tuple
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
-from .utils import is_ci
+from .cert import set_service_cert_permissions
 
 
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
@@ -248,7 +245,6 @@ def permissions_influxdb() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        os_type = platform.system().lower()
         host_name = config.get_value("HOSTNAME")
         certs_dir = base_dir / "certs" / host_name
         privkey_path = certs_dir / "privkey.pem"
@@ -258,15 +254,9 @@ def permissions_influxdb() -> Tuple[bool, str]:
 
         shutil.copy2(privkey_path, influx_key_path)
 
-        # Skip permission changes in CI environments (they're read-only)
-        if os_type in ("linux", "darwin") and not is_ci():
-            shutil.chown(influx_key_path, user=influx_uid, group=influx_gid)
-            msg = (
-                f"{influx_key_path} created and ownership set to "
-                f"{influx_uid}:{influx_gid}."
-            )
-        else:
-            msg = f"{influx_key_path} created (permission changes skipped in CI)."
-        return True, msg
+        # Set permissions on InfluxDB private key
+        return set_service_cert_permissions(
+            "InfluxDB", influx_key_path, influx_uid, influx_gid, 0o600
+        )
     except OSError as e:
         return False, f"Error setting permissions for InfluxDB: {e}"

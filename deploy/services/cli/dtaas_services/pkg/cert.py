@@ -1,6 +1,7 @@
 """TLS certificate management for DTaaS services"""
 
 import shutil
+import platform
 from pathlib import Path
 from typing import Tuple
 from .config import Config
@@ -117,6 +118,74 @@ def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
         return True, f"Certificates copied and normalized in {certs_dir}"
     except OSError as e:
         return False, f"Error copying certificates: {e}"
+
+
+def create_combined_cert(
+    privkey_path: Path, fullchain_path: Path, combined_path: Path
+) -> Tuple[bool, str]:
+    """Create combined.pem from privkey.pem and fullchain.pem.
+    Args:
+        privkey_path: Path to privkey.pem
+        fullchain_path: Path to fullchain.pem
+        combined_path: Path where combined.pem should be created
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        if not privkey_path.exists():
+            raise FileNotFoundError(f"Missing privkey.pem at {privkey_path}.")
+        if not fullchain_path.exists():
+            raise FileNotFoundError(f"Missing fullchain.pem at {fullchain_path}.")
+        with open(combined_path, "wb") as out_f:
+            with open(privkey_path, "rb") as pk:
+                out_f.write(pk.read())
+            with open(fullchain_path, "rb") as fc:
+                out_f.write(fc.read())
+        return True, f"Combined certificate created at {combined_path}"
+    except (FileNotFoundError, OSError) as e:
+        return False, f"Error creating combined certificate: {e}"
+
+
+def set_service_cert_permissions(
+    service_name: str,
+    cert_path: Path,
+    uid: int,
+    gid: int | None = None,
+    mode: int = 0o600,
+) -> Tuple[bool, str]:
+    """Set certificate file ownership and permissions for a service.
+
+    Automatically skips permission changes in CI environments (read-only).
+
+    Args:
+        service_name: Name of the service (e.g., "MongoDB", "InfluxDB")
+        cert_path: Path to certificate file
+        uid: User ID to set ownership to
+        gid: Group ID to set ownership to (optional, defaults to user group)
+        mode: File mode to set (default 0o600 for secure permissions)
+
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        os_type = platform.system().lower()
+
+        # Skip permission changes in CI environments (they're read-only)
+        if os_type in ("linux", "darwin") and not is_ci():
+            cert_path.chmod(mode)
+            if gid is not None:
+                shutil.chown(cert_path, user=uid, group=gid)
+            else:
+                shutil.chown(cert_path, user=uid)
+            if gid is not None:
+                msg = f"{cert_path.name} created with mode {oct(mode)} and ownership set to {uid}:{gid}."
+            else:
+                msg = f"{cert_path.name} created with mode {oct(mode)} and ownership set to user {uid}."
+        else:
+            msg = f"{cert_path.name} created (permission changes skipped in CI)."
+        return True, msg
+    except OSError as e:
+        return False, f"Error setting permissions for {service_name}: {e}"
 
 
 def copy_certs() -> Tuple[bool, str]:

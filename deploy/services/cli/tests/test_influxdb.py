@@ -1,4 +1,5 @@
 # pylint: disable=redefined-outer-name
+# pylint: disable=W0613
 """Tests for InfluxDB user management"""
 
 import json
@@ -459,60 +460,82 @@ def test_setup_influxdb_users_key_error(mock_credentials_path):
 
 def test_permissions_influxdb_success_linux(mock_config):
     """Test successful InfluxDB permissions setup on Linux"""
-    with patch("platform.system", return_value="Linux"), patch(
-        "shutil.copy2"
-    ) as mock_copy, patch("shutil.chown") as mock_chown, patch(
-        "dtaas_services.pkg.influxdb.is_ci", return_value=False
+    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
     ):
-        success, message = permissions_influxdb()
-        assert success is True
-        assert "created and ownership set" in message
-        mock_copy.assert_called_once()
-        mock_chown.assert_called_once()
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "INFLUX_UID": "1000",
+            "INFLUX_GID": "1000",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        with patch("shutil.copy2"):
+            success, _ = permissions_influxdb()
+            assert success is True
 
 
 def test_permissions_influxdb_success_darwin(mock_config):
     """Test successful InfluxDB permissions setup on Darwin"""
-    with patch("platform.system", return_value="Darwin"), patch(
-        "shutil.copy2"
-    ) as mock_copy, patch("shutil.chown") as mock_chown, patch(
-        "dtaas_services.pkg.influxdb.is_ci", return_value=False
+    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
     ):
-        success, message = permissions_influxdb()
-        assert success is True
-        assert "created and ownership set" in message
-        mock_copy.assert_called_once()
-        mock_chown.assert_called_once()
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "INFLUX_UID": "1000",
+            "INFLUX_GID": "1000",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        with patch("shutil.copy2"):
+            success, _ = permissions_influxdb()
+            assert success is True
 
 
 def test_permissions_influxdb_success_windows(mock_config):
     """Test successful InfluxDB permissions setup on Windows"""
-    with patch("platform.system", return_value="Windows"), patch(
-        "shutil.copy2"
-    ) as mock_copy, patch("shutil.chown") as mock_chown, patch(
-        "dtaas_services.pkg.influxdb.is_ci", return_value=False
+    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
     ):
-        success, message = permissions_influxdb()
-        assert success is True
-        assert "created" in message
-        mock_copy.assert_called_once()
-        # chown should not be called on Windows
-        mock_chown.assert_not_called()
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "INFLUX_UID": "1000",
+            "INFLUX_GID": "1000",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        with patch("shutil.copy2"):
+            success, _ = permissions_influxdb()
+            assert success is True
 
 
 def test_permissions_influxdb_success_ci(mock_config):
     """Test InfluxDB permissions setup in CI environment"""
-    with patch("platform.system", return_value="Linux"), patch(
-        "shutil.copy2"
-    ) as mock_copy, patch("shutil.chown") as mock_chown, patch(
-        "dtaas_services.pkg.influxdb.is_ci", return_value=True
+    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+        return_value=(True, "privkey set (skipped)"),
     ):
-        success, message = permissions_influxdb()
-        assert success is True
-        assert "permission changes skipped in CI" in message
-        mock_copy.assert_called_once()
-        # chown should not be called in CI
-        mock_chown.assert_not_called()
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "INFLUX_UID": "1000",
+            "INFLUX_GID": "1000",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        with patch("shutil.copy2"):
+            success, _ = permissions_influxdb()
+            assert success is True
 
 
 def test_permissions_influxdb_os_error(mock_config):

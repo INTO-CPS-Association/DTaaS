@@ -1,13 +1,12 @@
 # pylint: disable=redefined-outer-name
+# pylint: disable=W0613
 """Tests for MongoDB user management"""
 
 from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
-from dtaas_services.pkg.mongodb import (
-    create_combined_cert,
-    permissions_mongodb,
-)
+from dtaas_services.pkg.cert import create_combined_cert
+from dtaas_services.pkg.mongodb import permissions_mongodb
 
 
 @pytest.fixture
@@ -53,9 +52,9 @@ def test_create_combined_cert_missing_privkey(tmp_path):
     # Only create fullchain, not privkey
     fullchain_path.write_bytes(b"CERTIFICATE DATA\n")
 
-    with pytest.raises(FileNotFoundError) as exc_info:
-        create_combined_cert(privkey_path, fullchain_path, combined_path)
-    assert "Missing privkey.pem" in str(exc_info.value)
+    success, message = create_combined_cert(privkey_path, fullchain_path, combined_path)
+    assert success is False
+    assert "Missing privkey.pem" in message
 
 
 def test_create_combined_cert_missing_fullchain(tmp_path):
@@ -67,85 +66,101 @@ def test_create_combined_cert_missing_fullchain(tmp_path):
     # Only create privkey, not fullchain
     privkey_path.write_bytes(b"PRIVATE KEY DATA\n")
 
-    with pytest.raises(FileNotFoundError) as exc_info:
-        create_combined_cert(privkey_path, fullchain_path, combined_path)
-    assert "Missing fullchain.pem" in str(exc_info.value)
+    success, message = create_combined_cert(privkey_path, fullchain_path, combined_path)
+    assert success is False
+    assert "Missing fullchain.pem" in message
 
 
 def test_permissions_mongodb_success_linux(mock_config):
     """Test successful MongoDB permissions setup on Linux"""
-    with patch("platform.system", return_value="Linux"), patch(
-        "pathlib.Path.mkdir"
-    ) as mock_mkdir, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert"
-    ) as mock_create, patch("pathlib.Path.chmod") as mock_chmod, patch(
-        "shutil.chown"
-    ) as mock_chown, patch("dtaas_services.pkg.mongodb.is_ci", return_value=False):
-        success, message = permissions_mongodb()
+    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.mongodb.create_combined_cert",
+        return_value=(True, "Combined cert"),
+    ), patch(
+        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
+    ):
+        # Setup Config mocks
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "MONGO_UID": "999",
+            "MONGO_GID": "999",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        success, _ = permissions_mongodb()
         assert success is True
-        assert "combined.pem created with mode 600" in message
-        assert "ownership set to 999:999" in message
-        mock_mkdir.assert_called_once()
-        mock_create.assert_called_once()
-        mock_chmod.assert_called_once()
-        mock_chown.assert_called_once()
 
 
 def test_permissions_mongodb_success_darwin(mock_config):
     """Test successful MongoDB permissions setup on Darwin"""
-    with patch("platform.system", return_value="Darwin"), patch(
-        "pathlib.Path.mkdir"
-    ) as mock_mkdir, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert"
-    ) as mock_create, patch("pathlib.Path.chmod") as mock_chmod, patch(
-        "shutil.chown"
-    ) as mock_chown, patch("dtaas_services.pkg.mongodb.is_ci", return_value=False):
-        success, message = permissions_mongodb()
+    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.mongodb.create_combined_cert",
+        return_value=(True, "Combined cert"),
+    ), patch(
+        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
+    ):
+        # Setup Config mocks
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "MONGO_UID": "999",
+            "MONGO_GID": "999",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        success, _ = permissions_mongodb()
         assert success is True
-        assert "combined.pem created with mode 600" in message
-        mock_mkdir.assert_called_once()
-        mock_create.assert_called_once()
-        mock_chmod.assert_called_once()
-        mock_chown.assert_called_once()
 
 
 def test_permissions_mongodb_success_windows(mock_config):
     """Test successful MongoDB permissions setup on Windows"""
-    with patch("platform.system", return_value="Windows"), patch(
-        "pathlib.Path.mkdir"
-    ) as mock_mkdir, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert"
-    ) as mock_create, patch("pathlib.Path.chmod") as mock_chmod, patch(
-        "shutil.chown"
-    ) as mock_chown, patch("dtaas_services.pkg.mongodb.is_ci", return_value=False):
-        success, message = permissions_mongodb()
+    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.mongodb.create_combined_cert",
+        return_value=(True, "Combined cert"),
+    ), patch(
+        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        return_value=(True, "privkey set"),
+    ):
+        # Setup Config mocks
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "MONGO_UID": "999",
+            "MONGO_GID": "999",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        success, _ = permissions_mongodb()
         assert success is True
-        assert "combined.pem created" in message
-        assert "permission changes skipped in CI" in message
-        mock_mkdir.assert_called_once()
-        mock_create.assert_called_once()
-        # chmod and chown should not be called on Windows
-        mock_chmod.assert_not_called()
-        mock_chown.assert_not_called()
 
 
 def test_permissions_mongodb_success_ci(mock_config):
     """Test MongoDB permissions setup in CI environment"""
-    with patch("platform.system", return_value="Linux"), patch(
-        "pathlib.Path.mkdir"
-    ) as mock_mkdir, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert"
-    ) as mock_create, patch("pathlib.Path.chmod") as mock_chmod, patch(
-        "shutil.chown"
-    ) as mock_chown, patch("dtaas_services.pkg.mongodb.is_ci", return_value=True):
-        success, message = permissions_mongodb()
+    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.mongodb.create_combined_cert",
+        return_value=(True, "Combined cert"),
+    ), patch(
+        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        return_value=(True, "privkey set (skipped)"),
+    ):
+        # Setup Config mocks
+        mock_instance = Mock()
+        mock_instance.get_value.side_effect = lambda key: {
+            "HOSTNAME": "test.example.com",
+            "MONGO_UID": "999",
+            "MONGO_GID": "999",
+        }.get(key, "default")
+        mock_cfg.return_value = mock_instance
+        mock_cfg.get_base_dir.return_value = Path("/test/base")
+
+        success, _ = permissions_mongodb()
         assert success is True
-        assert "permission changes skipped in CI" in message
-        mock_mkdir.assert_called_once()
-        mock_create.assert_called_once()
-        # chmod and chown should not be called in CI
-        mock_chmod.assert_not_called()
-        mock_chown.assert_not_called()
 
 
 def test_permissions_mongodb_os_error(mock_config):

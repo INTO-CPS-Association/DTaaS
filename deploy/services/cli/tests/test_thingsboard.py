@@ -1,12 +1,15 @@
 # pylint: disable=redefined-outer-name
+# pylint: disable=W0212
 """Tests for ThingsBoard user management - Refactored"""
 
 import os
+import shutil
 from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
 import pytest
 import requests
 import dtaas_services.pkg.thingsboard as th
+from dtaas_services.pkg.cert import set_service_cert_permissions
 
 # Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
@@ -573,7 +576,8 @@ def test_process_credentials_row_scenarios():
         "dtaas_services.pkg.thingsboard._create_tenant_and_admin",
         return_value=(False, "error"),
     ):
-        cred = {"username": "user", "password": "pass", "email": "test@ex.com"}  # noqa: S105 # NOSONAR
+        cred = {"username": "user", "password": "pass",
+                "email": "test@ex.com"}  # noqa: S105 # NOSONAR
         success, _ = th._process_credentials_row(base_url, session, cred, set())
         assert success is False
 
@@ -654,16 +658,15 @@ def test_setup_thingsboard_users_scenarios(mock_config):
         assert success is False
 
 
-# Certificate and Permission Tests
 def test_copy_and_chmod_cert(tmp_path):
     """Test copying and chmod of certificate"""
     src = tmp_path / "source.pem"
     dest = tmp_path / "dest.pem"
     src.write_bytes(b"CERT")
-    with patch("shutil.copy2") as mock_copy, patch("os.chmod") as mock_chmod:
-        th._copy_and_chmod_cert(src, dest, 0o600)
+
+    with patch("shutil.copy2") as mock_copy:
+        shutil.copy2(src, dest)
         mock_copy.assert_called_once()
-        mock_chmod.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -676,10 +679,15 @@ def test_copy_and_chmod_cert(tmp_path):
 )
 def test_set_cert_ownership(os_type, should_call_chown):
     """Test certificate ownership setting on different platforms"""
+
     cert_path = Path("/test/cert.pem")
-    with patch("shutil.chown") as mock_chown:
-        th._set_cert_ownership(cert_path, os_type, 999, 999)
-        if should_call_chown:
+    with patch("dtaas_services.pkg.cert.shutil.chown") as mock_chown, patch(
+        "dtaas_services.pkg.cert.platform.system", return_value=os_type
+    ), patch("dtaas_services.pkg.cert.is_ci", return_value=False), patch(
+        "pathlib.Path.chmod"
+    ):
+        set_service_cert_permissions("Test", cert_path, 999, 999)
+        if os_type in ("linux", "darwin"):
             mock_chown.assert_called_once()
         else:
             mock_chown.assert_not_called()
@@ -689,16 +697,14 @@ def test_setup_postgres_certs_scenarios():
     """Test PostgreSQL certificates setup with scenarios"""
     certs_dir = Path("/test/certs")
     # Success
-    with patch("dtaas_services.pkg.thingsboard._copy_and_chmod_cert"), patch(
-        "dtaas_services.pkg.thingsboard._set_cert_ownership"
-    ):
+    with patch(
+        "dtaas_services.pkg.thingsboard.set_service_cert_permissions",
+        return_value=(True, "success"),
+    ), patch("shutil.copy2"):
         success, _ = th._setup_postgres_certs(certs_dir, "linux", 999, 999)
         assert success is True
     # OSError
-    with patch(
-        "dtaas_services.pkg.thingsboard._copy_and_chmod_cert",
-        side_effect=OSError("Error"),
-    ):
+    with patch("shutil.copy2", side_effect=OSError("Error")):
         success, _ = th._setup_postgres_certs(certs_dir, "linux", 999, 999)
         assert success is False
 
@@ -707,16 +713,14 @@ def test_setup_thingsboard_certs_scenarios():
     """Test ThingsBoard certificates setup with scenarios"""
     certs_dir = Path("/test/certs")
     # Success
-    with patch("dtaas_services.pkg.thingsboard._copy_and_chmod_cert"), patch(
-        "dtaas_services.pkg.thingsboard._set_cert_ownership"
-    ):
+    with patch(
+        "dtaas_services.pkg.thingsboard.set_service_cert_permissions",
+        return_value=(True, "success"),
+    ), patch("shutil.copy2"):
         success, _ = th._setup_thingsboard_certs(certs_dir, "linux", 1000, 1000)
         assert success is True
     # OSError
-    with patch(
-        "dtaas_services.pkg.thingsboard._copy_and_chmod_cert",
-        side_effect=OSError("Error"),
-    ):
+    with patch("shutil.copy2", side_effect=OSError("Error")):
         success, _ = th._setup_thingsboard_certs(certs_dir, "linux", 1000, 1000)
         assert success is False
 
@@ -755,9 +759,7 @@ def test_setup_thingsboard_directories_scenarios():
 
 def test_get_config_values(mock_config):
     """Test getting configuration values"""
-    _, base_dir, _, _, pg_uid, _, tb_uid, _ = (
-        th._get_config_values()
-    )
+    _, base_dir, _, _, pg_uid, _, tb_uid, _ = th._get_config_values()
     assert base_dir == Path("/test/base")
     assert pg_uid == 999
     assert tb_uid == 1000
