@@ -17,7 +17,7 @@ AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana", "influxdb"]
 
 def is_running_as_root():
     """Check if running as root (Unix) or admin (Windows)"""
-    return os.geteuid() == 0 if hasattr(os, 'geteuid') else True
+    return os.geteuid() == 0 if hasattr(os, "geteuid") else True
 
 
 def setup_services():
@@ -30,7 +30,7 @@ def setup_services():
             ["sudo", "dtaas-services", "setup"],
             capture_output=True,
             text=True,
-            check=False
+            check=False,
         )
         if result.returncode != 0:
             # If sudo fails, try without (some tests might not need actual permissions)
@@ -206,8 +206,10 @@ def test_setup_start_status_all_services(ensure_services_stopped):
     result = setup_services()
     # Setup might fail due to permissions in CI, but we can continue
     if result.returncode != 0:
-        console.print("[yellow]Warning: Setup failed "
-        "(may be due to permissions), continuing with test...[/yellow]")
+        console.print(
+            "[yellow]Warning: Setup failed "
+            "(may be due to permissions), continuing with test...[/yellow]"
+        )
 
     # Step 2: Start all services
     result = run_command(["dtaas-services", "start"])
@@ -227,8 +229,10 @@ def test_stop_influxdb_service(ensure_services_stopped):
     # Step 1: Run setup
     result = setup_services()
     if result.returncode != 0:
-        console.print("[yellow]Warning: Setup failed "
-        "(may be due to permissions), continuing with test...[/yellow]")
+        console.print(
+            "[yellow]Warning: Setup failed "
+            "(may be due to permissions), continuing with test...[/yellow]"
+        )
 
     # Step 2: Start all services
     result = run_command(["dtaas-services", "start"])
@@ -257,8 +261,10 @@ def test_stop_multiple_services(ensure_services_stopped):
     # Setup and start
     result = setup_services()
     if result.returncode != 0:
-        console.print("[yellow]Warning: Setup failed "
-        "(may be due to permissions), continuing with test...[/yellow]")
+        console.print(
+            "[yellow]Warning: Setup failed "
+            "(may be due to permissions), continuing with test...[/yellow]"
+        )
     run_command(["dtaas-services", "start"])
 
     # Stop rabbitmq and mongodb
@@ -281,8 +287,10 @@ def test_start_single_service(ensure_services_stopped):
     # Setup
     result = setup_services()
     if result.returncode != 0:
-        console.print("[yellow]Warning: Setup failed "
-        "(may be due to permissions), continuing with test...[/yellow]")
+        console.print(
+            "[yellow]Warning: Setup failed "
+            "(may be due to permissions), continuing with test...[/yellow]"
+        )
 
     # Start with -s rabbitmq flag
     result = run_command(["dtaas-services", "start", "-s", "rabbitmq"])
@@ -299,8 +307,10 @@ def test_start_stop_start_cycle(ensure_services_stopped):
     # Setup
     result = setup_services()
     if result.returncode != 0:
-        console.print("[yellow]Warning: Setup failed "
-        "(may be due to permissions), continuing with test...[/yellow]")
+        console.print(
+            "[yellow]Warning: Setup failed "
+            "(may be due to permissions), continuing with test...[/yellow]"
+        )
 
     # First start
     result = run_command(["dtaas-services", "start"])

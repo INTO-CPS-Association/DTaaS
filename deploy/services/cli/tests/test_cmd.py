@@ -28,7 +28,9 @@ def mock_service_setup():
         "dtaas_services.cmd.permissions_rabbitmq"
     ) as mock_rabbitmq, patch(
         "dtaas_services.cmd.permissions_thingsboard"
-    ) as mock_thingsboard, patch("dtaas_services.cmd.check_root_unix") as mock_check_root:
+    ) as mock_thingsboard, patch(
+        "dtaas_services.cmd.check_root_unix"
+    ) as mock_check_root:
         service_instance = Mock()
         mock_service_class.return_value = service_instance
         yield {
@@ -48,9 +50,7 @@ def mock_user_pkg():
     """Mock user management modules"""
     with patch("dtaas_services.cmd.influxdb") as mock_influx, patch(
         "dtaas_services.cmd.rabbitmq"
-    ) as mock_rabbit, patch(
-        "dtaas_services.cmd.thingsboard"
-    ) as mock_thingsboard:
+    ) as mock_rabbit, patch("dtaas_services.cmd.thingsboard") as mock_thingsboard:
         yield {
             "influxdb": mock_influx,
             "rabbitmq": mock_rabbit,
