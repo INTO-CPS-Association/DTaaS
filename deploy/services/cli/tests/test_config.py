@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from unittest.mock import patch
+import sys
 
 import pytest
 
@@ -111,6 +112,7 @@ def test_is_running_from_venv_source(mock_resolve):
     assert result is False
 
 
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific test")
 @patch("pathlib.Path.resolve")
 def test_get_windows_base_dir_from_venv(mock_resolve):
     """Test _get_windows_base_dir when running from venv"""
@@ -124,6 +126,7 @@ def test_get_windows_base_dir_from_venv(mock_resolve):
         assert "venv" in str(result) or "\\" in str(result)
 
 
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific test")
 @patch("pathlib.Path.resolve")
 def test_get_windows_base_dir_from_source(mock_resolve):
     """Test _get_windows_base_dir when running from source"""
