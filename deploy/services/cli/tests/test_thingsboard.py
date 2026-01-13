@@ -8,6 +8,15 @@ import pytest
 import requests
 import dtaas_services.pkg.thingsboard as th
 
+# Test constants (not real credentials, for testing only)
+TEST_USERNAME = "testuser"
+TEST_PASSWORD = "testpass123"  # noqa: S105
+TEST_EMAIL = "test@example.com"
+TEST_INVALID_EMAIL = ""
+TEST_OLD_PASSWORD = "old"  # noqa: S105
+TEST_NEW_PASSWORD = "new"  # noqa: S105
+TEST_CONFIGURED_PASSWORD = "newpassword"  # noqa: S105
+
 
 @pytest.fixture
 def mock_config():
@@ -42,9 +51,9 @@ def mock_config():
             {
                 "HOSTNAME": "custom.example.com",
                 "THINGSBOARD_PORT": "9090",
-                "THINGSBOARD_SCHEME": "http",
+                "THINGSBOARD_SCHEME": "https",
             },
-            "http://custom.example.com:9090",
+            "https://custom.example.com:9090",
         ),
     ],
 )
@@ -75,8 +84,8 @@ def test_handle_login_response(status_code, json_data, expected_token):
 def test_login_scenarios():
     """Test login with success, failure, and exception"""
     base_url = "https://localhost:8080"
-    email = "test@example.com"
-    password = "password"
+    email = TEST_EMAIL
+    password = TEST_PASSWORD
 
     # Success case
     with patch("requests.post") as mock_post:
@@ -101,7 +110,7 @@ def test_login_scenarios():
 @pytest.mark.parametrize(
     "env_password,expected",
     [
-        ("newpassword", "newpassword"),
+        (TEST_CONFIGURED_PASSWORD, TEST_CONFIGURED_PASSWORD),
         (None, None),
     ],
 )
@@ -131,7 +140,7 @@ def test_change_password_api_call(status_code, expected_success):
     mock_session = Mock()
     mock_session.post.return_value = Mock(status_code=status_code, text="error")
     result = th._change_password_api_call(
-        "https://localhost:8080", mock_session, "old", "new"
+        "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
     )
     assert result == expected_success
 
@@ -142,7 +151,7 @@ def test_change_password_api_call_exception():
     mock_session.post.side_effect = requests.exceptions.RequestException("Error")
     assert (
         th._change_password_api_call(
-            "https://localhost:8080", mock_session, "old", "new"
+            "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
         )
         is False
     )
@@ -159,7 +168,7 @@ def test_perform_password_change_scenarios():
         "dtaas_services.pkg.thingsboard._update_session_token"
     ):
         success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", "old", "new"
+            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
         )
         assert success is True
     # API call fails
@@ -167,7 +176,7 @@ def test_perform_password_change_scenarios():
         "dtaas_services.pkg.thingsboard._change_password_api_call", return_value=False
     ):
         success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", "old", "new"
+            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
         )
         assert success is False
     # Re-login fails
@@ -175,7 +184,7 @@ def test_perform_password_change_scenarios():
         "dtaas_services.pkg.thingsboard._change_password_api_call", return_value=True
     ), patch("dtaas_services.pkg.thingsboard.login", return_value=None):
         success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", "old", "new"
+            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
         )
         assert success is False
 
@@ -538,19 +547,25 @@ def test_process_credentials_row_scenarios():
         "dtaas_services.pkg.thingsboard._create_tenant_and_admin",
         return_value=(True, ""),
     ):
-        cred = {"username": "user", "password": "pass", "email": "test@ex.com"}
+        cred = {
+            "username": TEST_USERNAME,
+            "password": TEST_PASSWORD,
+            "email": TEST_EMAIL,
+        }
         success, _ = th._process_credentials_row(base_url, session, cred, set())
         assert success is True
     # No email
-    cred = {"username": "user", "password": "pass", "email": ""}
+    cred = {
+        "username": TEST_USERNAME,
+        "password": TEST_PASSWORD,
+        "email": TEST_INVALID_EMAIL,
+    }
     success, error = th._process_credentials_row(base_url, session, cred, set())
     assert success is False
     assert "Email field is required" in error
     # Duplicate email
-    cred = {"username": "user", "password": "pass", "email": "test@ex.com"}
-    success, error = th._process_credentials_row(
-        base_url, session, cred, {"test@ex.com"}
-    )
+    cred = {"username": TEST_USERNAME, "password": TEST_PASSWORD, "email": TEST_EMAIL}
+    success, error = th._process_credentials_row(base_url, session, cred, {TEST_EMAIL})
     assert success is False
     assert "Duplicate email" in error
     # Creation fails
