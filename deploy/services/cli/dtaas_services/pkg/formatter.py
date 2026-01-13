@@ -6,7 +6,7 @@ from rich.table import Table
 from python_on_whales import Container
 
 
-class RemovedService:
+class RemovedServiceEntry:
     """Placeholder class for removed services to show in status."""
 
     def __init__(self, name: str) -> None:
@@ -66,12 +66,12 @@ def _format_status_display(state: str) -> str:
 
 
 def format_container_status(
-    containers: List[Union[Container, RemovedService]], console: Console = None
+    containers: List[Union[Container, RemovedServiceEntry]], console: Console = None
 ) -> None:
     """
     Format and display container status in a nice table.
     Args:
-        containers: List of Container objects or RemovedService objects from python_on_whales
+        containers: List of Container objects or RemovedServiceEntry objects from python_on_whales
         console: Optional Rich console instance (creates new one if not provided)
     """
     if console is None:

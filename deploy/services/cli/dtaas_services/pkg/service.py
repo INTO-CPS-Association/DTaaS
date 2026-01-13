@@ -8,7 +8,7 @@ from pathlib import Path
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
 from .config import Config
-from .formatter import RemovedService, normalize_service_name
+from .formatter import RemovedServiceEntry, normalize_service_name
 
 DOCKER_OPERATION_EXCEPTIONS = (
     subprocess.CalledProcessError,
@@ -273,11 +273,11 @@ class Service:
             container_map: Dict mapping container names to container objects
             service_list: Optional list of specific services to check
         Returns:
-            List of container objects and RemovedService objects
+            List of container objects and RemovedServiceEntry objects
         """
         services_to_check = self._get_services_to_check(all_services, service_list)
         return [
-            container_map.get(service_name) or RemovedService(service_name)
+            container_map.get(service_name) or RemovedServiceEntry(service_name)
             for service_name in services_to_check
         ]
 
@@ -307,7 +307,7 @@ class Service:
 
         Returns:
             Tuple of (Exception or None,
-                list of Container objects and RemovedService objects)
+                list of Container objects and RemovedServiceEntry objects)
         """
         err, exists = self._check_compose_file()
         if not exists:

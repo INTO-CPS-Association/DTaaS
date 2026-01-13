@@ -10,7 +10,7 @@ from dtaas_services.pkg.cert import (
 )
 
 
-class TestNormalizeCertCandidates:
+class CertCandidateNormalizationTest:
     """Tests for normalize_cert_candidates function"""
 
     def test_normalize_cert_candidates_no_candidates(self, tmp_path):
@@ -63,8 +63,7 @@ class TestNormalizeCertCandidates:
         assert target.exists()
         assert target.read_text() == "target cert"
 
-
-class TestCreateDummyCerts:
+class DummyCertCreationTest:
     """Tests for _create_dummy_certs helper function"""
 
     def test_create_dummy_certs_success(self, tmp_path):
@@ -90,7 +89,7 @@ class TestCreateDummyCerts:
         assert (certs_dir / "fullchain.pem").read_text() == "existing fullchain"
 
 
-class TestCopyCertFiles:
+class CertFileCopyTest:
     """Tests for _copy_cert_files helper function"""
 
     def test_copy_cert_files_success(self, tmp_path):
@@ -119,7 +118,7 @@ class TestCopyCertFiles:
         assert "Error copying certificates" in message
 
 
-class TestCopyCerts:
+class CertsCopyTest:
     """Tests for copy_certs function"""
 
     @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
