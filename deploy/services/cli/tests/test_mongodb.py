@@ -79,8 +79,8 @@ def test_permissions_mongodb_success_linux(mock_config):
     ), patch(
         "dtaas_services.pkg.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
-        # Setup Config mocks
+    ), patch("pathlib.Path.mkdir"):
+        # Setup Config mocks both instance and class method
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -88,7 +88,7 @@ def test_permissions_mongodb_success_linux(mock_config):
             "MONGO_GID": "999",
         }.get(key, "default")
         mock_cfg.return_value = mock_instance
-        mock_cfg.get_base_dir.return_value = Path("/test/base")
+        mock_cfg.get_base_dir = Mock(return_value=Path("/test/base"))
 
         success, _ = permissions_mongodb()
         assert success is True
@@ -102,8 +102,8 @@ def test_permissions_mongodb_success_darwin(mock_config):
     ), patch(
         "dtaas_services.pkg.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
-        # Setup Config mocks
+    ), patch("pathlib.Path.mkdir"):
+        # Setup Config mocks both instance and class method
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -111,7 +111,7 @@ def test_permissions_mongodb_success_darwin(mock_config):
             "MONGO_GID": "999",
         }.get(key, "default")
         mock_cfg.return_value = mock_instance
-        mock_cfg.get_base_dir.return_value = Path("/test/base")
+        mock_cfg.get_base_dir = Mock(return_value=Path("/test/base"))
 
         success, _ = permissions_mongodb()
         assert success is True
@@ -125,8 +125,8 @@ def test_permissions_mongodb_success_windows(mock_config):
     ), patch(
         "dtaas_services.pkg.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
-        # Setup Config mocks
+    ), patch("pathlib.Path.mkdir"):
+        # Setup Config mocks both instance and class method
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -134,7 +134,7 @@ def test_permissions_mongodb_success_windows(mock_config):
             "MONGO_GID": "999",
         }.get(key, "default")
         mock_cfg.return_value = mock_instance
-        mock_cfg.get_base_dir.return_value = Path("/test/base")
+        mock_cfg.get_base_dir = Mock(return_value=Path("/test/base"))
 
         success, _ = permissions_mongodb()
         assert success is True
@@ -148,8 +148,8 @@ def test_permissions_mongodb_success_ci(mock_config):
     ), patch(
         "dtaas_services.pkg.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set (skipped)"),
-    ):
-        # Setup Config mocks
+    ), patch("pathlib.Path.mkdir"):
+        # Setup Config mocks both instance and class method
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -157,7 +157,7 @@ def test_permissions_mongodb_success_ci(mock_config):
             "MONGO_GID": "999",
         }.get(key, "default")
         mock_cfg.return_value = mock_instance
-        mock_cfg.get_base_dir.return_value = Path("/test/base")
+        mock_cfg.get_base_dir = Mock(return_value=Path("/test/base"))
 
         success, _ = permissions_mongodb()
         assert success is True

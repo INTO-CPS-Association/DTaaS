@@ -576,8 +576,8 @@ def test_process_credentials_row_scenarios():
         "dtaas_services.pkg.thingsboard._create_tenant_and_admin",
         return_value=(False, "error"),
     ):
-        cred = {"username": "user", "password": "pass",
-                "email": "test@ex.com"}  # noqa: S105 # NOSONAR
+        cred = {"username": "user", "password": "pass",# noqa: S105 # NOSONAR
+                "email": "test@ex.com"}
         success, _ = th._process_credentials_row(base_url, session, cred, set())
         assert success is False
 
