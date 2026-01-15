@@ -417,7 +417,7 @@ def test_create_and_activate_admin_scenarios():
     base_url = "https://localhost:8080"
     session = Mock()
     ctx = th._AdminContext(base_url, session, "admin@ex.com")
-    ctx.admin_password = "pass"
+    ctx.admin_password = TEST_PASSWORD
     # Full success
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
@@ -468,7 +468,7 @@ def test_ensure_tenant_admin_scenarios():
     base_url = "https://localhost:8080"
     session = Mock()
     ctx = th._AdminContext(base_url, session, "admin@ex.com")
-    ctx.admin_password = "pass"
+    ctx.admin_password = TEST_PASSWORD
     tenant = {"id": {"id": "tenant123"}}
     # Already exists
     with patch("dtaas_services.pkg.thingsboard._check_admin_exists", return_value=True):
