@@ -5,7 +5,7 @@
 import os
 import shutil
 from pathlib import Path
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch, Mock, MagicMock, mock_open
 import pytest
 import requests
 import dtaas_services.pkg.thingsboard as th
@@ -142,9 +142,10 @@ def test_change_password_api_call(status_code, expected_success):
     """Test password change API call with different responses"""
     mock_session = Mock()
     mock_session.post.return_value = Mock(status_code=status_code, text="error")
-    result = th._change_password_api_call(
+    ctx = th._PasswordChangeContext(
         "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
     )
+    result = th._change_password_api_call(ctx)
     assert result == expected_success
 
 
@@ -152,43 +153,38 @@ def test_change_password_api_call_exception():
     """Test password change API call with exception"""
     mock_session = Mock()
     mock_session.post.side_effect = requests.exceptions.RequestException("Error")
-    assert (
-        th._change_password_api_call(
-            "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
-        )
-        is False
+    ctx = th._PasswordChangeContext(
+        "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
     )
+    assert th._change_password_api_call(ctx) is False
 
 
 def test_perform_password_change_scenarios():
     """Test password change with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    ctx = th._PasswordChangeContext(
+        base_url, session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
+    )
     # Success case
     with patch(
         "dtaas_services.pkg.thingsboard._change_password_api_call", return_value=True
     ), patch("dtaas_services.pkg.thingsboard.login", return_value="token"), patch(
         "dtaas_services.pkg.thingsboard._update_session_token"
     ):
-        success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
-        )
+        success, _ = th._perform_password_change(ctx)
         assert success is True
     # API call fails
     with patch(
         "dtaas_services.pkg.thingsboard._change_password_api_call", return_value=False
     ):
-        success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
-        )
+        success, _ = th._perform_password_change(ctx)
         assert success is False
     # Re-login fails
     with patch(
         "dtaas_services.pkg.thingsboard._change_password_api_call", return_value=True
     ), patch("dtaas_services.pkg.thingsboard.login", return_value=None):
-        success, _ = th._perform_password_change(
-            base_url, session, "admin@ex.com", TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
-        )
+        success, _ = th._perform_password_change(ctx)
         assert success is False
 
 
@@ -274,23 +270,25 @@ def test_create_new_tenant_scenarios():
     session.post.return_value = Mock(
         status_code=200, json=lambda: {"id": {"id": "123"}, "title": "new"}
     )
-    success, _, _ = th._create_new_tenant(base_url, session, "new")
-    assert success is True
+    tenant, error = th._create_new_tenant(base_url, session, "new")
+    assert tenant is not None
+    assert error == ""
     # Failure
     session.post.return_value = Mock(status_code=400, text="Error")
-    success, _, _ = th._create_new_tenant(base_url, session, "new")
-    assert success is False
+    tenant, error = th._create_new_tenant(base_url, session, "new")
+    assert tenant is None
+    assert error != ""
     # JSON error
     session.post.return_value = Mock(
         status_code=200,
         json=Mock(side_effect=requests.exceptions.JSONDecodeError("err", "doc", 0)),
     )
-    success, _, _ = th._create_new_tenant(base_url, session, "new")
-    assert success is False
+    tenant, error = th._create_new_tenant(base_url, session, "new")
+    assert tenant is None
     # Request exception
     session.post.side_effect = requests.exceptions.RequestException("Error")
-    success, _, _ = th._create_new_tenant(base_url, session, "new")
-    assert success is False
+    tenant, error = th._create_new_tenant(base_url, session, "new")
+    assert tenant is None
 
 
 def test_get_or_create_tenant_scenarios():
@@ -302,24 +300,24 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard._check_existing_tenant",
         return_value=({"name": "test"}, ""),
     ):
-        success, _, _ = th._get_or_create_tenant(base_url, session, "test")
-        assert success is True
+        tenant, _ = th._get_or_create_tenant(base_url, session, "test")
+        assert tenant is not None
     # Create new
     with patch(
         "dtaas_services.pkg.thingsboard._check_existing_tenant", return_value=(None, "")
     ), patch(
         "dtaas_services.pkg.thingsboard._create_new_tenant",
-        return_value=(True, {"title": "new"}, ""),
+        return_value=({" title": "new"}, ""),
     ):
-        success, _, _ = th._get_or_create_tenant(base_url, session, "new")
-        assert success is True
+        tenant, _ = th._get_or_create_tenant(base_url, session, "new")
+        assert tenant is not None
     # Exception
     with patch(
         "dtaas_services.pkg.thingsboard._check_existing_tenant",
         side_effect=Exception("Error"),
     ):
-        success, _, _ = th._get_or_create_tenant(base_url, session, "test")
-        assert success is False
+        tenant, _ = th._get_or_create_tenant(base_url, session, "test")
+        assert tenant is None
 
 
 # Admin User Tests
@@ -343,30 +341,27 @@ def test_create_tenant_admin_user_scenarios():
     """Test tenant admin user creation with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    ctx = th._AdminContext(base_url, session, "admin@ex.com", "password")
     # Success
     session.post.return_value = Mock(
         status_code=200, json=lambda: {"id": {"id": "user123"}}
     )
-    success, user_id, _ = th._create_tenant_admin_user(
-        base_url, session, "admin@ex.com", "tenant"
-    )
-    assert success is True
+    user_id, error = th._create_tenant_admin_user(ctx, "tenant")
     assert user_id == "user123"
+    assert error == ""
     # Failure
     session.post.return_value = Mock(status_code=400, text="Error")
-    success, _, _ = th._create_tenant_admin_user(
-        base_url, session, "admin@ex.com", "tenant"
-    )
-    assert success is False
+    user_id, error = th._create_tenant_admin_user(ctx, "tenant")
+    assert user_id is None
+    assert error != ""
     # JSON error
     session.post.return_value = Mock(
         status_code=200,
         json=Mock(side_effect=requests.exceptions.JSONDecodeError("err", "doc", 0)),
     )
-    success, _, _ = th._create_tenant_admin_user(
-        base_url, session, "admin@ex.com", "tenant"
-    )
-    assert success is False
+    user_id, error = th._create_tenant_admin_user(ctx, "tenant")
+    assert user_id is None
+    assert error != ""
 
 
 def test_get_activation_token_scenarios():
@@ -375,17 +370,19 @@ def test_get_activation_token_scenarios():
     session = Mock()
     # Success
     session.get.return_value = Mock(status_code=200, text="link?activateToken=token123")
-    success, token, _ = th._get_activation_token(base_url, session, "user123")
-    assert success is True
+    token, error = th._get_activation_token(base_url, session, "user123")
     assert token == "token123"
+    assert error == ""
     # No token
     session.get.return_value = Mock(status_code=200, text="no token")
-    success, _, _ = th._get_activation_token(base_url, session, "user123")
-    assert success is False
+    token, error = th._get_activation_token(base_url, session, "user123")
+    assert token is None
+    assert error != ""
     # Exception
     session.get.side_effect = requests.exceptions.RequestException("Error")
-    success, _, _ = th._get_activation_token(base_url, session, "user123")
-    assert success is False
+    token, error = th._get_activation_token(base_url, session, "user123")
+    assert token is None
+    assert error != ""
 
 
 def test_activate_user_scenarios():
@@ -427,56 +424,49 @@ def test_create_and_activate_admin_scenarios():
     """Test admin creation and activation with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    ctx = th._AdminContext(base_url, session, "admin@ex.com", "pass")
     # Full success
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
-        return_value=(True, "user123", ""),
+        return_value=("user123", ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._get_activation_token",
-        return_value=(True, "token", ""),
+        return_value=("token", ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._activate_user", return_value=(True, "")
     ), patch(
         "dtaas_services.pkg.thingsboard._verify_admin_login", return_value=(True, "")
     ):
-        success, _ = th._create_and_activate_admin(
-            base_url, session, "admin@ex.com", "pass", "tenant"
-        )
+        success, _ = th._create_and_activate_admin(ctx, "tenant")
         assert success is True
     # Create fails
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
-        return_value=(False, "", "error"),
+        return_value=(None, "error"),
     ):
-        success, _ = th._create_and_activate_admin(
-            base_url, session, "admin@ex.com", "pass", "tenant"
-        )
+        success, _ = th._create_and_activate_admin(ctx, "tenant")
         assert success is False
     # Get token fails
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
-        return_value=(True, "user", ""),
+        return_value=("user", ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._get_activation_token",
-        return_value=(False, "", "error"),
+        return_value=(None, "error"),
     ):
-        success, _ = th._create_and_activate_admin(
-            base_url, session, "admin@ex.com", "pass", "tenant"
-        )
+        success, _ = th._create_and_activate_admin(ctx, "tenant")
         assert success is False
     # Activate fails
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
-        return_value=(True, "user", ""),
+        return_value=("user", ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._get_activation_token",
-        return_value=(True, "token", ""),
+        return_value=("token", ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._activate_user", return_value=(False, "error")
     ):
-        success, _ = th._create_and_activate_admin(
-            base_url, session, "admin@ex.com", "pass", "tenant"
-        )
+        success, _ = th._create_and_activate_admin(ctx, "tenant")
         assert success is False
 
 
@@ -484,12 +474,11 @@ def test_ensure_tenant_admin_scenarios():
     """Test ensuring tenant admin with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    ctx = th._AdminContext(base_url, session, "admin@ex.com", "pass")
     tenant = {"id": {"id": "tenant123"}}
     # Already exists
     with patch("dtaas_services.pkg.thingsboard._check_admin_exists", return_value=True):
-        success, _ = th._ensure_tenant_admin(
-            base_url, session, tenant, "admin@ex.com", "pass"
-        )
+        success, _ = th._ensure_tenant_admin(ctx, tenant)
         assert success is True
     # Create new
     with patch(
@@ -498,18 +487,14 @@ def test_ensure_tenant_admin_scenarios():
         "dtaas_services.pkg.thingsboard._create_and_activate_admin",
         return_value=(True, ""),
     ):
-        success, _ = th._ensure_tenant_admin(
-            base_url, session, tenant, "admin@ex.com", "pass"
-        )
+        success, _ = th._ensure_tenant_admin(ctx, tenant)
         assert success is True
     # Exception
     with patch(
         "dtaas_services.pkg.thingsboard._check_admin_exists",
         side_effect=Exception("Error"),
     ):
-        success, _ = th._ensure_tenant_admin(
-            base_url, session, tenant, "admin@ex.com", "pass"
-        )
+        success, _ = th._ensure_tenant_admin(ctx, tenant)
         assert success is False
 
 
@@ -521,7 +506,7 @@ def test_create_tenant_and_admin_scenarios():
     # Success
     with patch(
         "dtaas_services.pkg.thingsboard._get_or_create_tenant",
-        return_value=(True, tenant, ""),
+        return_value=(tenant, ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._ensure_tenant_admin", return_value=(True, "")
     ):
@@ -532,7 +517,7 @@ def test_create_tenant_and_admin_scenarios():
     # Tenant creation fails
     with patch(
         "dtaas_services.pkg.thingsboard._get_or_create_tenant",
-        return_value=(False, {}, "error"),
+        return_value=(None, "error"),
     ):
         success, _ = th._create_tenant_and_admin(
             base_url, session, "test", "admin@ex.com", "pass"
@@ -545,6 +530,7 @@ def test_process_credentials_row_scenarios():
     """Test credentials row processing with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    ctx = th._CredentialProcessContext(base_url, session)
     # Success
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_and_admin",
@@ -555,7 +541,7 @@ def test_process_credentials_row_scenarios():
             "password": TEST_PASSWORD,
             "email": TEST_EMAIL,
         }
-        success, _ = th._process_credentials_row(base_url, session, cred, set())
+        success, _ = th._process_credentials_row(ctx, cred)
         assert success is True
     # No email
     cred = {
@@ -563,22 +549,27 @@ def test_process_credentials_row_scenarios():
         "password": TEST_PASSWORD,
         "email": TEST_INVALID_EMAIL,
     }
-    success, error = th._process_credentials_row(base_url, session, cred, set())
+    success, error = th._process_credentials_row(ctx, cred)
     assert success is False
     assert "Email field is required" in error
     # Duplicate email
+    ctx.seen_emails.add(TEST_EMAIL)
     cred = {"username": TEST_USERNAME, "password": TEST_PASSWORD, "email": TEST_EMAIL}
-    success, error = th._process_credentials_row(base_url, session, cred, {TEST_EMAIL})
+    success, error = th._process_credentials_row(ctx, cred)
     assert success is False
     assert "Duplicate email" in error
     # Creation fails
+    ctx2 = th._CredentialProcessContext(base_url, session)
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_and_admin",
         return_value=(False, "error"),
     ):
-        cred = {"username": "user", "password": "pass",# noqa: S105 # NOSONAR
-                "email": "test@ex.com"}
-        success, _ = th._process_credentials_row(base_url, session, cred, set())
+        cred = {
+            "username": "user",
+            "password": "pass",  # noqa: S105 # NOSONAR
+            "email": "test@ex.com",
+        }
+        success, _ = th._process_credentials_row(ctx2, cred)
         assert success is False
 
 
@@ -738,31 +729,40 @@ def test_set_directory_ownership():
 def test_setup_thingsboard_directories_scenarios():
     """Test ThingsBoard directories setup with scenarios"""
     base_dir = Path("/test/base")
+    # Create a mock config object
+    mock_cfg = MagicMock()
+    mock_cfg.base_dir = base_dir
+    mock_cfg.os_type = "linux"
+    mock_cfg.thingsboard_uid = 1000
+    mock_cfg.thingsboard_gid = 1000
+
     # Success (non-CI)
     with patch("pathlib.Path.mkdir"), patch(
         "dtaas_services.pkg.thingsboard._set_directory_ownership"
     ), patch("dtaas_services.pkg.thingsboard.is_ci", return_value=False):
-        success, _ = th._setup_thingsboard_directories(base_dir, "linux", 1000, 1000)
+        success, _ = th._setup_thingsboard_directories(mock_cfg)
         assert success is True
+
     # Success (CI)
     with patch("pathlib.Path.mkdir"), patch(
         "dtaas_services.pkg.thingsboard._set_directory_ownership"
     ) as mock_chown, patch("dtaas_services.pkg.thingsboard.is_ci", return_value=True):
-        success, _ = th._setup_thingsboard_directories(base_dir, "linux", 1000, 1000)
+        success, _ = th._setup_thingsboard_directories(mock_cfg)
         assert success is True
         mock_chown.assert_not_called()
+
     # OSError
     with patch("pathlib.Path.mkdir", side_effect=OSError("Error")):
-        success, _ = th._setup_thingsboard_directories(base_dir, "linux", 1000, 1000)
+        success, _ = th._setup_thingsboard_directories(mock_cfg)
         assert success is False
 
 
 def test_get_config_values(mock_config):
     """Test getting configuration values"""
-    _, base_dir, _, _, pg_uid, _, tb_uid, _ = th._get_config_values()
-    assert base_dir == Path("/test/base")
-    assert pg_uid == 999
-    assert tb_uid == 1000
+    cfg = th._get_config_values()
+    assert cfg.base_dir == Path("/test/base")
+    assert cfg.postgres_uid == 999
+    assert cfg.thingsboard_uid == 1000
 
 
 def test_verify_certificates_exist_scenarios(tmp_path):
@@ -791,16 +791,9 @@ def test_permissions_thingsboard_scenarios(mock_config):
         "dtaas_services.pkg.thingsboard._execute_setup_operations",
         return_value=(True, ["setup1", "setup2"]),
     ):
-        mock_get.return_value = (
-            Mock(),
-            Path("/test/base"),
-            "linux",
-            Path("/test/certs"),
-            999,
-            999,
-            1000,
-            1000,
-        )
+        mock_cfg = MagicMock()
+        mock_cfg.certs_dir = Path("/test/certs")
+        mock_get.return_value = mock_cfg
         success, _ = th.permissions_thingsboard()
         assert success is True
     # Verify fails
@@ -810,15 +803,8 @@ def test_permissions_thingsboard_scenarios(mock_config):
         "dtaas_services.pkg.thingsboard._verify_certificates_exist",
         return_value=(False, "missing"),
     ):
-        mock_get.return_value = (
-            Mock(),
-            Path("/test/base"),
-            "linux",
-            Path("/test/certs"),
-            999,
-            999,
-            1000,
-            1000,
-        )
+        mock_cfg = MagicMock()
+        mock_cfg.certs_dir = Path("/test/certs")
+        mock_get.return_value = mock_cfg
         success, _ = th.permissions_thingsboard()
         assert success is False

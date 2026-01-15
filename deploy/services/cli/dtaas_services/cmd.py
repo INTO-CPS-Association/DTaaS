@@ -209,9 +209,7 @@ def install_thingsboard():
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except Exception as e:
-        raise click.ClickException(
-            f"ThingsBoard installation failed: {str(e)}"
-        ) from e
+        raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
 
 
 def _services_command_runner(command: str, service_name) -> None:

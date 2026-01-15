@@ -80,15 +80,26 @@ def _update_session_token(session: requests.Session, token: str) -> None:
     session.headers["X-Authorization"] = f"Bearer {token}"
 
 
-def _change_password_api_call(
-    base_url: str, session: requests.Session, default_pw: str, new_pw: str
-) -> bool:
+class _PasswordChangeContext:
+    """Context for password change operations."""
+
+    def __init__(
+        self, base_url: str, session: requests.Session, default_pw: str, new_pw: str
+    ):
+        self.base_url = base_url
+        self.session = session
+        self.default_pw = default_pw
+        self.new_pw = new_pw
+        self.sys_email = "sysadmin@thingsboard.org"
+
+
+def _change_password_api_call(ctx: _PasswordChangeContext) -> bool:
     """Call API to change password."""
-    url = f"{base_url}/api/auth/changePassword"
+    url = f"{ctx.base_url}/api/auth/changePassword"
     try:
-        resp = session.post(
+        resp = ctx.session.post(
             url,
-            json={"currentPassword": default_pw, "newPassword": new_pw},
+            json={"currentPassword": ctx.default_pw, "newPassword": ctx.new_pw},
             timeout=10,
             verify=True,
         )
@@ -102,25 +113,19 @@ def _change_password_api_call(
         return False
 
 
-def _perform_password_change(
-    base_url: str,
-    session: requests.Session,
-    sys_email: str,
-    default_pw: str,
-    new_pw: str,
-) -> Tuple[bool, str]:
+def _perform_password_change(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
     """Perform the password change operation."""
     logger.info("Logged in with default sysadmin password. Changing to new password...")
 
-    if not _change_password_api_call(base_url, session, default_pw, new_pw):
+    if not _change_password_api_call(ctx):
         return False, "Failed to change sysadmin password"
 
     # Log in again with new password
-    token = login(base_url, sys_email, new_pw)
+    token = login(ctx.base_url, ctx.sys_email, ctx.new_pw)
     if not token:
         return False, "Changed password but failed to log in with new sysadmin password"
 
-    _update_session_token(session, token)
+    _update_session_token(ctx.session, token)
     logger.info("Re-logged in as sysadmin with new password.")
     return True, ""
 
@@ -154,7 +159,17 @@ def change_sysadmin_password_if_needed(
         )
 
     _update_session_token(session, token)
-    return _perform_password_change(base_url, session, sys_email, default_pw, new_pw)
+    ctx = _PasswordChangeContext(base_url, session, default_pw, new_pw)
+    return _perform_password_change(ctx)
+
+
+def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
+    """Find tenant by name in response body."""
+    for tenant in body.get("data", []):
+        if tenant.get("title") == tenant_name:
+            logger.info(f"  Tenant '{tenant_name}' already exists")
+            return tenant
+    return None
 
 
 def _check_existing_tenant(
@@ -170,11 +185,8 @@ def _check_existing_tenant(
 
         body = resp.json()
         tenant_name = params.get("textSearch", "")
-        for tenant in body.get("data", []):
-            if tenant.get("title") == tenant_name:
-                logger.info(f"  Tenant '{tenant_name}' already exists")
-                return tenant, ""
-        return None, ""
+        tenant = _find_tenant_in_response(body, tenant_name)
+        return tenant, ""
     except requests.exceptions.JSONDecodeError as e:
         return None, f"Invalid JSON response checking tenant: {e}"
     except requests.exceptions.RequestException as e:
@@ -183,7 +195,7 @@ def _check_existing_tenant(
 
 def _create_new_tenant(
     base_url: str, session: requests.Session, tenant_name: str
-) -> Tuple[bool, dict, str]:
+) -> Tuple[dict | None, str]:
     """Create a new tenant."""
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
@@ -193,32 +205,34 @@ def _create_new_tenant(
         )
 
         if resp.status_code not in (200, 201):
-            error_msg = f"Failed to create tenant: {resp.status_code}"
-            return False, {}, error_msg
+            return None, f"Failed to create tenant: {resp.status_code}"
 
         tenant = resp.json()
         logger.info(f"  Tenant '{tenant_name}' created")
-        return True, tenant, ""
+        return tenant, ""
     except requests.exceptions.JSONDecodeError as e:
-        return False, {}, f"Invalid JSON response creating tenant: {e}"
+        return None, f"Invalid JSON response creating tenant: {e}"
     except requests.exceptions.RequestException as e:
-        return False, {}, f"Network error creating tenant: {e}"
+        return None, f"Network error creating tenant: {e}"
 
 
 def _get_or_create_tenant(
     base_url: str, session: requests.Session, tenant_name: str
-) -> Tuple[bool, dict, str]:
+) -> Tuple[dict | None, str]:
     """Get existing tenant or create a new one."""
     try:
         params = {"pageSize": 100, "page": 0, "textSearch": tenant_name}
-        tenant, _ = _check_existing_tenant(params, base_url, session)
+        tenant, error_msg = _check_existing_tenant(params, base_url, session)
+
+        if error_msg:
+            return None, error_msg
 
         if tenant:
-            return True, tenant, ""
+            return tenant, ""
 
         return _create_new_tenant(base_url, session, tenant_name)
     except Exception as e:
-        return False, {}, f"Exception getting/creating tenant: {e}"
+        return None, f"Exception getting/creating tenant: {e}"
 
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
@@ -231,19 +245,35 @@ def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) ->
     return False
 
 
+class _AdminContext:
+    """Context for admin user creation operations."""
+
+    def __init__(
+        self,
+        base_url: str,
+        session: requests.Session,
+        admin_email: str,
+        admin_password: str = "",
+    ):
+        self.base_url = base_url
+        self.session = session
+        self.admin_email = admin_email
+        self.admin_password = admin_password
+
+
 def _create_tenant_admin_user(
-    base_url: str, session: requests.Session, admin_email: str, tenant_id: str
-) -> Tuple[bool, str, str]:
+    ctx: _AdminContext, tenant_id: str
+) -> Tuple[str | None, str]:
     """Create tenant admin user."""
-    logger.info(f"  Creating tenant admin '{admin_email}'...")
+    logger.info(f"  Creating tenant admin '{ctx.admin_email}'...")
     user_payload = {
-        "email": admin_email,
+        "email": ctx.admin_email,
         "authority": "TENANT_ADMIN",
         "tenantId": {"id": tenant_id, "entityType": "TENANT"},
     }
     try:
-        resp = session.post(
-            f"{base_url}/api/user",
+        resp = ctx.session.post(
+            f"{ctx.base_url}/api/user",
             params={"sendActivationMail": "false"},
             json=user_payload,
             timeout=10,
@@ -251,32 +281,30 @@ def _create_tenant_admin_user(
         )
 
         if resp.status_code not in (200, 201):
-            error_msg = f"Failed to create tenant admin: {resp.status_code}"
-            return False, "", error_msg
+            return None, f"Failed to create tenant admin: {resp.status_code}"
 
         user = resp.json()
         user_id = user.get("id", {}).get("id")
         if not user_id:
-            return False, "", "Created user response missing id"
+            return None, "Created user response missing id"
 
-        return True, user_id, ""
+        return user_id, ""
     except requests.exceptions.JSONDecodeError as e:
-        return False, "", f"Invalid JSON response creating tenant admin: {e}"
+        return None, f"Invalid JSON response creating tenant admin: {e}"
     except requests.exceptions.RequestException as e:
-        return False, "", f"Network error creating tenant admin: {e}"
+        return None, f"Network error creating tenant admin: {e}"
 
 
 def _get_activation_token(
     base_url: str, session: requests.Session, user_id: str
-) -> Tuple[bool, str, str]:
+) -> Tuple[str | None, str]:
     """Get activation token for user."""
     try:
         resp = session.get(
             f"{base_url}/api/user/{user_id}/activationLink", timeout=10, verify=True
         )
         if resp.status_code != 200:
-            error_msg = f"Failed to get activation link: {resp.status_code}"
-            return False, "", error_msg
+            return None, f"Failed to get activation link: {resp.status_code}"
 
         activation_link = resp.text.strip().strip('"')
         parsed = urlparse(activation_link)
@@ -284,11 +312,11 @@ def _get_activation_token(
         tokens = qs.get("activateToken") or qs.get("activateToken".lower())
 
         if not tokens:
-            return False, "", "Could not extract activateToken from activation link"
+            return None, "Could not extract activateToken from activation link"
 
-        return True, tokens[0], ""
+        return tokens[0], ""
     except requests.exceptions.RequestException as e:
-        return False, "", f"Network error getting activation token: {e}"
+        return None, f"Network error getting activation token: {e}"
 
 
 def _activate_user(
@@ -326,44 +354,32 @@ def _verify_admin_login(
     return True, ""
 
 
-def _create_and_activate_admin(
-    base_url: str,
-    session: requests.Session,
-    admin_email: str,
-    admin_password: str,
-    tenant_id: str,
-) -> Tuple[bool, str]:
+def _create_and_activate_admin(ctx: _AdminContext, tenant_id: str) -> Tuple[bool, str]:
     """Create tenant admin user and activate."""
     # Create tenant admin user
-    success, user_id, error_msg = _create_tenant_admin_user(
-        base_url, session, admin_email, tenant_id
-    )
-    if not success:
+    user_id, error_msg = _create_tenant_admin_user(ctx, tenant_id)
+    if not user_id:
         return False, error_msg
 
     # Get activation token
-    success, activate_token, error_msg = _get_activation_token(
-        base_url, session, user_id
+    activate_token, error_msg = _get_activation_token(
+        ctx.base_url, ctx.session, user_id
+    )
+    if not activate_token:
+        return False, error_msg
+
+    # Activate user
+    success, error_msg = _activate_user(
+        ctx.base_url, activate_token, ctx.admin_password
     )
     if not success:
         return False, error_msg
 
-    # Activate user
-    success, error_msg = _activate_user(base_url, activate_token, admin_password)
-    if not success:
-        return False, error_msg
-
-    logger.info(f"  Admin '{admin_email}' created and activated")
-    return _verify_admin_login(base_url, admin_email, admin_password)
+    logger.info(f"  Admin '{ctx.admin_email}' created and activated")
+    return _verify_admin_login(ctx.base_url, ctx.admin_email, ctx.admin_password)
 
 
-def _ensure_tenant_admin(
-    base_url: str,
-    session: requests.Session,
-    tenant: dict,
-    admin_email: str,
-    admin_password: str,
-) -> Tuple[bool, str]:
+def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
     """Create and activate tenant admin user."""
     try:
         tenant_id_obj = tenant.get("id") or {}
@@ -372,13 +388,11 @@ def _ensure_tenant_admin(
             return False, "Invalid tenant object, missing id"
 
         # Check if admin already exists
-        if _check_admin_exists(base_url, admin_email, admin_password):
+        if _check_admin_exists(ctx.base_url, ctx.admin_email, ctx.admin_password):
             return True, ""
 
         # Create and activate admin
-        return _create_and_activate_admin(
-            base_url, session, admin_email, admin_password, tenant_id
-        )
+        return _create_and_activate_admin(ctx, tenant_id)
     except Exception as e:
         return False, f"Exception creating tenant admin: {e}"
 
@@ -391,15 +405,25 @@ def _create_tenant_and_admin(
     admin_password: str,
 ) -> Tuple[bool, str]:
     """Create a tenant and its admin user."""
-    success, tenant, error_msg = _get_or_create_tenant(base_url, session, tenant_name)
-    if not success:
+    tenant, error_msg = _get_or_create_tenant(base_url, session, tenant_name)
+    if not tenant:
         return False, error_msg
 
-    return _ensure_tenant_admin(base_url, session, tenant, admin_email, admin_password)
+    ctx = _AdminContext(base_url, session, admin_email, admin_password)
+    return _ensure_tenant_admin(ctx, tenant)
+
+
+class _CredentialProcessContext:
+    """Context for processing credentials."""
+
+    def __init__(self, base_url: str, session: requests.Session):
+        self.base_url = base_url
+        self.session = session
+        self.seen_emails = set()
 
 
 def _process_credentials_row(
-    base_url: str, session: requests.Session, credential: dict, seen_emails: set
+    ctx: _CredentialProcessContext, credential: dict
 ) -> Tuple[bool, str]:
     """Process a single credential row."""
     username = credential["username"]
@@ -411,13 +435,13 @@ def _process_credentials_row(
         return False, f"Email field is required for user {username}"
 
     # Check for duplicate emails
-    if email in seen_emails:
+    if email in ctx.seen_emails:
         return False, f"Duplicate email '{email}' found for user {username}"
-    seen_emails.add(email)
+    ctx.seen_emails.add(email)
 
     logger.info(f"\nProcessing user '{username}'...")
     success, error_msg = _create_tenant_and_admin(
-        base_url, session, username, email, password
+        ctx.base_url, ctx.session, username, email, password
     )
 
     if not success:
@@ -429,7 +453,7 @@ def _process_credentials_file(
     base_url: str, session: requests.Session, credentials_file: Path
 ) -> Tuple[bool, str]:
     """Process credentials file and create tenants."""
-    seen_emails = set()
+    ctx = _CredentialProcessContext(base_url, session)
     with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
         credentials = csv.DictReader(creds_file, delimiter=",")
 
@@ -438,9 +462,7 @@ def _process_credentials_file(
             return False, "Email column is required in credentials.csv"
 
         for credential in credentials:
-            success, error_msg = _process_credentials_row(
-                base_url, session, credential, seen_emails
-            )
+            success, error_msg = _process_credentials_row(ctx, credential)
             if not success:
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
@@ -470,90 +492,102 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         return False, f"Error adding ThingsBoard users: {e}"
 
 
-def _setup_postgres_certs(
-    certs_dir: Path, uid: int, gid: int
+class _ServiceCertConfig:
+    """Configuration for service certificate setup."""
+
+    def __init__(self, service_name: str, key_filename: str, cert_filename: str):
+        self.service_name = service_name
+        self.key_filename = key_filename
+        self.cert_filename = cert_filename
+
+
+def _setup_service_certs(
+    cert_cfg: _ServiceCertConfig, certs_dir: Path, uid: int, gid: int
 ) -> Tuple[bool, str]:
+    """Set up service certificates with proper permissions."""
+    try:
+        privkey_path = certs_dir / PRIV_KEY_FILENAME
+        fullchain_path = certs_dir / FULLCHAIN_FILENAME
+        service_key_path = certs_dir / cert_cfg.key_filename
+        service_cert_path = certs_dir / cert_cfg.cert_filename
+
+        shutil.copy2(privkey_path, service_key_path)
+        shutil.copy2(fullchain_path, service_cert_path)
+
+        # Set permissions on private key
+        success, msg = set_service_cert_permissions(
+            cert_cfg.service_name, service_key_path, uid, gid, 0o600
+        )
+        if not success:
+            return False, msg
+
+        # Set permissions on certificate (readable)
+        success, msg = set_service_cert_permissions(
+            cert_cfg.service_name, service_cert_path, uid, gid, 0o644
+        )
+        return success, msg
+    except OSError as e:
+        return False, f"Error setting up {cert_cfg.service_name} certificates: {e}"
+
+
+def _setup_postgres_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up PostgreSQL certificates with proper permissions."""
-    try:
-        privkey_path = certs_dir / PRIV_KEY_FILENAME
-        fullchain_path = certs_dir / FULLCHAIN_FILENAME
-        postgres_key_path = certs_dir / "postgres.key"
-        postgres_crt_path = certs_dir / "postgres.crt"
-
-        shutil.copy2(privkey_path, postgres_key_path)
-        shutil.copy2(fullchain_path, postgres_crt_path)
-
-        # Set permissions on private key
-        success, msg = set_service_cert_permissions(
-            "PostgreSQL", postgres_key_path, uid, gid, 0o600
-        )
-        if not success:
-            return False, msg
-
-        # Set permissions on certificate (readable)
-        success, msg = set_service_cert_permissions(
-            "PostgreSQL", postgres_crt_path, uid, gid, 0o644
-        )
-        return success, msg
-    except OSError as e:
-        return False, f"Error setting up PostgreSQL certificates: {e}"
+    cfg = _ServiceCertConfig("PostgreSQL", "postgres.key", "postgres.crt")
+    return _setup_service_certs(cfg, certs_dir, uid, gid)
 
 
-def _setup_thingsboard_certs(
-    certs_dir: Path, uid: int, gid: int
-) -> Tuple[bool, str]:
+def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
-    try:
-        privkey_path = certs_dir / PRIV_KEY_FILENAME
-        fullchain_path = certs_dir / FULLCHAIN_FILENAME
-        tb_privkey_path = certs_dir / "thingsboard-privkey.pem"
-        tb_fullchain_path = certs_dir / "thingsboard-fullchain.pem"
+    cfg = _ServiceCertConfig(
+        "ThingsBoard", "thingsboard-privkey.pem", "thingsboard-fullchain.pem"
+    )
+    return _setup_service_certs(cfg, certs_dir, uid, gid)
 
-        shutil.copy2(privkey_path, tb_privkey_path)
-        shutil.copy2(fullchain_path, tb_fullchain_path)
 
-        # Set permissions on private key
-        success, msg = set_service_cert_permissions(
-            "ThingsBoard", tb_privkey_path, uid, gid, 0o600
-        )
-        if not success:
-            return False, msg
+class _SetupConfig:
+    """Configuration container for ThingsBoard setup."""
 
-        # Set permissions on certificate (readable)
-        success, msg = set_service_cert_permissions(
-            "ThingsBoard", tb_fullchain_path, uid, gid, 0o644
-        )
-        return success, msg
-    except OSError as e:
-        return False, f"Error setting up ThingsBoard certificates: {e}"
+    def __init__(self):
+        self.config = Config()
+        self.base_dir = Config.get_base_dir()
+        self.os_type = platform.system().lower()
+        self.host_name = self.config.get_value("HOSTNAME")
+        self.certs_dir = self.base_dir / "certs" / self.host_name
+        self.postgres_uid = int(self.config.get_value("POSTGRES_UID"))
+        self.postgres_gid = int(self.config.get_value("POSTGRES_GID"))
+        self.thingsboard_uid = int(self.config.get_value("THINGSBOARD_UID"))
+        self.thingsboard_gid = int(self.config.get_value("THINGSBOARD_GID"))
+
+
+def _chown_path(path: Path, uid: int, gid: int) -> None:
+    """Change ownership of a single path."""
+    shutil.chown(path, user=uid, group=gid)
 
 
 def _set_directory_ownership(directory: Path, uid: int, gid: int) -> None:
     """Set ownership for directory and all its contents."""
-    shutil.chown(directory, user=uid, group=gid)
+    _chown_path(directory, uid, gid)
     for root, dirs, files in os.walk(directory):
         for d in dirs:
-            shutil.chown(Path(root) / d, user=uid, group=gid)
+            _chown_path(Path(root) / d, uid, gid)
         for f in files:
-            shutil.chown(Path(root) / f, user=uid, group=gid)
+            _chown_path(Path(root) / f, uid, gid)
 
 
-def _setup_thingsboard_directories(
-    base_dir: Path, os_type: str, uid: int, gid: int
-) -> Tuple[bool, str]:
+def _setup_thingsboard_directories(cfg: _SetupConfig) -> Tuple[bool, str]:
     """Set up ThingsBoard data and log directories with proper ownership."""
     try:
-        data_dir = base_dir / "data" / "thingsboard"
-        log_dir = base_dir / "log" / "thingsboard"
+        data_dir = cfg.base_dir / "data" / "thingsboard"
+        log_dir = cfg.base_dir / "log" / "thingsboard"
         data_dir.mkdir(parents=True, exist_ok=True)
         log_dir.mkdir(parents=True, exist_ok=True)
 
-        if os_type in ("linux", "darwin") and not is_ci():
-            _set_directory_ownership(data_dir, uid, gid)
-            _set_directory_ownership(log_dir, uid, gid)
+        if cfg.os_type in ("linux", "darwin") and not is_ci():
+            _set_directory_ownership(data_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
+            _set_directory_ownership(log_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
             return (
                 True,
-                f"ThingsBoard data and log directories ownership set to {uid}:{gid}",
+                f"ThingsBoard data and log directories ownership set to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}",
             )
 
         return True, "ThingsBoard data and log directories created (ownership skipped)"
@@ -561,29 +595,9 @@ def _setup_thingsboard_directories(
         return False, f"Error setting up ThingsBoard directories: {e}"
 
 
-def _get_config_values() -> Tuple[Config, Path, str, Path, int, int, int, int]:
+def _get_config_values() -> _SetupConfig:
     """Get configuration values for ThingsBoard setup."""
-    config = Config()
-    base_dir = Config.get_base_dir()
-    os_type = platform.system().lower()
-    host_name = config.get_value("HOSTNAME")
-    certs_dir = base_dir / "certs" / host_name
-
-    postgres_uid = int(config.get_value("POSTGRES_UID"))
-    postgres_gid = int(config.get_value("POSTGRES_GID"))
-    thingsboard_uid = int(config.get_value("THINGSBOARD_UID"))
-    thingsboard_gid = int(config.get_value("THINGSBOARD_GID"))
-
-    return (
-        config,
-        base_dir,
-        os_type,
-        certs_dir,
-        postgres_uid,
-        postgres_gid,
-        thingsboard_uid,
-        thingsboard_gid,
-    )
+    return _SetupConfig()
 
 
 def _verify_certificates_exist(certs_dir: Path) -> Tuple[bool, str]:
@@ -596,40 +610,32 @@ def _verify_certificates_exist(certs_dir: Path) -> Tuple[bool, str]:
     return True, ""
 
 
-def _execute_setup_operations(setup_params: dict) -> Tuple[bool, list]:
+def _execute_setup_operations(cfg: _SetupConfig) -> Tuple[bool, list]:
     """Execute all setup operations.
 
     Args:
-        setup_params: Dictionary containing base_dir, os_type, certs_dir,
-                      postgres_uid, postgres_gid, thingsboard_uid, thingsboard_gid
+        cfg: Setup configuration object
     """
     messages = []
-    base_dir = setup_params["base_dir"]
-    os_type = setup_params["os_type"]
-    certs_dir = setup_params["certs_dir"]
-    postgres_uid = setup_params["postgres_uid"]
-    postgres_gid = setup_params["postgres_gid"]
-    thingsboard_uid = setup_params["thingsboard_uid"]
-    thingsboard_gid = setup_params["thingsboard_gid"]
 
     # Set up PostgreSQL certificates
-    success, msg = _setup_postgres_certs(certs_dir, os_type, postgres_uid, postgres_gid)
+    success, msg = _setup_postgres_certs(
+        cfg.certs_dir, cfg.postgres_uid, cfg.postgres_gid
+    )
     if not success:
         return False, [msg]
     messages.append(msg)
 
     # Set up ThingsBoard certificates
     success, msg = _setup_thingsboard_certs(
-        certs_dir, os_type, thingsboard_uid, thingsboard_gid
+        cfg.certs_dir, cfg.thingsboard_uid, cfg.thingsboard_gid
     )
     if not success:
         return False, [msg]
     messages.append(msg)
 
     # Set up data and log directories
-    success, msg = _setup_thingsboard_directories(
-        base_dir, os_type, thingsboard_uid, thingsboard_gid
-    )
+    success, msg = _setup_thingsboard_directories(cfg)
     if not success:
         return False, [msg]
     messages.append(msg)
@@ -648,33 +654,15 @@ def permissions_thingsboard() -> Tuple[bool, str]:
         messages = [msg]
 
         # Get configuration values
-        (
-            _,
-            base_dir,
-            os_type,
-            certs_dir,
-            postgres_uid,
-            postgres_gid,
-            thingsboard_uid,
-            thingsboard_gid,
-        ) = _get_config_values()
+        cfg = _get_config_values()
 
         # Verify certificates exist
-        success, error_msg = _verify_certificates_exist(certs_dir)
+        success, error_msg = _verify_certificates_exist(cfg.certs_dir)
         if not success:
             return False, error_msg
 
         # Execute setup operations
-        setup_params = {
-            "base_dir": base_dir,
-            "os_type": os_type,
-            "certs_dir": certs_dir,
-            "postgres_uid": postgres_uid,
-            "postgres_gid": postgres_gid,
-            "thingsboard_uid": thingsboard_uid,
-            "thingsboard_gid": thingsboard_gid,
-        }
-        success, operation_messages = _execute_setup_operations(setup_params)
+        success, operation_messages = _execute_setup_operations(cfg)
 
         if not success:
             return False, operation_messages[0]
