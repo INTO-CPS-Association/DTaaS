@@ -9,7 +9,7 @@ from unittest.mock import patch, Mock, MagicMock, mock_open
 import pytest
 import requests
 import dtaas_services.pkg.thingsboard as th
-from dtaas_services.pkg.cert import set_service_cert_permissions
+from dtaas_services.pkg.cert import set_service_cert_permissions, _CertPermissionContext
 
 # Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
@@ -142,8 +142,9 @@ def test_change_password_api_call(status_code, expected_success):
     """Test password change API call with different responses"""
     mock_session = Mock()
     mock_session.post.return_value = Mock(status_code=status_code, text="error")
+    pw_config = th._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th._PasswordChangeContext(
-        "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
+        "https://localhost:8080", mock_session, pw_config
     )
     result = th._change_password_api_call(ctx)
     assert result == expected_success
@@ -153,8 +154,9 @@ def test_change_password_api_call_exception():
     """Test password change API call with exception"""
     mock_session = Mock()
     mock_session.post.side_effect = requests.exceptions.RequestException("Error")
+    pw_config = th._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th._PasswordChangeContext(
-        "https://localhost:8080", mock_session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
+        "https://localhost:8080", mock_session, pw_config
     )
     assert th._change_password_api_call(ctx) is False
 
@@ -163,8 +165,9 @@ def test_perform_password_change_scenarios():
     """Test password change with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
+    pw_config = th._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th._PasswordChangeContext(
-        base_url, session, TEST_OLD_PASSWORD, TEST_NEW_PASSWORD
+        base_url, session, pw_config
     )
     # Success case
     with patch(
@@ -192,25 +195,15 @@ def test_change_sysadmin_password_scenarios():
     """Test sysadmin password change with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
-    # No password configured
-    with patch(
-        "dtaas_services.pkg.thingsboard._check_password_configured", return_value=None
-    ):
-        success, _ = th.change_sysadmin_password_if_needed(base_url, session)
-        assert success is True
     # Password already changed
     with patch(
-        "dtaas_services.pkg.thingsboard._check_password_configured", return_value="new"
-    ), patch(
         "dtaas_services.pkg.thingsboard._try_login_with_new_password",
         return_value="token",
     ), patch("dtaas_services.pkg.thingsboard._update_session_token"):
-        success, _ = th.change_sysadmin_password_if_needed(base_url, session)
+        success, _ = th.change_sysadmin_password_if_needed(base_url, session, "new")
         assert success is True
     # Change needed
     with patch(
-        "dtaas_services.pkg.thingsboard._check_password_configured", return_value="new"
-    ), patch(
         "dtaas_services.pkg.thingsboard._try_login_with_new_password", return_value=None
     ), patch("dtaas_services.pkg.thingsboard.login", return_value="token"), patch(
         "dtaas_services.pkg.thingsboard._update_session_token"
@@ -218,15 +211,13 @@ def test_change_sysadmin_password_scenarios():
         "dtaas_services.pkg.thingsboard._perform_password_change",
         return_value=(True, "OK"),
     ):
-        success, _ = th.change_sysadmin_password_if_needed(base_url, session)
+        success, _ = th.change_sysadmin_password_if_needed(base_url, session, "new")
         assert success is True
     # Default login fails
     with patch(
-        "dtaas_services.pkg.thingsboard._check_password_configured", return_value="new"
-    ), patch(
         "dtaas_services.pkg.thingsboard._try_login_with_new_password", return_value=None
     ), patch("dtaas_services.pkg.thingsboard.login", return_value=None):
-        success, _ = th.change_sysadmin_password_if_needed(base_url, session)
+        success, _ = th.change_sysadmin_password_if_needed(base_url, session, "new")
         assert success is False
 
 
@@ -341,7 +332,8 @@ def test_create_tenant_admin_user_scenarios():
     """Test tenant admin user creation with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
-    ctx = th._AdminContext(base_url, session, "admin@ex.com", "password")
+    ctx = th._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = "password"
     # Success
     session.post.return_value = Mock(
         status_code=200, json=lambda: {"id": {"id": "user123"}}
@@ -424,7 +416,8 @@ def test_create_and_activate_admin_scenarios():
     """Test admin creation and activation with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
-    ctx = th._AdminContext(base_url, session, "admin@ex.com", "pass")
+    ctx = th._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = "pass"
     # Full success
     with patch(
         "dtaas_services.pkg.thingsboard._create_tenant_admin_user",
@@ -474,7 +467,8 @@ def test_ensure_tenant_admin_scenarios():
     """Test ensuring tenant admin with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
-    ctx = th._AdminContext(base_url, session, "admin@ex.com", "pass")
+    ctx = th._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = "pass"
     tenant = {"id": {"id": "tenant123"}}
     # Already exists
     with patch("dtaas_services.pkg.thingsboard._check_admin_exists", return_value=True):
@@ -510,18 +504,18 @@ def test_create_tenant_and_admin_scenarios():
     ), patch(
         "dtaas_services.pkg.thingsboard._ensure_tenant_admin", return_value=(True, "")
     ):
-        success, _ = th._create_tenant_and_admin(
-            base_url, session, "test", "admin@ex.com", "pass"
-        )
+        ctx = th._TenantAdminContext(base_url, session, "test")
+        ctx.admin_credentials = th._AdminCredentials("admin@ex.com", "pass")
+        success, _ = th._create_tenant_and_admin(ctx)
         assert success is True
     # Tenant creation fails
     with patch(
         "dtaas_services.pkg.thingsboard._get_or_create_tenant",
         return_value=(None, "error"),
     ):
-        success, _ = th._create_tenant_and_admin(
-            base_url, session, "test", "admin@ex.com", "pass"
-        )
+        ctx = th._TenantAdminContext(base_url, session, "test")
+        ctx.admin_credentials = th._AdminCredentials("admin@ex.com", "pass")
+        success, _ = th._create_tenant_and_admin(ctx)
         assert success is False
 
 
@@ -677,7 +671,8 @@ def test_set_cert_ownership(os_type, should_call_chown):
     ), patch("dtaas_services.pkg.cert.is_ci", return_value=False), patch(
         "pathlib.Path.chmod"
     ):
-        set_service_cert_permissions("Test", cert_path, 999, 999)
+        ctx = _CertPermissionContext("Test", cert_path, 999, 999)
+        set_service_cert_permissions(ctx)
         if os_type in ("linux", "darwin"):
             mock_chown.assert_called_once()
         else:
@@ -757,14 +752,6 @@ def test_setup_thingsboard_directories_scenarios():
         assert success is False
 
 
-def test_get_config_values(mock_config):
-    """Test getting configuration values"""
-    cfg = th._get_config_values()
-    assert cfg.base_dir == Path("/test/base")
-    assert cfg.postgres_uid == 999
-    assert cfg.thingsboard_uid == 1000
-
-
 def test_verify_certificates_exist_scenarios(tmp_path):
     """Test certificate verification with scenarios"""
     # Success
@@ -784,27 +771,21 @@ def test_permissions_thingsboard_scenarios(mock_config):
     # Success
     with patch("platform.system", return_value="Linux"), patch(
         "dtaas_services.pkg.thingsboard.copy_certs", return_value=(True, "copied")
-    ), patch("dtaas_services.pkg.thingsboard._get_config_values") as mock_get, patch(
+    ), patch(
         "dtaas_services.pkg.thingsboard._verify_certificates_exist",
         return_value=(True, ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._execute_setup_operations",
         return_value=(True, ["setup1", "setup2"]),
     ):
-        mock_cfg = MagicMock()
-        mock_cfg.certs_dir = Path("/test/certs")
-        mock_get.return_value = mock_cfg
         success, _ = th.permissions_thingsboard()
         assert success is True
     # Verify fails
     with patch("platform.system", return_value="Linux"), patch(
         "dtaas_services.pkg.thingsboard.copy_certs", return_value=(True, "copied")
-    ), patch("dtaas_services.pkg.thingsboard._get_config_values") as mock_get, patch(
+    ), patch(
         "dtaas_services.pkg.thingsboard._verify_certificates_exist",
         return_value=(False, "missing"),
     ):
-        mock_cfg = MagicMock()
-        mock_cfg.certs_dir = Path("/test/certs")
-        mock_get.return_value = mock_cfg
         success, _ = th.permissions_thingsboard()
         assert success is False

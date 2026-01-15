@@ -1,6 +1,10 @@
 from typing import Tuple
 from .config import Config
-from .cert import create_combined_cert, set_service_cert_permissions
+from .cert import (
+    create_combined_cert,
+    set_service_cert_permissions,
+    _CertPermissionContext,
+)
 
 
 def permissions_mongodb() -> Tuple[bool, str]:
@@ -30,9 +34,10 @@ def permissions_mongodb() -> Tuple[bool, str]:
             return False, msg
 
         # Set permissions on combined certificate
-        success, perm_msg = set_service_cert_permissions(
+        ctx = _CertPermissionContext(
             "MongoDB", combined_path, mongo_uid, mongo_gid, 0o600
         )
+        success, perm_msg = set_service_cert_permissions(ctx)
         return success, perm_msg
     except OSError as e:
         return False, f"Error setting permissions for MongoDB: {e}"

@@ -279,7 +279,7 @@ Tests are organized to mirror the source code structure:
 * `test_thingsboard.py`: Tests for ThingsBoard setup and installation
 * `test_formatter.py`: Tests for output formatting utilities
 * `test_template.py`: Tests for project structure generation and template file management
-* `test_utils.py`: Tests for shared utility functions (Docker operations, credentials path)
+* `test_utils.py`: Tests for shared utility functions
 
 ### Testing Guidelines
 

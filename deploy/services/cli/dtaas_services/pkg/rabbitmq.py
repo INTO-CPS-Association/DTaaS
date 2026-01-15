@@ -3,7 +3,7 @@ import shutil
 from typing import Tuple
 from .utils import get_credentials_path, execute_docker_command
 from .config import Config
-from .cert import set_service_cert_permissions
+from .cert import set_service_cert_permissions, _CertPermissionContext
 
 
 def _execute_rabbitmq_command(
@@ -113,8 +113,9 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         shutil.copy2(privkey_path, rabbit_key_path)
 
         # Set permissions on RabbitMQ private key (no group)
-        return set_service_cert_permissions(
+        ctx = _CertPermissionContext(
             "RabbitMQ", rabbit_key_path, rabbit_uid, None, 0o600
         )
+        return set_service_cert_permissions(ctx)
     except OSError as e:
         return False, f"Error setting permissions for RabbitMQ: {e}"

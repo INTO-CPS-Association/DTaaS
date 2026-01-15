@@ -12,6 +12,7 @@ from .utils import is_ci
 @dataclass
 class _CertPermissionContext:
     """Context for certificate permission operations."""
+
     service_name: str
     cert_path: Path
     uid: int
@@ -188,28 +189,19 @@ def _get_permission_message(ctx: _CertPermissionContext) -> str:
 
 
 def set_service_cert_permissions(
-    service_name: str,
-    cert_path: Path,
-    uid: int,
-    gid: int | None = None,
-    mode: int = 0o600,
+    ctx: _CertPermissionContext,
 ) -> Tuple[bool, str]:
     """Set certificate file ownership and permissions for a service.
 
     Automatically skips permission changes in CI environments (read-only).
 
     Args:
-        service_name: Name of the service (e.g., "MongoDB", "InfluxDB")
-        cert_path: Path to certificate file
-        uid: User ID to set ownership to
-        gid: Group ID to set ownership to (optional, defaults to user group)
-        mode: File mode to set (default 0o600 for secure permissions)
+        ctx: Context containing service name, cert path, uid, gid, and mode
 
     Returns:
         Tuple of (success, message)
     """
     try:
-        ctx = _CertPermissionContext(service_name, cert_path, uid, gid, mode)
         # Skip permission changes in CI environments (they're read-only)
         if _is_posix_not_ci():
             _apply_cert_permissions(ctx)
@@ -218,7 +210,7 @@ def set_service_cert_permissions(
             msg = f"{ctx.cert_path.name} created (permission changes skipped in CI)."
         return True, msg
     except OSError as e:
-        return False, f"Error setting permissions for {service_name}: {e}"
+        return False, f"Error setting permissions for {ctx.service_name}: {e}"
 
 
 def copy_certs() -> Tuple[bool, str]:

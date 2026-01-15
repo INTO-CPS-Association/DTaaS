@@ -25,6 +25,7 @@ def _handle_docker_not_running(func):
 
     Returns (error, message) when Docker is not running.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -34,6 +35,7 @@ def _handle_docker_not_running(func):
                 "Docker is not running. Please start Docker Desktop and try again."
             )
             return err, str(err)
+
     return wrapper
 
 
@@ -224,8 +226,9 @@ class Service:
             err_exc, _ = self._handle_docker_error("get service names", e)
             return err_exc, set()
 
-
-    def _match_container_by_name(self, container: object, container_map: dict, all_services: set) -> bool:
+    def _match_container_by_name(
+        self, container: object, container_map: dict, all_services: set
+    ) -> bool:
         """Try to match container by name. Returns True if matched."""
         if container.name in all_services:
             container_map[container.name] = container
@@ -238,13 +241,17 @@ class Service:
             return container.config.labels.get("com.docker.compose.service")
         return None
 
-    def _match_container_by_label(self, container: object, container_map: dict, all_services: set) -> None:
+    def _match_container_by_label(
+        self, container: object, container_map: dict, all_services: set
+    ) -> None:
         """Try to match container by service label and add to map if matched."""
         service_label = self._container_compose_service_label(container)
         if service_label and service_label in all_services:
             container_map[service_label] = container
 
-    def _process_single_container(self, container: object, container_map: dict, all_services: set) -> None:
+    def _process_single_container(
+        self, container: object, container_map: dict, all_services: set
+    ) -> None:
         """Process a single container and add to map if it matches a service (complexity reduction)."""
         if not self._match_container_by_name(container, container_map, all_services):
             self._match_container_by_label(container, container_map, all_services)
