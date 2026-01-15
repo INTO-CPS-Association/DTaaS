@@ -701,11 +701,11 @@ def test_setup_postgres_certs_scenarios():
         "dtaas_services.pkg.thingsboard.set_service_cert_permissions",
         return_value=(True, "success"),
     ), patch("shutil.copy2"):
-        success, _ = th._setup_postgres_certs(certs_dir, "linux", 999, 999)
+        success, _ = th._setup_postgres_certs(certs_dir, 999, 999)
         assert success is True
     # OSError
     with patch("shutil.copy2", side_effect=OSError("Error")):
-        success, _ = th._setup_postgres_certs(certs_dir, "linux", 999, 999)
+        success, _ = th._setup_postgres_certs(certs_dir, 999, 999)
         assert success is False
 
 
@@ -717,11 +717,11 @@ def test_setup_thingsboard_certs_scenarios():
         "dtaas_services.pkg.thingsboard.set_service_cert_permissions",
         return_value=(True, "success"),
     ), patch("shutil.copy2"):
-        success, _ = th._setup_thingsboard_certs(certs_dir, "linux", 1000, 1000)
+        success, _ = th._setup_thingsboard_certs(certs_dir, 1000, 1000)
         assert success is True
     # OSError
     with patch("shutil.copy2", side_effect=OSError("Error")):
-        success, _ = th._setup_thingsboard_certs(certs_dir, "linux", 1000, 1000)
+        success, _ = th._setup_thingsboard_certs(certs_dir, 1000, 1000)
         assert success is False
 
 

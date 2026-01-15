@@ -146,6 +146,46 @@ def setup():
         raise click.ClickException(str(e)) from e
 
 
+def _check_postgres_running(console: Console, docker) -> None:
+    """Check if PostgreSQL is running and warn if not."""
+    try:
+        containers = docker.compose.ps()
+        postgres_running = any(
+            c.name == "postgres"
+            for c in containers
+            if hasattr(c, "state") and c.state.status == "running"
+        )
+        if not postgres_running:
+            console.print(
+                "[yellow]⚠️  PostgreSQL does not appear to be running[/yellow]"
+            )
+            console.print(
+                "[cyan]Start it with: dtaas-services start -s postgresql[/cyan]"
+            )
+    except Exception:
+        # If we can't check, proceed anyway
+        pass
+
+
+def _run_thingsboard_install(console: Console, docker) -> None:
+    """Run ThingsBoard database installation."""
+    console.print(
+        "[cyan]Running ThingsBoard installation "
+        "(this may take a few minutes)...[/cyan]"
+    )
+    with console.status(
+        "[bold cyan]Installing ThingsBoard schema...[/bold cyan]",
+        spinner="dots",
+    ):
+        docker.compose.run(
+            "thingsboard-ce",
+            remove=True,
+            envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
+            service_ports=False,
+            use_aliases=True,
+        )
+
+
 @services.command()
 def install_thingsboard():
     """
@@ -161,55 +201,17 @@ def install_thingsboard():
     try:
         check_root_unix()
         console = Console()
+        service = Service()
+        docker = service.docker
 
-        try:
-            service = Service()
-            docker = service.docker
-            try:
-                # Try to get containers to verify PostgreSQL is accessible
-                containers = docker.compose.ps()
-                postgres_running = any(
-                    c.name == "postgres"
-                    for c in containers
-                    if hasattr(c, "state") and c.state.status == "running"
-                )
-                if not postgres_running:
-                    console.print(
-                        "[yellow]⚠️  PostgreSQL does not appear to be running[/yellow]"
-                    )
-                    console.print(
-                        "[cyan]Start it with: dtaas-services start -s postgresql[/cyan]"
-                    )
-            except Exception:
-                # If we can't check, proceed anyway
-                pass
-
-            console.print(
-                "[cyan]Running ThingsBoard installation "
-                "(this may take a few minutes)...[/cyan]"
-            )
-            with console.status(
-                "[bold cyan]Installing ThingsBoard schema...[/bold cyan]",
-                spinner="dots",
-            ):
-                docker.compose.run(
-                    "thingsboard-ce",
-                    remove=True,
-                    envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
-                    service_ports=False,
-                    use_aliases=True,
-                )
-            console.print("[green]✅ ThingsBoard installation completed[/green]")
-            console.print("\n[cyan]Next steps:[/cyan]")
-            console.print("  1. Start ThingsBoard: dtaas-services start -s thingsboard")
-            console.print("  2. Add users (if using credentials.csv):")
-            console.print("     dtaas-services user add")
-        except Exception as e:
-            raise click.ClickException(
-                f"ThingsBoard installation failed: {str(e)}"
-            ) from e
+        _check_postgres_running(console, docker)
+        _run_thingsboard_install(console, docker)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
+    except Exception as e:
+        raise click.ClickException(
+            f"ThingsBoard installation failed: {str(e)}"
+        ) from e
 
 
 def _services_command_runner(command: str, service_name) -> None:
@@ -334,6 +336,19 @@ def user():
     """User account management for services."""
 
 
+def _setup_service_users(
+    console: Console, service_name: str, setup_func: Callable
+) -> None:
+    """Set up users for a service and print status."""
+    console.print(f"\n[cyan]Adding users to {service_name}...[/cyan]")
+    success, msg = setup_func()
+    if not success:
+        error_line = msg.split("\n")[0]
+        console.print(f"[red]{service_name}: {error_line}[/red]", style="bold")
+    else:
+        console.print(f"[green]✅ {service_name}: {msg}[/green]")
+
+
 @user.command()
 def add():
     """
@@ -344,30 +359,9 @@ def add():
     """
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
-    console.print("\n[cyan]Adding users to InfluxDB...[/cyan]")
-    success, msg = influxdb.setup_influxdb_users()
-    if not success:
-        error_line = msg.split("\n")[0]
-        console.print(f"[red]InfluxDB: {error_line}[/red]", style="bold")
-    else:
-        console.print(f"[green]✅ InfluxDB: {msg}[/green]")
-
-    console.print("\n[cyan]Adding users to RabbitMQ...[/cyan]")
-    success, msg = rabbitmq.setup_rabbitmq_users()
-    if not success:
-        error_line = msg.split("\n")[0]
-        console.print(f"[red]RabbitMQ: {error_line}[/red]", style="bold")
-    else:
-        console.print(f"[green]✅ RabbitMQ: {msg}[/green]")
-
-    console.print("\n[cyan]Adding users to ThingsBoard...[/cyan]")
-    success, msg = thingsboard.setup_thingsboard_users()
-    if not success:
-        error_line = msg.split("\n")[0]
-        console.print(f"[red]ThingsBoard: {error_line}[/red]", style="bold")
-    else:
-        console.print(f"[green]✅ ThingsBoard: {msg}[/green]")
-
+    _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
+    _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
+    _setup_service_users(console, "ThingsBoard", thingsboard.setup_thingsboard_users)
     console.print("\n[bold green]✅ Adding user completed![/bold green]")
 
 
