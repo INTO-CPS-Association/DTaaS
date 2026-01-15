@@ -2,10 +2,21 @@
 
 import shutil
 import platform
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
 from .config import Config
 from .utils import is_ci
+
+
+@dataclass
+class _CertPermissionContext:
+    """Context for certificate permission operations."""
+    service_name: str
+    cert_path: Path
+    uid: int
+    gid: int | None = None
+    mode: int = 0o600
 
 
 def _create_dummy_cert_file(cert_path: Path) -> bool:
@@ -89,6 +100,17 @@ def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
         return False, f"Source directory error creating dummy certificates: {e}"
 
 
+def _should_copy_file(source_path: Path, dest_path: Path) -> bool:
+    """Check if a file should be copied (complexity reduction)."""
+    return source_path.is_file() and source_path.resolve() != dest_path.resolve()
+
+
+def _copy_single_file(source_path: Path, dest_path: Path) -> None:
+    """Copy a single file to destination."""
+    if _should_copy_file(source_path, dest_path):
+        shutil.copy2(source_path, dest_path)
+
+
 def _copy_files(source_dir: Path, certs_dir: Path) -> None:
     """Helper to copy files from source to destination directory.
     Args:
@@ -97,10 +119,7 @@ def _copy_files(source_dir: Path, certs_dir: Path) -> None:
     """
     certs_dir.mkdir(parents=True, exist_ok=True)
     for path in source_dir.glob("*"):
-        if path.is_file():
-            dest = certs_dir / path.name
-            if path.resolve() != dest.resolve():
-                shutil.copy2(path, dest)
+        _copy_single_file(path, certs_dir / path.name)
 
 
 def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
@@ -146,6 +165,28 @@ def create_combined_cert(
         return False, f"Error creating combined certificate: {e}"
 
 
+def _is_posix_not_ci() -> bool:
+    """Check if running on POSIX system outside of CI environment."""
+    os_type = platform.system().lower()
+    return os_type in ("linux", "darwin") and not is_ci()
+
+
+def _apply_cert_permissions(ctx: _CertPermissionContext) -> None:
+    """Apply file permissions to certificate (internal use)."""
+    ctx.cert_path.chmod(ctx.mode)
+    if ctx.gid is not None:
+        shutil.chown(ctx.cert_path, user=ctx.uid, group=ctx.gid)
+    else:
+        shutil.chown(ctx.cert_path, user=ctx.uid)
+
+
+def _get_permission_message(ctx: _CertPermissionContext) -> str:
+    """Generate message describing permission changes (internal use)."""
+    if ctx.gid is not None:
+        return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} and ownership set to {ctx.uid}:{ctx.gid}."
+    return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} and ownership set to user {ctx.uid}."
+
+
 def set_service_cert_permissions(
     service_name: str,
     cert_path: Path,
@@ -168,21 +209,13 @@ def set_service_cert_permissions(
         Tuple of (success, message)
     """
     try:
-        os_type = platform.system().lower()
-
+        ctx = _CertPermissionContext(service_name, cert_path, uid, gid, mode)
         # Skip permission changes in CI environments (they're read-only)
-        if os_type in ("linux", "darwin") and not is_ci():
-            cert_path.chmod(mode)
-            if gid is not None:
-                shutil.chown(cert_path, user=uid, group=gid)
-            else:
-                shutil.chown(cert_path, user=uid)
-            if gid is not None:
-                msg = f"{cert_path.name} created with mode {oct(mode)} and ownership set to {uid}:{gid}."
-            else:
-                msg = f"{cert_path.name} created with mode {oct(mode)} and ownership set to user {uid}."
+        if _is_posix_not_ci():
+            _apply_cert_permissions(ctx)
+            msg = _get_permission_message(ctx)
         else:
-            msg = f"{cert_path.name} created (permission changes skipped in CI)."
+            msg = f"{ctx.cert_path.name} created (permission changes skipped in CI)."
         return True, msg
     except OSError as e:
         return False, f"Error setting permissions for {service_name}: {e}"

@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+from functools import wraps
 from typing import Tuple, Optional, Set
 from pathlib import Path
 from python_on_whales import DockerClient
@@ -17,6 +18,23 @@ DOCKER_OPERATION_EXCEPTIONS = (
     ValueError,
     TypeError,
 )
+
+
+def _handle_docker_not_running(func):
+    """Decorator to catch DockerException and returndta error response.
+
+    Returns (error, message) when Docker is not running.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except DockerException:
+            err = RuntimeError(
+                "Docker is not running. Please start Docker Desktop and try again."
+            )
+            return err, str(err)
+    return wrapper
 
 
 class Service:
@@ -71,7 +89,7 @@ class Service:
         self._setup_environment_variables()
         self._setup_project_name()
 
-        # Use both compose files
+        # Use both compose filesd
         compose_files = [self.compose_file]
         if self.thingsboard_compose_file.exists():
             compose_files.append(self.thingsboard_compose_file)
@@ -163,6 +181,7 @@ class Service:
             return exc, str(exc)
         return self._handle_docker_error(f"{action} services", exc)
 
+    @_handle_docker_not_running
     def manage_services(
         self, action: str, service_list: Optional[list] = None
     ) -> Tuple[Optional[Exception], str]:
@@ -205,6 +224,31 @@ class Service:
             err_exc, _ = self._handle_docker_error("get service names", e)
             return err_exc, set()
 
+
+    def _match_container_by_name(self, container: object, container_map: dict, all_services: set) -> bool:
+        """Try to match container by name. Returns True if matched."""
+        if container.name in all_services:
+            container_map[container.name] = container
+            return True
+        return False
+
+    def _container_compose_service_label(self, container) -> Optional[str]:
+        """Get the compose service label from a container if it exists."""
+        if hasattr(container, "config") and container.config.labels:
+            return container.config.labels.get("com.docker.compose.service")
+        return None
+
+    def _match_container_by_label(self, container: object, container_map: dict, all_services: set) -> None:
+        """Try to match container by service label and add to map if matched."""
+        service_label = self._container_compose_service_label(container)
+        if service_label and service_label in all_services:
+            container_map[service_label] = container
+
+    def _process_single_container(self, container: object, container_map: dict, all_services: set) -> None:
+        """Process a single container and add to map if it matches a service (complexity reduction)."""
+        if not self._match_container_by_name(container, container_map, all_services):
+            self._match_container_by_label(container, container_map, all_services)
+
     def _filter_containers_by_service(self, all_containers, all_services: set) -> dict:
         """Filter containers to only include those matching service names.
 
@@ -214,20 +258,10 @@ class Service:
         """
         container_map = {}
         for container in all_containers:
-            # Check if container name matches a service name
-            if container.name in all_services:
-                container_map[container.name] = container
-            # Check if container has a compose service label
-            elif hasattr(container, "config") and container.config.labels:
-                service_label = container.config.labels.get(
-                    "com.docker.compose.service"
-                )
-                if service_label and service_label in all_services:
-                    # Use the service name as the key, not container name
-                    container_map[service_label] = container
-
+            self._process_single_container(container, container_map, all_services)
         return container_map
 
+    @_handle_docker_not_running
     def _get_all_containers(self) -> Tuple[Optional[Exception], dict]:
         """
         Get all containers belonging to this compose project and create a mapping by name.
@@ -243,11 +277,6 @@ class Service:
                 all_containers, all_services
             )
             return None, container_map
-        except DockerException:
-            err = RuntimeError(
-                "Docker is not running. Please start Docker Desktop and try again."
-            )
-            return err, {}
         except DOCKER_OPERATION_EXCEPTIONS as e:
             err_exc, _ = self._handle_docker_error("get containers", e)
             return err_exc, {}
@@ -356,6 +385,7 @@ class Service:
             return "Services and data removed successfully"
         return "Services removed successfully"
 
+    @_handle_docker_not_running
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
     ) -> Tuple[Optional[Exception], str]:
