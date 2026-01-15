@@ -291,6 +291,42 @@ For testing CLI commands, use Click's `CliRunner` instead of subprocess.
 
 Always mock Docker, file system, and configuration operations.
 
+### CI and GitHub Workflow Testing
+
+The project uses GitHub Actions to automatically run tests
+on every commit and pull request.
+Understanding how tests behave in CI is important for
+ensuring your changes pass checks.
+
+#### Environment Differences
+
+Tests automatically detect CI environments using `is_ci()` in `pkg/utils.py`
+and adjust behavior:
+
+* **Certificate handling**:
+  * CI auto-generates dummy self-signed certificates (no real certs required)
+  * Local uses real TLS certificates from your system (or dummy)
+
+* **File permissions**:
+  * Skipped in CI to avoid permission errors in read-only environments
+  * Applied locally on POSIX systems (Linux, macOS) via `_is_posix_not_ci()`
+
+* **Test constants**:
+  * Use defined constants like `TEST_PASSWORD` for test credentials
+  * Never hardcode password literals like `"pass"` to avoid security warnings
+  * Add `# noqa: S105 # SONAR` comment to suppress security checks for test constants
+
+#### Troubleshooting CI Failures
+
+If tests pass locally but fail in CI:
+
+* **Path separators**: Use `pathlib.Path` instead of string paths
+(handles `/` vs `\` automatically)
+* **Platform differences**: CI runs Ubuntu Linux; check for OS-specific assumptions
+* **Permissions**: Ensure permission-setting code is wrapped in `if _is_posix_not_ci()`
+* **Hardcoded values**: Check for hardcoded paths, ports,
+or environment variable assumptions
+
 ### System Tests
 
 The `tests/system_tests/` directory contains end-to-end tests that verify the complete

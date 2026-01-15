@@ -21,7 +21,7 @@ DOCKER_OPERATION_EXCEPTIONS = (
 
 
 def _handle_docker_not_running(func):
-    """Decorator to catch DockerException and returndta error response.
+    """Decorator to catch DockerException and return error response.
 
     Returns (error, message) when Docker is not running.
     """
@@ -91,7 +91,7 @@ class Service:
         self._setup_environment_variables()
         self._setup_project_name()
 
-        # Use both compose filesd
+        # Use both compose files
         compose_files = [self.compose_file]
         if self.thingsboard_compose_file.exists():
             compose_files.append(self.thingsboard_compose_file)

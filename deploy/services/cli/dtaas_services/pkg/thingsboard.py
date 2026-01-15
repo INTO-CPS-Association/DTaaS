@@ -216,7 +216,6 @@ def _create_new_tenant(
         logger.info(f"  Tenant '{tenant_name}' created")
         return tenant, ""
     except (
-        requests.exceptions.JSONDecodeError,
         requests.exceptions.RequestException,
     ) as e:
         error_type = (
@@ -315,7 +314,6 @@ def _create_tenant_admin_user(
         user_id = user.get("id", {}).get("id")
         return (user_id, "") if user_id else (None, "Created user response missing id")
     except (
-        requests.exceptions.JSONDecodeError,
         requests.exceptions.RequestException,
     ) as e:
         error_type = (
@@ -727,6 +725,9 @@ def _execute_setup_operations(cfg: _SetupConfig) -> Tuple[bool, list]:
 
     Args:
         cfg: Setup configuration object
+
+    Returns:
+        Tuple indicating success and list of messages
     """
     messages = []
     operations = [
