@@ -142,7 +142,7 @@ def create_combined_cert(
             with open(fullchain_path, "rb") as fc:
                 out_f.write(fc.read())
         return True, f"Combined certificate created at {combined_path}"
-    except (FileNotFoundError, OSError) as e:
+    except (OSError) as e:
         return False, f"Error creating combined certificate: {e}"
 
 

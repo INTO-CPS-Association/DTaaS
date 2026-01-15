@@ -471,7 +471,7 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
 
 
 def _setup_postgres_certs(
-    certs_dir: Path, os_type: str, uid: int, gid: int
+    certs_dir: Path, uid: int, gid: int
 ) -> Tuple[bool, str]:
     """Set up PostgreSQL certificates with proper permissions."""
     try:
@@ -500,7 +500,7 @@ def _setup_postgres_certs(
 
 
 def _setup_thingsboard_certs(
-    certs_dir: Path, os_type: str, uid: int, gid: int
+    certs_dir: Path, uid: int, gid: int
 ) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
     try:

@@ -81,6 +81,7 @@ cli/
 │       ├── mongodb.py      # MongoDB certificate and permission setup
 │       ├── influxdb.py     # InfluxDB certificate, permission, and user management
 │       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
+│       ├── thingsboard.py  # ThingsBoard setup and installation
 │       ├── formatter.py    # Output formatting utilities
 │       ├── template.py     # Project structure and template file management
 │       └── utils.py        # Shared utilities (Docker, file operations)
@@ -270,6 +271,15 @@ Tests are organized to mirror the source code structure:
 
 * `test_cmd.py`: Tests for CLI commands and argument parsing
 * `test_config.py`: Tests for configuration loading and validation
+* `test_service.py`: Tests for Docker Compose service management operations
+* `test_cert.py`: Tests for certificate copying and normalization
+* `test_mongodb.py`: Tests for MongoDB certificate and permission setup
+* `test_influxdb.py`: Tests for InfluxDB certificate, permission, and user management
+* `test_rabbitmq.py`: Tests for RabbitMQ certificate, permission, and user management
+* `test_thingsboard.py`: Tests for ThingsBoard setup and installation
+* `test_formatter.py`: Tests for output formatting utilities
+* `test_template.py`: Tests for project structure generation and template file management
+* `test_utils.py`: Tests for shared utility functions (Docker operations, credentials path)
 
 ### Testing Guidelines
 

@@ -220,11 +220,21 @@ deploy/services/cli/dtaas_services/compose.thingsboard.secure.yml
 #ignore developer files
 docker/.env
 docker/conf.dev
-deploy/services/data
-deploy/services/config
+
+# Deploy services data
+deploy/services/data/*
+!deploy/services/data/.gitkeep
+deploy/services/data/*/*
+!deploy/services/data/*/.gitkeep
+
+# Deploy services config
+deploy/services/config/*
+!deploy/services/config/.gitkeep
+deploy/services/config/*/*
+!deploy/services/config/*/.gitkeep
+
 deploy/services/cli/compose.services.secure.yml
 deploy/services/cli/compose.thingsboard.secure.yml
-
 
 deploy/services/cli/data
 deploy/services/cli/config
