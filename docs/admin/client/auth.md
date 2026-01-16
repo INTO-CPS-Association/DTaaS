@@ -1,8 +1,8 @@
 # OAuth 2.0 for React Client
 
 To enable user authorization on the DTaaS React client website,
-the OAuth 2.0 authorization protocol is used, specifically the PKCE authorization flow.
-The following steps describe the setup process:
+the OAuth 2.0 authorization protocol is used, specifically the PKCE
+authorization flow. The following steps describe the setup process:
 
 **1. Choose a GitLab Server:**
 
@@ -12,8 +12,8 @@ The following steps describe the setup process:
 - The
   [GitLab Omnibus Docker](https://docs.gitlab.com/ee/install/docker.html)
   can be used for this purpose.
-- The OAuth 2.0 application should be configured as
-  an [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+- The OAuth 2.0 application should be configured as an
+  [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
 
 **2. Determine the Website's Hostname:**
 

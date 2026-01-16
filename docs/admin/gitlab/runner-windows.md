@@ -130,7 +130,7 @@ Run a verification check to ensure your runner is properly configured:
 
 A successful verification will show something like:
 
-```
+```powershell
 Verifying runner... is valid        runner=YourRunnerToken
 ```
 
