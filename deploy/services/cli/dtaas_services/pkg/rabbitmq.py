@@ -1,7 +1,11 @@
-import csv
+"""RabbitMQ service and user management."""
 import shutil
 from typing import Tuple
-from .utils import get_credentials_path, execute_docker_command
+from .utils import (
+    process_credentials_file,
+    create_users_from_credentials,
+    execute_docker_command,
+)
 from .config import Config
 from .cert import set_service_cert_permissions, _CertPermissionContext
 
@@ -56,18 +60,6 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     return success, error_msg
 
 
-def _create_users_from_credentials(credentials_file) -> tuple[bool, str]:
-    """Create all users from credentials file."""
-    credentials = csv.DictReader(credentials_file, delimiter=",")
-    for credential in credentials:
-        username = credential["username"]
-        password = credential["password"]
-        success, error_msg = _add_rabbitmq_user(username, password)
-        if not success:
-            return False, error_msg
-    return True, ""
-
-
 def setup_rabbitmq_users() -> tuple[bool, str]:
     """
     Add users to RabbitMQ service.
@@ -75,22 +67,11 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
-    credentials_file = get_credentials_path()
-    if not credentials_file.exists():
-        return False, f"Credentials file not found: {credentials_file}"
-
-    try:
-        with credentials_file.open(
-            mode="r", newline="", encoding="utf-8"
-        ) as creds_file:
-            success, error_msg = _create_users_from_credentials(creds_file)
-            return (
-                (True, "RabbitMQ users created successfully")
-                if success
-                else (False, error_msg)
-            )
-    except (OSError, KeyError) as e:
-        return False, f"Error adding RabbitMQ users: {e}"
+    return process_credentials_file(
+        lambda creds_file: create_users_from_credentials(creds_file, _add_rabbitmq_user),
+        "RabbitMQ",
+        "RabbitMQ users created successfully",
+    )
 
 
 def permissions_rabbitmq() -> Tuple[bool, str]:

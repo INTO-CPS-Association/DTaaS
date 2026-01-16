@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+"""ThingsBoard installation, service and user management."""
 import csv
 import logging
 import os
@@ -692,7 +692,8 @@ def _apply_directory_ownership_if_needed(
     if cfg.os_type in ("linux", "darwin") and not is_ci():
         _set_directory_ownership(data_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
         _set_directory_ownership(log_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
-        return f"ThingsBoard data and log directories ownership set to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}"
+        return f"ThingsBoard data and log directories ownership set " \
+               f"to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}"
     return "ThingsBoard data and log directories created (ownership skipped)"
 
 

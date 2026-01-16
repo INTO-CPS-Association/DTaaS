@@ -8,10 +8,10 @@ import pytest
 from dtaas_services.pkg.rabbitmq import (
     _execute_rabbitmq_command,
     _add_rabbitmq_user,
-    _create_users_from_credentials,
     setup_rabbitmq_users,
     permissions_rabbitmq,
 )
+from dtaas_services.pkg.utils import create_users_from_credentials
 
 
 @pytest.fixture
@@ -29,10 +29,9 @@ def mock_config():
 
 
 @pytest.fixture
-def mock_credentials_path():
-    """Mock credentials path"""
-    with patch("dtaas_services.pkg.rabbitmq.get_credentials_path") as mock:
-        mock.return_value = Path("/test/config/credentials.csv")
+def mock_process_credentials():
+    """Mock process credentials file utility"""
+    with patch("dtaas_services.pkg.rabbitmq.process_credentials_file") as mock:
         yield mock
 
 
@@ -115,7 +114,7 @@ def test_create_users_from_credentials_success():
 
     with patch("dtaas_services.pkg.rabbitmq._add_rabbitmq_user") as mock_add:
         mock_add.return_value = (True, "")
-        success, error = _create_users_from_credentials(mock_file)
+        success, error = create_users_from_credentials(mock_file, mock_add)
         assert success is True
         assert error == ""
         assert mock_add.call_count == 2
@@ -128,71 +127,51 @@ def test_create_users_from_credentials_failure():
 
     with patch("dtaas_services.pkg.rabbitmq._add_rabbitmq_user") as mock_add:
         mock_add.return_value = (False, "Failed to add user")
-        success, error = _create_users_from_credentials(mock_file)
+        success, error = create_users_from_credentials(mock_file, mock_add)
         assert success is False
         assert "Failed to add user" in error
         # Should stop after first failure
         assert mock_add.call_count == 1
 
 
-def test_setup_rabbitmq_users_success(mock_credentials_path):
+def test_setup_rabbitmq_users_success(mock_process_credentials):
     """Test successful RabbitMQ users setup"""
-    csv_data = "username,password\nuser1,pass1\n"
-
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", mock_open(read_data=csv_data)
-    ), patch(
-        "dtaas_services.pkg.rabbitmq._create_users_from_credentials"
-    ) as mock_create:
-        mock_create.return_value = (True, "")
-        success, message = setup_rabbitmq_users()
-        assert success is True
-        assert "RabbitMQ users created successfully" in message
+    mock_process_credentials.return_value = (True, "RabbitMQ users created successfully")
+    success, message = setup_rabbitmq_users()
+    assert success is True
+    assert "RabbitMQ users created successfully" in message
 
 
-def test_setup_rabbitmq_users_file_not_found(mock_credentials_path):
+def test_setup_rabbitmq_users_file_not_found(mock_process_credentials):
     """Test RabbitMQ users setup when credentials file not found"""
-    with patch("pathlib.Path.exists", return_value=False):
-        success, message = setup_rabbitmq_users()
-        assert success is False
-        assert "Credentials file not found" in message
+    mock_process_credentials.return_value = (False, "Credentials file not found: /test/config/credentials.csv")
+    success, message = setup_rabbitmq_users()
+    assert success is False
+    assert "Credentials file not found" in message
 
 
-def test_setup_rabbitmq_users_creation_fails(mock_credentials_path):
+def test_setup_rabbitmq_users_creation_fails(mock_process_credentials):
     """Test RabbitMQ users setup when user creation fails"""
-    csv_data = "username,password\nuser1,pass1\n"
-
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", mock_open(read_data=csv_data)
-    ), patch(
-        "dtaas_services.pkg.rabbitmq._create_users_from_credentials"
-    ) as mock_create:
-        mock_create.return_value = (False, "Creation failed")
-        success, message = setup_rabbitmq_users()
-        assert success is False
-        assert "Creation failed" in message
+    mock_process_credentials.return_value = (False, "Creation failed")
+    success, message = setup_rabbitmq_users()
+    assert success is False
+    assert "Creation failed" in message
 
 
-def test_setup_rabbitmq_users_os_error(mock_credentials_path):
+def test_setup_rabbitmq_users_os_error(mock_process_credentials):
     """Test RabbitMQ users setup with OSError"""
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", side_effect=OSError("File error")
-    ):
-        success, message = setup_rabbitmq_users()
-        assert success is False
-        assert "Error adding RabbitMQ users" in message
+    mock_process_credentials.return_value = (False, "Error adding RabbitMQ users: File error")
+    success, message = setup_rabbitmq_users()
+    assert success is False
+    assert "Error adding RabbitMQ users" in message
 
 
-def test_setup_rabbitmq_users_key_error(mock_credentials_path):
+def test_setup_rabbitmq_users_key_error(mock_process_credentials):
     """Test RabbitMQ users setup with KeyError"""
-    csv_data = "wrongcolumn,data\nvalue1,value2\n"
-
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", mock_open(read_data=csv_data)
-    ):
-        success, message = setup_rabbitmq_users()
-        assert success is False
-        assert "Error adding RabbitMQ users" in message
+    mock_process_credentials.return_value = (False, "Error adding RabbitMQ users: 'username'")
+    success, message = setup_rabbitmq_users()
+    assert success is False
+    assert "Error adding RabbitMQ users" in message
 
 
 def test_permissions_rabbitmq_success_linux(mock_config):

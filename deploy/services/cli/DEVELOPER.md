@@ -152,6 +152,8 @@ The package uses a modular architecture where each service has its own module:
 * `check_root_unix()`: Verify root/sudo privileges on Unix systems
 * `execute_docker_command()`: Execute commands in Docker containers with error handling
 * `get_credentials_path()`: Get the path to the credentials CSV file
+* `process_credentials_file()`: Generic pattern for processing credentials file
+* `create_users_from_credentials()`: Generic function to create users from CSV
 
 #### Project Structure & Templates (`pkg/template.py`)
 
@@ -330,8 +332,8 @@ or environment variable assumptions
 ### System Tests
 
 The `tests/system_tests/` directory contains end-to-end tests that verify the complete
-CLI workflow with real Docker containers and services. These tests are designed to
-accelerate the pull request process by catching integration issues early.
+CLI workflow with real Docker containers and services. These tests are designed
+to accelerate the pull request process by catching integration issues early.
 
 #### Purpose
 

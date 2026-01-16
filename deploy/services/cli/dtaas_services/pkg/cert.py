@@ -102,7 +102,7 @@ def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
 
 
 def _should_copy_file(source_path: Path, dest_path: Path) -> bool:
-    """Check if a file should be copied (complexity reduction)."""
+    """Check if a file should be copied."""
     return source_path.is_file() and source_path.resolve() != dest_path.resolve()
 
 
@@ -184,8 +184,10 @@ def _apply_cert_permissions(ctx: _CertPermissionContext) -> None:
 def _get_permission_message(ctx: _CertPermissionContext) -> str:
     """Generate message describing permission changes (internal use)."""
     if ctx.gid is not None:
-        return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} and ownership set to {ctx.uid}:{ctx.gid}."
-    return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} and ownership set to user {ctx.uid}."
+        return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} " \
+               f"and ownership set to {ctx.uid}:{ctx.gid}."
+    return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} " \
+           f"and ownership set to user {ctx.uid}."
 
 
 def set_service_cert_permissions(

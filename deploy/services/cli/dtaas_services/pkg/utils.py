@@ -3,7 +3,9 @@
 from pathlib import Path
 import sys
 import os
+import csv
 import platform
+from typing import Callable, Tuple
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
 from .config import Config
@@ -123,3 +125,54 @@ def is_ci() -> bool:
         True if CI environment variables are set
     """
     return _should_skip_root_check()
+
+
+def process_credentials_file(
+    process_func: Callable, service_name: str, success_msg: str
+) -> Tuple[bool, str]:
+    """
+    Common pattern for processing credentials file for a service.
+
+    Args:
+        process_func: Function to call with opened credentials file
+        service_name: Name of the service (for error messages)
+        success_msg: Success message to return
+
+    Returns:
+        Tuple of (success, message)
+    """
+    credentials_file = get_credentials_path()
+    if not credentials_file.exists():
+        return False, f"Credentials file not found: {credentials_file}"
+
+    try:
+        with credentials_file.open(
+            mode="r", newline="", encoding="utf-8"
+        ) as creds_file:
+            success, error_msg = process_func(creds_file)
+            return (True, success_msg) if success else (False, error_msg)
+    except (OSError, ValueError, KeyError) as e:
+        return False, f"Error adding {service_name} users: {e}"
+
+
+def create_users_from_credentials(
+    credentials_file, user_creation_func: Callable[[str, str], Tuple[bool, str]]
+) -> Tuple[bool, str]:
+    """
+    Generic function to create users from a credentials CSV file.
+
+    Args:
+        credentials_file: Opened CSV file with username,password columns
+        user_creation_func: Function(username, password) -> (success, error_msg)
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    credentials = csv.DictReader(credentials_file, delimiter=",")
+    for credential in credentials:
+        username = credential["username"]
+        password = credential["password"]
+        success, error_msg = user_creation_func(username, password)
+        if not success:
+            return False, error_msg
+    return True, ""

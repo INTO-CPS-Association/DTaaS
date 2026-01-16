@@ -13,13 +13,13 @@ from dtaas_services.pkg.influxdb import (
     _get_influxdb_users,
     _get_existing_orgs,
     _setup_user_org_bucket,
-    _create_users_from_credentials,
     _setup_user_organizations,
     _fetch_influxdb_data,
     _execute_setup_steps,
     setup_influxdb_users,
     permissions_influxdb,
 )
+from dtaas_services.pkg.utils import create_users_from_credentials
 
 
 @pytest.fixture
@@ -38,10 +38,9 @@ def mock_config():
 
 
 @pytest.fixture
-def mock_credentials_path():
-    """Mock credentials path"""
-    with patch("dtaas_services.pkg.influxdb.get_credentials_path") as mock:
-        mock.return_value = Path("/test/config/credentials.csv")
+def mock_process_credentials():
+    """Mock process credentials file utility"""
+    with patch("dtaas_services.pkg.influxdb.process_credentials_file") as mock:
         yield mock
 
 
@@ -242,7 +241,7 @@ def test_create_users_from_credentials_success():
 
     with patch("dtaas_services.pkg.influxdb._create_influxdb_user") as mock_create:
         mock_create.return_value = (True, "")
-        success, error = _create_users_from_credentials(mock_file)
+        success, error = create_users_from_credentials(mock_file, mock_create)
         assert success is True
         assert error == ""
         assert mock_create.call_count == 2
@@ -255,7 +254,7 @@ def test_create_users_from_credentials_failure():
 
     with patch("dtaas_services.pkg.influxdb._create_influxdb_user") as mock_create:
         mock_create.return_value = (False, "user creation failed")
-        success, error = _create_users_from_credentials(mock_file)
+        success, error = create_users_from_credentials(mock_file, mock_create)
         assert success is False
         assert "user creation failed" in error
 
@@ -327,7 +326,7 @@ def test_execute_setup_steps_success():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb._create_users_from_credentials"
+        "dtaas_services.pkg.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
         "dtaas_services.pkg.influxdb._fetch_influxdb_data"
     ) as mock_fetch, patch(
@@ -347,7 +346,7 @@ def test_execute_setup_steps_create_users_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb._create_users_from_credentials"
+        "dtaas_services.pkg.influxdb.create_users_from_credentials"
     ) as mock_create:
         mock_create.return_value = (False, "creation failed")
         success, error = _execute_setup_steps(mock_file)
@@ -361,7 +360,7 @@ def test_execute_setup_steps_fetch_data_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb._create_users_from_credentials"
+        "dtaas_services.pkg.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
         "dtaas_services.pkg.influxdb._fetch_influxdb_data"
     ) as mock_fetch:
@@ -378,7 +377,7 @@ def test_execute_setup_steps_setup_orgs_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb._create_users_from_credentials"
+        "dtaas_services.pkg.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
         "dtaas_services.pkg.influxdb._fetch_influxdb_data"
     ) as mock_fetch, patch(
@@ -392,62 +391,52 @@ def test_execute_setup_steps_setup_orgs_fails():
         assert "setup failed" in error
 
 
-def test_setup_influxdb_users_success(mock_credentials_path):
+def test_setup_influxdb_users_success(mock_process_credentials):
     """Test successful InfluxDB users setup"""
-    csv_data = "username,password\nuser1,pass1\n"
-
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", mock_open(read_data=csv_data)
-    ), patch("dtaas_services.pkg.influxdb._execute_setup_steps") as mock_execute:
-        mock_execute.return_value = (True, "")
-        success, message = setup_influxdb_users()
-        assert success is True
-        assert "InfluxDB users created successfully" in message
+    mock_process_credentials.return_value = (True, "InfluxDB users created successfully")
+    success, message = setup_influxdb_users()
+    assert success is True
+    assert "InfluxDB users created successfully" in message
 
 
-def test_setup_influxdb_users_file_not_found(mock_credentials_path):
+def test_setup_influxdb_users_file_not_found(mock_process_credentials):
     """Test InfluxDB users setup when credentials file not found"""
-    with patch("pathlib.Path.exists", return_value=False):
-        success, message = setup_influxdb_users()
-        assert success is False
-        assert "Credentials file not found" in message
+    mock_process_credentials.return_value = (False, "Credentials file not found: /test/config/credentials.csv")
+    success, message = setup_influxdb_users()
+    assert success is False
+    assert "Credentials file not found" in message
 
 
-def test_setup_influxdb_users_setup_fails(mock_credentials_path):
+def test_setup_influxdb_users_setup_fails(mock_process_credentials):
     """Test InfluxDB users setup when setup steps fail"""
-    csv_data = "username,password\nuser1,pass1\n"
-
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", mock_open(read_data=csv_data)
-    ), patch("dtaas_services.pkg.influxdb._execute_setup_steps") as mock_execute:
-        mock_execute.return_value = (False, "setup error")
-        success, message = setup_influxdb_users()
-        assert success is False
-        assert "setup error" in message
+    mock_process_credentials.return_value = (False, "setup error")
+    success, message = setup_influxdb_users()
+    assert success is False
+    assert "setup error" in message
 
 
-def test_setup_influxdb_users_os_error(mock_credentials_path):
+def test_setup_influxdb_users_os_error(mock_process_credentials):
     """Test InfluxDB users setup with OSError"""
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", side_effect=OSError("File error")
-    ):
-        success, message = setup_influxdb_users()
-        assert success is False
-        assert "Error adding InfluxDB users" in message
+    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: File error")
+    success, message = setup_influxdb_users()
+    assert success is False
+    assert "Error adding InfluxDB users" in message
 
 
-def test_setup_influxdb_users_value_error(mock_credentials_path):
+def test_setup_influxdb_users_value_error(mock_process_credentials):
     """Test InfluxDB users setup with ValueError"""
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "pathlib.Path.open", side_effect=ValueError("Value error")
-    ):
-        success, message = setup_influxdb_users()
-        assert success is False
-        assert "Error adding InfluxDB users" in message
+    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: Value error")
+    success, message = setup_influxdb_users()
+    assert success is False
+    assert "Error adding InfluxDB users" in message
 
 
-def test_setup_influxdb_users_key_error(mock_credentials_path):
+def test_setup_influxdb_users_key_error(mock_process_credentials):
     """Test InfluxDB users setup with KeyError"""
+    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: 'username'")
+    success, message = setup_influxdb_users()
+    assert success is False
+    assert "Error adding InfluxDB users" in message
     csv_data = "wrongcolumn,data\nvalue1,value2\n"
 
     with patch("pathlib.Path.exists", return_value=True), patch(

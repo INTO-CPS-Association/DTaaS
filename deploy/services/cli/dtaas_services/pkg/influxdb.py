@@ -1,8 +1,12 @@
-import csv
+"""InfluxDB service and user management."""
 import json
 import shutil
 from typing import Tuple
-from .utils import get_credentials_path, execute_docker_command
+from .utils import (
+    process_credentials_file,
+    create_users_from_credentials,
+    execute_docker_command,
+)
 from .config import Config
 from .cert import set_service_cert_permissions, _CertPermissionContext
 
@@ -151,18 +155,6 @@ def _setup_user_org_bucket(
     return success, error_msg
 
 
-def _create_users_from_credentials(credentials_file) -> tuple[bool, str]:
-    """Create all users from credentials file."""
-    credentials = csv.DictReader(credentials_file, delimiter=",")
-    for credential in credentials:
-        username = credential["username"]
-        password = credential["password"]
-        success, error_msg = _create_influxdb_user(username, password)
-        if not success:
-            return False, error_msg
-    return True, ""
-
-
 def _setup_user_organizations(users_dict: dict, existing_orgs: set) -> tuple[bool, str]:
     """Set up organization and bucket for each user."""
     for name, user_id in users_dict.items():
@@ -199,7 +191,7 @@ def _execute_setup_steps(creds_file) -> tuple[bool, str]:
         Tuple of (success, error message if any)
     """
     # Create all users first
-    success, error_msg = _create_users_from_credentials(creds_file)
+    success, error_msg = create_users_from_credentials(creds_file, _create_influxdb_user)
     if not success:
         return False, error_msg
     # Fetch user and org data
@@ -217,21 +209,11 @@ def setup_influxdb_users() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
-    credentials_file = get_credentials_path()
-    if not credentials_file.exists():
-        return False, f"Credentials file not found: {credentials_file}"
-    try:
-        with credentials_file.open(
-            mode="r", newline="", encoding="utf-8"
-        ) as creds_file:
-            success, error_msg = _execute_setup_steps(creds_file)
-            return (
-                (True, "InfluxDB users created successfully")
-                if success
-                else (False, error_msg)
-            )
-    except (OSError, ValueError, KeyError) as e:
-        return False, f"Error adding InfluxDB users: {e}"
+    return process_credentials_file(
+        _execute_setup_steps,
+        "InfluxDB",
+        "InfluxDB users created successfully",
+    )
 
 
 def permissions_influxdb() -> Tuple[bool, str]:

@@ -252,7 +252,7 @@ class Service:
     def _process_single_container(
         self, container: object, container_map: dict, all_services: set
     ) -> None:
-        """Process a single container and add to map if it matches a service (complexity reduction)."""
+        """Process a single container and add to map if it matches a service."""
         if not self._match_container_by_name(container, container_map, all_services):
             self._match_container_by_label(container, container_map, all_services)
 
