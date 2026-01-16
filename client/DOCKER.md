@@ -7,8 +7,8 @@ application for the DTaaS.
 
 ## Authorization
 
-The react client website uses OAuth authorization.
-The [authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
+The react client website uses OAuth authorization. The
+[authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
 provides details on setting up OAuth authorization for
 the client application.
 
@@ -32,8 +32,8 @@ services:
 
 ### Create Configuration
 
-The client application requires configuration.
-See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+The client application requires configuration. See the
+[config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
 for an explanation of client configuration.
 
 The docker version of client application uses configuration

@@ -30,7 +30,7 @@ jobs:
         uses: Tiryoh/actions-mkdocs@14d3fd544b7a2bcffcdd86b05d558f20c244c9fc
         with:
           mkdocs_version: 'latest'
-          requirements: 'docs/requirements-github.txt'
+          requirements: 'script/docs/mkdocs-requirements-github.txt'
           configfile: 'mkdocs-github.yml'
 
       - name: show contents of compiled docs
