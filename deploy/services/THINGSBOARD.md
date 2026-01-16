@@ -114,8 +114,8 @@ python3 script/thingsboard.py
 
 If the PostgreSQL logs show errors like:
 
-- `ERROR: relation "ts_kv" does not exist`
-- `ERROR: relation "ts_kv_latest" does not exist`
+* `ERROR: relation "ts_kv" does not exist`
+* `ERROR: relation "ts_kv_latest" does not exist`
 
 this usually means that the ThingsBoard service started before the database
 schema was fully created.
@@ -153,7 +153,7 @@ After the installation is complete, you can see the ThingsBoard service active
 at the following ports / URLs.
 
 | service | external url |
-|:---|:---|
+| :--- | :--- |
 | ThingsBoard | services.foo.com:8089 |
 
 Please note that the TCP ports used by the services can be changed

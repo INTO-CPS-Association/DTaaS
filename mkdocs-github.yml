@@ -2,9 +2,9 @@ site_name: Digital Twin as a Service (DTaaS)
 
 repo_url: https://github.com/into-cps-association/DTaaS
 repo_name: DTaaS
-copyright: Copyright &copy; 2022 - 2024 The INTO-CPS Association
+copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
 
-theme: 
+theme:
   name: material
   locale: en
   logo: assets/dtaas-logo.png
@@ -19,34 +19,48 @@ nav:
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
-      - Website: user/website/index.md
-      - Reusable Assets: 
+      - Website:
+        - Overview: user/website/index.md
+        - Settings: user/website/settings.md
+      - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
+          - DevOps Preview: user/library/devops/ui.md
       - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
           - DevOps Preview:
-              - Digital Twin Structure: user/digital-twins/devops/file-structure.md
+              - Digital Twin Structure:
+                  user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md
+              - Settings: user/digital-twins/devops/execution-settings.md
+              - Capabilities: user/digital-twins/devops/capabilities.md
+              - Concurrent Execution:
+                  user/digital-twins/devops/concurrent-execution.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
-      - Runner: user/servers/execution/runner/README.md
+      - Runner: user/servers/execution/runner/readme.md
       - Examples:
           - Overview: user/examples/index.md
           - Mass Spring Damper: user/examples/mass-spring-damper/README.md
           - Water Tank Fault Injection: user/examples/water_tank_FI/README.md
           - Water Tank Model Swap: user/examples/water_tank_swap/README.md
-          - Desktop Robotti and RabbitMQ: user/examples/drobotti-rmqfmu/README.md
+          - Desktop Robotti and RabbitMQ:
+              user/examples/drobotti-rmqfmu/README.md
           - Water Plant and OPC-UA: user/examples/opc-ua-waterplant/README.md
           - Three Water Tanks: user/examples/three-tank/README.md
           - Flex Cell: user/examples/flex-cell/README.md
           - Incubator: user/examples/incubator/README.md
           - Firefighters: user/examples/o5g/README.md
-          - Mass Spring Damper with NuRV: user/examples/mass-spring-damper-monitor/README.md
-          - Water Tank Fault Injection with NuRV: user/examples/water_tank_FI_monitor/README.md
-          - Incubator Co-Sim with NuRV: user/examples/incubator-NuRV-monitor-validation/README.md
-          - Incubator with NuRV Service: user/examples/incubator-NuRV-monitor-service/README.md
-          - Incubator with NuRV FMU Service: user/examples/incubator-NuRV-fmu-monitor-service/README.md
+          - Mass Spring Damper with NuRV:
+              user/examples/mass-spring-damper-monitor/README.md
+          - Water Tank Fault Injection with NuRV:
+              user/examples/water_tank_FI_monitor/README.md
+          - Incubator Co-Sim with NuRV:
+              user/examples/incubator-NuRV-monitor-validation/README.md
+          - Incubator with NuRV Service:
+              user/examples/incubator-NuRV-monitor-service/README.md
+          - Incubator with NuRV FMU Service:
+              user/examples/incubator-NuRV-fmu-monitor-service/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - Admin:
       - Install:
@@ -62,16 +76,20 @@ nav:
         - Docker:
           - Localhost: admin/localhost.md
           - Secure Localhost: admin/localhost-secure.md
-          - Production: admin/host.md
+          - Production: admin/server.md
         - Vagrant:
           - Base Box: admin/vagrant/base-box.md
           - Single Machine: admin/vagrant/single-machine.md
           - Two Machines: admin/vagrant/two-machines.md
-        - Services: admin/services.md
+        - Platform Services:
+          - CLI: admin/services/cli.md
+          - Manual Install: admin/services/terminal-install.md
       - Integrated Gitlab:
         - Installation: admin/gitlab/index.md
         - Integration: admin/gitlab/integration.md
-        - Gitlab Runner: admin/gitlab/runner.md
+        - Gitlab Runner:
+          - Linux: admin/gitlab/runner.md
+          - Windows: admin/gitlab/runner-windows.md
       - CLI: admin/cli.md
       - Independent Packages:
         - Listing: admin/packages.md
@@ -80,11 +98,12 @@ nav:
           - Docker: admin/servers/lib/docker.md
       - Guides:
         - GUI Installation: admin/guides/localhost_portainer.md
+        - Check Config: admin/guides/check_config.md
         - Add user: admin/guides/add_user.md
         - Remove user: admin/guides/remove_user.md
-        - Add Service: admin/guides/add_service.md
         - Link services: admin/guides/link_service.md
         - Common Assets: admin/guides/common_workspace_readonly.md
+        - Renew Certificates: admin/guides/renew_certs.md
   - FAQ: FAQ.md
   - Developer:
       - Developer Guide: developer/index.md
@@ -94,12 +113,16 @@ nav:
         - Architecture: developer/system/architecture.md
         - Current Status: developer/system/current-status.md
       - OAuth2 Authorization:
-        - Concepts: developer/oauth/OAUTH2.0.md
-        - System Design: developer/oauth/DESIGN.md
-        - Microservice: developer/oauth/AUTHMS.md
+        - Concepts: developer/oauth/oauth2.0.md
+        - System Design: developer/oauth/design.md
+        - Microservice: developer/oauth/authms.md
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md
+      - DTaaS CLI: developer/cli.md
+      - Client: developer/client/client.md
+      - Library Microservice: developer/servers/lib/lib-ms.md
+      - Runner Microservice: developer/servers/execution/runner/runner.md
       - DevOps Framework:
         - Overview: developer/devops/overview.md
         - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
@@ -107,9 +130,9 @@ nav:
         - Implemented Classes: developer/devops/implementation.md
   - Bugs: bugs.md
   - Thanks: thanks.md
-  - License: 
+  - License:
       - DTaaS: LICENSE.md
-      - Third Party: third-party.md 
+      - Third Party: third-party.md
 
 use_directory_urls: false
 
@@ -133,7 +156,7 @@ markdown_extensions:
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets      
+  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -142,14 +165,9 @@ markdown_extensions:
   - pymdownx.details
   - admonition
   - pymdownx.tabbed:
-      alternate_style: true   
+      alternate_style: true
   - mdx_math:
       enable_dollar_delimiter: True
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - open-in-new-tab

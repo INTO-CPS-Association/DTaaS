@@ -1,10 +1,15 @@
 # :european_castle: System Overview
 
+The Digital Twin as a Service (DTaaS) platform is designed to support
+the complete digital twin (DT) lifecycle, enabling users to create,
+configure, execute, and share digital twins through reusable assets[1].
+The platform architecture reflects established principles for realising
+digital twins in practice[2], while also supporting advanced
+use cases such as runtime verification of autonomous systems[3].
+
 ## User Requirements
 
-The DTaaS software platform users expect a single platform
-to support the complete DT lifecycle. To be more precise,
-the platform users expect the following features:
+The platform provides the following core capabilities:
 
 1. **Author** – create different assets of the DT on the
    platform itself. This step requires use of some software
@@ -22,9 +27,9 @@ the platform users expect the following features:
 1. **Explore** – interact with a DT and explore the results
    stored both inside and outside the platform. Exploration
    may lead to analytical insights.
-1. **Save** – save the state of a DT that’s already in the
-   execution phase. This functionality is required for on
-   demand saving and re-spawning of DTs.
+1. **Save** – save the state of a DT that is already in the
+   execution phase. This functionality is required for on-demand
+   saving and re-spawning of DTs.
 1. **Services** – integrate DTs with on-platform or external
    services with which users can interact with.
 1. **Share** – share a DT with other users of their organisation.
@@ -37,12 +42,11 @@ The figure shows the system architecture of the the DTaaS software platform.
 
 ### System Components
 
-The users interact with the software platform using a webapp.
-The service router is a single point of entry for direct access to the platform
-services. The service router is responsible for controlling user access to
-the microservice components. The service mesh
-enables discovery of microservices, load balancing and authorization
-functionalities.
+Users interact with the software platform through a web application.
+The service router serves as the single point of entry for direct access
+to platform services and is responsible for controlling user access to
+the microservice components. The service mesh enables discovery of
+microservices, load balancing, and authorization functionalities.
 
 In addition, there are microservices for catering to managing
 DT reusable assets, platform services, DT lifecycle manager,
@@ -79,25 +83,36 @@ The microservices responsible for satisfying the user requirements are:
    It also directs _DT Execution Manager_ to perform execute, save and
    terminate operations on DTs.
 
-If you are interested, please take a look at
+For a more detailed view, refer to
 the [C4 architectural diagram](C4-L2_diagram.png).
 
 A mapping of the architectural components to related pages in
 the documentation is available in the table.
 
-| System Component  | Doc Page(s)                                                                                                                             |
-| :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Service Router           | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Web Application | [React Webapplication](../client/client.md)                                                                                              |
-| Reusable Assets   | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
-| Digital Twins and DevOps   | [Integrated Gitlab](../../admin/gitlab/index.md)                                                                                         |
-| Services              | [Third-party Services](./../../admin/services.md) (MQTT, InfluxDB, RabbitMQ, Grafana and MongoDB)                                                       |
-| DT Lifecycle      | Not available yet                                                                                      |
-| Security          | Gitlab [client OAuth](../../admin/client/auth.md) and [server OAuth](../../admin/servers/auth.md)                                                                                               |
-| Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/README.md)                                                                          |
-| Accounting        | Not available yet                                                                                                                                     |
-| Execution Manager | Not available yet                                                                                                                        |
+| System Component          | Doc Page(s)                                                                                                                              |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| Service Router            | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
+| Web Application           | [React Webapplication](../client/client.md)                                                                                              |
+| Reusable Assets           | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
+| Digital Twins and DevOps  | [Integrated GitLab](../../admin/gitlab/index.md)                                                                                         |
+| Platform Services         | [Third-party Services](./../../admin/services/terminal-install.md) (MQTT, InfluxDB, RabbitMQ, Grafana, PostgreSQL, and ThingsBoard                        |
+| DT Lifecycle Manager      | Not available yet                                                                                                                        |
+| Security                  | GitLab [client OAuth 2.0](../../admin/client/auth.md) and [server OAuth 2.0](../../admin/servers/auth.md)                                |
+| Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/readme.md)                                                                               |
+| Accounting                | Not available yet                                                                                                                        |
+| Execution Manager         | Not available yet                                                                                                                        |
 
 ## References
 
 Font sources: [fileformat](https://www.fileformat.info)
+
+[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
+     as a Service platform." Simulation 101.3 (2025): 287-311.
+
+[2]: Talasila, Prasad, et al. "Realising digital twins." The engineering of
+     digital twins. Cham: Springer International Publishing, 2024. 225-256.
+
+[3]: Kristensen, Morten Haahr, et al. "Runtime Verification of Autonomous Systems
+     Utilizing Digital Twins as a Service." 2024 IEEE International Conference on
+     Autonomic Computing and Self-Organizing Systems Companion (ACSOS-C).
+     IEEE, 2024.

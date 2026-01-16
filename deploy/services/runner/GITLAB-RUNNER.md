@@ -29,7 +29,7 @@ GitLab instance running.
 A GitLab Runner can be configured for three different scopes:
 
 | Runner Scope    | Description |
-|-----------------|-------------|
+| ----------------- | ------------- |
 | Instance Runner | Available to all groups and projects in a GitLab instance. |
 | Group Runner    | Available to all projects and subgroups in a group. |
 | Project Runner  | Associated with one specific project. |
@@ -45,7 +45,7 @@ instance. Open your GitLab instance (remote or local) and depending on your
 choice of runner scope, follow the steps given below:
 
 | Runner Scope    | Steps |
-|-----------------|-------|
+| ----------------- | ------- |
 | Instance Runner |1. On the __Admin__ dashboard, navigate to __CI/CD > Runners__.<br>2. Select __New instance runner__.|
 | Group Runner    |1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__.|
 | Project Runner  |1. On the __DTaaS__ group page, select the project named after your GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.|

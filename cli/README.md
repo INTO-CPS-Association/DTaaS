@@ -5,9 +5,6 @@ INTO-CPS-Association Digital Twins as a Service.
 
 ## Prerequisite
 
-Please visit and download the
-[DTaaS Software](https://github.com/INTO-CPS-Association/DTaaS).
-
 The DTaaS application with base users and essential
 containers should be up and running before using the CLI.
 
@@ -36,33 +33,64 @@ pip install dtaas
 
 ## Usage
 
-### Setup
+### Configure
 
-The base DTaaS system should be up and
-running before adding/deleting users with the CLI.
-
-Additionally,
-Setup the _dtaas.toml_ file in the _cli_ directory:
-
-- Set _common.server-dns_ to domain name of your server.
-  If you want to bring up the server locally,
-  please set this to _"localhost"_.
-
-- Set the _path_ to the full system path
-  of the DTaaS directory.
+The CLI uses _dtaas.toml_ as configuration file. A sample
+configuration file is given here.
 
 ```toml
+# This is the config for DTaaS CLI
+
+name = "Digital Twin as a Service (DTaaS)"
+version = "0.2.1"
+owner = "The INTO-CPS-Association"
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+
 [common]
-# absolute path to the DTaaS application directory
+# Server hostname either localhost or a valid hostname, ex: foo.com
 server-dns = "localhost"
+# absolute path to the DTaaS application directory
 # Specify the directory of DTaaS installation
 # Linux example
-path = "/home/Desktop/DTaaS"
+path = "/Users/username/DTaaS"
 # Windows example
 #path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get 
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
+
+[common.resources]
+# Default resource limits applied when creating user workspace containers.
+# Keys:
+# - cpus: integer count of virtual CPUs to allocate to the container
+# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
+# - pids_limit: maximum number of processes the container may create
+# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
+#
+# Adjust these values to match your host capacity and tenancy policy.
+cpus = 4
+mem_limit = "4G"
+pids_limit = 4960
+shm_size = "512m"
+
+# Example: Increase memory and lower CPU for heavier-memory workloads
+# cpus = 2
+# mem_limit = "8G"
+
+
+[users]
+# matching user info must present in this config file
+add = ["username1","username2", "username3"] 
+delete = ["username2", "username3"]
+...
 ```
+
+#### Notes
+
+- Edits to `dtaas.toml` affect new user containers created after the change.
+- To apply updated limits to existing containers, recreate or restart
+  the user container(s) (for example by removing and re-adding the user
+  workspace via the CLI or by restarting the container in Docker Compose).
+- Use units (`M`, `G`) for memory and shared memory values.
 
 ### Select Template
 

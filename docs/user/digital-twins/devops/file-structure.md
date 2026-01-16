@@ -1,21 +1,31 @@
-# Digital Twin File Structure in Gitlab
+# Digital Twin File Structure in GitLab
 
 We use GitLab as a file store for performing DevOps on Digital Twins.
 The [user interface page](ui.md) is a front-end for this gitlab-backed
 file storage.
 
-Each DTaaS installation comes with an integrated Gitlab. There must
-be a gitlab group named **dtaas** and a gitlab repository for each
+Each DTaaS installation comes with an integrated GitLab. There must
+be a GitLab group named **dtaas** and a GitLab repository for each
 user where repository name matches the username. For example,
 if there are two users, namely _user1_ and _user2_ on a DTaaS
 installation, then the following repositories must exist on the linked
-Gitlab installation.
+GitLab installation.
 
 ```txt
 https://foo.com/gitlab/dtaas/common.git
 https://foo.com/gitlab/dtaas/user1.git
 https://foo.com/gitlab/dtaas/user2.git
 ```
+
+<!-- markdownlint-disable MD046 -->
+<!-- prettier-ignore -->
+!!! warning
+    The assets being displayed on the Library preview page come from
+    the `master` branch of the backing GitLab project. Please create
+    a branch named `master` and make it the default
+    branch. This must be done for all the user repositories including
+    the common repository.
+<!-- markdownlint-enable MD046 -->
 
 Each user repository must also have a specific structure. The required structure
 is as follows.
@@ -53,7 +63,7 @@ hello_world/
 │   ├── create
 │   ├── execute
 │   └── terminate
-├── .gitlab-ci.yml (Gitlab DevOps config for executing lifecycle scripts)
+├── .gitlab-ci.yml (GitLab DevOps config for executing lifecycle scripts)
 └── description.md (optional but is recommended)
 └── README.md (optional but is recommended)
 ```

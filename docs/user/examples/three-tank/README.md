@@ -2,8 +2,8 @@
 
 ## Overview
 
-The three-tank system is a simple case study allows us to represent a system
-that is composed of three individual components that are coupled in
+The three-tank system is a simple case study that represents a system
+composed of three individual components coupled in
 a cascade as follows: The first tank is connected to the input of
 the second tank, and the output of the second tank is connected to
 the input of the third tank.
@@ -41,14 +41,14 @@ the co-simulation output.
 This example uses two models, two tools, one data, and one script.
 The specific assets used are:
 
-| Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
-| Model | Linear.fmu | Private | No |
-|  | TankSystem.aasx | Private | No |
-| Tool | DTManager-0.0.1-Maestro.jar (wraps Maestro) | Common | Yes |
-|  | maestro-2.3.0-jar-with-dependencies.jar (used by DTManager) | Common | Yes |
-|  | TankMain.java (main script) | Private | No |
-| Data | outputs.csv | Private | No |
+| Asset Type | Names of Assets                                             | Visibility | Reuse in Other Examples |
+| :--------- | :---------------------------------------------------------- | :--------- | :---------------------- |
+| Model      | Linear.fmu                                                  | Private    | No                      |
+|            | TankSystem.aasx                                             | Private    | No                      |
+| Tool       | DTManager-0.0.1-Maestro.jar (wraps Maestro)                 | Common     | Yes                     |
+|            | maestro-2.3.0-jar-with-dependencies.jar (used by DTManager) | Common     | Yes                     |
+|            | TankMain.java (main script)                                 | Private    | No                      |
+| Data       | outputs.csv                                                 | Private    | No                      |
 
 This DT has multiple configuration files. The _coe.json_ and
 _multimodel.json_ are used by Maestro tool. The _tank1.conf_, _tank2.conf_
@@ -59,11 +59,11 @@ one model (Linear.fmu).
 
 The lifecycles that are covered include:
 
-| Lifecycle Phase    | Completed Tasks |
-| --------- | ------- |
-| Create    | Installs Java Development Kit for Maestro tool                                                                    |
-| Execute   | The DT Manager executes the three-tank digital twin and produces output in ```data/three-tank/output``` directory |
-| Terminate | Terminating the background processes and cleaning up the output                                                   |
+| Lifecycle Phase | Completed Tasks                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Create          | Installs Java Development Kit for Maestro tool                                                                    |
+| Execute         | The DT Manager executes the three-tank digital twin and produces output in ```data/three-tank/output``` directory |
+| Terminate       | Terminating the background processes and cleaning up the output                                                   |
 
 ## Run the example
 

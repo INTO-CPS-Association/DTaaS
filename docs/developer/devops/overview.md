@@ -13,7 +13,7 @@ the DT.
 
 Integration with GitLab is another fundamental requirement. The framework must
 be able to interact with GitLab to execute CI/CD pipelines via API calls using
-Gitbeaker as a wrapper. Users must authenticate via GitLab's OAuth mechanism,
+Gitbeaker as a wrapper. Users must authenticate via GitLab's OAuth 2.0 mechanism,
 and the system must automatically manage the authentication tokens and trigger
 tokens needed to start pipelines. Additionally, the system must automatically
 retrieve key information from the user's GitLab repository, such as the list of
@@ -78,7 +78,7 @@ users to submit requests to GitLab's REST API.
 
 One of the most significant features of Gitbeaker is the provision of support
 for a range of authentication methods, including the use of personal tokens
-and OAuth keys. Gitbeaker provides a range of predefined methods for
+and OAuth 2.0 keys. Gitbeaker provides a range of predefined methods for
 requesting data from the various GitLab APIs, eliminating the need for users
 to manually construct HTTP requests, thus greatly simplifying the integration
 process with GitLab.

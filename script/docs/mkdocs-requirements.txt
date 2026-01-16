@@ -1,0 +1,6 @@
+mkdocs==1.5.3
+mkdocs-material==9.5.15
+python-markdown-math==0.8
+mkdocs-open-in-new-tab==1.0.3
+mkdocs-with-pdf==0.9.3
+qrcode==7.4.2

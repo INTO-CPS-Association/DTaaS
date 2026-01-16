@@ -6,11 +6,11 @@ It provides API endpoints for clients to query, and fetch these assets.
 
 This document provides instructions for using the library microservice.
 
-Please see [assets](assets.md) for a suggested storage
-conventions of your library assets.
+The [assets](assets.md) page describes suggested storage
+conventions for library assets.
 
-Once the assets are stored in the library, they become
-available in user workspace.
+Once assets are stored in the library, they become
+available in the user workspace.
 
 ## Application Programming Interface (API)
 
@@ -38,18 +38,18 @@ Here are sample screenshots.
 
 Endpoint: `localhost:PORT/lib`
 
-The `http://foo.com/lib` URL opens a graphql playground.
+The `http://foo.com/lib` URL opens a GraphQL playground.
 
-You can check the query schema and try sample queries here.
-The graphql queries need to be sent as HTTP POST requests and get responses.
+The query schema can be examined and sample queries can be tested there.
+GraphQL queries must be sent as HTTP POST requests to receive responses.
 
-The library microservice services two API calls:
+The library microservice provides two API calls:
 
 * Provide a list of contents for a directory
 * Fetch a file from the available files
 
-The API calls are accepted over GraphQL and HTTP API end points.
-The format of the accepted queries are:
+The API calls are accepted over GraphQL and HTTP API endpoints.
+The format of accepted queries is:
 
 ### Provide list of contents for a directory
 

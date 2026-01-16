@@ -1,22 +1,26 @@
-# Install DTaaS on localhost with Gitlab Integration
+# Install DTaaS on localhost with GitLab Integration
 
-This installation is ideal for single users intending to use
+This installation is suitable for single users intending to use
 DTaaS on their own computers.
 
-The installation instructions provided in this README are
-ideal for running the **DTaaS on localhost served over HTTPS connection**.
-**The intention is to integrate Gitlab into DTaaS so that both**
+The installation instructions provided in this document are
+appropriate for running the **DTaaS on localhost served over HTTPS connection**.
+**The intention is to integrate GitLab into DTaaS so that both**
 **are running on localhost.**
 
-If you do not need gitlab running on localhost, please use
-the simpler [localhost setup](localhost.md).
+If GitLab running on localhost is not required,
+the simpler [localhost setup](localhost.md) should be used.
 
 ## Design
 
 An illustration of the docker containers used and the authorization
-setup is shown here.
+setup is presented here.
 
-![Traefik OAuth](./localhost-https.png)
+![Traefik OAuth 2.0](./localhost-https.png)
+
+🗒️ The text starting with `/` at the beginning indicates the URL route
+at which a certain service is available. For example, user workspace
+is available at <https://localhost/user1>.
 
 ## Requirements
 
@@ -26,6 +30,11 @@ The installation requirements to run this docker version of the DTaaS are:
 - [mkcert](https://github.com/FiloSottile/mkcert)
 
 ## Clone Codebase
+
+If the DTaaS git repository has not been cloned, cloning is
+the first step.
+If the codebase already exists, the cloning step can be skipped.
+To clone:
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
@@ -41,14 +50,14 @@ cd DTaaS
    paths mentioned below are relatively to the top-level
    **DTaaS** directory.
 
-## Configure and Run
+## Configure
 
 ### Create User Workspace
 
-The existing filesystem for installation is setup for `user1`.
-A new filesystem directory needs to be created for the selected user.
+The existing filesystem for installation is configured for `user1`.
+A new filesystem directory must be created for the selected user.
 
-Please execute the following commands from the top-level directory
+The following commands should be executed from the top-level directory
 of the DTaaS project.
 
 ```bash
@@ -56,14 +65,14 @@ cp -R files/user1 files/username
 ```
 
 where _username_ is the selected username to be created (in next steps)
-on Gitlab running at <https://localhost/gitlab>.
+on GitLab running at <https://localhost/gitlab>.
 
 ### Obtain TLS / HTTPS Certificate
 
-Use [mkcert](https://github.com/FiloSottile/mkcert) to generate
-TLS certificates using
+[mkcert](https://github.com/FiloSottile/mkcert) can be used to generate
+TLS certificates following
 [this guide](https://kifarunix.com/create-locally-trusted-ssl-certificates-with-mkcert-on-ubuntu-20-04/).
-The certificates need to be generated for `localhost`.
+The certificates should be generated for `localhost`.
 
 The names of the certificates must be `fullchain.pem` and `privkey.pem`.
 The `fullchain.pem` corresponds to public certificate and
@@ -79,7 +88,7 @@ Copy the two certificate files into:
 Traefik will run with self-issued certificates if the above two certificates
 are either not found or found invalid.
 
-### Configure Docker Compose
+### Docker Compose
 
 The docker compose configuration is in `deploy/docker/.env.local`;
 it is a sample file.
@@ -88,12 +97,12 @@ that are used by the docker compose files.
 It can be updated to suit your local installation scenario.
 It contains the following environment variables.
 
-Edit all the fields according to your specific case.
+All fields should be edited according to the specific deployment case.
 
-  | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | username1 | 'user1' | Your gitlab username |
+| URL Path      | Example Value           | Explanation                                                                        |
+| :------------ | :---------------------- | :--------------------------------------------------------------------------------- |
+| DTAAS_DIR     | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+| username1     | 'user1'                 | Your GitLab username                                                               |
 
 :clipboard: Important points to note:
 
@@ -104,36 +113,47 @@ Edit all the fields according to your specific case.
    Edit the URLs in this file by replacing `http` with `https`.
    Beyond this, it is not necessary to modify this file.
 
-### Start DTaaS to Integrate Gitlab
+## Run
 
-Start the appliation with
+### Start DTaaS to Integrate GitLab
+
+The commands to start and stop the appliation are:
 
 ```bash
 docker compose -f compose.local.secure.yml --env-file .env.local up -d
+docker compose -f compose.local.secure.yml --env-file .env.local down
 ```
 
-### Start Gitlab
+To restart only a specific container, for example `client`
+
+```bash
+docker compose -f compose.local.secure.yml --env-file .env.local up \
+ -d --force-recreate client
+```
+
+### Start GitLab
 
 Use the instructions provided in
-[gitlab integration](gitlab/index.md) to bring up
-Gitlab on localhost and the Gitlab service will be available at <https://localhost/gitlab>
+[GitLab integration](gitlab/index.md) to bring up
+GitLab on localhost and the GitLab service will be available at <https://localhost/gitlab>
 
-### Register OAuth2 Application
+### Register OAuth 2.0 Application
 
-The frontend website requires OAuth2 application registration on the integrated Gitlab.
-The details of Oauth2 app for the frontend website are in
+The frontend website requires OAuth 2.0 application registration on
+the integrated GitLab.
+The details of OAuth 2.0 application for the frontend website are available in
 [client docs](client/auth.md).
 
-The default OAuth client application provided in `env.local.js` works.
-However, if you intend to run an
-[integrated gitlab instance](gitlab/index.md), then
-this application needs to be created on gitlab running at <https://localhost/gitlab>.
+The default OAuth 2.0 client application provided in `env.local.js` functions correctly.
+However, when running an
+[integrated GitLab instance](gitlab/index.md),
+this application needs to be created on GitLab running at <https://localhost/gitlab>.
 
-Remember to use <https://localhost/Library> as the Callback URL (`REACT_APP_REDIRECT_URI`).
+<https://localhost/Library> should be used as the Callback URL (`REACT_APP_REDIRECT_URI`).
 
-Please see
-[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-documentation for further help with creating this OAuth application.
+The
+[GitLab OAuth 2.0 provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+documentation provides further guidance on creating this OAuth 2.0 application.
 
 ### Update Client Website Configuration
 
@@ -152,6 +172,8 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: 'xxxxxx',
     REACT_APP_AUTH_AUTHORITY: 'https://localhost/gitlab/',
@@ -162,25 +184,26 @@ if (typeof window !== 'undefined') {
 };
 ```
 
-And then update OAuth2 client application ID (`REACT_APP_CLIENT_ID`) with that
-of the newly registered OAuth2 application.
+And then update OAuth 2.0 client application ID (`REACT_APP_CLIENT_ID`) with that
+of the newly registered OAuth 2.0 application.
 
 ### Restart DTaaS Client Website
 
 To update the client website configuration, run
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.local up -d --force-recreate client
+docker compose -f compose.local.secure.yml --env-file .env.local up \
+  -d --force-recreate client
 ```
 
 ## Use
 
 The application will be accessible at:
-<https://localhost> from web browser.
-Sign in using your <https://localhost/gitlab> account.
+<https://localhost> from a web browser.
+Users can sign in using their <https://localhost/gitlab> account.
 
-All the functionality of DTaaS should be available to you
-through the single page client now.
+All the functionality of DTaaS should be available
+through the single page client.
 
 ## Limitations
 
@@ -199,7 +222,8 @@ docker compose -f compose.local.secure.yml --env-file .env.local down
 To restart only a specific container, for example `client`
 
 ```bash
-docker compose -f compose.local.secure.yml --env-file .env.local up -d --force-recreate client
+docker compose -f compose.local.secure.yml --env-file .env.local up \
+  -d --force-recreate client
 ```
 
 ## References
@@ -208,4 +232,4 @@ Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
 [ml-workspace](https://github.com/ml-tooling/ml-workspace),
 [reactjs](https://krify.co/about-reactjs/),
-[gitlab](https://gitlab.com)
+[GitLab](https://gitlab.com)

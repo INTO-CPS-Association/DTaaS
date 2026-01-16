@@ -1,29 +1,35 @@
 # Contributors Guide
 
-Welcome to the Digital Twin as a Service (DTaaS) contributing guide
+This guide provides an overview of the contribution workflow for the
+Digital Twin as a Service (DTaaS) project. Contributors are encouraged
+to review the [Code of Conduct](conduct.md) to ensure a respectful and
+collaborative community environment.
 
-Thank you for investing your time in contributing to our project!
-
-Read our [Code of Conduct](conduct.md) to keep our community
-approachable and respectable.
-
-In this guide you will get an overview of the contribution workflow
-from opening an issue, creating a PR, reviewing, and merging the PR.
+The following sections outline the contribution process, from opening
+an issue to creating a pull request (PR), conducting reviews, and merging
+the PR.
 
 ## Project Goals
 
-It helps development team members get familiar with
-the DTaaS project software design, and development processes.
-Please see developer-specific
-[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-developer-overview_march2024.pdf),
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/DTaaS-developer-overview_march2024.mp4),
-and [Research paper](https://arxiv.org/abs/2305.07244).
+The DTaaS platform aims to facilitate the creation, management, and execution
+of Digital Twins (DTs) through a service-oriented architecture that promotes
+reusability of DT assets [1]. This documentation assists development team
+members in understanding the DTaaS project software design and
+development processes.
+
+Additional resources include:
+
+- [Developer Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605_Developer.pdf)
+- [Video Presentation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605_Developer-recorded_web.mp4)
+- [Research Paper](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-journal-paper.pdf)
 
 ## :computer: Development Environment
 
-There is a devcontainer configuration (`.devcontainer/devcontainer.json`)
-for the project. Please use it to get a dockerized development environment.
-DevContainer is the easiest way to get started.
+A devcontainer configuration is provided in `.devcontainer/devcontainer.json`
+for the project. This configuration offers a dockerized development environment
+and represents the recommended approach for establishing a consistent
+development setup. DevContainer provides the most straightforward method
+for initializing the development environment.
 
 <!--
 TODO insert when githooks works
@@ -64,102 +70,112 @@ option with care.
 
 ## :building_construction: Development Workflow
 
-To manage collaboration by multiple developers on the software,
-a development workflow is in place. Each developer should follow these steps:
+A structured development workflow is employed to manage collaboration
+among multiple developers. Each contributor should adhere to the
+following procedure:
 
-1. Fork of the main repository into your github account.
-1. Setup
-   [Qlty](https://docs.qlty.sh/cloud/quickstart)
-   and
-   [Codecov](https://docs.codecov.com/docs/quick-start)
-   for your fork. The codecov does not require secret token
-   for public repositories.
-1. Use NodeJS 22 and Python 3.12 development environments
-1. Use
+1. Create a fork of the main repository into a personal GitHub account.
+1. Configure
+   [Qlty](https://docs.qlty.sh/cloud/quickstart),
+   [Codecov](https://docs.codecov.com/docs/quick-start), and
+   [SonarQube](https://docs.sonarsource.com/sonarqube-cloud/)
+   for the forked repository. Note that Codecov does not require
+   a secret token for public repositories.
+1. Utilize Node.js 24 and Python 3.12 development environments.
+1. Follow the
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
-   workflow.
-1. Work in your fork and open a PR from your working
-   branch to your `feature/distributed-demo` branch.
-   The PR will run all the github actions, qlty and codecov checks.
-1. Resolve all the issues identified in the previous step.
-1. Once changes are verified, a PR should be made to
-   the `feature/distributed-demo` branch of
-   the upstream
-   [DTaaS repository](https://github.com/into-cps-association/DTaaS).
-1. The PR will be merged after checks by either the
-   project administrators or the maintainers.
+   workflow methodology.
+1. Develop within the fork and create a PR from the working
+   branch to the `feature/distributed-demo` branch.
+   The PR triggers all GitHub Actions, Qlty, SonarQube, and Codecov checks.
+1. Address all issues identified during the automated checks.
+1. Upon successful verification, submit a PR to
+   the `feature/distributed-demo` branch of the upstream
+   [DTaaS repository](https://github.com/INTO-CPS-Association/DTaaS).
+1. The PR undergoes review and is merged by either
+   project administrators or maintainers.
 
-Remember that every PR should be meaningful and satisfies
-a well-defined user story or improve
-the code quality.
+Each PR should represent a meaningful contribution that satisfies
+either a well-defined user story or improves code quality.
 
-## ✨Coding Agents and Editors
+## ✨ Coding Agents and Editors
 
-We make extensive use of coding agents. A non-exhaustive list of
-usage scenarios are:
+The project makes extensive use of coding agents. The primary
+usage scenarios include:
 
-👍 co-development
-👍 code reviews
-👍 draft pull requests to prototype ideas
+👍 Co-development assistance
 
-This monorepo has [copilot instructions](.github/copilot-instructions.md)
-to inform github copilot about the project structure and software
+👍 Code review support
+
+👍 Draft pull requests for prototyping ideas
+
+This project is structured as a monorepo and includes
+[copilot instructions](copilot-instructions.md) that inform
+GitHub Copilot about the project structure and software
 development conventions.
 
-Most Code IDEs like VSCode and Cursor have native integration of
-coding agents. No extra-effort is necessary for integrating these
-LLM-driven development workflows. Please disclose the code generated
-by the coding agent, especially if it embeds significant
-programming logic.
+Modern Code IDEs such as VS Code and Cursor provide native integration
+with coding agents, requiring no additional configuration for
+LLM-driven development workflows. Contributors should disclose
+code generated by coding agents, particularly when such code
+embeds significant programming logic.
 
-Having said that, the following are a strict NO-NO:
+The following practices are strictly prohibited:
 
-👎Contributing unknown code
-👎Not knowing the generated code
+👎 Contributing unknown or unreviewed code
 
-**TLDR**: Know your contributions and do not outsource your thinking
-to coding agents.
+👎 Failing to understand the implications of generated code
+
+**Summary**: Contributors must fully understand their contributions
+and should not delegate critical thinking to coding agents.
 
 ## :eye: Code Quality
 
-The project code qualities are measured based on:
+Project code quality is assessed through the following mechanisms:
 
-- Linting issues identified by [qlty](https://docs.qlty.sh).
-  Please [install qlty](https://docs.qlty.sh/cli/quickstart) and use
-  the following command to check for code quality issues.
-  `qlty check --no-fail --sample 5 --no-formatters` and resolve
-  any issues identified by the **qlty**.
-  (Please note that qlty only checks the files that changed from
-  the default branch, i.e., `feature/distributed-demo`).
-- Test coverage report collected by
-  [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
-- Successful [github actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
+- **Static Analysis**: Linting issues are identified by [Qlty](https://docs.qlty.sh).
+  Installation of [Qlty CLI](https://docs.qlty.sh/cli/quickstart) is recommended.
+  Execute the command `qlty check --no-fail --sample 5 --no-formatters`
+  to identify code quality issues.
+  Note that Qlty only analyzes files that differ from
+  the default branch (`feature/distributed-demo`).
+- **Security Scans**: Code quality and security issues are identified by
+  [SonarQube](https://sonarcloud.io/project/overview?id=INTO-CPS-Association_DTaaS).
+- **Test Coverage**: Coverage reports are collected by
+  [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS).
+- **Continuous Integration**: All
+  [GitHub Actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
+  must complete successfully.
 
 ### Qlty
 
-Qlty performs static analysis, linting and style checks.
-Quality checks are performed by qlty are to ensure the best
-possible quality of code to add to our project.
+Qlty performs static analysis, linting, and style checks to ensure
+optimal code quality for project contributions.
 
-While any new issues introduced in your code would be
-shown in the PR page itself, to address any specific issue,
-you can visit the issues or code section of the qlty page.
+While newly introduced issues appear directly on the PR page,
+specific issues can be addressed by visiting the issues or code
+section of the Qlty dashboard.
 
-It is highly recommended that any code you add does
-not introduce new quality issues. If they are introduced,
-they should be fixed immediately using the appropriate suggestions
-from Qlty, or in worst case, adding a ignore flag
-(To be used with caution).
+Code contributions should not introduce new quality issues.
+If such issues arise, they should be resolved immediately using
+the appropriate suggestions from Qlty. In exceptional cases,
+an ignore flag may be added, though this approach should be
+employed sparingly.
 
 ### Codecov
 
-Codecov keeps track of the test coverage for the entire project.
-For information about testing and workflow related to that,
-please see the [testing page](testing/intro.md).
+Codecov maintains test coverage metrics for the entire project.
+For detailed information about testing practices and workflows,
+refer to the [testing documentation](testing/intro.md).
 
-### Github Actions
+### GitHub Actions
 
-The project has multiple
-[github actions](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/.github/workflows)
-defined. All PRs and direct code commits must have successful
-status on github actions.
+The project defines multiple
+[GitHub Actions](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/.github/workflows).
+All pull requests and direct commits must achieve successful
+status on all GitHub Actions.
+
+## References
+
+[1] Talasila, Prasad, et al. "Composable digital twins on Digital Twin as
+    a Service platform." Simulation 101.3 (2025): 287-311.

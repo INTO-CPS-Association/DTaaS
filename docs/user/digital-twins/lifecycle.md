@@ -1,13 +1,13 @@
 # :recycle: Digital Twin Lifecycle
 
-The physical products in the real world have product lifecycle.
-A simplified four-stage product life is illustrated here.
+Physical products in the real world undergo a product lifecycle.
+A simplified four-stage product lifecycle is illustrated here.
 
-A digital twin tracking the physical products (twins) need
-to track and evolve in conjunction with the corresponding
+A digital twin tracking physical products (twins) must
+evolve in conjunction with the corresponding
 physical twin.
 
-The possible activities undertaken in each lifecycle phases
+The possible activities undertaken in each lifecycle phase
 are illustrated in the figure.
 
 ![DT-PT Lifecycle](lifecycle-four-stages.png)
@@ -19,45 +19,45 @@ pp. 1785-1824. ISSN 0018-9219.)
 
 ## Lifecycle Phases
 
-The four phase lifecycle has been extended to a lifecycle with
+The four-phase lifecycle has been extended to a lifecycle with
 eight phases. The new phase names and the typical activities
-undertaken in each phase are outlined in this section.
+undertaken in each phase are outlined in this section[1].
 
  A DT lifecycle consists of **explore, create, execute, save, analyse, evolve**
  and **terminate** phases.
 
-| Phase | Main Activities |
-|:----|:----|
-| **explore** | selection of suitable assets based on the user needs and checking their compatibility for the purposes of creating a DT. |
-| **create** | specification of DT configuration. If DT already exists, there is no creation phase at the time of reuse. |
-| **execute** | automated / manual execution of a DT based on its configuration. The DT configuration must checked before starting the execution phase. |
-| **analyse** | checking the outputs of a DT and making a decision. The outputs can be text files, or visual dashboards. |
-| **evolve** | reconfigure DT primarily based on analysis. |
-| **save** | involves saving the state of DT to enable future recovery. |
-| **terminate** | stop the execution of DT. |
+| Phase         | Main Activities                                                                                                                         |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **explore**   | Selection of suitable assets based on user requirements and verification of their compatibility for DT creation.                        |
+| **create**    | Specification of DT configuration. For existing DTs, no creation phase is required at the time of reuse.                                |
+| **execute**   | Automated or manual execution of a DT based on its configuration. The DT configuration must be verified before starting execution.      |
+| **analyse**   | Examination of DT outputs and decision-making. Outputs may include text files or visual dashboards.                                     |
+| **evolve**    | Reconfiguration of DT primarily based on analysis results.                                                                              |
+| **save**      | Preservation of DT state to enable future recovery.                                                                                     |
+| **terminate** | Cessation of DT execution.                                                                                                              |
 
-A digital twin faithfully tracking the physical twin lifecycle will have to
-support all the phases. It is also possible for digital twin engineers to add
-more phases to digital they are developing. Thus it is important for
-the DTaaS software platform needs to accommodate needs of different DTs.
+A digital twin faithfully tracking the physical twin lifecycle must
+support all the phases. Digital twin engineers may also add
+additional phases to their implementations. Consequently, the
+DTaaS platform is designed to accommodate the needs of diverse DTs.
 
 A potential linear representation of the tasks undertaken in
-a digital twin lifecycle are shown here.
+a digital twin lifecycle is shown here.
 
 ![Digital Twin Lifecycle](lifecycle.png)
 
-Again this is only a one possible pathway. Users are at liberty to
-alter the sequence of steps.
+This representation shows only one possible pathway. The sequence of steps
+may be altered as needed.
 
-It is possible to map the lifecycle phases identified so far with
+It is possible to map the lifecycle phases to
 the <font color="orange"> **Build-Use-Share**</font> approach
-of the DTaaS software platform.
+of the DTaaS platform.
 
 ![DT Lifecycle and Build-Use-Share](build-use-share.png)
 
-Even though not mandatory, having a matching coding structure makes it easy to
-for users to create and manage their DTs within the DTaaS.
-It is recommended to have the following structure:
+Although not mandatory, maintaining a matching code structure facilitates
+DT creation and management within the DTaaS platform.
+The following structure is recommended:
 
 ```text
 workspace/
@@ -72,18 +72,18 @@ workspace/
         terminate
 ```
 
-A dedicated program exists for each phase of DT lifecycle. Each program
+A dedicated program exists for each phase of the DT lifecycle. Each program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
 
-:fontawesome-solid-circle-info: **The recommended way to implement lifecycle**
-**phases within DTaaS is to create scripts. These scripts can be as simple**
-**as shell scripts.**
+:fontawesome-solid-circle-info: **The recommended approach for implementing lifecycle**
+**phases within DTaaS is to create scripts. These scripts can be implemented as**
+**shell scripts.**
 
 ## Example Lifecycle Scripts
 
-Here are the example programs / scripts to manage three phases in
-the lifecycle of **mass-spring-damper DT**.
+The following example programs/scripts demonstrate management of three phases in
+the lifecycle of the **mass-spring-damper DT**.
 
 ```bash title="lifecycle/execute"
 #!/bin/bash
@@ -95,12 +95,12 @@ java -jar /workspace/common/tools/maestro-2.3.0-jar-with-dependencies.jar \
     output-dir>debug.log 2>&1
 ```
 
-The execute phases uses the DT configuration, FMU models and Maestro tool
+The execute phase utilizes the DT configuration, FMU models, and Maestro tool
 to execute the digital twin. The script also stores the output of
-cosimulation in `/workspace/data/mass-spring-damper/output`.
+co-simulation in `/workspace/data/mass-spring-damper/output`.
 
-It is possible for a DT not to support a specific lifecycle phase.
-This intention can be specified with an empty script and a helpful message
+A DT may not support a specific lifecycle phase.
+This intention can be expressed with an empty script and a helpful message
 if deemed necessary.
 
 ```bash title="lifecycle/analyze"
@@ -108,11 +108,16 @@ if deemed necessary.
 printf "operation is not supported on this digital twin"
 ```
 
-The lifecycle programs can call other programs in the code base.
-In the case of `lifecycle/terminate` program, it is calling another
-script to do the necessary job.
+The lifecycle programs can invoke other programs in the codebase.
+In the case of the `lifecycle/terminate` program, it calls another
+script to perform the necessary operations.
 
 ```bash title="lifecycle/terminate"
 #!/bin/bash
 lifecycle/clean
 ```
+
+## References
+
+[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
+     as a Service platform." Simulation 101.3 (2025): 287-311.

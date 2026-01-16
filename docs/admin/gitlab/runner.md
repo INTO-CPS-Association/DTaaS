@@ -1,8 +1,14 @@
 # GitLab Runner Integration
 
-This document outlines the steps needed to create a Docker container named
-`gitlab-runner` which will contain a single runner that will be responsible for
-the execution of Digital Twins. There are two installation scenarios:
+This document outlines the steps needed to create a `gitlab-runner`
+that will be responsible for the execution of Digital Twins. Many such
+runners can be installaed and linked with the integrated GitLab.
+
+An illustration of the intended installation setup is shown below.
+
+![GitLab Runner Integration](gitlab-integrated-runner.png))
+
+There are two installation scenarios:
 
 1. __Localhost Installation__ - You are using the integrated runner locally with
    a GitLab instance hosted at `https://localhost/gitlab`.
@@ -18,21 +24,21 @@ execute digital twins from the Digital Twins Preview Page.
 
 A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
 For an explanation of how to set up a GitLab instance that integrates with a
-DTaaS application, refer to [our GitLab instance document](./index.md)
-and [our GitLab integration guide](./integration.md).
+DTaaS platform, refer to [our GitLab instance document](index.md)
+and [our GitLab integration guide](integration.md).
 
-The rest of this document assumes you have a running DTaaS application with a
+The rest of this document assumes you have a running DTaaS platform with a
 GitLab instance running.
 
 ## Runner Scopes
 
 A GitLab Runner can be configured for three different scopes:
 
-| Runner Scope    | Description |
-|-----------------|-------------|
-| Instance Runner | Available to all groups and projects in a GitLab instance. |
-| Group Runner    | Available to all projects and subgroups in a group. |
-| Project Runner  | Associated with one specific project. |
+| Runner Scope      | Description                                                |
+| ----------------- | ---------------------------------------------------------- |
+| Instance Runner   | Available to all groups and projects in a GitLab instance. |
+| Group Runner      | Available to all projects and subgroups in a group.        |
+| Project Runner    | Associated with one specific project.                      |
 
 We suggest creating __instance runners__ as they are the most straightforward, but
 any type will work. More about these three types can be found on
@@ -44,11 +50,11 @@ First, we will obtain the token necessary to register the runner for the GitLab
 instance. Open your GitLab instance (remote or local) and depending on your
 choice of runner scope, follow the steps given below:
 
-| Runner Scope    | Steps |
-|-----------------|-------|
-| Instance Runner |1. On the __Admin__ dashboard, navigate to __CI/CD > Runners__.<br>2. Select __New instance runner__.|
-| Group Runner    |1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__.|
-| Project Runner  |1. On the __DTaaS__ group page, select the project named after your GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.|
+| Runner Scope      | Steps                                                                                                                                                                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Instance Runner   | 1. On the __Admin__ dashboard, navigate to __CI/CD > Runners__.<br>2. Select __New instance runner__.                                                                                                                                                           |
+| Group Runner      | 1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__. |
+| Project Runner    | 1. On the __DTaaS__ group page, select the project named after your GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.                                                                                     |
 
 For any scope you have chosen, you will be directed to a page to create a
 runner:
@@ -71,7 +77,7 @@ configurations settings:
 1. __Localhost Installation__ - uses `deploy/docker/.env.local`
 1. __Server Installation__ - uses `deploy/docker/.env.server`
 
-These files are integral to running the DTaaS application, so it will be
+These files are integral to running the DTaaS platform, so it will be
 assumed that you have already configured these.
 
 We need to register the runner with the GitLab instance so that they may
@@ -113,15 +119,19 @@ container respectively, depending on your installation scenario:
 1. Localhost Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local up -d
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local down
+    docker compose -f deploy/services/runner/compose.runner.local.yml \
+      --env-file deploy/docker/.env.local up -d
+    docker compose -f deploy/services/runner/compose.runner.local.yml \
+      --env-file deploy/docker/.env.local down
     ```
 
 1. Server Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server up -d
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server down
+    docker compose -f deploy/services/runner/compose.runner.server.yml \
+      --env-file deploy/docker/.env.server up -d
+    docker compose -f deploy/services/runner/compose.runner.server.yml \
+      --env-file deploy/docker/.env.server down
     ```
 
 Once the container starts, the runner within it will run automatically. You can

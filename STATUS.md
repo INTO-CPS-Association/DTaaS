@@ -1,6 +1,6 @@
 # Project Quality Checks
 
-[![Maintainability](https://qlty.sh/badges/71e237c5-13aa-40c5-aac8-f0187d3edde8/maintainability.svg)](https://qlty.sh/gh/INTO-CPS-Association/projects/DTaaS)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=INTO-CPS-Association_DTaaS&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=INTO-CPS-Association_DTaaS)
 [![codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS/branch/feature/distributed-demo/graph/badge.svg?token=18F1J5IIO5)](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
 
 [![Client](https://github.com/into-cps-association/dtaas/actions/workflows/client.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/client.yml/badge.svg)

@@ -1,6 +1,6 @@
 # Install DTaaS on localhost (GUI)
 
-The installation instructions provided in this README are
+The installation instructions provided in this document are
 ideal for running the DTaaS on localhost via a Graphical User
 Interface (GUI).
 This installation is ideal for single users intending to use
@@ -11,7 +11,7 @@ DTaaS on their own computers.
 An illustration of the docker containers used and the authorization
 setup is shown here.
 
-![Traefik OAuth](../localhost.png)
+![Traefik OAuth 2.0](../localhost.png)
 
 ## Requirements
 
@@ -31,23 +31,23 @@ The installation requirements to run this docker version of the DTaaS are:
 
 ## Clone Codebase
 
-If you have not cloned the DTaaS git repository, cloning would be
+If the DTaaS git repository has not been cloned, cloning is
 the first step.
-In case you already have the codebase, you can skip the cloning step.
-To clone, do:
+If the codebase already exists, the cloning step can be skipped.
+To clone:
 
 ```bash
-git clone https://github.com/into-cps-association/DTaaS.git
+git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd DTaaS/deploy/services/gitlab
 ```
 
 In this guide we will assume the contents of the zip file have been extracted
-to the directory: `/home/DTaaS`.
+to the directory: `/Users/username/DTaaS`.
 
 !!! tip
     The path given here is for Linux OS.
        It can be Windows compatible as well, for example: `C:\\DTaaS`. Make
-       sure to use this path and format in place of `/home/DTaaS` in this
+       sure to use this path and format in place of `/Users/username/DTaaS` in this
        guide.
 
 ## Starting Portainer
@@ -64,7 +64,9 @@ Powershell on Windows, etc) and copy the following commands into it:
 
 ```bash
 docker volume create portainer_data
-docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:2.21.4
+docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data portainer/portainer-ce:2.21.4
 ```
 
 This will start the Portainer server on your system, which will host its
@@ -92,7 +94,7 @@ You may use your file explorer or an equivalent application to duplicate the
 the selected username registered on <https://gitlab.com>.
 
 ALternatively, you may execute the following commands from the top-level
-directory of the DTaaS project.
+directory of the DTaaS.
 
 ```bash
 cp -R files/user1 files/username
@@ -121,10 +123,10 @@ The `.env.local` file contains environment variables that are used by the
 compose file. Portainer allows you to modify them as shown in the screenshot
 above, here is a summary:
 
-  | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-  | username1 | 'user1' | Your gitlab username |
+| URL Path      | Example Value           | Explanation                                                                        |
+| :------------ | :---------------------- | :--------------------------------------------------------------------------------- |
+| DTAAS_DIR     | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+| username1     | 'user1'                 | Your gitlab username                                                               |
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->

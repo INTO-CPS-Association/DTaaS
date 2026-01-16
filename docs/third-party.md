@@ -1,42 +1,41 @@
 # Third Party Software
 
-The DTaaS software platform uses many third-party software.
+The DTaaS platform utilizes numerous third-party software components.
 These software components have their own licenses.
 
 ## User Installations
 
-The list of software included with DTaaS installation scripts are:
+The software included with the DTaaS installation scripts is listed below:
 
 | Software Package                                                         | Usage     | License                                                                   |
 | :----------------------------------------------------------------------- | :-------- | :------------------------------------------------------------------------ |
-| [docker v24.0](https://github.com/moby/moby)                             | mandatory | Apache 2.0                                                                |
-| [ml-workspace-minimal v0.13](https://github.com/ml-tooling/ml-workspace) | mandatory | Apache 2.0                                                                |
-| [nodejs v20.10](https://nodejs.org/en)                                   | mandatory | [Custom - Modified MIT](https://github.com/nodejs/node/blob/main/LICENSE) |
-| [npm v10.2](https://npmjs.com)                                           | mandatory | Artistic License 2.0                                                      |
+| [Docker CE](https://github.com/moby/moby)                                | mandatory | Apache 2.0 License                                                        |
+| [ml-workspace-minimal](https://github.com/ml-tooling/ml-workspace)       | mandatory | Apache 2.0 License                                                        |
+| [NodeJS](https://nodejs.org/en)                                          | mandatory | [Custom - Modified MIT](https://github.com/nodejs/node/blob/main/LICENSE) |
+| [npm](https://npmjs.com)                                                 | mandatory | Artistic License 2.0                                                      |
 | [serve](https://github.com/vercel/serve)                                 | mandatory | MIT                                                                       |
-| [Træfik v2.10](https://github.com/traefik/traefik)                       | mandatory | MIT                                                                       |
-| [yarn v1.22](https://yarnpkg.com/)                                       | mandatory | BSD 2-Clause                                                              |
-| [eclipse-mosquitto v2](https://github.com/eclipse/mosquitto)             | optional  | Eclipse Public License-2.0                                                |
-| [gitlab-ce v16.4](https://docs.gitlab.com/)                              | optional  | MIT                                                                       |
-| [Grafana v10.1](https://github.com/grafana/grafana)                      | optional  | GNU Affero General Public (AGPL) License v3.0                             |
-| [InfluxDB v2.7](https://github.com/influxdata/influxdb)                  | optional  | Apache2, MIT                                                              |
-| [Mongodb v7.0](https://github.com/mongodb/mongo)                         | optional  | AGPL License and Server Side Public License (SSPL) v1                     |
-| [Tabbitmq v3-management](https://github.com/rabbitmq/rabbitmq-server)    | optional  | Mozilla Public License                                                    |
-| [Telegraf v1.28](https://github.com/influxdata/telegraf)                 | optional  | MIT                                                                       |
+| [Træfik](https://github.com/traefik/traefik)                             | mandatory | MIT License                                                               |
+| [Yarn](https://yarnpkg.com/)                                             | mandatory | BSD 2-Clause License                                                      |
+| [Eclipse Mosquitto](https://github.com/eclipse/mosquitto)                | optional  | Eclipse Public License-2.0                                                |
+| [GitLab CE](https://docs.gitlab.com/)                                    | optional  | MIT License                                                               |
+| [Grafana](https://github.com/grafana/grafana)                            | optional  | GNU Affero General Public (AGPL) License v3.0                             |
+| [InfluxDB](https://github.com/influxdata/influxdb)                       | optional  | Apache 2.0 License, MIT  License                                          |
+| [Mongodb](https://github.com/mongodb/mongo)                              | optional  | AGPL License and Server Side Public License (SSPL) v1                     |
+| [RabbitMQ](https://github.com/rabbitmq/rabbitmq-server)                  | optional  | Mozilla Public License                                                    |
+| [Telegraf v1.28](https://github.com/influxdata/telegraf)                 | optional  | MIT License                                                               |
+| [ThingsBoard](https://github.com/thingsboard/thingsboard)                | optional  | PostgreSQL License                                                        |
 
 ## Development Environments
 
-Inaddition to all the software included in user installations,
+In addition to all software included in user installations,
 the DTaaS development environments may use the following
 additional software packages.
 
-| Software Package                                                    | Usage     | License        |
-| :------------------------------------------------------------------ | :-------- | :------------- |
-| [Material for mkdocs](https://github.com/squidfunk/mkdocs-material) | mandatory | MIT            |
-| [Docker-compose v2.20](https://github.com/docker/compose)           | optional  | Apache 2.0     |
-| [Jupyter Lab](https://github.com/jupyterlab/jupyterlab)             | optional  | 3-Clause BSD   |
-| [Microk8s v1.27](https://github.com/canonical/microk8s)             | optional  | Apache 2.0     |
-| [Openssl](https://www.openssl.org)                                  | optional  | Custom License |
+| Software Package                                                    | Usage     | License              |
+| :------------------------------------------------------------------ | :-------- | :------------------- |
+| [Material for mkdocs](https://github.com/squidfunk/mkdocs-material) | mandatory | MIT License          |
+| [Jupyter Lab](https://github.com/jupyterlab/jupyterlab)             | optional  | BSD 3-Clause License |
+| [Microk8s v1.27](https://github.com/canonical/microk8s)             | optional  | Apache 2.0 License   |
 
 ## Package Dependencies
 

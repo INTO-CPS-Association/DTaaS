@@ -30,18 +30,18 @@ A diagram depicting the logical software structure of the example can be seen be
 
 ![DT structure](dt-structure.png)
 
-## Digital Twin configuration
+## Digital Twin Configuration
 
 The example uses the following assets:
 
-| Asset Type | Names of Assets | Visibility | Reuse in other Examples |
-|:---|:---|:---|:---|
-| Models | anomaly_detection.fmu | Private | No |
-|        | energy_saver.fmu      | Private | No |
-|        | Source.fmu            | Private | No |
-|        | Watcher.fmu           | Private | No |
-| Specification | safe-operation.smv | Private | No |
-| Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
+| Asset Type    | Names of Assets                         | Visibility | Reuse in other Examples |
+| :------------ | :-------------------------------------- | :--------- | :---------------------- |
+| Models        | anomaly_detection.fmu                   | Private    | No                      |
+|               | energy_saver.fmu                        | Private    | No                      |
+|               | Source.fmu                              | Private    | No                      |
+|               | Watcher.fmu                             | Private    | No                      |
+| Specification | safe-operation.smv                      | Private    | No                      |
+| Tool          | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The _safe-operation.smv_ file contains the default monitored specification as
 described in the [Simulated scenario section](#simulated-scenario).
@@ -50,11 +50,11 @@ described in the [Simulated scenario section](#simulated-scenario).
 
 The lifecycle phases for this example include:
 
-| Lifecycle Phase    | Completed Tasks |
-| -------- | ------- |
-| Create  | Installs Java Development Kit for Maestro tool<br>Generates and compiles the monitor FMU    |
-| Execute | Produces and stores output in data/incubator-NuRV-monitor-validation/output directory|
-| Clean   | Clears run logs and outputs |
+| Lifecycle Phase | Completed Tasks                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| Create          | Installs Java Development Kit for Maestro tool<br>Generates and compiles the monitor FMU |
+| Execute         | Produces and stores output in data/incubator-NuRV-monitor-validation/output directory    |
+| Clean           | Clears run logs and outputs                                                              |
 
 If required, change the execute permissions of lifecycle scripts you need to execute.
 This can be done using the following command

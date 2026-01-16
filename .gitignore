@@ -239,5 +239,6 @@ deploy/services/cli/compose.thingsboard.secure.yml
 deploy/services/cli/data
 deploy/services/cli/config
 deploy/services/cli/test-output
-deploy/services/cli/log
 
+# local research papers
+.research-papers

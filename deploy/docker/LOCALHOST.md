@@ -55,8 +55,8 @@ It contains the following environment variables.
 Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
-  |:------------|:---------------|:---------------|
-  | DTAAS_DIR | '/home/Desktop/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
+  | :------------ | :--------------- | :--------------- |
+  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | username1 | 'user1' | Your gitlab username |
 
 :clipboard: Important points to note:

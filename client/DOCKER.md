@@ -7,8 +7,8 @@ application for the DTaaS.
 
 ## Authorization
 
-The react client website uses OAuth authorization.
-The [authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
+The react client website uses OAuth authorization. The
+[authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
 provides details on setting up OAuth authorization for
 the client application.
 
@@ -27,13 +27,13 @@ services:
     volumes:
       - ./config.js:/dtaas/client/build/env.js
     ports:
-      - "4000:4000"
+      - '4000:4000'
 ```
 
 ### Create Configuration
 
-The client application requires configuration.
-See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+The client application requires configuration. See the
+[config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
 for an explanation of client configuration.
 
 The docker version of client application uses configuration
@@ -54,6 +54,8 @@ if (typeof window !== 'undefined') {
     REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
     REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
     REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
+    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
+    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
