@@ -86,7 +86,7 @@ The installation instructions are given separately for each vagrant machine.
 
 ### Launch DTaaS Platform Default Services
 
-Follow the installation guide for [services](../services.md)
+Follow the installation guide for [services](../services/terminal-install.md)
 to install the DTaaS platform services.
 
 After the services are up and running,

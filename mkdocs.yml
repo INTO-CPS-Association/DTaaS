@@ -81,7 +81,9 @@ nav:
           - Base Box: admin/vagrant/base-box.md
           - Single Machine: admin/vagrant/single-machine.md
           - Two Machines: admin/vagrant/two-machines.md
-        - Platform Services: admin/services.md
+        - Platform Services:
+          - CLI: admin/services/cli.md
+          - Manual Install: admin/services/terminal-install.md
       - Integrated Gitlab:
         - Installation: admin/gitlab/index.md
         - Integration: admin/gitlab/integration.md

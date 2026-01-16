@@ -45,7 +45,7 @@ and provide raw TCP/UDP access to these services from the Internet.
 
 There are two additional directories, namely **GitLab** and **runner**.
 These directories are related to installation of
-[integrated GitLab](gitlab/index.md) and its [runner](gitlab/runner.md).
+[integrated GitLab](../gitlab/index.md) and its [runner](../gitlab/runner.md).
 The instructions in this page are not related to **GitLab** and **runner**
 installation.
 
