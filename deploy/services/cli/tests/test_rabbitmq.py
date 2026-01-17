@@ -136,7 +136,10 @@ def test_create_users_from_credentials_failure():
 
 def test_setup_rabbitmq_users_success(mock_process_credentials):
     """Test successful RabbitMQ users setup"""
-    mock_process_credentials.return_value = (True, "RabbitMQ users created successfully")
+    mock_process_credentials.return_value = (
+        True,
+        "RabbitMQ users created successfully",
+    )
     success, message = setup_rabbitmq_users()
     assert success is True
     assert "RabbitMQ users created successfully" in message
@@ -144,7 +147,10 @@ def test_setup_rabbitmq_users_success(mock_process_credentials):
 
 def test_setup_rabbitmq_users_file_not_found(mock_process_credentials):
     """Test RabbitMQ users setup when credentials file not found"""
-    mock_process_credentials.return_value = (False, "Credentials file not found: /test/config/credentials.csv")
+    mock_process_credentials.return_value = (
+        False,
+        "Credentials file not found: /test/config/credentials.csv",
+    )
     success, message = setup_rabbitmq_users()
     assert success is False
     assert "Credentials file not found" in message
@@ -160,7 +166,10 @@ def test_setup_rabbitmq_users_creation_fails(mock_process_credentials):
 
 def test_setup_rabbitmq_users_os_error(mock_process_credentials):
     """Test RabbitMQ users setup with OSError"""
-    mock_process_credentials.return_value = (False, "Error adding RabbitMQ users: File error")
+    mock_process_credentials.return_value = (
+        False,
+        "Error adding RabbitMQ users: File error",
+    )
     success, message = setup_rabbitmq_users()
     assert success is False
     assert "Error adding RabbitMQ users" in message
@@ -168,7 +177,10 @@ def test_setup_rabbitmq_users_os_error(mock_process_credentials):
 
 def test_setup_rabbitmq_users_key_error(mock_process_credentials):
     """Test RabbitMQ users setup with KeyError"""
-    mock_process_credentials.return_value = (False, "Error adding RabbitMQ users: 'username'")
+    mock_process_credentials.return_value = (
+        False,
+        "Error adding RabbitMQ users: 'username'",
+    )
     success, message = setup_rabbitmq_users()
     assert success is False
     assert "Error adding RabbitMQ users" in message

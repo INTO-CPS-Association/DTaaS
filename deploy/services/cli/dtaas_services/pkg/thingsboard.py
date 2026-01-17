@@ -66,6 +66,23 @@ class _TenantAdminContext:
         self.admin_credentials = None
 
 
+def _create_tenant_api_call(
+    ctx: _AdminContext, user_payload: dict
+) -> Tuple[requests.Response | None, str]:
+    """Make API call to create tenant admin user."""
+    try:
+        resp = ctx.session.post(
+            f"{ctx.base_url}/api/user",
+            params={"sendActivationMail": "false"},
+            json=user_payload,
+            timeout=10,
+            verify=True,
+        )
+        return resp, ""
+    except requests.exceptions.RequestException as e:
+        return None, f"Network error creating tenant admin: {e}"
+
+
 def _create_tenant_admin_user(
     ctx: _AdminContext, tenant_id: str
 ) -> Tuple[str | None, str]:
@@ -76,28 +93,20 @@ def _create_tenant_admin_user(
         "authority": "TENANT_ADMIN",
         "tenantId": {"id": tenant_id, "entityType": "TENANT"},
     }
+
+    resp, error_msg = _create_tenant_api_call(ctx, user_payload)
+    if not resp:
+        return None, error_msg
+
+    if resp.status_code not in (200, 201):
+        return None, f"Failed to create tenant admin: {resp.status_code}"
+
     try:
-        resp = ctx.session.post(
-            f"{ctx.base_url}/api/user",
-            params={"sendActivationMail": "false"},
-            json=user_payload,
-            timeout=10,
-            verify=True,
-        )
-
-        if resp.status_code not in (200, 201):
-            return None, f"Failed to create tenant admin: {resp.status_code}"
-
         user = resp.json()
         user_id = user.get("id", {}).get("id")
         return (user_id, "") if user_id else (None, "Created user response missing id")
-    except (requests.exceptions.RequestException,) as e:
-        error_type = (
-            "Invalid JSON response"
-            if isinstance(e, requests.exceptions.JSONDecodeError)
-            else "Network error"
-        )
-        return None, f"{error_type} creating tenant admin: {e}"
+    except requests.exceptions.JSONDecodeError as e:
+        return None, f"Invalid JSON response creating tenant admin: {e}"
 
 
 def _get_activation_token(

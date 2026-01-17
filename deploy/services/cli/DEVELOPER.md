@@ -169,14 +169,17 @@ The package uses a modular architecture where each service has its own module:
   * `_get_or_create_tenant()`: Get existing tenant or create a new one
 
 * **`thingsboard_permissions.py`**: ThingsBoard certificates and permissions setup:
-  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates and permissions
+  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates
+  and permissions
   * `_setup_postgres_certs()`: Set up PostgreSQL certificates with proper permissions
   * `_setup_thingsboard_certs()`: Set up ThingsBoard certificates with proper permissions
-  * `_setup_thingsboard_directories()`: Set up ThingsBoard data and log directories with proper ownership
+  * `_setup_thingsboard_directories()`: Set up ThingsBoard data and log directories
+  with proper ownership
   * `_verify_certificates_exist()`: Verify normalized certificates exist
   * `_set_directory_ownership()`: Set ownership for directory and all its contents
   * `_copy_service_cert_files()`: Copy service certificate files
-  * `_set_service_cert_file_permissions()`: Set permissions on service certificate files
+  * `_set_service_cert_file_permissions()`: Set permissions on
+  service certificate files
 
 ### Shared Utilities
 

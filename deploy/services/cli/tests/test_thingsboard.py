@@ -362,5 +362,3 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     ):
         success, _ = th.setup_thingsboard_users()
         assert success is False
-
-

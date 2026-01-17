@@ -393,7 +393,10 @@ def test_execute_setup_steps_setup_orgs_fails():
 
 def test_setup_influxdb_users_success(mock_process_credentials):
     """Test successful InfluxDB users setup"""
-    mock_process_credentials.return_value = (True, "InfluxDB users created successfully")
+    mock_process_credentials.return_value = (
+        True,
+        "InfluxDB users created successfully",
+    )
     success, message = setup_influxdb_users()
     assert success is True
     assert "InfluxDB users created successfully" in message
@@ -401,7 +404,10 @@ def test_setup_influxdb_users_success(mock_process_credentials):
 
 def test_setup_influxdb_users_file_not_found(mock_process_credentials):
     """Test InfluxDB users setup when credentials file not found"""
-    mock_process_credentials.return_value = (False, "Credentials file not found: /test/config/credentials.csv")
+    mock_process_credentials.return_value = (
+        False,
+        "Credentials file not found: /test/config/credentials.csv",
+    )
     success, message = setup_influxdb_users()
     assert success is False
     assert "Credentials file not found" in message
@@ -417,7 +423,10 @@ def test_setup_influxdb_users_setup_fails(mock_process_credentials):
 
 def test_setup_influxdb_users_os_error(mock_process_credentials):
     """Test InfluxDB users setup with OSError"""
-    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: File error")
+    mock_process_credentials.return_value = (
+        False,
+        "Error adding InfluxDB users: File error",
+    )
     success, message = setup_influxdb_users()
     assert success is False
     assert "Error adding InfluxDB users" in message
@@ -425,7 +434,10 @@ def test_setup_influxdb_users_os_error(mock_process_credentials):
 
 def test_setup_influxdb_users_value_error(mock_process_credentials):
     """Test InfluxDB users setup with ValueError"""
-    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: Value error")
+    mock_process_credentials.return_value = (
+        False,
+        "Error adding InfluxDB users: Value error",
+    )
     success, message = setup_influxdb_users()
     assert success is False
     assert "Error adding InfluxDB users" in message
@@ -433,7 +445,10 @@ def test_setup_influxdb_users_value_error(mock_process_credentials):
 
 def test_setup_influxdb_users_key_error(mock_process_credentials):
     """Test InfluxDB users setup with KeyError"""
-    mock_process_credentials.return_value = (False, "Error adding InfluxDB users: 'username'")
+    mock_process_credentials.return_value = (
+        False,
+        "Error adding InfluxDB users: 'username'",
+    )
     success, message = setup_influxdb_users()
     assert success is False
     assert "Error adding InfluxDB users" in message
