@@ -81,7 +81,9 @@ cli/
 │       ├── mongodb.py      # MongoDB certificate and permission setup
 │       ├── influxdb.py     # InfluxDB certificate, permission, and user management
 │       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
-│       ├── thingsboard.py  # ThingsBoard setup and installation
+│       ├── thingsboard.py  # ThingsBoard admin user management and credentials processing
+│       ├── thingsboard_users.py  # ThingsBoard authentication, password, and tenant management
+│       ├── thingsboard_permissions.py  # ThingsBoard certificates and permissions setup
 │       ├── formatter.py    # Output formatting utilities
 │       ├── template.py     # Project structure and template file management
 │       └── utils.py        # Shared utilities (Docker, file operations)
@@ -94,6 +96,9 @@ cli/
     ├── test_formatter.py   # Output formatting tests
     ├── test_template.py    # Project structure and template tests
     ├── test_utils.py       # Utility functions tests
+    ├── test_thingsboard.py # ThingsBoard admin user management tests
+    ├── test_thingsboard_users.py  # ThingsBoard authentication and tenant tests
+    ├── test_thingsboard_permissions.py  # ThingsBoard certificates and permissions tests
     └── system_tests/       # End-to-end system tests
         └── test_services_commands.py  # Real CLI workflow tests
 ```
@@ -137,13 +142,41 @@ The package uses a modular architecture where each service has its own module:
   * `setup_rabbitmq_users()`: Create users and vhosts (user-specific only)
   * `_add_rabbitmq_user()`: Add a user to RabbitMQ with vhost and permissions
 
-* **`thingsboard.py`**: ThingsBoard setup and installation:
+* **`thingsboard.py`**: ThingsBoard admin user management and credentials processing:
+  * `setup_thingsboard_users()`: Create tenants and tenant admins from credentials.csv
+  * `thingsboard_configure()`: Main configuration function for user setup
+  * `_check_admin_exists()`: Check if admin user already exists
+  * `_create_tenant_admin_user()`: Create tenant admin user
+  * `_get_activation_token()`: Get activation token for user
+  * `_activate_user()`: Activate user with password
+  * `_create_and_activate_admin()`: Create and activate admin user
+  * `_ensure_tenant_admin()`: Ensure tenant admin exists
+  * `_create_tenant_and_admin()`: Create tenant and its admin user
+  * `_process_credentials_row()`: Process a single credential row from CSV
+  * `_process_credentials_file()`: Process credentials file and create tenants
+
+* **`thingsboard_users.py`**: ThingsBoard authentication, password, and tenant management:
+  * `build_base_url()`: Build ThingsBoard base URL from environment variables
   * `login()`: Authenticate with ThingsBoard API
   * `change_sysadmin_password_if_needed()`: Update default sysadmin password
-  * `setup_thingsboard_users()`: Create tenants and tenant admins from credentials.csv
-  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates
-    and permissions
-  * `thingsboard_configure()`: Main configuration function for user setup
+  * `_check_password_configured()`: Check if new password is configured
+  * `_try_login_with_new_password()`: Try logging in with new password
+  * `_update_session_token()`: Update session with authorization token
+  * `_change_password_api_call()`: Call API to change password
+  * `_perform_password_change()`: Perform the password change operation
+  * `_check_existing_tenant()`: Check if tenant already exists
+  * `_create_new_tenant()`: Create a new tenant
+  * `_get_or_create_tenant()`: Get existing tenant or create a new one
+
+* **`thingsboard_permissions.py`**: ThingsBoard certificates and permissions setup:
+  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates and permissions
+  * `_setup_postgres_certs()`: Set up PostgreSQL certificates with proper permissions
+  * `_setup_thingsboard_certs()`: Set up ThingsBoard certificates with proper permissions
+  * `_setup_thingsboard_directories()`: Set up ThingsBoard data and log directories with proper ownership
+  * `_verify_certificates_exist()`: Verify normalized certificates exist
+  * `_set_directory_ownership()`: Set ownership for directory and all its contents
+  * `_copy_service_cert_files()`: Copy service certificate files
+  * `_set_service_cert_file_permissions()`: Set permissions on service certificate files
 
 ### Shared Utilities
 

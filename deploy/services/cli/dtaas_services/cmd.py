@@ -12,7 +12,7 @@ from .pkg.cert import copy_certs
 from .pkg.mongodb import permissions_mongodb
 from .pkg.influxdb import permissions_influxdb
 from .pkg.rabbitmq import permissions_rabbitmq
-from .pkg.thingsboard import permissions_thingsboard
+from .pkg.thingsboard_permissions import permissions_thingsboard
 from .pkg.service import Service
 from .pkg.utils import check_root_unix
 from .pkg.template import generate_project_structure
