@@ -1,4 +1,5 @@
 """ThingsBoard installation, service and user management."""
+
 import csv
 import logging
 from typing import Tuple
@@ -12,14 +13,14 @@ from .thingsboard_users import (
     login,
     _get_or_create_tenant,
     build_base_url,
-    change_sysadmin_password_if_needed
+    change_sysadmin_password_if_needed,
 )
+
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
 
 # Set up logger
 logger = logging.getLogger(__name__)
-
 
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
@@ -90,9 +91,7 @@ def _create_tenant_admin_user(
         user = resp.json()
         user_id = user.get("id", {}).get("id")
         return (user_id, "") if user_id else (None, "Created user response missing id")
-    except (
-        requests.exceptions.RequestException,
-    ) as e:
+    except (requests.exceptions.RequestException,) as e:
         error_type = (
             "Invalid JSON response"
             if isinstance(e, requests.exceptions.JSONDecodeError)

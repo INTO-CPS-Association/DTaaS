@@ -2,7 +2,6 @@
 # pylint: disable=W0212
 """Tests for ThingsBoard permissions functions."""
 
-import shutil
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 import pytest

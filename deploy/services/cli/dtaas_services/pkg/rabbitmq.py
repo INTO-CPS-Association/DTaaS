@@ -1,4 +1,5 @@
 """RabbitMQ service and user management."""
+
 import shutil
 from typing import Tuple
 from .utils import (
@@ -68,7 +69,9 @@ def setup_rabbitmq_users() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     return process_credentials_file(
-        lambda creds_file: create_users_from_credentials(creds_file, _add_rabbitmq_user),
+        lambda creds_file: create_users_from_credentials(
+            creds_file, _add_rabbitmq_user
+        ),
         "RabbitMQ",
         "RabbitMQ users created successfully",
     )

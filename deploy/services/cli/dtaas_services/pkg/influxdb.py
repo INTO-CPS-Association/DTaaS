@@ -1,4 +1,5 @@
 """InfluxDB service and user management."""
+
 import json
 import shutil
 from typing import Tuple
@@ -191,7 +192,9 @@ def _execute_setup_steps(creds_file) -> tuple[bool, str]:
         Tuple of (success, error message if any)
     """
     # Create all users first
-    success, error_msg = create_users_from_credentials(creds_file, _create_influxdb_user)
+    success, error_msg = create_users_from_credentials(
+        creds_file, _create_influxdb_user
+    )
     if not success:
         return False, error_msg
     # Fetch user and org data

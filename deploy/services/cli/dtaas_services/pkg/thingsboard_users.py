@@ -1,10 +1,8 @@
 import logging
 import os
 from typing import Tuple
-from pathlib import Path
 import requests
 import requests.exceptions
-from .config import Config
 
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
@@ -162,12 +160,6 @@ def change_sysadmin_password_if_needed(
     return _perform_password_change(ctx)
 
 
-
-
-
-
-
-
 def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
     """Find tenant by name in response body."""
     for tenant in body.get("data", []):
@@ -214,9 +206,7 @@ def _create_new_tenant(
         tenant = resp.json()
         logger.info(f"  Tenant '{tenant_name}' created")
         return tenant, ""
-    except (
-        requests.exceptions.RequestException,
-    ) as e:
+    except (requests.exceptions.RequestException,) as e:
         error_type = (
             "Invalid JSON response"
             if isinstance(e, requests.exceptions.JSONDecodeError)

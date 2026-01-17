@@ -15,6 +15,7 @@ FULLCHAIN_FILENAME = "fullchain.pem"
 # Set up logger
 logger = logging.getLogger(__name__)
 
+
 class _ServiceCertConfig:
     """Configuration for service certificate setup."""
 
@@ -41,8 +42,6 @@ class _TenantSetupContext:
         self.certs_dir = params.certs_dir
         self.uid = params.uid
         self.gid = params.gid
-
-
 
 
 def _copy_service_cert_files(setup_ctx: _TenantSetupContext) -> Tuple[tuple, bool, str]:
@@ -118,7 +117,6 @@ def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool,
     return _setup_service_certs(setup_ctx)
 
 
-
 class _SetupConfig:
     """Configuration container for ThingsBoard setup."""
 
@@ -158,10 +156,11 @@ def _apply_directory_ownership_if_needed(
     if cfg.os_type in ("linux", "darwin") and not is_ci():
         _set_directory_ownership(data_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
         _set_directory_ownership(log_dir, cfg.thingsboard_uid, cfg.thingsboard_gid)
-        return f"ThingsBoard data and log directories ownership set " \
-               f"to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}"
+        return (
+            f"ThingsBoard data and log directories ownership set "
+            f"to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}"
+        )
     return "ThingsBoard data and log directories created (ownership skipped)"
-
 
 
 def _setup_thingsboard_directories(cfg: _SetupConfig) -> Tuple[bool, str]:
@@ -176,7 +175,6 @@ def _setup_thingsboard_directories(cfg: _SetupConfig) -> Tuple[bool, str]:
         return True, msg
     except OSError as e:
         return False, f"Error setting up ThingsBoard directories: {e}"
-
 
 
 def _verify_certificates_exist(certs_dir: Path) -> Tuple[bool, str]:
@@ -218,13 +216,13 @@ def _execute_setup_operations(cfg: _SetupConfig) -> Tuple[bool, list]:
 
     return True, messages
 
+
 def _prepare_certificates_and_setup(cfg: _SetupConfig) -> Tuple[bool, list]:
     """Helper to prepare certificates and execute setup operations."""
     success, error_msg = _verify_certificates_exist(cfg.certs_dir)
     if not success:
         return False, [error_msg]
     return _execute_setup_operations(cfg)
-
 
 
 def permissions_thingsboard() -> Tuple[bool, str]:

@@ -184,10 +184,14 @@ def _apply_cert_permissions(ctx: _CertPermissionContext) -> None:
 def _get_permission_message(ctx: _CertPermissionContext) -> str:
     """Generate message describing permission changes (internal use)."""
     if ctx.gid is not None:
-        return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} " \
-               f"and ownership set to {ctx.uid}:{ctx.gid}."
-    return f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} " \
-           f"and ownership set to user {ctx.uid}."
+        return (
+            f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} "
+            f"and ownership set to {ctx.uid}:{ctx.gid}."
+        )
+    return (
+        f"{ctx.cert_path.name} created with mode {oct(ctx.mode)} "
+        f"and ownership set to user {ctx.uid}."
+    )
 
 
 def set_service_cert_permissions(
