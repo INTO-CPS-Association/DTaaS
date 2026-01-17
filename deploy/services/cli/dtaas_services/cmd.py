@@ -187,7 +187,13 @@ def _run_thingsboard_install(console: Console, docker) -> None:
 
 
 @services.command()
-def install_thingsboard():
+@click.option(
+    "-s",
+    "--service",
+    default=None,
+    help="(Ignored, ThingsBoard is the only service installed by this command)",
+)
+def install_thingsboard(service):
     """
     Install ThingsBoard database schema.
 
@@ -201,6 +207,14 @@ def install_thingsboard():
     try:
         check_root_unix()
         console = Console()
+
+        if service:
+            console.print(
+                "[yellow]⚠️  Note: The '-s' parameter is ignored for this command.[/yellow]\n"
+                "[cyan]This command only installs ThingsBoard.[/cyan]"
+            )
+            return
+
         service = Service()
         docker = service.docker
 
