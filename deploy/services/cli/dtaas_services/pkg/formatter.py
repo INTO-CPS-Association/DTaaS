@@ -34,10 +34,7 @@ USER_TO_SERVICE_NAME = {
 STATUS_INFO = {
     "running": ("✅", "running", "green"),
     "restarting": ("🔃", "restarting", "yellow"),
-    "paused": ("⏸️", "paused", "yellow"),
     "exited": ("🔴", "stopped", "red"),
-    "dead": ("💀", "dead", "red"),
-    "created": ("⚪", "created", "blue"),
     "removed": ("🗑️", "removed", "dim"),
 }
 

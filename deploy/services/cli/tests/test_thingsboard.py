@@ -220,7 +220,7 @@ def test_create_tenant_and_admin_scenarios():
     tenant = {"id": {"id": "123"}}
     # Success
     with patch(
-        "dtaas_services.pkg.thingsboard._get_or_create_tenant",
+        "dtaas_services.pkg.thingsboard.get_or_create_tenant",
         return_value=(tenant, ""),
     ), patch(
         "dtaas_services.pkg.thingsboard._ensure_tenant_admin", return_value=(True, "")
@@ -231,7 +231,7 @@ def test_create_tenant_and_admin_scenarios():
         assert success is True
     # Tenant creation fails
     with patch(
-        "dtaas_services.pkg.thingsboard._get_or_create_tenant",
+        "dtaas_services.pkg.thingsboard.get_or_create_tenant",
         return_value=(None, "error"),
     ):
         ctx = th._TenantAdminContext(base_url, session, "test")

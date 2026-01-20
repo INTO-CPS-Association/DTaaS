@@ -10,7 +10,7 @@ from .utils import is_ci
 
 
 @dataclass
-class _CertPermissionContext:
+class CertPermissionContext:
     """Context for certificate permission operations."""
 
     service_name: str
@@ -172,7 +172,7 @@ def _is_posix_not_ci() -> bool:
     return os_type in ("linux", "darwin") and not is_ci()
 
 
-def _apply_cert_permissions(ctx: _CertPermissionContext) -> None:
+def _apply_cert_permissions(ctx: CertPermissionContext) -> None:
     """Apply file permissions to certificate (internal use)."""
     ctx.cert_path.chmod(ctx.mode)
     if ctx.gid is not None:
@@ -181,7 +181,7 @@ def _apply_cert_permissions(ctx: _CertPermissionContext) -> None:
         shutil.chown(ctx.cert_path, user=ctx.uid)
 
 
-def _get_permission_message(ctx: _CertPermissionContext) -> str:
+def _get_permission_message(ctx: CertPermissionContext) -> str:
     """Generate message describing permission changes (internal use)."""
     if ctx.gid is not None:
         return (
@@ -195,7 +195,7 @@ def _get_permission_message(ctx: _CertPermissionContext) -> str:
 
 
 def set_service_cert_permissions(
-    ctx: _CertPermissionContext,
+    ctx: CertPermissionContext,
 ) -> Tuple[bool, str]:
     """Set certificate file ownership and permissions for a service.
 

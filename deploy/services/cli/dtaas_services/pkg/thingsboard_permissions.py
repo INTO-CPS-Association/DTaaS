@@ -5,7 +5,7 @@ import platform
 from typing import Tuple
 from pathlib import Path
 from .config import Config
-from .cert import copy_certs, set_service_cert_permissions, _CertPermissionContext
+from .cert import copy_certs, set_service_cert_permissions, CertPermissionContext
 from .utils import is_ci
 
 
@@ -61,7 +61,7 @@ def _set_service_cert_file_permissions(
 ) -> Tuple[bool, str]:
     """Set permissions on service certificate files."""
     # Set permissions on private key
-    ctx = _CertPermissionContext(
+    ctx = CertPermissionContext(
         setup_ctx.cert_cfg.service_name,
         service_key_path,
         setup_ctx.uid,
@@ -73,7 +73,7 @@ def _set_service_cert_file_permissions(
         return False, msg
 
     # Set permissions on certificate (readable)
-    ctx = _CertPermissionContext(
+    ctx = CertPermissionContext(
         setup_ctx.cert_cfg.service_name,
         service_cert_path,
         setup_ctx.uid,

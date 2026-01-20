@@ -9,9 +9,9 @@ import requests
 import requests.exceptions
 from .config import Config
 from .thingsboard_users import (
-    _check_password_configured,
+    check_password_configured,
     login,
-    _get_or_create_tenant,
+    get_or_create_tenant,
     build_base_url,
     change_sysadmin_password_if_needed,
 )
@@ -219,7 +219,7 @@ def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
 
 def _create_tenant_and_admin(ctx: _TenantAdminContext) -> Tuple[bool, str]:
     """Create a tenant and its admin user."""
-    tenant, error_msg = _get_or_create_tenant(
+    tenant, error_msg = get_or_create_tenant(
         ctx.base_url, ctx.session, ctx.tenant_name
     )
     if not tenant:
@@ -308,7 +308,7 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     logger.info(f"Using ThingsBoard URL: {base_url}")
 
     session = requests.Session()
-    new_pw = _check_password_configured()
+    new_pw = check_password_configured()
     if new_pw:
         success, error_msg = change_sysadmin_password_if_needed(
             base_url, session, new_pw

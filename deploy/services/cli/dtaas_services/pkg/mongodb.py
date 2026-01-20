@@ -3,7 +3,7 @@ from .config import Config
 from .cert import (
     create_combined_cert,
     set_service_cert_permissions,
-    _CertPermissionContext,
+    CertPermissionContext,
 )
 
 
@@ -34,7 +34,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
             return False, msg
 
         # Set permissions on combined certificate
-        ctx = _CertPermissionContext(
+        ctx = CertPermissionContext(
             "MongoDB", combined_path, mongo_uid, mongo_gid, 0o600
         )
         success, perm_msg = set_service_cert_permissions(ctx)

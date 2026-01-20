@@ -9,7 +9,7 @@ from .utils import (
     execute_docker_command,
 )
 from .config import Config
-from .cert import set_service_cert_permissions, _CertPermissionContext
+from .cert import set_service_cert_permissions, CertPermissionContext
 
 
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
@@ -240,7 +240,7 @@ def permissions_influxdb() -> Tuple[bool, str]:
         shutil.copy2(privkey_path, influx_key_path)
 
         # Set permissions on InfluxDB private key
-        ctx = _CertPermissionContext(
+        ctx = CertPermissionContext(
             "InfluxDB", influx_key_path, influx_uid, influx_gid, 0o600
         )
         return set_service_cert_permissions(ctx)

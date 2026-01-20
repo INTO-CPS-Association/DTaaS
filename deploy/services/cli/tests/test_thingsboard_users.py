@@ -99,7 +99,7 @@ def test_check_password_configured(env_password, expected):
     """Test password configuration checking"""
     env_dict = {"TB_SYSADMIN_NEW_PASSWORD": env_password} if env_password else {}
     with patch.dict(os.environ, env_dict, clear=True):
-        assert th_users._check_password_configured() == expected
+        assert th_users.check_password_configured() == expected
 
 
 @pytest.mark.parametrize(
@@ -286,7 +286,7 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard_users._check_existing_tenant",
         return_value=({"name": "test"}, ""),
     ):
-        tenant, _ = th_users._get_or_create_tenant(base_url, session, "test")
+        tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
         assert tenant is not None
 
     # Create new
@@ -297,7 +297,7 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard_users._create_new_tenant",
         return_value=({"title": "new"}, ""),
     ):
-        tenant, _ = th_users._get_or_create_tenant(base_url, session, "new")
+        tenant, _ = th_users.get_or_create_tenant(base_url, session, "new")
         assert tenant is not None
 
     # Exception
@@ -305,5 +305,5 @@ def test_get_or_create_tenant_scenarios():
         "dtaas_services.pkg.thingsboard_users._check_existing_tenant",
         side_effect=Exception("Error"),
     ):
-        tenant, _ = th_users._get_or_create_tenant(base_url, session, "test")
+        tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
         assert tenant is None

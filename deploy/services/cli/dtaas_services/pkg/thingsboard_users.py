@@ -49,7 +49,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
         return None
 
 
-def _check_password_configured() -> str | None:
+def check_password_configured() -> str | None:
     """Check if new password is configured."""
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
     if not new_pw:
@@ -215,7 +215,7 @@ def _create_new_tenant(
         return None, f"{error_type} creating tenant: {e}"
 
 
-def _get_or_create_tenant(
+def get_or_create_tenant(
     base_url: str, session: requests.Session, tenant_name: str
 ) -> Tuple[dict | None, str]:
     """Get existing tenant or create a new one."""

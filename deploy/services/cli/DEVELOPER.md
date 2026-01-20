@@ -159,14 +159,14 @@ The package uses a modular architecture where each service has its own module:
   * `build_base_url()`: Build ThingsBoard base URL from environment variables
   * `login()`: Authenticate with ThingsBoard API
   * `change_sysadmin_password_if_needed()`: Update default sysadmin password
-  * `_check_password_configured()`: Check if new password is configured
+  * `check_password_configured()`: Check if new password is configured
   * `_try_login_with_new_password()`: Try logging in with new password
   * `_update_session_token()`: Update session with authorization token
   * `_change_password_api_call()`: Call API to change password
   * `_perform_password_change()`: Perform the password change operation
   * `_check_existing_tenant()`: Check if tenant already exists
   * `_create_new_tenant()`: Create a new tenant
-  * `_get_or_create_tenant()`: Get existing tenant or create a new one
+  * `get_or_create_tenant()`: Get existing tenant or create a new one
 
 * **`thingsboard_permissions.py`**: ThingsBoard certificates and permissions setup:
   * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates

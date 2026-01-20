@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 import pytest
 import dtaas_services.pkg.thingsboard_permissions as th_perm
-from dtaas_services.pkg.cert import set_service_cert_permissions, _CertPermissionContext
+from dtaas_services.pkg.cert import set_service_cert_permissions, CertPermissionContext
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def test_set_cert_ownership(os_type, should_call_chown):
     ), patch("dtaas_services.pkg.cert.is_ci", return_value=False), patch(
         "pathlib.Path.chmod"
     ):
-        ctx = _CertPermissionContext("Test", cert_path, 999, 999)
+        ctx = CertPermissionContext("Test", cert_path, 999, 999)
         set_service_cert_permissions(ctx)
         if os_type in ("linux", "darwin"):
             mock_chown.assert_called_once()
