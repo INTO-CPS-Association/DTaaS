@@ -227,6 +227,9 @@ deploy/services/data/*
 deploy/services/data/*/*
 !deploy/services/data/*/.gitkeep
 
+
+deploy/services/cli/log/thingsboard
+
 # Deploy services config
 deploy/services/config/*
 !deploy/services/config/.gitkeep

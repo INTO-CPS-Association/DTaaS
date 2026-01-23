@@ -219,9 +219,7 @@ def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
 
 def _create_tenant_and_admin(ctx: _TenantAdminContext) -> Tuple[bool, str]:
     """Create a tenant and its admin user."""
-    tenant, error_msg = get_or_create_tenant(
-        ctx.base_url, ctx.session, ctx.tenant_name
-    )
+    tenant, error_msg = get_or_create_tenant(ctx.base_url, ctx.session, ctx.tenant_name)
     if not tenant:
         return False, error_msg
 
