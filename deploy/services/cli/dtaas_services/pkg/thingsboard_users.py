@@ -175,9 +175,7 @@ def _check_existing_tenant(
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
     try:
-        resp = session.get(
-            f"{base_url}/api/tenants", params=params, timeout=10
-        )
+        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=10)
         if resp.status_code != 200:
             return None, f"Failed to get tenants: {resp.status_code}"
 
@@ -196,9 +194,7 @@ def _create_new_tenant(
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
     try:
-        resp = session.post(
-            f"{base_url}/api/tenant", json=create_payload, timeout=10
-        )
+        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=10)
 
         if resp.status_code not in (200, 201):
             return None, f"Failed to create tenant: {resp.status_code}"

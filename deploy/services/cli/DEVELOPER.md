@@ -20,7 +20,7 @@ python -m venv venv
 venv\Scripts\activate
 pip install poetry
 
-# Copy external files (config, data, compose) into the package
+# Copy external files (config, data, log, compose) into the package
 python build.py
 
 # Install dependencies
@@ -40,7 +40,7 @@ poetry run dtaas-services <command>
 Before building, ensure external files are copied:
 
 ```bash
-# Copy external files (config, data, compose) into the package
+# Copy external files (config, data, log, compose) into the package
 python build.py
 
 # Build the wheel
@@ -73,6 +73,7 @@ cli/
 │   │   ├── postgres/
 │   │   ├── rabbitmq/
 │   │   └── thingsboard/
+│   ├── log/                # Log directory structure (copied by build.py)
 │   └── pkg/
 │       ├── __init__.py
 │       ├── config.py       # Configuration loader
@@ -241,7 +242,8 @@ The CLI provides a two-phase setup workflow:
 
 * Copies and normalizes TLS certificates
 * Sets up certificate permissions and ownership
-* Creates required data and log directories
+* Creates required data and log directories (directory structures are created
+by build.py)
 * Configures all services (MongoDB, InfluxDB, RabbitMQ, ThingsBoard, PostgreSQL)
 * No service startup or database initialization
 
@@ -441,6 +443,12 @@ Run all tests with coverage reports:
 
 ```bash
 poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
+```
+
+You can ignore the system tests for quick testing
+
+```bash
+poetry run pytest --cov=dtaas_services --ignore=tests\system_tests --cov-report=term-missing
 ```
 
 ### Test Coverage

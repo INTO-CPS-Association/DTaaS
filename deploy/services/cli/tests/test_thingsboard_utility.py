@@ -2,8 +2,7 @@
 # pylint: disable=W0212
 """Tests for ThingsBoard utility functions."""
 
-from pathlib import Path
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch, Mock
 import pytest
 import httpx
 import dtaas_services.pkg.thingsboard_utility as th_util

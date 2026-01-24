@@ -45,6 +45,9 @@ def copy_external_files():
     # 3. Create data directory structure (empty directories only)
     create_data_structure(pkg_dir)
 
+    # 4. Create log directory structure (empty directory only)
+    create_log_structure(pkg_dir)
+
 
 def _copy_config_file(src_file: Path, dst_file: Path, filename: str) -> None:
     """Copy a single config file if it exists."""
@@ -128,6 +131,27 @@ def create_data_structure(pkg_dir: Path):
         # Create .gitkeep to ensure directory is included in package
         (subdir_path / ".gitkeep").touch()
         print(f"Created: data/{subdir}/")
+
+
+def create_log_structure(pkg_dir: Path):
+    """
+    Create empty log directory structure only.
+
+    NO actual log files are copied, only directory structure.
+    Users will populate these during runtime.
+    """
+    dst_log = pkg_dir / "log"
+
+    # Remove existing log directory
+    if dst_log.exists():
+        shutil.rmtree(dst_log)
+
+    # Create fresh log directory
+    dst_log.mkdir(parents=True, exist_ok=True)
+
+    # Create .gitkeep to ensure directory is included in package
+    (dst_log / ".gitkeep").touch()
+    print("Created: log/")
 
 
 if __name__ == "__main__":

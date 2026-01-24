@@ -101,9 +101,7 @@ def _get_activation_token(
 ) -> Tuple[str | None, str]:
     """Get activation token for user."""
     try:
-        resp = session.get(
-            f"{base_url}/api/user/{user_id}/activationLink", timeout=10
-        )
+        resp = session.get(f"{base_url}/api/user/{user_id}/activationLink", timeout=10)
         if resp.status_code != 200:
             return None, f"Failed to get activation link: {resp.status_code}"
 

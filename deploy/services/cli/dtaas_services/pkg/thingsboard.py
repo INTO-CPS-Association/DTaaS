@@ -12,11 +12,13 @@ from .thingsboard_users import (
     build_base_url,
     change_sysadmin_password_if_needed,
 )
-from .thingsboard_utility import (CredentialProcessContext,
-                                 create_tenant_and_admin,
-                                 validate_credential_row,
-                                 TenantAdminContext,
-                                 AdminCredentials)
+from .thingsboard_utility import (
+    CredentialProcessContext,
+    create_tenant_and_admin,
+    validate_credential_row,
+    TenantAdminContext,
+    AdminCredentials,
+)
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -47,6 +49,7 @@ def _process_credentials_row(
         if not success
         else (True, "")
     )
+
 
 def _process_credentials_file(
     base_url: str, session: httpx.Client, credentials_file: Path
