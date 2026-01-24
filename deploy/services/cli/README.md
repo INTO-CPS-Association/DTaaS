@@ -1,4 +1,34 @@
-# DTaaS Services CLI
+# Platform Services
+
+It is recommended to install certain third-party software for use
+by digital twins running inside the DTaaS software.
+_These services can only be installed in secure (TLS) mode._
+
+The following services can be installed:
+
+* **Influx** time-series database and dashboard service
+* **Grafana** visualization and dashboard service
+* **RabbitMQ** AMQP broker and its' management interface
+  The **MQTT plugin** of this broker has been enabled.
+  So, it can also be used as **MQTT** broker.
+* **MongoDB** database server
+* **ThingsBoard** IoT device management and data visualization platform
+(with PostgreSQL backend)
+
+## Directory Structure
+
+* **config** is used for storing the service configuration
+* **data** is used by the services for storing data
+* **certs** is used for storing the TLS certificates needed by the services.
+* **cli** contains a CLI package for automated service management
+
+## Installation Methods
+
+You can install and manage the services using:
+
+**CLI Package :** Automated CLI tool for easy service management.
+
+## DTaaS Services CLI
 
 A command-line tool for managing DTaaS platform services including MongoDB,
 InfluxDB, RabbitMQ, and Grafana.
@@ -53,12 +83,22 @@ structure and run:
    * `compose.thingsboard.secure.yml` for ThingsBoard and PostgreSQL
 
 2. Update `config/services.env` with your environment values:
-   * `SERVICES_UID` - User ID for service file ownership
-   * `SERVICES_GID` - Group ID for service file ownership
-   * `SERVER_DNS` - Your server hostname
+   * `SERVICES_UID`: User ID for service file ownership
+   * `SERVICES_GID`: Group ID for service file ownership
+   * `SERVER_DNS`: Your server hostname
    * Port numbers for each service
 
 3. Update `config/credentials.csv` with user accounts (format: `username,password`)
+
+**Options:**
+
+* `--path` Directory to generate project structure (default: current directory)
+
+**Example:**
+
+```bash
+dtaas-services generate-project --path /path/to/project
+```
 
 ## Usage
 
@@ -78,41 +118,17 @@ This command will:
 * Set up RabbitMQ certificates and permissions
 * Set up PostgreSQL and ThingsBoard certificates and permissions
 
-### ThingsBoard Database Installation
+### ThingsBoard Installation
 
-If you are using ThingsBoard, you need to install its database schema separately.
-This must be done after `setup` and requires PostgreSQL to be running.
+To install ThingsBoard, run these commands in sequence:
 
 ```bash
 # 1. Start PostgreSQL
 dtaas-services start -s postgresql
 
-# 2. Wait a moment for PostgreSQL to be ready, then install ThingsBoard
+# 2. Install ThingsBoard (wait for PostgreSQL to be ready)
 dtaas-services install-thingsboard
 ```
-
-**Permission Requirements:**
-
-This command requires access to the Docker daemon. You have two options:
-
-1. **Recommended:** Add your user to the docker group (run once):
-
-   ```bash
-   sudo usermod -aG docker $USER
-   newgrp docker
-   ```
-
-   Then run the command without sudo:
-
-   ```bash
-   dtaas-services setup
-   ```
-
-2. **Alternative:** Run with sudo:
-
-   ```bash
-   sudo dtaas-services setup
-   ```
 
 ### Service Management
 
@@ -152,66 +168,11 @@ Remove services and their volumes:
 dtaas-services remove --volumes
 ```
 
-### User Account Management
-
-1. Edit `config/credentials.csv` with user accounts (format: `username,password`)
-
-2. Add users to InfluxDB and RabbitMQ:
-
-   ```bash
-   dtaas-services user add
-   ```
-
-   This will create user accounts with appropriate permissions in both services.
-
-## Commands Reference
-
-### `dtaas-services generate-project`
-
-Generates the project structure with config, data directories, and compose file.
-
 **Options:**
 
-* `--path` - Directory to generate project structure (default: current directory)
+The start command is just an example, the options are for all commands listed above
 
-**Example:**
-
-```bash
-dtaas-services generate-project --path /path/to/project
-```
-
-### `dtaas-services setup`
-
-Performs service setup including certificate copying and permission configuration.
-**Example:**
-
-```bash
-dtaas-services setup
-```
-
-### `dtaas-services install-thingsboard`
-
-Installs the ThingsBoard database schema. Must be run after `setup` and requires
-PostgreSQL to be running.
-
-**Prerequisites:**
-
-* `dtaas-services setup` must be completed
-* PostgreSQL must be running: `dtaas-services start -s postgresql`
-
-**Example:**
-
-```bash
-dtaas-services install-thingsboard
-```
-
-### `dtaas-services start`
-
-Starts all platform services using Docker Compose.
-
-**Options:**
-
-* `-s, --services` - Comma-separated list of specific services to start
+* `-s, --services` Comma-separated list of specific services to start
 
 **Service Names:**
 
@@ -222,9 +183,6 @@ Starts all platform services using Docker Compose.
 **Examples:**
 
 ```bash
-# Start all services
-dtaas-services start
-
 # Start specific services
 dtaas-services start -s influxdb,rabbitmq,thingsboard
 
@@ -232,99 +190,37 @@ dtaas-services start -s influxdb,rabbitmq,thingsboard
 dtaas-services start -s postgresql
 ```
 
-### `dtaas-services stop`
+### User Account Management
 
-Stops all running platform services.
+1. Edit `config/credentials.csv` with user accounts (format: `username,password`)
 
-**Options:**
+2. Add users to services:
 
-* `-s, --services` - Comma-separated list of specific services to stop
+   ```bash
+   dtaas-services user add
+   ```
 
-**Examples:**
+   This creates user accounts in InfluxDB, RabbitMQ, and ThingsBoard (if installed).
 
-```bash
-# Stop all services
-dtaas-services stop
+## ThingsBoard
 
-# Stop specific services
-dtaas-services stop -s mongodb,grafana,postgresql
-```
+It is recommended to install the third-party software ThingsBoard
+for use by digital twins
+running inside the DTaaS software.
+This service can only be installed in secure (TLS) mode.
 
-### `dtaas-services restart`
+The steps given above install two services:
 
-Restarts platform services.
+* **ThingsBoard** is an IoT device management and data visualization platform
+* **PostgreSQL** is a database server for ThingsBoard
 
-**Options:**
+## ThingsBoard Directory Structure
 
-* `-s, --services` - Comma-separated list of specific services to restart
-
-**Examples:**
-
-```bash
-# Restart all services
-dtaas-services restart
-
-# Restart specific services
-dtaas-services restart --services influxdb,thingsboard
-```
-
-### `dtaas-services remove`
-
-Removes platform services and optionally their volumes.
-Prompts for confirmation before removal.
-
-**Note:** When volumes are removed with `--volumes`, the data directories are
-automatically recreated empty to ensure successful reinstallation of services.
-
-**Options:**
-
-* `-s, --services` - Comma-separated list of specific services to remove
-* `-v, --volumes` - Remove volumes as well (data will be deleted
-but directories preserved)
-
-**Examples:**
-
-```bash
-# Remove all services (with confirmation)
-dtaas-services remove
-
-# Remove specific services
-dtaas-services remove --services influxdb,rabbitmq,thingsboard
-
-# Remove all services and their volumes
-dtaas-services remove --volumes
-
-# Remove specific services with volumes
-dtaas-services remove -s mongodb,postgresql -v
-```
-
-### `dtaas-services status`
-
-Shows the current status of all services.
-
-**Options:**
-
-* `-s, --services` - Comma-separated list of specific services to check
-
-**Examples:**
-
-```bash
-# Show status of all services
-dtaas-services status
-
-# Show status of specific services
-dtaas-services status --services influxdb,thingsboard
-```
-
-### `dtaas-services user add`
-
-Adds user accounts to InfluxDB, RabbitMQ, and ThingsBoard from `config/credentials.csv`.
-
-**Example:**
-
-```bash
-dtaas-services user add
-```
+* **config** is used for storing the service configuration
+* **data** is used by the services for storing data
+* **log** is used by the services for logging
+* **certs** is used for storing the TLS certificates needed by the services
+* **script** contains scripts for creating user accounts and service management
 
 ## Troubleshooting
 

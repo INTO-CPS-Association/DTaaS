@@ -1,3 +1,6 @@
+"""ThingsBoard and PostgreSQL certificate and permission management."""
+
+# pylint: disable=W1203, R0903
 import logging
 import os
 import shutil

@@ -1,0 +1,20 @@
+[default]
+  url = "https://localhost:8086"
+  token = "h-gY1V3miPX0kNJl31AwEjEq1Mv3P6TuDXAnsnsp2o-d5Se9W3Hfh2zt92Kmvs3sQrFOF4vffCWZeyKhrRozYQ=="
+  org = "dtaas"
+  active = true
+#
+# [eu-central]
+#   url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""
+#
+# [us-central]
+#   url = "https://us-central1-1.gcp.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""
+#
+# [us-west]
+#   url = "https://us-west-2-1.aws.cloud2.influxdata.com"
+#   token = "XXX"
+#   org = ""

@@ -1,8 +1,10 @@
+"""ThingsBoard user management functions."""
+
+# pylint: disable=W1203, R0903
 import logging
 import os
 from typing import Tuple
-import requests
-import requests.exceptions
+import httpx
 
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
@@ -19,13 +21,13 @@ def build_base_url() -> str:
     return f"{scheme}://{hostname}:{port}".rstrip("/")
 
 
-def _handle_login_response(resp: requests.Response) -> str | None:
+def _handle_login_response(resp: httpx.Response) -> str | None:
     """Handle login response and extract token."""
     if resp.status_code == 200:
         try:
             data = resp.json()
             return data.get("token")
-        except requests.exceptions.JSONDecodeError as e:
+        except Exception as e:
             logger.error(f"Invalid JSON response during login: {e}")
             return None
     if resp.status_code != 401:
@@ -37,14 +39,14 @@ def login(base_url: str, email: str, password: str) -> str | None:
     """Authenticate with ThingsBoard and return a JWT token."""
     url = f"{base_url}/api/auth/login"
     try:
-        resp = requests.post(
+        resp = httpx.post(
             url,
             json={"username": email, "password": password},
             timeout=10,
             verify=True,
         )
         return _handle_login_response(resp)
-    except requests.exceptions.RequestException as e:
+    except httpx.HTTPError as e:
         logger.error(f"Network error during login: {e}")
         return None
 
@@ -66,7 +68,7 @@ def _try_login_with_new_password(base_url: str, email: str, new_pw: str) -> str 
     return login(base_url, email, new_pw)
 
 
-def _update_session_token(session: requests.Session, token: str) -> None:
+def _update_session_token(session: httpx.Client, token: str) -> None:
     """Update session with authorization token."""
     session.headers["X-Authorization"] = f"Bearer {token}"
 
@@ -83,7 +85,7 @@ class _PasswordChangeContext:
     """Context for password change operations."""
 
     def __init__(
-        self, base_url: str, session: requests.Session, pw_config: _PasswordConfig
+        self, base_url: str, session: httpx.Client, pw_config: _PasswordConfig
     ):
         self.base_url = base_url
         self.session = session
@@ -100,14 +102,13 @@ def _change_password_api_call(ctx: _PasswordChangeContext) -> bool:
             url,
             json={"currentPassword": ctx.default_pw, "newPassword": ctx.new_pw},
             timeout=10,
-            verify=True,
         )
         if resp.status_code == 200:
             logger.info("Sysadmin password changed successfully.")
             return True
         logger.error(f"Failed to change sysadmin password: {resp.status_code}")
         return False
-    except requests.exceptions.RequestException as e:
+    except httpx.HTTPError as e:
         logger.error(f"Network error during password change: {e}")
         return False
 
@@ -131,7 +132,7 @@ def _perform_password_change(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
 
 def change_sysadmin_password_if_needed(
     base_url: str,
-    session: requests.Session,
+    session: httpx.Client,
     new_pw: str,
 ) -> Tuple[bool, str]:
     """Change the sysadmin password if configured."""
@@ -170,12 +171,12 @@ def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
 
 
 def _check_existing_tenant(
-    params: dict, base_url: str, session: requests.Session
+    params: dict, base_url: str, session: httpx.Client
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
     try:
         resp = session.get(
-            f"{base_url}/api/tenants", params=params, timeout=10, verify=True
+            f"{base_url}/api/tenants", params=params, timeout=10
         )
         if resp.status_code != 200:
             return None, f"Failed to get tenants: {resp.status_code}"
@@ -183,21 +184,20 @@ def _check_existing_tenant(
         body = resp.json()
         tenant_name = params.get("textSearch", "")
         return _find_tenant_in_response(body, tenant_name), ""
-    except requests.exceptions.JSONDecodeError as e:
-        return None, f"Invalid JSON response checking tenant: {e}"
-    except requests.exceptions.RequestException as e:
-        return None, f"Network error checking tenant: {e}"
+    except Exception as e:
+        error_type = "Invalid JSON" if "json" in str(e).lower() else "Network error"
+        return None, f"{error_type} checking tenant: {e}"
 
 
 def _create_new_tenant(
-    base_url: str, session: requests.Session, tenant_name: str
+    base_url: str, session: httpx.Client, tenant_name: str
 ) -> Tuple[dict | None, str]:
     """Create a new tenant."""
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
     try:
         resp = session.post(
-            f"{base_url}/api/tenant", json=create_payload, timeout=10, verify=True
+            f"{base_url}/api/tenant", json=create_payload, timeout=10
         )
 
         if resp.status_code not in (200, 201):
@@ -206,17 +206,13 @@ def _create_new_tenant(
         tenant = resp.json()
         logger.info(f"  Tenant '{tenant_name}' created")
         return tenant, ""
-    except (requests.exceptions.RequestException,) as e:
-        error_type = (
-            "Invalid JSON response"
-            if isinstance(e, requests.exceptions.JSONDecodeError)
-            else "Network error"
-        )
+    except Exception as e:
+        error_type = "Invalid JSON" if "json" in str(e).lower() else "Network error"
         return None, f"{error_type} creating tenant: {e}"
 
 
 def get_or_create_tenant(
-    base_url: str, session: requests.Session, tenant_name: str
+    base_url: str, session: httpx.Client, tenant_name: str
 ) -> Tuple[dict | None, str]:
     """Get existing tenant or create a new one."""
     try:

@@ -5,7 +5,7 @@
 import os
 from unittest.mock import patch, Mock
 import pytest
-import requests
+import httpx
 import dtaas_services.pkg.thingsboard_users as th_users
 
 # Test constants (not real credentials, for testing only)
@@ -69,20 +69,20 @@ def test_login_scenarios():
     password = TEST_PASSWORD
 
     # Success case
-    with patch("requests.post") as mock_post:
+    with patch("httpx.post") as mock_post:
         mock_post.return_value = Mock(
             status_code=200, json=lambda: {"token": "token123"}
         )
         assert th_users.login(base_url, email, password) == "token123"
 
     # Failure case
-    with patch("requests.post") as mock_post:
+    with patch("httpx.post") as mock_post:
         mock_post.return_value = Mock(status_code=401)
         assert th_users.login(base_url, email, password) is None
 
     # Exception case
     with patch(
-        "requests.post", side_effect=requests.exceptions.RequestException("Error")
+        "httpx.post", side_effect=httpx.HTTPError("Error")
     ):
         assert th_users.login(base_url, email, password) is None
 
@@ -124,7 +124,7 @@ def test_change_password_api_call(status_code, expected_success):
 def test_change_password_api_call_exception():
     """Test password change API call with exception"""
     mock_session = Mock()
-    mock_session.post.side_effect = requests.exceptions.RequestException("Error")
+    mock_session.post.side_effect = httpx.HTTPError("Error")
     pw_config = th_users._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th_users._PasswordChangeContext(
         "https://localhost:8080", mock_session, pw_config
@@ -231,14 +231,14 @@ def test_check_existing_tenant_scenarios():
     # JSON error
     session.get.return_value = Mock(
         status_code=200,
-        json=Mock(side_effect=requests.exceptions.JSONDecodeError("err", "doc", 0)),
+        json=Mock(side_effect=Exception("JSON decode error")),
     )
     tenant, error = th_users._check_existing_tenant(params, base_url, session)
     assert tenant is None
-    assert "Invalid JSON" in error
+    assert "json" in error.lower()
 
     # Request exception
-    session.get.side_effect = requests.exceptions.RequestException("Error")
+    session.get.side_effect = httpx.HTTPError("Error")
     tenant, error = th_users._check_existing_tenant(params, base_url, session)
     assert tenant is None
 
@@ -265,13 +265,13 @@ def test_create_new_tenant_scenarios():
     # JSON error
     session.post.return_value = Mock(
         status_code=200,
-        json=Mock(side_effect=requests.exceptions.JSONDecodeError("err", "doc", 0)),
+        json=Mock(side_effect=Exception("JSON decode error")),
     )
     tenant, error = th_users._create_new_tenant(base_url, session, "new")
     assert tenant is None
 
     # Request exception
-    session.post.side_effect = requests.exceptions.RequestException("Error")
+    session.post.side_effect = httpx.HTTPError("Error")
     tenant, error = th_users._create_new_tenant(base_url, session, "new")
     assert tenant is None
 

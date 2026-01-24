@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas-services"
-version = "0.1.0"
+version = "0.2.0"
 description = "DTaaS Platform Services Management CLI"
 authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"
@@ -18,7 +18,7 @@ click = "^8.1.7"
 python-dotenv = "^1.0.1"
 python-on-whales = "^0.75.0"
 rich = "^14.2.0"
-requests = "^2.31.0"
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

@@ -196,11 +196,9 @@ deploy/services/gitlab/config/
 
 # config files
 services.env
-credentials.csv
 deploy/services/certs/*
 !deploy/services/certs/services.foo.com
 deploy/services/cli/certs/*
-deploy/services/cli/config/
 deploy/services/cli/data
 
 # qlty config
@@ -230,17 +228,12 @@ deploy/services/data/*/*
 
 deploy/services/cli/log/thingsboard
 
-# Deploy services config
-deploy/services/config/*
-!deploy/services/config/.gitkeep
-deploy/services/config/*/*
-!deploy/services/config/*/.gitkeep
+deploy/services/config/credentials.csv
+deploy/services/cli/config/credentials.csv
 
 deploy/services/cli/compose.services.secure.yml
 deploy/services/cli/compose.thingsboard.secure.yml
 
-deploy/services/cli/data
-deploy/services/cli/config
 deploy/services/cli/test-output
 
 # local research papers
