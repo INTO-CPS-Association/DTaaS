@@ -117,7 +117,7 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     with patch("pathlib.Path.exists", return_value=True), patch(
         "dtaas_services.pkg.thingsboard.build_base_url",
         return_value="https://localhost:8080",
-    ), patch("requests.Session"), patch(
+    ), patch("httpx.Client"), patch(
         "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
         return_value=(True, ""),
     ), patch(
@@ -130,7 +130,7 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     with patch("pathlib.Path.exists", return_value=True), patch(
         "dtaas_services.pkg.thingsboard.build_base_url",
         return_value="https://localhost:8080",
-    ), patch("requests.Session"), patch(
+    ), patch("httpx.Client"), patch(
         "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
         return_value=(False, "error"),
     ):
@@ -140,7 +140,7 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     with patch("pathlib.Path.exists", return_value=True), patch(
         "dtaas_services.pkg.thingsboard.build_base_url",
         return_value="https://localhost:8080",
-    ), patch("requests.Session"), patch(
+    ), patch("httpx.Client"), patch(
         "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
         return_value=(True, ""),
     ), patch(
