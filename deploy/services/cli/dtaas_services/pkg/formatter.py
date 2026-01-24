@@ -21,7 +21,7 @@ SERVICE_DISPLAY_NAMES = {
     "grafana": "Grafana",
     "influxdb": "InfluxDB",
     "postgres": "PostgreSQL",
-    "thingsboard-ce": "Thingsboard",
+    "thingsboard-ce": "ThingsBoard",
 }
 
 # User input to actual service name mapping
@@ -78,8 +78,8 @@ def format_container_status(
         return
     # Create a table
     table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Service", style="cyan", width=15)
-    table.add_column("Status", width=20)
+    table.add_column("Service", style="cyan", width=20)
+    table.add_column("Status", width=25)
     # Sort containers by name for consistent output
     sorted_containers = sorted(containers, key=lambda c: c.name)
     for container in sorted_containers:
@@ -121,8 +121,8 @@ def format_service_list_status(
         console = Console()
     # Create a table
     table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Service", style="cyan", width=15)
-    table.add_column("Status", width=20)
+    table.add_column("Service", style="cyan", width=20)
+    table.add_column("Status", width=25)
     # Sort services by name for consistent output
     _sort_service_names(services, all_services, table)
     console.print(table)

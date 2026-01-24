@@ -68,8 +68,12 @@ def test_service_display_names():
     assert "influxdb" in SERVICE_DISPLAY_NAMES
     assert "mongodb" in SERVICE_DISPLAY_NAMES
     assert "rabbitmq" in SERVICE_DISPLAY_NAMES
+    assert "postgres" in SERVICE_DISPLAY_NAMES
+    assert "thingsboard-ce" in SERVICE_DISPLAY_NAMES
     assert SERVICE_DISPLAY_NAMES["grafana"] == "Grafana"
     assert SERVICE_DISPLAY_NAMES["rabbitmq"] == "RabbitMQ"
+    assert SERVICE_DISPLAY_NAMES["postgres"] == "PostgreSQL"
+    assert SERVICE_DISPLAY_NAMES["thingsboard-ce"] == "ThingsBoard"
 
 
 def test_status_info():

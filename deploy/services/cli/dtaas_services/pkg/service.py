@@ -30,11 +30,30 @@ def _handle_docker_not_running(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except DockerException:
-            err = RuntimeError(
-                "Docker is not running. Please start Docker Desktop and try again."
-            )
-            return err, str(err)
+        except DockerException as e:
+            error_msg = str(e).lower()
+            # Check if it's actually a service not found error
+            if "no such service" in error_msg:
+                err = ValueError(f"Service not found: {str(e)}")
+                return err, str(e)
+            # Check if it's a Docker daemon connection issue
+            if (
+                "cannot connect" in error_msg
+                or "connection refused" in error_msg
+                or "daemon" in error_msg
+                or "not running" in error_msg
+                or (
+                    "returned with code" in error_msg
+                    and "no such service" not in error_msg
+                )
+            ):
+                err = RuntimeError(
+                    "Docker is not running. Please start Docker Desktop and try again."
+                )
+                return err, str(err)
+            # For other Docker exceptions, return the actual error
+            err = RuntimeError(f"Docker error: {str(e)}")
+            return err, str(e)
 
     return wrapper
 
