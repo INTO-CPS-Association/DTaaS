@@ -467,7 +467,7 @@ def test_permissions_influxdb_success_linux(mock_config):
     with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
         "dtaas_services.pkg.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
+    ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -487,7 +487,7 @@ def test_permissions_influxdb_success_darwin(mock_config):
     with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
         "dtaas_services.pkg.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
+    ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -507,7 +507,7 @@ def test_permissions_influxdb_success_windows(mock_config):
     with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
         "dtaas_services.pkg.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
-    ):
+    ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -527,7 +527,7 @@ def test_permissions_influxdb_success_ci(mock_config):
     with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
         "dtaas_services.pkg.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set (skipped)"),
-    ):
+    ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -545,8 +545,8 @@ def test_permissions_influxdb_success_ci(mock_config):
 def test_permissions_influxdb_os_error(mock_config):
     """Test InfluxDB permissions setup with OSError"""
     with patch("platform.system", return_value="Linux"), patch(
-        "shutil.copy2", side_effect=OSError("Copy failed")
-    ):
+        "pathlib.Path.exists", return_value=True
+    ), patch("shutil.copy2", side_effect=OSError("Copy failed")):
         success, message = permissions_influxdb()
         assert success is False
         assert "Error setting permissions for InfluxDB" in message
