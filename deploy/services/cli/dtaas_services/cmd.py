@@ -246,12 +246,12 @@ def _check_thingsboard_installation(
                 "[cyan]You need to run 'dtaas-services install' "
                 "after starting PostgreSQL.[/cyan]"
             )
-            if click.confirm(
-                "Do you want to continue starting services?", default=True
+            # Use abort=False to auto-confirm in non-interactive environments (CI)
+            if not click.confirm(
+                "Do you want to continue starting services?", default=True, abort=False
             ):
-                console.print("[cyan]Remember to run: dtaas-services install[/cyan]")
-            else:
                 raise click.ClickException("Operation cancelled by user")
+            console.print("[cyan]Remember to run: dtaas-services install[/cyan]")
 
 
 def _services_command_runner(command: str, service_name) -> None:
