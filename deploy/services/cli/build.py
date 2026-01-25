@@ -27,6 +27,7 @@ def copy_external_files():
     # 1. Copy compose files
     compose_files = [
         "compose.services.secure.yml",
+        "compose.thingsboard.secure.yml",
     ]
 
     for filename in compose_files:
@@ -149,8 +150,6 @@ def create_log_structure(pkg_dir: Path):
     # Create fresh log directory
     dst_log.mkdir(parents=True, exist_ok=True)
 
-    # Create .gitkeep to ensure directory is included in package
-    (dst_log / ".gitkeep").touch()
     print("Created: log/")
 
 

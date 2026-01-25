@@ -237,6 +237,10 @@ def permissions_influxdb() -> Tuple[bool, str]:
         influx_uid = int(config.get_value("INFLUX_UID"))
         influx_gid = int(config.get_value("INFLUX_GID"))
 
+        # Verify source file exists before attempting copy
+        if not privkey_path.exists():
+            return False, f"Source certificate not found: {privkey_path}"
+
         shutil.copy2(privkey_path, influx_key_path)
 
         # Set permissions on InfluxDB private key
@@ -244,5 +248,5 @@ def permissions_influxdb() -> Tuple[bool, str]:
             "InfluxDB", influx_key_path, influx_uid, influx_gid, 0o600
         )
         return set_service_cert_permissions(ctx)
-    except OSError as e:
+    except (OSError, FileNotFoundError, PermissionError) as e:
         return False, f"Error setting permissions for InfluxDB: {e}"

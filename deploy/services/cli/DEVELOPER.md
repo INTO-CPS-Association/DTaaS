@@ -20,9 +20,6 @@ python -m venv venv
 venv\Scripts\activate
 pip install poetry
 
-# Copy external files (config, data, log, compose) into the package
-python build.py
-
 # Install dependencies
 poetry install
 ```
@@ -34,20 +31,6 @@ poetry install
 ```bash
 poetry run dtaas-services <command>
 ```
-
-### Building
-
-Before building, ensure external files are copied:
-
-```bash
-# Copy external files (config, data, log, compose) into the package
-python build.py
-
-# Build the wheel
-poetry build
-```
-
-This creates distribution files in the `dist/` directory.
 
 ## Project Structure
 

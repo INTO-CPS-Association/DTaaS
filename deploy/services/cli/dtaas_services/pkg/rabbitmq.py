@@ -94,6 +94,10 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
         rabbit_key_path = certs_dir / "privkey-rabbitmq.pem"
         rabbit_uid = int(config.get_value("RABBIT_UID"))
 
+        # Verify source file exists before attempting copy
+        if not privkey_path.exists():
+            return False, f"Source certificate not found: {privkey_path}"
+
         shutil.copy2(privkey_path, rabbit_key_path)
 
         # Set permissions on RabbitMQ private key (no group)
@@ -101,5 +105,5 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
             "RabbitMQ", rabbit_key_path, rabbit_uid, None, 0o600
         )
         return set_service_cert_permissions(ctx)
-    except OSError as e:
+    except (OSError, FileNotFoundError, PermissionError) as e:
         return False, f"Error setting permissions for RabbitMQ: {e}"

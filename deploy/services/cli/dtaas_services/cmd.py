@@ -190,12 +190,12 @@ def _run_thingsboard_install(console: Console, docker) -> None:
 @click.option(
     "-s",
     "--service",
-    default=None,
-    help="(Ignored, ThingsBoard is the only service installed by this command)",
+    default="thingsboard",
+    help="Service to install (only 'thingsboard' is supported)",
 )
-def install_thingsboard(service):
+def install(service):
     """
-    Install ThingsBoard database schema.
+    Install service database schema.
 
     Prerequisites:
     - dtaas-services setup must be completed
@@ -208,22 +208,50 @@ def install_thingsboard(service):
         check_root_unix()
         console = Console()
 
-        if service:
-            console.print(
-                "[yellow]⚠️  Note: The '-s' parameter is ignored for this command.[/yellow]\n"
-                "[cyan]This command only installs ThingsBoard.[/cyan]"
+        if service and service.lower() not in ["thingsboard", "thingsboard-ce"]:
+            raise click.ClickException(
+                f"Installation is only supported for ThingsBoard. Got: {service}"
             )
-            return
 
-        service = Service()
-        docker = service.docker
+        service_obj = Service()
+        docker = service_obj.docker
 
         _check_postgres_running(console, docker)
         _run_thingsboard_install(console, docker)
+        console.print("[green]✅ ThingsBoard installation completed![/green]")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except Exception as e:
         raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
+
+
+def _check_thingsboard_installation(
+    service: Service, service_list: Optional[list[str]]
+) -> None:
+    """Check if ThingsBoard needs installation and prompt user.
+
+    Args:
+        service: Service instance to check ThingsBoard installation status
+        service_list: Optional list of services being started
+
+    Raises:
+        click.ClickException: If user cancels the operation
+    """
+    if service_list is None or "thingsboard-ce" in service_list:
+        # User wants to start thingsboard
+        if not service._is_thingsboard_installed():
+            console = Console()
+            console.print("[yellow]⚠️  ThingsBoard is not installed yet.[/yellow]")
+            console.print(
+                "[cyan]You need to run 'dtaas-services install' "
+                "after starting PostgreSQL.[/cyan]"
+            )
+            if click.confirm(
+                "Do you want to continue starting services?", default=True
+            ):
+                console.print("[cyan]Remember to run: dtaas-services install[/cyan]")
+            else:
+                raise click.ClickException("Operation cancelled by user")
 
 
 def _services_command_runner(command: str, service_name) -> None:
@@ -238,6 +266,11 @@ def _services_command_runner(command: str, service_name) -> None:
     if command in commands_map:
         meta = commands_map[command]
         service = Service()
+
+        # Check if ThingsBoard needs installation (only for start command)
+        if command == "start":
+            _check_thingsboard_installation(service, service_list)
+
         # Lambda receives service_list from _handle_service_command
         _handle_service_command(
             lambda sl: service.manage_services(command, sl), service_list, meta
@@ -337,6 +370,47 @@ def remove(service_names, volumes):
             err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
         if err is not None:
             raise click.ClickException(msg)
+        console.print(f"[green]✅ {msg}[/green]")
+
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+
+
+@services.command()
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services to clean",
+)
+@click.confirmation_option(
+    prompt="This will delete ALL data and log files for the selected services. Continue?"
+)
+def clean(service_names):
+    """
+    Clean all temporary files and data for services.
+
+    This removes all files from data and log directories for the specified services,
+    including .gitkeep files. Useful for preparing to reinstall services.
+    """
+    try:
+        setup_obj = Service()
+        console = Console()
+        service_list = _parse_service_list(service_names)
+
+        if service_list:
+            console.print(f"[yellow]Cleaning services:[/yellow] {', '.join(service_list)}...")
+        else:
+            console.print("[yellow]Cleaning all services...[/yellow]")
+
+        with console.status(
+            "[bold yellow]Removing data and log files...[/bold yellow]", spinner="dots"
+        ):
+            err, msg = setup_obj.clean_services(service_list)
+
+        if err is not None:
+            raise click.ClickException(msg)
+
         console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:

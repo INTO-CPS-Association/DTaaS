@@ -79,14 +79,16 @@ def format_container_status(
     # Create a table
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Service", style="cyan", width=20)
+    table.add_column("Container Name", style="blue", width=20)
     table.add_column("Status", width=25)
     # Sort containers by name for consistent output
     sorted_containers = sorted(containers, key=lambda c: c.name)
     for container in sorted_containers:
         display_name = _get_display_name(container.name)
+        container_name = container.name
         state = container.state.status
         status_display = _format_status_display(state)
-        table.add_row(display_name, status_display)
+        table.add_row(display_name, container_name, status_display)
     console.print(table)
 
 
@@ -100,11 +102,13 @@ def _sort_service_names(
         container = services.get(service_name)
         if container is None:
             # Service not found/installed
+            container_name = "-"
             status_display = "❌ [red]not installed[/red]"
         else:
+            container_name = container.name
             state = container.state.status
             status_display = _format_status_display(state)
-        table.add_row(display_name, status_display)
+        table.add_row(display_name, container_name, status_display)
 
 
 def format_service_list_status(
@@ -122,6 +126,7 @@ def format_service_list_status(
     # Create a table
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Service", style="cyan", width=20)
+    table.add_column("Container Name", style="blue", width=20)
     table.add_column("Status", width=25)
     # Sort services by name for consistent output
     _sort_service_names(services, all_services, table)

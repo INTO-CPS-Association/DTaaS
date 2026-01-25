@@ -149,21 +149,21 @@ class Service:
 
     def _start_services(self, service_list: Optional[list]) -> None:
         """Start services or all if service_list is None."""
-        if service_list:
+        if service_list is not None:
             self.docker.compose.up(service_list, detach=True)
         else:
             self.docker.compose.up(detach=True)
 
     def _stop_services(self, service_list: Optional[list]) -> None:
         """Stop services or all if service_list is None."""
-        if service_list:
+        if service_list is not None:
             self.docker.compose.stop(service_list)
         else:
             self.docker.compose.stop()
 
     def _restart_services(self, service_list: Optional[list]) -> None:
         """Restart services or all if service_list is None."""
-        if service_list:
+        if service_list is not None:
             self.docker.compose.restart(service_list)
         else:
             self.docker.compose.restart()
@@ -202,6 +202,60 @@ class Service:
             return exc, str(exc)
         return self._handle_docker_error(f"{action} services", exc)
 
+    def _check_postgres_stop_dependency(
+        self, service_list: Optional[list]
+    ) -> Tuple[bool, Optional[str]]:
+        """
+        Check if postgres stop should be blocked due to thingsboard.
+        Returns (should_warn, warning_message).
+        """
+        if not service_list:
+            # Stopping all services, check if thingsboard exists
+            if self._is_thingsboard_installed():
+                return True, (
+                    "⚠️  Skipping PostgreSQL stop: ThingsBoard is installed. "
+                    "Remove ThingsBoard first if you want to stop PostgreSQL."
+                )
+            return False, None
+
+        if "postgres" not in service_list:
+            return False, None
+
+        if self._is_thingsboard_installed():
+            return True, (
+                "⚠️  Skipping PostgreSQL stop: ThingsBoard is installed. "
+                "Remove ThingsBoard first if you want to stop PostgreSQL."
+            )
+
+        return False, None
+
+    def _filter_postgres_if_needed(
+        self, action: str, service_list: Optional[list]
+    ) -> Tuple[Optional[list], Optional[str]]:
+        """
+        Filter out postgres from service list if thingsboard is installed and action is stop.
+        Returns (filtered_service_list, warning_message).
+        """
+        if action != "stop":
+            return service_list, None
+
+        should_warn, warning = self._check_postgres_stop_dependency(service_list)
+        if not should_warn:
+            return service_list, None
+
+        # Filter out postgres
+        if service_list is None:
+            # Get all services except postgres
+            err, all_services = self._get_all_service_names()
+            if err:
+                return service_list, warning
+            filtered = [s for s in all_services if s != "postgres"]
+            return filtered, warning
+
+        # Remove postgres from the list
+        filtered = [s for s in service_list if s != "postgres"]
+        return filtered, warning
+
     @_handle_docker_not_running
     def manage_services(
         self, action: str, service_list: Optional[list] = None
@@ -223,9 +277,15 @@ class Service:
         if service_list:
             service_list = [normalize_service_name(s) for s in service_list]
 
+        # Filter postgres if needed for stop operation
+        service_list, warning = self._filter_postgres_if_needed(action, service_list)
+
         try:
             self._execute_compose_action(action, service_list)
-            return None, self._get_success_message(action)
+            success_msg = self._get_success_message(action)
+            if warning:
+                success_msg = f"{warning}\\n{success_msg}"
+            return None, success_msg
         except (ValueError, *DOCKER_OPERATION_EXCEPTIONS) as e:
             return self._handle_service_action_error(action, e)
 
@@ -411,6 +471,40 @@ class Service:
             return "Services and data removed successfully"
         return "Services removed successfully"
 
+    def _is_thingsboard_installed(self) -> bool:
+        """Check if ThingsBoard container exists (installed)."""
+        try:
+            err, container_map = self._get_all_containers()
+            if err:
+                return False
+            return "thingsboard-ce" in container_map
+        except Exception:
+            return False
+
+    def _check_postgres_dependency(
+        self, service_list: Optional[list]
+    ) -> Tuple[Optional[Exception], Optional[str]]:
+        """
+        Check if postgres can be removed only if thingsboard is removed.
+        Returns (Exception, message) if postgres can't be removed, (None, None) otherwise.
+        """
+        if (
+            not service_list
+            or "postgres" not in service_list
+            or "thingsboard-ce" in service_list
+        ):
+            return None, None
+
+        # Check if thingsboard is installed
+        if self._is_thingsboard_installed():
+            err = ValueError(
+                "Cannot remove PostgreSQL while ThingsBoard is installed. "
+                "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
+            )
+            return err, str(err)
+
+        return None, None
+
     @_handle_docker_not_running
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
@@ -434,6 +528,11 @@ class Service:
         if service_list:
             service_list = [normalize_service_name(s) for s in service_list]
 
+        # Check postgres dependency
+        err, msg = self._check_postgres_dependency(service_list)
+        if err:
+            return err, msg
+
         try:
             self._remove_docker_services(service_list, remove_volumes)
             if remove_volumes:
@@ -441,3 +540,90 @@ class Service:
             return None, self._get_remove_message(remove_volumes)
         except DOCKER_OPERATION_EXCEPTIONS as e:
             return self._handle_docker_error("remove services", e)
+
+    def _get_service_directories(
+        self, service_list: Optional[list] = None
+    ) -> list[Path]:
+        """
+        Get all data and log directories for services.
+        Args:
+            service_list: Optional list of specific services to get directories for
+        Returns:
+            List of Path objects to data and log directories
+        """
+        base_dir = Config.get_base_dir()
+        data_dir = base_dir / "data"
+        log_dir = base_dir / "log"
+
+        services = (
+            service_list
+            if service_list
+            else ["grafana", "influxdb", "mongodb", "postgres", "rabbitmq", "thingsboard"]
+        )
+
+        directories = []
+        for service in services:
+            # Map normalized names to directory names
+            dir_name = service
+            if service == "thingsboard-ce":
+                dir_name = "thingsboard"
+
+            data_path = data_dir / dir_name
+            log_path = log_dir / dir_name
+
+            if data_path.exists():
+                directories.append(data_path)
+            if log_path.exists():
+                directories.append(log_path)
+
+        return directories
+
+    def _remove_all_files_in_directory(self, directory: Path) -> None:
+        """Remove all files and subdirectories in a directory, including .gitkeep."""
+        if not directory.exists():
+            return
+
+        for item in directory.iterdir():
+            if item.is_file():
+                item.unlink()
+            elif item.is_dir():
+                shutil.rmtree(item, ignore_errors=True)
+
+    def clean_services(
+        self, service_list: Optional[list] = None
+    ) -> Tuple[Optional[Exception], str]:
+        """
+        Clean all temporary files and data for services.
+        This removes all files from data and log directories for the specified services,
+        including .gitkeep files. Useful for preparing to reinstall services.
+
+        Args:
+            service_list: Optional list of specific services to clean
+
+        Returns:
+            Tuple of (Exception or None, message)
+        """
+        # Normalize service names if provided
+        if service_list:
+            service_list = [normalize_service_name(s) for s in service_list]
+
+        try:
+            directories = self._get_service_directories(service_list)
+
+            if not directories:
+                if service_list:
+                    return (
+                        None,
+                        f"No data directories found for services: {', '.join(service_list)}",
+                    )
+                return None, "No data directories found"
+
+            for directory in directories:
+                self._remove_all_files_in_directory(directory)
+
+            if service_list:
+                return None, f"Cleaned data for services: {', '.join(service_list)}"
+            return None, "Cleaned all service data"
+        except (OSError, PermissionError) as e:
+            err = RuntimeError(f"Failed to clean service data: {str(e)}")
+            return err, str(err)

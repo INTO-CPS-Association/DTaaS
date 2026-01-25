@@ -168,11 +168,23 @@ Remove services and their volumes:
 dtaas-services remove --volumes
 ```
 
+Clean all data and log files for services (with confirmation prompt):
+
+```bash
+dtaas-services clean
+```
+
+This command removes all files from data and log directories,
+including `.gitkeep` files.
+Useful for preparing to reinstall services or troubleshooting installation issues.
+
 **Options:**
 
 The start command is just an example, the options are for all commands listed above
 
-* `-s, --services` Comma-separated list of specific services to start
+* `-s, --services` Comma-separated list of specific services to manage
+* `--volumes, -v` (remove command only) Remove volumes as well
+* `--yes` (clean command only) Skip confirmation prompt
 
 **Service Names:**
 
@@ -188,6 +200,15 @@ dtaas-services start -s influxdb,rabbitmq,thingsboard
 
 # Start PostgreSQL
 dtaas-services start -s postgresql
+
+# Clean all services (removes all data and log files)
+dtaas-services clean
+
+# Clean specific service without confirmation
+dtaas-services clean -s postgres --yes
+
+# Clean multiple services
+dtaas-services clean -s "postgres,thingsboard"
 ```
 
 ### User Account Management
