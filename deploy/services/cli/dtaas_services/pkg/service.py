@@ -213,7 +213,7 @@ class Service:
             # Stopping all services, check if thingsboard exists
             if self._is_thingsboard_installed():
                 return True, (
-                    "⚠️  Skipping PostgreSQL stop: ThingsBoard is installed. "
+                    " Skipping PostgreSQL stop: ThingsBoard is installed. "
                     "Remove ThingsBoard first if you want to stop PostgreSQL."
                 )
             return False, None
@@ -223,7 +223,7 @@ class Service:
 
         if self._is_thingsboard_installed():
             return True, (
-                "⚠️  Skipping PostgreSQL stop: ThingsBoard is installed. "
+                "  Skipping PostgreSQL stop: ThingsBoard is installed. "
                 "Remove ThingsBoard first if you want to stop PostgreSQL."
             )
 
