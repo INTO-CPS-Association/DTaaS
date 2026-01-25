@@ -70,7 +70,23 @@ def run_command(cmd_list, check=True):
         subprocess.CompletedProcess with stdout, stderr, and returncode
     """
     try:
-        result = subprocess.run(cmd_list, capture_output=True, text=True, check=check)
+        # Use poetry run to ensure correct environment
+        if cmd_list[0] == "dtaas-services":
+            cmd_list = ["poetry", "run"] + cmd_list
+
+        # Set CI=true to skip interactive prompts
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["CI"] = "true"
+
+        result = subprocess.run(
+            cmd_list,
+            capture_output=True,
+            text=True,
+            check=check,
+            env=env,
+            encoding="utf-8",
+        )
         return result
     except subprocess.CalledProcessError as e:
         # Check if it's a permission error

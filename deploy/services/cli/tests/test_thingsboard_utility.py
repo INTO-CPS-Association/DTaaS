@@ -24,7 +24,9 @@ TEST_INVALID_EMAIL = ""
 )
 def test_check_admin_exists(login_token, expected):
     """Test checking if admin exists"""
-    with patch("dtaas_services.pkg.thingsboard_utility.login", return_value=login_token):
+    with patch(
+        "dtaas_services.pkg.thingsboard_utility.login", return_value=login_token
+    ):
         result = th_util._check_admin_exists(
             "https://localhost:8080", "admin@ex.com", "pass"
         )
@@ -92,9 +94,7 @@ def test_activate_user_scenarios():
         success, _ = th_util._activate_user(base_url, "token", "pass")
         assert success is False
     # Exception
-    with patch(
-        "httpx.post", side_effect=httpx.HTTPError("Error")
-    ):
+    with patch("httpx.post", side_effect=httpx.HTTPError("Error")):
         success, _ = th_util._activate_user(base_url, "token", "pass")
         assert success is False
 
@@ -108,7 +108,9 @@ def test_activate_user_scenarios():
 )
 def test_verify_admin_login(login_token, expected_success):
     """Test admin login verification"""
-    with patch("dtaas_services.pkg.thingsboard_utility.login", return_value=login_token):
+    with patch(
+        "dtaas_services.pkg.thingsboard_utility.login", return_value=login_token
+    ):
         success, _ = th_util._verify_admin_login(
             "https://localhost:8080", "admin@ex.com", "pass"
         )
@@ -131,7 +133,8 @@ def test_create_and_activate_admin_scenarios():
     ), patch(
         "dtaas_services.pkg.thingsboard_utility._activate_user", return_value=(True, "")
     ), patch(
-        "dtaas_services.pkg.thingsboard_utility._verify_admin_login", return_value=(True, "")
+        "dtaas_services.pkg.thingsboard_utility._verify_admin_login",
+        return_value=(True, ""),
     ):
         success, _ = th_util._create_and_activate_admin(ctx, "tenant")
         assert success is True
@@ -160,7 +163,8 @@ def test_create_and_activate_admin_scenarios():
         "dtaas_services.pkg.thingsboard_utility._get_activation_token",
         return_value=("token", ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard_utility._activate_user", return_value=(False, "error")
+        "dtaas_services.pkg.thingsboard_utility._activate_user",
+        return_value=(False, "error"),
     ):
         success, _ = th_util._create_and_activate_admin(ctx, "tenant")
         assert success is False
@@ -174,7 +178,9 @@ def test_ensure_tenant_admin_scenarios():
     ctx.admin_password = TEST_PASSWORD
     tenant = {"id": {"id": "tenant123"}}
     # Already exists
-    with patch("dtaas_services.pkg.thingsboard_utility._check_admin_exists", return_value=True):
+    with patch(
+        "dtaas_services.pkg.thingsboard_utility._check_admin_exists", return_value=True
+    ):
         success, _ = th_util._ensure_tenant_admin(ctx, tenant)
         assert success is True
     # Create new
@@ -205,7 +211,8 @@ def test_create_tenant_and_admin_scenarios():
         "dtaas_services.pkg.thingsboard_users.get_or_create_tenant",
         return_value=(tenant, ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard_utility._ensure_tenant_admin", return_value=(True, "")
+        "dtaas_services.pkg.thingsboard_utility._ensure_tenant_admin",
+        return_value=(True, ""),
     ):
         ctx = th_util.TenantAdminContext(base_url, session, "test")
         ctx.admin_credentials = th_util.AdminCredentials("admin@ex.com", "pass")

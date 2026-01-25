@@ -81,9 +81,7 @@ def test_login_scenarios():
         assert th_users.login(base_url, email, password) is None
 
     # Exception case
-    with patch(
-        "httpx.post", side_effect=httpx.HTTPError("Error")
-    ):
+    with patch("httpx.post", side_effect=httpx.HTTPError("Error")):
         assert th_users.login(base_url, email, password) is None
 
 

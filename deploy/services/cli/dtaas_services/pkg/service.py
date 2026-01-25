@@ -210,21 +210,21 @@ class Service:
         Returns (should_warn, warning_message).
         """
         if not service_list:
-            # Stopping all services, check if thingsboard exists
-            if self._is_thingsboard_installed():
+            # Stopping all services, check if thingsboard container exists
+            if self._is_thingsboard_container_present():
                 return True, (
-                    " Skipping PostgreSQL stop: ThingsBoard is installed. "
-                    "Remove ThingsBoard first if you want to stop PostgreSQL."
+                    " Skipping PostgreSQL stop: ThingsBoard container is still present. "
+                    "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
                 )
             return False, None
 
         if "postgres" not in service_list:
             return False, None
 
-        if self._is_thingsboard_installed():
+        if self._is_thingsboard_container_present():
             return True, (
-                "  Skipping PostgreSQL stop: ThingsBoard is installed. "
-                "Remove ThingsBoard first if you want to stop PostgreSQL."
+                "  Skipping PostgreSQL stop: ThingsBoard container is still present. "
+                "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
             )
 
         return False, None
@@ -471,13 +471,52 @@ class Service:
             return "Services and data removed successfully"
         return "Services removed successfully"
 
-    def _is_thingsboard_installed(self) -> bool:
-        """Check if ThingsBoard container exists (installed)."""
+    def _is_thingsboard_container_present(self) -> bool:
+        """Check if ThingsBoard container exists (not removed).
+
+        This is used for dependency checking - we don't want to allow stopping
+        or removing postgres if the ThingsBoard container still exists.
+        """
         try:
             err, container_map = self._get_all_containers()
             if err:
                 return False
             return "thingsboard-ce" in container_map
+        except Exception:
+            return False
+
+    def _is_thingsboard_installed(self) -> bool:
+        """Check if ThingsBoard database schema is installed in PostgreSQL.
+
+        This is used to determine if the user needs to run the install command
+        when starting services. The schema persists even if the container is removed.
+        """
+        try:
+            # Check if PostgreSQL container exists and is running
+            err, container_map = self._get_all_containers()
+            if err or "postgres" not in container_map:
+                return False
+
+            postgres_container = container_map["postgres"]
+            if (
+                not hasattr(postgres_container, "state")
+                or postgres_container.state.status != "running"
+            ):
+                return False
+
+            # Check if ThingsBoard schema exists by querying PostgreSQL
+            # Use the postgres container's default configured user
+            result = self.docker.execute(
+                "postgres",
+                [
+                    "sh",
+                    "-c",
+                    'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc '
+                    "\"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'admin_settings');\"",
+                ],
+            )
+            # t -> table exists, f -> does not exist
+            return result.strip() == "t"
         except Exception:
             return False
 
@@ -495,10 +534,10 @@ class Service:
         ):
             return None, None
 
-        # Check if thingsboard is installed
-        if self._is_thingsboard_installed():
+        # Check if thingsboard container exists
+        if self._is_thingsboard_container_present():
             err = ValueError(
-                "Cannot remove PostgreSQL while ThingsBoard is installed. "
+                "Cannot remove PostgreSQL while ThingsBoard container exists. "
                 "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
             )
             return err, str(err)
@@ -558,7 +597,14 @@ class Service:
         services = (
             service_list
             if service_list
-            else ["grafana", "influxdb", "mongodb", "postgres", "rabbitmq", "thingsboard"]
+            else [
+                "grafana",
+                "influxdb",
+                "mongodb",
+                "postgres",
+                "rabbitmq",
+                "thingsboard",
+            ]
         )
 
         directories = []

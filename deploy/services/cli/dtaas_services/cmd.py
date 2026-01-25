@@ -1,23 +1,22 @@
 """DTaaS Services CLI commands"""
 
 from pathlib import Path
-
 from typing import Optional, Callable
 from dataclasses import dataclass
 import click
+import sys
 from rich.console import Console
-
 import dtaas_services
 from .pkg.cert import copy_certs
 from .pkg.mongodb import permissions_mongodb
 from .pkg.influxdb import permissions_influxdb
 from .pkg.rabbitmq import permissions_rabbitmq
-from .pkg.thingsboard_permissions import permissions_thingsboard
 from .pkg.service import Service
-from .pkg.utils import check_root_unix
+from .pkg.utils import check_root_unix, is_ci
 from .pkg.template import generate_project_structure
 from .pkg.formatter import format_container_status
 from .pkg import influxdb, rabbitmq, thingsboard
+from .pkg.thingsboard_permissions import permissions_thingsboard
 
 
 @dataclass
@@ -237,6 +236,7 @@ def _check_thingsboard_installation(
     Raises:
         click.ClickException: If user cancels the operation
     """
+
     if service_list is None or "thingsboard-ce" in service_list:
         # User wants to start thingsboard
         if not service._is_thingsboard_installed():
@@ -246,11 +246,13 @@ def _check_thingsboard_installation(
                 "[cyan]You need to run 'dtaas-services install' "
                 "after starting PostgreSQL.[/cyan]"
             )
-            # Use abort=False to auto-confirm in non-interactive environments (CI)
-            if not click.confirm(
-                "Do you want to continue starting services?", default=True, abort=False
-            ):
-                raise click.ClickException("Operation cancelled by user")
+            # Check if running in interactive mode
+            if sys.stdin.isatty() and not is_ci():
+                if not click.confirm(
+                    "Do you want to continue starting services?", default=True
+                ):
+                    raise click.ClickException("Operation cancelled by user")
+            # Non-interactive, CI environment, or user confirmed: continue
             console.print("[cyan]Remember to run: dtaas-services install[/cyan]")
 
 
@@ -399,7 +401,9 @@ def clean(service_names):
         service_list = _parse_service_list(service_names)
 
         if service_list:
-            console.print(f"[yellow]Cleaning services:[/yellow] {', '.join(service_list)}...")
+            console.print(
+                f"[yellow]Cleaning services:[/yellow] {', '.join(service_list)}..."
+            )
         else:
             console.print("[yellow]Cleaning all services...[/yellow]")
 
@@ -443,6 +447,7 @@ def add():
     Example:
         dtaas-services user add
     """
+
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
     _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)

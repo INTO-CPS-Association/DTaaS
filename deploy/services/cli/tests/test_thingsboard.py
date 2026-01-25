@@ -79,8 +79,6 @@ def test_process_credentials_row_scenarios():
         assert success is False
 
 
-
-
 def test_process_credentials_file_scenarios():
     """Test credentials file processing with scenarios"""
     base_url = "https://localhost:8080"
