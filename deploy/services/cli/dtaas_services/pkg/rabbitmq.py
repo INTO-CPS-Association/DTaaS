@@ -105,5 +105,5 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
             "RabbitMQ", rabbit_key_path, rabbit_uid, None, 0o600
         )
         return set_service_cert_permissions(ctx)
-    except (OSError, FileNotFoundError, PermissionError) as e:
+    except OSError as e:
         return False, f"Error setting permissions for RabbitMQ: {e}"

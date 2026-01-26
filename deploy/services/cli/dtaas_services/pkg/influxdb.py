@@ -248,5 +248,5 @@ def permissions_influxdb() -> Tuple[bool, str]:
             "InfluxDB", influx_key_path, influx_uid, influx_gid, 0o600
         )
         return set_service_cert_permissions(ctx)
-    except (OSError, FileNotFoundError, PermissionError) as e:
+    except OSError as e:
         return False, f"Error setting permissions for InfluxDB: {e}"
