@@ -83,6 +83,9 @@ cli/
     ├── test_thingsboard.py # ThingsBoard admin user management tests
     ├── test_thingsboard_users.py  # ThingsBoard authentication and tenant tests
     ├── test_thingsboard_permissions.py  # ThingsBoard certificates and permissions tests
+    ├── config/             # Test configuration files (REQUIRED for system tests)
+    │   ├── services.env    # Test environment variables
+    │   └── credentials.csv # Test user credentials
     └── system_tests/       # End-to-end system tests
         └── test_services_commands.py  # Real CLI workflow tests
 ```
@@ -410,15 +413,17 @@ The test suite covers critical workflows:
 * **State Assertions**: Properly handles Docker container state transitions
   (e.g., "running", "restarting", "stopped", "exited")
 
-#### Configuration
+#### Configuration Requirements
 
-System tests use the actual `services.env` configuration file located at:
+System tests require configuration files in the `tests/config/` directory:
 
-```bash
-deploy/services/config/services.env
-```
+* `tests/config/services.env`
+* `tests/config/credentials.csv`
 
-This file contains real service credentials and configurations used during testing.
+**No Setup Required:**
+
+The configuration files are pre-configured with test-safe dummy credentials
+and are ready to use immediately.
 
 ## Running Tests with Coverage
 

@@ -5,19 +5,25 @@ import platform
 from pathlib import Path
 from dotenv import load_dotenv
 
+SERVICES_ENV_FILE = "services.env"
 
 class Config:
     """This class handles loading and accessing configuration values from an environment file."""
 
     def __init__(self):
         base_dir = self.get_base_dir()
-        self.env_path = base_dir / "config" / "services.env"
+        if os.environ.get("DTAAS_TEST_MODE") == "true":
+            # Use test configuration from tests/config/
+            self.env_path = base_dir / "tests" / "config" / SERVICES_ENV_FILE
+        else:
+            self.env_path = base_dir / "config" / SERVICES_ENV_FILE
+
         self.base_dir = base_dir
 
         if not self.env_path.exists():
             raise FileNotFoundError(
                 f"Configuration file not found: {self.env_path}\n"
-                f"Please copy config/services.env.template to config/services.env \n"
+                f"Please copy config/{SERVICES_ENV_FILE}.template to config/{SERVICES_ENV_FILE} \n"
                 f"and update it with your configuration "
             )
         load_dotenv(dotenv_path=self.env_path, override=True)

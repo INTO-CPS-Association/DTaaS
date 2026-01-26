@@ -12,7 +12,8 @@ from dtaas_services.pkg.service import Service
 
 console = Console()
 pytestmark = pytest.mark.system
-AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana", "influxdb"]
+AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana",
+                       "influxdb", "postgres", "thingsboard"]
 
 
 def is_running_as_root():
@@ -40,8 +41,14 @@ def setup_services():
 
 @pytest.fixture(scope="module")
 def ensure_services_stopped():
-    """Clean up services after all tests complete"""
+    """Clean up services before and after all tests complete"""
+    for service in AVAILABLE_SERVICES:
+        subprocess.run(
+            ["docker", "rm", "-f", service], check=False, capture_output=True
+        )
+
     yield
+
     # Final cleanup after all tests
     for service in AVAILABLE_SERVICES:
         subprocess.run(
@@ -74,10 +81,11 @@ def run_command(cmd_list, check=True):
         if cmd_list[0] == "dtaas-services":
             cmd_list = ["poetry", "run"] + cmd_list
 
-        # Set CI=true to skip interactive prompts
+        # Set environment variables for testing
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         env["CI"] = "true"
+        env["DTAAS_TEST_MODE"] = "true"
 
         result = subprocess.run(
             cmd_list,
