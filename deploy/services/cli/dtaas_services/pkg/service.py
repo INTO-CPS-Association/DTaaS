@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import click
 import subprocess
 from functools import wraps
 from typing import Tuple, Optional, Set
@@ -160,10 +161,7 @@ class Service:
 
             running_services = set()
             for service_name, container in container_map.items():
-                if (
-                    hasattr(container, "state")
-                    and container.state.status == "running"
-                ):
+                if hasattr(container, "state") and container.state.status == "running":
                     running_services.add(service_name)
             return running_services
         except Exception:
@@ -181,9 +179,7 @@ class Service:
         # Determine which services to start
         if service_list is not None:
             # Filter out already running services
-            services_to_start = [
-                s for s in service_list if s not in running_services
-            ]
+            services_to_start = [s for s in service_list if s not in running_services]
             skipped_services = [s for s in service_list if s in running_services]
 
             if services_to_start:
@@ -197,9 +193,7 @@ class Service:
                 self.docker.compose.up(detach=True)
                 return [], []
 
-            services_to_start = [
-                s for s in all_services if s not in running_services
-            ]
+            services_to_start = [s for s in all_services if s not in running_services]
             skipped_services = list(running_services & all_services)
 
             if services_to_start:
@@ -718,10 +712,19 @@ class Service:
             return
 
         for item in directory.iterdir():
-            if item.is_file():
-                item.unlink()
-            elif item.is_dir():
-                shutil.rmtree(item, ignore_errors=True)
+            try:
+                if item.is_file():
+                    # Try to change permissions before deleting (Windows compatibility)
+                    try:
+                        item.chmod(0o777)
+                    except (PermissionError):
+                        pass
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item, ignore_errors=True)
+            except (OSError) as e:
+                # Log but continue with other files
+                click.echo(f"Warning: Could not remove {item}: {e}", err=True)
 
     def clean_services(
         self, service_list: Optional[list] = None
@@ -758,6 +761,6 @@ class Service:
             if service_list:
                 return None, f"Cleaned data for services: {', '.join(service_list)}"
             return None, "Cleaned all service data"
-        except (OSError, PermissionError) as e:
+        except (OSError) as e:
             err = RuntimeError(f"Failed to clean service data: {str(e)}")
             return err, str(err)

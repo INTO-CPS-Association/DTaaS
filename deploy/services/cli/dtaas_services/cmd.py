@@ -394,11 +394,37 @@ def clean(service_names):
 
     This removes all files from data and log directories for the specified services,
     including .gitkeep files. Useful for preparing to reinstall services.
+
+    Services must be stopped before cleaning.
     """
     try:
         setup_obj = Service()
         console = Console()
         service_list = _parse_service_list(service_names)
+
+        # Check if any services are running
+        running_services = setup_obj._get_running_services()
+        if service_list:
+            services_to_stop = [s for s in service_list if s in running_services]
+            if services_to_stop:
+                console.print(
+                    f"[yellow]⚠️  The following services are running"
+                    f" and must be stopped first:[/yellow] {', '.join(services_to_stop)}"
+                )
+                console.print(
+                    f"[yellow]Run:[/yellow] dtaas-services stop -s {','.join(services_to_stop)}"
+                )
+                raise click.ClickException(
+                    "Cannot clean running services. Stop them first."
+                )
+        elif running_services:
+            console.print(
+                f"[yellow]⚠️  Some services are still running:[/yellow] {', '.join(running_services)}"
+            )
+            console.print("[yellow]Run:[/yellow] dtaas-services stop")
+            raise click.ClickException(
+                "Cannot clean while services are running. Stop all services first."
+            )
 
         if service_list:
             console.print(

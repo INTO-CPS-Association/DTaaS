@@ -50,10 +50,10 @@ def _find_latest_cert(certs_dir: Path, prefix: str) -> Path | None:
     not files like '{prefix}-service.pem'.
     """
     candidates = [
-        p for p in certs_dir.glob(f"{prefix}*.pem")
-        if p.name == f"{prefix}.pem" or
-        (p.name.startswith(f"{prefix}") and
-         p.name[len(prefix):-4].isdigit())
+        p
+        for p in certs_dir.glob(f"{prefix}*.pem")
+        if p.name == f"{prefix}.pem"
+        or (p.name.startswith(f"{prefix}") and p.name[len(prefix) : -4].isdigit())
     ]
     if not candidates:
         return None
@@ -71,7 +71,7 @@ def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
             continue
         # Only remove if it matches the pattern (not service-specific certs)
         if p.name == f"{prefix}.pem" or (
-            p.name.startswith(f"{prefix}") and p.name[len(prefix):-4].isdigit()
+            p.name.startswith(f"{prefix}") and p.name[len(prefix) : -4].isdigit()
         ):
             p.unlink(missing_ok=True)
 
