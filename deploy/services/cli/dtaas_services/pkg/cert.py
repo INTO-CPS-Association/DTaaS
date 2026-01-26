@@ -44,17 +44,35 @@ VQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDI
 
 
 def _find_latest_cert(certs_dir: Path, prefix: str) -> Path | None:
-    """Find the latest certificate file for a given prefix."""
-    candidates = list(certs_dir.glob(f"{prefix}*.pem"))
+    """Find the latest certificate file for a given prefix.
+
+    Only matches files named exactly '{prefix}.pem'',
+    not files like '{prefix}-service.pem'.
+    """
+    candidates = [
+        p for p in certs_dir.glob(f"{prefix}*.pem")
+        if p.name == f"{prefix}.pem" or
+        (p.name.startswith(f"{prefix}") and
+         p.name[len(prefix):-4].isdigit())
+    ]
     if not candidates:
         return None
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
-    """Remove all cert files with the given prefix except the target."""
+    """Remove all cert files with the given prefix except the target.
+
+    Only matches files named exactly '{prefix}.pem' or '{prefix}[0-9].pem',
+    not files like '{prefix}-service.pem'.
+    """
     for p in certs_dir.glob(f"{prefix}*.pem"):
-        if p.resolve() != target.resolve():
+        if p.resolve() == target.resolve():
+            continue
+        # Only remove if it matches the pattern (not service-specific certs)
+        if p.name == f"{prefix}.pem" or (
+            p.name.startswith(f"{prefix}") and p.name[len(prefix):-4].isdigit()
+        ):
             p.unlink(missing_ok=True)
 
 

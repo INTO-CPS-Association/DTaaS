@@ -54,6 +54,7 @@ def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -
     items_to_copy = [
         ("config", "config"),
         ("data", "data"),
+        ("log", "log"),
         ("compose.services.secure.yml", "compose.services.secure.yml"),
         ("compose.thingsboard.secure.yml", "compose.thingsboard.secure.yml"),
     ]

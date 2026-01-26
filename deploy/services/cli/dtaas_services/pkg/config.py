@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 SERVICES_ENV_FILE = "services.env"
 
+
 class Config:
     """This class handles loading and accessing configuration values from an environment file."""
 

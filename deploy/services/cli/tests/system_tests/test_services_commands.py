@@ -12,8 +12,14 @@ from dtaas_services.pkg.service import Service
 
 console = Console()
 pytestmark = pytest.mark.system
-AVAILABLE_SERVICES = ["rabbitmq", "mongodb", "grafana",
-                       "influxdb", "postgres", "thingsboard"]
+AVAILABLE_SERVICES = [
+    "rabbitmq",
+    "mongodb",
+    "grafana",
+    "influxdb",
+    "postgres",
+    "thingsboard",
+]
 
 
 def is_running_as_root():
