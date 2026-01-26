@@ -147,12 +147,65 @@ class Service:
         # For other exceptions, include type information
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
 
-    def _start_services(self, service_list: Optional[list]) -> None:
-        """Start services or all if service_list is None."""
+    def _get_running_services(self) -> Set[str]:
+        """Get set of currently running service names.
+
+        Returns:
+            Set of service names that are currently running
+        """
+        try:
+            err, container_map = self._get_all_containers()
+            if err:
+                return set()
+
+            running_services = set()
+            for service_name, container in container_map.items():
+                if (
+                    hasattr(container, "state")
+                    and container.state.status == "running"
+                ):
+                    running_services.add(service_name)
+            return running_services
+        except Exception:
+            return set()
+
+    def _start_services(self, service_list: Optional[list]) -> Tuple[list, list]:
+        """Start services or all if service_list is None.
+
+        Returns:
+            Tuple of (list of skipped services, list of started services)
+        """
+        # Get currently running services
+        running_services = self._get_running_services()
+
+        # Determine which services to start
         if service_list is not None:
-            self.docker.compose.up(service_list, detach=True)
+            # Filter out already running services
+            services_to_start = [
+                s for s in service_list if s not in running_services
+            ]
+            skipped_services = [s for s in service_list if s in running_services]
+
+            if services_to_start:
+                self.docker.compose.up(services_to_start, detach=True)
+
+            return skipped_services, services_to_start
         else:
-            self.docker.compose.up(detach=True)
+            # Starting all services
+            err, all_services = self._get_all_service_names()
+            if err:
+                self.docker.compose.up(detach=True)
+                return [], []
+
+            services_to_start = [
+                s for s in all_services if s not in running_services
+            ]
+            skipped_services = list(running_services & all_services)
+
+            if services_to_start:
+                self.docker.compose.up(services_to_start, detach=True)
+
+            return skipped_services, services_to_start
 
     def _stop_services(self, service_list: Optional[list]) -> None:
         """Stop services or all if service_list is None."""
@@ -170,11 +223,15 @@ class Service:
 
     def _execute_compose_action(
         self, action: str, service_list: Optional[list]
-    ) -> None:
+    ) -> Tuple[list, list]:
         """Execute a compose action with appropriate arguments.
         Args:
             action: The action name ('start', 'stop', 'restart')
             service_list: Optional list of services to target
+
+        Returns:
+            Tuple of (list of skipped services, list of affected services)
+            Only applicable for 'start' action, returns ([], []) for others
         """
         action_handlers = {
             "start": self._start_services,
@@ -183,12 +240,43 @@ class Service:
         }
         if action not in action_handlers:
             raise ValueError(f"Invalid action: {action}")
-        action_handlers[action](service_list)
 
-    def _get_success_message(self, action: str) -> str:
-        """Get success message for an action."""
+        result = action_handlers[action](service_list)
+
+        # _start_services returns (skipped, started), others return None
+        if action == "start" and result is not None:
+            return result
+        return [], []
+
+    def _get_success_message(
+        self, action: str, skipped: list = None, affected: list = None
+    ) -> str:
+        """Get success message for an action.
+
+        Args:
+            action: The action performed
+            skipped: List of services that were skipped (for start action)
+            affected: List of services that were affected
+        """
+        if action == "start":
+            parts = []
+            if skipped:
+                parts.append(
+                    f"Skipped {len(skipped)} already running service(s): "
+                    f"{', '.join(skipped)}"
+                )
+            if affected:
+                parts.append(
+                    f"Started {len(affected)} service(s): {', '.join(affected)}"
+                )
+            elif not skipped:
+                parts.append("No services to start")
+
+            if not parts:
+                return "All services are already running"
+            return "\n".join(parts)
+
         messages = {
-            "start": "Docker Compose started successfully",
             "stop": "Services stopped successfully",
             "restart": "Services restarted successfully",
         }
@@ -281,10 +369,10 @@ class Service:
         service_list, warning = self._filter_postgres_if_needed(action, service_list)
 
         try:
-            self._execute_compose_action(action, service_list)
-            success_msg = self._get_success_message(action)
+            skipped, affected = self._execute_compose_action(action, service_list)
+            success_msg = self._get_success_message(action, skipped, affected)
             if warning:
-                success_msg = f"{warning}\\n{success_msg}"
+                success_msg = f"{warning}\n{success_msg}"
             return None, success_msg
         except (ValueError, *DOCKER_OPERATION_EXCEPTIONS) as e:
             return self._handle_service_action_error(action, e)
