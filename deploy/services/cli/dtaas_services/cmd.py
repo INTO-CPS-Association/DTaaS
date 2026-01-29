@@ -5,6 +5,7 @@ from typing import Optional, Callable
 from dataclasses import dataclass
 import click
 import sys
+import time
 from rich.console import Console
 import dtaas_services
 from .pkg.cert import copy_certs
@@ -153,23 +154,78 @@ def setup():
         raise click.ClickException(str(e)) from e
 
 
-def _check_postgres_running(console: Console, docker) -> None:
-    """Check if PostgreSQL is running and warn if not."""
-    try:
-        containers = docker.compose.ps()
-        postgres_running = any(
-            c.name == "postgres"
-            for c in containers
-            if hasattr(c, "state") and c.state.status == "running"
-        )
-        if not postgres_running:
-            console.print(
-                "[yellow]⚠️  PostgreSQL does not appear to be running, starting it now...[/yellow]"
+def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None:
+    """
+    Wait for PostgreSQL to be ready to accept connections.
+
+    Args:
+        console: Rich console for output
+        docker: Docker client
+        timeout: Maximum time to wait in seconds
+
+    Raises:
+        click.ClickException: If PostgreSQL doesn't become ready within timeout
+    """
+
+    console.print("[cyan]Waiting for PostgreSQL to be ready...[/cyan]")
+    start_time = time.time()
+    last_status = None
+
+    while time.time() - start_time < timeout:
+        try:
+            # Check if postgres container is running and healthy
+            containers = docker.compose.ps()
+            postgres = next(
+                (c for c in containers if c.name == "postgres"),
+                None
             )
 
-    except Exception:
-        # If we can't check, proceed anyway
-        pass
+            if postgres and hasattr(postgres, "state"):
+                current_status = postgres.state.status
+
+                if current_status != last_status:
+                    if current_status == "running":
+                        console.print("[green]PostgreSQL container is running, checking health...[/green]")
+                    elif current_status == "restarting":
+                        console.print(
+                            "[yellow]⚠️  PostgreSQL is restarting. "
+                            "Check logs with: docker logs postgres[/yellow]"
+                        )
+                    last_status = current_status
+
+                # Check if container is running
+                if current_status == "running":
+                    # Check health status if available
+                    if hasattr(postgres.state, "health") and postgres.state.health:
+                        if postgres.state.health == "healthy":
+                            console.print("[green]✅ PostgreSQL is ready[/green]")
+                            return
+
+                    # Fallback: Try pg_isready command
+                    try:
+                        result = docker.compose.execute(
+                            "postgres",
+                            ["pg_isready", "-U", "postgres"],
+                            tty=False
+                        )
+                        if result[1] == 0:
+                            console.print("[green]✅ PostgreSQL is ready[/green]")
+                            return
+                    except Exception:
+                        pass
+                elif current_status == "restarting":
+                    time.sleep(3)
+                    continue
+        except Exception as e:
+            # Log error but continue waiting
+            console.print(f"[yellow]Warning: {str(e)}[/yellow]")
+
+        time.sleep(2)
+
+    raise click.ClickException(
+        f"PostgreSQL did not become ready within {timeout} seconds. "
+        "This usually indicates a configuration problem. "
+    )
 
 
 def _run_thingsboard_install(console: Console, docker) -> None:
@@ -204,7 +260,7 @@ def install(service):
 
     Prerequisites:
     - dtaas-services setup must be completed
-    - PostgreSQL must be running (start with: dtaas-services start -s postgresql)
+    - PostgreSQL must be running
 
     This command initializes the ThingsBoard database and creates the default
     system administrator account. It must be run only once after initial setup.
@@ -221,7 +277,7 @@ def install(service):
         service_obj = Service()
         docker = service_obj.docker
 
-        _check_postgres_running(console, docker)
+        _wait_for_postgres_ready(console, docker)
         _run_thingsboard_install(console, docker)
         console.print("[green]✅ ThingsBoard installation completed![/green]")
     except FileNotFoundError as e:
