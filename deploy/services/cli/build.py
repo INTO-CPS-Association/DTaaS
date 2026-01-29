@@ -49,6 +49,9 @@ def copy_external_files():
     # 4. Create log directory structure (empty directory only)
     create_log_structure(pkg_dir)
 
+    # 5. Create certs directory structure (empty directory only)
+    create_certs_directory(pkg_dir)
+
 
 def _copy_config_file(src_file: Path, dst_file: Path, filename: str) -> None:
     """Copy a single config file if it exists."""
@@ -150,7 +153,31 @@ def create_log_structure(pkg_dir: Path):
     # Create fresh log directory
     dst_log.mkdir(parents=True, exist_ok=True)
 
+    # Create .gitkeep to ensure directory is included in package
+    (dst_log / ".gitkeep").touch()
+
     print("Created: log/")
+
+
+def create_certs_directory(pkg_dir: Path):
+    """
+    Create empty certs directory structure only.
+
+    NO actual cert files are copied, only directory structure.
+    Users will populate these during runtime.
+    """
+    dst_certs = pkg_dir / "certs"
+
+    # Remove existing certs directory
+    if dst_certs.exists():
+        shutil.rmtree(dst_certs)
+
+    # Create fresh certs directory
+    dst_certs.mkdir(parents=True, exist_ok=True)
+    # Create .gitkeep to ensure directory is included in package
+    (dst_certs / ".gitkeep").touch()
+
+    print("Created: certs/")
 
 
 if __name__ == "__main__":

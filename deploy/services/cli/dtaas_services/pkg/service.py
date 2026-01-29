@@ -529,6 +529,7 @@ class Service:
 
     def _clean_data_directories(self, service_list: Optional[list] = None) -> None:
         """Clean and recreate data directories for services.
+
         Args:
             service_list: Optional list of specific services to clean
         """
@@ -538,26 +539,75 @@ class Service:
         for subdir in data_subdirs:
             self._remove_and_recreate_directory(data_dir / subdir)
 
-    def _remove_docker_services(
-        self, service_list: Optional[list] = None, remove_volumes: bool = False
-    ) -> None:
-        """Execute docker compose remove/down command."""
-        if service_list:
-            self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
-        else:
-            self.docker.compose.down(volumes=remove_volumes)
-
     def _get_remove_message(self, remove_volumes: bool) -> str:
-        """Get success message for remove operation."""
+        """Get message for remove_services based on whether volumes were removed."""
         if remove_volumes:
-            return "Services and data removed successfully"
-        return "Services removed successfully"
+            return " Services and volumes removed successfully"
+        return " Services removed successfully"
+
+    def _remove_all_files_in_directory(self, directory: Path) -> None:
+        """Recursively remove all files and subdirectories in a directory.
+
+        Removes all files at all levels including .gitkeep files in nested subdirectories.
+        This is used by clean_services to ensure complete cleanup of all service data.
+        """
+        if not directory.exists():
+            return
+
+        try:
+            for item in directory.iterdir():
+                if item.is_file():
+                    # Try to change permissions before deleting (Windows compatibility)
+                    try:
+                        item.chmod(0o777)
+                    except PermissionError:
+                        pass
+                    try:
+                        item.unlink()
+                    except OSError as e:
+                        click.echo(f"Warning: Could not remove {item}: {e}", err=True)
+                elif item.is_dir():
+                    # Recursively remove files in subdirectories
+                    self._remove_all_files_in_directory(item)
+                    # After removing all contents, try to remove the directory itself
+                    try:
+                        item.rmdir()
+                    except OSError:
+                        # Directory might not be empty or have permission issues, skip
+                        pass
+        except OSError as e:
+            click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+
+    def _remove_gitkeep_files(self, directory: Path) -> None:
+        """Recursively remove all .gitkeep files in a directory and subdirectories.
+
+        Keeps all other files intact. Useful for cleaning placeholder files
+        while preserving actual configuration and data.
+        """
+        if not directory.exists():
+            return
+
+        try:
+            for item in directory.iterdir():
+                if item.is_file() and item.name == ".gitkeep":
+                    try:
+                        item.chmod(0o777)
+                    except PermissionError:
+                        pass
+                    try:
+                        item.unlink()
+                    except OSError as e:
+                        click.echo(f"Warning: Could not remove {item}: {e}", err=True)
+                elif item.is_dir():
+                    # Recursively search subdirectories
+                    self._remove_gitkeep_files(item)
+        except OSError as e:
+            click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
 
     def _is_thingsboard_container_present(self) -> bool:
         """Check if ThingsBoard container exists (not removed).
-
-        This is used for dependency checking - we don't want to allow stopping
-        or removing postgres if the ThingsBoard container still exists.
+        This is used for dependency checking. Stopping or removing postgres
+        is allowed only if ThingsBoard does not exist.
         """
         try:
             err, container_map = self._get_all_containers()
@@ -594,7 +644,7 @@ class Service:
                     "sh",
                     "-c",
                     'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc '
-                    "\"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'admin_settings');\"",
+                    + "\"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'admin_settings');\"",
                 ],
             )
             # t -> table exists, f -> does not exist
@@ -626,6 +676,27 @@ class Service:
 
         return None, None
 
+    def _remove_docker_services(
+        self, service_list: Optional[list] = None, remove_volumes: bool = False
+    ) -> None:
+        """Remove Docker services using docker compose.
+
+        Args:
+            service_list: Optional list of specific services to remove.
+                         If None, removes all services.
+            remove_volumes: Whether to remove associated volumes
+        """
+        if service_list:
+            # Remove specific services
+            self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
+        else:
+            # Remove all services
+            self.docker.compose.down(volumes=remove_volumes)
+
+        # If volumes were removed, recreate data directory structure
+        if remove_volumes:
+            self._clean_data_directories(service_list)
+
     @_handle_docker_not_running
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
@@ -656,75 +727,9 @@ class Service:
 
         try:
             self._remove_docker_services(service_list, remove_volumes)
-            if remove_volumes:
-                self._clean_data_directories(service_list)
             return None, self._get_remove_message(remove_volumes)
         except DOCKER_OPERATION_EXCEPTIONS as e:
             return self._handle_docker_error("remove services", e)
-
-    def _get_service_directories(
-        self, service_list: Optional[list] = None
-    ) -> list[Path]:
-        """
-        Get all data and log directories for services.
-        Args:
-            service_list: Optional list of specific services to get directories for
-        Returns:
-            List of Path objects to data and log directories
-        """
-        base_dir = Config.get_base_dir()
-        data_dir = base_dir / "data"
-        log_dir = base_dir / "log"
-
-        services = (
-            service_list
-            if service_list
-            else [
-                "grafana",
-                "influxdb",
-                "mongodb",
-                "postgres",
-                "rabbitmq",
-                "thingsboard",
-            ]
-        )
-
-        directories = []
-        for service in services:
-            # Map normalized names to directory names
-            dir_name = service
-            if service == "thingsboard-ce":
-                dir_name = "thingsboard"
-
-            data_path = data_dir / dir_name
-            log_path = log_dir / dir_name
-
-            if data_path.exists():
-                directories.append(data_path)
-            if log_path.exists():
-                directories.append(log_path)
-
-        return directories
-
-    def _remove_all_files_in_directory(self, directory: Path) -> None:
-        """Remove all files and subdirectories in a directory, including .gitkeep."""
-        if not directory.exists():
-            return
-
-        for item in directory.iterdir():
-            try:
-                if item.is_file():
-                    # Try to change permissions before deleting (Windows compatibility)
-                    try:
-                        item.chmod(0o777)
-                    except (PermissionError):
-                        pass
-                    item.unlink()
-                elif item.is_dir():
-                    shutil.rmtree(item, ignore_errors=True)
-            except (OSError) as e:
-                # Log but continue with other files
-                click.echo(f"Warning: Could not remove {item}: {e}", err=True)
 
     def clean_services(
         self, service_list: Optional[list] = None
@@ -732,7 +737,8 @@ class Service:
         """
         Clean all temporary files and data for services.
         This removes all files from data and log directories for the specified services,
-        including .gitkeep files. Useful for preparing to reinstall services.
+        including .gitkeep files. Also removes .gitkeep files from config subdirectories.
+        Useful for preparing to reinstall services.
 
         Args:
             service_list: Optional list of specific services to clean
@@ -745,7 +751,25 @@ class Service:
             service_list = [normalize_service_name(s) for s in service_list]
 
         try:
-            directories = self._get_service_directories(service_list)
+            base_dir = Config.get_base_dir()
+            directories = []
+
+            # When cleaning all services, clean root directories
+            if not service_list:
+                for dir_name in ["data", "log", "certs"]:
+                    dir_path = base_dir / dir_name
+                    if dir_path.exists():
+                        directories.append(dir_path)
+            else:
+                # When cleaning specific services, clean their subdirectories
+                for service in service_list:
+                    # Map normalized names to directory names
+                    dir_name = "thingsboard" if service == "thingsboard-ce" else service
+
+                    for subdir_type in ["data", "log"]:
+                        dir_path = base_dir / subdir_type / dir_name
+                        if dir_path.exists():
+                            directories.append(dir_path)
 
             if not directories:
                 if service_list:
@@ -758,9 +782,14 @@ class Service:
             for directory in directories:
                 self._remove_all_files_in_directory(directory)
 
+            # Also remove .gitkeep files from config directories
+            config_dir = base_dir / "config"
+            if config_dir.exists():
+                self._remove_gitkeep_files(config_dir)
+
             if service_list:
                 return None, f"Cleaned data for services: {', '.join(service_list)}"
             return None, "Cleaned all service data"
-        except (OSError) as e:
+        except OSError as e:
             err = RuntimeError(f"Failed to clean service data: {str(e)}")
             return err, str(err)

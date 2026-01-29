@@ -151,8 +151,11 @@ def _copy_cert_files(source_dir: Path, certs_dir: Path) -> Tuple[bool, str]:
     """
     try:
         _copy_files(source_dir, certs_dir)
+        # Normalize all Let's Encrypt/Certbot certificate types
         normalize_cert_candidates(certs_dir, "privkey")
         normalize_cert_candidates(certs_dir, "fullchain")
+        normalize_cert_candidates(certs_dir, "cert")
+        normalize_cert_candidates(certs_dir, "chain")
         return True, f"Certificates copied and normalized in {certs_dir}"
     except OSError as e:
         return False, f"Error copying certificates: {e}"

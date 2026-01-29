@@ -78,7 +78,11 @@ def services():
 
 
 @services.command()
-@click.option("--path", default=".", help="Directory to generate project structure")
+@click.option(
+    "--path",
+    default=None,
+    help="Directory to generate project structure (defaults to current directory)",
+)
 def generate_project(path):
     """
     Generate project structure with template config, data directories, and compose file.
@@ -88,7 +92,11 @@ def generate_project(path):
         dtaas-services generate-project
         dtaas-services generate-project --path /path/to/project
     """
-    target_dir = Path(path).resolve()
+    if path is None:
+        target_dir = Path.cwd()
+    else:
+        target_dir = Path(path).resolve()
+
     package_root = Path(dtaas_services.__file__).parent
 
     success, message = generate_project_structure(target_dir, package_root)
@@ -156,11 +164,9 @@ def _check_postgres_running(console: Console, docker) -> None:
         )
         if not postgres_running:
             console.print(
-                "[yellow]⚠️  PostgreSQL does not appear to be running[/yellow]"
+                "[yellow]⚠️  PostgreSQL does not appear to be running, starting it now...[/yellow]"
             )
-            console.print(
-                "[cyan]Start it with: dtaas-services start -s postgresql[/cyan]"
-            )
+
     except Exception:
         # If we can't check, proceed anyway
         pass

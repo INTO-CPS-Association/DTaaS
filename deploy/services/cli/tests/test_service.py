@@ -136,9 +136,11 @@ def test_start_services_success(patch_service_deps):
     mock_docker = MagicMock()
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True), \
-         patch.object(service, "_get_running_services", return_value=set()), \
-         patch.object(service, "_get_all_service_names", return_value=(None, {"grafana", "influxdb"})):
+    with patch.object(Path, "exists", return_value=True), patch.object(
+        service, "_get_running_services", return_value=set()
+    ), patch.object(
+        service, "_get_all_service_names", return_value=(None, {"grafana", "influxdb"})
+    ):
         err, message = service.manage_services("start")
 
     assert err is None
@@ -167,9 +169,11 @@ def test_start_services_docker_error(patch_service_deps):
     mock_docker.compose.up.side_effect = OSError("Docker error")
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True), \
-         patch.object(service, "_get_running_services", return_value=set()), \
-         patch.object(service, "_get_all_service_names", return_value=(None, {"grafana"})):
+    with patch.object(Path, "exists", return_value=True), patch.object(
+        service, "_get_running_services", return_value=set()
+    ), patch.object(
+        service, "_get_all_service_names", return_value=(None, {"grafana"})
+    ):
         err, message = service.manage_services("start")
 
     assert err is not None
@@ -447,9 +451,11 @@ def test_docker_not_running_decorator(patch_service_deps):
     mock_docker.compose.up.side_effect = DockerException(["docker"], 1, None, None)
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True), \
-         patch.object(service, "_get_running_services", return_value=set()), \
-         patch.object(service, "_get_all_service_names", return_value=(None, {"grafana"})):
+    with patch.object(Path, "exists", return_value=True), patch.object(
+        service, "_get_running_services", return_value=set()
+    ), patch.object(
+        service, "_get_all_service_names", return_value=(None, {"grafana"})
+    ):
         err, _ = service.manage_services("start")
     assert err is not None
     assert isinstance(err, RuntimeError)
