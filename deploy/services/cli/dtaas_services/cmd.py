@@ -447,15 +447,23 @@ def remove(service_names, volumes):
     "service_names",
     help="Comma-separated list of services to clean",
 )
-@click.confirmation_option(
-    prompt="This will delete ALL data and log files for the selected services. Continue?"
+@click.option(
+    "--certs",
+    is_flag=True,
+    default=False,
+    help=(
+        "Also delete copied TLS cert files under certs/<HOSTNAME>. "
+        "This will require re-running dtaas-services setup."
+    ),
 )
-def clean(service_names):
+def clean(service_names, certs):
     """
     Clean all temporary files and data for services.
 
     This removes all files from data and log directories for the specified services,
     including .gitkeep files. Useful for preparing to reinstall services.
+
+    By default, certificates under certs/<HOSTNAME> are preserved. Use --certs to delete them.
 
     Services must be stopped before cleaning.
     """
@@ -463,6 +471,12 @@ def clean(service_names):
         setup_obj = Service()
         console = Console()
         service_list = _parse_service_list(service_names)
+
+        prompt = "This will delete ALL data and log files for the selected services."
+        if certs:
+            prompt += " It will ALSO delete copied TLS cert files under certs/<HOSTNAME>."
+        prompt += " Continue?"
+        click.confirm(prompt, default=False, abort=True)
 
         # Check if any services are running
         running_services = setup_obj._get_running_services()
@@ -495,10 +509,11 @@ def clean(service_names):
         else:
             console.print("[yellow]Cleaning all services...[/yellow]")
 
-        with console.status(
-            "[bold yellow]Removing data and log files...[/bold yellow]", spinner="dots"
-        ):
-            err, msg = setup_obj.clean_services(service_list)
+        status_msg = "[bold yellow]Removing data and log files...[/bold yellow]"
+        if certs:
+            status_msg = "[bold yellow]Removing data, log, and cert files...[/bold yellow]"
+        with console.status(status_msg, spinner="dots"):
+            err, msg = setup_obj.clean_services(service_list, include_certs=certs)
 
         if err is not None:
             raise click.ClickException(msg)

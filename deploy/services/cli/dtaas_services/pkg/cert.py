@@ -114,7 +114,7 @@ def _create_dummy_certs(certs_dir: Path) -> Tuple[bool, str]:
             _create_dummy_cert_file(privkey_path)
         if not fullchain_path.exists():
             _create_dummy_cert_file(fullchain_path)
-        return True, f"Created dummy certificates in {certs_dir} for CI testing"
+        return True, f"\nCreated dummy certificates in {certs_dir} for CI testing"
     except OSError as e:
         return False, f"Source directory error creating dummy certificates: {e}"
 
@@ -220,7 +220,7 @@ def set_service_cert_permissions(
 ) -> Tuple[bool, str]:
     """Set certificate file ownership and permissions for a service.
 
-    Automatically skips permission changes in CI environments (read-only).
+    Automatically skips permission changes in CI environments and Windows.
 
     Args:
         ctx: Context containing service name, cert path, uid, gid, and mode
@@ -229,12 +229,17 @@ def set_service_cert_permissions(
         Tuple of (success, message)
     """
     try:
-        # Skip permission changes in CI environments (they're read-only)
         if _is_posix_not_ci():
             _apply_cert_permissions(ctx)
             msg = _get_permission_message(ctx)
         else:
-            msg = f"{ctx.cert_path.name} created (permission changes skipped in CI)."
+            # Determine why permissions were skipped
+            if is_ci():
+                msg = f"\n{ctx.cert_path.name} created (permission changes skipped in CI)."
+            elif platform.system().lower() == "windows":
+                msg = f"\n{ctx.cert_path.name} created (POSIX permissions not applicable on Windows)."
+            else:
+                msg = f"\n{ctx.cert_path.name} created (permission changes skipped)."
         return True, msg
     except OSError as e:
         return False, f"Error setting permissions for {ctx.service_name}: {e}"

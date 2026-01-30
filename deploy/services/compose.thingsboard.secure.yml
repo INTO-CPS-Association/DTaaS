@@ -8,19 +8,35 @@ services:
       - '${POSTGRES_PORT}:5432'
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
-      - './certs/${HOSTNAME}:/etc/ssl'
+      # Mount certs read-only and copy into container to ensure correct POSIX permissions.
+      # This avoids restart loops on Windows bind mounts where postgres.key appears world-readable.
+      - './certs/${HOSTNAME}:/certs-src:ro'
     environment:
       POSTGRES_DB: '${POSTGRES_DB}'
       POSTGRES_USER: '${POSTGRES_USER}'
       POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
-    command:
-      - postgres
+    entrypoint:
+      - bash
       - -c
-      - ssl=on
-      - -c
-      - ssl_cert_file=/etc/ssl/postgres.crt
-      - -c
-      - ssl_key_file=/etc/ssl/postgres.key
+      - |
+        set -e
+        if [ ! -f /certs-src/postgres.crt ] || [ ! -f /certs-src/postgres.key ]; then
+          echo "Missing /certs-src/postgres.crt or /certs-src/postgres.key. Run: dtaas-services setup" >&2
+          exit 1
+        fi
+
+        mkdir -p /var/lib/postgresql/ssl
+        cp /certs-src/postgres.crt /var/lib/postgresql/ssl/postgres.crt
+        cp /certs-src/postgres.key /var/lib/postgresql/ssl/postgres.key
+
+        chown postgres:postgres /var/lib/postgresql/ssl/postgres.crt /var/lib/postgresql/ssl/postgres.key
+        chmod 644 /var/lib/postgresql/ssl/postgres.crt
+        chmod 600 /var/lib/postgresql/ssl/postgres.key
+
+        exec docker-entrypoint.sh postgres \
+          -c ssl=on \
+          -c ssl_cert_file=/var/lib/postgresql/ssl/postgres.crt \
+          -c ssl_key_file=/var/lib/postgresql/ssl/postgres.key
     networks:
       - platform-services
 

@@ -163,7 +163,7 @@ def _apply_directory_ownership_if_needed(
             f"ThingsBoard data and log directories ownership set "
             f"to {cfg.thingsboard_uid}:{cfg.thingsboard_gid}"
         )
-    return "ThingsBoard data and log directories created (ownership skipped)"
+    return "\nThingsBoard data and log directories created (ownership skipped)"
 
 
 def _setup_thingsboard_directories(cfg: _SetupConfig) -> Tuple[bool, str]:

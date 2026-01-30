@@ -49,7 +49,7 @@ def _handle_docker_not_running(func):
                 )
             ):
                 err = RuntimeError(
-                    "Docker is not running. Please start Docker Desktop and try again."
+                    "\nDocker is not running. Please start Docker Desktop and try again."
                 )
                 return err, str(err)
             # For other Docker exceptions, return the actual error
@@ -732,16 +732,20 @@ class Service:
             return self._handle_docker_error("remove services", e)
 
     def clean_services(
-        self, service_list: Optional[list] = None
+        self, service_list: Optional[list] = None, include_certs: bool = False
     ) -> Tuple[Optional[Exception], str]:
         """
-        Clean all temporary files and data for services.
-        This removes all files from data and log directories for the specified services,
-        including .gitkeep files. Also removes .gitkeep files from config subdirectories.
-        Useful for preparing to reinstall services.
+        Clean service data directories.
+
+        By default, this removes all files from data and log directories for the specified
+        services (including .gitkeep files) and removes .gitkeep files from config
+        subdirectories.
+
+        Certificates under certs/<HOSTNAME> are NOT deleted unless include_certs=True.
 
         Args:
             service_list: Optional list of specific services to clean
+            include_certs: Whether to also remove copied TLS cert files under certs/<HOSTNAME>
 
         Returns:
             Tuple of (Exception or None, message)
@@ -754,12 +758,20 @@ class Service:
             base_dir = Config.get_base_dir()
             directories = []
 
+            host_name = os.environ.get("HOSTNAME")
+            certs_host_dir = (
+                (base_dir / "certs" / host_name) if host_name else (base_dir / "certs")
+            )
+
             # When cleaning all services, clean root directories
             if not service_list:
-                for dir_name in ["data", "log", "certs"]:
+                for dir_name in ["data", "log"]:
                     dir_path = base_dir / dir_name
                     if dir_path.exists():
                         directories.append(dir_path)
+
+                if include_certs and certs_host_dir.exists():
+                    directories.append(certs_host_dir)
             else:
                 # When cleaning specific services, clean their subdirectories
                 for service in service_list:
@@ -770,6 +782,10 @@ class Service:
                         dir_path = base_dir / subdir_type / dir_name
                         if dir_path.exists():
                             directories.append(dir_path)
+
+                # Certs are shared across services; only remove host cert dir if explicitly requested
+                if include_certs and certs_host_dir.exists():
+                    directories.append(certs_host_dir)
 
             if not directories:
                 if service_list:
@@ -787,9 +803,13 @@ class Service:
             if config_dir.exists():
                 self._remove_gitkeep_files(config_dir)
 
+            certs_note = " (including certificates)" if include_certs else ""
             if service_list:
-                return None, f"Cleaned data for services: {', '.join(service_list)}"
-            return None, "Cleaned all service data"
+                return (
+                    None,
+                    f"Cleaned data for services: {', '.join(service_list)}{certs_note}",
+                )
+            return None, f"Cleaned all service data{certs_note}"
         except OSError as e:
             err = RuntimeError(f"Failed to clean service data: {str(e)}")
             return err, str(err)
