@@ -539,6 +539,33 @@ class Service:
         for subdir in data_subdirs:
             self._remove_and_recreate_directory(data_dir / subdir)
 
+    def _remove_influx_cli_config_if_needed(self, service_list: Optional[list]) -> None:
+        """Remove generated InfluxDB CLI config file if InfluxDB data was wiped.
+
+        InfluxDB's Docker init script can fail with:
+        "Error: config name 'default' already exists"
+        if the CLI config file persists while the data directory has been wiped.
+
+        The CLI config file is generated at config/influxdb/influx-configs and is safe
+        to delete when resetting InfluxDB.
+        """
+        if service_list and "influxdb" not in service_list:
+            return
+
+        base_dir = Config.get_base_dir()
+        influx_cfg = base_dir / "config" / "influxdb" / "influx-configs"
+        if not influx_cfg.exists():
+            return
+        try:
+            try:
+                influx_cfg.chmod(0o777)
+            except OSError:
+                pass
+            influx_cfg.unlink(missing_ok=True)
+        except OSError:
+            # Best-effort cleanup; if it fails, Influx may still restart-loop.
+            pass
+
     def _get_remove_message(self, remove_volumes: bool) -> str:
         """Get message for remove_services based on whether volumes were removed."""
         if remove_volumes:
@@ -696,6 +723,8 @@ class Service:
         # If volumes were removed, recreate data directory structure
         if remove_volumes:
             self._clean_data_directories(service_list)
+            # Also remove generated config artifacts that conflict with fresh init
+            self._remove_influx_cli_config_if_needed(service_list)
 
     @_handle_docker_not_running
     def remove_services(
@@ -797,6 +826,9 @@ class Service:
 
             for directory in directories:
                 self._remove_all_files_in_directory(directory)
+
+            # If we wiped InfluxDB data, also remove the generated CLI config file
+            self._remove_influx_cli_config_if_needed(service_list)
 
             # Also remove .gitkeep files from config directories
             config_dir = base_dir / "config"
