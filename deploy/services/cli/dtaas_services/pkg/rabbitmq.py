@@ -38,27 +38,43 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
         Tuple of (success, error message if any)
     """
     vhost = username
-    # Add user
-    success, error_msg = _execute_rabbitmq_command(
+    # Add user (ignore if already exists) - don't print output to avoid clutter
+    success, output = execute_docker_command(
         "rabbitmq",
         ["rabbitmqctl", "add_user", username, password],
-        f"Failed to add user {username}",
+        verbose=False,
     )
     if not success:
-        return False, error_msg
-    # Add vhost
-    success, error_msg = _execute_rabbitmq_command(
-        "rabbitmq", ["rabbitmqctl", "add_vhost", vhost], f"Failed to add vhost {vhost}"
+        if "already exists" in output:
+            print(f"User '{username}' already exists, skipping...")
+        else:
+            error_msg = f"Failed to add user {username}: {output}"
+            print(error_msg)  # Print manually if it's a real error
+            return False, error_msg
+    
+    # Add vhost (ignore if already exists)
+    success, output = execute_docker_command(
+        "rabbitmq",
+        ["rabbitmqctl", "add_vhost", vhost],
+        verbose=False,
     )
     if not success:
-        return False, error_msg
+        if "already exists" in output:
+            print(f"Vhost '{vhost}' already exists, skipping...")
+        else:
+            error_msg = f"Failed to add vhost {vhost}: {output}"
+            print(error_msg)
+            return False, error_msg
+    
     # Set permissions on user's own vhost only
-    success, error_msg = _execute_rabbitmq_command(
+    success, output = execute_docker_command(
         "rabbitmq",
         ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"],
-        f"Failed to set permissions on vhost {vhost}",
+        verbose=True,
     )
-    return success, error_msg
+    if not success:
+        return False, f"Failed to set permissions on vhost {vhost}: {output}"
+    return True, ""
 
 
 def setup_rabbitmq_users() -> tuple[bool, str]:

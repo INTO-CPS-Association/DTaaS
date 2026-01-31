@@ -28,15 +28,16 @@ def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
         return False, None, f"Unexpected data format: {str(e)}"
 
 
-def _execute_influxdb_command(command: list, error_context: str) -> tuple[bool, str]:
+def _execute_influxdb_command(command: list, error_context: str, verbose: bool = False) -> tuple[bool, str]:
     """Execute an InfluxDB docker command and return error if it fails.
     Args:
         command: Command list to execute
         error_context: Error message context
+        verbose: Whether to print command output
     Returns:
         Tuple of (success, error message if any)
     """
-    success, output = execute_docker_command("influxdb", command)
+    success, output = execute_docker_command("influxdb", command, verbose=verbose)
     if not success:
         return False, f"{error_context}: {output}"
     return True, ""
@@ -54,9 +55,14 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     success, output = execute_docker_command(
         "influxdb",
         ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password],
+        verbose=False,
     )
 
     if not success:
+        if "already exists" in output:
+            print(f"User '{username}' already exists, skipping...")
+            return True, ""
+        print(f"Docker error: {output}")  # Only print real errors
         return False, f"Failed to create user {username}: {output}"
     return True, ""
 
@@ -130,7 +136,7 @@ def _setup_user_org_bucket(
         )
         if not success:
             return False, error_msg
-    # Add user as owner to organization
+    # Add user as owner to organization (ignore if already exists)
     success, error_msg = _execute_influxdb_command(
         [
             "influx",
@@ -145,15 +151,29 @@ def _setup_user_org_bucket(
             user_id,
         ],
         f"Failed to add user {user_id} as owner to {name}",
+        verbose=False,
     )
     if not success:
-        return False, error_msg
-    # Create bucket
+        if "already exists" in error_msg:
+            print(f"Organization membership for '{name}' already exists, skipping...")
+        else:
+            print(f"Docker error: {error_msg}")  # Only print real errors
+            return False, error_msg
+    
+    # Create bucket (ignore if already exists)
     success, error_msg = _execute_influxdb_command(
         ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
         f"Failed to create bucket {name}",
+        verbose=False,
     )
-    return success, error_msg
+    if not success:
+        if "already exists" in error_msg:
+            print(f"Bucket '{name}' already exists, skipping...")
+        else:
+            print(f"Docker error: {error_msg}")  # Only print real errors
+            return False, error_msg
+    
+    return True, ""
 
 
 def _setup_user_organizations(users_dict: dict, existing_orgs: set) -> tuple[bool, str]:

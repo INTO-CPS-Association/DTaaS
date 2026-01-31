@@ -1,6 +1,7 @@
 """DTaaS Services CLI commands"""
 
 from pathlib import Path
+import os
 from typing import Optional, Callable
 from dataclasses import dataclass
 import click
@@ -201,16 +202,22 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
                             console.print("[green]✅ PostgreSQL is ready[/green]")
                             return
 
-                    # Fallback: Try pg_isready command
+                    # Fallback: Try pg_isready command using docker.execute
                     try:
-                        result = docker.compose.execute(
-                            "postgres",
-                            ["pg_isready", "-U", "postgres"],
-                            tty=False
-                        )
-                        if result[1] == 0:
-                            console.print("[green]✅ PostgreSQL is ready[/green]")
-                            return
+                        pg_user = os.environ.get("POSTGRES_USER", "postgres")
+                        result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
+                        if isinstance(result, str):
+                            if "accepting" in result.lower():
+                                console.print("[green]✅ PostgreSQL is ready[/green]")
+                                return
+                        # In some contexts the execute call may return (out, exit_code)
+                        if isinstance(result, (list, tuple)) and len(result) > 1:
+                            try:
+                                if int(result[1]) == 0:
+                                    console.print("[green]✅ PostgreSQL is ready[/green]")
+                                    return
+                            except Exception:
+                                pass
                     except Exception:
                         pass
                 elif current_status == "restarting":
@@ -531,8 +538,12 @@ def user():
 
 def _setup_service_users(
     console: Console, service_name: str, setup_func: Callable
-) -> None:
-    """Set up users for a service and print status."""
+) -> bool:
+    """Set up users for a service and print status.
+    
+    Returns:
+        bool: True if successful, False if there were errors
+    """
     console.print(f"\n[cyan]Adding users to {service_name}...[/cyan]")
     success, msg = setup_func()
     if not success:
@@ -540,6 +551,7 @@ def _setup_service_users(
         console.print(f"[red]{service_name}: {error_line}[/red]", style="bold")
     else:
         console.print(f"[green]✅ {service_name}: {msg}[/green]")
+    return success
 
 
 @user.command()
@@ -553,10 +565,19 @@ def add():
 
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
-    _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
-    _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
-    _setup_service_users(console, "ThingsBoard", thingsboard.setup_thingsboard_users)
-    console.print("\n[bold green]✅ Adding user completed![/bold green]")
+    
+    results = []
+    results.append(_setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users))
+    results.append(_setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users))
+    results.append(_setup_service_users(console, "ThingsBoard", thingsboard.setup_thingsboard_users))
+    
+    # Check if all services succeeded
+    all_success = all(results)
+    if all_success:
+        console.print("\n[bold green]✅ All users added successfully![/bold green]")
+    else:
+        failed_count = sum(1 for r in results if not r)
+        console.print(f"\n[bold yellow]⚠️  User addition completed with {failed_count} error(s). See messages above.[/bold yellow]")
 
 
 if __name__ == "__main__":
