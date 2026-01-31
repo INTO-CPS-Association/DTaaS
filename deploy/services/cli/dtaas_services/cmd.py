@@ -176,17 +176,16 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
         try:
             # Check if postgres container is running and healthy
             containers = docker.compose.ps()
-            postgres = next(
-                (c for c in containers if c.name == "postgres"),
-                None
-            )
+            postgres = next((c for c in containers if c.name == "postgres"), None)
 
             if postgres and hasattr(postgres, "state"):
                 current_status = postgres.state.status
 
                 if current_status != last_status:
                     if current_status == "running":
-                        console.print("[green]PostgreSQL container is running, checking health...[/green]")
+                        console.print(
+                            "[green]PostgreSQL container is running, checking health...[/green]"
+                        )
                     elif current_status == "restarting":
                         console.print(
                             "[yellow]⚠️  PostgreSQL is restarting. "
@@ -205,7 +204,9 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
                     # Fallback: Try pg_isready command using docker.execute
                     try:
                         pg_user = os.environ.get("POSTGRES_USER", "postgres")
-                        result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
+                        result = docker.execute(
+                            "postgres", ["pg_isready", "-U", pg_user]
+                        )
                         if isinstance(result, str):
                             if "accepting" in result.lower():
                                 console.print("[green]✅ PostgreSQL is ready[/green]")
@@ -214,7 +215,9 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
                         if isinstance(result, (list, tuple)) and len(result) > 1:
                             try:
                                 if int(result[1]) == 0:
-                                    console.print("[green]✅ PostgreSQL is ready[/green]")
+                                    console.print(
+                                        "[green]✅ PostgreSQL is ready[/green]"
+                                    )
                                     return
                             except Exception:
                                 pass
@@ -488,7 +491,9 @@ def clean(service_names, certs):
 
         prompt = "This will delete ALL data and log files for the selected services."
         if certs:
-            prompt += " It will ALSO delete copied TLS cert files under certs/<HOSTNAME>."
+            prompt += (
+                " It will ALSO delete copied TLS cert files under certs/<HOSTNAME>."
+            )
         prompt += " Continue?"
         click.confirm(prompt, default=False, abort=True)
 
@@ -525,7 +530,9 @@ def clean(service_names, certs):
 
         status_msg = "[bold yellow]Removing data and log files...[/bold yellow]"
         if certs:
-            status_msg = "[bold yellow]Removing data, log, and cert files...[/bold yellow]"
+            status_msg = (
+                "[bold yellow]Removing data, log, and cert files...[/bold yellow]"
+            )
         with console.status(status_msg, spinner="dots"):
             err, msg = setup_obj.clean_services(service_list, include_certs=certs)
 
@@ -547,7 +554,7 @@ def _setup_service_users(
     console: Console, service_name: str, setup_func: Callable
 ) -> bool:
     """Set up users for a service and print status.
-    
+
     Returns:
         bool: True if successful, False if there were errors
     """
@@ -572,19 +579,29 @@ def add():
 
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
-    
+
     results = []
-    results.append(_setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users))
-    results.append(_setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users))
-    results.append(_setup_service_users(console, "ThingsBoard", thingsboard.setup_thingsboard_users))
-    
+    results.append(
+        _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
+    )
+    results.append(
+        _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
+    )
+    results.append(
+        _setup_service_users(
+            console, "ThingsBoard", thingsboard.setup_thingsboard_users
+        )
+    )
+
     # Check if all services succeeded
     all_success = all(results)
     if all_success:
         console.print("\n[bold green]✅ All users added successfully![/bold green]")
     else:
         failed_count = sum(1 for r in results if not r)
-        console.print(f"\n[bold yellow]⚠️  User addition completed with {failed_count} error(s). See messages above.[/bold yellow]")
+        console.print(
+            f"\n[bold yellow]⚠️  User addition completed with {failed_count} error(s). See messages above.[/bold yellow]"
+        )
 
 
 if __name__ == "__main__":

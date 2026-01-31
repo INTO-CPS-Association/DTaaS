@@ -52,7 +52,10 @@ def login(base_url: str, email: str, password: str) -> str | None:
     except httpx.HTTPError as e:
         error_str = str(e)
         # Check if it's an SSL verification error
-        if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
+        if (
+            "certificate verify failed" in error_str.lower()
+            or "ssl" in error_str.lower()
+        ):
             logger.error(
                 f"SSL certificate verification failed: {e}\n"
                 "  → Using self-signed certificates? Change verify=True to verify=False in thingsboard_users.py\n"

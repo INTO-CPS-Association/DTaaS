@@ -1,6 +1,7 @@
 """
 Pytest configuration and fixtures for DTaaS Services CLI tests.
 """
+
 from pathlib import Path
 import traceback
 import dtaas_services
@@ -13,7 +14,8 @@ def pytest_configure(config):
     This hook runs before tests are collected.
     """
     config.addinivalue_line(
-        "markers", "system: mark test as a system/integration test that requires full environment setup"
+        "markers",
+        "system: mark test as a system/integration test that requires full environment setup",
     )
 
     # Set up the test environment by generating project structure
@@ -32,4 +34,3 @@ def pytest_configure(config):
     except Exception as e:
         print(f"\nWarning: Failed to set up test environment: {e}")
         traceback.print_exc()
-
