@@ -267,10 +267,10 @@ def install(service):
 
     Prerequisites:
     - dtaas-services setup must be completed
-    - PostgreSQL must be running
 
-    This command initializes the ThingsBoard database and creates the default
-    system administrator account. It must be run only once after initial setup.
+    This command automatically starts PostgreSQL if needed, then initializes
+    the ThingsBoard database and creates the default system administrator account.
+    It must be run only once after initial setup.
     """
     try:
         check_root_unix()
@@ -283,6 +283,13 @@ def install(service):
 
         service_obj = Service()
         docker = service_obj.docker
+
+        # Start PostgreSQL (will be skipped if already running/restarting)
+        console.print("[cyan]Ensuring PostgreSQL is running...[/cyan]")
+        err, msg = service_obj.manage_services("start", ["postgres"])
+        if err is not None:
+            raise click.ClickException(f"Failed to start PostgreSQL: {msg}")
+        console.print(f"[green]{msg}[/green]")
 
         _wait_for_postgres_ready(console, docker)
         _run_thingsboard_install(console, docker)

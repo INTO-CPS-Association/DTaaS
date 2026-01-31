@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 def build_base_url() -> str:
-    """Build ThingsBoard base URL from environment variables."""
+    """
+    Build ThingsBoard base URL from environment variables.
+    Uses HOSTNAME from environment (must match certificate domain name).
+    """
     hostname = os.getenv("HOSTNAME", "localhost")
     port = os.getenv("THINGSBOARD_PORT", "8080")
     scheme = os.getenv("THINGSBOARD_SCHEME", "https")
@@ -43,11 +46,20 @@ def login(base_url: str, email: str, password: str) -> str | None:
             url,
             json={"username": email, "password": password},
             timeout=10,
-            verify=True,
+            verify=True,  # Change to False for self-signed certificates
         )
         return _handle_login_response(resp)
     except httpx.HTTPError as e:
-        logger.error(f"Network error during login: {e}")
+        error_str = str(e)
+        # Check if it's an SSL verification error
+        if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
+            logger.error(
+                f"SSL certificate verification failed: {e}\n"
+                "  → Using self-signed certificates? Change verify=True to verify=False in thingsboard_users.py\n"
+                "  → Or use valid CA-signed certificates for production"
+            )
+        else:
+            logger.error(f"Network error during login: {e}")
         return None
 
 

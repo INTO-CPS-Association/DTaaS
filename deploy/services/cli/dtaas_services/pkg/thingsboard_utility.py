@@ -86,6 +86,16 @@ def _create_tenant_admin_user(
         return None, error_msg
 
     if resp.status_code not in (200, 201):
+        # 400 often means user already exists
+        if resp.status_code == 400:
+            try:
+                error_data = resp.json()
+                error_message = error_data.get("message", "")
+                if "already" in error_message.lower():
+                    logger.info(f"  Tenant admin '{ctx.admin_email}' already exists, skipping...")
+                    return None, ""
+            except:
+                pass
         return None, f"Failed to create tenant admin: {resp.status_code}"
 
     try:
@@ -131,7 +141,8 @@ def _activate_user(
         resp = httpx.post(
             f"{base_url}/api/noauth/activate",
             json=activate_payload,
-            timeout=10,
+            timeout=15,
+            verify=True,  # Change to False for self-signed certificates
         )
 
         if resp.status_code != 200:
@@ -140,6 +151,15 @@ def _activate_user(
 
         return True, ""
     except httpx.HTTPError as e:
+        error_str = str(e)
+        # Check if it's an SSL verification error
+        if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
+            return False, (
+                f"SSL certificate verification failed: {e}\n"
+                "  → Using self-signed certificates? Change this line in thingsboard_utility.py:\n"
+                "     verify=True  →  verify=False\n"
+                "  → Or use valid CA-signed certificates for production"
+            )
         return False, f"Network error activating user: {e}"
 
 
@@ -178,6 +198,9 @@ def _create_and_activate_admin(ctx: _AdminContext, tenant_id: str) -> Tuple[bool
     # Create tenant admin user
     user_id, error_msg = _create_tenant_admin_user(ctx, tenant_id)
     if not user_id:
+        if error_msg == "":
+            print(f"Tenant admin '{ctx.admin_email}' already exists, skipping...")
+            return True, ""
         return False, error_msg
 
     return _activate_admin(ctx, user_id)

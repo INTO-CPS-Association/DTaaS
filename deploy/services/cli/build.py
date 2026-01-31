@@ -3,7 +3,7 @@
 from pathlib import Path
 import shutil
 
-
+GIKEEP = ".gitkeep"
 def build(setup_kwargs):
     """
     This function is called by Poetry during build to prepare files.
@@ -133,7 +133,7 @@ def create_data_structure(pkg_dir: Path):
         subdir_path = dst_data / subdir
         subdir_path.mkdir(exist_ok=True)
         # Create .gitkeep to ensure directory is included in package
-        (subdir_path / ".gitkeep").touch()
+        (subdir_path / GIKEEP).touch()
         print(f"Created: data/{subdir}/")
 
 
@@ -154,7 +154,7 @@ def create_log_structure(pkg_dir: Path):
     dst_log.mkdir(parents=True, exist_ok=True)
 
     # Create .gitkeep to ensure directory is included in package
-    (dst_log / ".gitkeep").touch()
+    (dst_log / GIKEEP).touch()
 
     print("Created: log/")
 
@@ -175,7 +175,7 @@ def create_certs_directory(pkg_dir: Path):
     # Create fresh certs directory
     dst_certs.mkdir(parents=True, exist_ok=True)
     # Create .gitkeep to ensure directory is included in package
-    (dst_certs / ".gitkeep").touch()
+    (dst_certs / GIKEEP).touch()
 
     print("Created: certs/")
 

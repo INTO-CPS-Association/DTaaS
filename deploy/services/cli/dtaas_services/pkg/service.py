@@ -167,39 +167,67 @@ class Service:
         except Exception:
             return set()
 
-    def _start_services(self, service_list: Optional[list]) -> Tuple[list, list]:
+    def _get_running_or_restarting_services(self) -> Tuple[Set[str], Set[str]]:
+        """Get sets of running and restarting service names.
+
+        Returns:
+            Tuple of (running services set, restarting services set)
+        """
+        try:
+            err, container_map = self._get_all_containers()
+            if err:
+                return set(), set()
+
+            running_services = set()
+            restarting_services = set()
+            for service_name, container in container_map.items():
+                if hasattr(container, "state"):
+                    if container.state.status == "running":
+                        running_services.add(service_name)
+                    elif container.state.status == "restarting":
+                        restarting_services.add(service_name)
+            return running_services, restarting_services
+        except Exception:
+            return set(), set()
+
+    def _start_services(
+        self, service_list: Optional[list]
+    ) -> Tuple[list, list, list]:
         """Start services or all if service_list is None.
 
         Returns:
-            Tuple of (list of skipped services, list of started services)
+            Tuple of (skipped running services, started services, restarting services)
         """
-        # Get currently running services
-        running_services = self._get_running_services()
+        # Get currently running and restarting services
+        running_services, restarting_services = self._get_running_or_restarting_services()
+        skip_services = running_services | restarting_services
 
         # Determine which services to start
         if service_list is not None:
-            # Filter out already running services
-            services_to_start = [s for s in service_list if s not in running_services]
+            # Filter out already running/restarting services
+            services_to_start = [s for s in service_list if s not in skip_services]
             skipped_services = [s for s in service_list if s in running_services]
+            restarting_list = [s for s in service_list if s in restarting_services]
 
             if services_to_start:
                 self.docker.compose.up(services_to_start, detach=True)
 
-            return skipped_services, services_to_start
+            return skipped_services, services_to_start, restarting_list
         else:
             # Starting all services
             err, all_services = self._get_all_service_names()
             if err:
                 self.docker.compose.up(detach=True)
-                return [], []
+                return [], [], []
 
-            services_to_start = [s for s in all_services if s not in running_services]
+            services_to_start = [s for s in all_services if s not in skip_services]
             skipped_services = list(running_services & all_services)
+            restarting_list = list(restarting_services & all_services)
 
             if services_to_start:
                 self.docker.compose.up(services_to_start, detach=True)
 
-            return skipped_services, services_to_start
+            return skipped_services, services_to_start, restarting_list
 
     def _stop_services(self, service_list: Optional[list]) -> None:
         """Stop services or all if service_list is None."""
@@ -217,15 +245,15 @@ class Service:
 
     def _execute_compose_action(
         self, action: str, service_list: Optional[list]
-    ) -> Tuple[list, list]:
+    ) -> Tuple[list, list, list]:
         """Execute a compose action with appropriate arguments.
         Args:
             action: The action name ('start', 'stop', 'restart')
             service_list: Optional list of services to target
 
         Returns:
-            Tuple of (list of skipped services, list of affected services)
-            Only applicable for 'start' action, returns ([], []) for others
+            Tuple of (skipped services, affected services, restarting services)
+            Only applicable for 'start' action, returns ([], [], []) for others
         """
         action_handlers = {
             "start": self._start_services,
@@ -237,13 +265,17 @@ class Service:
 
         result = action_handlers[action](service_list)
 
-        # _start_services returns (skipped, started), others return None
+        # _start_services returns (skipped, started, restarting), others return None
         if action == "start" and result is not None:
             return result
-        return [], []
+        return [], [], []
 
     def _get_success_message(
-        self, action: str, skipped: list = None, affected: list = None
+        self,
+        action: str,
+        skipped: list = None,
+        affected: list = None,
+        restarting: list = None,
     ) -> str:
         """Get success message for an action.
 
@@ -251,6 +283,7 @@ class Service:
             action: The action performed
             skipped: List of services that were skipped (for start action)
             affected: List of services that were affected
+            restarting: List of services that are in restarting state
         """
         if action == "start":
             parts = []
@@ -259,11 +292,18 @@ class Service:
                     f"Skipped {len(skipped)} already running service(s): "
                     f"{', '.join(skipped)}"
                 )
+            if restarting:
+                parts.append(
+                    f"⚠️  {len(restarting)} service(s) are restarting: "
+                    f"{', '.join(restarting)}\n"
+                    "   If a service keeps restarting, there may be a configuration error.\n"
+                    "   Check logs with: docker logs <container_name>"
+                )
             if affected:
                 parts.append(
                     f"Started {len(affected)} service(s): {', '.join(affected)}"
                 )
-            elif not skipped:
+            elif not skipped and not restarting:
                 parts.append("No services to start")
 
             if not parts:
@@ -363,8 +403,8 @@ class Service:
         service_list, warning = self._filter_postgres_if_needed(action, service_list)
 
         try:
-            skipped, affected = self._execute_compose_action(action, service_list)
-            success_msg = self._get_success_message(action, skipped, affected)
+            skipped, affected, restarting = self._execute_compose_action(action, service_list)
+            success_msg = self._get_success_message(action, skipped, affected, restarting)
             if warning:
                 success_msg = f"{warning}\n{success_msg}"
             return None, success_msg
@@ -560,6 +600,7 @@ class Service:
             try:
                 influx_cfg.chmod(0o777)
             except OSError:
+                # Best-effort: if we cannot change permissions, attempt deletion anyway.
                 pass
             influx_cfg.unlink(missing_ok=True)
         except OSError:
@@ -588,6 +629,7 @@ class Service:
                     try:
                         item.chmod(0o777)
                     except PermissionError:
+                        # Best-effort: if we cannot change permissions, still attempt deletion below.
                         pass
                     try:
                         item.unlink()
@@ -620,6 +662,8 @@ class Service:
                     try:
                         item.chmod(0o777)
                     except PermissionError:
+                        # Best-effort permission change; if this fails, we still try to delete
+                        # the file below and will report any unlink errors separately.
                         pass
                     try:
                         item.unlink()

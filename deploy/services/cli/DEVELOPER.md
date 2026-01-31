@@ -67,6 +67,7 @@ cli/
 │       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
 │       ├── thingsboard.py  # ThingsBoard admin user management and credentials processing
 │       ├── thingsboard_users.py  # ThingsBoard authentication, password, and tenant management
+│       ├── thingsboard_utility.py  # ThingsBoard user activation helpers
 │       ├── thingsboard_permissions.py  # ThingsBoard certificates and permissions setup
 │       ├── formatter.py    # Output formatting utilities
 │       ├── template.py     # Project structure and template file management
@@ -99,91 +100,19 @@ from the parent `deploy/services/` directory and are gitignored.
 
 The package uses a modular architecture where each service has its own module:
 
-* **`config.py`**: Central configuration loader that handles environment variables
-  and base directory detection across different OS platforms (Linux, macOS, Windows)
-
-* **`service.py`**: Docker Compose service management:
-  * `start_services()`: Start platform services
-  * `stop_services()`: Stop platform services
-  * `restart_services()`: Restart platform services
-  * `remove_services()`: Remove platform services and optionally volumes
-  * `get_status()`: Get status of platform services
-
-* **`cert.py`**: TLS certificate operations:
-  * `copy_certs()`: Copy certificates from source and normalize filenames
-
-* **`mongodb.py`**: MongoDB setup:
-  * `create_combined_cert()`: Create combined certificate file
-  * `permissions_mongodb()`: Set certificate permissions and ownership
-
-* **`influxdb.py`**: InfluxDB setup:
-  * `permissions_influxdb()`: Set certificate permissions and ownership
-  * `setup_influxdb_users()`: Create users, organizations, and buckets
-  * `_create_influxdb_user()`: Create a single InfluxDB user
-  * `_get_influxdb_users()`: Get list of InfluxDB users
-  * `_get_existing_orgs()`: Get set of existing organization names
-  * `_setup_user_org_bucket()`: Set up organization and bucket for a user
-
-* **`rabbitmq.py`**: RabbitMQ setup:
-  * `permissions_rabbitmq()`: Set certificate permissions and ownership
-  * `setup_rabbitmq_users()`: Create users and vhosts (user-specific only)
-  * `_add_rabbitmq_user()`: Add a user to RabbitMQ with vhost and permissions
-
-* **`thingsboard.py`**: ThingsBoard admin user management and credentials processing:
-  * `setup_thingsboard_users()`: Create tenants and tenant admins from credentials.csv
-  * `thingsboard_configure()`: Main configuration function for user setup
-  * `_check_admin_exists()`: Check if admin user already exists
-  * `_create_tenant_admin_user()`: Create tenant admin user
-  * `_get_activation_token()`: Get activation token for user
-  * `_activate_user()`: Activate user with password
-  * `_create_and_activate_admin()`: Create and activate admin user
-  * `_ensure_tenant_admin()`: Ensure tenant admin exists
-  * `_create_tenant_and_admin()`: Create tenant and its admin user
-  * `_process_credentials_row()`: Process a single credential row from CSV
-  * `_process_credentials_file()`: Process credentials file and create tenants
-
-* **`thingsboard_users.py`**: ThingsBoard authentication, password, and tenant management:
-  * `build_base_url()`: Build ThingsBoard base URL from environment variables
-  * `login()`: Authenticate with ThingsBoard API
-  * `change_sysadmin_password_if_needed()`: Update default sysadmin password
-  * `check_password_configured()`: Check if new password is configured
-  * `_try_login_with_new_password()`: Try logging in with new password
-  * `_update_session_token()`: Update session with authorization token
-  * `_change_password_api_call()`: Call API to change password
-  * `_perform_password_change()`: Perform the password change operation
-  * `_check_existing_tenant()`: Check if tenant already exists
-  * `_create_new_tenant()`: Create a new tenant
-  * `get_or_create_tenant()`: Get existing tenant or create a new one
-
-* **`thingsboard_permissions.py`**: ThingsBoard certificates and permissions setup:
-  * `permissions_thingsboard()`: Set up PostgreSQL and ThingsBoard certificates
-  and permissions
-  * `_setup_postgres_certs()`: Set up PostgreSQL certificates with proper permissions
-  * `_setup_thingsboard_certs()`: Set up ThingsBoard certificates with proper permissions
-  * `_setup_thingsboard_directories()`: Set up ThingsBoard data and log directories
-  with proper ownership
-  * `_verify_certificates_exist()`: Verify normalized certificates exist
-  * `_set_directory_ownership()`: Set ownership for directory and all its contents
-  * `_copy_service_cert_files()`: Copy service certificate files
-  * `_set_service_cert_file_permissions()`: Set permissions on
-  service certificate files
-
-### Shared Utilities
-
-#### System & Docker Operations (`pkg/utils.py`)
-
-* `check_root_unix()`: Verify root/sudo privileges on Unix systems
-* `execute_docker_command()`: Execute commands in Docker containers with error handling
-* `get_credentials_path()`: Get the path to the credentials CSV file
-* `process_credentials_file()`: Generic pattern for processing credentials file
-* `create_users_from_credentials()`: Generic function to create users from CSV
-
-#### Project Structure & Templates (`pkg/template.py`)
-
-* `copy_directory_or_file()`: Copy files or directories with error handling
-* `copy_template_to_config()`: Copy template files to actual config files
-* `generate_project_structure()`: Generate complete project structure with
-config and data directories
+* **`config.py`**: Central configuration loader for environment variables
+  and base directory detection across OS platforms
+* **`service.py`**: Docker Compose service management (start, stop, restart, remove, status, clean)
+* **`cert.py`**: TLS certificate copying and normalization
+* **`mongodb.py`**: MongoDB certificate setup
+* **`influxdb.py`**: InfluxDB certificate setup and user management
+* **`rabbitmq.py`**: RabbitMQ certificate setup and user management
+* **`thingsboard.py`**: ThingsBoard tenant and user management from credentials.csv
+* **`thingsboard_users.py`**: ThingsBoard authentication and password management
+* **`thingsboard_permissions.py`**: ThingsBoard and PostgreSQL certificate setup
+* **`formatter.py`**: Output formatting utilities
+* **`template.py`**: Project structure and template file management
+* **`utils.py`**: Shared utilities (Docker operations, credentials handling)
 
 ### Code Organization Pattern
 
@@ -220,25 +149,73 @@ The `Service` class automatically loads environment variables from `config/servi
 and sets them in `os.environ` before calling Docker Compose. This ensures all
 Docker Compose variables are properly configured without additional setup.
 
+#### Key Environment Variables
+
+* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`) and ThingsBoard API URL.
+  Must match certificate domain name for SSL to work.
+* **`THINGSBOARD_PORT`**: ThingsBoard API port (default: 8080)
+* **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`, default: `https`)
+
+#### ThingsBoard SSL Configuration
+
+ThingsBoard API calls use SSL verification by default (`verify=True`). For development
+with self-signed certificates:
+
+1. Change `verify=True` to `verify=False` in:
+   * `thingsboard.py`
+   * `thingsboard_users.py`
+   * `thingsboard_utility.py`
+
+2. If SSL verification fails, the CLI displays a helpful error message indicating
+   which files to modify.
+
 ### Setup Workflow
 
-The CLI provides a two-phase setup workflow:
+The CLI provides a multi-phase setup workflow:
 
 #### Phase 1: Setup (`dtaas-services setup`)
 
-* Copies and normalizes TLS certificates
+* Copies and normalizes TLS certificates to `certs/<HOSTNAME>/`
 * Sets up certificate permissions and ownership
-* Creates required data and log directories (directory structures are created
-by build.py)
+* Creates required data and log directories
 * Configures all services (MongoDB, InfluxDB, RabbitMQ, ThingsBoard, PostgreSQL)
 * No service startup or database initialization
 
-#### Phase 2: ThingsBoard Installation (Optional, `dtaas-services install-thingsboard`)
+#### Phase 2: ThingsBoard Installation (`dtaas-services install`)
 
-* Requires PostgreSQL to be running (must be started manually)
+* Automatically starts PostgreSQL if not already running
 * Initializes ThingsBoard database schema (one-time operation)
 * Creates default system administrator account
-* Separate command to ensure PostgreSQL is healthy before initialization
+
+#### Phase 3: Start Services (`dtaas-services start`)
+
+* Starts all platform services
+* Use `-s <service>` to start specific services
+
+#### Phase 4: Add Users (`dtaas-services user add`)
+
+* Creates users in InfluxDB, RabbitMQ, and ThingsBoard
+* Reads credentials from `config/credentials.csv`
+
+### Cleanup and Reset
+
+#### Clean Command (`dtaas-services clean`)
+
+Removes data and log files for services, useful for resetting to a clean state:
+
+* **Basic clean**: `dtaas-services clean` - Removes data and log files
+* **With certificates**: `dtaas-services clean --certs` - Also removes TLS certificates
+* **Specific services**: `dtaas-services clean -s mongodb,influxdb`
+
+**Note**: Services must be stopped before cleaning. The command will prompt
+for confirmation before deleting files.
+
+#### Remove Command (`dtaas-services remove`)
+
+Stops and removes Docker containers:
+
+* **Basic remove**: `dtaas-services remove` - Removes containers
+* **With volumes**: `dtaas-services remove -v` - Also removes Docker volumes
 
 ### User Management Best Practices
 
@@ -264,13 +241,9 @@ by build.py)
   credentials
 * **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
   using the `dtaas-services user add` command
-* `test_config.py`: Tests for configuration loading and validation
-* `test_service.py`: Tests for Docker Compose service management operations
-* `test_cert.py`: Tests for certificate copying and normalization
-* `test_formatter.py`: Tests for output formatting utilities
-* `test_template.py`: Tests for project structure generation and template file management
-* `test_utils.py`: Tests for shared utility functions
-  (Docker operations, credentials path)
+* **SSL Configuration**: ThingsBoard API calls use `verify=True` by default.
+  For self-signed certificates, change to `verify=False` in the ThingsBoard modules.
+  If SSL verification fails, a helpful error message will indicate the fix.
 
 ### Error Handling Pattern
 
@@ -288,24 +261,14 @@ All service management functions follow a consistent error handling pattern:
 * **click**: CLI framework for command definitions and argument parsing
 * **python-dotenv**: Environment variable management
 * **python-on-whales**: Docker client library for container operations
+* **httpx**: HTTP client for ThingsBoard API communication
 
 ## Testing
 
 ### Test Structure
 
-Tests are organized to mirror the source code structure:
-
-* `test_cmd.py`: Tests for CLI commands and argument parsing
-* `test_config.py`: Tests for configuration loading and validation
-* `test_service.py`: Tests for Docker Compose service management operations
-* `test_cert.py`: Tests for certificate copying and normalization
-* `test_mongodb.py`: Tests for MongoDB certificate and permission setup
-* `test_influxdb.py`: Tests for InfluxDB certificate, permission, and user management
-* `test_rabbitmq.py`: Tests for RabbitMQ certificate, permission, and user management
-* `test_thingsboard.py`: Tests for ThingsBoard setup and installation
-* `test_formatter.py`: Tests for output formatting utilities
-* `test_template.py`: Tests for project structure generation and template file management
-* `test_utils.py`: Tests for shared utility functions
+Tests are organized to mirror the source code structure in the `tests/` directory.
+Each module in `pkg/` has a corresponding test file (e.g., `test_config.py` for `config.py`).
 
 ### Testing Guidelines
 
