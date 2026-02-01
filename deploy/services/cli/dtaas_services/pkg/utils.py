@@ -35,7 +35,9 @@ def _extract_stderr_line(error_str: str) -> str:
         if len(parts) > 1:
             stderr_part = parts[1].split("'")[0]
             # Get all non-empty lines from stderr
-            lines = [line.strip() for line in stderr_part.strip().split("\n") if line.strip()]
+            lines = [
+                line.strip() for line in stderr_part.strip().split("\n") if line.strip()
+            ]
             # If we have multiple lines and first is just "Error:", join them
             if len(lines) > 1 and lines[0] == "Error:":
                 return ": ".join(lines[:2])  # Join "Error:" with the next line

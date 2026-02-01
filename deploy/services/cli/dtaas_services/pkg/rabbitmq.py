@@ -51,7 +51,7 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
             error_msg = f"Failed to add user {username}: {output}"
             print(error_msg)  # Print manually if it's a real error
             return False, error_msg
-    
+
     # Add vhost (ignore if already exists)
     success, output = execute_docker_command(
         "rabbitmq",
@@ -65,7 +65,7 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
             error_msg = f"Failed to add vhost {vhost}: {output}"
             print(error_msg)
             return False, error_msg
-    
+
     # Set permissions on user's own vhost only
     success, output = execute_docker_command(
         "rabbitmq",

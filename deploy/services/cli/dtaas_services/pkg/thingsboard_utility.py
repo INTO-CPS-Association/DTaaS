@@ -94,7 +94,9 @@ def _create_tenant_admin_user(
                 error_data = resp.json()
                 error_message = error_data.get("message", "")
                 if "already" in error_message.lower():
-                    logger.info(f"  Tenant admin '{ctx.admin_email}' already exists, skipping...")
+                    logger.info(
+                        f"  Tenant admin '{ctx.admin_email}' already exists, skipping..."
+                    )
                     return None, ""
             except:
                 pass
@@ -155,7 +157,10 @@ def _activate_user(
     except httpx.HTTPError as e:
         error_str = str(e)
         # Check if it's an SSL verification error
-        if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
+        if (
+            "certificate verify failed" in error_str.lower()
+            or "ssl" in error_str.lower()
+        ):
             return False, (
                 f"SSL certificate verification failed: {e}\n"
             )

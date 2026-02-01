@@ -190,16 +190,16 @@ class Service:
         except Exception:
             return set(), set()
 
-    def _start_services(
-        self, service_list: Optional[list]
-    ) -> Tuple[list, list, list]:
+    def _start_services(self, service_list: Optional[list]) -> Tuple[list, list, list]:
         """Start services or all if service_list is None.
 
         Returns:
             Tuple of (skipped running services, started services, restarting services)
         """
         # Get currently running and restarting services
-        running_services, restarting_services = self._get_running_or_restarting_services()
+        running_services, restarting_services = (
+            self._get_running_or_restarting_services()
+        )
         skip_services = running_services | restarting_services
 
         # Determine which services to start
@@ -403,8 +403,12 @@ class Service:
         service_list, warning = self._filter_postgres_if_needed(action, service_list)
 
         try:
-            skipped, affected, restarting = self._execute_compose_action(action, service_list)
-            success_msg = self._get_success_message(action, skipped, affected, restarting)
+            skipped, affected, restarting = self._execute_compose_action(
+                action, service_list
+            )
+            success_msg = self._get_success_message(
+                action, skipped, affected, restarting
+            )
             if warning:
                 success_msg = f"{warning}\n{success_msg}"
             return None, success_msg

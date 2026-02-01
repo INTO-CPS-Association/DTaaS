@@ -28,7 +28,9 @@ def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
         return False, None, f"Unexpected data format: {str(e)}"
 
 
-def _execute_influxdb_command(command: list, error_context: str, verbose: bool = False) -> tuple[bool, str]:
+def _execute_influxdb_command(
+    command: list, error_context: str, verbose: bool = False
+) -> tuple[bool, str]:
     """Execute an InfluxDB docker command and return error if it fails.
     Args:
         command: Command list to execute
@@ -159,7 +161,7 @@ def _setup_user_org_bucket(
         else:
             print(f"Docker error: {error_msg}")  # Only print real errors
             return False, error_msg
-    
+
     # Create bucket (ignore if already exists)
     success, error_msg = _execute_influxdb_command(
         ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
@@ -172,7 +174,7 @@ def _setup_user_org_bucket(
         else:
             print(f"Docker error: {error_msg}")  # Only print real errors
             return False, error_msg
-    
+
     return True, ""
 
 

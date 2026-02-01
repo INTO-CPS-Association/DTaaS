@@ -4,6 +4,8 @@ from pathlib import Path
 import shutil
 
 GIKEEP = ".gitkeep"
+
+
 def build(setup_kwargs):
     """
     This function is called by Poetry during build to prepare files.
