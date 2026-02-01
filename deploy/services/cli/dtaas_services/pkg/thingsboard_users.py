@@ -5,12 +5,15 @@ import logging
 import os
 from typing import Tuple
 import httpx
+from .config import Config
 
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
 
 # Set up logger
 logger = logging.getLogger(__name__)
+config = Config()
+SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
 
 def build_base_url() -> str:
@@ -46,7 +49,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
             url,
             json={"username": email, "password": password},
             timeout=10,
-            verify=True,  # Change to False for self-signed certificates
+            verify=SSL_CHECK,  # Change to False for self-signed certificates
         )
         return _handle_login_response(resp)
     except httpx.HTTPError as e:
@@ -55,8 +58,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
         if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
             logger.error(
                 f"SSL certificate verification failed: {e}\n"
-                "  → Using self-signed certificates? Change verify=True to verify=False in thingsboard_users.py\n"
-                "  → Or use valid CA-signed certificates for production"
+                " Using self-signed certificates? Change SSL_VERIFY in services.env to False\n"
             )
         else:
             logger.error(f"Network error during login: {e}")

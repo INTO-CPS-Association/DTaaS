@@ -76,3 +76,12 @@ class Config:
                 f"Required configuration key '{key}' is not set in the environment file."
             )
         return value
+
+    def get_bool_value(self, key: str) -> bool:
+        """Gets a configuration value as a boolean."""
+        value = self.get_value(key).lower().strip()
+        if value in ("true", "1", "yes", "on"):
+            return True
+        if value in ("false", "0", "no", "off"):
+            return False
+        raise ValueError(f"Cannot convert '{value}' to boolean for key '{key}'")

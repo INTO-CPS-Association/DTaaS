@@ -6,10 +6,12 @@ from typing import Tuple
 from urllib.parse import urlparse, parse_qs
 import httpx
 from .thingsboard_users import login
+from .config import Config
 
 # Set up logger
 logger = logging.getLogger(__name__)
-
+config = Config()
+SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
     """Check if admin already exists."""
@@ -142,7 +144,7 @@ def _activate_user(
             f"{base_url}/api/noauth/activate",
             json=activate_payload,
             timeout=15,
-            verify=True,  # Change to False for self-signed certificates
+            verify=SSL_CHECK,
         )
 
         if resp.status_code != 200:
@@ -156,9 +158,6 @@ def _activate_user(
         if "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower():
             return False, (
                 f"SSL certificate verification failed: {e}\n"
-                "  → Using self-signed certificates? Change this line in thingsboard_utility.py:\n"
-                "     verify=True  →  verify=False\n"
-                "  → Or use valid CA-signed certificates for production"
             )
         return False, f"Network error activating user: {e}"
 

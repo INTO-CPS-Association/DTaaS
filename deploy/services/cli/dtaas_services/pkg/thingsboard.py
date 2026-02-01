@@ -22,6 +22,8 @@ from .thingsboard_utility import (
 
 # Set up logger
 logger = logging.getLogger(__name__)
+config = Config()
+SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
 
 def _process_credentials_row(
@@ -77,9 +79,7 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     base_url = build_base_url()
     logger.info(f"Using ThingsBoard URL: {base_url}")
 
-    # Use verify=True for production with valid CA-signed certificates
-    # Change to verify=False for self-signed certificates (development only)
-    session = httpx.Client(verify=True, timeout=15)
+    session = httpx.Client(verify=SSL_CHECK, timeout=15)
     new_pw = check_password_configured()
     if new_pw:
         success, error_msg = change_sysadmin_password_if_needed(
