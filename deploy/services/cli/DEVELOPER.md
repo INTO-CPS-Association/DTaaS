@@ -153,21 +153,21 @@ Docker Compose variables are properly configured without additional setup.
 
 * **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`) and ThingsBoard API URL.
   Must match certificate domain name for SSL to work.
+* **`SSL_VERIFY`**: Enable/disable SSL certificate verification for API calls (`True` or `False`).
+  Set to `False` for development with self-signed certificates.
 * **`THINGSBOARD_PORT`**: ThingsBoard API port (default: 8080)
 * **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`, default: `https`)
 
 #### ThingsBoard SSL Configuration
 
-ThingsBoard API calls use SSL verification by default (`verify=True`). For development
-with self-signed certificates:
+ThingsBoard API calls use the `SSL_VERIFY` setting from `config/services.env`:
 
-1. Change `verify=True` to `verify=False` in:
-   * `thingsboard.py`
-   * `thingsboard_users.py`
-   * `thingsboard_utility.py`
+* **Development**: Set `SSL_VERIFY=False` to use self-signed certificates
+* **Production**: Set `SSL_VERIFY=True` for proper SSL certificate verification
+* **Auto-detection**: The CLI automatically applies this setting to all API calls
 
-2. If SSL verification fails, the CLI displays a helpful error message indicating
-   which files to modify.
+If SSL verification fails, the error message will indicate the current setting
+and how to change it in `services.env`.
 
 ### Setup Workflow
 
@@ -221,6 +221,8 @@ Stops and removes Docker containers:
 
 #### InfluxDB Users
 
+* **Token Authentication**: InfluxDB uses token-based authentication. The CLI
+  automatically extracts the token from the InfluxDB container configuration.
 * **Organization Management**: Always check for existing organizations before creating
   new ones to avoid conflicts. Use `_get_existing_orgs()` before creating.
 * **User Ownership**: Users are added as **owners** (not members) of their
@@ -233,6 +235,10 @@ Stops and removes Docker containers:
 * **Vhost Isolation**: Each user only has access to their own vhost (username-based).
   The default "/" vhost is NOT accessible to regular users;
   only administrators should use it.
+* **Automatic Retry**: User creation includes retry logic with 1-second delays
+  to handle timing issues when RabbitMQ is still initializing after startup.
+* **Error Handling**: "Already exists" errors are handled gracefully and do not
+  cause the operation to fail.
 
 #### ThingsBoard Users
 

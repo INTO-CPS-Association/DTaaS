@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
 import pytest
 from dtaas_services.pkg.rabbitmq import (
-    _execute_rabbitmq_command,
     _add_rabbitmq_user,
     setup_rabbitmq_users,
     permissions_rabbitmq,
@@ -35,30 +34,6 @@ def mock_process_credentials():
         yield mock
 
 
-def test_execute_rabbitmq_command_success():
-    """Test successful RabbitMQ command execution"""
-    with patch("dtaas_services.pkg.rabbitmq.execute_docker_command") as mock_exec:
-        mock_exec.return_value = (True, "success output")
-        success, error = _execute_rabbitmq_command(
-            "rabbitmq", ["rabbitmqctl", "list_users"], "Failed to list users"
-        )
-        assert success is True
-        assert error == ""
-        mock_exec.assert_called_once_with("rabbitmq", ["rabbitmqctl", "list_users"])
-
-
-def test_execute_rabbitmq_command_failure():
-    """Test failed RabbitMQ command execution"""
-    with patch("dtaas_services.pkg.rabbitmq.execute_docker_command") as mock_exec:
-        mock_exec.return_value = (False, "command failed")
-        success, error = _execute_rabbitmq_command(
-            "rabbitmq", ["rabbitmqctl", "list_users"], "Failed to list users"
-        )
-        assert success is False
-        assert "Failed to list users" in error
-        assert "command failed" in error
-
-
 def test_add_rabbitmq_user_success():
     """Test successful RabbitMQ user addition"""
     with patch("dtaas_services.pkg.rabbitmq.execute_docker_command") as mock_exec:
@@ -66,7 +41,7 @@ def test_add_rabbitmq_user_success():
         success, error = _add_rabbitmq_user("testuser", "testpass")
         assert success is True
         assert error == ""
-        # Verify all three commands were called
+        # 1 add_user + 1 add_vhost + 1 set_permissions = 3 calls
         assert mock_exec.call_count == 3
 
 
@@ -77,19 +52,23 @@ def test_add_rabbitmq_user_add_user_fails():
         success, error = _add_rabbitmq_user("testuser", "testpass")
         assert success is False
         assert "Failed to add user testuser" in error
-        # Should only call once before returning
-        assert mock_exec.call_count == 1
+        assert mock_exec.call_count == 2
 
 
 def test_add_rabbitmq_user_add_vhost_fails():
     """Test RabbitMQ user addition when add_vhost fails"""
     with patch("dtaas_services.pkg.rabbitmq.execute_docker_command") as mock_exec:
-        # First call (add_user) succeeds, second (add_vhost) fails
-        mock_exec.side_effect = [(True, "success"), (False, "vhost error")]
+        # First call (add_user) succeeds, next 2 (add_vhost with retry) fail
+        mock_exec.side_effect = [
+            (True, "success"),  # add_user succeeds
+            (False, "vhost error"),  # add_vhost attempt 1
+            (False, "vhost error"),  # add_vhost attempt 2
+        ]
         success, error = _add_rabbitmq_user("testuser", "testpass")
         assert success is False
         assert "Failed to add vhost testuser" in error
-        assert mock_exec.call_count == 2
+        # 1 successful add_user + 2 failed add_vhost retries
+        assert mock_exec.call_count == 3
 
 
 def test_add_rabbitmq_user_set_permissions_fails():

@@ -12,6 +12,26 @@ from .config import Config
 from .cert import set_service_cert_permissions, CertPermissionContext
 
 
+def _get_influxdb_token() -> str | None:
+    """Get InfluxDB auth token from container's influx config file."""
+    success, output = execute_docker_command(
+        "influxdb",
+        ["cat", "/etc/influxdb2/influx-configs"],
+        verbose=False,
+    )
+    if not success:
+        return None
+    try:
+        for line in output.split("\n"):
+            if "token =" in line and not line.strip().startswith("#"):
+                token = line.split("=", 1)[1].strip().strip('"')
+                if token and len(token) > 50:
+                    return token
+    except Exception:
+        pass
+    return None
+
+
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
     """Parse JSON response.
     Args:
@@ -54,17 +74,35 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     Returns:
         Tuple of (success, error message if any)
     """
+    token = _get_influxdb_token()
+    if not token:
+        return (
+            False,
+            "Failed to retrieve InfluxDB authentication token. Ensure InfluxDB is running and initialized.",
+        )
+
     success, output = execute_docker_command(
         "influxdb",
-        ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password],
+        [
+            "influx",
+            "user",
+            "create",
+            "--skip-verify",
+            "--token",
+            token,
+            "--org",
+            "dtaas",
+            "--name",
+            username,
+            "--password",
+            password,
+        ],
         verbose=False,
     )
 
     if not success:
         if "already exists" in output:
-            print(f"User '{username}' already exists, skipping...")
             return True, ""
-        print(f"Docker error: {output}")  # Only print real errors
         return False, f"Failed to create user {username}: {output}"
     return True, ""
 
@@ -76,8 +114,18 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
     Returns:
         Tuple of (success, users dict, error message if any)
     """
+    token = _get_influxdb_token()
+    if not token:
+        return (
+            False,
+            {},
+            "Failed to retrieve InfluxDB authentication token. Ensure InfluxDB is running.",
+        )
+
     success, users_json_str = execute_docker_command(
-        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], verbose=False
+        "influxdb",
+        ["influx", "user", "list", "--skip-verify", "--token", token, "--json"],
+        verbose=False,
     )
     if not success:
         return False, {}, f"Failed to retrieve user list: {users_json_str}"
@@ -95,8 +143,18 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
     Returns:
         Tuple of (success, set of org names, error message if any)
     """
+    token = _get_influxdb_token()
+    if not token:
+        return (
+            False,
+            set(),
+            "Failed to retrieve InfluxDB authentication token. Ensure InfluxDB is running.",
+        )
+
     success, orgs_json_str = execute_docker_command(
-        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], verbose=False
+        "influxdb",
+        ["influx", "org", "list", "--skip-verify", "--token", token, "--json"],
+        verbose=False,
     )
     if not success:
         return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
@@ -121,6 +179,13 @@ def _setup_user_org_bucket(
     Returns:
         Tuple of (success, error message if any)
     """
+    token = _get_influxdb_token()
+    if not token:
+        return (
+            False,
+            "Failed to retrieve InfluxDB authentication token. Ensure InfluxDB is running.",
+        )
+
     # Create organization only if it doesn't exist
     if name not in existing_orgs:
         success, error_msg = _execute_influxdb_command(
@@ -129,6 +194,8 @@ def _setup_user_org_bucket(
                 "org",
                 "create",
                 "--skip-verify",
+                "--token",
+                token,
                 "--name",
                 name,
                 "--description",
@@ -146,6 +213,8 @@ def _setup_user_org_bucket(
             "members",
             "add",
             "--skip-verify",
+            "--token",
+            token,
             "--name",
             name,
             "--owner",
@@ -159,12 +228,23 @@ def _setup_user_org_bucket(
         if "already exists" in error_msg:
             print(f"Organization membership for '{name}' already exists, skipping...")
         else:
-            print(f"Docker error: {error_msg}")  # Only print real errors
+            print(f"Docker error: {error_msg}")
             return False, error_msg
 
     # Create bucket (ignore if already exists)
     success, error_msg = _execute_influxdb_command(
-        ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
+        [
+            "influx",
+            "bucket",
+            "create",
+            "--skip-verify",
+            "--token",
+            token,
+            "--name",
+            name,
+            "--org",
+            name,
+        ],
         f"Failed to create bucket {name}",
         verbose=False,
     )
@@ -172,7 +252,7 @@ def _setup_user_org_bucket(
         if "already exists" in error_msg:
             print(f"Bucket '{name}' already exists, skipping...")
         else:
-            print(f"Docker error: {error_msg}")  # Only print real errors
+            print(f"Docker error: {error_msg}")
             return False, error_msg
 
     return True, ""

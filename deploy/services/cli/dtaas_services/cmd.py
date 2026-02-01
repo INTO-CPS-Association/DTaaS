@@ -628,7 +628,7 @@ def add(service_names):
     # Check if all services succeeded
     all_success = all(results)
     if all_success:
-        console.print("\n[bold green]✅ All users added successfully![/bold green]")
+        console.print("\n[bold green]✅ Users added successfully![/bold green]")
     else:
         failed_count = sum(1 for r in results if not r)
         console.print(
