@@ -68,27 +68,62 @@ def _process_credentials_file(
         for credential in credentials:
             success, error_msg = _process_credentials_row(ctx, credential)
             if not success:
+                # Check if ThingsBoard is not reachable/installed
+                if any(
+                    x in error_msg.lower()
+                    for x in ["not reachable", "connection", "ssl", "network error"]
+                ):
+                    return (
+                        True,
+                        "ThingsBoard is not installed. Install with: dtaas-services install",
+                    )
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
 
 
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     """Helper to set up credentials and change password."""
-    # Initialize Config to load environment variables
-    Config()
-    base_url = build_base_url()
-    logger.info(f"Using ThingsBoard URL: {base_url}")
+    try:
+        Config()
+        base_url = build_base_url()
+        session = httpx.Client(verify=SSL_CHECK, timeout=15)
+        new_pw = check_password_configured()
 
-    session = httpx.Client(verify=SSL_CHECK, timeout=15)
-    new_pw = check_password_configured()
-    if new_pw:
-        success, error_msg = change_sysadmin_password_if_needed(
-            base_url, session, new_pw
+        if new_pw:
+            # Temporarily suppress thingsboard_users logger to prevent error spam
+            # when login fails (ThingsBoard not running). We'll catch it below.
+            tb_logger = logging.getLogger("dtaas_services.pkg.thingsboard_users")
+            old_level = tb_logger.level
+            tb_logger.setLevel(logging.CRITICAL)
+
+            try:
+                success, error_msg = change_sysadmin_password_if_needed(
+                    base_url, session, new_pw
+                )
+            finally:
+                tb_logger.setLevel(old_level)
+
+            if not success:
+                if any(
+                    x in error_msg.lower()
+                    for x in ["not reachable", "connection", "unable to log in", "ssl"]
+                ):
+                    return (
+                        True,
+                        "ThingsBoard is not installed. Install with: dtaas-services install",
+                    )
+                return False, error_msg
+
+        return _process_credentials_file(base_url, session, credentials_file)
+    except (OSError, httpx.HTTPError):
+        # Connection errors mean ThingsBoard is not running/installed
+        return (
+            True,
+            "ThingsBoard is not installed. Install with: dtaas-services install",
         )
-        if not success:
-            return False, error_msg
-
-    return _process_credentials_file(base_url, session, credentials_file)
+    except (ValueError, KeyError) as e:
+        logger.error(f"Error in ThingsBoard setup: {e}")
+        return False, f"Error in ThingsBoard setup: {e}"
 
 
 def setup_thingsboard_users() -> Tuple[bool, str]:

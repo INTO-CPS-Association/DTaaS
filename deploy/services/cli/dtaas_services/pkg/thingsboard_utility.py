@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 config = Config()
 SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
+
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
     """Check if admin already exists."""
     logger.info(f"  Checking if admin '{admin_email}' exists...")
@@ -161,9 +162,7 @@ def _activate_user(
             "certificate verify failed" in error_str.lower()
             or "ssl" in error_str.lower()
         ):
-            return False, (
-                f"SSL certificate verification failed: {e}\n"
-            )
+            return False, (f"SSL certificate verification failed: {e}\n")
         return False, f"Network error activating user: {e}"
 
 

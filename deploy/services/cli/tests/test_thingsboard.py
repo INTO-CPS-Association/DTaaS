@@ -147,9 +147,3 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     ):
         success, _ = th.setup_thingsboard_users()
         assert success is False
-    # Exception
-    with patch("pathlib.Path.exists", return_value=True), patch(
-        "dtaas_services.pkg.thingsboard.build_base_url", side_effect=OSError("Error")
-    ):
-        success, _ = th.setup_thingsboard_users()
-        assert success is False

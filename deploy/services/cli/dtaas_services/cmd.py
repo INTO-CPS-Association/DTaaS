@@ -564,12 +564,19 @@ def _setup_service_users(
         error_line = msg.split("\n")[0]
         console.print(f"[red]{service_name}: {error_line}[/red]", style="bold")
     else:
-        console.print(f"[green]✅ {service_name}: {msg}[/green]")
+        # Check if this is a skip/warning (service not installed) vs. success
+        if "not installed" in msg.lower():
+            console.print(f"[yellow]⚠️  {service_name}: {msg}[/yellow]")
+        else:
+            console.print(f"[green]✅ {service_name}: {msg}[/green]")
     return success
 
 
 @user.command()
-def add():
+@click.option(
+    "--services", "-s", "service_names", help="Comma-separated list of services to stop"
+)
+def add(service_names):
     """
     Add user accounts to InfluxDB, RabbitMQ, and ThingsBoard.
     Reads config/credentials.csv and creates accounts in all services.
@@ -579,19 +586,44 @@ def add():
 
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
+    service_list = _parse_service_list(service_names)
 
     results = []
-    results.append(
-        _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
-    )
-    results.append(
-        _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
-    )
-    results.append(
-        _setup_service_users(
-            console, "ThingsBoard", thingsboard.setup_thingsboard_users
+
+    if not service_list:
+        results.append(
+            _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
         )
-    )
+        results.append(
+            _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
+        )
+        results.append(
+            _setup_service_users(
+                console, "ThingsBoard", thingsboard.setup_thingsboard_users
+            )
+        )
+    else:
+        for s in service_list:
+            if s.lower() == "influxdb":
+                results.append(
+                    _setup_service_users(
+                        console, "InfluxDB", influxdb.setup_influxdb_users
+                    )
+                )
+            elif s.lower() == "rabbitmq":
+                results.append(
+                    _setup_service_users(
+                        console, "RabbitMQ", rabbitmq.setup_rabbitmq_users
+                    )
+                )
+            elif s.lower() == "thingsboard":
+                results.append(
+                    _setup_service_users(
+                        console, "ThingsBoard", thingsboard.setup_thingsboard_users
+                    )
+                )
+            else:
+                console.print(f"[yellow]Unknown service: {s}, skipping...[/yellow]")
 
     # Check if all services succeeded
     all_success = all(results)
