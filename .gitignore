@@ -224,7 +224,7 @@ deploy/services/data/*
 !deploy/services/data/.gitkeep
 deploy/services/data/*/*
 !deploy/services/data/*/.gitkeep
-
+deploy/services/cli/config/influxdb
 
 deploy/services/cli/log/thingsboard
 
