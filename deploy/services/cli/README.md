@@ -118,9 +118,15 @@ This command will:
 * Set up RabbitMQ certificates and permissions
 * Set up PostgreSQL and ThingsBoard certificates and permissions
 
+Make sure you run the clean command
+
 ### ThingsBoard Installation
 
 To install ThingsBoard, run this command:
+
+```bash
+dtaas-services clean
+```
 
 ```bash
 #  (It starts PostgreSQL if it's not running, and it checks its health)

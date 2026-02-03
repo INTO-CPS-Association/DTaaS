@@ -254,6 +254,7 @@ def _run_thingsboard_install(console: Console, docker) -> None:
             envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
             service_ports=False,
             use_aliases=True,
+            user='root'
         )
 
 

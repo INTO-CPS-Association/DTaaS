@@ -173,6 +173,8 @@ def _setup_thingsboard_directories(cfg: _SetupConfig) -> Tuple[bool, str]:
         log_dir = cfg.base_dir / "log" / "thingsboard"
         data_dir.mkdir(parents=True, exist_ok=True)
         log_dir.mkdir(parents=True, exist_ok=True)
+        data_dir.chmod(0o777)
+        log_dir.chmod(0o777)
 
         msg = _apply_directory_ownership_if_needed(cfg, data_dir, log_dir)
         return True, msg
