@@ -5,8 +5,7 @@ import logging
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs
 import httpx
-from .thingsboard_users import login
-from .config import Config
+from .thingsboard_users import login, _get_ssl_verify
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -145,7 +144,7 @@ def _activate_user(
             f"{base_url}/api/noauth/activate",
             json=activate_payload,
             timeout=15,
-            verify=SSL_CHECK,
+            verify=_get_ssl_verify(),
         )
 
         if resp.status_code != 200:

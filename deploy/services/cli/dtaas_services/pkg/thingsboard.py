@@ -66,15 +66,6 @@ def _process_credentials_file(
         for credential in credentials:
             success, error_msg = _process_credentials_row(ctx, credential)
             if not success:
-                # Check if ThingsBoard is not reachable/installed
-                if any(
-                    x in error_msg.lower()
-                    for x in ["not reachable", "connection", "ssl", "network error"]
-                ):
-                    return (
-                        True,
-                        "ThingsBoard is not installed. Install with: dtaas-services install",
-                    )
                 return False, error_msg
     return True, "ThingsBoard users created successfully"
 
@@ -85,6 +76,7 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
         Config()  # Loads config/services.env into environment
         base_url = build_base_url()
         from .thingsboard_users import _get_ssl_verify
+
         session = httpx.Client(verify=_get_ssl_verify(), timeout=15)
         new_pw = check_password_configured()
 
@@ -105,20 +97,23 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
             if not success:
                 if any(
                     x in error_msg.lower()
-                    for x in ["not reachable", "connection", "unable to log in", "ssl"]
+                    for x in ["not reachable", "unable to log in", "ssl"]
                 ):
-                    return (
-                        True,
-                        "ThingsBoard is not installed. Install with: dtaas-services install",
+                    # Password change failed, but continue to try user setup
+                    logger.warning(
+                        f"Could not change sysadmin password: {error_msg}. "
+                        "Continuing with user setup..."
                     )
-                return False, error_msg
+                else:
+                    return False, error_msg
 
         return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, httpx.HTTPError):
-        # Connection errors mean ThingsBoard is not running/installed
+    except (OSError, httpx.HTTPError) as e:
+        # Connection error
+        logger.error(f"Connection error: {e}")
         return (
-            True,
-            "ThingsBoard is not installed. Install with: dtaas-services install",
+            False,
+            f"Cannot connect to ThingsBoard at {build_base_url()}. Check HOSTNAME in services.env.",
         )
     except (ValueError, KeyError) as e:
         logger.error(f"Error in ThingsBoard setup: {e}")

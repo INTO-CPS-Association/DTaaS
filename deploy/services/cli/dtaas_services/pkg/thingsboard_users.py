@@ -5,7 +5,6 @@ import logging
 import os
 from typing import Tuple
 import httpx
-from .config import Config
 
 PRIV_KEY_FILENAME = "privkey.pem"
 FULLCHAIN_FILENAME = "fullchain.pem"
