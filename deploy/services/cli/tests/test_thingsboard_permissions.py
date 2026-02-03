@@ -104,14 +104,14 @@ def test_setup_thingsboard_directories_scenarios():
     mock_cfg.thingsboard_gid = 1000
 
     # Success (non-CI)
-    with patch("pathlib.Path.mkdir"), patch(
+    with patch("pathlib.Path.mkdir"), patch("pathlib.Path.chmod"), patch(
         "dtaas_services.pkg.thingsboard_permissions._set_directory_ownership"
     ), patch("dtaas_services.pkg.thingsboard_permissions.is_ci", return_value=False):
         success, _ = th_perm._setup_thingsboard_directories(mock_cfg)
         assert success is True
 
     # Success (CI)
-    with patch("pathlib.Path.mkdir"), patch(
+    with patch("pathlib.Path.mkdir"), patch("pathlib.Path.chmod"), patch(
         "dtaas_services.pkg.thingsboard_permissions._set_directory_ownership"
     ) as mock_chown, patch(
         "dtaas_services.pkg.thingsboard_permissions.is_ci", return_value=True
