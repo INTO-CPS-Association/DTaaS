@@ -106,170 +106,144 @@ def test_execute_influxdb_command_failure():
 def test_create_influxdb_user_success():
     """Test successful InfluxDB user creation"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, "success")
-            success, error = _create_influxdb_user("testuser", "testpass")
-            assert success is True
-            assert error == ""
+        mock_exec.return_value = (True, "success")
+        success, error = _create_influxdb_user("testuser", "testpass")
+        assert success is True
+        assert error == ""
 
 
 def test_create_influxdb_user_failure():
     """Test failed InfluxDB user creation"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (False, "user exists")
-            success, error = _create_influxdb_user("testuser", "testpass")
-            assert success is False
-            assert "Failed to create user testuser" in error
+        mock_exec.return_value = (False, "user exists")
+        success, error = _create_influxdb_user("testuser", "testpass")
+        assert success is False
+        assert "Failed to create user testuser" in error
 
 
 def test_get_influxdb_users_success():
     """Test successful retrieval of InfluxDB users"""
     users_data = [{"name": "user1", "id": "id1"}, {"name": "user2", "id": "id2"}]
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, json.dumps(users_data))
-            success, users_dict, error = _get_influxdb_users()
-            assert success is True
-            assert users_dict == {"user1": "id1", "user2": "id2"}
-            assert error == ""
+        mock_exec.return_value = (True, json.dumps(users_data))
+        success, users_dict, error = _get_influxdb_users()
+        assert success is True
+        assert users_dict == {"user1": "id1", "user2": "id2"}
+        assert error == ""
 
 
 def test_get_influxdb_users_command_failure():
     """Test get users when command fails"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (False, "connection error")
-            success, users_dict, error = _get_influxdb_users()
-            assert success is False
-            assert users_dict == {}
-            assert "Failed to retrieve user list" in error
+        mock_exec.return_value = (False, "connection error")
+        success, users_dict, error = _get_influxdb_users()
+        assert success is False
+        assert users_dict == {}
+        assert "Failed to retrieve user list" in error
 
 
 def test_get_influxdb_users_json_parse_error():
     """Test get users with JSON parse error"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, "{invalid json")
-            success, users_dict, error = _get_influxdb_users()
-            assert success is False
-            assert users_dict == {}
-            assert "Failed to parse JSON" in error
+        mock_exec.return_value = (True, "{invalid json")
+        success, users_dict, error = _get_influxdb_users()
+        assert success is False
+        assert users_dict == {}
+        assert "Failed to parse JSON" in error
 
 
 def test_get_existing_orgs_success():
     """Test successful retrieval of existing organizations"""
     orgs_data = [{"name": "org1"}, {"name": "org2"}]
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, json.dumps(orgs_data))
-            success, org_names, error = _get_existing_orgs()
-            assert success is True
-            assert org_names == {"org1", "org2"}
-            assert error == ""
+        mock_exec.return_value = (True, json.dumps(orgs_data))
+        success, org_names, error = _get_existing_orgs()
+        assert success is True
+        assert org_names == {"org1", "org2"}
+        assert error == ""
 
 
 def test_get_existing_orgs_command_failure():
     """Test get orgs when command fails"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (False, "connection error")
-            success, org_names, error = _get_existing_orgs()
-            assert success is False
-            assert org_names == set()
-            assert "Failed to retrieve org list" in error
+        mock_exec.return_value = (False, "connection error")
+        success, org_names, error = _get_existing_orgs()
+        assert success is False
+        assert org_names == set()
+        assert "Failed to retrieve org list" in error
 
 
 def test_get_existing_orgs_json_parse_error():
     """Test get orgs with JSON parse error"""
     with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
-        with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, "{invalid json")
-            success, org_names, error = _get_existing_orgs()
-            assert success is False
-            assert org_names == set()
-            assert "Failed to parse JSON" in error
+        mock_exec.return_value = (True, "{invalid json")
+        success, org_names, error = _get_existing_orgs()
+        assert success is False
+        assert org_names == set()
+        assert "Failed to parse JSON" in error
 
 
 def test_setup_user_org_bucket_new_org():
     """Test setup user org and bucket when org doesn't exist"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-        with patch(
-            "dtaas_services.pkg.influxdb._execute_influxdb_command"
-        ) as mock_exec:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, "")
-            success, error = _setup_user_org_bucket("testuser", "userid123", set())
-            assert success is True
-            assert error == ""
-            # Should create org, add member, and create bucket
-            assert mock_exec.call_count == 3
+    with patch(
+        "dtaas_services.pkg.influxdb._execute_influxdb_command"
+    ) as mock_exec:
+        mock_exec.return_value = (True, "")
+        success, error = _setup_user_org_bucket("testuser", "userid123", set())
+        assert success is True
+        assert error == ""
+        # Should create org, add member, and create bucket
+        assert mock_exec.call_count == 3
 
 
 def test_setup_user_org_bucket_existing_org():
     """Test setup user org and bucket when org already exists"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-        with patch(
-            "dtaas_services.pkg.influxdb._execute_influxdb_command"
-        ) as mock_exec:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (True, "")
-            success, error = _setup_user_org_bucket(
-                "testuser", "userid123", {"testuser"}
-            )
-            assert success is True
-            assert error == ""
-            # Should skip org creation, only add member and create bucket
-            assert mock_exec.call_count == 2
+    with patch(
+        "dtaas_services.pkg.influxdb._execute_influxdb_command"
+    ) as mock_exec:
+        mock_exec.return_value = (True, "")
+        success, error = _setup_user_org_bucket(
+            "testuser", "userid123", {"testuser"}
+        )
+        assert success is True
+        assert error == ""
+        # Should skip org creation, only add member and create bucket
+        assert mock_exec.call_count == 2
 
 
 def test_setup_user_org_bucket_create_org_fails():
     """Test setup when org creation fails"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-        with patch(
-            "dtaas_services.pkg.influxdb._execute_influxdb_command"
-        ) as mock_exec:
-            mock_token.return_value = "test_token_123"
-            mock_exec.return_value = (False, "org creation failed")
-            success, error = _setup_user_org_bucket("testuser", "userid123", set())
-            assert success is False
-            assert "org creation failed" in error
+    with patch(
+        "dtaas_services.pkg.influxdb._execute_influxdb_command"
+    ) as mock_exec:
+        mock_exec.return_value = (False, "org creation failed")
+        success, error = _setup_user_org_bucket("testuser", "userid123", set())
+        assert success is False
+        assert "org creation failed" in error
 
 
 def test_setup_user_org_bucket_add_member_fails():
     """Test setup when adding member fails"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-        with patch(
-            "dtaas_services.pkg.influxdb._execute_influxdb_command"
-        ) as mock_exec:
-            mock_token.return_value = "test_token_123"
-            # First call (create org) succeeds, second (add member) fails
-            mock_exec.side_effect = [(True, ""), (False, "add member failed")]
-            success, error = _setup_user_org_bucket("testuser", "userid123", set())
-            assert success is False
-            assert "add member failed" in error
+    with patch(
+        "dtaas_services.pkg.influxdb._execute_influxdb_command"
+    ) as mock_exec:
+        # First call (create org) succeeds, second (add member) fails
+        mock_exec.side_effect = [(True, ""), (False, "add member failed")]
+        success, error = _setup_user_org_bucket("testuser", "userid123", set())
+        assert success is False
+        assert "add member failed" in error
 
 
 def test_setup_user_org_bucket_create_bucket_fails():
     """Test setup when bucket creation fails"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_token") as mock_token:
-        with patch(
-            "dtaas_services.pkg.influxdb._execute_influxdb_command"
-        ) as mock_exec:
-            mock_token.return_value = "test_token_123"
-            # First two succeed, third (create bucket) fails
-            mock_exec.side_effect = [(True, ""), (True, ""), (False, "bucket failed")]
-            success, error = _setup_user_org_bucket("testuser", "userid123", set())
-            assert success is False
-            assert "bucket failed" in error
+    with patch(
+        "dtaas_services.pkg.influxdb._execute_influxdb_command"
+    ) as mock_exec:
+        # First two succeed, third (create bucket) fails
+        mock_exec.side_effect = [(True, ""), (True, ""), (False, "bucket failed")]
+        success, error = _setup_user_org_bucket("testuser", "userid123", set())
+        assert success is False
+        assert "bucket failed" in error
 
 
 def test_create_users_from_credentials_success():

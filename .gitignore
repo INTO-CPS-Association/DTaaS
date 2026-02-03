@@ -230,7 +230,7 @@ deploy/services/cli/log/thingsboard
 
 deploy/services/config/credentials.csv
 deploy/services/cli/config/credentials.csv
-
+deploy/services/cli/config
 deploy/services/cli/compose.services.secure.yml
 deploy/services/cli/compose.thingsboard.secure.yml
 

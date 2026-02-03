@@ -221,8 +221,6 @@ Stops and removes Docker containers:
 
 #### InfluxDB Users
 
-* **Token Authentication**: InfluxDB uses token-based authentication. The CLI
-  automatically extracts the token from the InfluxDB container configuration.
 * **Organization Management**: Always check for existing organizations before creating
   new ones to avoid conflicts. Use `_get_existing_orgs()` before creating.
 * **User Ownership**: Users are added as **owners** (not members) of their

@@ -120,14 +120,11 @@ This command will:
 
 ### ThingsBoard Installation
 
-To install ThingsBoard, run these commands in sequence:
+To install ThingsBoard, run this command:
 
 ```bash
-# 1. Start PostgreSQL
-dtaas-services start -s postgresql
-
-# 2. Install ThingsBoard (wait for PostgreSQL to be ready)
-dtaas-services install-thingsboard
+#  (It starts PostgreSQL if it's not running, and it checks its health)
+dtaas-services install
 ```
 
 ### Service Management
@@ -165,7 +162,7 @@ dtaas-services remove
 Remove services and their volumes:
 
 ```bash
-dtaas-services remove --volumes
+dtaas-services remove --v
 ```
 
 Clean all data and log files for services (with confirmation prompt):
@@ -223,6 +220,10 @@ dtaas-services clean -s "postgres,thingsboard"
 
    This creates user accounts in InfluxDB, RabbitMQ, and ThingsBoard (if installed).
 
+3. Add user to a specifix service
+   ```bash
+   dtaas-services user add -s rabbitmq
+   ```
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard
