@@ -22,8 +22,6 @@ from .thingsboard_utility import (
 
 # Set up logger
 logger = logging.getLogger(__name__)
-config = Config()
-SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
 
 def _process_credentials_row(
@@ -84,9 +82,10 @@ def _process_credentials_file(
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     """Helper to set up credentials and change password."""
     try:
-        Config()
+        Config()  # Loads config/services.env into environment
         base_url = build_base_url()
-        session = httpx.Client(verify=SSL_CHECK, timeout=15)
+        from .thingsboard_users import _get_ssl_verify
+        session = httpx.Client(verify=_get_ssl_verify(), timeout=15)
         new_pw = check_password_configured()
 
         if new_pw:

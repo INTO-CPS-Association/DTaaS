@@ -12,8 +12,15 @@ FULLCHAIN_FILENAME = "fullchain.pem"
 
 # Set up logger
 logger = logging.getLogger(__name__)
-config = Config()
-SSL_CHECK = config.get_bool_value("SSL_VERIFY")
+
+
+def _get_ssl_verify() -> bool:
+    """Get SSL_VERIFY from environment (after Config loads services.env).
+    Deferred to runtime so this module can be imported even when
+    config/services.env doesn't exist (e.g., during generate-project).
+    """
+    raw = os.getenv("SSL_VERIFY", "true").strip().lower()
+    return raw not in ("false", "0", "no", "off")
 
 
 def build_base_url() -> str:
@@ -49,7 +56,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
             url,
             json={"username": email, "password": password},
             timeout=10,
-            verify=SSL_CHECK,  # Change to False for self-signed certificates
+            verify=_get_ssl_verify(),  # Set SSL_VERIFY in services.env for self-signed certs
         )
         return _handle_login_response(resp)
     except httpx.HTTPError as e:

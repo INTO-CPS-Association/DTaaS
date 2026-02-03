@@ -10,8 +10,6 @@ from .config import Config
 
 # Set up logger
 logger = logging.getLogger(__name__)
-config = Config()
-SSL_CHECK = config.get_bool_value("SSL_VERIFY")
 
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
