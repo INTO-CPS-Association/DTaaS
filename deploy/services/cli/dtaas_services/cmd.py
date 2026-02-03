@@ -4,9 +4,12 @@ from pathlib import Path
 import os
 from typing import Optional, Callable
 from dataclasses import dataclass
+
+from python_on_whales import docker
 import click
 import sys
 import time
+import concurrent.futures
 from rich.console import Console
 import dtaas_services
 from .pkg.cert import copy_certs
@@ -21,6 +24,7 @@ from .pkg import influxdb, rabbitmq, thingsboard
 from .pkg.thingsboard_permissions import permissions_thingsboard
 
 
+POSTGRES_READY = "[green]✅ PostgreSQL is ready[/green]"
 @dataclass
 class OperationMeta:
     """Metadata for service operations."""
@@ -155,6 +159,51 @@ def setup():
         raise click.ClickException(str(e)) from e
 
 
+def _get_postgres_container(containers):
+    """Extract PostgreSQL container from compose containers list."""
+    return next((c for c in containers if c.name == "postgres"), None)
+
+
+def _print_status_change(console: Console, current_status: str, last_status: str) -> None:
+    """Print status message if status has changed."""
+    if current_status == last_status:
+        return
+
+    if current_status == "running":
+        console.print("[green]PostgreSQL container is running, checking health...[/green]")
+    elif current_status == "restarting":
+        console.print(
+            "[yellow]⚠️  PostgreSQL is restarting. "
+            "Check logs with: docker logs postgres[/yellow]"
+        )
+
+
+def _check_postgres_healthy(console: Console, docker, postgres) -> bool:
+    """Check if PostgreSQL is healthy via health status or pg_isready."""
+    if hasattr(postgres.state, "health") and postgres.state.health:
+        if postgres.state.health == "healthy":
+            console.print("[green]✅ PostgreSQL is ready[/green]")
+            return True
+
+    # Fallback: Try pg_isready command
+    try:
+        pg_user = os.environ.get("POSTGRES_USER", "postgres")
+        result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
+
+        if isinstance(result, str) and "accepting" in result.lower():
+            console.print(POSTGRES_READY)
+            return True
+
+        if isinstance(result, (list, tuple)) and len(result) > 1:
+            if int(result[1]) == 0:
+                console.print(POSTGRES_READY)
+                return True
+    except Exception:
+        pass
+
+    return False
+
+
 def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None:
     """
     Wait for PostgreSQL to be ready to accept connections.
@@ -167,67 +216,31 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
     Raises:
         click.ClickException: If PostgreSQL doesn't become ready within timeout
     """
-
     console.print("[cyan]Waiting for PostgreSQL to be ready...[/cyan]")
     start_time = time.time()
     last_status = None
 
     while time.time() - start_time < timeout:
         try:
-            # Check if postgres container is running and healthy
             containers = docker.compose.ps()
-            postgres = next((c for c in containers if c.name == "postgres"), None)
+            postgres = _get_postgres_container(containers)
 
-            if postgres and hasattr(postgres, "state"):
-                current_status = postgres.state.status
+            if not postgres or not hasattr(postgres, "state"):
+                time.sleep(2)
+                continue
 
-                if current_status != last_status:
-                    if current_status == "running":
-                        console.print(
-                            "[green]PostgreSQL container is running, checking health...[/green]"
-                        )
-                    elif current_status == "restarting":
-                        console.print(
-                            "[yellow]⚠️  PostgreSQL is restarting. "
-                            "Check logs with: docker logs postgres[/yellow]"
-                        )
-                    last_status = current_status
+            current_status = postgres.state.status
+            _print_status_change(console, current_status, last_status)
+            last_status = current_status
 
-                # Check if container is running
-                if current_status == "running":
-                    # Check health status if available
-                    if hasattr(postgres.state, "health") and postgres.state.health:
-                        if postgres.state.health == "healthy":
-                            console.print("[green]✅ PostgreSQL is ready[/green]")
-                            return
+            if current_status == "running":
+                if _check_postgres_healthy(console, docker, postgres):
+                    return
+            elif current_status == "restarting":
+                time.sleep(3)
+                continue
 
-                    # Fallback: Try pg_isready command using docker.execute
-                    try:
-                        pg_user = os.environ.get("POSTGRES_USER", "postgres")
-                        result = docker.execute(
-                            "postgres", ["pg_isready", "-U", pg_user]
-                        )
-                        if isinstance(result, str):
-                            if "accepting" in result.lower():
-                                console.print("[green]✅ PostgreSQL is ready[/green]")
-                                return
-                        # In some contexts the execute call may return (out, exit_code)
-                        if isinstance(result, (list, tuple)) and len(result) > 1:
-                            try:
-                                if int(result[1]) == 0:
-                                    console.print(
-                                        "[green]✅ PostgreSQL is ready[/green]"
-                                    )
-                                    return
-                            except Exception:
-                                pass
-                    except Exception:
-                        pass
-                elif current_status == "restarting":
-                    time.sleep(3)
-                    continue
         except Exception as e:
-            # Log error but continue waiting
             console.print(f"[yellow]Warning: {str(e)}[/yellow]")
 
         time.sleep(2)
@@ -235,6 +248,19 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
     raise click.ClickException(
         f"PostgreSQL did not become ready within {timeout} seconds. "
         "This usually indicates a configuration problem. "
+    )
+
+
+def _run_install(docker) -> None:
+    """Run ThingsBoard database installation. Kept as a top-level helper so it can be
+    submitted to a ThreadPoolExecutor with docker passed as an argument."""
+    docker.compose.run(
+        "thingsboard-ce",
+        remove=True,
+        envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
+        service_ports=False,
+        use_aliases=True,
+        user='root',
     )
 
 
@@ -248,14 +274,27 @@ def _run_thingsboard_install(console: Console, docker) -> None:
         "[bold cyan]Installing ThingsBoard schema...[/bold cyan]",
         spinner="dots",
     ):
-        docker.compose.run(
-            "thingsboard-ce",
-            remove=True,
-            envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
-            service_ports=False,
-            use_aliases=True,
-            user='root'
-        )
+        timeout = int(os.getenv("THINGSBOARD_INSTALL_TIMEOUT", "300"))
+
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_run_install, docker)
+                future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            console.print(f"[red]ThingsBoard installation timed out after {timeout} seconds.[/red]")
+            console.print("[yellow]Attempting to stop ThingsBoard container " \
+            "to avoid inconsistent state...[/yellow]")
+            try:
+                docker.compose.kill("thingsboard-ce")
+            except Exception:
+                # Best-effort cleanup; ignore errors here
+                pass
+            raise click.ClickException(
+                f"ThingsBoard installation timed out after {timeout} seconds. "
+                "Check logs with: docker logs thingsboard-ce and try again."
+            )
+        except Exception as e:
+            raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
 
 
 @services.command()
