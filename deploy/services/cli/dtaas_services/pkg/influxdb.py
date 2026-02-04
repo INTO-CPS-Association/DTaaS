@@ -36,7 +36,7 @@ def _execute_influxdb_command(command: list, error_context: str) -> tuple[bool, 
     Returns:
         Tuple of (success, error message if any)
     """
-    success, output = execute_docker_command("influxdb", command)
+    success, output = execute_docker_command("influxdb", command, False)
     if not success:
         return False, f"{error_context}: {output}"
     return True, ""
@@ -53,7 +53,7 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     """
     success, output = execute_docker_command(
         "influxdb",
-        ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password],
+        ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password], False
     )
 
     if not success:
@@ -69,7 +69,7 @@ def _get_influxdb_users() -> tuple[bool, dict, str]:
         Tuple of (success, users dict, error message if any)
     """
     success, users_json_str = execute_docker_command(
-        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"]
+        "influxdb", ["influx", "user", "list", "--skip-verify", "--json"], False
     )
     if not success:
         return False, {}, f"Failed to retrieve user list: {users_json_str}"
@@ -88,7 +88,7 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
         Tuple of (success, set of org names, error message if any)
     """
     success, orgs_json_str = execute_docker_command(
-        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"]
+        "influxdb", ["influx", "org", "list", "--skip-verify", "--json"], False
     )
     if not success:
         return False, set(), f"Failed to retrieve org list: {orgs_json_str}"
@@ -97,6 +97,24 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
         return False, set(), error_msg
     org_names = {org["name"] for org in orgs_json_list}
     return True, org_names, ""
+
+
+def _handle_bucket_creation(name: str, error_msg: str) -> tuple[bool, str]:
+    """Handle bucket creation result."""
+    if "already exists" in error_msg:
+        print(f"Bucket '{name}' already exists, skipping...")
+        return True, ""
+    print(f"Docker error: {error_msg}")
+    return False, error_msg
+
+
+def _handle_membership_creation(name: str, error_msg: str) -> tuple[bool, str]:
+    """Handle organization membership creation result."""
+    if "already exists" in error_msg:
+        print(f"Organization membership for '{name}' already exists, skipping...")
+        return True, ""
+    print(f"Docker error: {error_msg}")
+    return False, error_msg
 
 
 def _setup_user_org_bucket(
@@ -130,6 +148,7 @@ def _setup_user_org_bucket(
         )
         if not success:
             return False, error_msg
+
     # Add user as owner to organization
     success, error_msg = _execute_influxdb_command(
         [
@@ -147,23 +166,17 @@ def _setup_user_org_bucket(
         f"Failed to add user {user_id} as owner to {name}",
     )
     if not success:
-        if "already exists" in error_msg:
-            print(f"Organization membership for '{name}' already exists, skipping...")
-        else:
-            print(f"Docker error: {error_msg}")
+        success, error_msg = _handle_membership_creation(name, error_msg)
+        if not success:
             return False, error_msg
+
     # Create bucket
     success, error_msg = _execute_influxdb_command(
         ["influx", "bucket", "create", "--skip-verify", "--name", name, "--org", name],
         f"Failed to create bucket {name}",
-
     )
     if not success:
-        if "already exists" in error_msg:
-            print(f"Bucket '{name}' already exists, skipping...")
-        else:
-            print(f"Docker error: {error_msg}")
-            return False, error_msg
+        return _handle_bucket_creation(name, error_msg)
 
     return True, ""
 

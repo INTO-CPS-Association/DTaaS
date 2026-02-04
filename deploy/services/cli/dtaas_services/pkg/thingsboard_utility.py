@@ -96,7 +96,8 @@ def _create_tenant_admin_user(
                         f"  Tenant admin '{ctx.admin_email}' already exists, skipping..."
                     )
                     return None, ""
-            except:
+            except Exception:
+                # Ignore JSON parsing errors when checking for existing user
                 pass
         return None, f"Failed to create tenant admin: {resp.status_code}"
 

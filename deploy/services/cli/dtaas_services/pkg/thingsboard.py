@@ -70,6 +70,42 @@ def _process_credentials_file(
     return True, "ThingsBoard users created successfully"
 
 
+def _is_password_change_recoverable(error_msg: str) -> bool:
+    """Check if password change error is recoverable."""
+    return any(
+        x in error_msg.lower() for x in ["not reachable", "unable to log in", "ssl"]
+    )
+
+
+def _change_password_with_logging(
+    base_url: str, session: httpx.Client, new_pw: str
+) -> Tuple[bool, str]:
+    """Attempt to change sysadmin password with logging suppression."""
+    tb_logger = logging.getLogger("dtaas_services.pkg.thingsboard_users")
+    old_level = tb_logger.level
+    tb_logger.setLevel(logging.CRITICAL)
+
+    try:
+        return change_sysadmin_password_if_needed(base_url, session, new_pw)
+    finally:
+        tb_logger.setLevel(old_level)
+
+
+def _handle_password_change_result(
+    success: bool, error_msg: str
+) -> Tuple[bool, str | None]:
+    """Handle password change result and return error if not recoverable."""
+    if not success:
+        if _is_password_change_recoverable(error_msg):
+            logger.warning(
+                f"Could not change sysadmin password: {error_msg}. "
+                "Continuing with user setup..."
+            )
+            return True, None
+        return False, error_msg
+    return True, None
+
+
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     """Helper to set up credentials and change password."""
     try:
@@ -77,40 +113,22 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
         base_url = build_base_url()
         from .thingsboard_users import _get_ssl_verify
 
-        session = httpx.Client(verify=_get_ssl_verify(), timeout=15)
+        # Increased timeout to 30s to handle self-signed certificates
+        # (SSL handshake can be slow with dummy/self-signed certs)
+        session = httpx.Client(verify=_get_ssl_verify(), timeout=30)
         new_pw = check_password_configured()
 
         if new_pw:
-            # Temporarily suppress thingsboard_users logger to prevent error spam
-            # when login fails (ThingsBoard not running). We'll catch it below.
-            tb_logger = logging.getLogger("dtaas_services.pkg.thingsboard_users")
-            old_level = tb_logger.level
-            tb_logger.setLevel(logging.CRITICAL)
-
-            try:
-                success, error_msg = change_sysadmin_password_if_needed(
-                    base_url, session, new_pw
-                )
-            finally:
-                tb_logger.setLevel(old_level)
-
-            if not success:
-                if any(
-                    x in error_msg.lower()
-                    for x in ["not reachable", "unable to log in", "ssl"]
-                ):
-                    # Password change failed, but continue to try user setup
-                    logger.warning(
-                        f"Could not change sysadmin password: {error_msg}. "
-                        "Continuing with user setup..."
-                    )
-                else:
-                    return False, error_msg
+            success, error_msg = _change_password_with_logging(
+                base_url, session, new_pw
+            )
+            should_continue, error = _handle_password_change_result(success, error_msg)
+            if not should_continue:
+                return False, error
 
         return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, httpx.HTTPError) as e:
-        # Connection error
-        logger.error(f"Connection error: {e}")
+    except (OSError, httpx.HTTPError):
+        logger.error("Connection error connecting to ThingsBoard")
         return (
             False,
             f"Cannot connect to ThingsBoard at {build_base_url()}. Check HOSTNAME in services.env.",

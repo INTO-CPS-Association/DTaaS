@@ -237,7 +237,8 @@ def set_service_cert_permissions(
             if is_ci():
                 msg = f"\n{ctx.cert_path.name} created (permission changes skipped in CI)."
             elif platform.system().lower() == "windows":
-                msg = f"\n{ctx.cert_path.name} created (POSIX permissions not applicable on Windows)."
+                msg = f"\n{ctx.cert_path.name} created"
+                "\n(POSIX permissions not applicable on Windows)."
             else:
                 msg = f"\n{ctx.cert_path.name} created (permission changes skipped)."
         return True, msg

@@ -1,15 +1,13 @@
 """DTaaS Services CLI commands"""
 
+import sys
+import time
+import concurrent.futures
 from pathlib import Path
 import os
 from typing import Optional, Callable
 from dataclasses import dataclass
-
-from python_on_whales import docker
 import click
-import sys
-import time
-import concurrent.futures
 from rich.console import Console
 import dtaas_services
 from .pkg.cert import copy_certs
@@ -25,6 +23,8 @@ from .pkg.thingsboard_permissions import permissions_thingsboard
 
 
 POSTGRES_READY = "[green]✅ PostgreSQL is ready[/green]"
+
+
 @dataclass
 class OperationMeta:
     """Metadata for service operations."""
@@ -164,13 +164,17 @@ def _get_postgres_container(containers):
     return next((c for c in containers if c.name == "postgres"), None)
 
 
-def _print_status_change(console: Console, current_status: str, last_status: str) -> None:
+def _print_status_change(
+    console: Console, current_status: str, last_status: str
+) -> None:
     """Print status message if status has changed."""
     if current_status == last_status:
         return
 
     if current_status == "running":
-        console.print("[green]PostgreSQL container is running, checking health...[/green]")
+        console.print(
+            "[green]PostgreSQL container is running, checking health...[/green]"
+        )
     elif current_status == "restarting":
         console.print(
             "[yellow]⚠️  PostgreSQL is restarting. "
@@ -178,14 +182,8 @@ def _print_status_change(console: Console, current_status: str, last_status: str
         )
 
 
-def _check_postgres_healthy(console: Console, docker, postgres) -> bool:
-    """Check if PostgreSQL is healthy via health status or pg_isready."""
-    if hasattr(postgres.state, "health") and postgres.state.health:
-        if postgres.state.health == "healthy":
-            console.print("[green]✅ PostgreSQL is ready[/green]")
-            return True
-
-    # Fallback: Try pg_isready command
+def _check_postgres_via_pg_isready(console: Console, docker) -> bool:
+    """Check if PostgreSQL is ready using pg_isready command."""
     try:
         pg_user = os.environ.get("POSTGRES_USER", "postgres")
         result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
@@ -199,9 +197,51 @@ def _check_postgres_healthy(console: Console, docker, postgres) -> bool:
                 console.print(POSTGRES_READY)
                 return True
     except Exception:
+        # Ignore errors from pg_isready command
         pass
 
     return False
+
+
+def _check_postgres_health_status(postgres) -> bool:
+    """Check if PostgreSQL container has healthy status."""
+    if hasattr(postgres.state, "health") and postgres.state.health:
+        return postgres.state.health == "healthy"
+    return False
+
+
+def _check_postgres_healthy(console: Console, docker, postgres) -> bool:
+    """Check if PostgreSQL is healthy via health status or pg_isready."""
+    if _check_postgres_health_status(postgres):
+        console.print("[green]✅ PostgreSQL is ready[/green]")
+        return True
+
+    # Fallback: Try pg_isready command
+    return _check_postgres_via_pg_isready(console, docker)
+
+
+def _handle_postgres_timeout_error(console: Console, timeout: int) -> None:
+    """Handle PostgreSQL timeout error."""
+    raise click.ClickException(
+        f"PostgreSQL did not become ready within {timeout} seconds. "
+        "This usually indicates a configuration problem. "
+    )
+
+
+def _check_postgres_state(
+    console: Console, docker, postgres, last_status
+) -> tuple[str | None, bool]:
+    """Check PostgreSQL container state and return (current_status, is_ready)."""
+    current_status = postgres.state.status
+    _print_status_change(console, current_status, last_status)
+
+    if current_status != "running":
+        return current_status, False
+
+    if _check_postgres_healthy(console, docker, postgres):
+        return current_status, True
+
+    return current_status, False
 
 
 def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None:
@@ -229,14 +269,15 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
                 time.sleep(2)
                 continue
 
-            current_status = postgres.state.status
-            _print_status_change(console, current_status, last_status)
+            current_status, is_ready = _check_postgres_state(
+                console, docker, postgres, last_status
+            )
             last_status = current_status
 
-            if current_status == "running":
-                if _check_postgres_healthy(console, docker, postgres):
-                    return
-            elif current_status == "restarting":
+            if is_ready:
+                return
+
+            if current_status == "restarting":
                 time.sleep(3)
                 continue
 
@@ -245,10 +286,7 @@ def _wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> Non
 
         time.sleep(2)
 
-    raise click.ClickException(
-        f"PostgreSQL did not become ready within {timeout} seconds. "
-        "This usually indicates a configuration problem. "
-    )
+    _handle_postgres_timeout_error(console, timeout)
 
 
 def _run_install(docker) -> None:
@@ -260,7 +298,7 @@ def _run_install(docker) -> None:
         envs={"INSTALL_TB": "true", "LOAD_DEMO": "false"},
         service_ports=False,
         use_aliases=True,
-        user='root',
+        user="root",
     )
 
 
@@ -281,9 +319,13 @@ def _run_thingsboard_install(console: Console, docker) -> None:
                 future = executor.submit(_run_install, docker)
                 future.result(timeout=timeout)
         except concurrent.futures.TimeoutError:
-            console.print(f"[red]ThingsBoard installation timed out after {timeout} seconds.[/red]")
-            console.print("[yellow]Attempting to stop ThingsBoard container " \
-            "to avoid inconsistent state...[/yellow]")
+            console.print(
+                f"[red]ThingsBoard installation timed out after {timeout} seconds.[/red]"
+            )
+            console.print(
+                "[yellow]Attempting to stop ThingsBoard container "
+                "to avoid inconsistent state...[/yellow]"
+            )
             try:
                 docker.compose.kill("thingsboard-ce")
             except Exception:
@@ -294,7 +336,9 @@ def _run_thingsboard_install(console: Console, docker) -> None:
                 "Check logs with: docker logs thingsboard-ce and try again."
             )
         except Exception as e:
-            raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
+            raise click.ClickException(
+                f"ThingsBoard installation failed: {str(e)}"
+            ) from e
 
 
 @services.command()
@@ -358,7 +402,7 @@ def _check_thingsboard_installation(
 
     if service_list is None or "thingsboard-ce" in service_list:
         # User wants to start thingsboard
-        if not service._is_thingsboard_installed():
+        if not service.is_thingsboard_installed():
             console = Console()
             console.print("[yellow]⚠️  ThingsBoard is not installed yet.[/yellow]")
             console.print(
@@ -538,7 +582,7 @@ def clean(service_names, certs):
         click.confirm(prompt, default=False, abort=True)
 
         # Check if any services are running
-        running_services = setup_obj._get_running_services()
+        running_services = setup_obj.get_running_services()
         if service_list:
             services_to_stop = [s for s in service_list if s in running_services]
             if services_to_stop:
@@ -554,7 +598,8 @@ def clean(service_names, certs):
                 )
         elif running_services:
             console.print(
-                f"[yellow]⚠️  Some services are still running:[/yellow] {', '.join(running_services)}"
+                f"[yellow]⚠️  Some services are still \n"
+                f"running:[/yellow] {', '.join(running_services)}"
             )
             console.print("[yellow]Run:[/yellow] dtaas-services stop")
             raise click.ClickException(
@@ -672,7 +717,8 @@ def add(service_names):
     else:
         failed_count = sum(1 for r in results if not r)
         console.print(
-            f"\n[bold yellow]⚠️  User addition completed with {failed_count} error(s). See messages above.[/bold yellow]"
+            f"\n[bold yellow]⚠️  User addition completed \n"
+            f"with {failed_count} error(s). See messages above.[/bold yellow]"
         )
 
 

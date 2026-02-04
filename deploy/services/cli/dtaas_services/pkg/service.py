@@ -1,12 +1,12 @@
 """DTaaS platform services setup module"""
 
-import os
-import shutil
-import click
 import subprocess
 from functools import wraps
 from typing import Tuple, Optional, Set
 from pathlib import Path
+import os
+import shutil
+import click
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
 from .config import Config
@@ -21,6 +21,42 @@ DOCKER_OPERATION_EXCEPTIONS = (
 )
 
 
+def _is_service_not_found_error(error_msg: str) -> bool:
+    """Check if error is a service not found error."""
+    return "no such service" in error_msg
+
+
+def _is_docker_daemon_error(error_msg: str) -> bool:
+    """Check if error is a Docker daemon connection issue."""
+    daemon_keywords = [
+        "cannot connect",
+        "connection refused",
+        "daemon",
+        "not running",
+    ]
+    if any(keyword in error_msg for keyword in daemon_keywords):
+        return True
+    return "returned with code" in error_msg and "no such service" not in error_msg
+
+
+def _process_docker_exception(exc: DockerException) -> Tuple[Exception, str]:
+    """Process DockerException and return appropriate error tuple."""
+    error_msg = str(exc).lower()
+
+    if _is_service_not_found_error(error_msg):
+        err = ValueError(f"Service not found: {str(exc)}")
+        return err, str(exc)
+
+    if _is_docker_daemon_error(error_msg):
+        err = RuntimeError(
+            "\nDocker is not running. Please start Docker Desktop and try again."
+        )
+        return err, str(err)
+
+    err = RuntimeError(f"Docker error: {str(exc)}")
+    return err, str(exc)
+
+
 def _handle_docker_not_running(func):
     """Decorator to catch DockerException and return error response.
 
@@ -32,29 +68,7 @@ def _handle_docker_not_running(func):
         try:
             return func(*args, **kwargs)
         except DockerException as e:
-            error_msg = str(e).lower()
-            # Check if it's actually a service not found error
-            if "no such service" in error_msg:
-                err = ValueError(f"Service not found: {str(e)}")
-                return err, str(e)
-            # Check if it's a Docker daemon connection issue
-            if (
-                "cannot connect" in error_msg
-                or "connection refused" in error_msg
-                or "daemon" in error_msg
-                or "not running" in error_msg
-                or (
-                    "returned with code" in error_msg
-                    and "no such service" not in error_msg
-                )
-            ):
-                err = RuntimeError(
-                    "\nDocker is not running. Please start Docker Desktop and try again."
-                )
-                return err, str(err)
-            # For other Docker exceptions, return the actual error
-            err = RuntimeError(f"Docker error: {str(e)}")
-            return err, str(e)
+            return _process_docker_exception(e)
 
     return wrapper
 
@@ -148,7 +162,11 @@ class Service:
         # For other exceptions, include type information
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
 
-    def _get_running_services(self) -> Set[str]:
+    def _is_container_running(self, container) -> bool:
+        """Check if a container is running."""
+        return hasattr(container, "state") and container.state.status == "running"
+
+    def get_running_services(self) -> Set[str]:
         """Get set of currently running service names.
 
         Returns:
@@ -159,13 +177,28 @@ class Service:
             if err:
                 return set()
 
-            running_services = set()
-            for service_name, container in container_map.items():
-                if hasattr(container, "state") and container.state.status == "running":
-                    running_services.add(service_name)
+            running_services = {
+                service_name
+                for service_name, container in container_map.items()
+                if self._is_container_running(container)
+            }
             return running_services
         except Exception:
             return set()
+
+    def _categorize_container_state(
+        self,
+        service_name: str,
+        container,
+        running_set: Set[str],
+        restarting_set: Set[str],
+    ) -> None:
+        """Categorize a container into running or restarting state."""
+        if hasattr(container, "state"):
+            if container.state.status == "running":
+                running_set.add(service_name)
+            elif container.state.status == "restarting":
+                restarting_set.add(service_name)
 
     def _get_running_or_restarting_services(self) -> Tuple[Set[str], Set[str]]:
         """Get sets of running and restarting service names.
@@ -181,14 +214,40 @@ class Service:
             running_services = set()
             restarting_services = set()
             for service_name, container in container_map.items():
-                if hasattr(container, "state"):
-                    if container.state.status == "running":
-                        running_services.add(service_name)
-                    elif container.state.status == "restarting":
-                        restarting_services.add(service_name)
+                self._categorize_container_state(
+                    service_name, container, running_services, restarting_services
+                )
             return running_services, restarting_services
         except Exception:
             return set(), set()
+
+    def _prepare_services_to_start(
+        self, service_list: Optional[list], skip_services: Set[str]
+    ) -> Tuple[list, list, list]:
+        """Prepare lists of services to start, skip, and those restarting."""
+        running_services, restarting_services = (
+            self._get_running_or_restarting_services()
+        )
+        services_to_start = [s for s in service_list if s not in skip_services]
+        skipped_services = [s for s in service_list if s in running_services]
+        restarting_list = [s for s in service_list if s in restarting_services]
+        return services_to_start, skipped_services, restarting_list
+
+    def _prepare_all_services_to_start(
+        self, skip_services: Set[str]
+    ) -> Tuple[list, list, list]:
+        """Prepare all services to start."""
+        err, all_services = self._get_all_service_names()
+        if err:
+            return [], [], []
+
+        services_to_start = [s for s in all_services if s not in skip_services]
+        running_services, restarting_services = (
+            self._get_running_or_restarting_services()
+        )
+        skipped_services = list(running_services & set(all_services))
+        restarting_list = list(restarting_services & set(all_services))
+        return services_to_start, skipped_services, restarting_list
 
     def _start_services(self, service_list: Optional[list]) -> Tuple[list, list, list]:
         """Start services or all if service_list is None.
@@ -196,38 +255,24 @@ class Service:
         Returns:
             Tuple of (skipped running services, started services, restarting services)
         """
-        # Get currently running and restarting services
         running_services, restarting_services = (
             self._get_running_or_restarting_services()
         )
         skip_services = running_services | restarting_services
 
-        # Determine which services to start
         if service_list is not None:
-            # Filter out already running/restarting services
-            services_to_start = [s for s in service_list if s not in skip_services]
-            skipped_services = [s for s in service_list if s in running_services]
-            restarting_list = [s for s in service_list if s in restarting_services]
-
-            if services_to_start:
-                self.docker.compose.up(services_to_start, detach=True)
-
-            return skipped_services, services_to_start, restarting_list
+            services_to_start, skipped_services, restarting_list = (
+                self._prepare_services_to_start(service_list, skip_services)
+            )
         else:
-            # Starting all services
-            err, all_services = self._get_all_service_names()
-            if err:
-                self.docker.compose.up(detach=True)
-                return [], [], []
+            services_to_start, skipped_services, restarting_list = (
+                self._prepare_all_services_to_start(skip_services)
+            )
 
-            services_to_start = [s for s in all_services if s not in skip_services]
-            skipped_services = list(running_services & all_services)
-            restarting_list = list(restarting_services & all_services)
+        if services_to_start:
+            self.docker.compose.up(services_to_start, detach=True)
 
-            if services_to_start:
-                self.docker.compose.up(services_to_start, detach=True)
-
-            return skipped_services, services_to_start, restarting_list
+        return skipped_services, services_to_start, restarting_list
 
     def _stop_services(self, service_list: Optional[list]) -> None:
         """Stop services or all if service_list is None."""
@@ -270,6 +315,45 @@ class Service:
             return result
         return [], [], []
 
+    def _build_skipped_message(self, skipped: list) -> Optional[str]:
+        """Build message for skipped services."""
+        if skipped:
+            return f"Skipped {len(skipped)} already running service(s): {', '.join(skipped)}"
+        return None
+
+    def _build_restarting_message(self, restarting: list) -> Optional[str]:
+        """Build message for restarting services."""
+        if restarting:
+            return (
+                f"⚠️  {len(restarting)} service(s) are restarting: {', '.join(restarting)}\n"
+                "   If a service keeps restarting, there may be a configuration error.\n"
+                "   Check logs with: docker logs <container_name>"
+            )
+        return None
+
+    def _build_started_message(
+        self, affected: list, skipped: list, restarting: list
+    ) -> Optional[str]:
+        """Build message for started services."""
+        if affected:
+            return f"Started {len(affected)} service(s): {', '.join(affected)}"
+        if not skipped and not restarting:
+            return "No services to start"
+        return None
+
+    def _build_start_messages(
+        self, skipped: list, affected: list, restarting: list
+    ) -> list:
+        """Build all messages for start action."""
+        messages = []
+        if skipped_msg := self._build_skipped_message(skipped):
+            messages.append(skipped_msg)
+        if restarting_msg := self._build_restarting_message(restarting):
+            messages.append(restarting_msg)
+        if started_msg := self._build_started_message(affected, skipped, restarting):
+            messages.append(started_msg)
+        return messages
+
     def _get_success_message(
         self,
         action: str,
@@ -286,35 +370,18 @@ class Service:
             restarting: List of services that are in restarting state
         """
         if action == "start":
-            parts = []
-            if skipped:
-                parts.append(
-                    f"Skipped {len(skipped)} already running service(s): "
-                    f"{', '.join(skipped)}"
-                )
-            if restarting:
-                parts.append(
-                    f"⚠️  {len(restarting)} service(s) are restarting: "
-                    f"{', '.join(restarting)}\n"
-                    "   If a service keeps restarting, there may be a configuration error.\n"
-                    "   Check logs with: docker logs <container_name>"
-                )
-            if affected:
-                parts.append(
-                    f"Started {len(affected)} service(s): {', '.join(affected)}"
-                )
-            elif not skipped and not restarting:
-                parts.append("No services to start")
-
-            if not parts:
+            messages = self._build_start_messages(
+                skipped or [], affected or [], restarting or []
+            )
+            if not messages:
                 return "All services are already running"
-            return "\n".join(parts)
+            return "\n".join(messages)
 
-        messages = {
+        messages_map = {
             "stop": "Services stopped successfully",
             "restart": "Services restarted successfully",
         }
-        return messages.get(action, "Operation completed successfully")
+        return messages_map.get(action, "Operation completed successfully")
 
     def _handle_service_action_error(
         self, action: str, exc: Exception
@@ -332,7 +399,6 @@ class Service:
         Returns (should_warn, warning_message).
         """
         if not service_list:
-            # Stopping all services, check if thingsboard container exists
             if self._is_thingsboard_container_present():
                 return True, (
                     " Skipping PostgreSQL stop: ThingsBoard container is still present. "
@@ -365,16 +431,13 @@ class Service:
         if not should_warn:
             return service_list, None
 
-        # Filter out postgres
         if service_list is None:
-            # Get all services except postgres
             err, all_services = self._get_all_service_names()
             if err:
                 return service_list, warning
             filtered = [s for s in all_services if s != "postgres"]
             return filtered, warning
 
-        # Remove postgres from the list
         filtered = [s for s in service_list if s != "postgres"]
         return filtered, warning
 
@@ -583,6 +646,19 @@ class Service:
         for subdir in data_subdirs:
             self._remove_and_recreate_directory(data_dir / subdir)
 
+    def _try_remove_file(self, path: Path) -> None:
+        """Try to remove a file with permission handling."""
+        try:
+            path.chmod(0o777)
+        except OSError:
+            # Ignore errors when changing permissions
+            pass
+        try:
+            path.unlink()
+        except OSError:
+            # Ignore errors when deleting file
+            pass
+
     def _remove_influx_cli_config_if_needed(self, service_list: Optional[list]) -> None:
         """Remove generated InfluxDB CLI config file if InfluxDB data was wiped.
 
@@ -600,22 +676,35 @@ class Service:
         influx_cfg = base_dir / "config" / "influxdb" / "influx-configs"
         if not influx_cfg.exists():
             return
-        try:
-            try:
-                influx_cfg.chmod(0o777)
-            except OSError:
-                # Best-effort: if we cannot change permissions, attempt deletion anyway.
-                pass
-            influx_cfg.unlink(missing_ok=True)
-        except OSError:
-            # Best-effort cleanup; if it fails, Influx may still restart-loop.
-            pass
+
+        self._try_remove_file(influx_cfg)
 
     def _get_remove_message(self, remove_volumes: bool) -> str:
         """Get message for remove_services based on whether volumes were removed."""
         if remove_volumes:
             return " Services and volumes removed successfully"
         return " Services removed successfully"
+
+    def _handle_file_removal(self, item: Path) -> None:
+        """Handle removal of a file with permission and error handling."""
+        try:
+            item.chmod(0o777)
+        except PermissionError:
+            # Ignore permission errors
+            pass
+        try:
+            item.unlink()
+        except OSError as e:
+            click.echo(f"Warning: Could not remove {item}: {e}", err=True)
+
+    def _handle_directory_removal(self, item: Path) -> None:
+        """Handle recursive removal of directory contents."""
+        self._remove_all_files_in_directory(item)
+        try:
+            item.rmdir()
+        except OSError:
+            # Ignore errors when removing directory
+            pass
 
     def _remove_all_files_in_directory(self, directory: Path) -> None:
         """Recursively remove all files and subdirectories in a directory.
@@ -629,27 +718,23 @@ class Service:
         try:
             for item in directory.iterdir():
                 if item.is_file():
-                    # Try to change permissions before deleting (Windows compatibility)
-                    try:
-                        item.chmod(0o777)
-                    except PermissionError:
-                        # Best-effort: if we cannot change permissions, still attempt deletion below.
-                        pass
-                    try:
-                        item.unlink()
-                    except OSError as e:
-                        click.echo(f"Warning: Could not remove {item}: {e}", err=True)
+                    self._handle_file_removal(item)
                 elif item.is_dir():
-                    # Recursively remove files in subdirectories
-                    self._remove_all_files_in_directory(item)
-                    # After removing all contents, try to remove the directory itself
-                    try:
-                        item.rmdir()
-                    except OSError:
-                        # Directory might not be empty or have permission issues, skip
-                        pass
+                    self._handle_directory_removal(item)
         except OSError as e:
             click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+
+    def _handle_gitkeep_file(self, item: Path) -> None:
+        """Handle removal of a .gitkeep file."""
+        try:
+            item.chmod(0o777)
+        except PermissionError:
+            # Ignore permission errors
+            pass
+        try:
+            item.unlink()
+        except OSError as e:
+            click.echo(f"Warning: Could not remove {item}: {e}", err=True)
 
     def _remove_gitkeep_files(self, directory: Path) -> None:
         """Recursively remove all .gitkeep files in a directory and subdirectories.
@@ -663,18 +748,8 @@ class Service:
         try:
             for item in directory.iterdir():
                 if item.is_file() and item.name == ".gitkeep":
-                    try:
-                        item.chmod(0o777)
-                    except PermissionError:
-                        # Best-effort permission change; if this fails, we still try to delete
-                        # the file below and will report any unlink errors separately.
-                        pass
-                    try:
-                        item.unlink()
-                    except OSError as e:
-                        click.echo(f"Warning: Could not remove {item}: {e}", err=True)
+                    self._handle_gitkeep_file(item)
                 elif item.is_dir():
-                    # Recursively search subdirectories
                     self._remove_gitkeep_files(item)
         except OSError as e:
             click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
@@ -692,38 +767,49 @@ class Service:
         except Exception:
             return False
 
-    def _is_thingsboard_installed(self) -> bool:
-        """Check if ThingsBoard database schema is installed in PostgreSQL.
+    def _validate_postgres_for_thingsboard_check(self, container_map: dict) -> bool:
+        """Validate PostgreSQL container is available and running for TB check."""
+        if "postgres" not in container_map:
+            return False
 
-        This is used to determine if the user needs to run the install command
-        when starting services. The schema persists even if the container is removed.
-        """
+        postgres_container = container_map["postgres"]
+        return (
+            hasattr(postgres_container, "state")
+            and postgres_container.state.status == "running"
+        )
+
+    def _query_thingsboard_schema(self) -> bool:
+        """Query PostgreSQL for ThingsBoard schema existence."""
         try:
-            # Check if PostgreSQL container exists and is running
-            err, container_map = self._get_all_containers()
-            if err or "postgres" not in container_map:
-                return False
-
-            postgres_container = container_map["postgres"]
-            if (
-                not hasattr(postgres_container, "state")
-                or postgres_container.state.status != "running"
-            ):
-                return False
-
-            # Check if ThingsBoard schema exists by querying PostgreSQL
-            # Use the postgres container's default configured user
             result = self.docker.execute(
                 "postgres",
                 [
                     "sh",
                     "-c",
                     'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc '
-                    + "\"SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'admin_settings');\"",
+                    + "\"SELECT EXISTS (SELECT 1 FROM "
+                    + "information_schema.tables WHERE table_name = 'admin_settings');\"",
                 ],
             )
-            # t -> table exists, f -> does not exist
             return result.strip() == "t"
+        except Exception:
+            return False
+
+    def is_thingsboard_installed(self) -> bool:
+        """Check if ThingsBoard database schema is installed in PostgreSQL.
+
+        This is used to determine if the user needs to run the install command
+        when starting services. The schema persists even if the container is removed.
+        """
+        try:
+            err, container_map = self._get_all_containers()
+            if err:
+                return False
+
+            if not self._validate_postgres_for_thingsboard_check(container_map):
+                return False
+
+            return self._query_thingsboard_schema()
         except Exception:
             return False
 
@@ -734,14 +820,15 @@ class Service:
         Check if postgres can be removed only if thingsboard is removed.
         Returns (Exception, message) if postgres can't be removed, (None, None) otherwise.
         """
-        if (
-            not service_list
-            or "postgres" not in service_list
-            or "thingsboard-ce" in service_list
-        ):
+        should_check = (
+            service_list
+            and "postgres" in service_list
+            and "thingsboard-ce" not in service_list
+        )
+
+        if not should_check:
             return None, None
 
-        # Check if thingsboard container exists
         if self._is_thingsboard_container_present():
             err = ValueError(
                 "Cannot remove PostgreSQL while ThingsBoard container exists. "
@@ -774,6 +861,20 @@ class Service:
             # Also remove generated config artifacts that conflict with fresh init
             self._remove_influx_cli_config_if_needed(service_list)
 
+    def _check_remove_prerequisites(
+        self, service_list: Optional[list]
+    ) -> Tuple[Optional[Exception], Optional[str]]:
+        """Check prerequisites for removal (compose file exists and postgres dependency)."""
+        err, exists = self._check_compose_file()
+        if not exists:
+            return err, str(err)
+
+        err, msg = self._check_postgres_dependency(service_list)
+        if err:
+            return err, msg
+
+        return None, None
+
     @_handle_docker_not_running
     def remove_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False
@@ -789,16 +890,10 @@ class Service:
         Returns:
             Tuple of (Exception or None, message)
         """
-        err, exists = self._check_compose_file()
-        if not exists:
-            return err, str(err)
-
-        # Normalize service names if provided
         if service_list:
             service_list = [normalize_service_name(s) for s in service_list]
 
-        # Check postgres dependency
-        err, msg = self._check_postgres_dependency(service_list)
+        err, msg = self._check_remove_prerequisites(service_list)
         if err:
             return err, msg
 
@@ -807,6 +902,152 @@ class Service:
             return None, self._get_remove_message(remove_volumes)
         except DOCKER_OPERATION_EXCEPTIONS as e:
             return self._handle_docker_error("remove services", e)
+
+    def _get_root_data_directories(self) -> list:
+        """
+        Get root data and log directories.
+
+        Returns:
+            List of Path objects for root data/log directories that exist
+        """
+        base_dir = Config.get_base_dir()
+        directories = []
+        for dir_name in ["data", "log"]:
+            dir_path = base_dir / dir_name
+            if dir_path.exists():
+                directories.append(dir_path)
+        return directories
+
+    def _get_service_subdirectories(self, service_list: list) -> list:
+        """
+        Get data and log subdirectories for specific services.
+
+        Args:
+            service_list: Non-empty list of services to get directories for
+
+        Returns:
+            List of Path objects for service subdirectories that exist
+        """
+        base_dir = Config.get_base_dir()
+        directories = []
+        for service in service_list:
+            # Map normalized names to directory names
+            dir_name = "thingsboard" if service == "thingsboard-ce" else service
+            for subdir_type in ["data", "log"]:
+                dir_path = base_dir / subdir_type / dir_name
+                if dir_path.exists():
+                    directories.append(dir_path)
+        return directories
+
+    def _get_service_data_directories(self, service_list: Optional[list]) -> list:
+        """
+        Get data and log directories for services.
+
+        Args:
+            service_list: Optional list of specific services. If None, returns root data/log dirs.
+
+        Returns:
+            List of Path objects for service data directories
+        """
+        if not service_list:
+            return self._get_root_data_directories()
+        return self._get_service_subdirectories(service_list)
+
+    def _get_certs_directory(self) -> Optional[Path]:
+        """
+        Get the certificate directory path for the current hostname.
+
+        Returns:
+            Path to certs directory if it exists, None otherwise
+        """
+        base_dir = Config.get_base_dir()
+        host_name = os.environ.get("HOSTNAME")
+        certs_host_dir = (
+            (base_dir / "certs" / host_name) if host_name else (base_dir / "certs")
+        )
+        if certs_host_dir.exists():
+            return certs_host_dir
+        return None
+
+    def _get_directories_to_clean(
+        self, service_list: Optional[list], include_certs: bool
+    ) -> list:
+        """
+        Determine which directories need to be cleaned.
+
+        Args:
+            service_list: Optional list of specific services to clean
+            include_certs: Whether to include certificate directories
+
+        Returns:
+            List of Path objects to clean
+        """
+        directories = self._get_service_data_directories(service_list)
+
+        # Optionally add certificate directory
+        if include_certs:
+            certs_dir = self._get_certs_directory()
+            if certs_dir:
+                directories.append(certs_dir)
+
+        return directories
+
+    def _perform_cleanup(self, directories: list, service_list: Optional[list]) -> None:
+        """
+        Perform the actual cleanup of directories and configuration.
+
+        Args:
+            directories: List of directories to remove files from
+            service_list: Optional list of services being cleaned
+        """
+        for directory in directories:
+            self._remove_all_files_in_directory(directory)
+
+        # If we wiped InfluxDB data, also remove the generated CLI config file
+        self._remove_influx_cli_config_if_needed(service_list)
+
+        # Also remove .gitkeep files from config directories
+        config_dir = Config.get_base_dir() / "config"
+        if config_dir.exists():
+            self._remove_gitkeep_files(config_dir)
+
+    def _build_cleanup_message(
+        self, service_list: Optional[list], include_certs: bool
+    ) -> str:
+        """
+        Build the success message for cleanup operation.
+
+        Args:
+            service_list: Optional list of services that were cleaned
+            include_certs: Whether certificates were included in cleanup
+
+        Returns:
+            Success message string
+        """
+        certs_note = " (including certificates)" if include_certs else ""
+        if service_list:
+            return f"Cleaned data for services: {', '.join(service_list)}{certs_note}"
+        return f"Cleaned all service data{certs_note}"
+
+    def _validate_clean_directories(
+        self, directories: list, service_list: Optional[list]
+    ) -> Tuple[Optional[Exception], Optional[str]]:
+        """Validate that directories exist for cleanup."""
+        if not directories:
+            if service_list:
+                msg = (
+                    f"No data directories found for services: {', '.join(service_list)}"
+                )
+            else:
+                msg = "No data directories found"
+            return None, msg
+        return None, None
+
+    def _execute_clean_operation(
+        self, directories: list, service_list: Optional[list]
+    ) -> None:
+        """Execute the cleanup operation."""
+        self._perform_cleanup(directories, service_list)
 
     def clean_services(
         self, service_list: Optional[list] = None, include_certs: bool = False
@@ -827,69 +1068,18 @@ class Service:
         Returns:
             Tuple of (Exception or None, message)
         """
-        # Normalize service names if provided
         if service_list:
             service_list = [normalize_service_name(s) for s in service_list]
 
         try:
-            base_dir = Config.get_base_dir()
-            directories = []
+            directories = self._get_directories_to_clean(service_list, include_certs)
+            err, msg = self._validate_clean_directories(directories, service_list)
+            if err or msg:
+                return err, msg
 
-            host_name = os.environ.get("HOSTNAME")
-            certs_host_dir = (
-                (base_dir / "certs" / host_name) if host_name else (base_dir / "certs")
-            )
-
-            # When cleaning all services, clean root directories
-            if not service_list:
-                for dir_name in ["data", "log"]:
-                    dir_path = base_dir / dir_name
-                    if dir_path.exists():
-                        directories.append(dir_path)
-
-                if include_certs and certs_host_dir.exists():
-                    directories.append(certs_host_dir)
-            else:
-                # When cleaning specific services, clean their subdirectories
-                for service in service_list:
-                    # Map normalized names to directory names
-                    dir_name = "thingsboard" if service == "thingsboard-ce" else service
-
-                    for subdir_type in ["data", "log"]:
-                        dir_path = base_dir / subdir_type / dir_name
-                        if dir_path.exists():
-                            directories.append(dir_path)
-
-                # Certs are shared across services; only remove host cert dir if explicitly requested
-                if include_certs and certs_host_dir.exists():
-                    directories.append(certs_host_dir)
-
-            if not directories:
-                if service_list:
-                    return (
-                        None,
-                        f"No data directories found for services: {', '.join(service_list)}",
-                    )
-                return None, "No data directories found"
-
-            for directory in directories:
-                self._remove_all_files_in_directory(directory)
-
-            # If we wiped InfluxDB data, also remove the generated CLI config file
-            self._remove_influx_cli_config_if_needed(service_list)
-
-            # Also remove .gitkeep files from config directories
-            config_dir = base_dir / "config"
-            if config_dir.exists():
-                self._remove_gitkeep_files(config_dir)
-
-            certs_note = " (including certificates)" if include_certs else ""
-            if service_list:
-                return (
-                    None,
-                    f"Cleaned data for services: {', '.join(service_list)}{certs_note}",
-                )
-            return None, f"Cleaned all service data{certs_note}"
+            self._execute_clean_operation(directories, service_list)
+            message = self._build_cleanup_message(service_list, include_certs)
+            return None, message
         except OSError as e:
             err = RuntimeError(f"Failed to clean service data: {str(e)}")
             return err, str(err)

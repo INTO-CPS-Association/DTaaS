@@ -4,6 +4,7 @@
 import logging
 import os
 from typing import Tuple
+import json
 import httpx
 
 PRIV_KEY_FILENAME = "privkey.pem"
@@ -39,7 +40,7 @@ def _handle_login_response(resp: httpx.Response) -> str | None:
         try:
             data = resp.json()
             return data.get("token")
-        except Exception as e:
+        except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON response during login: {e}")
             return None
     if resp.status_code != 401:
@@ -198,7 +199,7 @@ def _check_existing_tenant(
 ) -> Tuple[dict | None, str]:
     """Check if tenant already exists."""
     try:
-        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=10)
+        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=20)
         if resp.status_code != 200:
             return None, f"Failed to get tenants: {resp.status_code}"
 
@@ -217,7 +218,7 @@ def _create_new_tenant(
     logger.info(f"  Creating tenant '{tenant_name}'...")
     create_payload = {"title": tenant_name}
     try:
-        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=10)
+        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=20)
 
         if resp.status_code not in (200, 201):
             return None, f"Failed to create tenant: {resp.status_code}"

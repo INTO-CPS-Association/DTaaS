@@ -137,7 +137,7 @@ def test_start_services_success(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True), patch.object(
-        service, "_get_running_services", return_value=set()
+        service, "get_running_services", return_value=set()
     ), patch.object(
         service, "_get_all_service_names", return_value=(None, {"grafana", "influxdb"})
     ):
@@ -170,7 +170,7 @@ def test_start_services_docker_error(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True), patch.object(
-        service, "_get_running_services", return_value=set()
+        service, "get_running_services", return_value=set()
     ), patch.object(
         service, "_get_all_service_names", return_value=(None, {"grafana"})
     ):
@@ -452,7 +452,7 @@ def test_docker_not_running_decorator(patch_service_deps):
     mock_docker_client.return_value = mock_docker
     service = Service()
     with patch.object(Path, "exists", return_value=True), patch.object(
-        service, "_get_running_services", return_value=set()
+        service, "get_running_services", return_value=set()
     ), patch.object(
         service, "_get_all_service_names", return_value=(None, {"grafana"})
     ):

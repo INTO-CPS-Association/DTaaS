@@ -185,9 +185,7 @@ def test_get_existing_orgs_json_parse_error():
 
 def test_setup_user_org_bucket_new_org():
     """Test setup user org and bucket when org doesn't exist"""
-    with patch(
-        "dtaas_services.pkg.influxdb._execute_influxdb_command"
-    ) as mock_exec:
+    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
         mock_exec.return_value = (True, "")
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
         assert success is True
@@ -198,13 +196,9 @@ def test_setup_user_org_bucket_new_org():
 
 def test_setup_user_org_bucket_existing_org():
     """Test setup user org and bucket when org already exists"""
-    with patch(
-        "dtaas_services.pkg.influxdb._execute_influxdb_command"
-    ) as mock_exec:
+    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
         mock_exec.return_value = (True, "")
-        success, error = _setup_user_org_bucket(
-            "testuser", "userid123", {"testuser"}
-        )
+        success, error = _setup_user_org_bucket("testuser", "userid123", {"testuser"})
         assert success is True
         assert error == ""
         # Should skip org creation, only add member and create bucket
@@ -213,9 +207,7 @@ def test_setup_user_org_bucket_existing_org():
 
 def test_setup_user_org_bucket_create_org_fails():
     """Test setup when org creation fails"""
-    with patch(
-        "dtaas_services.pkg.influxdb._execute_influxdb_command"
-    ) as mock_exec:
+    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
         mock_exec.return_value = (False, "org creation failed")
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
         assert success is False
@@ -224,9 +216,7 @@ def test_setup_user_org_bucket_create_org_fails():
 
 def test_setup_user_org_bucket_add_member_fails():
     """Test setup when adding member fails"""
-    with patch(
-        "dtaas_services.pkg.influxdb._execute_influxdb_command"
-    ) as mock_exec:
+    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
         # First call (create org) succeeds, second (add member) fails
         mock_exec.side_effect = [(True, ""), (False, "add member failed")]
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
@@ -236,9 +226,7 @@ def test_setup_user_org_bucket_add_member_fails():
 
 def test_setup_user_org_bucket_create_bucket_fails():
     """Test setup when bucket creation fails"""
-    with patch(
-        "dtaas_services.pkg.influxdb._execute_influxdb_command"
-    ) as mock_exec:
+    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
         # First two succeed, third (create bucket) fails
         mock_exec.side_effect = [(True, ""), (True, ""), (False, "bucket failed")]
         success, error = _setup_user_org_bucket("testuser", "userid123", set())

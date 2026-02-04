@@ -47,7 +47,9 @@ def test_create_tenant_admin_user_scenarios():
     assert user_id == "user123"
     assert error == ""
     # Failure
-    session.post.return_value = Mock(status_code=400, text="Error")
+    session.post.return_value = Mock(
+        status_code=400, json=lambda: {"message": "User creation failed"}
+    )
     user_id, error = th_util._create_tenant_admin_user(ctx, "tenant")
     assert user_id is None
     assert error != ""
