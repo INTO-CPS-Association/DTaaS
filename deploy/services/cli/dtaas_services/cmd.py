@@ -189,11 +189,7 @@ def _check_pg_isready_string_result(result: str) -> bool:
 
 def _check_pg_isready_tuple_result(result) -> bool:
     """Check if pg_isready tuple result indicates ready state."""
-    return (
-        isinstance(result, (list, tuple))
-        and len(result) > 1
-        and int(result[1]) == 0
-    )
+    return isinstance(result, (list, tuple)) and len(result) > 1 and int(result[1]) == 0
 
 
 def _check_postgres_via_pg_isready(console: Console, docker) -> bool:
@@ -419,11 +415,14 @@ def _confirm_continue_without_thingsboard() -> None:
     Raises:
         click.ClickException: If user cancels the operation
     """
-    if sys.stdin.isatty() and not is_ci():
-        if not click.confirm(
+    if (
+        sys.stdin.isatty()
+        and not is_ci()
+        and not click.confirm(
             "Do you want to continue starting services?", default=True
-        ):
-            raise click.ClickException("Operation cancelled by user")
+        )
+    ):
+        raise click.ClickException("Operation cancelled by user")
 
 
 def _check_thingsboard_installation(
@@ -707,7 +706,7 @@ def _setup_all_service_users(console: Console) -> list[bool]:
     ]
 
 
-def _setup_specific_service(console: Console, service_name: str) -> bool:
+def _setup_specific_service(console: Console, service_name: str) -> bool | None:
     """Set up users for a specific service.
 
     Returns:
@@ -762,10 +761,7 @@ def add(service_names):
     if not service_list:
         results = _setup_all_service_users(console)
     else:
-        results = [
-            _setup_specific_service(console, s)
-            for s in service_list
-        ]
+        results = [_setup_specific_service(console, s) for s in service_list]
 
     _print_user_add_summary(results)
 

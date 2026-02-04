@@ -812,7 +812,7 @@ class Service:
                     "sh",
                     "-c",
                     'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc '
-                    + "\"SELECT EXISTS (SELECT 1 FROM "
+                    + '"SELECT EXISTS (SELECT 1 FROM '
                     + "information_schema.tables WHERE table_name = 'admin_settings');\"",
                 ],
             )
@@ -943,7 +943,9 @@ class Service:
         """Map service name to directory name."""
         return "thingsboard" if service == "thingsboard-ce" else service
 
-    def _add_service_directories(self, base_dir: Path, service: str, directories: list) -> None:
+    def _add_service_directories(
+        self, base_dir: Path, service: str, directories: list
+    ) -> None:
         """Add data and log directories for a service if they exist."""
         dir_name = self._get_service_directory_name(service)
         for subdir_type in ["data", "log"]:
