@@ -227,9 +227,11 @@ dtaas-services clean -s "postgres,thingsboard"
    This creates user accounts in InfluxDB, RabbitMQ, and ThingsBoard (if installed).
 
 3. Add user to a specifix service
+
    ```bash
    dtaas-services user add -s rabbitmq
    ```
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard

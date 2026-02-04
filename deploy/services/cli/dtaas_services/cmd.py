@@ -182,20 +182,31 @@ def _print_status_change(
         )
 
 
+def _check_pg_isready_string_result(result: str) -> bool:
+    """Check if pg_isready string result indicates ready state."""
+    return isinstance(result, str) and "accepting" in result.lower()
+
+
+def _check_pg_isready_tuple_result(result) -> bool:
+    """Check if pg_isready tuple result indicates ready state."""
+    return (
+        isinstance(result, (list, tuple))
+        and len(result) > 1
+        and int(result[1]) == 0
+    )
+
+
 def _check_postgres_via_pg_isready(console: Console, docker) -> bool:
     """Check if PostgreSQL is ready using pg_isready command."""
     try:
         pg_user = os.environ.get("POSTGRES_USER", "postgres")
         result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
 
-        if isinstance(result, str) and "accepting" in result.lower():
+        if _check_pg_isready_string_result(result) or _check_pg_isready_tuple_result(
+            result
+        ):
             console.print(POSTGRES_READY)
             return True
-
-        if isinstance(result, (list, tuple)) and len(result) > 1:
-            if int(result[1]) == 0:
-                console.print(POSTGRES_READY)
-                return True
     except Exception:
         # Ignore errors from pg_isready command
         pass
@@ -387,6 +398,34 @@ def install(service):
         raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
 
 
+def _should_check_thingsboard(service_list: Optional[list[str]]) -> bool:
+    """Check if ThingsBoard installation check is needed."""
+    return service_list is None or "thingsboard-ce" in service_list
+
+
+def _prompt_thingsboard_installation() -> None:
+    """Display ThingsBoard installation warning and prompt."""
+    console = Console()
+    console.print("[yellow]⚠️  ThingsBoard is not installed yet.[/yellow]")
+    console.print(
+        "[cyan]You need to run 'dtaas-services install' "
+        "after starting PostgreSQL.[/cyan]"
+    )
+
+
+def _confirm_continue_without_thingsboard() -> None:
+    """Confirm user wants to continue without ThingsBoard installation.
+
+    Raises:
+        click.ClickException: If user cancels the operation
+    """
+    if sys.stdin.isatty() and not is_ci():
+        if not click.confirm(
+            "Do you want to continue starting services?", default=True
+        ):
+            raise click.ClickException("Operation cancelled by user")
+
+
 def _check_thingsboard_installation(
     service: Service, service_list: Optional[list[str]]
 ) -> None:
@@ -399,24 +438,15 @@ def _check_thingsboard_installation(
     Raises:
         click.ClickException: If user cancels the operation
     """
+    if not _should_check_thingsboard(service_list):
+        return
 
-    if service_list is None or "thingsboard-ce" in service_list:
-        # User wants to start thingsboard
-        if not service.is_thingsboard_installed():
-            console = Console()
-            console.print("[yellow]⚠️  ThingsBoard is not installed yet.[/yellow]")
-            console.print(
-                "[cyan]You need to run 'dtaas-services install' "
-                "after starting PostgreSQL.[/cyan]"
-            )
-            # Check if running in interactive mode
-            if sys.stdin.isatty() and not is_ci():
-                if not click.confirm(
-                    "Do you want to continue starting services?", default=True
-                ):
-                    raise click.ClickException("Operation cancelled by user")
-            # Non-interactive, CI environment, or user confirmed: continue
-            console.print("[cyan]Remember to run: dtaas-services install[/cyan]")
+    if service.is_thingsboard_installed():
+        return
+
+    _prompt_thingsboard_installation()
+    _confirm_continue_without_thingsboard()
+    Console().print("[cyan]Remember to run: dtaas-services install[/cyan]")
 
 
 def _services_command_runner(command: str, service_name) -> None:
@@ -635,6 +665,19 @@ def user():
     """User account management for services."""
 
 
+def _print_service_user_result(
+    console: Console, service_name: str, success: bool, msg: str
+) -> None:
+    """Print the result of setting up service users."""
+    if not success:
+        error_line = msg.split("\n")[0]
+        console.print(f"[red]{service_name}: {error_line}[/red]", style="bold")
+    elif "not installed" in msg.lower():
+        console.print(f"[yellow]⚠️  {service_name}: {msg}[/yellow]")
+    else:
+        console.print(f"[green]✅ {service_name}: {msg}[/green]")
+
+
 def _setup_service_users(
     console: Console, service_name: str, setup_func: Callable
 ) -> bool:
@@ -645,16 +688,60 @@ def _setup_service_users(
     """
     console.print(f"\n[cyan]Adding users to {service_name}...[/cyan]")
     success, msg = setup_func()
-    if not success:
-        error_line = msg.split("\n")[0]
-        console.print(f"[red]{service_name}: {error_line}[/red]", style="bold")
-    else:
-        # Check if this is a skip/warning (service not installed) vs. success
-        if "not installed" in msg.lower():
-            console.print(f"[yellow]⚠️  {service_name}: {msg}[/yellow]")
-        else:
-            console.print(f"[green]✅ {service_name}: {msg}[/green]")
+    _print_service_user_result(console, service_name, success, msg)
     return success
+
+
+def _setup_all_service_users(console: Console) -> list[bool]:
+    """Set up users for all services.
+
+    Returns:
+        List of success flags for each service
+    """
+    return [
+        _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users),
+        _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users),
+        _setup_service_users(
+            console, "ThingsBoard", thingsboard.setup_thingsboard_users
+        ),
+    ]
+
+
+def _setup_specific_service(console: Console, service_name: str) -> bool:
+    """Set up users for a specific service.
+
+    Returns:
+        Success flag, or None if service is unknown
+    """
+    service_map = {
+        "influxdb": ("InfluxDB", influxdb.setup_influxdb_users),
+        "rabbitmq": ("RabbitMQ", rabbitmq.setup_rabbitmq_users),
+        "thingsboard": ("ThingsBoard", thingsboard.setup_thingsboard_users),
+    }
+
+    service_lower = service_name.lower()
+    if service_lower in service_map:
+        display_name, setup_func = service_map[service_lower]
+        return _setup_service_users(console, display_name, setup_func)
+
+    console.print(f"[yellow]Unknown service: {service_name}, skipping...[/yellow]")
+    return None
+
+
+def _print_user_add_summary(results: list[bool]) -> None:
+    """Print summary of user addition results."""
+    console = Console()
+    # Filter out None values from unknown services
+    valid_results = [r for r in results if r is not None]
+
+    if all(valid_results):
+        console.print("\n[bold green]✅ Users added successfully![/bold green]")
+    else:
+        failed_count = sum(1 for r in valid_results if not r)
+        console.print(
+            f"\n[bold yellow]⚠️  User addition completed \n"
+            f"with {failed_count} error(s). See messages above.[/bold yellow]"
+        )
 
 
 @user.command()
@@ -668,58 +755,19 @@ def add(service_names):
     Example:
         dtaas-services user add
     """
-
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
     service_list = _parse_service_list(service_names)
 
-    results = []
-
     if not service_list:
-        results.append(
-            _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users)
-        )
-        results.append(
-            _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users)
-        )
-        results.append(
-            _setup_service_users(
-                console, "ThingsBoard", thingsboard.setup_thingsboard_users
-            )
-        )
+        results = _setup_all_service_users(console)
     else:
-        for s in service_list:
-            if s.lower() == "influxdb":
-                results.append(
-                    _setup_service_users(
-                        console, "InfluxDB", influxdb.setup_influxdb_users
-                    )
-                )
-            elif s.lower() == "rabbitmq":
-                results.append(
-                    _setup_service_users(
-                        console, "RabbitMQ", rabbitmq.setup_rabbitmq_users
-                    )
-                )
-            elif s.lower() == "thingsboard":
-                results.append(
-                    _setup_service_users(
-                        console, "ThingsBoard", thingsboard.setup_thingsboard_users
-                    )
-                )
-            else:
-                console.print(f"[yellow]Unknown service: {s}, skipping...[/yellow]")
+        results = [
+            _setup_specific_service(console, s)
+            for s in service_list
+        ]
 
-    # Check if all services succeeded
-    all_success = all(results)
-    if all_success:
-        console.print("\n[bold green]✅ Users added successfully![/bold green]")
-    else:
-        failed_count = sum(1 for r in results if not r)
-        console.print(
-            f"\n[bold yellow]⚠️  User addition completed \n"
-            f"with {failed_count} error(s). See messages above.[/bold yellow]"
-        )
+    _print_user_add_summary(results)
 
 
 if __name__ == "__main__":

@@ -11,6 +11,32 @@ from .utils import (
 from .config import Config
 from .cert import set_service_cert_permissions, CertPermissionContext
 
+ALREADY_EXISTS_MSG = "already exists"
+
+
+def _execute_with_retry(
+    container: str, cmd: list, error_context: str, max_attempts: int = 2
+) -> tuple[bool, str]:
+    """Execute a docker command with retries for timing issues.
+
+    Args:
+        container: Container name
+        cmd: Command to execute
+        error_context: Error message context
+        max_attempts: Maximum number of attempts
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    for attempt in range(max_attempts):
+        success, output = execute_docker_command(container, cmd, verbose=False)
+        if success or ALREADY_EXISTS_MSG in output:
+            return True, ""
+        if attempt < max_attempts - 1:
+            time.sleep(4)
+
+    return False, f"{error_context}: {output}"
+
 
 def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     """
@@ -24,34 +50,22 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     vhost = username
 
     # Add user (with retries for timing issues)
-    for attempt in range(2):
-        success, output = execute_docker_command(
-            "rabbitmq",
-            ["rabbitmqctl", "add_user", username, password],
-            verbose=False,
-        )
-        if success or "already exists" in output:
-            break
-        if attempt < 2:
-            time.sleep(1)
-    else:
-        if not success and "already exists" not in output:
-            return False, f"Failed to add user {username}: {output}"
+    success, error_msg = _execute_with_retry(
+        "rabbitmq",
+        ["rabbitmqctl", "add_user", username, password],
+        f"Failed to add user {username}",
+    )
+    if not success:
+        return False, error_msg
 
     # Add vhost (ignore if already exists)
-    for attempt in range(2):
-        success, output = execute_docker_command(
-            "rabbitmq",
-            ["rabbitmqctl", "add_vhost", vhost],
-            verbose=False,
-        )
-        if success or "already exists" in output:
-            break
-        if attempt < 2:
-            time.sleep(1)
-    else:
-        if not success and "already exists" not in output:
-            return False, f"Failed to add vhost {vhost}: {output}"
+    success, error_msg = _execute_with_retry(
+        "rabbitmq",
+        ["rabbitmqctl", "add_vhost", vhost],
+        f"Failed to add vhost {vhost}",
+    )
+    if not success:
+        return False, error_msg
 
     # Set permissions on user's own vhost only
     success, output = execute_docker_command(

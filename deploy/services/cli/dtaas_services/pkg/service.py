@@ -186,19 +186,29 @@ class Service:
         except Exception:
             return set()
 
-    def _categorize_container_state(
-        self,
-        service_name: str,
-        container,
-        running_set: Set[str],
-        restarting_set: Set[str],
+    def _add_service_to_state_set(
+        self, service_name: str, status: str, state_sets: dict
     ) -> None:
-        """Categorize a container into running or restarting state."""
+        """Add service to appropriate state set based on status."""
+        if status == "running":
+            state_sets["running"].add(service_name)
+        elif status == "restarting":
+            state_sets["restarting"].add(service_name)
+
+    def _categorize_container_state(
+        self, service_name: str, container, state_sets: dict
+    ) -> None:
+        """Categorize a container into running or restarting state.
+
+        Args:
+            service_name: Name of the service
+            container: Container object
+            state_sets: Dict with 'running' and 'restarting' sets
+        """
         if hasattr(container, "state"):
-            if container.state.status == "running":
-                running_set.add(service_name)
-            elif container.state.status == "restarting":
-                restarting_set.add(service_name)
+            self._add_service_to_state_set(
+                service_name, container.state.status, state_sets
+            )
 
     def _get_running_or_restarting_services(self) -> Tuple[Set[str], Set[str]]:
         """Get sets of running and restarting service names.
@@ -211,13 +221,10 @@ class Service:
             if err:
                 return set(), set()
 
-            running_services = set()
-            restarting_services = set()
+            state_sets = {"running": set(), "restarting": set()}
             for service_name, container in container_map.items():
-                self._categorize_container_state(
-                    service_name, container, running_services, restarting_services
-                )
-            return running_services, restarting_services
+                self._categorize_container_state(service_name, container, state_sets)
+            return state_sets["running"], state_sets["restarting"]
         except Exception:
             return set(), set()
 
@@ -354,6 +361,15 @@ class Service:
             messages.append(started_msg)
         return messages
 
+    def _format_start_success_message(
+        self, skipped: list, affected: list, restarting: list
+    ) -> str:
+        """Format success message for start action."""
+        messages = self._build_start_messages(skipped, affected, restarting)
+        if not messages:
+            return "All services are already running"
+        return "\n".join(messages)
+
     def _get_success_message(
         self,
         action: str,
@@ -370,12 +386,9 @@ class Service:
             restarting: List of services that are in restarting state
         """
         if action == "start":
-            messages = self._build_start_messages(
+            return self._format_start_success_message(
                 skipped or [], affected or [], restarting or []
             )
-            if not messages:
-                return "All services are already running"
-            return "\n".join(messages)
 
         messages_map = {
             "stop": "Services stopped successfully",
@@ -391,6 +404,19 @@ class Service:
             return exc, str(exc)
         return self._handle_docker_error(f"{action} services", exc)
 
+    def _get_postgres_stop_warning(self) -> str:
+        """Get warning message for blocked PostgreSQL stop."""
+        return (
+            "  Skipping PostgreSQL stop: ThingsBoard container is still present. "
+            "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
+        )
+
+    def _should_check_postgres_thingsboard_dependency(
+        self, service_list: Optional[list]
+    ) -> bool:
+        """Check if postgres-thingsboard dependency check is needed."""
+        return service_list is None or "postgres" in service_list
+
     def _check_postgres_stop_dependency(
         self, service_list: Optional[list]
     ) -> Tuple[bool, Optional[str]]:
@@ -398,24 +424,22 @@ class Service:
         Check if postgres stop should be blocked due to thingsboard.
         Returns (should_warn, warning_message).
         """
-        if not service_list:
-            if self._is_thingsboard_container_present():
-                return True, (
-                    " Skipping PostgreSQL stop: ThingsBoard container is still present. "
-                    "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
-                )
-            return False, None
-
-        if "postgres" not in service_list:
+        if not self._should_check_postgres_thingsboard_dependency(service_list):
             return False, None
 
         if self._is_thingsboard_container_present():
-            return True, (
-                "  Skipping PostgreSQL stop: ThingsBoard container is still present. "
-                "Remove ThingsBoard first with: dtaas-services remove -s thingsboard"
-            )
+            return True, self._get_postgres_stop_warning()
 
         return False, None
+
+    def _filter_out_postgres(self, service_list: Optional[list]) -> Optional[list]:
+        """Filter postgres from service list."""
+        if service_list is None:
+            err, all_services = self._get_all_service_names()
+            if err:
+                return None
+            return [s for s in all_services if s != "postgres"]
+        return [s for s in service_list if s != "postgres"]
 
     def _filter_postgres_if_needed(
         self, action: str, service_list: Optional[list]
@@ -431,15 +455,8 @@ class Service:
         if not should_warn:
             return service_list, None
 
-        if service_list is None:
-            err, all_services = self._get_all_service_names()
-            if err:
-                return service_list, warning
-            filtered = [s for s in all_services if s != "postgres"]
-            return filtered, warning
-
-        filtered = [s for s in service_list if s != "postgres"]
-        return filtered, warning
+        filtered = self._filter_out_postgres(service_list)
+        return filtered if filtered is not None else service_list, warning
 
     @_handle_docker_not_running
     def manage_services(
@@ -706,6 +723,13 @@ class Service:
             # Ignore errors when removing directory
             pass
 
+    def _process_item_for_removal(self, item: Path) -> None:
+        """Process a single item for removal (file or directory)."""
+        if item.is_file():
+            self._handle_file_removal(item)
+        elif item.is_dir():
+            self._handle_directory_removal(item)
+
     def _remove_all_files_in_directory(self, directory: Path) -> None:
         """Recursively remove all files and subdirectories in a directory.
 
@@ -717,10 +741,7 @@ class Service:
 
         try:
             for item in directory.iterdir():
-                if item.is_file():
-                    self._handle_file_removal(item)
-                elif item.is_dir():
-                    self._handle_directory_removal(item)
+                self._process_item_for_removal(item)
         except OSError as e:
             click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
 
@@ -736,6 +757,13 @@ class Service:
         except OSError as e:
             click.echo(f"Warning: Could not remove {item}: {e}", err=True)
 
+    def _process_item_for_gitkeep_removal(self, item: Path) -> None:
+        """Process a single item for gitkeep removal."""
+        if item.is_file() and item.name == ".gitkeep":
+            self._handle_gitkeep_file(item)
+        elif item.is_dir():
+            self._remove_gitkeep_files(item)
+
     def _remove_gitkeep_files(self, directory: Path) -> None:
         """Recursively remove all .gitkeep files in a directory and subdirectories.
 
@@ -747,10 +775,7 @@ class Service:
 
         try:
             for item in directory.iterdir():
-                if item.is_file() and item.name == ".gitkeep":
-                    self._handle_gitkeep_file(item)
-                elif item.is_dir():
-                    self._remove_gitkeep_files(item)
+                self._process_item_for_gitkeep_removal(item)
         except OSError as e:
             click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
 
@@ -803,12 +828,8 @@ class Service:
         """
         try:
             err, container_map = self._get_all_containers()
-            if err:
+            if err or not self._validate_postgres_for_thingsboard_check(container_map):
                 return False
-
-            if not self._validate_postgres_for_thingsboard_check(container_map):
-                return False
-
             return self._query_thingsboard_schema()
         except Exception:
             return False
@@ -918,6 +939,18 @@ class Service:
                 directories.append(dir_path)
         return directories
 
+    def _get_service_directory_name(self, service: str) -> str:
+        """Map service name to directory name."""
+        return "thingsboard" if service == "thingsboard-ce" else service
+
+    def _add_service_directories(self, base_dir: Path, service: str, directories: list) -> None:
+        """Add data and log directories for a service if they exist."""
+        dir_name = self._get_service_directory_name(service)
+        for subdir_type in ["data", "log"]:
+            dir_path = base_dir / subdir_type / dir_name
+            if dir_path.exists():
+                directories.append(dir_path)
+
     def _get_service_subdirectories(self, service_list: list) -> list:
         """
         Get data and log subdirectories for specific services.
@@ -931,12 +964,7 @@ class Service:
         base_dir = Config.get_base_dir()
         directories = []
         for service in service_list:
-            # Map normalized names to directory names
-            dir_name = "thingsboard" if service == "thingsboard-ce" else service
-            for subdir_type in ["data", "log"]:
-                dir_path = base_dir / subdir_type / dir_name
-                if dir_path.exists():
-                    directories.append(dir_path)
+            self._add_service_directories(base_dir, service, directories)
         return directories
 
     def _get_service_data_directories(self, service_list: Optional[list]) -> list:

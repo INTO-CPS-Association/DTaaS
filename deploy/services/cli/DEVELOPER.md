@@ -102,7 +102,8 @@ The package uses a modular architecture where each service has its own module:
 
 * **`config.py`**: Central configuration loader for environment variables
   and base directory detection across OS platforms
-* **`service.py`**: Docker Compose service management (start, stop, restart, remove, status, clean)
+* **`service.py`**: Docker Compose service management
+(start, stop, restart, remove, status, clean)
 * **`cert.py`**: TLS certificate copying and normalization
 * **`mongodb.py`**: MongoDB certificate setup
 * **`influxdb.py`**: InfluxDB certificate setup and user management
@@ -151,12 +152,15 @@ Docker Compose variables are properly configured without additional setup.
 
 #### Key Environment Variables
 
-* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`) and ThingsBoard API URL.
+* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`)
+and ThingsBoard API URL.
   Must match certificate domain name for SSL to work.
-* **`SSL_VERIFY`**: Enable/disable SSL certificate verification for API calls (`True` or `False`).
+* **`SSL_VERIFY`**: Enable/disable SSL certificate verification for API calls
+(`True` or `False`).
   Set to `False` for development with self-signed certificates.
 * **`THINGSBOARD_PORT`**: ThingsBoard API port (default: 8080)
-* **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`, default: `https`)
+* **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`,
+default: `https`)
 
 #### ThingsBoard SSL Configuration
 
@@ -272,7 +276,8 @@ All service management functions follow a consistent error handling pattern:
 ### Test Structure
 
 Tests are organized to mirror the source code structure in the `tests/` directory.
-Each module in `pkg/` has a corresponding test file (e.g., `test_config.py` for `config.py`).
+Each module in `pkg/` has a corresponding test file
+(e.g., `test_config.py` for `config.py`).
 
 ### Testing Guidelines
 
