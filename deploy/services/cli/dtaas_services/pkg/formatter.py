@@ -76,11 +76,11 @@ def format_container_status(
     if not containers:
         console.print("[yellow]No services found[/yellow]")
         return
-    # Create a table
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Service", style="cyan", width=20)
-    table.add_column("Container Name", style="blue", width=20)
-    table.add_column("Status", width=25)
+    # Rich auto-calculate width
+    table = Table(show_header=True, header_style="bold magenta", padding=(0, 1))
+    table.add_column("Service", style="cyan", no_wrap=True)
+    table.add_column("Container Name", style="blue", no_wrap=True)
+    table.add_column("Status", no_wrap=True)
     # Sort containers by name for consistent output
     sorted_containers = sorted(containers, key=lambda c: c.name)
     for container in sorted_containers:

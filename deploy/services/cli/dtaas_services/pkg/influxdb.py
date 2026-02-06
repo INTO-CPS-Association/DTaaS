@@ -53,7 +53,8 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     """
     success, output = execute_docker_command(
         "influxdb",
-        ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password], False
+        ["influx", "user", "create", "--skip-verify", "-n", username, "-p", password],
+        False,
     )
 
     if not success:
