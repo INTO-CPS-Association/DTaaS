@@ -11,6 +11,7 @@ from .utils import (
 from .config import Config
 from .cert import set_service_cert_permissions, CertPermissionContext
 
+AE = "already exists"
 
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
     """Parse JSON response.
@@ -58,6 +59,9 @@ def _create_influxdb_user(username: str, password: str) -> tuple[bool, str]:
     )
 
     if not success:
+        if AE in output:
+            print(f"User '{username}' {AE}, skipping...")
+            return True, ""
         return False, f"Failed to create user {username}: {output}"
     return True, ""
 
@@ -102,8 +106,8 @@ def _get_existing_orgs() -> tuple[bool, set, str]:
 
 def _handle_bucket_creation(name: str, error_msg: str) -> tuple[bool, str]:
     """Handle bucket creation result."""
-    if "already exists" in error_msg:
-        print(f"Bucket '{name}' already exists, skipping...")
+    if AE in error_msg:
+        print(f"Bucket '{name}' {AE}, skipping...")
         return True, ""
     print(f"Docker error: {error_msg}")
     return False, error_msg
@@ -111,8 +115,8 @@ def _handle_bucket_creation(name: str, error_msg: str) -> tuple[bool, str]:
 
 def _handle_membership_creation(name: str, error_msg: str) -> tuple[bool, str]:
     """Handle organization membership creation result."""
-    if "already exists" in error_msg:
-        print(f"Organization membership for '{name}' already exists, skipping...")
+    if AE in error_msg:
+        print(f"Organization membership for '{name}' {AE}, skipping...")
         return True, ""
     print(f"Docker error: {error_msg}")
     return False, error_msg
