@@ -237,8 +237,9 @@ Stops and removes Docker containers:
 * **Vhost Isolation**: Each user only has access to their own vhost (username-based).
   The default "/" vhost is NOT accessible to regular users;
   only administrators should use it.
-* **Automatic Retry**: User creation includes retry logic with 1-second delays
-  to handle timing issues when RabbitMQ is still initializing after startup.
+* **Automatic Retry**: User creation includes retry logic with 4-second delays
+  and up to 2 retry attempts to handle timing issues when RabbitMQ is still
+  initializing after startup.
 * **Error Handling**: "Already exists" errors are handled gracefully and do not
   cause the operation to fail.
 
@@ -249,9 +250,10 @@ Stops and removes Docker containers:
   credentials
 * **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
   using the `dtaas-services user add` command
-* **SSL Configuration**: ThingsBoard API calls use `verify=True` by default.
-  For self-signed certificates, change to `verify=False` in the ThingsBoard modules.
-  If SSL verification fails, a helpful error message will indicate the fix.
+* **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by the
+  `SSL_VERIFY` environment variable (from `services.env`) and use verification enabled
+  by default. For self-signed certificates in non-production environments, set
+  `SSL_VERIFY=false`.
 
 ### Error Handling Pattern
 

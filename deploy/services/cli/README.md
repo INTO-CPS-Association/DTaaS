@@ -168,7 +168,7 @@ dtaas-services remove
 Remove services and their volumes:
 
 ```bash
-dtaas-services remove --v
+dtaas-services remove -v
 ```
 
 Clean all data and log files for services (with confirmation prompt):
@@ -216,7 +216,7 @@ dtaas-services clean -s "postgres,thingsboard"
 
 ### User Account Management
 
-1. Edit `config/credentials.csv` with user accounts (format: `username,password`)
+1. Edit `config/credentials.csv` with user accounts (format: `username,email,password`)
 
 2. Add users to services:
 
@@ -226,7 +226,7 @@ dtaas-services clean -s "postgres,thingsboard"
 
    This creates user accounts in InfluxDB, RabbitMQ, and ThingsBoard (if installed).
 
-3. Add user to a specifix service
+3. Add user to a specific service
 
    ```bash
    dtaas-services user add -s rabbitmq
