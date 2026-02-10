@@ -70,6 +70,36 @@ def _create_tenant_api_call(
         return None, f"Network error creating tenant admin: {e}"
 
 
+def _is_json_parse_error(exception: Exception) -> bool:
+    """Check if exception is JSON parsing related."""
+    return "json" in str(exception).lower()
+
+
+def _handle_admin_already_exists(resp: httpx.Response) -> Tuple[str | None, str]:
+    """Handle case where admin user already exists."""
+    try:
+        error_data = resp.json()
+        error_message = error_data.get("message", "")
+        if "already" in error_message.lower():
+            logger.info(" Tenant admin already exists, skipping...")
+            return None, ""
+    except Exception:
+        # Ignore JSON parsing errors when checking for existing user
+        pass
+    return None, f"Failed to create tenant admin: {resp.status_code}"
+
+
+def _extract_user_id_from_response(resp: httpx.Response) -> Tuple[str | None, str]:
+    """Extract user ID from API response."""
+    try:
+        user = resp.json()
+        user_id = user.get("id", {}).get("id")
+        return (user_id, "") if user_id else (None, "Created user response missing id")
+    except Exception as e:
+        error_type = "Invalid JSON" if _is_json_parse_error(e) else "Unexpected error"
+        return None, f"{error_type} response creating tenant admin: {e}"
+
+
 def _create_tenant_admin_user(
     ctx: _AdminContext, tenant_id: str
 ) -> Tuple[str | None, str]:
@@ -85,28 +115,15 @@ def _create_tenant_admin_user(
     if not resp:
         return None, error_msg
 
+    # Handle non-success status codes
     if resp.status_code not in (200, 201):
         # 400 often means user already exists
         if resp.status_code == 400:
-            try:
-                error_data = resp.json()
-                error_message = error_data.get("message", "")
-                if "already" in error_message.lower():
-                    logger.info(
-                        f"  Tenant admin '{ctx.admin_email}' already exists, skipping..."
-                    )
-                    return None, ""
-            except Exception:
-                # Ignore JSON parsing errors when checking for existing user
-                pass
+            return _handle_admin_already_exists(resp)
         return None, f"Failed to create tenant admin: {resp.status_code}"
 
-    try:
-        user = resp.json()
-        user_id = user.get("id", {}).get("id")
-        return (user_id, "") if user_id else (None, "Created user response missing id")
-    except Exception as e:
-        return None, f"Invalid JSON response creating tenant admin: {e}"
+    # Extract user ID from successful response
+    return _extract_user_id_from_response(resp)
 
 
 def _get_activation_token(
@@ -132,6 +149,13 @@ def _get_activation_token(
         return None, f"Network error getting activation token: {e}"
 
 
+def _is_ssl_error_activate(error_str: str) -> bool:
+    """Check if error is SSL-related."""
+    return (
+        "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower()
+    )
+
+
 def _activate_user(
     base_url: str, activate_token: str, admin_password: str
 ) -> Tuple[bool, str]:
@@ -149,18 +173,12 @@ def _activate_user(
         )
 
         if resp.status_code != 200:
-            error_msg = f"Failed to activate tenant admin: {resp.status_code}"
-            return False, error_msg
-
+            return False, f"Failed to activate tenant admin: {resp.status_code}"
         return True, ""
     except httpx.HTTPError as e:
         error_str = str(e)
-        # Check if it's an SSL verification error
-        if (
-            "certificate verify failed" in error_str.lower()
-            or "ssl" in error_str.lower()
-        ):
-            return False, (f"SSL certificate verification failed: {e}\n")
+        if _is_ssl_error_activate(error_str):
+            return False, f"SSL certificate verification failed: {e}\n"
         return False, f"Network error activating user: {e}"
 
 

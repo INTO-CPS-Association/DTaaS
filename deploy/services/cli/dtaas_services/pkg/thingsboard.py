@@ -11,7 +11,9 @@ from .thingsboard_users import (
     check_password_configured,
     build_base_url,
     change_sysadmin_password_if_needed,
+    _get_ssl_verify,
 )
+
 from .thingsboard_utility import (
     CredentialProcessContext,
     create_tenant_and_admin,
@@ -106,18 +108,22 @@ def _handle_password_change_result(
     return True, None
 
 
+def _create_session() -> httpx.Client:
+    """Create HTTP session with SSL verification settings."""
+    # Increased timeout to 30s to handle self-signed certificates
+    # (SSL handshake can be slow with dummy/self-signed certs)
+    return httpx.Client(verify=_get_ssl_verify(), timeout=30)
+
+
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     """Helper to set up credentials and change password."""
     try:
         Config()  # Loads config/services.env into environment
         base_url = build_base_url()
-        from .thingsboard_users import _get_ssl_verify
-
-        # Increased timeout to 30s to handle self-signed certificates
-        # (SSL handshake can be slow with dummy/self-signed certs)
-        session = httpx.Client(verify=_get_ssl_verify(), timeout=30)
+        session = _create_session()
         new_pw = check_password_configured()
 
+        # Change password if configured
         if new_pw:
             success, error_msg = _change_password_with_logging(
                 base_url, session, new_pw
@@ -127,8 +133,8 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
                 return False, error
 
         return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, httpx.HTTPError):
-        logger.error("Connection error connecting to ThingsBoard")
+    except (OSError, httpx.HTTPError) as e:
+        logger.error(f"Connection error connecting to ThingsBoard: {e}")
         return (
             False,
             f"Cannot connect to ThingsBoard at {build_base_url()}. Check HOSTNAME in services.env.",

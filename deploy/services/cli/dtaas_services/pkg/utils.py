@@ -22,6 +22,42 @@ def get_credentials_path() -> Path:
     return base_dir / "config" / "credentials.csv"
 
 
+def _get_stderr_content(error_str: str) -> str:
+    """Extract stderr content from Docker error string.
+
+    Args:
+        error_str: Full error string from DockerException
+
+    Returns:
+        Stderr content or empty string if not found
+    """
+    if "stderr is '" not in error_str:
+        return ""
+    parts = error_str.split("stderr is '", 1)
+    if len(parts) <= 1:
+        return ""
+    return parts[1].split("'")[0]
+
+
+def _process_stderr_lines(stderr_content: str) -> str:
+    """Process stderr content to extract meaningful error message.
+
+    Args:
+        stderr_content: Raw stderr content
+
+    Returns:
+        Processed error message
+    """
+    lines = [
+        line.strip() for line in stderr_content.strip().split("\n") if line.strip()
+    ]
+    if not lines:
+        return "Unknown error"
+    if len(lines) > 1 and lines[0] == "Error:":
+        return ": ".join(lines[:2])
+    return lines[0]
+
+
 def _extract_stderr_line(error_str: str) -> str:
     """Extract just the stderr line from Docker error for cleaner display.
     Args:
@@ -29,21 +65,9 @@ def _extract_stderr_line(error_str: str) -> str:
     Returns:
         Clean error message (stderr line or first line if not found)
     """
-    # Look for stderr content between "stderr is '" and the closing quote
-    if "stderr is '" in error_str:
-        parts = error_str.split("stderr is '", 1)
-        if len(parts) > 1:
-            stderr_part = parts[1].split("'")[0]
-            # Get all non-empty lines from stderr
-            lines = [
-                line.strip() for line in stderr_part.strip().split("\n") if line.strip()
-            ]
-            # If we have multiple lines and first is just "Error:", join them
-            if len(lines) > 1 and lines[0] == "Error:":
-                return ": ".join(lines[:2])  # Join "Error:" with the next line
-            # Otherwise return first meaningful line
-            return lines[0] if lines else "Unknown error"
-    # Fallback to first line if no stderr found
+    stderr_content = _get_stderr_content(error_str)
+    if stderr_content:
+        return _process_stderr_lines(stderr_content)
     return error_str.split("\n")[0]
 
 

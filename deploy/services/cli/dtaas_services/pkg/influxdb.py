@@ -13,6 +13,7 @@ from .cert import set_service_cert_permissions, CertPermissionContext
 
 AE = "already exists"
 
+
 def _parse_json_response(json_str: str) -> tuple[bool, any, str]:
     """Parse JSON response.
     Args:
@@ -122,6 +123,66 @@ def _handle_membership_creation(name: str, error_msg: str) -> tuple[bool, str]:
     return False, error_msg
 
 
+def _create_org_if_needed(name: str, existing_orgs: set) -> tuple[bool, str]:
+    """Create organization if it doesn't already exist.
+
+    Args:
+        name: Organization name
+        existing_orgs: Set of existing organization names
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    if name in existing_orgs:
+        return True, ""
+    return _execute_influxdb_command(
+        [
+            "influx",
+            "org",
+            "create",
+            "--skip-verify",
+            "--name",
+            name,
+            "--description",
+            name,
+        ],
+        f"Failed to create organization {name}",
+    )
+
+
+def _add_user_as_org_owner(
+    username: str, user_id: str, org_name: str
+) -> tuple[bool, str]:
+    """Add user as owner to organization.
+
+    Args:
+        username: Username (for error messages)
+        user_id: User ID to add as owner
+        org_name: Organization name
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    success, error_msg = _execute_influxdb_command(
+        [
+            "influx",
+            "org",
+            "members",
+            "add",
+            "--skip-verify",
+            "--name",
+            org_name,
+            "--owner",
+            "-m",
+            user_id,
+        ],
+        f"Failed to add user {user_id} as owner to {org_name}",
+    )
+    if not success:
+        return _handle_membership_creation(username, error_msg)
+    return True, ""
+
+
 def _setup_user_org_bucket(
     name: str, user_id: str, existing_orgs: set
 ) -> tuple[bool, str]:
@@ -137,43 +198,14 @@ def _setup_user_org_bucket(
         Tuple of (success, error message if any)
     """
     # Create organization only if it doesn't exist
-    if name not in existing_orgs:
-        success, error_msg = _execute_influxdb_command(
-            [
-                "influx",
-                "org",
-                "create",
-                "--skip-verify",
-                "--name",
-                name,
-                "--description",
-                name,
-            ],
-            f"Failed to create organization {name}",
-        )
-        if not success:
-            return False, error_msg
+    success, error_msg = _create_org_if_needed(name, existing_orgs)
+    if not success:
+        return False, error_msg
 
     # Add user as owner to organization
-    success, error_msg = _execute_influxdb_command(
-        [
-            "influx",
-            "org",
-            "members",
-            "add",
-            "--skip-verify",
-            "--name",
-            name,
-            "--owner",
-            "-m",
-            user_id,
-        ],
-        f"Failed to add user {user_id} as owner to {name}",
-    )
+    success, error_msg = _add_user_as_org_owner(name, user_id, name)
     if not success:
-        success, error_msg = _handle_membership_creation(name, error_msg)
-        if not success:
-            return False, error_msg
+        return False, error_msg
 
     # Create bucket
     success, error_msg = _execute_influxdb_command(
@@ -182,7 +214,6 @@ def _setup_user_org_bucket(
     )
     if not success:
         return _handle_bucket_creation(name, error_msg)
-
     return True, ""
 
 

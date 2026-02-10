@@ -48,6 +48,25 @@ def _handle_login_response(resp: httpx.Response) -> str | None:
     return None
 
 
+def _is_ssl_error(error_str: str) -> bool:
+    """Check if error is SSL-related."""
+    return (
+        "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower()
+    )
+
+
+def _log_login_error(error: httpx.HTTPError) -> None:
+    """Log login error with appropriate context."""
+    error_str = str(error)
+    if _is_ssl_error(error_str):
+        logger.error(
+            f"SSL certificate verification failed: {error}\n"
+            " Using self-signed certificates? Change SSL_VERIFY in services.env to False\n"
+        )
+    else:
+        logger.error(f"Network error during login: {error}")
+
+
 def login(base_url: str, email: str, password: str) -> str | None:
     """Authenticate with ThingsBoard and return a JWT token."""
     url = f"{base_url}/api/auth/login"
@@ -60,18 +79,7 @@ def login(base_url: str, email: str, password: str) -> str | None:
         )
         return _handle_login_response(resp)
     except httpx.HTTPError as e:
-        error_str = str(e)
-        # Check if it's an SSL verification error
-        if (
-            "certificate verify failed" in error_str.lower()
-            or "ssl" in error_str.lower()
-        ):
-            logger.error(
-                f"SSL certificate verification failed: {e}\n"
-                " Using self-signed certificates? Change SSL_VERIFY in services.env to False\n"
-            )
-        else:
-            logger.error(f"Network error during login: {e}")
+        _log_login_error(e)
         return None
 
 
@@ -194,6 +202,11 @@ def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
     return None
 
 
+def _is_json_error(exception: Exception) -> bool:
+    """Check if exception is JSON-related."""
+    return "json" in str(exception).lower()
+
+
 def _check_existing_tenant(
     params: dict, base_url: str, session: httpx.Client
 ) -> Tuple[dict | None, str]:
@@ -207,7 +220,7 @@ def _check_existing_tenant(
         tenant_name = params.get("textSearch", "")
         return _find_tenant_in_response(body, tenant_name), ""
     except Exception as e:
-        error_type = "Invalid JSON" if "json" in str(e).lower() else "Network error"
+        error_type = "Invalid JSON" if _is_json_error(e) else "Network error"
         return None, f"{error_type} checking tenant: {e}"
 
 
@@ -231,6 +244,21 @@ def _create_new_tenant(
         return None, f"{error_type} creating tenant: {e}"
 
 
+def _get_or_create_if_needed(
+    base_url: str,
+    session: httpx.Client,
+    tenant_name: str,
+    error_msg: str,
+    tenant: dict | None,
+) -> Tuple[dict | None, str]:
+    """Create tenant if it doesn't exist or return error."""
+    if error_msg:
+        return None, error_msg
+    if tenant:
+        return tenant, ""
+    return _create_new_tenant(base_url, session, tenant_name)
+
+
 def get_or_create_tenant(
     base_url: str, session: httpx.Client, tenant_name: str
 ) -> Tuple[dict | None, str]:
@@ -238,13 +266,8 @@ def get_or_create_tenant(
     try:
         params = {"pageSize": 100, "page": 0, "textSearch": tenant_name}
         tenant, error_msg = _check_existing_tenant(params, base_url, session)
-
-        if error_msg or not tenant:
-            return (
-                (None, error_msg)
-                if error_msg
-                else _create_new_tenant(base_url, session, tenant_name)
-            )
-        return tenant, ""
+        return _get_or_create_if_needed(
+            base_url, session, tenant_name, error_msg, tenant
+        )
     except Exception as e:
         return None, f"Exception getting/creating tenant: {e}"
