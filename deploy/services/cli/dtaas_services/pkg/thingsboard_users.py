@@ -3,6 +3,7 @@
 # pylint: disable=W1203, R0903
 import logging
 import os
+import time
 from typing import Tuple
 import json
 import httpx
@@ -68,19 +69,52 @@ def _log_login_error(error: httpx.HTTPError) -> None:
 
 
 def login(base_url: str, email: str, password: str) -> str | None:
-    """Authenticate with ThingsBoard and return a JWT token."""
+    """Authenticate with ThingsBoard and return a JWT token.
+
+    Args:
+        base_url: ThingsBoard base URL
+        email: User email
+        password: User password
+        max_retries: Maximum number of retry attempts (default 3)
+
+    Returns:
+        JWT token if successful, None otherwise
+    """
     url = f"{base_url}/api/auth/login"
-    try:
-        resp = httpx.post(
-            url,
-            json={"username": email, "password": password},
-            timeout=10,
-            verify=_get_ssl_verify(),  # Set SSL_VERIFY in services.env for self-signed certs
-        )
-        return _handle_login_response(resp)
-    except httpx.HTTPError as e:
-        _log_login_error(e)
-        return None
+
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            resp = httpx.post(
+                url,
+                json={"username": email, "password": password},
+                timeout=10,
+                verify=_get_ssl_verify(),
+            )
+            token = _handle_login_response(resp)
+            if token:
+                return token
+
+            # If 401, credentials are wrong, return.
+            if resp.status_code == 401:
+                return None
+
+            # For other errors, retry with backoff
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt
+                logger.info(f"Login attempt {attempt + 1}"
+                            f" failed, retrying in {wait_time}s...")
+                time.sleep(wait_time)
+
+        except httpx.HTTPError as e:
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt
+                logger.info(f"Connection error, retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                _log_login_error(e)
+
+    return None
 
 
 def check_password_configured() -> str | None:
