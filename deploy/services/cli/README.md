@@ -216,7 +216,7 @@ dtaas-services clean -s "postgres,thingsboard"
 
 ### User Account Management
 
-1. Edit `config/credentials.csv` with user accounts (format: `username,email,password`)
+1. Edit `config/credentials.csv` with user accounts (format: `username,password,email`)
 
 2. Add users to services:
 

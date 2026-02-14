@@ -3,13 +3,13 @@
 import json
 import shutil
 from typing import Tuple
-from .utils import (
+from ..utils import (
     process_credentials_file,
     create_users_from_credentials,
     execute_docker_command,
 )
-from .config import Config
-from .cert import set_service_cert_permissions, CertPermissionContext
+from ..config import Config
+from ..cert import set_service_cert_permissions, CertPermissionContext
 
 AE = "already exists"
 

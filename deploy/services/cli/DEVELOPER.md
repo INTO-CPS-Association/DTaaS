@@ -42,7 +42,13 @@ cli/
 ├── DEVELOPER.md            # This file
 ├── dtaas_services/         # Main package directory
 │   ├── __init__.py
-│   ├── cmd.py              # Main CLI commands
+│   ├── cmd.py              # CLI entry point (imports from commands/)
+│   ├── commands/           # CLI command modules
+│   │   ├── __init__.py
+│   │   ├── service_ops.py  # Service lifecycle commands (start, stop, restart, status, remove, clean)
+│   │   ├── setup_ops.py    # Setup commands (generate-project, setup, install)
+│   │   ├── user_ops.py     # User management commands (user add)
+│   │   └── utility.py      # Command utilities
 │   ├── compose.services.secure.yml  # Main services Docker Compose configuration (copied by build.py)
 │   ├── compose.thingsboard.secure.yml  # ThingsBoard and PostgreSQL Docker Compose configuration (copied by build.py)
 │   ├── config/             # Configuration files (copied by build.py)
@@ -60,30 +66,39 @@ cli/
 │   └── pkg/
 │       ├── __init__.py
 │       ├── config.py       # Configuration loader
-│       ├── service.py      # Docker Compose service management
 │       ├── cert.py         # TLS certificate operations
-│       ├── mongodb.py      # MongoDB certificate and permission setup
-│       ├── influxdb.py     # InfluxDB certificate, permission, and user management
-│       ├── rabbitmq.py     # RabbitMQ certificate, permission, and user management
-│       ├── thingsboard.py  # ThingsBoard admin user management and credentials processing
-│       ├── thingsboard_users.py  # ThingsBoard authentication, password, and tenant management
-│       ├── thingsboard_utility.py  # ThingsBoard user activation helpers
-│       ├── thingsboard_permissions.py  # ThingsBoard certificates and permissions setup
 │       ├── formatter.py    # Output formatting utilities
 │       ├── template.py     # Project structure and template file management
-│       └── utils.py        # Shared utilities (Docker, file operations)
+│       ├── utils.py        # Shared utilities (Docker, file operations)
+│       ├── lib/            # Core service management
+│       │   ├── __init__.py
+│       │   ├── manager.py  # Docker Compose service management
+│       │   ├── docker_executor.py  # Docker command execution
+│       │   ├── initialization.py   # Service initialization
+│       │   ├── status.py   # Service status operations
+│       │   ├── cleanup.py  # Service cleanup operations
+│       │   └── utils.py    # Library utilities
+│       └── services/       # Service-specific modules
+│           ├── mongodb.py  # MongoDB certificate and permission setup
+│           ├── influxdb.py # InfluxDB certificate, permission, and user management
+│           ├── rabbitmq.py # RabbitMQ certificate, permission, and user management
+│           └── thingsboard/
+│               ├── setup.py        # ThingsBoard setup orchestration
+│               ├── sysadmin.py     # System admin operations
+│               ├── tenant_admin.py # Tenant admin provisioning
+│               ├── postgres.py     # PostgreSQL operations
+│               ├── checker.py      # Installation checking
+│               ├── permissions.py  # Certificate setup
+│               ├── tb_cert.py      # Certificate operations
+│               └── tb_utility.py   # Utilities
 └── tests/
     ├── __init__.py
     ├── test_cmd.py         # CLI command tests
     ├── test_config.py      # Configuration tests
-    ├── test_service.py     # Service management tests
     ├── test_cert.py        # Certificate operations tests
     ├── test_formatter.py   # Output formatting tests
     ├── test_template.py    # Project structure and template tests
     ├── test_utils.py       # Utility functions tests
-    ├── test_thingsboard.py # ThingsBoard admin user management tests
-    ├── test_thingsboard_users.py  # ThingsBoard authentication and tenant tests
-    ├── test_thingsboard_permissions.py  # ThingsBoard certificates and permissions tests
     ├── config/             # Test configuration files (REQUIRED for system tests)
     │   ├── services.env    # Test environment variables
     │   └── credentials.csv # Test user credentials
@@ -98,46 +113,74 @@ from the parent `deploy/services/` directory and are gitignored.
 
 ### Architecture
 
-The package uses a modular architecture where each service has its own module:
+The package uses a modular, three-layer architecture:
 
-* **`config.py`**: Central configuration loader for environment variables
-  and base directory detection across OS platforms
-* **`service.py`**: Docker Compose service management
-(start, stop, restart, remove, status, clean)
-* **`cert.py`**: TLS certificate copying and normalization
-* **`mongodb.py`**: MongoDB certificate setup
-* **`influxdb.py`**: InfluxDB certificate setup and user management
-* **`rabbitmq.py`**: RabbitMQ certificate setup and user management
-* **`thingsboard.py`**: ThingsBoard tenant and user management from credentials.csv
-* **`thingsboard_users.py`**: ThingsBoard authentication and password management
-* **`thingsboard_permissions.py`**: ThingsBoard and PostgreSQL certificate setup
-* **`formatter.py`**: Output formatting utilities
-* **`template.py`**: Project structure and template file management
-* **`utils.py`**: Shared utilities (Docker operations, credentials handling)
+#### Command Layer (`commands/`)
 
-### Code Organization Pattern
-
-The project follows a clean separation between CLI interface and business logic:
-
-#### CLI Layer (`cmd.py`)
-
-* Thin command definitions using Click decorators
-* Argument parsing and validation
-* User-facing output formatting
-* Minimal business logic - delegates to `pkg/` modules
+* **`service_ops.py`**: Service lifecycle commands (start, stop, restart, status, remove, clean)
+* **`setup_ops.py`**: Setup and installation commands (generate-project, setup, install)
+* **`user_ops.py`**: User management commands (user add)
+* **`utility.py`**: Shared command utilities
 
 #### Business Logic Layer (`pkg/`)
 
-* All core functionality implemented in dedicated modules
-* Pure functions that return results (success/failure, messages)
-* Independent, testable units
-* No direct CLI output (returns strings for CLI to display)
+* **`config.py`**: Configuration loader for environment variables and base directory detection
+* **`cert.py`**: TLS certificate copying and normalization
+* **`formatter.py`**: Output formatting utilities
+* **`template.py`**: Project structure and template file management
+* **`utils.py`**: Shared utilities (Docker operations, credentials handling)
+* **`lib/`**: Core service management modules
+  * `manager.py`: Docker Compose service management
+  * `docker_executor.py`: Docker command execution
+  * `initialization.py`: Service initialization
+  * `status.py`: Service status operations
+  * `cleanup.py`: Service cleanup operations
+  * `utils.py`: Library utilities
+
+#### Service Layer (`pkg/services/`)
+
+* **`mongodb.py`**: MongoDB certificate and permission setup
+* **`influxdb.py`**: InfluxDB certificate, permission, and user management
+* **`rabbitmq.py`**: RabbitMQ certificate, permission, and user management
+* **`thingsboard/`**: ThingsBoard modules
+  * `setup.py`: Setup orchestration
+  * `sysadmin.py`: System admin operations
+  * `tenant_admin.py`: Tenant admin user provisioning
+  * `postgres.py`: PostgreSQL operations
+  * `checker.py`: Installation validation
+  * `permissions.py`: Certificate setup
+
+### Code Organization Pattern
+
+The project follows a clean three-layer separation:
+
+#### CLI Entry Point (`cmd.py`)
+
+* Minimal entry point that imports commands from `commands/` package
+* Registers commands with Click command groups
+* Maintains backward-compatible CLI interface
+
+#### Command Layer (`commands/`)
+
+* Modular command definitions using Click decorators
+* Argument parsing and validation
+* User-facing output formatting with Rich console
+* Delegates business logic to `pkg/` modules
+* Organized by functional area (service operations, setup, user management)
+
+#### Business Logic Layer (`pkg/`)
+
+* Core functionality in focused, testable modules
+* Functions return `tuple[bool, str]` (success status, message)
+* No direct CLI dependencies or output
+* Service-specific logic isolated in `services/` subdirectory
 
 This separation ensures:
 
-* Easy testing of business logic without CLI context
-* Reusability of functions across different commands
+* Easy testing without CLI context
+* Reusable business logic across commands
 * Clear responsibility boundaries
+* Low complexity per file (100-300 lines)
 
 ### Configuration Pattern
 

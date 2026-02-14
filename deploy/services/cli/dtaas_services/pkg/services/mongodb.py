@@ -1,8 +1,8 @@
 """MongoDB installation, service and user management."""
 
 from typing import Tuple
-from .config import Config
-from .cert import (
+from ..config import Config
+from ..cert import (
     create_combined_cert,
     set_service_cert_permissions,
     CertPermissionContext,

@@ -1,131 +1,12 @@
-"""ThingsBoard user management functions."""
+"""ThingsBoard admin operations - sysadmin password and tenant management."""
 
 # pylint: disable=W1203, R0903
 import logging
-import os
-import time
 from typing import Tuple
-import json
 import httpx
+from .tb_utility import login
 
-PRIV_KEY_FILENAME = "privkey.pem"
-FULLCHAIN_FILENAME = "fullchain.pem"
-
-# Set up logger
 logger = logging.getLogger(__name__)
-
-
-def _get_ssl_verify() -> bool:
-    """Get SSL_VERIFY from environment (after Config loads services.env).
-    Deferred to runtime so this module can be imported even when
-    config/services.env doesn't exist (e.g., during generate-project).
-    """
-    raw = os.getenv("SSL_VERIFY", "true").strip().lower()
-    return raw not in ("false", "0", "no", "off")
-
-
-def build_base_url() -> str:
-    """
-    Build ThingsBoard base URL from environment variables.
-    Uses HOSTNAME from environment (must match certificate domain name).
-    """
-    hostname = os.getenv("HOSTNAME", "localhost")
-    port = os.getenv("THINGSBOARD_PORT", "8080")
-    scheme = os.getenv("THINGSBOARD_SCHEME", "https")
-    return f"{scheme}://{hostname}:{port}".rstrip("/")
-
-
-def _handle_login_response(resp: httpx.Response) -> str | None:
-    """Handle login response and extract token."""
-    if resp.status_code == 200:
-        try:
-            data = resp.json()
-            return data.get("token")
-        except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON response during login: {e}")
-            return None
-    if resp.status_code != 401:
-        logger.warning(f"Unexpected login response {resp.status_code}")
-    return None
-
-
-def _is_ssl_error(error_str: str) -> bool:
-    """Check if error is SSL-related."""
-    return (
-        "certificate verify failed" in error_str.lower() or "ssl" in error_str.lower()
-    )
-
-
-def _log_login_error(error: httpx.HTTPError) -> None:
-    """Log login error with appropriate context."""
-    error_str = str(error)
-    if _is_ssl_error(error_str):
-        logger.error(
-            f"SSL certificate verification failed: {error}\n"
-            " Using self-signed certificates? Change SSL_VERIFY in services.env to False\n"
-        )
-    else:
-        logger.error(f"Network error during login: {error}")
-
-
-def login(base_url: str, email: str, password: str) -> str | None:
-    """Authenticate with ThingsBoard and return a JWT token.
-
-    Args:
-        base_url: ThingsBoard base URL
-        email: User email
-        password: User password
-        max_retries: Maximum number of retry attempts (default 3)
-
-    Returns:
-        JWT token if successful, None otherwise
-    """
-    url = f"{base_url}/api/auth/login"
-
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            resp = httpx.post(
-                url,
-                json={"username": email, "password": password},
-                timeout=10,
-                verify=_get_ssl_verify(),
-            )
-            token = _handle_login_response(resp)
-            if token:
-                return token
-
-            # If 401, credentials are wrong, return.
-            if resp.status_code == 401:
-                return None
-
-            # For other errors, retry with backoff
-            if attempt < max_retries - 1:
-                wait_time = 2 ** attempt
-                logger.info(f"Login attempt {attempt + 1}"
-                            f" failed, retrying in {wait_time}s...")
-                time.sleep(wait_time)
-
-        except httpx.HTTPError as e:
-            if attempt < max_retries - 1:
-                wait_time = 2 ** attempt
-                logger.info(f"Connection error, retrying in {wait_time}s...")
-                time.sleep(wait_time)
-            else:
-                _log_login_error(e)
-
-    return None
-
-
-def check_password_configured() -> str | None:
-    """Check if new password is configured."""
-    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
-    if not new_pw:
-        logger.info(
-            "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
-            "Skipping sysadmin password change."
-        )
-    return new_pw
 
 
 def _try_login_with_new_password(base_url: str, email: str, new_pw: str) -> str | None:
@@ -217,8 +98,8 @@ def change_sysadmin_password_if_needed(
     token = login(base_url, sys_email, default_pw)
     if not token:
         return False, (
-            "Unable to log in as sysadmin with either new or default password. "
-            "Check configuration in config/services.env and ensure ThingsBoard is running."
+            "Failed to get authentication token for sysadmin. "
+            "Verify the configuration in config/services.env."
         )
 
     _update_session_token(session, token)

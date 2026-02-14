@@ -1,4 +1,4 @@
-"""ThingsBoard and PostgreSQL certificate and permission management."""
+"""ThingsBoard certificate and permission management."""
 
 # pylint: disable=W1203, R0903
 import logging
@@ -7,117 +7,31 @@ import shutil
 import platform
 from typing import Tuple
 from pathlib import Path
-from .config import Config
-from .cert import copy_certs, set_service_cert_permissions, CertPermissionContext
-from .utils import is_ci
-
-
-PRIV_KEY_FILENAME = "privkey.pem"
-FULLCHAIN_FILENAME = "fullchain.pem"
+from ...config import Config
+from ...cert import copy_certs
+from ...utils import is_ci
+from .postgres import setup_postgres_certs
+from .tb_cert import (
+    ServiceCertConfig,
+    CertSetupParams,
+    ServiceSetupContext,
+    setup_service_certs,
+    PRIV_KEY_FILENAME,
+    FULLCHAIN_FILENAME,
+)
 
 # Set up logger
 logger = logging.getLogger(__name__)
 
 
-class _ServiceCertConfig:
-    """Configuration for service certificate setup."""
-
-    def __init__(self, service_name: str, key_filename: str, cert_filename: str):
-        self.service_name = service_name
-        self.key_filename = key_filename
-        self.cert_filename = cert_filename
-
-
-class _CertSetupParams:
-    """Certificate setup parameters."""
-
-    def __init__(self, certs_dir: Path, uid: int, gid: int):
-        self.certs_dir = certs_dir
-        self.uid = uid
-        self.gid = gid
-
-
-class _TenantSetupContext:
-    """Context for tenant setup operations."""
-
-    def __init__(self, cert_cfg: _ServiceCertConfig, params: _CertSetupParams):
-        self.cert_cfg = cert_cfg
-        self.certs_dir = params.certs_dir
-        self.uid = params.uid
-        self.gid = params.gid
-
-
-def _copy_service_cert_files(setup_ctx: _TenantSetupContext) -> Tuple[tuple, bool, str]:
-    """Copy service certificate files and return paths."""
-    privkey_path = setup_ctx.certs_dir / PRIV_KEY_FILENAME
-    fullchain_path = setup_ctx.certs_dir / FULLCHAIN_FILENAME
-    service_key_path = setup_ctx.certs_dir / setup_ctx.cert_cfg.key_filename
-    service_cert_path = setup_ctx.certs_dir / setup_ctx.cert_cfg.cert_filename
-
-    shutil.copy2(privkey_path, service_key_path)
-    shutil.copy2(fullchain_path, service_cert_path)
-    return (service_key_path, service_cert_path), True, ""
-
-
-def _set_service_cert_file_permissions(
-    setup_ctx: _TenantSetupContext, service_key_path: Path, service_cert_path: Path
-) -> Tuple[bool, str]:
-    """Set permissions on service certificate files."""
-    # Set permissions on private key
-    ctx = CertPermissionContext(
-        setup_ctx.cert_cfg.service_name,
-        service_key_path,
-        setup_ctx.uid,
-        setup_ctx.gid,
-        0o600,
-    )
-    success, msg = set_service_cert_permissions(ctx)
-    if not success:
-        return False, msg
-
-    # Set permissions on certificate (readable)
-    ctx = CertPermissionContext(
-        setup_ctx.cert_cfg.service_name,
-        service_cert_path,
-        setup_ctx.uid,
-        setup_ctx.gid,
-        0o644,
-    )
-    return set_service_cert_permissions(ctx)
-
-
-def _setup_service_certs(setup_ctx: _TenantSetupContext) -> Tuple[bool, str]:
-    """Set up service certificates with proper permissions."""
-    try:
-        (service_key_path, service_cert_path), _, _ = _copy_service_cert_files(
-            setup_ctx
-        )
-        return _set_service_cert_file_permissions(
-            setup_ctx, service_key_path, service_cert_path
-        )
-    except OSError as e:
-        return (
-            False,
-            f"Error setting up {setup_ctx.cert_cfg.service_name} certificates: {e}",
-        )
-
-
-def _setup_postgres_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
-    """Set up PostgreSQL certificates with proper permissions."""
-    cfg = _ServiceCertConfig("PostgreSQL", "postgres.key", "postgres.crt")
-    params = _CertSetupParams(certs_dir, uid, gid)
-    setup_ctx = _TenantSetupContext(cfg, params)
-    return _setup_service_certs(setup_ctx)
-
-
 def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
-    cfg = _ServiceCertConfig(
+    cfg = ServiceCertConfig(
         "ThingsBoard", "thingsboard-privkey.pem", "thingsboard-fullchain.pem"
     )
-    params = _CertSetupParams(certs_dir, uid, gid)
-    setup_ctx = _TenantSetupContext(cfg, params)
-    return _setup_service_certs(setup_ctx)
+    params = CertSetupParams(certs_dir, uid, gid)
+    setup_ctx = ServiceSetupContext(cfg, params)
+    return setup_service_certs(setup_ctx)
 
 
 class _SetupConfig:
@@ -203,7 +117,7 @@ def _execute_setup_operations(cfg: _SetupConfig) -> Tuple[bool, list]:
     """
     messages = []
     operations = [
-        (_setup_postgres_certs, cfg.certs_dir, cfg.postgres_uid, cfg.postgres_gid),
+        (setup_postgres_certs, cfg.certs_dir, cfg.postgres_uid, cfg.postgres_gid),
         (
             _setup_thingsboard_certs,
             cfg.certs_dir,

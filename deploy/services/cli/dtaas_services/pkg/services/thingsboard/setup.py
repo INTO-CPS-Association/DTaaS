@@ -1,28 +1,26 @@
-"""ThingsBoard installation, service and user management."""
+"""ThingsBoard installation and setup orchestration."""
 
 # pylint: disable=W1203, R0903
 import csv
 import logging
+import os
 from typing import Tuple
 from pathlib import Path
 import httpx
-from .config import Config
-from .thingsboard_users import (
-    check_password_configured,
-    build_base_url,
-    change_sysadmin_password_if_needed,
-    _get_ssl_verify,
-)
-
-from .thingsboard_utility import (
-    CredentialProcessContext,
+from ...config import Config
+from .tb_utility import get_ssl_verify
+from .sysadmin import change_sysadmin_password_if_needed
+from .tenant_admin import (
     create_tenant_and_admin,
-    validate_credential_row,
     TenantAdminContext,
     AdminCredentials,
 )
+from .tb_cert import (
+    CredentialProcessContext,
+    validate_credential_row,
+    build_base_url,
+)
 
-# Set up logger
 logger = logging.getLogger(__name__)
 
 
@@ -83,7 +81,9 @@ def _change_password_with_logging(
     base_url: str, session: httpx.Client, new_pw: str
 ) -> Tuple[bool, str]:
     """Attempt to change sysadmin password with logging suppression."""
-    tb_logger = logging.getLogger("dtaas_services.pkg.thingsboard_users")
+    tb_logger = logging.getLogger(
+        "dtaas_services.pkg.services.thingsboard.thingsboard_admin"
+    )
     old_level = tb_logger.level
     tb_logger.setLevel(logging.CRITICAL)
 
@@ -91,6 +91,17 @@ def _change_password_with_logging(
         return change_sysadmin_password_if_needed(base_url, session, new_pw)
     finally:
         tb_logger.setLevel(old_level)
+
+
+def check_password_configured() -> str | None:
+    """Check if new password is configured."""
+    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
+    if not new_pw:
+        logger.info(
+            "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
+            "Skipping sysadmin password change."
+        )
+    return new_pw
 
 
 def _handle_password_change_result(
@@ -112,7 +123,7 @@ def _create_session() -> httpx.Client:
     """Create HTTP session with SSL verification settings."""
     # Increased timeout to 30s to handle self-signed certificates
     # (SSL handshake can be slow with dummy/self-signed certs)
-    return httpx.Client(verify=_get_ssl_verify(), timeout=30)
+    return httpx.Client(verify=get_ssl_verify(), timeout=30)
 
 
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:

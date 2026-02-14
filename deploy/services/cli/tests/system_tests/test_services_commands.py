@@ -8,7 +8,7 @@ import os
 import pytest
 from rich.console import Console
 from rich.panel import Panel
-from dtaas_services.pkg.service import Service
+from dtaas_services.pkg.lib import Service
 
 console = Console()
 pytestmark = pytest.mark.system

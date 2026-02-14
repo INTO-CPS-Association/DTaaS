@@ -144,7 +144,7 @@ def check_root_unix() -> None:
     if not _is_current_user_root():
         print(
             "This script must be run as root (Linux/MacOS). "
-            'Try: sudo -E env PATH="$PATH" dtaas-services setup'
+            'Try: sudo -E env PATH="$PATH" dtaas-services <command>'
         )
         sys.exit(1)
 

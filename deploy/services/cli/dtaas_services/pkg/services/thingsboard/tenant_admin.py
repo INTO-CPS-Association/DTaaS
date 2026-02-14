@@ -1,13 +1,15 @@
-"""Utility functions for ThingsBoard user and tenant management."""
+"""Creates (or fetches) a tenant, creates/activates a tenant-admin account, and
+verifies the admin can log in."""
 
 # pylint: disable=W1203, R0903
 import logging
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs
 import httpx
-from .thingsboard_users import login, _get_ssl_verify
+from .tb_utility import login, verify_admin_login
+from .tb_utility import get_ssl_verify, is_json_parse_error
+from .sysadmin import get_or_create_tenant
 
-# Set up logger
 logger = logging.getLogger(__name__)
 
 
@@ -70,11 +72,6 @@ def _create_tenant_api_call(
         return None, f"Network error creating tenant admin: {e}"
 
 
-def _is_json_parse_error(exception: Exception) -> bool:
-    """Check if exception is JSON parsing related."""
-    return "json" in str(exception).lower()
-
-
 def _handle_admin_already_exists(resp: httpx.Response) -> Tuple[str | None, str]:
     """Handle case where admin user already exists."""
     try:
@@ -96,7 +93,7 @@ def _extract_user_id_from_response(resp: httpx.Response) -> Tuple[str | None, st
         user_id = user.get("id", {}).get("id")
         return (user_id, "") if user_id else (None, "Created user response missing id")
     except Exception as e:
-        error_type = "Invalid JSON" if _is_json_parse_error(e) else "Unexpected error"
+        error_type = "Invalid JSON" if is_json_parse_error(e) else "Unexpected error"
         return None, f"{error_type} response creating tenant admin: {e}"
 
 
@@ -169,7 +166,7 @@ def _activate_user(
             f"{base_url}/api/noauth/activate",
             json=activate_payload,
             timeout=15,
-            verify=_get_ssl_verify(),
+            verify=get_ssl_verify(),
         )
 
         if resp.status_code != 200:
@@ -180,16 +177,6 @@ def _activate_user(
         if _is_ssl_error_activate(error_str):
             return False, f"SSL certificate verification failed: {e}\n"
         return False, f"Network error activating user: {e}"
-
-
-def _verify_admin_login(
-    base_url: str, admin_email: str, admin_password: str
-) -> Tuple[bool, str]:
-    """Verify admin can login."""
-    token = login(base_url, admin_email, admin_password)
-    if not token:
-        return False, "Created admin but login verification failed"
-    return True, ""
 
 
 def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:
@@ -209,7 +196,7 @@ def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:
         return False, error_msg
 
     logger.info(f"  Admin '{ctx.admin_email}' created and activated")
-    return _verify_admin_login(ctx.base_url, ctx.admin_email, ctx.admin_password)
+    return verify_admin_login(ctx.base_url, ctx.admin_email, ctx.admin_password)
 
 
 def _create_and_activate_admin(ctx: _AdminContext, tenant_id: str) -> Tuple[bool, str]:
@@ -245,7 +232,6 @@ def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
 
 def create_tenant_and_admin(ctx: TenantAdminContext) -> Tuple[bool, str]:
     """Create a tenant and its admin user."""
-    from .thingsboard_users import get_or_create_tenant
 
     tenant, error_msg = get_or_create_tenant(ctx.base_url, ctx.session, ctx.tenant_name)
     if not tenant:
@@ -256,25 +242,3 @@ def create_tenant_and_admin(ctx: TenantAdminContext) -> Tuple[bool, str]:
     )
     admin_ctx.admin_password = ctx.admin_credentials.admin_password
     return _ensure_tenant_admin(admin_ctx, tenant)
-
-
-class CredentialProcessContext:
-    """Context for processing credentials."""
-
-    def __init__(self, base_url: str, session: httpx.Client):
-        self.base_url = base_url
-        self.session = session
-        self.seen_emails = set()
-
-
-def validate_credential_row(
-    credential: dict, username: str, seen_emails: set
-) -> Tuple[bool, str]:
-    """Validate a credential row and check for duplicates."""
-    email = credential.get("email", "").strip()
-
-    if not email:
-        return False, f"Email field is required for user {username}"
-    if email in seen_emails:
-        return False, f"Duplicate email '{email}' found for user {username}"
-    return True, email

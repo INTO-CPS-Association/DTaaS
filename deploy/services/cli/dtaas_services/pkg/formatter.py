@@ -4,6 +4,7 @@ from typing import List, Union
 from rich.console import Console
 from rich.table import Table
 from python_on_whales import Container
+# pylint: disable=too-few-public-methods
 
 
 class RemovedServiceEntry:

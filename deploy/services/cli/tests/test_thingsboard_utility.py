@@ -108,12 +108,12 @@ def test_activate_user_scenarios():
         (None, False),
     ],
 )
-def test_verify_admin_login(login_token, expected_success):
+def testverify_admin_login(login_token, expected_success):
     """Test admin login verification"""
     with patch(
         "dtaas_services.pkg.thingsboard_utility.login", return_value=login_token
     ):
-        success, _ = th_util._verify_admin_login(
+        success, _ = th_util.verify_admin_login(
             "https://localhost:8080", "admin@ex.com", "pass"
         )
         assert success == expected_success
@@ -135,7 +135,7 @@ def test_create_and_activate_admin_scenarios():
     ), patch(
         "dtaas_services.pkg.thingsboard_utility._activate_user", return_value=(True, "")
     ), patch(
-        "dtaas_services.pkg.thingsboard_utility._verify_admin_login",
+        "dtaas_services.pkg.thingsboard_utility.verify_admin_login",
         return_value=(True, ""),
     ):
         success, _ = th_util._create_and_activate_admin(ctx, "tenant")
