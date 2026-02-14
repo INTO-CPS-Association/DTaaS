@@ -159,16 +159,20 @@ def _create_new_tenant(
         return None, f"{error_type} creating tenant: {e}"
 
 
-def _get_or_create_if_needed(
-    base_url: str,
-    session: httpx.Client,
-    tenant_name: str,
-    error_msg: str,
-    tenant: dict | None,
+def _get_or_create_tenant_helper(
+    base_url: str, session: httpx.Client, tenant_name: str, tenant: dict | None
 ) -> Tuple[dict | None, str]:
-    """Create tenant if it doesn't exist or return error."""
-    if error_msg:
-        return None, error_msg
+    """Helper to create tenant if it doesn't exist.
+
+    Args:
+        base_url: ThingsBoard base URL
+        session: HTTP session
+        tenant_name: Name of tenant
+        tenant: Existing tenant or None
+
+    Returns:
+        Tuple of (tenant dict or None, error message)
+    """
     if tenant:
         return tenant, ""
     return _create_new_tenant(base_url, session, tenant_name)
@@ -181,8 +185,10 @@ def get_or_create_tenant(
     try:
         params = {"pageSize": 100, "page": 0, "textSearch": tenant_name}
         tenant, error_msg = _check_existing_tenant(params, base_url, session)
-        return _get_or_create_if_needed(
-            base_url, session, tenant_name, error_msg, tenant
-        )
+
+        if error_msg:
+            return None, error_msg
+
+        return _get_or_create_tenant_helper(base_url, session, tenant_name, tenant)
     except Exception as e:
         return None, f"Exception getting/creating tenant: {e}"

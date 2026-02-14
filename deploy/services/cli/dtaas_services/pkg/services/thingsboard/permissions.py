@@ -12,10 +12,7 @@ from ...cert import copy_certs
 from ...utils import is_ci
 from .postgres import setup_postgres_certs
 from .tb_cert import (
-    ServiceCertConfig,
-    CertSetupParams,
-    ServiceSetupContext,
-    setup_service_certs,
+    setup_service_certificates,
     PRIV_KEY_FILENAME,
     FULLCHAIN_FILENAME,
 )
@@ -26,12 +23,15 @@ logger = logging.getLogger(__name__)
 
 def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
-    cfg = ServiceCertConfig(
-        "ThingsBoard", "thingsboard-privkey.pem", "thingsboard-fullchain.pem"
+
+    return setup_service_certificates(
+        "ThingsBoard",
+        "thingsboard-fullchain.pem",
+        "thingsboard-privkey.pem",
+        certs_dir,
+        uid,
+        gid,
     )
-    params = CertSetupParams(certs_dir, uid, gid)
-    setup_ctx = ServiceSetupContext(cfg, params)
-    return setup_service_certs(setup_ctx)
 
 
 class _SetupConfig:

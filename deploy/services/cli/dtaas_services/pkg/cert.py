@@ -60,6 +60,38 @@ def _find_latest_cert(certs_dir: Path, prefix: str) -> Path | None:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
+def _is_target_cert(cert_path: Path, target: Path) -> bool:
+    """Check if certificate is the target certificate.
+
+    Args:
+        cert_path: Path to check
+        target: Target certificate path
+
+    Returns:
+        True if cert_path is the target
+    """
+    return cert_path.resolve() == target.resolve()
+
+
+def _matches_cert_pattern(cert_name: str, prefix: str) -> bool:
+    """Check if certificate name matches the pattern for removal.
+
+    Matches '{prefix}.pem' or '{prefix}[0-9].pem', but not '{prefix}-service.pem'.
+
+    Args:
+        cert_name: Certificate filename
+        prefix: Certificate prefix
+
+    Returns:
+        True if matches pattern
+    """
+    if cert_name == f"{prefix}.pem":
+        return True
+    if cert_name.startswith(prefix) and cert_name[len(prefix) : -4].isdigit():
+        return True
+    return False
+
+
 def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
     """Remove all cert files with the given prefix except the target.
 
@@ -67,12 +99,9 @@ def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
     not files like '{prefix}-service.pem'.
     """
     for p in certs_dir.glob(f"{prefix}*.pem"):
-        if p.resolve() == target.resolve():
+        if _is_target_cert(p, target):
             continue
-        # Only remove if it matches the pattern (not service-specific certs)
-        if p.name == f"{prefix}.pem" or (
-            p.name.startswith(f"{prefix}") and p.name[len(prefix) : -4].isdigit()
-        ):
+        if _matches_cert_pattern(p.name, prefix):
             p.unlink(missing_ok=True)
 
 
@@ -215,6 +244,24 @@ def _get_permission_message(ctx: CertPermissionContext) -> str:
     )
 
 
+def _get_skip_permission_message(cert_name: str) -> str:
+    """Get message for when permissions are skipped.
+
+    Args:
+        cert_name: Certificate filename
+
+    Returns:
+        Appropriate skip message
+    """
+    if is_ci():
+        return f"\n{cert_name} created (permission changes skipped in CI)."
+    if platform.system().lower() == "windows":
+        return (
+            f"\n{cert_name} created" "\n(POSIX permissions not applicable on Windows)."
+        )
+    return f"\n{cert_name} created (permission changes skipped)."
+
+
 def set_service_cert_permissions(
     ctx: CertPermissionContext,
 ) -> Tuple[bool, str]:
@@ -233,16 +280,7 @@ def set_service_cert_permissions(
             _apply_cert_permissions(ctx)
             msg = _get_permission_message(ctx)
         else:
-            # Determine why permissions were skipped
-            if is_ci():
-                msg = f"\n{ctx.cert_path.name} created (permission changes skipped in CI)."
-            elif platform.system().lower() == "windows":
-                msg = (
-                    f"\n{ctx.cert_path.name} created"
-                    "\n(POSIX permissions not applicable on Windows)."
-                )
-            else:
-                msg = f"\n{ctx.cert_path.name} created (permission changes skipped)."
+            msg = _get_skip_permission_message(ctx.cert_path.name)
         return True, msg
     except OSError as e:
         return False, f"Error setting permissions for {ctx.service_name}: {e}"

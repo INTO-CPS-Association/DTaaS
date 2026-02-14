@@ -31,6 +31,35 @@ def try_remove_file(path: Path) -> None:
         pass
 
 
+def _remove_directory_item(item: Path) -> None:
+    """Remove a single file or directory item.
+
+    Args:
+        item: File or directory to remove
+    """
+    if item.is_file():
+        try_remove_file(item)
+    elif item.is_dir():
+        remove_all_files_in_directory(item)
+        try:
+            item.rmdir()
+        except OSError:
+            pass
+
+
+def _process_directory_contents(directory: Path) -> None:
+    """Process all items in a directory.
+
+    Args:
+        directory: Directory to process
+    """
+    try:
+        for item in directory.iterdir():
+            _remove_directory_item(item)
+    except OSError as e:
+        click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+
+
 def remove_all_files_in_directory(directory: Path) -> None:
     """Recursively remove all files and subdirectories in a directory.
 
@@ -39,17 +68,42 @@ def remove_all_files_in_directory(directory: Path) -> None:
     if not directory.exists():
         return
 
+    _process_directory_contents(directory)
+
+
+def _is_gitkeep_file(item: Path) -> bool:
+    """Check if item is a .gitkeep file.
+
+    Args:
+        item: Path to check
+
+    Returns:
+        True if item is a .gitkeep file
+    """
+    return item.is_file() and item.name == ".gitkeep"
+
+
+def _process_gitkeep_item(item: Path) -> None:
+    """Process a single item for gitkeep removal.
+
+    Args:
+        item: File or directory to process
+    """
+    if _is_gitkeep_file(item):
+        try_remove_file(item)
+    elif item.is_dir():
+        remove_gitkeep_files(item)
+
+
+def _process_gitkeep_directory(directory: Path) -> None:
+    """Process all items in a directory for gitkeep removal.
+
+    Args:
+        directory: Directory to process
+    """
     try:
         for item in directory.iterdir():
-            if item.is_file():
-                try_remove_file(item)
-            elif item.is_dir():
-                remove_all_files_in_directory(item)
-                try:
-                    item.rmdir()
-                except OSError:
-                    # Ignore errors when removing directory
-                    pass
+            _process_gitkeep_item(item)
     except OSError as e:
         click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
 
@@ -63,14 +117,7 @@ def remove_gitkeep_files(directory: Path) -> None:
     if not directory.exists():
         return
 
-    try:
-        for item in directory.iterdir():
-            if item.is_file() and item.name == ".gitkeep":
-                try_remove_file(item)
-            elif item.is_dir():
-                remove_gitkeep_files(item)
-    except OSError as e:
-        click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+    _process_gitkeep_directory(directory)
 
 
 def check_compose_file(compose_file: Path) -> Tuple[Optional[Exception], bool]:

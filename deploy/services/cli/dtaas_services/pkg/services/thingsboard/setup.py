@@ -126,6 +126,26 @@ def _create_session() -> httpx.Client:
     return httpx.Client(verify=get_ssl_verify(), timeout=30)
 
 
+def _handle_password_setup(
+    base_url: str, session: httpx.Client, new_pw: str | None
+) -> Tuple[bool, str | None]:
+    """Handle password change if configured.
+
+    Args:
+        base_url: ThingsBoard URL
+        session: HTTP session
+        new_pw: New password or None
+
+    Returns:
+        Tuple of (should_continue, error_message or None)
+    """
+    if not new_pw:
+        return True, None
+
+    success, error_msg = _change_password_with_logging(base_url, session, new_pw)
+    return _handle_password_change_result(success, error_msg)
+
+
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
     """Helper to set up credentials and change password."""
     try:
@@ -135,13 +155,9 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
         new_pw = check_password_configured()
 
         # Change password if configured
-        if new_pw:
-            success, error_msg = _change_password_with_logging(
-                base_url, session, new_pw
-            )
-            should_continue, error = _handle_password_change_result(success, error_msg)
-            if not should_continue:
-                return False, error
+        should_continue, error = _handle_password_setup(base_url, session, new_pw)
+        if not should_continue:
+            return False, error
 
         return _process_credentials_file(base_url, session, credentials_file)
     except (OSError, httpx.HTTPError) as e:

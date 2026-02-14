@@ -153,6 +153,21 @@ def _is_ssl_error_activate(error_str: str) -> bool:
     )
 
 
+def _handle_activate_error(error_str: str, e: Exception) -> Tuple[bool, str]:
+    """Handle activation error based on type.
+
+    Args:
+        error_str: Error string to check
+        e: Original exception
+
+    Returns:
+        Tuple of (False, error message)
+    """
+    if _is_ssl_error_activate(error_str):
+        return False, f"SSL certificate verification failed: {e}\n"
+    return False, f"Network error activating user: {e}"
+
+
 def _activate_user(
     base_url: str, activate_token: str, admin_password: str
 ) -> Tuple[bool, str]:
@@ -173,10 +188,7 @@ def _activate_user(
             return False, f"Failed to activate tenant admin: {resp.status_code}"
         return True, ""
     except httpx.HTTPError as e:
-        error_str = str(e)
-        if _is_ssl_error_activate(error_str):
-            return False, f"SSL certificate verification failed: {e}\n"
-        return False, f"Network error activating user: {e}"
+        return _handle_activate_error(str(e), e)
 
 
 def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:

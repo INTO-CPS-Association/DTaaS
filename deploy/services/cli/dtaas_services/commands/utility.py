@@ -59,34 +59,57 @@ def _handle_service_command(
         raise click.ClickException(str(e)) from e
 
 
-def services_command_runner(command: str, service_name) -> None:
-    """Run start/stop/restart service commands."""
-    service_list = parse_service_list(service_name)
+def _get_command_metadata(command: str) -> OperationMeta:
+    """Get operation metadata for a command.
+
+    Args:
+        command: Command name
+
+    Returns:
+        Operation metadata
+
+    Raises:
+        click.ClickException: If command is unknown
+    """
     commands_map = {
         "start": OperationMeta("Starting", "cyan", "Starting containers..."),
         "stop": OperationMeta("Stopping", "yellow", "Stopping containers..."),
         "restart": OperationMeta("Restarting", "blue", "Restarting containers..."),
     }
 
-    if command in commands_map:
-        meta = commands_map[command]
-        service = Service()
-
-        # Check if ThingsBoard needs installation (only for start command)
-        if command == "start":
-            # Get container map for ThingsBoard check
-            err, container_map = service.get_all_containers()
-            if not err:
-                check_thingsboard_installation(
-                    service.docker, container_map, service_list
-                )
-
-        # Lambda receives service_list from _handle_service_command
-        _handle_service_command(
-            lambda sl: service.manage_services(command, sl), service_list, meta
-        )
-    else:
+    if command not in commands_map:
         raise click.ClickException(f"Unknown command: {command}")
+
+    return commands_map[command]
+
+
+def _check_thingsboard_if_starting(
+    command: str, service: Service, service_list: Optional[list[str]]
+) -> None:
+    """Check ThingsBoard installation status if starting services.
+
+    Args:
+        command: Command being executed
+        service: Service instance
+        service_list: List of services to operate on
+    """
+    if command == "start":
+        err, container_map = service.get_all_containers()
+        if not err:
+            check_thingsboard_installation(service.docker, container_map, service_list)
+
+
+def services_command_runner(command: str, service_name) -> None:
+    """Run start/stop/restart service commands."""
+    service_list = parse_service_list(service_name)
+    meta = _get_command_metadata(command)
+    service = Service()
+
+    _check_thingsboard_if_starting(command, service, service_list)
+
+    _handle_service_command(
+        lambda sl: service.manage_services(command, sl), service_list, meta
+    )
 
 
 def build_clean_confirmation_prompt(certs: bool) -> str:

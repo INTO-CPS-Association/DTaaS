@@ -1,12 +1,22 @@
 """High-level service operations (manage_services, _start_services, _stop_services logic)"""
 
 from typing import Tuple, Optional, Set
+from dataclasses import dataclass
 from ..formatter import normalize_service_name
 from ..services.thingsboard.checker import _is_thingsboard_container_running
 from .utils import check_compose_file
 from .utils import DOCKER_OPERATION_EXCEPTIONS
 from .docker_executor import handle_docker_not_running
 from .status import Status
+
+
+@dataclass
+class ServiceActionResult:
+    """Result of a service action."""
+
+    skipped: list = None
+    affected: list = None
+    restarting: list = None
 
 
 class Manager(Status):
@@ -78,21 +88,17 @@ class Manager(Status):
     def _get_success_message(
         self,
         action: str,
-        skipped: list = None,
-        affected: list = None,
-        restarting: list = None,
+        result: ServiceActionResult,
     ) -> str:
         """Get success message for an action.
 
         Args:
             action: The action performed
-            skipped: List of services that were skipped (for start action)
-            affected: List of services that were affected
-            restarting: List of services that are in restarting state
+            result: ServiceActionResult containing skipped, affected, and restarting lists
         """
         if action == "start":
             return self._format_start_success_message(
-                skipped or [], affected or [], restarting or []
+                result.skipped or [], result.affected or [], result.restarting or []
             )
 
         messages_map = {
@@ -182,9 +188,10 @@ class Manager(Status):
             skipped, affected, restarting = self._execute_compose_action(
                 action, service_list
             )
-            success_msg = self._get_success_message(
-                action, skipped, affected, restarting
+            result = ServiceActionResult(
+                skipped=skipped, affected=affected, restarting=restarting
             )
+            success_msg = self._get_success_message(action, result)
             return None, success_msg
         except (ValueError, *DOCKER_OPERATION_EXCEPTIONS) as e:
             return self._handle_service_action_error(action, e)

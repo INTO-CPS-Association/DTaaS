@@ -40,6 +40,46 @@ def _validate_postgres_for_thingsboard_check(container_map: dict) -> bool:
     )
 
 
+def _find_thingsboard_containers(docker) -> list:
+    """Get list of ThingsBoard containers.
+
+    Args:
+        docker: Docker client instance
+
+    Returns:
+        List of ThingsBoard containers (empty if error)
+    """
+    try:
+        return docker.container.list(filters={"name": "thingsboard"})
+    except Exception as e:
+        logger.warning(f"Failed to list ThingsBoard containers: {e}")
+        return []
+
+
+def _is_container_running(container) -> bool:
+    """Check if a single container is running.
+
+    Args:
+        container: Container object
+
+    Returns:
+        True if container has state and is running
+    """
+    return hasattr(container, "state") and container.state.status == "running"
+
+
+def _has_running_container(containers: list) -> bool:
+    """Check if any container in list is running.
+
+    Args:
+        containers: List of container objects
+
+    Returns:
+        True if any container is running
+    """
+    return any(_is_container_running(container) for container in containers)
+
+
 def _is_thingsboard_container_running(docker) -> bool:
     """Check if ThingsBoard container is running.
 
@@ -47,18 +87,8 @@ def _is_thingsboard_container_running(docker) -> bool:
     This is used for dependency checking. PostgreSQL must not be stopped or removed
     while ThingsBoard is running since ThingsBoard depends on PostgreSQL.
     """
-    try:
-        containers = docker.container.list(filters={"name": "thingsboard"})
-        if not containers:
-            return False
-        # Check if any container matching the name is running
-        for container in containers:
-            if hasattr(container, "state") and container.state.status == "running":
-                return True
-        return False
-    except Exception as e:
-        logger.warning(f"Failed to check ThingsBoard container status: {e}")
-        return False
+    containers = _find_thingsboard_containers(docker)
+    return _has_running_container(containers)
 
 
 def is_thingsboard_installed(docker, container_map: dict) -> bool:

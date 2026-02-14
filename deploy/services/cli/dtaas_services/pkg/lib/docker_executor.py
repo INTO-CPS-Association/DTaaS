@@ -128,30 +128,6 @@ class DockerExecutor(ServiceInitializer):
         else:
             self.docker.compose.restart()
 
-    def remove_docker_services(
-        self, service_list: Optional[list] = None, remove_volumes: bool = False
-    ) -> None:
-        """Remove Docker services using docker compose.
-
-        Args:
-            service_list: Optional list of specific services to remove.
-                            If None, removes all services.
-            remove_volumes: Whether to remove associated volumes
-        """
-        if service_list is None:
-            # Get all services from compose config if none specified
-            _, all_services = self.get_all_service_names()
-            service_list = list(all_services) if all_services else []
-
-        if service_list:
-            self.docker.compose.rm(service_list, stop=True, volumes=remove_volumes)
-
-        # If volumes were removed, recreate data directory structure
-        if remove_volumes:
-            self.clean_data_directories(service_list)
-            # Also remove generated config artifacts that conflict with fresh init
-            self.remove_influx_config(service_list)
-
     def handle_docker_error(
         self, operation: str, exc: Exception
     ) -> Tuple[Optional[Exception], str]:
@@ -169,3 +145,47 @@ class DockerExecutor(ServiceInitializer):
             return exc, f"Invalid configuration for {operation}: {str(exc)}"
         # For other exceptions, include type information
         return exc, f"Failed to {operation} - {type(exc).__name__}: {str(exc)}"
+
+    def _get_services_to_remove(self, service_list: Optional[list]) -> list:
+        """Get list of services to remove, using all services if none specified.
+
+        Args:
+            service_list: Optional list of specific services
+
+        Returns:
+            List of services to remove
+        """
+        if service_list is not None:
+            return service_list
+
+        _, all_services = self.get_all_service_names()
+        return list(all_services) if all_services else []
+
+    def _perform_post_removal_cleanup(
+        self, service_list: list, remove_volumes: bool
+    ) -> None:
+        """Perform cleanup operations after removing services.
+
+        Args:
+            service_list: List of removed services
+            remove_volumes: Whether volumes were removed
+        """
+        if remove_volumes:
+            self.clean_data_directories(service_list)
+            self.remove_influx_config(service_list)
+
+    def remove_docker_services(
+        self, service_list: Optional[list] = None, remove_volumes: bool = False
+    ) -> None:
+        """Remove Docker services using docker compose.
+
+        Args:
+            service_list: Optional list of specific services to remove.
+                            If None, removes all services.
+            remove_volumes: Whether to remove associated volumes
+        """
+        services = self._get_services_to_remove(service_list)
+
+        if services:
+            self.docker.compose.rm(services, stop=True, volumes=remove_volumes)
+            self._perform_post_removal_cleanup(services, remove_volumes)

@@ -26,6 +26,32 @@ def _is_already_exists_error(output: str) -> bool:
     return ALREADY_EXISTS_MSG in output
 
 
+def _should_retry(attempt: int, max_attempts: int) -> bool:
+    """Check if we should retry the command.
+
+    Args:
+        attempt: Current attempt number
+        max_attempts: Maximum number of attempts
+
+    Returns:
+        True if should retry
+    """
+    return attempt < max_attempts - 1
+
+
+def _is_successful_result(success: bool, output: str) -> bool:
+    """Check if command result is considered successful.
+
+    Args:
+        success: Command success status
+        output: Command output
+
+    Returns:
+        True if result is successful
+    """
+    return success or _is_already_exists_error(output)
+
+
 def _execute_with_retry(
     container: str, cmd: list, error_context: str
 ) -> tuple[bool, str]:
@@ -40,11 +66,15 @@ def _execute_with_retry(
         Tuple of (success, error message if any)
     """
     max_attempts = 2
+    output = ""
+
     for attempt in range(max_attempts):
         success, output = execute_docker_command(container, cmd, verbose=False)
-        if success or _is_already_exists_error(output):
+
+        if _is_successful_result(success, output):
             return True, ""
-        if attempt < max_attempts - 1:
+
+        if _should_retry(attempt, max_attempts):
             time.sleep(4)
 
     return False, f"{error_context}: {output}"

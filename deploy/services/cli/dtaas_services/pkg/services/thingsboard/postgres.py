@@ -12,10 +12,7 @@ from rich.console import Console
 
 from ...config import Config
 from .tb_cert import (
-    ServiceCertConfig,
-    CertSetupParams,
-    ServiceSetupContext,
-    setup_service_certs,
+    setup_service_certificates,
     PRIV_KEY_FILENAME,
     FULLCHAIN_FILENAME,
 )
@@ -46,10 +43,10 @@ def setup_postgres_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str
     Returns:
         Tuple of (success, message)
     """
-    cfg = ServiceCertConfig("PostgreSQL", "postgres.key", "postgres.crt")
-    params = CertSetupParams(certs_dir, uid, gid)
-    setup_ctx = ServiceSetupContext(cfg, params)
-    return setup_service_certs(setup_ctx)
+
+    return setup_service_certificates(
+        "PostgreSQL", "postgres.crt", "postgres.key", certs_dir, uid, gid
+    )
 
 
 def permissions_postgres() -> Tuple[bool, str]:

@@ -125,3 +125,30 @@ def build_base_url() -> str:
     port = os.getenv("THINGSBOARD_PORT", "8080")
     scheme = os.getenv("THINGSBOARD_SCHEME", "https")
     return f"{scheme}://{hostname}:{port}".rstrip("/")
+
+
+def setup_service_certificates(
+    service_name: str,
+    cert_filename: str,
+    key_filename: str,
+    certs_dir: Path,
+    uid: int,
+    gid: int,
+) -> Tuple[bool, str]:
+    """Abstract helper for setting up service certificates.
+
+    Args:
+        service_name: Name of service for logging
+        cert_filename: Certificate filename
+        key_filename: Private key filename
+        certs_dir: Directory containing certificates
+        uid: User ID for permissions
+        gid: Group ID for permissions
+
+    Returns:
+        Tuple of (success, message)
+    """
+    cfg = ServiceCertConfig(service_name, key_filename, cert_filename)
+    params = CertSetupParams(certs_dir, uid, gid)
+    setup_ctx = ServiceSetupContext(cfg, params)
+    return setup_service_certs(setup_ctx)
