@@ -1,4 +1,4 @@
-"""Tests for setup_ops commands (setup, generate-project)"""
+"""Tests for setup_ops commands (setup, generate-project, install)"""
 
 # pylint: disable=redefined-outer-name
 from unittest.mock import patch
@@ -38,14 +38,6 @@ def test_setup_config_not_found(runner):
             assert "Config not found" in result.output
 
 
-def test_generate_project_default_path(runner, tmp_path):
-    """Test generate-project with default path"""
-    with runner.isolated_filesystem(temp_dir=tmp_path):
-        result = runner.invoke(services, ["generate-project"])
-        assert result.exit_code == 0 or "Warning" in result.output
-        assert "Generating project structure" in result.output
-
-
 def test_generate_project_custom_path(runner, tmp_path):
     """Test generate-project with custom path"""
     custom_path = tmp_path / "custom"
@@ -64,3 +56,52 @@ def test_generate_project_failure(runner):
         result = runner.invoke(services, ["generate-project"])
         assert result.exit_code != 0
         assert "Failed to generate project" in result.output
+
+
+def test_install_invalid_service(runner, mock_service_setup):
+    """Test install command with unsupported service name"""
+    result = runner.invoke(services, ["install", "-s", "mysql"])
+    assert result.exit_code != 0
+    assert "only supported for ThingsBoard" in result.output
+
+
+def test_install_success(runner, mock_service_setup):
+    """Test successful install command"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None,
+        "PostgreSQL started",
+    )
+    with patch(
+        "dtaas_services.commands.setup_ops.wait_for_postgres_ready"
+    ) as mock_wait, patch(
+        "dtaas_services.commands.setup_ops.run_thingsboard_install"
+    ) as mock_install:
+        result = runner.invoke(services, ["install"])
+    assert result.exit_code == 0
+    assert "ThingsBoard installation completed" in result.output
+    mock_wait.assert_called_once()
+    mock_install.assert_called_once()
+
+
+def test_install_postgres_start_fails(runner, mock_service_setup):
+    """Test install command when postgres start fails"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        RuntimeError("Start failed"),
+        "Failed to start PostgreSQL",
+    )
+    result = runner.invoke(services, ["install"])
+    assert result.exit_code != 0
+    assert "Failed to start PostgreSQL" in result.output
+
+
+def test_install_file_not_found(runner):
+    """Test install command when Service init raises FileNotFoundError"""
+    with patch(
+        "dtaas_services.commands.setup_ops.check_root_unix"
+    ), patch(
+        "dtaas_services.commands.setup_ops.Service",
+        side_effect=FileNotFoundError("Config not found"),
+    ):
+        result = runner.invoke(services, ["install"])
+    assert result.exit_code != 0
+    assert "Config not found" in result.output

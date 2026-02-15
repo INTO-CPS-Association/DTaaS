@@ -147,3 +147,95 @@ def test_setup_thingsboard_users_scenarios(mock_config):
     ):
         success, _ = th.setup_thingsboard_users()
         assert success is False
+
+
+def test_process_credentials_file_no_email_column():
+    """Test _process_credentials_file with missing email column"""
+    session = Mock()
+    csv_data = "username,password\nuser1,pass1\n"
+    with patch("pathlib.Path.open", mock_open(read_data=csv_data)):
+        success, msg = th._process_credentials_file(
+            "https://localhost:8080", session, Path("/test/creds.csv")
+        )
+    assert success is False
+    assert "Email column is required" in msg
+
+
+def test_change_password_with_logging_success():
+    """Test _change_password_with_logging suppresses logging"""
+    session = Mock()
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
+        return_value=(True, "Password changed"),
+    ):
+        success, msg = th._change_password_with_logging(
+            "https://localhost:8080", session, "newpass"
+        )
+    assert success is True
+
+
+def test_handle_password_change_result_recoverable_error():
+    """Test _handle_password_change_result with recoverable error"""
+    should_continue, error = th._handle_password_change_result(
+        False, "Server not reachable"
+    )
+    assert should_continue is True
+    assert error is None
+
+
+def test_handle_password_change_result_fatal_error():
+    """Test _handle_password_change_result with fatal error"""
+    should_continue, error = th._handle_password_change_result(
+        False, "Invalid credentials format"
+    )
+    assert should_continue is False
+    assert error is not None
+
+
+def test_handle_password_setup_with_password():
+    """Test _handle_password_setup with password"""
+    session = Mock()
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        return_value=(True, "Changed"),
+    ):
+        should_continue, error = th._handle_password_setup(
+            "https://localhost:8080", session, "newpass"
+        )
+    assert should_continue is True
+
+
+def test_setup_helper_certs_value_error(mock_config):
+    """Test _setup_helper_certs handles ValueError"""
+    with patch("pathlib.Path.exists", return_value=True), patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.setup._create_session",
+        side_effect=ValueError("Bad config"),
+    ):
+        success, msg = th._setup_helper_certs(Path("/test/creds.csv"))
+    assert success is False
+    assert "Error" in msg
+
+
+def test_thingsboard_configure_success(mock_config):
+    """Test thingsboard_configure on success"""
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
+        return_value=(True, "Users created successfully"),
+    ):
+        success, msg = th.thingsboard_configure()
+    assert success is True
+    assert "Users created" in msg
+
+
+def test_thingsboard_configure_failure(mock_config):
+    """Test thingsboard_configure on failure"""
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
+        return_value=(False, "Connection refused"),
+    ):
+        success, msg = th.thingsboard_configure()
+    assert success is False
+    assert "Error" in msg

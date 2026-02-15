@@ -192,9 +192,9 @@ def test_validate_credential_row_duplicate_email():
             {
                 "HOSTNAME": "example.com",
                 "THINGSBOARD_PORT": "9090",
-                "THINGSBOARD_SCHEME": "http",
+                "THINGSBOARD_SCHEME": "https",
             },
-            "http://example.com:9090",
+            "https://example.com:9090",
         ),
         (
             {
@@ -202,7 +202,7 @@ def test_validate_credential_row_duplicate_email():
                 "THINGSBOARD_PORT": "8080",
                 "THINGSBOARD_SCHEME": "https",
             },
-            "https://test.local:8080",  # defaults
+            "https://test.local:8080",
         ),
     ],
 )

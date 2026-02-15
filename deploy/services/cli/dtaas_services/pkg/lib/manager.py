@@ -107,7 +107,7 @@ class Manager(Status):
         }
         return messages_map.get(action, "Operation completed successfully")
 
-    # Mesage builders
+    # Message builders 
     def _build_skipped_message(self, skipped: list) -> Optional[str]:
         """Build message for skipped services."""
         if skipped:

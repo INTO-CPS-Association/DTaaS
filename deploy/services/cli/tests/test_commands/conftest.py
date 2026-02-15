@@ -21,6 +21,8 @@ def mock_service_setup():
     ) as mock_service_class, patch(
         "dtaas_services.commands.utility.Service"
     ) as mock_utility_service_class, patch(
+        "dtaas_services.commands.setup_ops.Service"
+    ) as mock_setup_service_class, patch(
         "dtaas_services.commands.setup_ops.copy_certs"
     ) as mock_copy_certs, patch(
         "dtaas_services.commands.setup_ops.permissions_mongodb"
@@ -36,8 +38,10 @@ def mock_service_setup():
         service_instance = Mock()
         service_instance.get_all_containers.return_value = (None, {})
         service_instance.get_running_services.return_value = set()
+        service_instance.docker = Mock()
         mock_service_class.return_value = service_instance
         mock_utility_service_class.return_value = service_instance
+        mock_setup_service_class.return_value = service_instance
         yield {
             "service": mock_service_class,
             "service_instance": service_instance,

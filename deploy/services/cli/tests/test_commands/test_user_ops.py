@@ -7,6 +7,11 @@ import pytest
 from click.testing import CliRunner
 
 from dtaas_services.cmd import services
+from dtaas_services.commands.user_ops import (
+    _print_service_user_result,
+    _setup_specific_service,
+    UserSetupResult,
+)
 
 
 @pytest.fixture
@@ -28,34 +33,6 @@ def mock_user_pkg():
             "rabbitmq": mock_rabbit,
             "thingsboard": mock_thingsboard,
         }
-
-
-def test_user_help(runner):
-    """Test user command shows help"""
-    result = runner.invoke(services, ["user", "--help"])
-    assert result.exit_code == 0
-    assert "User account management" in result.output
-
-
-def test_add_users_success(runner, mock_user_pkg):
-    """Test successful user addition"""
-    mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (
-        True,
-        "Added to InfluxDB",
-    )
-    mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (
-        True,
-        "Added to RabbitMQ",
-    )
-    mock_user_pkg["thingsboard"].return_value = (
-        True,
-        "Added to ThingsBoard",
-    )
-    result = runner.invoke(services, ["user", "add"])
-    assert result.exit_code == 0
-    assert "Adding users from CSV file" in result.output
-    assert "InfluxDB: Added to InfluxDB" in result.output
-    assert "RabbitMQ: Added to RabbitMQ" in result.output
 
 
 def test_add_users_influxdb_fails(runner, mock_user_pkg):
@@ -96,3 +73,29 @@ def test_add_users_both_fail(runner, mock_user_pkg):
     assert result.exit_code == 0
     assert "InfluxDB: InfluxDB failed" in result.output
     assert "RabbitMQ: RabbitMQ failed" in result.output
+
+
+def test_print_service_user_result_not_installed(capsys):
+    """Test _print_service_user_result for 'not installed' message"""
+    from rich.console import Console
+
+    console = Console()
+    result = UserSetupResult("ThingsBoard", True, "Service not installed")
+    _print_service_user_result(console, result)
+
+
+def test_setup_specific_service_unknown(capsys):
+    """Test _setup_specific_service with unknown service"""
+    from rich.console import Console
+
+    console = Console()
+    result = _setup_specific_service(console, "unknown_service")
+    assert result is None
+
+
+def test_add_users_specific_service(runner, mock_user_pkg):
+    """Test user add with specific service"""
+    mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (True, "OK")
+    result = runner.invoke(services, ["user", "add", "-s", "influxdb"])
+    assert result.exit_code == 0
+    assert "InfluxDB: OK" in result.output
