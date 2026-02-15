@@ -13,6 +13,7 @@ from ...utils import is_ci
 from .postgres import setup_postgres_certs
 from .tb_cert import (
     setup_service_certificates,
+    CertificateSetupConfig,
     PRIV_KEY_FILENAME,
     FULLCHAIN_FILENAME,
 )
@@ -23,8 +24,7 @@ logger = logging.getLogger(__name__)
 
 def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up ThingsBoard certificates with proper permissions."""
-
-    return setup_service_certificates(
+    config = CertificateSetupConfig(
         "ThingsBoard",
         "thingsboard-fullchain.pem",
         "thingsboard-privkey.pem",
@@ -32,6 +32,7 @@ def _setup_thingsboard_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool,
         uid,
         gid,
     )
+    return setup_service_certificates(config)
 
 
 class _SetupConfig:

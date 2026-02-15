@@ -127,28 +127,40 @@ def build_base_url() -> str:
     return f"{scheme}://{hostname}:{port}".rstrip("/")
 
 
-def setup_service_certificates(
-    service_name: str,
-    cert_filename: str,
-    key_filename: str,
-    certs_dir: Path,
-    uid: int,
-    gid: int,
-) -> Tuple[bool, str]:
+class CertificateSetupConfig:
+    """Configuration for setting up service certificates."""
+
+    def __init__(
+        self,
+        service_name: str,
+        cert_filename: str,
+        key_filename: str,
+        certs_dir: Path,
+        uid: int,
+        gid: int,
+    ):
+        self.service_name = service_name
+        self.cert_filename = cert_filename
+        self.key_filename = key_filename
+        self.certs_dir = certs_dir
+        self.uid = uid
+        self.gid = gid
+
+
+def setup_service_certificates(config: CertificateSetupConfig) -> Tuple[bool, str]:
     """Abstract helper for setting up service certificates.
 
     Args:
-        service_name: Name of service for logging
-        cert_filename: Certificate filename
-        key_filename: Private key filename
-        certs_dir: Directory containing certificates
-        uid: User ID for permissions
-        gid: Group ID for permissions
+        config: Certificate setup configuration object
 
     Returns:
         Tuple of (success, message)
     """
-    cfg = ServiceCertConfig(service_name, key_filename, cert_filename)
-    params = CertSetupParams(certs_dir, uid, gid)
-    setup_ctx = ServiceSetupContext(cfg, params)
-    return setup_service_certs(setup_ctx)
+    try:
+        cert_cfg = ServiceCertConfig(
+            config.service_name, config.key_filename, config.cert_filename
+        )
+        params = CertSetupParams(config.certs_dir, config.uid, config.gid)
+        return setup_service_certs(ServiceSetupContext(cert_cfg, params))
+    except OSError as e:
+        return False, f"Error setting up {config.service_name} certificates: {e}"

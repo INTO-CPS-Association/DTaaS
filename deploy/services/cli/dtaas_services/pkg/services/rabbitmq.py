@@ -73,8 +73,7 @@ def _execute_with_retry(
 
         if _is_successful_result(success, output):
             return True, ""
-
-        if _should_retry(attempt, max_attempts):
+        elif _should_retry(attempt, max_attempts):
             time.sleep(4)
 
     return False, f"{error_context}: {output}"

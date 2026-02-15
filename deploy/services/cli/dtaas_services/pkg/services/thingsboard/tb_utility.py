@@ -167,6 +167,45 @@ def _process_login_response(resp: httpx.Response) -> str | None:
     raise ValueError(f"Login failed with status {resp.status_code}")
 
 
+def _handle_login_retry_error(
+    e: httpx.HTTPError, attempt: int, max_retries: int
+) -> None:
+    """Handle login retry on HTTPError."""
+    if attempt < max_retries - 1:
+        wait_time = 2**attempt
+        print(f"Connection error, retrying in {wait_time}s...")
+        time.sleep(wait_time)
+    else:
+        _log_login_error(e)
+
+
+def _handle_login_retry_failure(attempt: int, max_retries: int) -> None:
+    """Handle login retry on ValueError (non-401 error)."""
+    if attempt < max_retries - 1:
+        wait_time = 2**attempt
+        print(f"Login attempt {attempt + 1} failed, retrying in {wait_time}s...")
+        time.sleep(wait_time)
+
+
+def _attempt_login(base_url: str, email: str, password: str) -> str | None:
+    """Make a single login attempt.
+
+    Args:
+        base_url: ThingsBoard base URL
+        email: User email
+        password: User password
+
+    Returns:
+        JWT token if successful, None if credentials invalid (401)
+
+    Raises:
+        httpx.HTTPError: On network errors
+        ValueError: On other HTTP errors (retryable)
+    """
+    resp = _make_login_request(base_url, email, password)
+    return _process_login_response(resp)
+
+
 def login(base_url: str, email: str, password: str) -> str | None:
     """Authenticate with ThingsBoard and return a JWT token.
 
@@ -181,22 +220,11 @@ def login(base_url: str, email: str, password: str) -> str | None:
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            resp = _make_login_request(base_url, email, password)
-            return _process_login_response(resp)
+            return _attempt_login(base_url, email, password)
         except httpx.HTTPError as e:
-            if attempt < max_retries - 1:
-                wait_time = 2**attempt
-                logger.info(f"Connection error, retrying in {wait_time}s...")
-                time.sleep(wait_time)
-            else:
-                _log_login_error(e)
+            _handle_login_retry_error(e, attempt, max_retries)
         except ValueError:
-            if attempt < max_retries - 1:
-                wait_time = 2**attempt
-                logger.info(
-                    f"Login attempt {attempt + 1} failed, retrying in {wait_time}s..."
-                )
-                time.sleep(wait_time)
+            _handle_login_retry_failure(attempt, max_retries)
 
     return None
 

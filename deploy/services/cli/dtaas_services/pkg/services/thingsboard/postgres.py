@@ -13,6 +13,7 @@ from rich.console import Console
 from ...config import Config
 from .tb_cert import (
     setup_service_certificates,
+    CertificateSetupConfig,
     PRIV_KEY_FILENAME,
     FULLCHAIN_FILENAME,
 )
@@ -43,10 +44,10 @@ def setup_postgres_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str
     Returns:
         Tuple of (success, message)
     """
-
-    return setup_service_certificates(
+    config = CertificateSetupConfig(
         "PostgreSQL", "postgres.crt", "postgres.key", certs_dir, uid, gid
     )
+    return setup_service_certificates(config)
 
 
 def permissions_postgres() -> Tuple[bool, str]:
@@ -209,6 +210,30 @@ def _wait_iteration(
         return False, last_status
 
 
+def _perform_wait_loop(
+    console: Console,
+    docker,
+    timeout: int,
+    start_time: float,
+    last_status: Optional[str],
+) -> Optional[str]:
+    """Perform the main wait loop iteration.
+
+    Returns:
+        None if ready, updated last_status if not ready, raises on timeout.
+    """
+    while time.time() - start_time < timeout:
+        is_ready, new_status = _wait_iteration(console, docker, last_status)
+        if is_ready:
+            return None
+
+        wait_time = _get_wait_time_for_status(new_status) if new_status else 2
+        last_status = new_status
+        time.sleep(wait_time)
+
+    return "timeout"
+
+
 def wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None:
     """
     Wait for PostgreSQL to be ready to accept connections.
@@ -223,16 +248,6 @@ def wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None
     """
     console.print("[cyan]Waiting for PostgreSQL to be ready...[/cyan]")
     start_time = time.time()
-    last_status = None
-
-    while time.time() - start_time < timeout:
-        is_ready, new_status = _wait_iteration(console, docker, last_status)
-
-        if is_ready:
-            return
-
-        wait_time = _get_wait_time_for_status(new_status) if new_status else 2
-        last_status = new_status
-        time.sleep(wait_time)
-
-    _handle_postgres_timeout_error(console, timeout)
+    result = _perform_wait_loop(console, docker, timeout, start_time, None)
+    if result == "timeout":
+        _handle_postgres_timeout_error(console, timeout)

@@ -99,9 +99,7 @@ def _remove_remaining_certs(certs_dir: Path, prefix: str, target: Path) -> None:
     not files like '{prefix}-service.pem'.
     """
     for p in certs_dir.glob(f"{prefix}*.pem"):
-        if _is_target_cert(p, target):
-            continue
-        if _matches_cert_pattern(p.name, prefix):
+        if not _is_target_cert(p, target) and _matches_cert_pattern(p.name, prefix):
             p.unlink(missing_ok=True)
 
 

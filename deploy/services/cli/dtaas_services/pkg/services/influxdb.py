@@ -199,29 +199,32 @@ def _setup_user_org_bucket(
     """
     # Create organization only if it doesn't exist
     success, error_msg = _create_org_if_needed(name, existing_orgs)
-    if success:
-        # Add user as owner to organization
-        success, error_msg = _add_user_as_org_owner(name, user_id, name)
+    if not success:
+        return False, error_msg
 
-    if success:
-        # Create bucket
-        success, error_msg = _execute_influxdb_command(
-            [
-                "influx",
-                "bucket",
-                "create",
-                "--skip-verify",
-                "--name",
-                name,
-                "--org",
-                name,
-            ],
-            f"Failed to create bucket {name}",
-        )
-        if not success:
-            return _handle_bucket_creation(name, error_msg)
+    # Add user as owner to organization
+    success, error_msg = _add_user_as_org_owner(name, user_id, name)
+    if not success:
+        return False, error_msg
 
-    return success, error_msg if not success else ""
+    # Create bucket
+    success, error_msg = _execute_influxdb_command(
+        [
+            "influx",
+            "bucket",
+            "create",
+            "--skip-verify",
+            "--name",
+            name,
+            "--org",
+            name,
+        ],
+        f"Failed to create bucket {name}",
+    )
+    if not success:
+        return _handle_bucket_creation(name, error_msg)
+
+    return True, ""
 
 
 def _setup_user_organizations(users_dict: dict, existing_orgs: set) -> tuple[bool, str]:

@@ -113,10 +113,9 @@ def _create_tenant_admin_user(
         return None, error_msg
 
     # Handle non-success status codes
-    if resp.status_code not in (200, 201):
-        # 400 often means user already exists
-        if resp.status_code == 400:
-            return _handle_admin_already_exists(resp)
+    if resp.status_code == 400:
+        return _handle_admin_already_exists(resp)
+    elif resp.status_code not in (200, 201):
         return None, f"Failed to create tenant admin: {resp.status_code}"
 
     # Extract user ID from successful response
