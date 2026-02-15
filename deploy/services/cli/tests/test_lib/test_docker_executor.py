@@ -91,7 +91,7 @@ def test_process_docker_exception_service_not_found(patch_service_deps):
     ), patch.object(
         service, "prepare_services_to_start", return_value=(["unknown_service"], [], [])
     ):
-        err, msg = service.manage_services("start", ["unknown_service"])
+        err, _ = service.manage_services("start", ["unknown_service"])
     assert err is not None
     assert isinstance(err, ValueError)
     assert "Service not found" in str(err)

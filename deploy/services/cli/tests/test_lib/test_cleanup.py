@@ -37,7 +37,7 @@ def _make_service(patch_service_deps, base_dir=None):
 
 def test_remove_services_with_volumes(patch_service_deps, tmp_path):
     """Test remove_services with volume removal"""
-    service, mock_docker, mock_config = _make_service(patch_service_deps, tmp_path)
+    service, mock_docker, _ = _make_service(patch_service_deps, tmp_path)
     with patch.object(Path, "exists", return_value=True):
         err, _ = service.remove_services(remove_volumes=True)
     assert err is None

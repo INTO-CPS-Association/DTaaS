@@ -14,9 +14,9 @@ from .status import Status
 class ServiceActionResult:
     """Result of a service action."""
 
-    skipped: list = None
-    affected: list = None
-    restarting: list = None
+    skipped: Optional[list] = None
+    affected: Optional[list] = None
+    restarting: Optional[list] = None
 
 
 class Manager(Status):

@@ -86,7 +86,7 @@ def test_set_service_cert_file_permissions_success():
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(True, "success"),
     ):
-        success, msg = tb_cert.set_service_cert_file_permissions(
+        success, _ = tb_cert.set_service_cert_file_permissions(
             ctx, key_path, cert_path
         )
         assert success is True
@@ -129,7 +129,7 @@ def test_setup_service_certs_success():
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_file_permissions",
         return_value=(True, "success"),
     ):
-        success, msg = tb_cert.setup_service_certs(ctx)
+        success, _ = tb_cert.setup_service_certs(ctx)
         assert success is True
 
 
@@ -239,7 +239,7 @@ def test_setup_service_certificates_success():
         "dtaas_services.pkg.services.thingsboard.tb_cert.setup_service_certs",
         return_value=(True, "success"),
     ):
-        success, msg = tb_cert.setup_service_certificates(config)
+        success, _ = tb_cert.setup_service_certificates(config)
         assert success is True
 
 

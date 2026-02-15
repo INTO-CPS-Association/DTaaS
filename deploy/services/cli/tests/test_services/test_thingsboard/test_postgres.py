@@ -49,7 +49,7 @@ def test_setup_postgres_certs_success():
         "dtaas_services.pkg.services.thingsboard.postgres.setup_service_certificates",
         return_value=(True, "success"),
     ):
-        success, msg = postgres.setup_postgres_certs(certs_dir, 999, 999)
+        success, _ = postgres.setup_postgres_certs(certs_dir, 999, 999)
         assert success is True
 
 
@@ -60,7 +60,7 @@ def test_setup_postgres_certs_failure():
         "dtaas_services.pkg.services.thingsboard.postgres.setup_service_certificates",
         return_value=(False, "error"),
     ):
-        success, msg = postgres.setup_postgres_certs(certs_dir, 999, 999)
+        success, _ = postgres.setup_postgres_certs(certs_dir, 999, 999)
         assert success is False
 
 
@@ -71,7 +71,7 @@ def test_permissions_postgres_success(mock_config):
         "dtaas_services.pkg.services.thingsboard.postgres.setup_postgres_certs",
         return_value=(True, "success"),
     ), patch("pathlib.Path.exists", return_value=True):
-        success, msg = postgres.permissions_postgres()
+        success, _ = postgres.permissions_postgres()
         assert success is True
 
 
@@ -89,7 +89,7 @@ def test_permissions_postgres_exception(mock_config):
         "dtaas_services.pkg.services.thingsboard.postgres.setup_postgres_certs",
         side_effect=Exception("Setup error"),
     ), patch("pathlib.Path.exists", return_value=True):
-        success, msg = postgres.permissions_postgres()
+        success, _ = postgres.permissions_postgres()
         assert success is False
 
 

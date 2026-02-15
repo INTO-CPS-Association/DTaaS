@@ -1,4 +1,4 @@
-"""Shared utilities and helper functionsfor file and directory manipulation."""
+"""Shared utilities and helper functions for file and directory manipulation."""
 
 import subprocess
 import os

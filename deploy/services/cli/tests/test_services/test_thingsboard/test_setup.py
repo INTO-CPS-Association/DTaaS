@@ -168,7 +168,7 @@ def test_change_password_with_logging_success():
         "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
         return_value=(True, "Password changed"),
     ):
-        success, msg = th._change_password_with_logging(
+        success, _ = th._change_password_with_logging(
             "https://localhost:8080", session, "newpass"
         )
     assert success is True
@@ -199,7 +199,7 @@ def test_handle_password_setup_with_password():
         "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
         return_value=(True, "Changed"),
     ):
-        should_continue, error = th._handle_password_setup(
+        should_continue, _ = th._handle_password_setup(
             "https://localhost:8080", session, "newpass"
         )
     assert should_continue is True
