@@ -5,7 +5,7 @@
 from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
 import pytest
-import dtaas_services.pkg.thingsboard as th
+import dtaas_services.pkg.services.thingsboard.setup as th
 
 # Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
@@ -17,7 +17,7 @@ TEST_INVALID_EMAIL = ""
 @pytest.fixture
 def mock_config():
     """Mock Config class"""
-    with patch("dtaas_services.pkg.thingsboard.Config") as mock:
+    with patch("dtaas_services.pkg.services.thingsboard.setup.Config") as mock:
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -39,7 +39,7 @@ def test_process_credentials_row_scenarios():
     ctx = th.CredentialProcessContext(base_url, session)
     # Success
     with patch(
-        "dtaas_services.pkg.thingsboard.create_tenant_and_admin",
+        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
         return_value=(True, ""),
     ):
         cred = {
@@ -67,7 +67,7 @@ def test_process_credentials_row_scenarios():
     # Creation fails
     ctx2 = th.CredentialProcessContext(base_url, session)
     with patch(
-        "dtaas_services.pkg.thingsboard.create_tenant_and_admin",
+        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
         return_value=(False, "error"),
     ):
         cred = {
@@ -86,7 +86,7 @@ def test_process_credentials_file_scenarios():
     csv_data = "username,password,email\nuser1,pass1,user1@ex.com\n"
     # Success
     with patch("pathlib.Path.open", mock_open(read_data=csv_data)), patch(
-        "dtaas_services.pkg.thingsboard._process_credentials_row",
+        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_row",
         return_value=(True, ""),
     ):
         success, _ = th._process_credentials_file(
@@ -95,7 +95,7 @@ def test_process_credentials_file_scenarios():
         assert success is True
     # Row fails
     with patch("pathlib.Path.open", mock_open(read_data=csv_data)), patch(
-        "dtaas_services.pkg.thingsboard._process_credentials_row",
+        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_row",
         return_value=(False, "error"),
     ):
         success, _ = th._process_credentials_file(
@@ -113,36 +113,36 @@ def test_setup_thingsboard_users_scenarios(mock_config):
         assert "not found" in msg
     # Success
     with patch("pathlib.Path.exists", return_value=True), patch(
-        "dtaas_services.pkg.thingsboard.build_base_url",
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
         return_value="https://localhost:8080",
     ), patch("httpx.Client"), patch(
-        "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
         return_value=(True, ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard._process_credentials_file",
+        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_file",
         return_value=(True, ""),
     ):
         success, _ = th.setup_thingsboard_users()
         assert success is True
     # Password change fails
     with patch("pathlib.Path.exists", return_value=True), patch(
-        "dtaas_services.pkg.thingsboard.build_base_url",
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
         return_value="https://localhost:8080",
     ), patch("httpx.Client"), patch(
-        "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
         return_value=(False, "error"),
     ):
         success, _ = th.setup_thingsboard_users()
         assert success is False
     # Process fails
     with patch("pathlib.Path.exists", return_value=True), patch(
-        "dtaas_services.pkg.thingsboard.build_base_url",
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
         return_value="https://localhost:8080",
     ), patch("httpx.Client"), patch(
-        "dtaas_services.pkg.thingsboard.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
         return_value=(True, ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard._process_credentials_file",
+        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_file",
         return_value=(False, "error"),
     ):
         success, _ = th.setup_thingsboard_users()

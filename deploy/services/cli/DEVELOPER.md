@@ -90,15 +90,44 @@ cli/
 │               ├── checker.py      # Installation checking
 │               ├── permissions.py  # Certificate setup
 │               ├── tb_cert.py      # Certificate operations
-│               └── tb_utility.py   # Utilities
+│               └── tb_utility.py
 └── tests/
     ├── __init__.py
-    ├── test_cmd.py         # CLI command tests
-    ├── test_config.py      # Configuration tests
-    ├── test_cert.py        # Certificate operations tests
-    ├── test_formatter.py   # Output formatting tests
-    ├── test_template.py    # Project structure and template tests
-    ├── test_utils.py       # Utility functions tests
+    ├── test_cert.py
+    ├── test_config.py
+    ├── test_formatter.py
+    ├── test_template.py
+    ├── test_utils.py
+    ├── test_commands/
+    │   ├── __init__.py
+    │   ├── conftest.py
+    │   ├── test_cmd.py
+    │   ├── test_service_ops.py
+    │   ├── test_setup_ops.py
+    │   └── test_user_ops.py
+    ├── test_lib/
+    │   ├── __init__.py
+    │   ├── test_initialization.py
+    │   ├── test_utils.py
+    │   ├── test_docker_executor.py
+    │   ├── test_manager.py
+    │   ├── test_status.py
+    │   └── test_cleanup.py
+    ├── test_services/
+    │   ├── __init__.py
+    │   ├── test_influxdb.py
+    │   ├── test_mongodb.py
+    │   ├── test_rabbitmq.py
+    │   └── test_thingsboard/
+    │       ├── __init__.py
+    │       ├── test_permissions.py
+    │       ├── test_setup.py
+    │       ├── test_sysadmin.py
+    │       ├── test_checker.py
+    │       ├── test_postgres.py
+    │       ├── test_tb_cert.py
+    │       ├── test_tb_utility.py
+    │       └── test_tenant_admin.py
     ├── config/             # Test configuration files (REQUIRED for system tests)
     │   ├── services.env    # Test environment variables
     │   └── credentials.csv # Test user credentials
@@ -175,13 +204,6 @@ The project follows a clean three-layer separation:
 * No direct CLI dependencies or output
 * Service-specific logic isolated in `services/` subdirectory
 
-This separation ensures:
-
-* Easy testing without CLI context
-* Reusable business logic across commands
-* Clear responsibility boundaries
-* Low complexity per file (100-300 lines)
-
 ### Configuration Pattern
 
 Each module that needs configuration imports and instantiates `Config()` internally,
@@ -215,34 +237,6 @@ ThingsBoard API calls use the `SSL_VERIFY` setting from `config/services.env`:
 
 If SSL verification fails, the error message will indicate the current setting
 and how to change it in `services.env`.
-
-### Setup Workflow
-
-The CLI provides a multi-phase setup workflow:
-
-#### Phase 1: Setup (`dtaas-services setup`)
-
-* Copies and normalizes TLS certificates to `certs/<HOSTNAME>/`
-* Sets up certificate permissions and ownership
-* Creates required data and log directories
-* Configures all services (MongoDB, InfluxDB, RabbitMQ, ThingsBoard, PostgreSQL)
-* No service startup or database initialization
-
-#### Phase 2: ThingsBoard Installation (`dtaas-services install`)
-
-* Automatically starts PostgreSQL if not already running
-* Initializes ThingsBoard database schema (one-time operation)
-* Creates default system administrator account
-
-#### Phase 3: Start Services (`dtaas-services start`)
-
-* Starts all platform services
-* Use `-s <service>` to start specific services
-
-#### Phase 4: Add Users (`dtaas-services user add`)
-
-* Creates users in InfluxDB, RabbitMQ, and ThingsBoard
-* Reads credentials from `config/credentials.csv`
 
 ### Cleanup and Reset
 
@@ -307,22 +301,7 @@ All service management functions follow a consistent error handling pattern:
 * Provide detailed error messages for debugging
 * Stop execution on first failure to prevent inconsistent state
 
-## Dependencies
-
-### Core Dependencies
-
-* **click**: CLI framework for command definitions and argument parsing
-* **python-dotenv**: Environment variable management
-* **python-on-whales**: Docker client library for container operations
-* **httpx**: HTTP client for ThingsBoard API communication
-
 ## Testing
-
-### Test Structure
-
-Tests are organized to mirror the source code structure in the `tests/` directory.
-Each module in `pkg/` has a corresponding test file
-(e.g., `test_config.py` for `config.py`).
 
 ### Testing Guidelines
 
@@ -447,13 +426,14 @@ and are ready to use immediately.
 Run all tests with coverage reports:
 
 ```bash
-poetry run pytest --cov=dtaas_services --cov-report=html --cov-report=term-missing
+poetry run pytest tests --cov=dtaas_services --cov-report=html --cov-report=term-missing
 ```
 
 You can ignore the system tests for quick testing
 
 ```bash
-poetry run pytest --cov=dtaas_services --ignore=tests\system_tests --cov-report=term-missing
+poetry run pytest tests --ignore=tests\system_tests  --cov=dtaas_services --cov-report=html --cov-report=term-missing
+
 ```
 
 ### Test Coverage

@@ -6,7 +6,13 @@ import os
 from unittest.mock import patch, Mock
 import pytest
 import httpx
-import dtaas_services.pkg.thingsboard_users as th_users
+import dtaas_services.pkg.services.thingsboard.sysadmin as th_users
+from dtaas_services.pkg.services.thingsboard.tb_cert import build_base_url
+from dtaas_services.pkg.services.thingsboard.tb_utility import (
+    handle_login_response,
+    login,
+)
+from dtaas_services.pkg.services.thingsboard.setup import check_password_configured
 
 # Test constants (not real credentials, for testing only)
 TEST_EMAIL = "test@example.com"
@@ -41,7 +47,7 @@ TEST_CONFIGURED_PASSWORD = "newpassword"  # noqa: S105 # NOSONAR
 def test_build_base_url(env_vars, expected_url):
     """Test building base URL with different configurations"""
     with patch.dict(os.environ, env_vars, clear=False):
-        assert th_users.build_base_url() == expected_url
+        assert build_base_url() == expected_url
 
 
 @pytest.mark.parametrize(
@@ -59,7 +65,7 @@ def test_handle_login_response(status_code, json_data, expected_token):
     if json_data:
         mock_response.json.return_value = json_data
     mock_response.text = "error"
-    assert th_users._handle_login_response(mock_response) == expected_token
+    assert handle_login_response(mock_response) == expected_token
 
 
 def test_login_scenarios():
@@ -73,16 +79,16 @@ def test_login_scenarios():
         mock_post.return_value = Mock(
             status_code=200, json=lambda: {"token": "token123"}
         )
-        assert th_users.login(base_url, email, password) == "token123"
+        assert login(base_url, email, password) == "token123"
 
     # Failure case
     with patch("httpx.post") as mock_post:
         mock_post.return_value = Mock(status_code=401)
-        assert th_users.login(base_url, email, password) is None
+        assert login(base_url, email, password) is None
 
     # Exception case
     with patch("httpx.post", side_effect=httpx.HTTPError("Error")):
-        assert th_users.login(base_url, email, password) is None
+        assert login(base_url, email, password) is None
 
 
 # Password Configuration Tests
@@ -97,7 +103,7 @@ def test_check_password_configured(env_password, expected):
     """Test password configuration checking"""
     env_dict = {"TB_SYSADMIN_NEW_PASSWORD": env_password} if env_password else {}
     with patch.dict(os.environ, env_dict, clear=True):
-        assert th_users.check_password_configured() == expected
+        assert check_password_configured() == expected
 
 
 @pytest.mark.parametrize(
@@ -139,17 +145,17 @@ def test_perform_password_change_scenarios():
 
     # Success case
     with patch(
-        "dtaas_services.pkg.thingsboard_users._change_password_api_call",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
         return_value=True,
-    ), patch("dtaas_services.pkg.thingsboard_users.login", return_value="token"), patch(
-        "dtaas_services.pkg.thingsboard_users._update_session_token"
-    ):
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
+    ), patch("dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"):
         success, _ = th_users._perform_password_change(ctx)
         assert success is True
 
     # API call fails
     with patch(
-        "dtaas_services.pkg.thingsboard_users._change_password_api_call",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
         return_value=False,
     ):
         success, _ = th_users._perform_password_change(ctx)
@@ -157,9 +163,11 @@ def test_perform_password_change_scenarios():
 
     # Re-login fails
     with patch(
-        "dtaas_services.pkg.thingsboard_users._change_password_api_call",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
         return_value=True,
-    ), patch("dtaas_services.pkg.thingsboard_users.login", return_value=None):
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
+    ):
         success, _ = th_users._perform_password_change(ctx)
         assert success is False
 
@@ -171,9 +179,9 @@ def test_change_sysadmin_password_scenarios():
 
     # Password already changed
     with patch(
-        "dtaas_services.pkg.thingsboard_users._try_login_with_new_password",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
         return_value="token",
-    ), patch("dtaas_services.pkg.thingsboard_users._update_session_token"):
+    ), patch("dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"):
         success, _ = th_users.change_sysadmin_password_if_needed(
             base_url, session, "new"
         )
@@ -181,12 +189,14 @@ def test_change_sysadmin_password_scenarios():
 
     # Change needed
     with patch(
-        "dtaas_services.pkg.thingsboard_users._try_login_with_new_password",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
         return_value=None,
-    ), patch("dtaas_services.pkg.thingsboard_users.login", return_value="token"), patch(
-        "dtaas_services.pkg.thingsboard_users._update_session_token"
     ), patch(
-        "dtaas_services.pkg.thingsboard_users._perform_password_change",
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin._perform_password_change",
         return_value=(True, "OK"),
     ):
         success, _ = th_users.change_sysadmin_password_if_needed(
@@ -196,9 +206,11 @@ def test_change_sysadmin_password_scenarios():
 
     # Default login fails
     with patch(
-        "dtaas_services.pkg.thingsboard_users._try_login_with_new_password",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
         return_value=None,
-    ), patch("dtaas_services.pkg.thingsboard_users.login", return_value=None):
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
+    ):
         success, _ = th_users.change_sysadmin_password_if_needed(
             base_url, session, "new"
         )
@@ -281,7 +293,7 @@ def test_get_or_create_tenant_scenarios():
 
     # Existing tenant
     with patch(
-        "dtaas_services.pkg.thingsboard_users._check_existing_tenant",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         return_value=({"name": "test"}, ""),
     ):
         tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
@@ -289,10 +301,10 @@ def test_get_or_create_tenant_scenarios():
 
     # Create new
     with patch(
-        "dtaas_services.pkg.thingsboard_users._check_existing_tenant",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         return_value=(None, ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard_users._create_new_tenant",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._create_new_tenant",
         return_value=({"title": "new"}, ""),
     ):
         tenant, _ = th_users.get_or_create_tenant(base_url, session, "new")
@@ -300,7 +312,7 @@ def test_get_or_create_tenant_scenarios():
 
     # Exception
     with patch(
-        "dtaas_services.pkg.thingsboard_users._check_existing_tenant",
+        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         side_effect=Exception("Error"),
     ):
         tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")

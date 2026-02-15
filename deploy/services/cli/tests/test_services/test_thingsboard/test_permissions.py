@@ -5,14 +5,14 @@
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 import pytest
-import dtaas_services.pkg.thingsboard_permissions as th_perm
+import dtaas_services.pkg.services.thingsboard.permissions as th_perm
 from dtaas_services.pkg.cert import set_service_cert_permissions, CertPermissionContext
 
 
 @pytest.fixture
 def mock_config():
     """Mock Config class"""
-    with patch("dtaas_services.pkg.thingsboard_permissions.Config") as mock:
+    with patch("dtaas_services.pkg.services.thingsboard.permissions.Config") as mock:
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -56,14 +56,14 @@ def test_setup_postgres_certs_scenarios():
     certs_dir = Path("/test/certs")
     # Success
     with patch(
-        "dtaas_services.pkg.thingsboard_permissions.set_service_cert_permissions",
+        "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(True, "success"),
     ), patch("shutil.copy2"):
-        success, _ = th_perm._setup_postgres_certs(certs_dir, 999, 999)
+        success, _ = th_perm.setup_postgres_certs(certs_dir, 999, 999)
         assert success is True
     # OSError
     with patch("shutil.copy2", side_effect=OSError("Error")):
-        success, _ = th_perm._setup_postgres_certs(certs_dir, 999, 999)
+        success, _ = th_perm.setup_postgres_certs(certs_dir, 999, 999)
         assert success is False
 
 
@@ -72,7 +72,7 @@ def test_setup_thingsboard_certs_scenarios():
     certs_dir = Path("/test/certs")
     # Success
     with patch(
-        "dtaas_services.pkg.thingsboard_permissions.set_service_cert_permissions",
+        "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(True, "success"),
     ), patch("shutil.copy2"):
         success, _ = th_perm._setup_thingsboard_certs(certs_dir, 1000, 1000)
@@ -105,16 +105,18 @@ def test_setup_thingsboard_directories_scenarios():
 
     # Success (non-CI)
     with patch("pathlib.Path.mkdir"), patch("pathlib.Path.chmod"), patch(
-        "dtaas_services.pkg.thingsboard_permissions._set_directory_ownership"
-    ), patch("dtaas_services.pkg.thingsboard_permissions.is_ci", return_value=False):
+        "dtaas_services.pkg.services.thingsboard.permissions._set_directory_ownership"
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.permissions.is_ci", return_value=False
+    ):
         success, _ = th_perm._setup_thingsboard_directories(mock_cfg)
         assert success is True
 
     # Success (CI)
     with patch("pathlib.Path.mkdir"), patch("pathlib.Path.chmod"), patch(
-        "dtaas_services.pkg.thingsboard_permissions._set_directory_ownership"
+        "dtaas_services.pkg.services.thingsboard.permissions._set_directory_ownership"
     ) as mock_chown, patch(
-        "dtaas_services.pkg.thingsboard_permissions.is_ci", return_value=True
+        "dtaas_services.pkg.services.thingsboard.permissions.is_ci", return_value=True
     ):
         success, _ = th_perm._setup_thingsboard_directories(mock_cfg)
         assert success is True
@@ -144,23 +146,23 @@ def test_permissions_thingsboard_scenarios(mock_config):
     """Test ThingsBoard permissions setup with scenarios"""
     # Success
     with patch("platform.system", return_value="Linux"), patch(
-        "dtaas_services.pkg.thingsboard_permissions.copy_certs",
+        "dtaas_services.pkg.services.thingsboard.permissions.copy_certs",
         return_value=(True, "copied"),
     ), patch(
-        "dtaas_services.pkg.thingsboard_permissions._verify_certificates_exist",
+        "dtaas_services.pkg.services.thingsboard.permissions._verify_certificates_exist",
         return_value=(True, ""),
     ), patch(
-        "dtaas_services.pkg.thingsboard_permissions._execute_setup_operations",
+        "dtaas_services.pkg.services.thingsboard.permissions._execute_setup_operations",
         return_value=(True, ["setup1", "setup2"]),
     ):
         success, _ = th_perm.permissions_thingsboard()
         assert success is True
     # Verify fails
     with patch("platform.system", return_value="Linux"), patch(
-        "dtaas_services.pkg.thingsboard_permissions.copy_certs",
+        "dtaas_services.pkg.services.thingsboard.permissions.copy_certs",
         return_value=(True, "copied"),
     ), patch(
-        "dtaas_services.pkg.thingsboard_permissions._verify_certificates_exist",
+        "dtaas_services.pkg.services.thingsboard.permissions._verify_certificates_exist",
         return_value=(False, "missing"),
     ):
         success, _ = th_perm.permissions_thingsboard()

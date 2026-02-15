@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
 import pytest
-from dtaas_services.pkg.influxdb import (
+from dtaas_services.pkg.services.influxdb import (
     _parse_json_response,
     _execute_influxdb_command,
     _create_influxdb_user,
@@ -25,7 +25,7 @@ from dtaas_services.pkg.utils import create_users_from_credentials
 @pytest.fixture
 def mock_config():
     """Mock Config class"""
-    with patch("dtaas_services.pkg.influxdb.Config") as mock:
+    with patch("dtaas_services.pkg.services.influxdb.Config") as mock:
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -40,7 +40,7 @@ def mock_config():
 @pytest.fixture
 def mock_process_credentials():
     """Mock process credentials file utility"""
-    with patch("dtaas_services.pkg.influxdb.process_credentials_file") as mock:
+    with patch("dtaas_services.pkg.services.influxdb.process_credentials_file") as mock:
         yield mock
 
 
@@ -83,7 +83,9 @@ def test_parse_json_response_type_error():
 
 def test_execute_influxdb_command_success():
     """Test successful InfluxDB command execution"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "success output")
         success, error = _execute_influxdb_command(
             ["influx", "user", "list"], "Failed to list users"
@@ -94,7 +96,9 @@ def test_execute_influxdb_command_success():
 
 def test_execute_influxdb_command_failure():
     """Test failed InfluxDB command execution"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (False, "command failed")
         success, error = _execute_influxdb_command(
             ["influx", "user", "list"], "Failed to list users"
@@ -105,7 +109,9 @@ def test_execute_influxdb_command_failure():
 
 def test_create_influxdb_user_success():
     """Test successful InfluxDB user creation"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "success")
         success, error = _create_influxdb_user("testuser", "testpass")
         assert success is True
@@ -114,7 +120,9 @@ def test_create_influxdb_user_success():
 
 def test_create_influxdb_user_failure():
     """Test failed InfluxDB user creation"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (False, "user exists")
         success, error = _create_influxdb_user("testuser", "testpass")
         assert success is False
@@ -124,7 +132,9 @@ def test_create_influxdb_user_failure():
 def test_get_influxdb_users_success():
     """Test successful retrieval of InfluxDB users"""
     users_data = [{"name": "user1", "id": "id1"}, {"name": "user2", "id": "id2"}]
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, json.dumps(users_data))
         success, users_dict, error = _get_influxdb_users()
         assert success is True
@@ -134,7 +144,9 @@ def test_get_influxdb_users_success():
 
 def test_get_influxdb_users_command_failure():
     """Test get users when command fails"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (False, "connection error")
         success, users_dict, error = _get_influxdb_users()
         assert success is False
@@ -144,7 +156,9 @@ def test_get_influxdb_users_command_failure():
 
 def test_get_influxdb_users_json_parse_error():
     """Test get users with JSON parse error"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "{invalid json")
         success, users_dict, error = _get_influxdb_users()
         assert success is False
@@ -155,7 +169,9 @@ def test_get_influxdb_users_json_parse_error():
 def test_get_existing_orgs_success():
     """Test successful retrieval of existing organizations"""
     orgs_data = [{"name": "org1"}, {"name": "org2"}]
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, json.dumps(orgs_data))
         success, org_names, error = _get_existing_orgs()
         assert success is True
@@ -165,7 +181,9 @@ def test_get_existing_orgs_success():
 
 def test_get_existing_orgs_command_failure():
     """Test get orgs when command fails"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (False, "connection error")
         success, org_names, error = _get_existing_orgs()
         assert success is False
@@ -175,7 +193,9 @@ def test_get_existing_orgs_command_failure():
 
 def test_get_existing_orgs_json_parse_error():
     """Test get orgs with JSON parse error"""
-    with patch("dtaas_services.pkg.influxdb.execute_docker_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb.execute_docker_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "{invalid json")
         success, org_names, error = _get_existing_orgs()
         assert success is False
@@ -185,7 +205,9 @@ def test_get_existing_orgs_json_parse_error():
 
 def test_setup_user_org_bucket_new_org():
     """Test setup user org and bucket when org doesn't exist"""
-    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._execute_influxdb_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "")
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
         assert success is True
@@ -196,7 +218,9 @@ def test_setup_user_org_bucket_new_org():
 
 def test_setup_user_org_bucket_existing_org():
     """Test setup user org and bucket when org already exists"""
-    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._execute_influxdb_command"
+    ) as mock_exec:
         mock_exec.return_value = (True, "")
         success, error = _setup_user_org_bucket("testuser", "userid123", {"testuser"})
         assert success is True
@@ -207,7 +231,9 @@ def test_setup_user_org_bucket_existing_org():
 
 def test_setup_user_org_bucket_create_org_fails():
     """Test setup when org creation fails"""
-    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._execute_influxdb_command"
+    ) as mock_exec:
         mock_exec.return_value = (False, "org creation failed")
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
         assert success is False
@@ -216,7 +242,9 @@ def test_setup_user_org_bucket_create_org_fails():
 
 def test_setup_user_org_bucket_add_member_fails():
     """Test setup when adding member fails"""
-    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._execute_influxdb_command"
+    ) as mock_exec:
         # First call (create org) succeeds, second (add member) fails
         mock_exec.side_effect = [(True, ""), (False, "add member failed")]
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
@@ -226,7 +254,9 @@ def test_setup_user_org_bucket_add_member_fails():
 
 def test_setup_user_org_bucket_create_bucket_fails():
     """Test setup when bucket creation fails"""
-    with patch("dtaas_services.pkg.influxdb._execute_influxdb_command") as mock_exec:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._execute_influxdb_command"
+    ) as mock_exec:
         # First two succeed, third (create bucket) fails
         mock_exec.side_effect = [(True, ""), (True, ""), (False, "bucket failed")]
         success, error = _setup_user_org_bucket("testuser", "userid123", set())
@@ -239,7 +269,9 @@ def test_create_users_from_credentials_success():
     csv_data = "username,password\nuser1,pass1\nuser2,pass2\n"
     mock_file = mock_open(read_data=csv_data)()
 
-    with patch("dtaas_services.pkg.influxdb._create_influxdb_user") as mock_create:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._create_influxdb_user"
+    ) as mock_create:
         mock_create.return_value = (True, "")
         success, error = create_users_from_credentials(mock_file, mock_create)
         assert success is True
@@ -252,7 +284,9 @@ def test_create_users_from_credentials_failure():
     csv_data = "username,password\nuser1,pass1\nuser2,pass2\n"
     mock_file = mock_open(read_data=csv_data)()
 
-    with patch("dtaas_services.pkg.influxdb._create_influxdb_user") as mock_create:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._create_influxdb_user"
+    ) as mock_create:
         mock_create.return_value = (False, "user creation failed")
         success, error = create_users_from_credentials(mock_file, mock_create)
         assert success is False
@@ -264,7 +298,9 @@ def test_setup_user_organizations_success():
     users_dict = {"user1": "id1", "user2": "id2"}
     existing_orgs = set()
 
-    with patch("dtaas_services.pkg.influxdb._setup_user_org_bucket") as mock_setup:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._setup_user_org_bucket"
+    ) as mock_setup:
         mock_setup.return_value = (True, "")
         success, error = _setup_user_organizations(users_dict, existing_orgs)
         assert success is True
@@ -277,7 +313,9 @@ def test_setup_user_organizations_failure():
     users_dict = {"user1": "id1", "user2": "id2"}
     existing_orgs = set()
 
-    with patch("dtaas_services.pkg.influxdb._setup_user_org_bucket") as mock_setup:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._setup_user_org_bucket"
+    ) as mock_setup:
         mock_setup.return_value = (False, "setup failed")
         success, error = _setup_user_organizations(users_dict, existing_orgs)
         assert success is False
@@ -287,8 +325,10 @@ def test_setup_user_organizations_failure():
 def test_fetch_influxdb_data_success():
     """Test successful data fetching"""
 
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_users") as mock_users, patch(
-        "dtaas_services.pkg.influxdb._get_existing_orgs"
+    with patch(
+        "dtaas_services.pkg.services.influxdb._get_influxdb_users"
+    ) as mock_users, patch(
+        "dtaas_services.pkg.services.influxdb._get_existing_orgs"
     ) as mock_orgs:
         mock_users.return_value = (True, {"user1": "id1"}, "")
         mock_orgs.return_value = (True, {"org1"}, "")
@@ -301,7 +341,9 @@ def test_fetch_influxdb_data_success():
 
 def test_fetch_influxdb_data_users_failure():
     """Test data fetching when get users fails"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_users") as mock_users:
+    with patch(
+        "dtaas_services.pkg.services.influxdb._get_influxdb_users"
+    ) as mock_users:
         mock_users.return_value = (False, {}, "failed to get users")
         success, _, _, error = _fetch_influxdb_data()
         assert success is False
@@ -310,8 +352,10 @@ def test_fetch_influxdb_data_users_failure():
 
 def test_fetch_influxdb_data_orgs_failure():
     """Test data fetching when get orgs fails"""
-    with patch("dtaas_services.pkg.influxdb._get_influxdb_users") as mock_users, patch(
-        "dtaas_services.pkg.influxdb._get_existing_orgs"
+    with patch(
+        "dtaas_services.pkg.services.influxdb._get_influxdb_users"
+    ) as mock_users, patch(
+        "dtaas_services.pkg.services.influxdb._get_existing_orgs"
     ) as mock_orgs:
         mock_users.return_value = (True, {"user1": "id1"}, "")
         mock_orgs.return_value = (False, set(), "failed to get orgs")
@@ -326,11 +370,11 @@ def test_execute_setup_steps_success():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb.create_users_from_credentials"
+        "dtaas_services.pkg.services.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
-        "dtaas_services.pkg.influxdb._fetch_influxdb_data"
+        "dtaas_services.pkg.services.influxdb._fetch_influxdb_data"
     ) as mock_fetch, patch(
-        "dtaas_services.pkg.influxdb._setup_user_organizations"
+        "dtaas_services.pkg.services.influxdb._setup_user_organizations"
     ) as mock_setup:
         mock_create.return_value = (True, "")
         mock_fetch.return_value = (True, {"user1": "id1"}, {"org1"}, "")
@@ -346,7 +390,7 @@ def test_execute_setup_steps_create_users_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb.create_users_from_credentials"
+        "dtaas_services.pkg.services.influxdb.create_users_from_credentials"
     ) as mock_create:
         mock_create.return_value = (False, "creation failed")
         success, error = _execute_setup_steps(mock_file)
@@ -360,9 +404,9 @@ def test_execute_setup_steps_fetch_data_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb.create_users_from_credentials"
+        "dtaas_services.pkg.services.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
-        "dtaas_services.pkg.influxdb._fetch_influxdb_data"
+        "dtaas_services.pkg.services.influxdb._fetch_influxdb_data"
     ) as mock_fetch:
         mock_create.return_value = (True, "")
         mock_fetch.return_value = (False, {}, set(), "fetch failed")
@@ -377,11 +421,11 @@ def test_execute_setup_steps_setup_orgs_fails():
     mock_file = mock_open(read_data=csv_data)()
 
     with patch(
-        "dtaas_services.pkg.influxdb.create_users_from_credentials"
+        "dtaas_services.pkg.services.influxdb.create_users_from_credentials"
     ) as mock_create, patch(
-        "dtaas_services.pkg.influxdb._fetch_influxdb_data"
+        "dtaas_services.pkg.services.influxdb._fetch_influxdb_data"
     ) as mock_fetch, patch(
-        "dtaas_services.pkg.influxdb._setup_user_organizations"
+        "dtaas_services.pkg.services.influxdb._setup_user_organizations"
     ) as mock_setup:
         mock_create.return_value = (True, "")
         mock_fetch.return_value = (True, {"user1": "id1"}, set(), "")
@@ -464,8 +508,8 @@ def test_setup_influxdb_users_key_error(mock_process_credentials):
 
 def test_permissions_influxdb_success_linux(mock_config):
     """Test successful InfluxDB permissions setup on Linux"""
-    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+    with patch("dtaas_services.pkg.services.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
@@ -484,8 +528,8 @@ def test_permissions_influxdb_success_linux(mock_config):
 
 def test_permissions_influxdb_success_darwin(mock_config):
     """Test successful InfluxDB permissions setup on Darwin"""
-    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+    with patch("dtaas_services.pkg.services.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
@@ -504,8 +548,8 @@ def test_permissions_influxdb_success_darwin(mock_config):
 
 def test_permissions_influxdb_success_windows(mock_config):
     """Test successful InfluxDB permissions setup on Windows"""
-    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+    with patch("dtaas_services.pkg.services.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()
@@ -524,8 +568,8 @@ def test_permissions_influxdb_success_windows(mock_config):
 
 def test_permissions_influxdb_success_ci(mock_config):
     """Test InfluxDB permissions setup in CI environment"""
-    with patch("dtaas_services.pkg.influxdb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.influxdb.set_service_cert_permissions",
+    with patch("dtaas_services.pkg.services.influxdb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.influxdb.set_service_cert_permissions",
         return_value=(True, "privkey set (skipped)"),
     ), patch("pathlib.Path.exists", return_value=True):
         mock_instance = Mock()

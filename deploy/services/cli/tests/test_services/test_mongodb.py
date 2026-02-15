@@ -6,13 +6,13 @@ from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
 from dtaas_services.pkg.cert import create_combined_cert
-from dtaas_services.pkg.mongodb import permissions_mongodb
+from dtaas_services.pkg.services.mongodb import permissions_mongodb
 
 
 @pytest.fixture
 def mock_config():
     """Mock Config class"""
-    with patch("dtaas_services.pkg.mongodb.Config") as mock:
+    with patch("dtaas_services.pkg.services.mongodb.Config") as mock:
         mock_instance = Mock()
         mock_instance.get_value.side_effect = lambda key: {
             "HOSTNAME": "test.example.com",
@@ -73,11 +73,11 @@ def test_create_combined_cert_missing_fullchain(tmp_path):
 
 def test_permissions_mongodb_success_linux(mock_config):
     """Test successful MongoDB permissions setup on Linux"""
-    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert",
+    with patch("dtaas_services.pkg.services.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.mongodb.create_combined_cert",
         return_value=(True, "Combined cert"),
     ), patch(
-        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        "dtaas_services.pkg.services.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.mkdir"):
         # Setup Config mocks both instance and class method
@@ -96,11 +96,11 @@ def test_permissions_mongodb_success_linux(mock_config):
 
 def test_permissions_mongodb_success_darwin(mock_config):
     """Test successful MongoDB permissions setup on Darwin"""
-    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert",
+    with patch("dtaas_services.pkg.services.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.mongodb.create_combined_cert",
         return_value=(True, "Combined cert"),
     ), patch(
-        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        "dtaas_services.pkg.services.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.mkdir"):
         # Setup Config mocks both instance and class method
@@ -119,11 +119,11 @@ def test_permissions_mongodb_success_darwin(mock_config):
 
 def test_permissions_mongodb_success_windows(mock_config):
     """Test successful MongoDB permissions setup on Windows"""
-    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert",
+    with patch("dtaas_services.pkg.services.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.mongodb.create_combined_cert",
         return_value=(True, "Combined cert"),
     ), patch(
-        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        "dtaas_services.pkg.services.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set"),
     ), patch("pathlib.Path.mkdir"):
         # Setup Config mocks both instance and class method
@@ -142,11 +142,11 @@ def test_permissions_mongodb_success_windows(mock_config):
 
 def test_permissions_mongodb_success_ci(mock_config):
     """Test MongoDB permissions setup in CI environment"""
-    with patch("dtaas_services.pkg.mongodb.Config") as mock_cfg, patch(
-        "dtaas_services.pkg.mongodb.create_combined_cert",
+    with patch("dtaas_services.pkg.services.mongodb.Config") as mock_cfg, patch(
+        "dtaas_services.pkg.services.mongodb.create_combined_cert",
         return_value=(True, "Combined cert"),
     ), patch(
-        "dtaas_services.pkg.mongodb.set_service_cert_permissions",
+        "dtaas_services.pkg.services.mongodb.set_service_cert_permissions",
         return_value=(True, "privkey set (skipped)"),
     ), patch("pathlib.Path.mkdir"):
         # Setup Config mocks both instance and class method
