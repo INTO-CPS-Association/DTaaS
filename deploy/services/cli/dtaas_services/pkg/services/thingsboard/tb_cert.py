@@ -5,6 +5,7 @@ import shutil
 import os
 from typing import Tuple
 from pathlib import Path
+from dataclasses import dataclass
 import httpx
 from ...cert import set_service_cert_permissions, CertPermissionContext
 
@@ -127,24 +128,16 @@ def build_base_url() -> str:
     return f"{scheme}://{hostname}:{port}".rstrip("/")
 
 
+@dataclass
 class CertificateSetupConfig:
     """Configuration for setting up service certificates."""
 
-    def __init__(
-        self,
-        service_name: str,
-        cert_filename: str,
-        key_filename: str,
-        certs_dir: Path,
-        uid: int,
-        gid: int,
-    ):
-        self.service_name = service_name
-        self.cert_filename = cert_filename
-        self.key_filename = key_filename
-        self.certs_dir = certs_dir
-        self.uid = uid
-        self.gid = gid
+    service_name: str
+    cert_filename: str
+    key_filename: str
+    certs_dir: Path
+    uid: int
+    gid: int
 
 
 def setup_service_certificates(config: CertificateSetupConfig) -> Tuple[bool, str]:

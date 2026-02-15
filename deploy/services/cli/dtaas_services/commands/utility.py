@@ -1,6 +1,8 @@
+"""Utility functions for DTaaS services CLI commands."""
+
 from typing import Optional, Callable
-from rich.console import Console
 from dataclasses import dataclass
+from rich.console import Console
 import click
 from ..pkg.lib import Service
 from ..pkg.services.thingsboard.checker import check_thingsboard_installation

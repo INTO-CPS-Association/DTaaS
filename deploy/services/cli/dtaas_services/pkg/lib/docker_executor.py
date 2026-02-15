@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Tuple, Optional
 from python_on_whales.exceptions import DockerException
 from .initialization import ServiceInitializer
+# pylint: disable=E1101
 
 
 def _is_service_not_found_error(error_msg: str) -> bool:

@@ -33,6 +33,17 @@ class PostgresCheckContext:
     last_status: Optional[str] = None
 
 
+@dataclass
+class PostgresWaitContext:
+    """Context for PostgreSQL wait loop operations."""
+
+    console: Console
+    docker: object
+    timeout: int
+    start_time: float
+    last_status: Optional[str] = None
+
+
 def setup_postgres_certs(certs_dir: Path, uid: int, gid: int) -> Tuple[bool, str]:
     """Set up PostgreSQL certificates with proper permissions.
 
@@ -149,7 +160,7 @@ def _handle_postgres_timeout_error(console: Console, timeout: int) -> None:
     """Handle PostgreSQL timeout error."""
     raise click.ClickException(
         f"PostgreSQL did not become ready within {timeout} seconds. "
-        "This usually indicates a configuration problem. "
+        "\nThis usually indicates a configuration problem, if it keeps restarting. "
     )
 
 
@@ -210,26 +221,39 @@ def _wait_iteration(
         return False, last_status
 
 
+def _handle_wait_iteration(ctx: PostgresWaitContext) -> bool:
+    """Handle a single wait iteration, updating context and returning ready status.
+
+    Args:
+        ctx: Wait loop context to update
+
+    Returns:
+        True if PostgreSQL is ready, False otherwise
+    """
+    is_ready, new_status = _wait_iteration(ctx.console, ctx.docker, ctx.last_status)
+    if is_ready:
+        return True
+
+    wait_time = _get_wait_time_for_status(new_status) if new_status else 2
+    ctx.last_status = new_status
+    time.sleep(wait_time)
+    return False
+
+
 def _perform_wait_loop(
-    console: Console,
-    docker,
-    timeout: int,
-    start_time: float,
-    last_status: Optional[str],
+    ctx: PostgresWaitContext,
 ) -> Optional[str]:
     """Perform the main wait loop iteration.
 
-    Returns:
-        None if ready, updated last_status if not ready, raises on timeout.
-    """
-    while time.time() - start_time < timeout:
-        is_ready, new_status = _wait_iteration(console, docker, last_status)
-        if is_ready:
-            return None
+    Args:
+        ctx: Wait loop context with console, docker, timeout, start_time
 
-        wait_time = _get_wait_time_for_status(new_status) if new_status else 2
-        last_status = new_status
-        time.sleep(wait_time)
+    Returns:
+        None if ready, "timeout" if timeout reached.
+    """
+    while time.time() - ctx.start_time < ctx.timeout:
+        if _handle_wait_iteration(ctx):
+            return None
 
     return "timeout"
 
@@ -248,6 +272,7 @@ def wait_for_postgres_ready(console: Console, docker, timeout: int = 15) -> None
     """
     console.print("[cyan]Waiting for PostgreSQL to be ready...[/cyan]")
     start_time = time.time()
-    result = _perform_wait_loop(console, docker, timeout, start_time, None)
+    ctx = PostgresWaitContext(console, docker, timeout, start_time)
+    result = _perform_wait_loop(ctx)
     if result == "timeout":
         _handle_postgres_timeout_error(console, timeout)

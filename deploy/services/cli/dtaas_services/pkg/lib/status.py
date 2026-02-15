@@ -107,7 +107,7 @@ class Status(DockerExecutor):
                 if self._is_container_running(container)
             }
             return running_services
-        except Exception:
+        except DOCKER_OPERATION_EXCEPTIONS:
             return set()
 
     def get_running_or_restarting_services(self) -> Tuple[Set[str], Set[str]]:
@@ -125,7 +125,7 @@ class Status(DockerExecutor):
             for service_name, container in container_map.items():
                 self._categorize_container_state(service_name, container, state_sets)
             return state_sets["running"], state_sets["restarting"]
-        except Exception:
+        except DOCKER_OPERATION_EXCEPTIONS:
             return set(), set()
 
     def _fetch_status_data(
