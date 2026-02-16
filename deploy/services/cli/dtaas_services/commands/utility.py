@@ -44,7 +44,6 @@ def _handle_service_command(
 ) -> None:
     """Handle common service command logic."""
     try:
-        Service()
         console = Console()
         _print_operation_status(console, meta, service_list)
         with console.status(

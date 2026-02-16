@@ -1,7 +1,7 @@
-"""Setup and installation commands - generate-project, setup, install."""
+"""Setup and installation commands, generate-project, setup, install."""
 
 from pathlib import Path
-from typing import Callable, Tuple
+from typing import Callable
 import click
 from rich.console import Console
 import dtaas_services
@@ -87,8 +87,10 @@ def setup():
         console.print("[cyan]Next steps:[/cyan]")
         console.print("  1. Start services: dtaas-services start")
         console.print("  2. Install ThingsBoard (if using it):")
-        console.print("     - Start PostgreSQL: dtaas-services start -s postgresql")
-        console.print("     - Install ThingsBoard: dtaas-services install-thingsboard")
+        console.print(
+            "     Run ThingsBoard installation (starts PostgreSQL "
+            "automatically): dtaas-services install"
+        )
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
 
@@ -105,13 +107,11 @@ def _validate_service_name(service: str) -> None:
         )
 
 
-def _ensure_postgres_running(
-    console: Console, service_obj: Service
-) -> Tuple[None, object]:
+def _ensure_postgres_running(console: Console, service_obj: Service) -> object:
     """Start PostgreSQL if needed and return docker client.
 
     Returns:
-        Tuple of (None, docker_client)
+        docker_client
 
     Raises:
         click.ClickException: If PostgreSQL fails to start
@@ -121,7 +121,7 @@ def _ensure_postgres_running(
     if err is not None:
         raise click.ClickException(f"Failed to start PostgreSQL: {msg}")
     console.print(f"[green]{msg}[/green]")
-    return None, service_obj.docker
+    return service_obj.docker
 
 
 @click.command()
@@ -148,7 +148,7 @@ def install(service):
         _validate_service_name(service)
 
         service_obj = Service()
-        _, docker = _ensure_postgres_running(console, service_obj)
+        docker = _ensure_postgres_running(console, service_obj)
 
         wait_for_postgres_ready(console, docker)
         run_thingsboard_install(console, docker)

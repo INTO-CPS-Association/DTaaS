@@ -79,12 +79,12 @@ def test_handle_service_command_file_not_found():
     from dtaas_services.commands.utility import OperationMeta
 
     meta = OperationMeta("Starting", "cyan", "Starting containers...")
-    with patch(
-        "dtaas_services.commands.utility.Service",
-        side_effect=FileNotFoundError("Config not found"),
-    ):
-        with pytest.raises(click.ClickException):
-            _handle_service_command(lambda sl: (None, "OK"), None, meta)
+
+    def operation_raises_file_not_found(sl):
+        raise FileNotFoundError("Config not found")
+
+    with pytest.raises(click.ClickException):
+        _handle_service_command(operation_raises_file_not_found, None, meta)
 
 
 def test_check_thingsboard_if_starting_start():

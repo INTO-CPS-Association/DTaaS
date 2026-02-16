@@ -11,7 +11,5 @@ class Service(Manager, Cleanup):
     This provides complete service management capabilities.
     """
 
-    pass
-
 
 __all__ = ["Service"]

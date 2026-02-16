@@ -1,11 +1,12 @@
-"""User management commands - user add."""
+"""User management commands, user add."""
 
-from typing import Callable, Optional
+from typing import Callable
 from dataclasses import dataclass
 import click
 from rich.console import Console
 from ..pkg.services import influxdb, rabbitmq
 from ..pkg.services.thingsboard import setup_thingsboard_users
+from .utility import parse_service_list
 
 
 @dataclass
@@ -15,13 +16,6 @@ class UserSetupResult:
     service_name: str
     success: bool
     message: str
-
-
-def _parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
-    """Parse comma-separated service names into a list."""
-    if not service_names:
-        return None
-    return [s.strip() for s in service_names.split(",")]
 
 
 def _print_service_user_result(console: Console, result: UserSetupResult) -> None:
@@ -114,7 +108,7 @@ def add(service_names):
     """
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
-    service_list = _parse_service_list(service_names)
+    service_list = parse_service_list(service_names)
 
     if not service_list:
         results = _setup_all_service_users(console)

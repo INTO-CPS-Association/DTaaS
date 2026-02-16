@@ -1,4 +1,4 @@
-"""Service operational commands - start, stop, restart, status, remove, clean."""
+"""Service operational commands."""
 
 from typing import Optional
 import click
