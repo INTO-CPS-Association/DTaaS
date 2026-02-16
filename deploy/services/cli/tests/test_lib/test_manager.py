@@ -151,9 +151,7 @@ def test_get_success_message_start_with_restarting(patch_service_deps):
     from dtaas_services.pkg.lib.manager import ServiceActionResult
 
     service, _, _ = _make_service(patch_service_deps)
-    result = ServiceActionResult(
-        skipped=[], affected=[], restarting=["grafana"]
-    )
+    result = ServiceActionResult(skipped=[], affected=[], restarting=["grafana"])
     msg = service._get_success_message("start", result)
     assert "restarting" in msg.lower()
 

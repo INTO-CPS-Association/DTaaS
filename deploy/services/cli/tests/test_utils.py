@@ -15,6 +15,12 @@ from dtaas_services.pkg.utils import (
     create_users_from_credentials,
 )
 
+# Test fixture constants (not real credentials)
+TEST_USER_1 = "testuser1"  # noqa: S105
+TEST_USER_2 = "testuser2"  # noqa: S105
+TEST_PASS_1 = "testpass1"  # noqa: S105
+TEST_PASS_2 = "testpass2"  # noqa: S105
+
 
 def test_check_root_unix_linux_as_root():
     """Test check_root_unix on Linux when running as root"""
@@ -99,7 +105,6 @@ def test_format_docker_error_no_such_container():
     assert "dtaas-services start" in result
 
 
-
 @patch("dtaas_services.pkg.utils.get_credentials_path")
 def test_process_credentials_file_success(mock_get_path):
     """Test successful credentials file processing"""
@@ -119,6 +124,7 @@ def test_process_credentials_file_success(mock_get_path):
         assert success is True
         assert msg == "Success message"
 
+
 @patch("dtaas_services.pkg.utils.get_credentials_path")
 def test_process_credentials_file_not_found(mock_get_path):
     """Test when credentials file does not exist"""
@@ -134,6 +140,7 @@ def test_process_credentials_file_not_found(mock_get_path):
         )
         assert success is False
         assert "Credentials file not found" in msg
+
 
 @patch("dtaas_services.pkg.utils.get_credentials_path")
 def test_process_credentials_file_os_error(mock_get_path):
@@ -160,6 +167,7 @@ def test_create_users_from_credentials_success():
     mock_file = mock_open(read_data=csv_content)
 
     call_count = 0
+
     def mock_user_creation(username, password):
         nonlocal call_count
         call_count += 1
@@ -167,8 +175,8 @@ def test_create_users_from_credentials_success():
 
     with patch("dtaas_services.pkg.utils.csv.DictReader") as mock_dictreader:
         mock_dictreader.return_value = [
-            {"username": "user1", "password": "pass1"},
-            {"username": "user2", "password": "pass2"},
+            {"username": TEST_USER_1, "password": TEST_PASS_1},
+            {"username": TEST_USER_2, "password": TEST_PASS_2},
         ]
         success, error_msg = create_users_from_credentials(
             mock_file(), mock_user_creation
@@ -177,19 +185,20 @@ def test_create_users_from_credentials_success():
         assert error_msg == ""
         assert call_count == 2
 
+
 def test_create_users_from_credentials_failure():
     """Test user creation failure"""
     csv_content = "username,password\nuser1,pass1"
     mock_file = mock_open(read_data=csv_content)
 
     def mock_user_creation(username, password):
-        if username == "user1":
+        if username == TEST_USER_1:
             return False, "User creation failed"
         return True, ""
 
     with patch("dtaas_services.pkg.utils.csv.DictReader") as mock_dictreader:
         mock_dictreader.return_value = [
-            {"username": "user1", "password": "pass1"},
+            {"username": TEST_USER_1, "password": TEST_PASS_1},
         ]
         success, error_msg = create_users_from_credentials(
             mock_file(), mock_user_creation

@@ -18,6 +18,7 @@ from dtaas_services.commands.utility import (
     build_clean_status_message,
 )
 
+
 def test_parse_service_list_with_services():
     """Test parsing comma-separated service names"""
     result = parse_service_list("grafana,influxdb,mongodb")
@@ -58,9 +59,7 @@ def test_handle_service_command_success():
 
     meta = OperationMeta("Starting", "cyan", "Starting containers...")
     with patch("dtaas_services.commands.utility.Service"):
-        _handle_service_command(
-            lambda sl: (None, "Started successfully"), None, meta
-        )
+        _handle_service_command(lambda sl: (None, "Started successfully"), None, meta)
 
 
 def test_handle_service_command_failure():
@@ -85,9 +84,7 @@ def test_handle_service_command_file_not_found():
         side_effect=FileNotFoundError("Config not found"),
     ):
         with pytest.raises(click.ClickException):
-            _handle_service_command(
-                lambda sl: (None, "OK"), None, meta
-            )
+            _handle_service_command(lambda sl: (None, "OK"), None, meta)
 
 
 def test_check_thingsboard_if_starting_start():
@@ -114,9 +111,7 @@ def test_check_running_services_for_clean_specific_running():
 
     console = Console()
     with pytest.raises(click.ClickException):
-        check_running_services_for_clean(
-            console, ["grafana"], ["grafana", "influxdb"]
-        )
+        check_running_services_for_clean(console, ["grafana"], ["grafana", "influxdb"])
 
 
 def test_check_running_services_for_clean_all_running():
@@ -133,9 +128,7 @@ def test_check_running_services_for_clean_specific_not_running():
     from rich.console import Console
 
     console = Console()
-    check_running_services_for_clean(
-        console, ["mongodb"], ["grafana"]
-    )
+    check_running_services_for_clean(console, ["mongodb"], ["grafana"])
 
 
 def test_print_clean_status_with_services(capsys):

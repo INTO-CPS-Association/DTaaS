@@ -11,10 +11,11 @@ from dtaas_services.pkg.lib import Service
 def patch_service_deps(monkeypatch):
     """Patch dependencies for Service tests"""
     monkeypatch.setenv("HOSTNAME", "test-hostname")
-    with patch("dtaas_services.pkg.lib.initialization.Config") as mock_config, \
-         patch("dtaas_services.pkg.lib.initialization.DockerClient") as mock_docker_client, \
-         patch("dtaas_services.pkg.lib.cleanup.Config", mock_config), \
-         patch("dtaas_services.pkg.lib.utils.Config", mock_config):
+    with patch("dtaas_services.pkg.lib.initialization.Config") as mock_config, patch(
+        "dtaas_services.pkg.lib.initialization.DockerClient"
+    ) as mock_docker_client, patch(
+        "dtaas_services.pkg.lib.cleanup.Config", mock_config
+    ), patch("dtaas_services.pkg.lib.utils.Config", mock_config):
         mock_config_instance = Mock()
         mock_config_instance.env = {}
         mock_config.return_value = mock_config_instance

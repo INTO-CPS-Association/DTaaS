@@ -96,9 +96,7 @@ def test_install_postgres_start_fails(runner, mock_service_setup):
 
 def test_install_file_not_found(runner):
     """Test install command when Service init raises FileNotFoundError"""
-    with patch(
-        "dtaas_services.commands.setup_ops.check_root_unix"
-    ), patch(
+    with patch("dtaas_services.commands.setup_ops.check_root_unix"), patch(
         "dtaas_services.commands.setup_ops.Service",
         side_effect=FileNotFoundError("Config not found"),
     ):

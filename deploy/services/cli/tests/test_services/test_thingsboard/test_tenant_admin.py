@@ -276,7 +276,9 @@ def test_handle_activate_error_scenarios():
     """Test activation error handling"""
     exception = Exception("Test error")
     # SSL error
-    success, error = th_util._handle_activate_error("certificate verify failed", exception)
+    success, error = th_util._handle_activate_error(
+        "certificate verify failed", exception
+    )
     assert success is False
     assert "SSL" in error
     # Network error
@@ -339,7 +341,7 @@ def test_create_and_activate_admin_with_user_id():
         "dtaas_services.pkg.services.thingsboard.tenant_admin._activate_admin",
         return_value=(True, ""),
     ):
-        success, error = th_util._create_and_activate_admin(ctx, "tenant123")
+        success, _ = th_util._create_and_activate_admin(ctx, "tenant123")
         assert success is True
 
 

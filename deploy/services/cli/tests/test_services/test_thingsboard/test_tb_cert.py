@@ -51,9 +51,7 @@ def test_set_service_cert_file_permissions_success():
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(True, "success"),
     ):
-        success, _ = tb_cert.set_service_cert_file_permissions(
-            ctx, key_path, cert_path
-        )
+        success, _ = tb_cert.set_service_cert_file_permissions(ctx, key_path, cert_path)
         assert success is True
 
 

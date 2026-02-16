@@ -17,6 +17,7 @@ from dtaas_services.pkg.cert import (
     _get_skip_permission_message,
 )
 
+
 def test_create_dummy_certs_success(tmp_path):
     """Test successful creation of dummy certificates"""
     certs_dir = tmp_path / "certs"
@@ -92,9 +93,9 @@ def test_remove_remaining_certs(tmp_path):
     (certs_dir / "privkey2.pem").write_text("old2")
     target = certs_dir / "privkey.pem"
     target.write_text("target")
-    
+
     _remove_remaining_certs(certs_dir, "privkey", target)
-    
+
     # Should remove numbered files but keep target
     assert target.exists()
     assert not (certs_dir / "privkey1.pem").exists()
@@ -108,9 +109,9 @@ def test_create_combined_cert_success(tmp_path):
     fullchain = tmp_path / "fullchain.pem"
     fullchain.write_text("FULLCHAIN")
     combined = tmp_path / "combined.pem"
-    
+
     success, _ = create_combined_cert(privkey, fullchain, combined)
-    
+
     assert success
     assert combined.exists()
     assert combined.read_text() == "PRIVKEYFULLCHAIN"
@@ -122,9 +123,9 @@ def test_create_combined_cert_missing_privkey(tmp_path):
     fullchain = tmp_path / "fullchain.pem"
     fullchain.write_text("FULLCHAIN")
     combined = tmp_path / "combined.pem"
-    
+
     success, message = create_combined_cert(privkey, fullchain, combined)
-    
+
     assert not success
     assert "Missing privkey" in message
 
@@ -135,9 +136,9 @@ def test_create_combined_cert_missing_fullchain(tmp_path):
     privkey.write_text("PRIVKEY")
     fullchain = tmp_path / "fullchain.pem"
     combined = tmp_path / "combined.pem"
-    
+
     success, message = create_combined_cert(privkey, fullchain, combined)
-    
+
     assert not success
     assert "Missing fullchain" in message
 
@@ -145,29 +146,34 @@ def test_create_combined_cert_missing_fullchain(tmp_path):
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Linux")
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown")
-def test_set_service_cert_permissions_posix(mock_chown, mock_is_ci, mock_platform, tmp_path):
+def test_set_service_cert_permissions_posix(
+    mock_chown, mock_is_ci, mock_platform, tmp_path
+):
     """Test permission setting on POSIX system"""
     cert_path = tmp_path / "test.pem"
     cert_path.write_text("cert")
-    
+
     ctx = CertPermissionContext("grafana", cert_path, 1000, 1001, 0o600)
     success, message = set_service_cert_permissions(ctx)
-    
+
     assert success
     assert "1000:1001" in message
     mock_chown.assert_called_once()
 
+
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Linux")
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown")
-def test_set_service_cert_permissions_posix_no_gid(mock_chown, mock_is_ci, mock_platform, tmp_path):
+def test_set_service_cert_permissions_posix_no_gid(
+    mock_chown, mock_is_ci, mock_platform, tmp_path
+):
     """Test permission setting on POSIX without gid"""
     cert_path = tmp_path / "test.pem"
     cert_path.write_text("cert")
-    
+
     ctx = CertPermissionContext("grafana", cert_path, 1000, None, 0o600)
     success, message = set_service_cert_permissions(ctx)
-    
+
     assert success
     assert "user 1000" in message
 
@@ -178,10 +184,10 @@ def test_set_service_cert_permissions_ci(mock_is_ci, mock_platform, tmp_path):
     """Test permission skipped in CI"""
     cert_path = tmp_path / "test.pem"
     cert_path.write_text("cert")
-    
+
     ctx = CertPermissionContext("grafana", cert_path, 1000, 1001, 0o600)
     success, message = set_service_cert_permissions(ctx)
-    
+
     assert success
     assert "CI" in message
 
@@ -189,14 +195,16 @@ def test_set_service_cert_permissions_ci(mock_is_ci, mock_platform, tmp_path):
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Linux")
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown", side_effect=OSError("Permission denied"))
-def test_set_service_cert_permissions_error(mock_chown, mock_is_ci, mock_platform, tmp_path):
+def test_set_service_cert_permissions_error(
+    mock_chown, mock_is_ci, mock_platform, tmp_path
+):
     """Test error handling in permission setting"""
     cert_path = tmp_path / "test.pem"
     cert_path.write_text("cert")
-    
+
     ctx = CertPermissionContext("grafana", cert_path, 1000, 1001, 0o600)
     success, message = set_service_cert_permissions(ctx)
-    
+
     assert not success
     assert "Error setting permissions" in message
 
