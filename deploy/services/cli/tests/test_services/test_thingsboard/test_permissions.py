@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
 import pytest
 import dtaas_services.pkg.services.thingsboard.permissions as th_perm
-from dtaas_services.pkg.cert import set_service_cert_permissions, CertPermissionContext
 
 
 @pytest.fixture
@@ -24,47 +23,6 @@ def mock_config():
         mock.return_value = mock_instance
         mock.get_base_dir.return_value = Path("/test/base")
         yield mock
-
-
-@pytest.mark.parametrize(
-    "os_type,should_call_chown",
-    [
-        ("linux", True),
-        ("darwin", True),
-        ("windows", False),
-    ],
-)
-def test_set_cert_ownership(os_type, should_call_chown):
-    """Test certificate ownership setting on different platforms"""
-
-    cert_path = Path("/test/cert.pem")
-    with patch("dtaas_services.pkg.cert.shutil.chown") as mock_chown, patch(
-        "dtaas_services.pkg.cert.platform.system", return_value=os_type
-    ), patch("dtaas_services.pkg.cert.is_ci", return_value=False), patch(
-        "pathlib.Path.chmod"
-    ):
-        ctx = CertPermissionContext("Test", cert_path, 999, 999)
-        set_service_cert_permissions(ctx)
-        if os_type in ("linux", "darwin"):
-            mock_chown.assert_called_once()
-        else:
-            mock_chown.assert_not_called()
-
-
-def test_setup_postgres_certs_scenarios():
-    """Test PostgreSQL certificates setup with scenarios"""
-    certs_dir = Path("/test/certs")
-    # Success
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
-        return_value=(True, "success"),
-    ), patch("shutil.copy2"):
-        success, _ = th_perm.setup_postgres_certs(certs_dir, 999, 999)
-        assert success is True
-    # OSError
-    with patch("shutil.copy2", side_effect=OSError("Error")):
-        success, _ = th_perm.setup_postgres_certs(certs_dir, 999, 999)
-        assert success is False
 
 
 def test_setup_thingsboard_certs_scenarios():

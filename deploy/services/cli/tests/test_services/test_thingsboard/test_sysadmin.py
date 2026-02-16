@@ -2,17 +2,10 @@
 # pylint: disable=W0212
 """Tests for ThingsBoard users functions."""
 
-import os
 from unittest.mock import patch, Mock
 import pytest
 import httpx
 import dtaas_services.pkg.services.thingsboard.sysadmin as th_users
-from dtaas_services.pkg.services.thingsboard.tb_cert import build_base_url
-from dtaas_services.pkg.services.thingsboard.tb_utility import (
-    handle_login_response,
-    login,
-)
-from dtaas_services.pkg.services.thingsboard.setup import check_password_configured
 
 # Test constants (not real credentials, for testing only)
 TEST_EMAIL = "test@example.com"
@@ -20,90 +13,6 @@ TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR
 TEST_OLD_PASSWORD = "old"  # noqa: S105 # NOSONAR
 TEST_NEW_PASSWORD = "new"  # noqa: S105 # NOSONAR
 TEST_CONFIGURED_PASSWORD = "newpassword"  # noqa: S105 # NOSONAR
-
-
-# Base URL and Login Tests
-@pytest.mark.parametrize(
-    "env_vars,expected_url",
-    [
-        (
-            {
-                "HOSTNAME": "localhost",
-                "THINGSBOARD_PORT": "8080",
-                "THINGSBOARD_SCHEME": "https",
-            },
-            "https://localhost:8080",
-        ),
-        (
-            {
-                "HOSTNAME": "custom.example.com",
-                "THINGSBOARD_PORT": "9090",
-                "THINGSBOARD_SCHEME": "https",
-            },
-            "https://custom.example.com:9090",
-        ),
-    ],
-)
-def test_build_base_url(env_vars, expected_url):
-    """Test building base URL with different configurations"""
-    with patch.dict(os.environ, env_vars, clear=False):
-        assert build_base_url() == expected_url
-
-
-@pytest.mark.parametrize(
-    "status_code,json_data,expected_token",
-    [
-        (200, {"token": "test_token"}, "test_token"),
-        (401, None, None),
-        (500, None, None),
-    ],
-)
-def test_handle_login_response(status_code, json_data, expected_token):
-    """Test handling different login response scenarios"""
-    mock_response = Mock()
-    mock_response.status_code = status_code
-    if json_data:
-        mock_response.json.return_value = json_data
-    mock_response.text = "error"
-    assert handle_login_response(mock_response) == expected_token
-
-
-def test_login_scenarios():
-    """Test login with success, failure, and exception"""
-    base_url = "https://localhost:8080"
-    email = TEST_EMAIL
-    password = TEST_PASSWORD
-
-    # Success case
-    with patch("httpx.post") as mock_post:
-        mock_post.return_value = Mock(
-            status_code=200, json=lambda: {"token": "token123"}
-        )
-        assert login(base_url, email, password) == "token123"
-
-    # Failure case
-    with patch("httpx.post") as mock_post:
-        mock_post.return_value = Mock(status_code=401)
-        assert login(base_url, email, password) is None
-
-    # Exception case
-    with patch("httpx.post", side_effect=httpx.HTTPError("Error")):
-        assert login(base_url, email, password) is None
-
-
-# Password Configuration Tests
-@pytest.mark.parametrize(
-    "env_password,expected",
-    [
-        (TEST_CONFIGURED_PASSWORD, TEST_CONFIGURED_PASSWORD),
-        (None, None),
-    ],
-)
-def test_check_password_configured(env_password, expected):
-    """Test password configuration checking"""
-    env_dict = {"TB_SYSADMIN_NEW_PASSWORD": env_password} if env_password else {}
-    with patch.dict(os.environ, env_dict, clear=True):
-        assert check_password_configured() == expected
 
 
 @pytest.mark.parametrize(
@@ -217,7 +126,6 @@ def test_change_sysadmin_password_scenarios():
         assert success is False
 
 
-# Tenant Management Tests
 def test_check_existing_tenant_scenarios():
     """Test checking for existing tenant with multiple scenarios"""
     base_url = "https://localhost:8080"

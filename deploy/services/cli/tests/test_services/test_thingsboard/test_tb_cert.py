@@ -4,9 +4,8 @@
 
 import os
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 import pytest
-import httpx
 import dtaas_services.pkg.services.thingsboard.tb_cert as tb_cert
 
 
@@ -15,7 +14,6 @@ TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR
 TEST_EMAIL = "test@example.com"
 
 
-# Test CredentialProcessContext
 def test_credential_process_context():
     """Test CredentialProcessContext initialization"""
     session = Mock()
@@ -25,38 +23,6 @@ def test_credential_process_context():
     assert ctx.seen_emails == set()
 
 
-# Test ServiceCertConfig
-def test_service_cert_config():
-    """Test ServiceCertConfig initialization"""
-    config = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
-    assert config.service_name == "postgres"
-    assert config.key_filename == "postgres.key"
-    assert config.cert_filename == "postgres.crt"
-
-
-# Test CertSetupParams
-def test_cert_setup_params():
-    """Test CertSetupParams initialization"""
-    certs_dir = Path("/test/certs")
-    params = tb_cert.CertSetupParams(certs_dir, 999, 999)
-    assert params.certs_dir == certs_dir
-    assert params.uid == 999
-    assert params.gid == 999
-
-
-# Test ServiceSetupContext
-def test_service_setup_context():
-    """Test ServiceSetupContext initialization"""
-    cert_cfg = tb_cert.ServiceCertConfig("test", "test.key", "test.crt")
-    params = tb_cert.CertSetupParams(Path("/test"), 999, 999)
-    ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
-    assert ctx.cert_cfg == cert_cfg
-    assert ctx.certs_dir == Path("/test")
-    assert ctx.uid == 999
-    assert ctx.gid == 999
-
-
-# Test copy_service_cert_files
 def test_copy_service_cert_files_success():
     """Test successful certificate file copying"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
@@ -73,7 +39,6 @@ def test_copy_service_cert_files_success():
         assert service_cert_path == Path("/test/certs/postgres.crt")
 
 
-# Test set_service_cert_file_permissions
 def test_set_service_cert_file_permissions_success():
     """Test setting certificate file permissions"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
@@ -111,7 +76,6 @@ def test_set_service_cert_file_permissions_key_failure():
         assert "Permission error" in msg
 
 
-# Test setup_service_certs
 def test_setup_service_certs_success():
     """Test successful service certificate setup"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
@@ -148,7 +112,6 @@ def test_setup_service_certs_os_error():
         assert "postgres" in msg
 
 
-# Test validate_credential_row
 def test_validate_credential_row_success():
     """Test valid credential row"""
     credential = {"email": "user@example.com"}
@@ -176,7 +139,6 @@ def test_validate_credential_row_duplicate_email():
     assert "Duplicate" in msg
 
 
-# Test build_base_url
 @pytest.mark.parametrize(
     "env_vars,expected_url",
     [
@@ -210,37 +172,6 @@ def test_build_base_url(env_vars, expected_url):
     """Test building base URL with different configurations"""
     with patch.dict(os.environ, env_vars, clear=False):
         assert tb_cert.build_base_url() == expected_url
-
-
-# Test CertificateSetupConfig
-def test_certificate_setup_config():
-    """Test CertificateSetupConfig dataclass"""
-    certs_dir = Path("/test/certs")
-    config = tb_cert.CertificateSetupConfig(
-        "postgres", "postgres.crt", "postgres.key", certs_dir, 999, 999
-    )
-    assert config.service_name == "postgres"
-    assert config.cert_filename == "postgres.crt"
-    assert config.key_filename == "postgres.key"
-    assert config.certs_dir == certs_dir
-    assert config.uid == 999
-    assert config.gid == 999
-
-
-# Test setup_service_certificates
-def test_setup_service_certificates_success():
-    """Test successful service certificate setup via config"""
-    certs_dir = Path("/test/certs")
-    config = tb_cert.CertificateSetupConfig(
-        "postgres", "postgres.crt", "postgres.key", certs_dir, 999, 999
-    )
-
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.tb_cert.setup_service_certs",
-        return_value=(True, "success"),
-    ):
-        success, _ = tb_cert.setup_service_certificates(config)
-        assert success is True
 
 
 def test_setup_service_certificates_os_error():

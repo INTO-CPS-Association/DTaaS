@@ -6,7 +6,6 @@ from unittest.mock import patch, Mock
 import pytest
 import httpx
 import dtaas_services.pkg.services.thingsboard.tenant_admin as th_util
-from dtaas_services.pkg.services.thingsboard.tb_cert import validate_credential_row
 
 # Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
@@ -15,7 +14,6 @@ TEST_EMAIL = "test@example.com"
 TEST_INVALID_EMAIL = ""
 
 
-# Admin User Tests
 @pytest.mark.parametrize(
     "login_token,expected",
     [
@@ -33,6 +31,17 @@ def test_check_admin_exists(login_token, expected):
             "https://localhost:8080", "admin@ex.com", "pass"
         )
         assert result == expected
+
+
+def test_create_tenant_api_call_network_error():
+    """Test API call with network error"""
+    session = Mock()
+    session.post.side_effect = httpx.HTTPError("Connection failed")
+    ctx = th_util._AdminContext("https://localhost:8080", session, "admin@ex.com")
+    payload = {"email": "admin@ex.com"}
+    resp, error = th_util._create_tenant_api_call(ctx, payload)
+    assert resp is None
+    assert "Network error" in error
 
 
 def test_create_tenant_admin_user_scenarios():
@@ -84,6 +93,12 @@ def test_get_activation_token_scenarios():
     token, error = th_util._get_activation_token(base_url, session, "user123")
     assert token is None
     assert error != ""
+    # Bad status code
+    session.get.side_effect = None
+    session.get.return_value = Mock(status_code=404, text="Not found")
+    token, error = th_util._get_activation_token(base_url, session, "user123")
+    assert token is None
+    assert "Failed" in error
 
 
 def test_activate_user_scenarios():
@@ -101,25 +116,6 @@ def test_activate_user_scenarios():
     with patch("httpx.post", side_effect=httpx.HTTPError("Error")):
         success, _ = th_util._activate_user(base_url, "token", "pass")
         assert success is False
-
-
-@pytest.mark.parametrize(
-    "login_token,expected_success",
-    [
-        ("token123", True),
-        (None, False),
-    ],
-)
-def testverify_admin_login(login_token, expected_success):
-    """Test admin login verification"""
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.tb_utility.login",
-        return_value=login_token,
-    ):
-        success, _ = th_util.verify_admin_login(
-            "https://localhost:8080", "admin@ex.com", "pass"
-        )
-        assert success == expected_success
 
 
 def test_create_and_activate_admin_scenarios():
@@ -237,23 +233,134 @@ def test_create_tenant_and_admin_scenarios():
         assert success is False
 
 
-def test_validate_credential_row_scenarios():
-    """Test credential row validation"""
-    seen_emails = set()
-    # Valid email
-    success, email = validate_credential_row(
-        {"email": TEST_EMAIL}, TEST_USERNAME, seen_emails
-    )
-    assert success is True
-    assert email == TEST_EMAIL
-    # Empty email
-    success, error = validate_credential_row({"email": ""}, TEST_USERNAME, seen_emails)
+def test_handle_admin_already_exists_scenarios():
+    """Test handling when admin already exists"""
+    # Admin already exists
+    resp = Mock(status_code=400)
+    resp.json.return_value = {"message": "User with email already exists"}
+    user_id, error = th_util._handle_admin_already_exists(resp)
+    assert user_id is None
+    assert error == ""
+    # Different error message
+    resp.json.return_value = {"message": "Invalid request"}
+    user_id, error = th_util._handle_admin_already_exists(resp)
+    assert user_id is None
+    assert error != ""
+    # JSON parsing error
+    resp.json.side_effect = Exception("JSON error")
+    user_id, error = th_util._handle_admin_already_exists(resp)
+    assert user_id is None
+    assert error != ""
+
+
+def test_create_tenant_admin_user_status_codes():
+    """Test tenant admin user creation with various status codes"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    ctx = th_util._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = "password"
+    # Status code 202 (unexpected but not 200/201/400)
+    session.post.return_value = Mock(status_code=202, text="Created")
+    user_id, error = th_util._create_tenant_admin_user(ctx, "tenant")
+    assert user_id is None
+    assert "Failed" in error
+    # Status code 400 with unknown error
+    session.post.return_value = Mock(status_code=400)
+    session.post.return_value.json.side_effect = Exception("JSON error")
+    user_id, error = th_util._create_tenant_admin_user(ctx, "tenant")
+    assert user_id is None
+    assert error != ""
+
+
+def test_handle_activate_error_scenarios():
+    """Test activation error handling"""
+    exception = Exception("Test error")
+    # SSL error
+    success, error = th_util._handle_activate_error("certificate verify failed", exception)
     assert success is False
-    assert "Email field is required" in error
-    # Duplicate email
-    seen_emails.add(TEST_EMAIL)
-    success, error = validate_credential_row(
-        {"email": TEST_EMAIL}, TEST_USERNAME, seen_emails
-    )
+    assert "SSL" in error
+    # Network error
+    success, error = th_util._handle_activate_error("connection error", exception)
     assert success is False
-    assert "Duplicate email" in error
+    assert "Network error" in error
+
+
+def test_activate_admin_scenarios():
+    """Test admin activation with various scenarios"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    ctx = th_util._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = TEST_PASSWORD
+    # Success path
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._get_activation_token",
+        return_value=("token", ""),
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._activate_user",
+        return_value=(True, ""),
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.verify_admin_login",
+        return_value=(True, ""),
+    ):
+        success, error = th_util._activate_admin(ctx, "user123")
+        assert success is True
+    # Get token fails
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._get_activation_token",
+        return_value=(None, "token error"),
+    ):
+        success, error = th_util._activate_admin(ctx, "user123")
+        assert success is False
+        assert error == "token error"
+    # Activation fails
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._get_activation_token",
+        return_value=("token", ""),
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._activate_user",
+        return_value=(False, "activation error"),
+    ):
+        success, error = th_util._activate_admin(ctx, "user123")
+        assert success is False
+        assert error == "activation error"
+
+
+def test_create_and_activate_admin_with_user_id():
+    """Test successful admin creation and activation flow"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    ctx = th_util._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = TEST_PASSWORD
+    # Full success with activation
+    with patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._create_tenant_admin_user",
+        return_value=("user123", ""),
+    ), patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin._activate_admin",
+        return_value=(True, ""),
+    ):
+        success, error = th_util._create_and_activate_admin(ctx, "tenant123")
+        assert success is True
+
+
+def test_ensure_tenant_admin_invalid_tenant():
+    """Test ensuring tenant admin with invalid tenant object"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    ctx = th_util._AdminContext(base_url, session, "admin@ex.com")
+    ctx.admin_password = TEST_PASSWORD
+    # Invalid tenant (missing id)
+    invalid_tenant = {"name": "test"}
+    success, error = th_util._ensure_tenant_admin(ctx, invalid_tenant)
+    assert success is False
+    assert "Invalid tenant" in error
+    # Empty id
+    tenant_no_id = {"id": {}}
+    success, error = th_util._ensure_tenant_admin(ctx, tenant_no_id)
+    assert success is False
+    assert "Invalid tenant" in error
+    # None id field
+    tenant_none_id = {"id": None}
+    success, error = th_util._ensure_tenant_admin(ctx, tenant_none_id)
+    assert success is False
+    assert "Invalid tenant" in error

@@ -4,7 +4,7 @@
 import logging
 from typing import Tuple
 import httpx
-from .tb_utility import login
+from .tb_utility import login, is_json_parse_error
 
 logger = logging.getLogger(__name__)
 
@@ -117,11 +117,6 @@ def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
     return None
 
 
-def _is_json_error(exception: Exception) -> bool:
-    """Check if exception is JSON-related."""
-    return "json" in str(exception).lower()
-
-
 def _check_existing_tenant(
     params: dict, base_url: str, session: httpx.Client
 ) -> Tuple[dict | None, str]:
@@ -135,7 +130,7 @@ def _check_existing_tenant(
         tenant_name = params.get("textSearch", "")
         return _find_tenant_in_response(body, tenant_name), ""
     except Exception as e:
-        error_type = "Invalid JSON" if _is_json_error(e) else "Network error"
+        error_type = "Invalid JSON" if is_json_parse_error(e) else "Network error"
         return None, f"{error_type} checking tenant: {e}"
 
 
@@ -155,7 +150,7 @@ def _create_new_tenant(
         logger.info(f"  Tenant '{tenant_name}' created")
         return tenant, ""
     except Exception as e:
-        error_type = "Invalid JSON" if "json" in str(e).lower() else "Network error"
+        error_type = "Invalid JSON" if is_json_parse_error(e) else "Network error"
         return None, f"{error_type} creating tenant: {e}"
 
 
