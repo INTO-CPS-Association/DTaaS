@@ -115,7 +115,7 @@ def test_check_running_services_for_clean_specific_running():
     console = Console()
     with pytest.raises(click.ClickException):
         check_running_services_for_clean(
-            console, {"grafana"}, ["grafana", "influxdb"]
+            console, ["grafana"], ["grafana", "influxdb"]
         )
 
 
@@ -125,7 +125,7 @@ def test_check_running_services_for_clean_all_running():
 
     console = Console()
     with pytest.raises(click.ClickException):
-        check_running_services_for_clean(console, {"grafana"}, None)
+        check_running_services_for_clean(console, ["grafana"], None)
 
 
 def test_check_running_services_for_clean_specific_not_running():
@@ -134,7 +134,7 @@ def test_check_running_services_for_clean_specific_not_running():
 
     console = Console()
     check_running_services_for_clean(
-        console, {"mongodb"}, ["grafana"]
+        console, ["mongodb"], ["grafana"]
     )
 
 
