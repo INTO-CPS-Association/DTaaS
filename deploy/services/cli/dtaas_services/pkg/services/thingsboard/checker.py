@@ -114,7 +114,11 @@ def is_thingsboard_installed(docker, container_map: dict) -> bool:
 
 def _should_check_thingsboard(service_list: Optional[list[str]]) -> bool:
     """Check if ThingsBoard installation check is needed."""
-    return service_list is None or "thingsboard-ce" in service_list
+    return (
+        service_list is None
+        or "thingsboard-ce" in service_list
+        or "thingsboard" in service_list
+    )
 
 
 def _prompt_thingsboard_installation() -> None:

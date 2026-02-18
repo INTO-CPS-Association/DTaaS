@@ -1,10 +1,11 @@
 """InfluxDB utility functions."""
 
 import json
+from typing import Any
 from ...utils import execute_docker_command
 
 
-def parse_json_response(json_str: str) -> tuple[bool, any, str]:
+def parse_json_response(json_str: str) -> tuple[bool, Any, str]:
     """Parse JSON response.
     Args:
         json_str: JSON string to parse
