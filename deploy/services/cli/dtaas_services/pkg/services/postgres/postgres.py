@@ -1,8 +1,7 @@
-"""PostgreSQL certificate and permission management for ThingsBoard integration."""
+"""PostgreSQL certificate and permission management."""
 
 # pylint: disable=W1203, R0903
 import logging
-import os
 import time
 import click
 from typing import Tuple, Optional
@@ -11,26 +10,17 @@ from dataclasses import dataclass
 from rich.console import Console
 
 from ...config import Config
-from .tb_cert import (
+from ..thingsboard.tb_cert import (
     setup_service_certificates,
     CertificateSetupConfig,
     PRIV_KEY_FILENAME,
     FULLCHAIN_FILENAME,
 )
+from .status import check_postgres_state
 
 # Set up logger
 logger = logging.getLogger(__name__)
 POSTGRES_READY = "[green]✅ PostgreSQL is ready[/green]"
-
-
-@dataclass
-class PostgresCheckContext:
-    """Context for PostgreSQL state checking operations."""
-
-    console: Console
-    docker: object
-    postgres: object
-    last_status: Optional[str] = None
 
 
 @dataclass
@@ -41,6 +31,16 @@ class PostgresWaitContext:
     docker: object
     timeout: int
     start_time: float
+    last_status: Optional[str] = None
+
+
+@dataclass
+class PostgresCheckContext:
+    """Context for PostgreSQL state checking operations."""
+
+    console: Console
+    docker: object
+    postgres: object
     last_status: Optional[str] = None
 
 
@@ -88,72 +88,9 @@ def permissions_postgres() -> Tuple[bool, str]:
         return False, str(e)
 
 
-def _check_pg_isready_string_result(result: str) -> bool:
-    """Check if pg_isready string result indicates ready state."""
-    return isinstance(result, str) and "accepting" in result.lower()
-
-
-def _check_pg_isready_tuple_result(result) -> bool:
-    """Check if pg_isready tuple result indicates ready state."""
-    return isinstance(result, (list, tuple)) and len(result) > 1 and int(result[1]) == 0
-
-
-def _check_postgres_via_pg_isready(console: Console, docker) -> bool:
-    """Check if PostgreSQL is ready using pg_isready command."""
-    try:
-        pg_user = os.environ.get("POSTGRES_USER", "postgres")
-        result = docker.execute("postgres", ["pg_isready", "-U", pg_user])
-
-        if _check_pg_isready_string_result(result) or _check_pg_isready_tuple_result(
-            result
-        ):
-            console.print(POSTGRES_READY)
-            return True
-    except Exception:
-        # Ignore errors from pg_isready command
-        pass
-
-    return False
-
-
-def _print_status_change(
-    console: Console, current_status: str, last_status: str
-) -> None:
-    """Print status message if status has changed."""
-    if current_status == last_status:
-        return
-
-    if current_status == "running":
-        console.print(
-            "[green]PostgreSQL container is running, checking health...[/green]"
-        )
-    elif current_status == "restarting":
-        console.print(
-            "[yellow]⚠️  PostgreSQL is restarting. "
-            "Check logs with: docker logs postgres[/yellow]"
-        )
-
-
 def _get_postgres_container(containers):
     """Extract PostgreSQL container from compose containers list."""
     return next((c for c in containers if c.name == "postgres"), None)
-
-
-def _check_postgres_health_status(postgres) -> bool:
-    """Check if PostgreSQL container has healthy status."""
-    if hasattr(postgres.state, "health") and postgres.state.health:
-        return postgres.state.health == "healthy"
-    return False
-
-
-def _check_postgres_healthy(console: Console, docker, postgres) -> bool:
-    """Check if PostgreSQL is healthy via health status or pg_isready."""
-    if _check_postgres_health_status(postgres):
-        console.print("[green]✅ PostgreSQL is ready[/green]")
-        return True
-
-    # Fallback: Try pg_isready command
-    return _check_postgres_via_pg_isready(console, docker)
 
 
 def _handle_postgres_timeout_error(console: Console, timeout: int) -> None:
@@ -162,20 +99,6 @@ def _handle_postgres_timeout_error(console: Console, timeout: int) -> None:
         f"PostgreSQL did not become ready within {timeout} seconds. "
         "\nThis usually indicates a configuration problem, if it keeps restarting. "
     )
-
-
-def _check_postgres_state(ctx: PostgresCheckContext) -> tuple[str | None, bool]:
-    """Check PostgreSQL container state and return (current_status, is_ready)."""
-    current_status = ctx.postgres.state.status
-    _print_status_change(ctx.console, current_status, ctx.last_status)
-
-    if current_status != "running":
-        return current_status, False
-
-    if _check_postgres_healthy(ctx.console, ctx.docker, ctx.postgres):
-        return current_status, True
-
-    return current_status, False
 
 
 def _try_get_postgres_container(docker) -> Optional[object]:
@@ -212,7 +135,7 @@ def _wait_iteration(
             return False, last_status
 
         ctx = PostgresCheckContext(console, docker, postgres, last_status)
-        current_status, is_ready = _check_postgres_state(ctx)
+        current_status, is_ready = check_postgres_state(ctx)
 
         return is_ready, current_status
 

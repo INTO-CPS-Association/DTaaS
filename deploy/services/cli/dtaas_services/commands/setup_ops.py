@@ -7,13 +7,13 @@ from rich.console import Console
 import dtaas_services
 from ..pkg.cert import copy_certs
 from ..pkg.services.mongodb import permissions_mongodb
-from ..pkg.services.influxdb import permissions_influxdb
+from ..pkg.services.influxdb.influxdb import permissions_influxdb
 from ..pkg.services.rabbitmq import permissions_rabbitmq
 from ..pkg.lib import Service
 from ..pkg.utils import check_root_unix
 from ..pkg.template import generate_project_structure
 from ..pkg.services.thingsboard.permissions import permissions_thingsboard
-from ..pkg.services.thingsboard.postgres import wait_for_postgres_ready
+from ..pkg.services.postgres.postgres import wait_for_postgres_ready
 from ..pkg.services.thingsboard.tb_utility import run_thingsboard_install
 
 

@@ -80,13 +80,21 @@ cli/
 │       │   └── utils.py    # Library utilities
 │       └── services/       # Service-specific modules
 │           ├── mongodb.py  # MongoDB certificate and permission setup
-│           ├── influxdb.py # InfluxDB certificate, permission, and user management
-│           ├── rabbitmq.py # RabbitMQ certificate, permission, and user management
-│           └── thingsboard/
-│               ├── setup.py        # ThingsBoard setup orchestration
-│               ├── sysadmin.py     # System admin operations
-│               ├── tenant_admin.py # Tenant admin provisioning
-│               ├── postgres.py     # PostgreSQL operations
+           ├── rabbitmq.py # RabbitMQ certificate, permission, and user management
+           ├── influxdb/   # InfluxDB service module
+           │   ├── __init__.py
+           │   ├── _utils.py       # Shared Docker command wrapper and JSON parsing
+           │   ├── influxdb.py     # Certificate, permissions, and setup orchestration
+           │   └── user_management.py  # User, org, and bucket management
+           ├── postgres/   # PostgreSQL service module
+           │   ├── __init__.py
+           │   ├── postgres.py     # Certificate setup and readiness waiting
+           │   └── status.py       # Container health and state checking
+           └── thingsboard/
+               ├── __init__.py
+               ├── setup.py        # ThingsBoard setup orchestration
+               ├── sysadmin.py     # System admin operations
+               ├── tenant_admin.py # Tenant admin provisioning
 │               ├── checker.py      # Installation checking
 │               ├── permissions.py  # Certificate setup
 │               ├── tb_cert.py      # Certificate operations
@@ -115,16 +123,23 @@ cli/
     │   └── test_cleanup.py
     ├── test_services/
     │   ├── __init__.py
-    │   ├── test_influxdb.py
     │   ├── test_mongodb.py
     │   ├── test_rabbitmq.py
+    │   ├── test_influxdb/
+    │   │   ├── __init__.py
+    │   │   ├── test_utils.py           # Tests for _utils.py
+    │   │   ├── test_influxdb.py        # Tests for influxdb.py
+    │   │   └── test_user_management.py # Tests for user_management.py
+    │   ├── test_postgres/
+    │   │   ├── __init__.py
+    │   │   ├── test_postgres.py        # Tests for postgres.py
+    │   │   └── test_status.py          # Tests for status.py
     │   └── test_thingsboard/
     │       ├── __init__.py
     │       ├── test_permissions.py
     │       ├── test_setup.py
     │       ├── test_sysadmin.py
     │       ├── test_checker.py
-    │       ├── test_postgres.py
     │       ├── test_tb_cert.py
     │       ├── test_tb_utility.py
     │       └── test_tenant_admin.py
@@ -146,14 +161,17 @@ The package uses a modular, three-layer architecture:
 
 #### Command Layer (`commands/`)
 
-* **`service_ops.py`**: Service lifecycle commands (start, stop, restart, status, remove, clean)
-* **`setup_ops.py`**: Setup and installation commands (generate-project, setup, install)
+* **`service_ops.py`**: Service lifecycle commands (start, stop, restart, status,
+ remove, clean)
+* **`setup_ops.py`**: Setup and installation commands (generate-project, setup,
+ install)
 * **`user_ops.py`**: User management commands (user add)
 * **`utility.py`**: Shared command utilities
 
 #### Business Logic Layer (`pkg/`)
 
-* **`config.py`**: Configuration loader for environment variables and base directory detection
+* **`config.py`**: Configuration loader for environment variables and base
+ directory detection
 * **`cert.py`**: TLS certificate copying and normalization
 * **`formatter.py`**: Output formatting utilities
 * **`template.py`**: Project structure and template file management
@@ -169,40 +187,22 @@ The package uses a modular, three-layer architecture:
 #### Service Layer (`pkg/services/`)
 
 * **`mongodb.py`**: MongoDB certificate and permission setup
-* **`influxdb.py`**: InfluxDB certificate, permission, and user management
 * **`rabbitmq.py`**: RabbitMQ certificate, permission, and user management
+* **`influxdb/`**: InfluxDB service module
+  * `_utils.py`: Shared Docker command wrapper (`execute_influxdb_command`) and JSON parsing
+  * `influxdb.py`: Certificate permissions and setup orchestration
+  * `user_management.py`: User, organisation, and bucket management
+* **`postgres/`**: PostgreSQL service module
+  * `postgres.py`: Certificate setup and readiness waiting
+  * `status.py`: Container health and state checking
 * **`thingsboard/`**: ThingsBoard modules
   * `setup.py`: Setup orchestration
   * `sysadmin.py`: System admin operations
   * `tenant_admin.py`: Tenant admin user provisioning
-  * `postgres.py`: PostgreSQL operations
   * `checker.py`: Installation validation
   * `permissions.py`: Certificate setup
-
-### Code Organization Pattern
-
-The project follows a clean three-layer separation:
-
-#### CLI Entry Point (`cmd.py`)
-
-* Minimal entry point that imports commands from `commands/` package
-* Registers commands with Click command groups
-* Maintains backward-compatible CLI interface
-
-#### Command Layer (`commands/`)
-
-* Modular command definitions using Click decorators
-* Argument parsing and validation
-* User-facing output formatting with Rich console
-* Delegates business logic to `pkg/` modules
-* Organized by functional area (service operations, setup, user management)
-
-#### Business Logic Layer (`pkg/`)
-
-* Core functionality in focused, testable modules
-* Functions return `tuple[bool, str]` (success status, message)
-* No direct CLI dependencies or output
-* Service-specific logic isolated in `services/` subdirectory
+  * `tb_cert.py`: Certificate operations
+  * `tb_utility.py`: ThingsBoard utility helpers
 
 ### Configuration Pattern
 
@@ -287,10 +287,10 @@ Stops and removes Docker containers:
   credentials
 * **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
   using the `dtaas-services user add` command
-* **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by the
-  `SSL_VERIFY` environment variable (from `services.env`) and use verification enabled
-  by default. For self-signed certificates in non-production environments, set
-  `SSL_VERIFY=false`.
+* **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by
+  the `SSL_VERIFY` environment variable (from `services.env`) and use
+  verification enabled by default. For self-signed certificates in non-production
+  environments, set `SSL_VERIFY=false`.
 
 ### Error Handling Pattern
 

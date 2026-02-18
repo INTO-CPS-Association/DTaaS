@@ -94,7 +94,6 @@ def change_sysadmin_password_if_needed(
         return True, "Password already updated"
 
     # Try with default password and perform change if successful
-    logger.info("New password did not work, trying default sysadmin password...")
     token = login(base_url, sys_email, default_pw)
     if not token:
         return False, (

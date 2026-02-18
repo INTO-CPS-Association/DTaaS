@@ -10,7 +10,7 @@ from pathlib import Path
 from ...config import Config
 from ...cert import copy_certs
 from ...utils import is_ci
-from .postgres import setup_postgres_certs
+from ..postgres.postgres import setup_postgres_certs
 from .tb_cert import (
     setup_service_certificates,
     CertificateSetupConfig,
