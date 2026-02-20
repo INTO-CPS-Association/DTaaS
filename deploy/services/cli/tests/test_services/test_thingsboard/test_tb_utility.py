@@ -3,7 +3,7 @@
 import os
 import json
 import concurrent.futures
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import Mock, MagicMock
 import pytest
 import click
 import httpx
@@ -53,37 +53,37 @@ def test_run_install(mock_docker):
     )
 
 
-def test_run_thingsboard_install_timeout(mock_docker, mock_console):
+def test_run_thingsboard_install_timeout(mock_docker, mock_console, mocker):
     """Test ThingsBoard installation timeout"""
-    with patch.dict(os.environ, {"THINGSBOARD_INSTALL_TIMEOUT": "10"}):
-        with patch("concurrent.futures.ThreadPoolExecutor") as mock_executor_class:
-            mock_executor = MagicMock()
-            mock_future = MagicMock()
-            mock_future.result.side_effect = concurrent.futures.TimeoutError()
-            mock_executor.submit.return_value = mock_future
-            mock_executor.__enter__.return_value = mock_executor
-            mock_executor.__exit__.return_value = None
-            mock_executor_class.return_value = mock_executor
+    mocker.patch.dict(os.environ, {"THINGSBOARD_INSTALL_TIMEOUT": "10"})
+    mock_executor_class = mocker.patch("concurrent.futures.ThreadPoolExecutor")
+    mock_executor = MagicMock()
+    mock_future = MagicMock()
+    mock_future.result.side_effect = concurrent.futures.TimeoutError()
+    mock_executor.submit.return_value = mock_future
+    mock_executor.__enter__.return_value = mock_executor
+    mock_executor.__exit__.return_value = None
+    mock_executor_class.return_value = mock_executor
 
-            with pytest.raises(click.ClickException) as exc_info:
-                tb_utility.run_thingsboard_install(mock_console, mock_docker)
-            assert "timed out" in str(exc_info.value)
+    with pytest.raises(click.ClickException) as exc_info:
+        tb_utility.run_thingsboard_install(mock_console, mock_docker)
+    assert "timed out" in str(exc_info.value)
 
 
-def test_run_thingsboard_install_error(mock_docker, mock_console):
+def test_run_thingsboard_install_error(mock_docker, mock_console, mocker):
     """Test ThingsBoard installation error"""
-    with patch("concurrent.futures.ThreadPoolExecutor") as mock_executor_class:
-        mock_executor = MagicMock()
-        mock_future = MagicMock()
-        mock_future.result.side_effect = Exception("Install failed")
-        mock_executor.submit.return_value = mock_future
-        mock_executor.__enter__.return_value = mock_executor
-        mock_executor.__exit__.return_value = None
-        mock_executor_class.return_value = mock_executor
+    mock_executor_class = mocker.patch("concurrent.futures.ThreadPoolExecutor")
+    mock_executor = MagicMock()
+    mock_future = MagicMock()
+    mock_future.result.side_effect = Exception("Install failed")
+    mock_executor.submit.return_value = mock_future
+    mock_executor.__enter__.return_value = mock_executor
+    mock_executor.__exit__.return_value = None
+    mock_executor_class.return_value = mock_executor
 
-        with pytest.raises(click.ClickException) as exc_info:
-            tb_utility.run_thingsboard_install(mock_console, mock_docker)
-        assert "failed" in str(exc_info.value)
+    with pytest.raises(click.ClickException) as exc_info:
+        tb_utility.run_thingsboard_install(mock_console, mock_docker)
+    assert "failed" in str(exc_info.value)
 
 
 def test_handle_login_response_json_error():
@@ -95,16 +95,16 @@ def test_handle_login_response_json_error():
     assert token is None
 
 
-def test_log_login_error_ssl():
+def test_log_login_error_ssl(mocker):
     """Test logging SSL error"""
     error = httpx.HTTPError("certificate verify failed")
-    with patch(
+    mock_logger = mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_utility.logger"
-    ) as mock_logger:
-        tb_utility._log_login_error(error)
-        mock_logger.error.assert_called_once()
-        call_args = str(mock_logger.error.call_args)
-        assert "SSL" in call_args
+    )
+    tb_utility._log_login_error(error)
+    mock_logger.error.assert_called_once()
+    call_args = str(mock_logger.error.call_args)
+    assert "SSL" in call_args
 
 
 def test_process_login_response_success():
@@ -124,49 +124,49 @@ def test_process_login_response_unauthorized():
     assert token is None
 
 
-def test_login_network_error_with_retries():
+def test_login_network_error_with_retries(mocker):
     """Test login with network error and retries"""
-    with patch("httpx.post") as mock_post, patch("time.sleep"):
-        mock_post.side_effect = httpx.HTTPError("Connection error")
+    mock_post = mocker.patch(
+        "httpx.post", side_effect=httpx.HTTPError("Connection error")
+    )
+    mocker.patch("time.sleep")
+    token = tb_utility.login("https://localhost:8080", TEST_EMAIL, TEST_PASSWORD)
+    assert token is None
+    assert mock_post.call_count == 3  # 3 retries
 
-        token = tb_utility.login("https://localhost:8080", TEST_EMAIL, TEST_PASSWORD)
-        assert token is None
-        assert mock_post.call_count == 3  # 3 retries
 
-
-def test_login_server_error_with_retries():
+def test_login_server_error_with_retries(mocker):
     """Test login with server error and retries"""
-    with patch("httpx.post") as mock_post, patch("time.sleep"), patch("builtins.print"):
-        mock_response = Mock()
-        mock_response.status_code = 500
-        mock_post.return_value = mock_response
+    mock_response = Mock(status_code=500)
+    mock_post = mocker.patch("httpx.post", return_value=mock_response)
+    mocker.patch("time.sleep")
+    mocker.patch("builtins.print")
+    token = tb_utility.login("https://localhost:8080", TEST_EMAIL, TEST_PASSWORD)
+    assert token is None
+    assert mock_post.call_count == 3  # 3 retries
 
-        token = tb_utility.login("https://localhost:8080", TEST_EMAIL, TEST_PASSWORD)
-        assert token is None
-        assert mock_post.call_count == 3  # 3 retries
 
-
-def test_verify_admin_login_success():
+def test_verify_admin_login_success(mocker):
     """Test successful admin login verification"""
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_utility.login",
         return_value="test_token",
-    ):
-        success, msg = tb_utility.verify_admin_login(
-            "https://localhost:8080", TEST_EMAIL, TEST_PASSWORD
-        )
-        assert success is True
-        assert msg == ""
+    )
+    success, msg = tb_utility.verify_admin_login(
+        "https://localhost:8080", TEST_EMAIL, TEST_PASSWORD
+    )
+    assert success is True
+    assert msg == ""
 
 
-def test_verify_admin_login_failure():
+def test_verify_admin_login_failure(mocker):
     """Test failed admin login verification"""
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_utility.login",
         return_value=None,
-    ):
-        success, msg = tb_utility.verify_admin_login(
-            "https://localhost:8080", TEST_EMAIL, TEST_PASSWORD
-        )
-        assert success is False
-        assert "verification failed" in msg
+    )
+    success, msg = tb_utility.verify_admin_login(
+        "https://localhost:8080", TEST_EMAIL, TEST_PASSWORD
+    )
+    assert success is False
+    assert "verification failed" in msg

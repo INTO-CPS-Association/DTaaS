@@ -1,6 +1,5 @@
 """Tests for template and project structure functions"""
 
-from unittest.mock import patch
 from dtaas_services.pkg.template import (
     generate_project_structure,
 )
@@ -31,15 +30,15 @@ def test_generate_project_structure_success(tmp_path):
         assert (target_dir / "data" / subdir).exists()
 
 
-def test_generate_project_structure_failure(tmp_path):
+def test_generate_project_structure_failure(tmp_path, mocker):
     """Test project generation failure"""
     target_dir = tmp_path / "project"
     # Use invalid package root to trigger exception
     package_root = tmp_path / "nonexistent"
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.template.Path.mkdir",
         side_effect=PermissionError("No permission"),
-    ):
-        success, message = generate_project_structure(target_dir, package_root)
-        assert success is False
-        assert "Failed to generate project" in message
+    )
+    success, message = generate_project_structure(target_dir, package_root)
+    assert success is False
+    assert "Failed to generate project" in message

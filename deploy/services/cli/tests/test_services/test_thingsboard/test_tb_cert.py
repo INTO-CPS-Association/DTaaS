@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import pytest
 from dtaas_services.pkg.services.thingsboard import tb_cert
 # pylint: disable=W0212, W0621
@@ -21,91 +21,85 @@ def test_credential_process_context():
     assert ctx.seen_emails == set()
 
 
-def test_copy_service_cert_files_success():
+def test_copy_service_cert_files_success(mocker):
     """Test successful certificate file copying"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
     params = tb_cert.CertSetupParams(Path("/test/certs"), 999, 999)
     ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
+    mock_copy = mocker.patch("shutil.copy2")
+    paths, success, msg = tb_cert.copy_service_cert_files(ctx)
+    assert success is True
+    assert msg == ""
+    assert mock_copy.call_count == 2
+    service_key_path, service_cert_path = paths
+    assert service_key_path == Path("/test/certs/postgres.key")
+    assert service_cert_path == Path("/test/certs/postgres.crt")
 
-    with patch("shutil.copy2") as mock_copy:
-        paths, success, msg = tb_cert.copy_service_cert_files(ctx)
-        assert success is True
-        assert msg == ""
-        assert mock_copy.call_count == 2
-        service_key_path, service_cert_path = paths
-        assert service_key_path == Path("/test/certs/postgres.key")
-        assert service_cert_path == Path("/test/certs/postgres.crt")
 
-
-def test_set_service_cert_file_permissions_success():
+def test_set_service_cert_file_permissions_success(mocker):
     """Test setting certificate file permissions"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
     params = tb_cert.CertSetupParams(Path("/test/certs"), 999, 999)
     ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
     key_path = Path("/test/certs/postgres.key")
     cert_path = Path("/test/certs/postgres.crt")
-
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(True, "success"),
-    ):
-        success, _ = tb_cert.set_service_cert_file_permissions(ctx, key_path, cert_path)
-        assert success is True
+    )
+    success, _ = tb_cert.set_service_cert_file_permissions(ctx, key_path, cert_path)
+    assert success is True
 
 
-def test_set_service_cert_file_permissions_key_failure():
+def test_set_service_cert_file_permissions_key_failure(mocker):
     """Test permission setting failure on key"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
     params = tb_cert.CertSetupParams(Path("/test/certs"), 999, 999)
     ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
     key_path = Path("/test/certs/postgres.key")
     cert_path = Path("/test/certs/postgres.crt")
-
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_permissions",
         return_value=(False, "Permission error"),
-    ):
-        success, msg = tb_cert.set_service_cert_file_permissions(
-            ctx, key_path, cert_path
-        )
-        assert success is False
-        assert "Permission error" in msg
+    )
+    success, msg = tb_cert.set_service_cert_file_permissions(ctx, key_path, cert_path)
+    assert success is False
+    assert "Permission error" in msg
 
 
-def test_setup_service_certs_success():
+def test_setup_service_certs_success(mocker):
     """Test successful service certificate setup"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
     params = tb_cert.CertSetupParams(Path("/test/certs"), 999, 999)
     ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
-
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.copy_service_cert_files",
         return_value=(
             (Path("/test/certs/postgres.key"), Path("/test/certs/postgres.crt")),
             True,
             "",
         ),
-    ), patch(
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.set_service_cert_file_permissions",
         return_value=(True, "success"),
-    ):
-        success, _ = tb_cert.setup_service_certs(ctx)
-        assert success is True
+    )
+    success, _ = tb_cert.setup_service_certs(ctx)
+    assert success is True
 
 
-def test_setup_service_certs_os_error():
+def test_setup_service_certs_os_error(mocker):
     """Test service certificate setup with OS error"""
     cert_cfg = tb_cert.ServiceCertConfig("postgres", "postgres.key", "postgres.crt")
     params = tb_cert.CertSetupParams(Path("/test/certs"), 999, 999)
     ctx = tb_cert.ServiceSetupContext(cert_cfg, params)
-
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.copy_service_cert_files",
         side_effect=OSError("File error"),
-    ):
-        success, msg = tb_cert.setup_service_certs(ctx)
-        assert success is False
-        assert "postgres" in msg
+    )
+    success, msg = tb_cert.setup_service_certs(ctx)
+    assert success is False
+    assert "postgres" in msg
 
 
 def test_validate_credential_row_success():
@@ -164,23 +158,22 @@ def test_validate_credential_row_duplicate_email():
         ),
     ],
 )
-def test_build_base_url(env_vars, expected_url):
+def test_build_base_url(env_vars, expected_url, mocker):
     """Test building base URL with different configurations"""
-    with patch.dict(os.environ, env_vars, clear=False):
-        assert tb_cert.build_base_url() == expected_url
+    mocker.patch.dict(os.environ, env_vars, clear=False)
+    assert tb_cert.build_base_url() == expected_url
 
 
-def test_setup_service_certificates_os_error():
+def test_setup_service_certificates_os_error(mocker):
     """Test service certificate setup with OS error via config"""
     certs_dir = Path("/test/certs")
     config = tb_cert.CertificateSetupConfig(
         "postgres", "postgres.crt", "postgres.key", certs_dir, 999, 999
     )
-
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tb_cert.setup_service_certs",
         side_effect=OSError("File error"),
-    ):
-        success, msg = tb_cert.setup_service_certificates(config)
-        assert success is False
-        assert "postgres" in msg
+    )
+    success, msg = tb_cert.setup_service_certificates(config)
+    assert success is False
+    assert "postgres" in msg

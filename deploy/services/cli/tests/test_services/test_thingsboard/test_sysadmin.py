@@ -2,7 +2,7 @@
 # pylint: disable=W0212
 """Tests for ThingsBoard users functions."""
 
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import pytest
 import httpx
 import dtaas_services.pkg.services.thingsboard.sysadmin as th_users
@@ -45,67 +45,76 @@ def test_change_password_api_call_exception():
     assert th_users._change_password_api_call(ctx) is False
 
 
-def test_perform_password_change_scenarios():
-    """Test password change with multiple scenarios"""
+def test_perform_password_change_success(mocker):
+    """Test successful password change"""
     base_url = "https://localhost:8080"
     session = Mock()
     pw_config = th_users._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th_users._PasswordChangeContext(base_url, session, pw_config)
-
-    # Success case
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
         return_value=True,
-    ):
-        success, _ = th_users._perform_password_change(ctx)
-        assert success is True
-
-    # API call fails
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
-        return_value=False,
-    ):
-        success, _ = th_users._perform_password_change(ctx)
-        assert success is False
+    )
+    success, _ = th_users._perform_password_change(ctx)
+    assert success is True
 
 
-def test_change_sysadmin_password_scenarios():
-    """Test sysadmin password change with multiple scenarios"""
+def test_perform_password_change_api_fails(mocker):
+    """Test password change when API call fails"""
     base_url = "https://localhost:8080"
     session = Mock()
+    pw_config = th_users._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
+    ctx = th_users._PasswordChangeContext(base_url, session, pw_config)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
+        return_value=False,
+    )
+    success, _ = th_users._perform_password_change(ctx)
+    assert success is False
 
-    # Password already changed: default login fails, new-password login succeeds
-    with patch(
+
+def test_change_sysadmin_password_already_changed(mocker):
+    """Test sysadmin password already changed (default login fails, new succeeds)"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login",
         side_effect=[None, "token"],
-    ), patch("dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"):
-        success, _ = th_users.change_sysadmin_password_if_needed(
-            base_url, session, "new"
-        )
-        assert success is True
-
-    # Change needed: default login succeeds, change succeeds
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
-    ), patch(
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
-    ), patch(
+    )
+    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    assert success is True
+
+
+def test_change_sysadmin_password_change_needed(mocker):
+    """Test sysadmin password change when default login succeeds"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._perform_password_change",
         return_value=(True, "OK"),
-    ):
-        success, _ = th_users.change_sysadmin_password_if_needed(
-            base_url, session, "new"
-        )
-        assert success is True
+    )
+    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    assert success is True
 
-    # Both logins fail
-    with patch(
+
+def test_change_sysadmin_password_all_logins_fail(mocker):
+    """Test sysadmin password change when both logins fail"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
-    ):
-        success, _ = th_users.change_sysadmin_password_if_needed(
-            base_url, session, "new"
-        )
-        assert success is False
+    )
+    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    assert success is False
 
 
 def test_check_existing_tenant_scenarios():
@@ -176,34 +185,41 @@ def test_create_new_tenant_scenarios():
     assert tenant is None
 
 
-def test_get_or_create_tenant_scenarios():
-    """Test get or create tenant with multiple scenarios"""
+def test_get_or_create_tenant_existing(mocker):
+    """Test get_or_create_tenant when tenant already exists"""
     base_url = "https://localhost:8080"
     session = Mock()
-
-    # Existing tenant
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         return_value=({"name": "test"}, ""),
-    ):
-        tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
-        assert tenant is not None
+    )
+    tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
+    assert tenant is not None
 
-    # Create new
-    with patch(
+
+def test_get_or_create_tenant_create_new(mocker):
+    """Test get_or_create_tenant when tenant must be created"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         return_value=(None, ""),
-    ), patch(
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._create_new_tenant",
         return_value=({"title": "new"}, ""),
-    ):
-        tenant, _ = th_users.get_or_create_tenant(base_url, session, "new")
-        assert tenant is not None
+    )
+    tenant, _ = th_users.get_or_create_tenant(base_url, session, "new")
+    assert tenant is not None
 
-    # Exception
-    with patch(
+
+def test_get_or_create_tenant_exception(mocker):
+    """Test get_or_create_tenant when an exception is raised"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
         side_effect=Exception("Error"),
-    ):
-        tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
-        assert tenant is None
+    )
+    tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
+    assert tenant is None

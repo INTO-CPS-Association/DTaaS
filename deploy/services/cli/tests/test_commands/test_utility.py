@@ -1,6 +1,6 @@
 """Tests for utility functions used by service commands."""
 
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import click
 import pytest
 from rich.console import Console
@@ -51,23 +51,23 @@ def test_print_operation_status_with_service_list():
     _print_operation_status(console, meta, ["grafana", "influxdb"])
 
 
-def test_handle_service_command_success():
+def test_handle_service_command_success(mocker):
     """Test _handle_service_command with successful operation"""
 
     meta = OperationMeta("Starting", "cyan", "Starting containers...")
-    with patch("dtaas_services.commands.utility.Service"):
-        _handle_service_command(lambda sl: (None, "Started successfully"), None, meta)
+    mocker.patch("dtaas_services.commands.utility.Service")
+    _handle_service_command(lambda sl: (None, "Started successfully"), None, meta)
 
 
-def test_handle_service_command_failure():
+def test_handle_service_command_failure(mocker):
     """Test _handle_service_command raises ClickException on failure"""
 
     meta = OperationMeta("Starting", "cyan", "Starting containers...")
-    with patch("dtaas_services.commands.utility.Service"):
-        with pytest.raises(click.ClickException):
-            _handle_service_command(
-                lambda sl: (RuntimeError("fail"), "Docker error"), None, meta
-            )
+    mocker.patch("dtaas_services.commands.utility.Service")
+    with pytest.raises(click.ClickException):
+        _handle_service_command(
+            lambda sl: (RuntimeError("fail"), "Docker error"), None, meta
+        )
 
 
 def test_handle_service_command_file_not_found():
@@ -82,14 +82,14 @@ def test_handle_service_command_file_not_found():
         _handle_service_command(operation_raises_file_not_found, None, meta)
 
 
-def test_check_thingsboard_if_starting_start():
+def test_check_thingsboard_if_starting_start(mocker):
     """Test _check_thingsboard_if_starting checks TB when starting"""
     service = Mock()
     service.get_all_containers.return_value = (None, {})
-    with patch(
+    mock_check = mocker.patch(
         "dtaas_services.commands.utility.check_thingsboard_installation"
-    ) as mock_check:
-        _check_thingsboard_if_starting("start", service, None)
+    )
+    _check_thingsboard_if_starting("start", service, None)
     mock_check.assert_called_once()
 
 

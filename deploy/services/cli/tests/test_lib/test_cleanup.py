@@ -1,46 +1,45 @@
 """Tests for Cleanup methods (remove_services, clean_services)"""
 
 from pathlib import Path
-from unittest.mock import patch
 from .conftest import _make_service
 # pylint: disable=W0212, W0621
 
 
-def test_remove_services_with_volumes(patch_service_deps, tmp_path):
+def test_remove_services_with_volumes(patch_service_deps, tmp_path, mocker):
     """Test remove_services with volume removal"""
     service, mock_docker, _ = _make_service(patch_service_deps, tmp_path)
-    with patch.object(Path, "exists", return_value=True):
-        err, _ = service.remove_services(remove_volumes=True)
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, _ = service.remove_services(remove_volumes=True)
     assert err is None
     mock_docker.compose.rm.assert_called_once()
 
 
-def test_remove_services_with_service_list(patch_service_deps):
+def test_remove_services_with_service_list(patch_service_deps, mocker):
     """Test remove_services with specific services"""
     service, mock_docker, _ = _make_service(patch_service_deps)
-    with patch.object(Path, "exists", return_value=True):
-        err, _ = service.remove_services(["grafana", "influxdb"])
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, _ = service.remove_services(["grafana", "influxdb"])
     assert err is None
     mock_docker.compose.rm.assert_called_once_with(
         ["grafana", "influxdb"], stop=True, volumes=False
     )
 
 
-def test_remove_services_compose_file_not_found(patch_service_deps):
+def test_remove_services_compose_file_not_found(patch_service_deps, mocker):
     """Test remove_services when compose file does not exist"""
     service, _, _ = _make_service(patch_service_deps, Path("/nonexistent/base"))
-    with patch.object(Path, "exists", return_value=False):
-        err, _ = service.remove_services()
+    mocker.patch.object(Path, "exists", return_value=False)
+    err, _ = service.remove_services()
     assert err is not None
     assert isinstance(err, FileNotFoundError)
 
 
-def test_remove_services_docker_error(patch_service_deps):
+def test_remove_services_docker_error(patch_service_deps, mocker):
     """Test remove_services with Docker error"""
     service, mock_docker, _ = _make_service(patch_service_deps)
     mock_docker.compose.rm.side_effect = OSError("Remove error")
-    with patch.object(Path, "exists", return_value=True):
-        err, message = service.remove_services()
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, message = service.remove_services()
     assert err is not None
     assert "remove error" in message.lower()
 
@@ -96,14 +95,14 @@ def test_clean_services_no_directories(patch_service_deps, tmp_path):
     assert "no data directories" in msg.lower()
 
 
-def test_clean_services_os_error(patch_service_deps, tmp_path):
+def test_clean_services_os_error(patch_service_deps, tmp_path, mocker):
     """Test clean_services handles OSError"""
     service, _, _ = _make_service(patch_service_deps, tmp_path)
     (tmp_path / "data").mkdir()
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.lib.cleanup.remove_all_files_in_directory",
         side_effect=OSError("Disk error"),
-    ):
-        err, msg = service.clean_services()
+    )
+    err, msg = service.clean_services()
     assert err is not None
     assert "failed" in msg.lower()

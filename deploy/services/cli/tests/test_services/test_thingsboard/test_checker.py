@@ -1,6 +1,6 @@
 """Tests for ThingsBoard checker module."""
 
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import pytest
 import click
 from dtaas_services.pkg.services.thingsboard import checker
@@ -42,11 +42,14 @@ def test_is_thingsboard_installed_false_no_postgres(mock_docker):
     assert checker.is_thingsboard_installed(mock_docker, container_map) is False
 
 
-def test_confirm_continue_without_thingsboard_no():
+def test_confirm_continue_without_thingsboard_no(mocker):
     """Test user cancels operation"""
-    with patch("sys.stdin.isatty", return_value=True), patch(
+    mocker.patch("sys.stdin.isatty", return_value=True)
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.checker.is_ci", return_value=False
-    ), patch("click.confirm", return_value=False), pytest.raises(click.ClickException):
+    )
+    mocker.patch("click.confirm", return_value=False)
+    with pytest.raises(click.ClickException):
         checker._confirm_continue_without_thingsboard()
 
 
@@ -67,20 +70,22 @@ def test_check_thingsboard_installation_already_installed(mock_docker):
     checker.check_thingsboard_installation(mock_docker, container_map, None)
 
 
-def test_check_thingsboard_installation_needs_install(mock_docker, mock_console):
+def test_check_thingsboard_installation_needs_install(
+    mock_docker, mock_console, mocker
+):
     """Test check when ThingsBoard needs installation"""
     mock_container = Mock()
     mock_container.state.status = "running"
     container_map = {"postgres": mock_container}
     mock_docker.execute.return_value = "f"
 
-    with patch("dtaas_services.pkg.services.thingsboard.checker.Console") as mock_cls:
-        mock_cls.return_value = mock_console
-        with patch(
-            "dtaas_services.pkg.services.thingsboard.checker.is_ci", return_value=True
-        ):
-            checker.check_thingsboard_installation(mock_docker, container_map, None)
-            assert mock_console.print.call_count >= 2
+    mock_cls = mocker.patch("dtaas_services.pkg.services.thingsboard.checker.Console")
+    mock_cls.return_value = mock_console
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.checker.is_ci", return_value=True
+    )
+    checker.check_thingsboard_installation(mock_docker, container_map, None)
+    assert mock_console.print.call_count >= 2
 
 
 def test_check_postgres_dependency_no_check_needed():

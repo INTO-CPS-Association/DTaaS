@@ -1,7 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Tests for InfluxDB utility functions (_utils.py)"""
 
-from unittest.mock import patch
 from dtaas_services.pkg.services.influxdb._utils import (
     parse_json_response,
     execute_influxdb_command,
@@ -26,32 +25,32 @@ def test_parse_json_response_invalid_json():
     assert "Failed to parse JSON" in error
 
 
-def test_parse_json_response_key_error():
+def test_parse_json_response_key_error(mocker):
     """Test JSON parsing with KeyError"""
-    with patch("json.loads", side_effect=KeyError("missing key")):
-        success, data, error = parse_json_response('{"test": "value"}')
-        assert success is False
-        assert data is None
-        assert "Unexpected data format" in error
+    mocker.patch("json.loads", side_effect=KeyError("missing key"))
+    success, data, error = parse_json_response('{"test": "value"}')
+    assert success is False
+    assert data is None
+    assert "Unexpected data format" in error
 
 
-def test_execute_influxdb_command_success():
+def test_execute_influxdb_command_success(mocker):
     """Test successful InfluxDB command execution"""
-    with patch(f"{UTILS_PATH}.execute_docker_command") as mock_exec:
-        mock_exec.return_value = (True, "success output")
-        success, output = execute_influxdb_command(
-            ["influx", "user", "list"], "Failed to list users"
-        )
-        assert success is True
-        assert output == "success output"
+    mock_exec = mocker.patch(f"{UTILS_PATH}.execute_docker_command")
+    mock_exec.return_value = (True, "success output")
+    success, output = execute_influxdb_command(
+        ["influx", "user", "list"], "Failed to list users"
+    )
+    assert success is True
+    assert output == "success output"
 
 
-def test_execute_influxdb_command_failure():
+def test_execute_influxdb_command_failure(mocker):
     """Test failed InfluxDB command execution"""
-    with patch(f"{UTILS_PATH}.execute_docker_command") as mock_exec:
-        mock_exec.return_value = (False, "command failed")
-        success, error = execute_influxdb_command(
-            ["influx", "user", "list"], "Failed to list users"
-        )
-        assert success is False
-        assert "Failed to list users" in error
+    mock_exec = mocker.patch(f"{UTILS_PATH}.execute_docker_command")
+    mock_exec.return_value = (False, "command failed")
+    success, error = execute_influxdb_command(
+        ["influx", "user", "list"], "Failed to list users"
+    )
+    assert success is False
+    assert "Failed to list users" in error

@@ -1,8 +1,8 @@
 """Tests for ThingsBoard password helpers and sysadmin password reset."""
 
-import httpx
 from pathlib import Path
 from unittest.mock import Mock
+import httpx
 import dtaas_services.pkg.services.thingsboard.setup as th
 # pylint: disable=W0212, W0621
 

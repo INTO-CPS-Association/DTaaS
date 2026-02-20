@@ -2,40 +2,41 @@
 
 import time
 from pathlib import Path
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import pytest
 import click
 from dtaas_services.pkg.services.postgres import postgres
 # pylint: disable=W0212, W0621
 
 
-def test_setup_postgres_certs_failure():
+def test_setup_postgres_certs_failure(mocker):
     """Test failed Postgres certificate setup"""
     certs_dir = Path("/test/certs")
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres.setup_service_certificates",
         return_value=(False, "error"),
-    ):
-        success, _ = postgres.setup_postgres_certs(certs_dir, 999, 999)
-        assert success is False
+    )
+    success, _ = postgres.setup_postgres_certs(certs_dir, 999, 999)
+    assert success is False
 
 
-def test_permissions_postgres_missing_certs():
+def test_permissions_postgres_missing_certs(mocker):
     """Test Postgres permissions with missing certificates"""
-    with patch("pathlib.Path.exists", return_value=False):
-        success, msg = postgres.permissions_postgres()
-        assert success is False
-        assert "not found" in msg
+    mocker.patch("pathlib.Path.exists", return_value=False)
+    success, msg = postgres.permissions_postgres()
+    assert success is False
+    assert "not found" in msg
 
 
-def test_permissions_postgres_exception():
+def test_permissions_postgres_exception(mocker):
     """Test Postgres permissions with exception"""
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres.setup_postgres_certs",
         side_effect=Exception("Setup error"),
-    ), patch("pathlib.Path.exists", return_value=True):
-        success, _ = postgres.permissions_postgres()
-        assert success is False
+    )
+    mocker.patch("pathlib.Path.exists", return_value=True)
+    success, _ = postgres.permissions_postgres()
+    assert success is False
 
 
 def test_wait_iteration_ready(mock_console, mock_docker):
@@ -60,42 +61,43 @@ def test_wait_iteration_exception(mock_console, mock_docker):
     assert status is None
 
 
-def test_handle_wait_iteration_ready(mock_console, mock_docker):
+def test_handle_wait_iteration_ready(mock_console, mock_docker, mocker):
     """Test handle wait iteration when ready"""
     ctx = postgres.PostgresWaitContext(mock_console, mock_docker, 30, time.time(), None)
 
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres._wait_iteration",
         return_value=(True, "running"),
-    ):
-        result = postgres._handle_wait_iteration(ctx)
-        assert result is True
+    )
+    result = postgres._handle_wait_iteration(ctx)
+    assert result is True
 
 
-def test_handle_wait_iteration_not_ready(mock_console, mock_docker):
+def test_handle_wait_iteration_not_ready(mock_console, mock_docker, mocker):
     """Test handle wait iteration when not ready"""
     ctx = postgres.PostgresWaitContext(mock_console, mock_docker, 30, time.time(), None)
 
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres._wait_iteration",
         return_value=(False, "starting"),
-    ), patch("time.sleep"):
-        result = postgres._handle_wait_iteration(ctx)
-        assert result is False
-        assert ctx.last_status == "starting"
+    )
+    mocker.patch("time.sleep")
+    result = postgres._handle_wait_iteration(ctx)
+    assert result is False
+    assert ctx.last_status == "starting"
 
 
-def test_perform_wait_loop_becomes_ready(mock_console, mock_docker):
+def test_perform_wait_loop_becomes_ready(mock_console, mock_docker, mocker):
     """Test wait loop when Postgres becomes ready"""
     start_time = time.time()
     ctx = postgres.PostgresWaitContext(mock_console, mock_docker, 30, start_time, None)
 
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres._handle_wait_iteration",
         return_value=True,
-    ):
-        result = postgres._perform_wait_loop(ctx)
-        assert result is None
+    )
+    result = postgres._perform_wait_loop(ctx)
+    assert result is None
 
 
 def test_perform_wait_loop_timeout(mock_console, mock_docker):
@@ -107,11 +109,12 @@ def test_perform_wait_loop_timeout(mock_console, mock_docker):
     assert result == "timeout"
 
 
-def test_wait_for_postgres_ready_timeout(mock_console, mock_docker):
+def test_wait_for_postgres_ready_timeout(mock_console, mock_docker, mocker):
     """Test wait for Postgres ready with timeout"""
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.services.postgres.postgres._perform_wait_loop",
         return_value="timeout",
-    ), pytest.raises(click.ClickException) as exc_info:
+    )
+    with pytest.raises(click.ClickException) as exc_info:
         postgres.wait_for_postgres_ready(mock_console, mock_docker, 15)
     assert "15 seconds" in str(exc_info.value)
