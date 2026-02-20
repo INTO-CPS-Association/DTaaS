@@ -3,8 +3,8 @@
 from typing import Callable
 from dataclasses import dataclass
 import click
-from ..pkg.services.influxdb import influxdb
 from rich.console import Console
+from ..pkg.services.influxdb import influxdb
 from ..pkg.services import rabbitmq
 from ..pkg.services.thingsboard import setup_thingsboard_users
 from .utility import parse_service_list

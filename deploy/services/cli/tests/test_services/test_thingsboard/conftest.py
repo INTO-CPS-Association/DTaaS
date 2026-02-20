@@ -1,23 +1,20 @@
 """Shared fixtures for test_thingsboard tests"""
 
-from unittest.mock import patch
 import pytest
 from ..conftest import _create_mock_config_instance
 
 
 @pytest.fixture
-def mock_config():
+def mock_config(mocker):
     """Mock Config class for any module"""
-    # Patch both the permissions and setup modules
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.permissions.Config"
-    ) as mock1, patch("dtaas_services.pkg.services.thingsboard.setup.Config") as mock2:
-        mock_instance = _create_mock_config_instance(
-            {
-                "THINGSBOARD_UID": "1000",
-                "THINGSBOARD_GID": "1000",
-            }
-        )
-        mock1.return_value = mock_instance
-        mock2.return_value = mock_instance
-        yield mock1  # Return the first one for the test
+    mock_instance = _create_mock_config_instance(
+        {
+            "THINGSBOARD_UID": "1000",
+            "THINGSBOARD_GID": "1000",
+        }
+    )
+    mock1 = mocker.patch("dtaas_services.pkg.services.thingsboard.permissions.Config")
+    mock2 = mocker.patch("dtaas_services.pkg.services.thingsboard.setup.Config")
+    mock1.return_value = mock_instance
+    mock2.return_value = mock_instance
+    return mock1  # Return the first one for the test

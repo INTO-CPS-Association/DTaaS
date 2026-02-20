@@ -1,54 +1,56 @@
 """Tests for Manager methods (manage_services: start, stop, restart)"""
 
 from pathlib import Path
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 from dtaas_services.pkg.lib.manager import ServiceActionResult
 from .conftest import _make_service, _make_simple_service
 # pylint: disable=W0621, W0212
 
 
-def test_start_services_compose_file_not_found(patch_service_deps):
+def test_start_services_compose_file_not_found(patch_service_deps, mocker):
     """Test start_services when compose file does not exist"""
     service, _, _ = _make_simple_service(
         patch_service_deps,
         base_dir=Path("/nonexistent/base"),
         use_magic_mock=True,
     )
-    with patch.object(Path, "exists", return_value=False):
-        err, _ = service.manage_services("start")
+    mocker.patch.object(Path, "exists", return_value=False)
+    err, _ = service.manage_services("start")
 
     assert err is not None
     assert isinstance(err, FileNotFoundError)
 
 
-def test_start_services_docker_error(patch_service_deps):
+def test_start_services_docker_error(patch_service_deps, mocker):
     """Test start_services with Docker error"""
     service, mock_docker, _ = _make_simple_service(
         patch_service_deps, use_magic_mock=True
     )
     mock_docker.compose.up.side_effect = OSError("Docker error")
-    with patch.object(Path, "exists", return_value=True), patch.object(
-        service, "get_running_services", return_value=set()
-    ), patch.object(service, "get_all_service_names", return_value=(None, {"grafana"})):
-        err, message = service.manage_services("start")
+    mocker.patch.object(Path, "exists", return_value=True)
+    mocker.patch.object(service, "get_running_services", return_value=set())
+    mocker.patch.object(
+        service, "get_all_service_names", return_value=(None, {"grafana"})
+    )
+    err, message = service.manage_services("start")
 
     assert err is not None
     assert isinstance(err, OSError)
     assert "docker error" in message.lower()
 
 
-def test_stop_services_with_service_list(patch_service_deps):
+def test_stop_services_with_service_list(patch_service_deps, mocker):
     """Test stop_services with specific services"""
     service, mock_docker, _ = _make_simple_service(
         patch_service_deps, use_magic_mock=True
     )
-    with patch.object(Path, "exists", return_value=True):
-        err, _ = service.manage_services("stop", ["grafana", "influxdb"])
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, _ = service.manage_services("stop", ["grafana", "influxdb"])
     assert err is None
     mock_docker.compose.stop.assert_called_once_with(["grafana", "influxdb"])
 
 
-def test_prepare_services_to_start(patch_service_deps):
+def test_prepare_services_to_start(patch_service_deps, mocker):
     """Test prepare_services_to_start separates running/starting/restarting"""
     service, mock_docker, _ = _make_service(patch_service_deps)
     container_running = Mock()
@@ -59,10 +61,10 @@ def test_prepare_services_to_start(patch_service_deps):
     container_restarting.state.status = "restarting"
     mock_docker.container.list.return_value = [container_running, container_restarting]
 
-    with patch.object(Path, "exists", return_value=True):
-        _, skipped, restarting = service.prepare_services_to_start(
-            ["grafana", "influxdb", "mongodb"], skip_services=set()
-        )
+    mocker.patch.object(Path, "exists", return_value=True)
+    _, skipped, restarting = service.prepare_services_to_start(
+        ["grafana", "influxdb", "mongodb"], skip_services=set()
+    )
     assert "grafana" in skipped
     assert "influxdb" in restarting
 
@@ -79,26 +81,28 @@ def test_prepare_all_services_to_start_error(patch_service_deps):
     assert not restarting
 
 
-def test_filter_postgres_if_needed_stop_postgres_tb_running(patch_service_deps):
+def test_filter_postgres_if_needed_stop_postgres_tb_running(patch_service_deps, mocker):
     """Test _filter_postgres_if_needed blocks postgres stop when TB is running"""
     service, _, _ = _make_service(patch_service_deps)
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.lib.manager._is_thingsboard_container_running",
         return_value=True,
-    ):
-        _, err, msg = service._filter_postgres_if_needed("stop", ["postgres"])
+    )
+    _, err, msg = service._filter_postgres_if_needed("stop", ["postgres"])
     assert err is not None
     assert "thingsboard" in msg.lower()
 
 
-def test_filter_postgres_if_needed_stop_postgres_tb_not_running(patch_service_deps):
+def test_filter_postgres_if_needed_stop_postgres_tb_not_running(
+    patch_service_deps, mocker
+):
     """Test _filter_postgres_if_needed allows postgres stop when TB is not running"""
     service, _, _ = _make_service(patch_service_deps)
-    with patch(
+    mocker.patch(
         "dtaas_services.pkg.lib.manager._is_thingsboard_container_running",
         return_value=False,
-    ):
-        _, err, _ = service._filter_postgres_if_needed("stop", ["postgres"])
+    )
+    _, err, _ = service._filter_postgres_if_needed("stop", ["postgres"])
     assert err is None
 
 

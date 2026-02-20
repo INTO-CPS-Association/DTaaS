@@ -1,6 +1,5 @@
 """Tests for setup_ops commands (setup, generate-project, install)"""
 
-from unittest.mock import patch
 from dtaas_services.cmd import services
 # pylint: disable=W0621
 
@@ -25,16 +24,16 @@ def test_setup_cert_copy_fails(runner, mock_service_setup):
     assert "Copy failed" in result.output
 
 
-def test_setup_config_not_found(runner):
+def test_setup_config_not_found(runner, mocker):
     """Test setup fails when config not found"""
-    with patch("dtaas_services.pkg.utils.os.geteuid", return_value=0, create=True):
-        with patch(
-            "dtaas_services.pkg.config.Config.__init__",
-            side_effect=FileNotFoundError("Config not found"),
-        ):
-            result = runner.invoke(services, ["setup"])
-            assert result.exit_code != 0
-            assert "Config not found" in result.output
+    mocker.patch("dtaas_services.pkg.utils.os.geteuid", return_value=0, create=True)
+    mocker.patch(
+        "dtaas_services.pkg.config.Config.__init__",
+        side_effect=FileNotFoundError("Config not found"),
+    )
+    result = runner.invoke(services, ["setup"])
+    assert result.exit_code != 0
+    assert "Config not found" in result.output
 
 
 def test_generate_project_custom_path(runner, tmp_path):
@@ -46,15 +45,15 @@ def test_generate_project_custom_path(runner, tmp_path):
     assert "Project structure generated" in result.output
 
 
-def test_generate_project_failure(runner):
+def test_generate_project_failure(runner, mocker):
     """Test generate-project failure"""
-    with patch(
+    mock_gen = mocker.patch(
         "dtaas_services.commands.setup_ops.generate_project_structure"
-    ) as mock_gen:
-        mock_gen.return_value = (False, "Failed to generate project: Path error")
-        result = runner.invoke(services, ["generate-project"])
-        assert result.exit_code != 0
-        assert "Failed to generate project" in result.output
+    )
+    mock_gen.return_value = (False, "Failed to generate project: Path error")
+    result = runner.invoke(services, ["generate-project"])
+    assert result.exit_code != 0
+    assert "Failed to generate project" in result.output
 
 
 def test_install_invalid_service(runner):
@@ -64,18 +63,19 @@ def test_install_invalid_service(runner):
     assert "only supported for ThingsBoard" in result.output
 
 
-def test_install_success(runner, mock_service_setup):
+def test_install_success(runner, mock_service_setup, mocker):
     """Test successful install command"""
     mock_service_setup["service_instance"].manage_services.return_value = (
         None,
         "PostgreSQL started",
     )
-    with patch(
+    mock_wait = mocker.patch(
         "dtaas_services.commands.setup_ops.wait_for_postgres_ready"
-    ) as mock_wait, patch(
+    )
+    mock_install = mocker.patch(
         "dtaas_services.commands.setup_ops.run_thingsboard_install"
-    ) as mock_install:
-        result = runner.invoke(services, ["install"])
+    )
+    result = runner.invoke(services, ["install"])
     assert result.exit_code == 0
     assert "ThingsBoard installation completed" in result.output
     mock_wait.assert_called_once()
@@ -93,12 +93,13 @@ def test_install_postgres_start_fails(runner, mock_service_setup):
     assert "Failed to start PostgreSQL" in result.output
 
 
-def test_install_file_not_found(runner):
+def test_install_file_not_found(runner, mocker):
     """Test install command when Service init raises FileNotFoundError"""
-    with patch("dtaas_services.commands.setup_ops.check_root_unix"), patch(
+    mocker.patch("dtaas_services.commands.setup_ops.check_root_unix")
+    mocker.patch(
         "dtaas_services.commands.setup_ops.Service",
         side_effect=FileNotFoundError("Config not found"),
-    ):
-        result = runner.invoke(services, ["install"])
+    )
+    result = runner.invoke(services, ["install"])
     assert result.exit_code != 0
     assert "Config not found" in result.output

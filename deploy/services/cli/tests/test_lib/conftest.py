@@ -1,25 +1,26 @@
 """Shared fixtures for test_lib tests"""
 
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import Mock, MagicMock
 import pytest
 from dtaas_services.pkg.lib import Service
 # pylint: disable=W0621
 
 
 @pytest.fixture(autouse=True)
-def patch_service_deps(monkeypatch):
+def patch_service_deps(monkeypatch, mocker):
     """Patch dependencies for Service tests"""
     monkeypatch.setenv("HOSTNAME", "test-hostname")
-    with patch("dtaas_services.pkg.lib.initialization.Config") as mock_config, patch(
+    mock_config = mocker.patch("dtaas_services.pkg.lib.initialization.Config")
+    mock_docker_client = mocker.patch(
         "dtaas_services.pkg.lib.initialization.DockerClient"
-    ) as mock_docker_client, patch(
-        "dtaas_services.pkg.lib.cleanup.Config", mock_config
-    ), patch("dtaas_services.pkg.lib.utils.Config", mock_config):
-        mock_config_instance = Mock()
-        mock_config_instance.env = {}
-        mock_config.return_value = mock_config_instance
-        yield mock_docker_client, mock_config
+    )
+    mocker.patch("dtaas_services.pkg.lib.cleanup.Config", mock_config)
+    mocker.patch("dtaas_services.pkg.lib.utils.Config", mock_config)
+    mock_config_instance = Mock()
+    mock_config_instance.env = {}
+    mock_config.return_value = mock_config_instance
+    return mock_docker_client, mock_config
 
 
 def _make_service(patch_service_deps, base_dir=None):

@@ -1,6 +1,5 @@
 """Tests for user_ops commands (user add)"""
 
-from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 from rich.console import Console
@@ -20,18 +19,18 @@ def runner():
 
 
 @pytest.fixture
-def mock_user_pkg():
+def mock_user_pkg(mocker):
     """Mock user management modules"""
-    with patch("dtaas_services.commands.user_ops.influxdb") as mock_influx, patch(
-        "dtaas_services.commands.user_ops.rabbitmq"
-    ) as mock_rabbit, patch(
+    mock_influx = mocker.patch("dtaas_services.commands.user_ops.influxdb")
+    mock_rabbit = mocker.patch("dtaas_services.commands.user_ops.rabbitmq")
+    mock_thingsboard = mocker.patch(
         "dtaas_services.commands.user_ops.setup_thingsboard_users"
-    ) as mock_thingsboard:
-        yield {
-            "influxdb": mock_influx,
-            "rabbitmq": mock_rabbit,
-            "thingsboard": mock_thingsboard,
-        }
+    )
+    return {
+        "influxdb": mock_influx,
+        "rabbitmq": mock_rabbit,
+        "thingsboard": mock_thingsboard,
+    }
 
 
 def test_add_users_influxdb_fails(runner, mock_user_pkg):

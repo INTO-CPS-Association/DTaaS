@@ -1,7 +1,6 @@
 """Tests for lib/utils.py standalone utility functions"""
 
 from pathlib import Path
-from unittest.mock import patch
 from dtaas_services.pkg.lib.utils import (
     check_compose_file,
     get_service_data_directories,
@@ -19,20 +18,20 @@ from .conftest import _make_simple_service
 # pylint: disable=W0621
 
 
-def test_check_compose_file_exists(patch_service_deps):
+def test_check_compose_file_exists(patch_service_deps, mocker):
     """Test check_compose_file when file exists"""
     service, _, _ = _make_simple_service(patch_service_deps)
-    with patch.object(Path, "exists", return_value=True):
-        err, exists = check_compose_file(service.compose_file)
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, exists = check_compose_file(service.compose_file)
     assert err is None
     assert exists is True
 
 
-def test_check_compose_file_not_exists(patch_service_deps):
+def test_check_compose_file_not_exists(patch_service_deps, mocker):
     """Test check_compose_file when file does not exist"""
     service, _, _ = _make_simple_service(patch_service_deps)
-    with patch.object(Path, "exists", return_value=False):
-        err, exists = check_compose_file(service.compose_file)
+    mocker.patch.object(Path, "exists", return_value=False)
+    err, exists = check_compose_file(service.compose_file)
     assert err is not None
     assert isinstance(err, FileNotFoundError)
     assert exists is False
@@ -68,10 +67,10 @@ def test_remove_directory_item_directory(tmp_path):
     assert not test_dir.exists()
 
 
-def test_process_directory_contents_permission_error(tmp_path, capsys):
+def test_process_directory_contents_permission_error(tmp_path, capsys, mocker):
     """Test _process_directory_contents handles access errors"""
-    with patch.object(Path, "iterdir", side_effect=OSError("Permission denied")):
-        _process_directory_contents(tmp_path)
+    mocker.patch.object(Path, "iterdir", side_effect=OSError("Permission denied"))
+    _process_directory_contents(tmp_path)
     captured = capsys.readouterr()
     assert "Warning" in captured.err
 
@@ -92,10 +91,10 @@ def test_process_gitkeep_item_directory(tmp_path):
     assert not gitkeep.exists()
 
 
-def test_process_gitkeep_directory_error(tmp_path, capsys):
+def test_process_gitkeep_directory_error(tmp_path, capsys, mocker):
     """Test _process_gitkeep_directory handles access errors"""
-    with patch.object(Path, "iterdir", side_effect=OSError("Access denied")):
-        _process_gitkeep_directory(tmp_path)
+    mocker.patch.object(Path, "iterdir", side_effect=OSError("Access denied"))
+    _process_gitkeep_directory(tmp_path)
     captured = capsys.readouterr()
     assert "Warning" in captured.err
 

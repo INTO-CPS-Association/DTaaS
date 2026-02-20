@@ -1,6 +1,5 @@
 """Tests for service_ops commands (start, stop, restart, status, remove, clean)"""
 
-from unittest.mock import patch
 from conftest import make_mock_container
 from dtaas_services.cmd import services
 # pylint: disable=W0621
@@ -93,24 +92,24 @@ def test_status_runtime_error(runner, mock_service_setup):
     assert "Docker not running" in result.output
 
 
-def test_status_file_not_found(runner):
+def test_status_file_not_found(runner, mocker):
     """Test status command when Service init raises FileNotFoundError"""
-    with patch(
+    mocker.patch(
         "dtaas_services.commands.service_ops.Service",
         side_effect=FileNotFoundError("Config not found"),
-    ):
-        result = runner.invoke(services, ["status"])
+    )
+    result = runner.invoke(services, ["status"])
     assert result.exit_code != 0
     assert "Config not found" in result.output
 
 
-def test_remove_file_not_found(runner):
+def test_remove_file_not_found(runner, mocker):
     """Test remove command when Service init raises FileNotFoundError"""
-    with patch(
+    mocker.patch(
         "dtaas_services.commands.service_ops.Service",
         side_effect=FileNotFoundError("Config not found"),
-    ):
-        result = runner.invoke(services, ["remove"])
+    )
+    result = runner.invoke(services, ["remove"])
     assert result.exit_code != 0
     assert "Config not found" in result.output
 
@@ -144,12 +143,12 @@ def test_clean_failure(runner, mock_service_setup):
     assert result.exit_code != 0
 
 
-def test_clean_file_not_found(runner):
+def test_clean_file_not_found(runner, mocker):
     """Test clean command when Service init raises FileNotFoundError"""
-    with patch(
+    mocker.patch(
         "dtaas_services.commands.service_ops.Service",
         side_effect=FileNotFoundError("Config not found"),
-    ):
-        result = runner.invoke(services, ["clean"], input="y\n")
+    )
+    result = runner.invoke(services, ["clean"], input="y\n")
     assert result.exit_code != 0
     assert "Config not found" in result.output

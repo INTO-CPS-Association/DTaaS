@@ -1,14 +1,14 @@
 """Tests for Status methods (get_status, container matching, _fetch_status_data)"""
 
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import Mock, MagicMock
 from dtaas_services.pkg.lib import Service
 from conftest import make_mock_container
 from .conftest import _make_service, _make_simple_service
 # pylint: disable=W0621, W0212
 
 
-def test_get_status_success(patch_service_deps):
+def test_get_status_success(patch_service_deps, mocker):
     """Test successful get_status"""
 
     mock_docker_client, mock_config = patch_service_deps
@@ -24,13 +24,13 @@ def test_get_status_success(patch_service_deps):
     mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True):
-        err, containers = service.get_status()
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, containers = service.get_status()
     assert err is None
     assert len(containers) == 2
 
 
-def test_get_status_with_service_list(patch_service_deps):
+def test_get_status_with_service_list(patch_service_deps, mocker):
     """Test get_status with specific services"""
 
     mock_docker_client, mock_config = patch_service_deps
@@ -44,13 +44,13 @@ def test_get_status_with_service_list(patch_service_deps):
     mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True):
-        err, containers = service.get_status(["grafana"])
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, containers = service.get_status(["grafana"])
     assert err is None
     assert any(c.name == "grafana" for c in containers)
 
 
-def test_get_status_compose_file_not_found(patch_service_deps):
+def test_get_status_compose_file_not_found(patch_service_deps, mocker):
     """Test get_status when compose file does not exist"""
 
     service, _, _ = _make_simple_service(
@@ -58,14 +58,14 @@ def test_get_status_compose_file_not_found(patch_service_deps):
         base_dir=Path("/nonexistent/base"),
         use_magic_mock=True,
     )
-    with patch.object(Path, "exists", return_value=False):
-        err, containers = service.get_status()
+    mocker.patch.object(Path, "exists", return_value=False)
+    err, containers = service.get_status()
     assert err is not None
     assert isinstance(err, FileNotFoundError)
     assert containers == []
 
 
-def test_get_status_docker_error(patch_service_deps):
+def test_get_status_docker_error(patch_service_deps, mocker):
     """Test get_status with Docker error"""
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
@@ -76,8 +76,8 @@ def test_get_status_docker_error(patch_service_deps):
     mock_docker.compose.config.return_value = mock_config_obj
     mock_docker_client.return_value = mock_docker
     service = Service()
-    with patch.object(Path, "exists", return_value=True):
-        err, containers = service.get_status()
+    mocker.patch.object(Path, "exists", return_value=True)
+    err, containers = service.get_status()
     assert err is not None
     assert containers == []
 
@@ -117,15 +117,15 @@ def test_get_all_service_names_empty(patch_service_deps):
     assert names == set()
 
 
-def test_get_running_services_returns_running(patch_service_deps):
+def test_get_running_services_returns_running(patch_service_deps, mocker):
     """Test get_running_services returns running service names"""
 
     service, mock_docker, _ = _make_service(patch_service_deps)
     container1 = make_mock_container("grafana", "running")
     container2 = make_mock_container("influxdb", "exited")
     mock_docker.container.list.return_value = [container1, container2]
-    with patch.object(Path, "exists", return_value=True):
-        result = service.get_running_services()
+    mocker.patch.object(Path, "exists", return_value=True)
+    result = service.get_running_services()
     assert "grafana" in result
     assert "influxdb" not in result
 
@@ -139,15 +139,15 @@ def test_get_running_services_docker_error(patch_service_deps):
     assert result == set()
 
 
-def test_get_running_or_restarting_services(patch_service_deps):
+def test_get_running_or_restarting_services(patch_service_deps, mocker):
     """Test get_running_or_restarting_services categorizes correctly"""
 
     service, mock_docker, _ = _make_service(patch_service_deps)
     container1 = make_mock_container("grafana", "running")
     container2 = make_mock_container("influxdb", "restarting")
     mock_docker.container.list.return_value = [container1, container2]
-    with patch.object(Path, "exists", return_value=True):
-        running, restarting = service.get_running_or_restarting_services()
+    mocker.patch.object(Path, "exists", return_value=True)
+    running, restarting = service.get_running_or_restarting_services()
     assert "grafana" in running
     assert "influxdb" in restarting
 
