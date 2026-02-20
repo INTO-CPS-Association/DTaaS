@@ -9,7 +9,7 @@ from pathlib import Path
 import httpx
 from ...config import Config
 from .tb_utility import get_ssl_verify
-from .sysadmin import change_sysadmin_password_if_needed
+from .sysadmin import change_sysadmin_password_if_needed, authenticate_session
 from .tenant_admin import (
     create_tenant_and_admin,
     TenantAdminContext,
@@ -152,6 +152,11 @@ def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
         Config()  # Loads config/services.env into environment
         base_url = build_base_url()
         session = _create_session()
+
+        # Authenticate session as sysadmin before making API calls
+        auth_ok, auth_err = authenticate_session(base_url, session)
+        if not auth_ok:
+            return False, auth_err
 
         return _process_credentials_file(base_url, session, credentials_file)
     except (OSError, httpx.HTTPError) as e:

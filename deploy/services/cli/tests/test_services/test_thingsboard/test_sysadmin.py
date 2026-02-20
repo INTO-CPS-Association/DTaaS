@@ -56,9 +56,7 @@ def test_perform_password_change_scenarios():
     with patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
         return_value=True,
-    ), patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
-    ), patch("dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"):
+    ):
         success, _ = th_users._perform_password_change(ctx)
         assert success is True
 
@@ -70,37 +68,24 @@ def test_perform_password_change_scenarios():
         success, _ = th_users._perform_password_change(ctx)
         assert success is False
 
-    # Re-login fails
-    with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
-        return_value=True,
-    ), patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
-    ):
-        success, _ = th_users._perform_password_change(ctx)
-        assert success is False
-
 
 def test_change_sysadmin_password_scenarios():
     """Test sysadmin password change with multiple scenarios"""
     base_url = "https://localhost:8080"
     session = Mock()
 
-    # Password already changed
+    # Password already changed: default login fails, new-password login succeeds
     with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
-        return_value="token",
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login",
+        side_effect=[None, "token"],
     ), patch("dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"):
         success, _ = th_users.change_sysadmin_password_if_needed(
             base_url, session, "new"
         )
         assert success is True
 
-    # Change needed
+    # Change needed: default login succeeds, change succeeds
     with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
-        return_value=None,
-    ), patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
     ), patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
@@ -113,11 +98,8 @@ def test_change_sysadmin_password_scenarios():
         )
         assert success is True
 
-    # Default login fails
+    # Both logins fail
     with patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._try_login_with_new_password",
-        return_value=None,
-    ), patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
     ):
         success, _ = th_users.change_sysadmin_password_if_needed(

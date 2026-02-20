@@ -171,23 +171,21 @@ def _print_reset_password_summary(results: list[bool]) -> None:
     "--services",
     "-s",
     "service_names",
-    help="Comma-separated list of services",
-    required=True,
+    help="Comma-separated list of services (default: thingsboard)",
+    required=False,
+    default=None,
 )
 def reset_password(service_names):
     """
     Reset admin passwords for services.
     Currently supports: thingsboard.
     Example:
+        dtaas-services user reset-password
         dtaas-services user reset-password -s thingsboard
     """
     console = Console()
     console.print("[bold cyan]Resetting service passwords...[/bold cyan]")
-    service_list = parse_service_list(service_names)
-
-    if not service_list:
-        console.print("[bold red]Please specify services with -s option.[/bold red]")
-        return
+    service_list = parse_service_list(service_names) or ["thingsboard"]
 
     results = [_reset_password_for_service(console, s) for s in service_list]
     _print_reset_password_summary(results)

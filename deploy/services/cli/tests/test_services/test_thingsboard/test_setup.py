@@ -124,7 +124,7 @@ def test_setup_thingsboard_users_success(mocker):
     )
     mocker.patch("httpx.Client")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
         return_value=(True, ""),
     )
     mocker.patch(
@@ -136,7 +136,7 @@ def test_setup_thingsboard_users_success(mocker):
 
 
 def test_setup_thingsboard_users_password_fails(mocker):
-    """Test ThingsBoard users setup - password change fails"""
+    """Test ThingsBoard users setup - authentication fails"""
     mocker.patch("pathlib.Path.exists", return_value=True)
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
@@ -144,8 +144,8 @@ def test_setup_thingsboard_users_password_fails(mocker):
     )
     mocker.patch("httpx.Client")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
-        return_value=(False, "error"),
+        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
+        return_value=(False, "auth error"),
     )
     success, _ = th.setup_thingsboard_users()
     assert success is False
@@ -160,7 +160,7 @@ def test_setup_thingsboard_users_process_fails(mocker):
     )
     mocker.patch("httpx.Client")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
         return_value=(True, ""),
     )
     mocker.patch(
