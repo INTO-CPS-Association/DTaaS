@@ -30,6 +30,7 @@ def user():
 
 
 user.add_command(user_ops.add)
+user.add_command(user_ops.reset_password)
 
 
 if __name__ == "__main__":

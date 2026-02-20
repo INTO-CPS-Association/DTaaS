@@ -232,6 +232,18 @@ dtaas-services clean -s "postgres,thingsboard"
    dtaas-services user add -s rabbitmq
    ```
 
+### Reset Service Passwords
+
+Reset the ThingsBoard sysadmin password using the value configured in
+`config/services.env` (`TB_SYSADMIN_NEW_PASSWORD`):
+
+```bash
+dtaas-services user reset-password -s thingsboard
+```
+
+The command reads the new password from `TB_SYSADMIN_NEW_PASSWORD`
+and applies it via the ThingsBoard API.
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard

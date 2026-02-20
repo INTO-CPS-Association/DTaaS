@@ -1,4 +1,4 @@
-"""Tests for ThingsBoard admin user management functions."""
+"""Tests for ThingsBoard user provisioning and credentials processing."""
 
 from pathlib import Path
 from unittest.mock import Mock, mock_open
@@ -183,66 +183,6 @@ def test_process_credentials_file_no_email_column(mocker):
     assert "Email column is required" in msg
 
 
-def test_change_password_with_logging_success(mocker):
-    """Test _change_password_with_logging suppresses logging"""
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
-        return_value=(True, "Password changed"),
-    )
-    success, _ = th._change_password_with_logging(
-        "https://localhost:8080", session, "newpass"
-    )
-    assert success is True
-
-
-def test_handle_password_change_result_recoverable_error():
-    """Test _handle_password_change_result with recoverable error"""
-    should_continue, error = th._handle_password_change_result(
-        False, "Server not reachable"
-    )
-    assert should_continue is True
-    assert error is None
-
-
-def test_handle_password_change_result_fatal_error():
-    """Test _handle_password_change_result with fatal error"""
-    should_continue, error = th._handle_password_change_result(
-        False, "Invalid credentials format"
-    )
-    assert should_continue is False
-    assert error is not None
-
-
-def test_handle_password_setup_with_password(mocker):
-    """Test _handle_password_setup with password"""
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
-        return_value=(True, "Changed"),
-    )
-    should_continue, _ = th._handle_password_setup(
-        "https://localhost:8080", session, "newpass"
-    )
-    assert should_continue is True
-
-
-def test_setup_helper_certs_value_error(mocker):
-    """Test _setup_helper_certs handles ValueError"""
-    mocker.patch("pathlib.Path.exists", return_value=True)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
-        return_value="https://localhost:8080",
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._create_session",
-        side_effect=ValueError("Bad config"),
-    )
-    success, msg = th._setup_helper_certs(Path("/test/creds.csv"))
-    assert success is False
-    assert "Error" in msg
-
-
 def test_thingsboard_configure_success(mocker):
     """Test thingsboard_configure on success"""
     mocker.patch(
@@ -261,5 +201,17 @@ def test_thingsboard_configure_failure(mocker):
         return_value=(False, "Connection refused"),
     )
     success, msg = th.thingsboard_configure()
+    assert success is False
+    assert "Error" in msg
+
+
+def test_setup_thingsboard_users_os_error(mocker):
+    """Test setup_thingsboard_users handles OSError from _setup_helper_certs"""
+    mocker.patch("pathlib.Path.exists", return_value=True)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._setup_helper_certs",
+        side_effect=OSError("disk error"),
+    )
+    success, msg = th.setup_thingsboard_users()
     assert success is False
     assert "Error" in msg

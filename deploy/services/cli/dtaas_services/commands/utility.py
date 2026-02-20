@@ -104,7 +104,10 @@ def services_command_runner(command: str, service_name) -> None:
     """Run start/stop/restart service commands."""
     service_list = parse_service_list(service_name)
     meta = _get_command_metadata(command)
-    service = Service()
+    try:
+        service = Service()
+    except (FileNotFoundError, RuntimeError) as e:
+        raise click.ClickException(str(e)) from e
 
     _check_thingsboard_if_starting(command, service, service_list)
 

@@ -47,7 +47,7 @@ cli/
 │   │   ├── __init__.py
 │   │   ├── service_ops.py  # Service lifecycle commands (start, stop, restart, status, remove, clean)
 │   │   ├── setup_ops.py    # Setup commands (generate-project, setup, install)
-│   │   ├── user_ops.py     # User management commands (user add)
+│   │   ├── user_ops.py     # User management commands (user add, user reset-password)
 │   │   └── utility.py      # Command utilities
 │   ├── compose.services.secure.yml  # Main services Docker Compose configuration (copied by build.py)
 │   ├── compose.thingsboard.secure.yml  # ThingsBoard and PostgreSQL Docker Compose configuration (copied by build.py)
@@ -138,6 +138,7 @@ cli/
     │       ├── __init__.py
     │       ├── test_permissions.py
     │       ├── test_setup.py
+    │       ├── test_reset_password.py
     │       ├── test_sysadmin.py
     │       ├── test_checker.py
     │       ├── test_tb_cert.py
@@ -165,7 +166,7 @@ The package uses a modular, three-layer architecture:
  remove, clean)
 * **`setup_ops.py`**: Setup and installation commands (generate-project, setup,
  install)
-* **`user_ops.py`**: User management commands (user add)
+* **`user_ops.py`**: User management commands (`user add`, `user reset-password`)
 * **`utility.py`**: Shared command utilities
 
 #### Business Logic Layer (`pkg/`)
@@ -287,6 +288,9 @@ Stops and removes Docker containers:
   credentials
 * **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
   using the `dtaas-services user add` command
+* **Password Reset**: The sysadmin password can be reset independently using
+  `dtaas-services user reset-password -s thingsboard`, which reads
+  `TB_SYSADMIN_NEW_PASSWORD` from `config/services.env`
 * **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by
   the `SSL_VERIFY` environment variable (from `services.env`) and use
   verification enabled by default. For self-signed certificates in non-production

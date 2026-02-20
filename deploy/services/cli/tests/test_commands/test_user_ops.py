@@ -1,4 +1,4 @@
-"""Tests for user_ops commands (user add)"""
+"""Tests for user_ops commands (user add, user reset-password)"""
 
 import pytest
 from click.testing import CliRunner
@@ -7,6 +7,7 @@ from dtaas_services.cmd import services
 from dtaas_services.commands.user_ops import (
     _print_service_user_result,
     _setup_specific_service,
+    _reset_password_for_service,
     UserSetupResult,
 )
 # pylint: disable=W0621
@@ -89,9 +90,48 @@ def test_setup_specific_service_unknown():
     assert result is None
 
 
+@pytest.fixture
+def mock_reset_pkg(mocker):
+    """Mock reset_thingsboard_password"""
+    return mocker.patch("dtaas_services.commands.user_ops.reset_thingsboard_password")
+
+
 def test_add_users_specific_service(runner, mock_user_pkg):
     """Test user add with specific service"""
     mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (True, "OK")
     result = runner.invoke(services, ["user", "add", "-s", "influxdb"])
     assert result.exit_code == 0
     assert "InfluxDB: OK" in result.output
+
+
+def test_reset_password_thingsboard_success(runner, mock_reset_pkg):
+    """Test reset-password command succeeds for thingsboard"""
+    mock_reset_pkg.return_value = (
+        True,
+        "ThingsBoard sysadmin password updated successfully",
+    )
+    result = runner.invoke(services, ["user", "reset-password", "-s", "thingsboard"])
+    assert result.exit_code == 0
+    assert "ThingsBoard" in result.output
+
+
+def test_reset_password_thingsboard_fails(runner, mock_reset_pkg):
+    """Test reset-password command when thingsboard password change fails"""
+    mock_reset_pkg.return_value = (False, "Auth failed")
+    result = runner.invoke(services, ["user", "reset-password", "-s", "thingsboard"])
+    assert result.exit_code == 0
+    assert "ThingsBoard" in result.output
+
+
+def test_reset_password_unknown_service(runner):
+    """Test reset-password skips unknown services cleanly"""
+    result = runner.invoke(services, ["user", "reset-password", "-s", "fakeservice"])
+    assert result.exit_code == 0
+    assert "not supported" in result.output
+
+
+def test_reset_password_for_service_unknown():
+    """Test _reset_password_for_service returns None for unknown service"""
+    console = Console()
+    result = _reset_password_for_service(console, "unknownservice")
+    assert result is None

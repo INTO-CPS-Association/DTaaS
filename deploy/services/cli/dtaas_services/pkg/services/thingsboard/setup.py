@@ -147,17 +147,11 @@ def _handle_password_setup(
 
 
 def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
-    """Helper to set up credentials and change password."""
+    """Helper to set up credentials."""
     try:
         Config()  # Loads config/services.env into environment
         base_url = build_base_url()
         session = _create_session()
-        new_pw = check_password_configured()
-
-        # Change password if configured
-        should_continue, error = _handle_password_setup(base_url, session, new_pw)
-        if not should_continue:
-            return False, error
 
         return _process_credentials_file(base_url, session, credentials_file)
     except (OSError, httpx.HTTPError) as e:
@@ -184,6 +178,43 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
     except (OSError, ValueError, KeyError) as e:
         logger.error(f"Error adding ThingsBoard users: {e}")
         return False, f"Error adding ThingsBoard users: {e}"
+
+
+def reset_thingsboard_password() -> Tuple[bool, str]:
+    """Reset the ThingsBoard sysadmin password.
+
+    Reads TB_SYSADMIN_NEW_PASSWORD from config/services.env and
+    changes the sysadmin password from the default to the configured value.
+
+    Returns:
+        Tuple of (success, message)
+    """
+    try:
+        Config()  # Loads config/services.env into environment
+        base_url = build_base_url()
+        session = _create_session()
+        new_pw = check_password_configured()
+
+        if not new_pw:
+            return False, (
+                "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
+                "Cannot reset password."
+            )
+
+        success, error_msg = _change_password_with_logging(base_url, session, new_pw)
+        if not success:
+            return False, error_msg
+        return True, "ThingsBoard sysadmin password updated successfully"
+    except (OSError, httpx.HTTPError) as e:
+        logger.error(f"Connection error connecting to ThingsBoard: {e}")
+        return (
+            False,
+            f"Cannot connect to ThingsBoard at {build_base_url()}. "
+            "Check HOSTNAME in services.env.",
+        )
+    except (ValueError, KeyError) as e:
+        logger.error(f"Error resetting ThingsBoard password: {e}")
+        return False, f"Error resetting ThingsBoard password: {e}"
 
 
 def thingsboard_configure() -> Tuple[bool, str]:

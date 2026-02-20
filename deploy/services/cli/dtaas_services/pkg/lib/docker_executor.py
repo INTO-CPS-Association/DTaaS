@@ -2,7 +2,7 @@
 
 import subprocess
 from functools import wraps
-from typing import Tuple, Optional
+from typing import Callable, Tuple, Optional
 from python_on_whales.exceptions import DockerException
 from .initialization import ServiceInitializer
 # pylint: disable=E1101
@@ -44,7 +44,7 @@ def _process_docker_exception(exc: DockerException) -> Tuple[Exception, str]:
     return err, str(exc)
 
 
-def handle_docker_not_running(func):
+def handle_docker_not_running(func) -> Callable:
     """Decorator to catch DockerException and return error response.
 
     Returns (error, message) when Docker is not running.

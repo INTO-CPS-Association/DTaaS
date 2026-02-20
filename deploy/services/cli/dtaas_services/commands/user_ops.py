@@ -6,7 +6,10 @@ import click
 from rich.console import Console
 from ..pkg.services.influxdb import influxdb
 from ..pkg.services import rabbitmq
-from ..pkg.services.thingsboard import setup_thingsboard_users
+from ..pkg.services.thingsboard import (
+    setup_thingsboard_users,
+    reset_thingsboard_password,
+)
 from .utility import parse_service_list
 
 
@@ -117,3 +120,74 @@ def add(service_names):
         results = [_setup_specific_service(console, s) for s in service_list]
 
     _print_user_add_summary(results)
+
+
+def _reset_password_for_service(console: Console, service_name: str) -> bool | None:
+    """Reset password for a specific service.
+
+    Returns:
+        True if successful, False on error, None if service unknown
+    """
+    service_lower = service_name.lower()
+    if service_lower == "thingsboard":
+        console.print("\n[cyan]Resetting sysadmin password for ThingsBoard...[/cyan]")
+        success, msg = reset_thingsboard_password()
+        result = UserSetupResult("ThingsBoard", success, msg)
+        _print_service_user_result(console, result)
+        return success
+
+    console.print(
+        f"[yellow]Password reset is not supported for: "
+        f"{service_name}, skipping...[/yellow]"
+    )
+    return None
+
+
+def _print_reset_password_summary(results: list[bool]) -> None:
+    """Print summary of password reset results."""
+    console = Console()
+    valid_results = [r for r in results if r is not None]
+
+    if not valid_results:
+        console.print(
+            "\n[bold yellow]⚠️  No supported services specified "
+            "for password reset.[/bold yellow]"
+        )
+        return
+
+    if all(valid_results):
+        console.print("\n[bold green]✅ Password reset completed ![/bold green]")
+    else:
+        failed_count = sum(1 for r in valid_results if not r)
+        console.print(
+            f"\n[bold yellow]⚠️  Password reset completed "
+            f"with {failed_count} error(s). "
+            f"See messages above.[/bold yellow]"
+        )
+
+
+@click.command(name="reset-password")
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help="Comma-separated list of services",
+    required=True,
+)
+def reset_password(service_names):
+    """
+    Reset admin passwords for services.
+    Currently supports: thingsboard.
+    Example:
+        dtaas-services user reset-password -s thingsboard
+    """
+    console = Console()
+    console.print("[bold cyan]Resetting service passwords...[/bold cyan]")
+    service_list = parse_service_list(service_names)
+
+    if not service_list:
+        console.print("[bold red]Please specify services with -s option.[/bold red]")
+        return
+
+    results = [_reset_password_for_service(console, s) for s in service_list]
+    _print_reset_password_summary(results)
