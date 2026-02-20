@@ -1,13 +1,11 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard certificate utilities."""
 
 import os
 from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
-import dtaas_services.pkg.services.thingsboard.tb_cert as tb_cert
-
+from dtaas_services.pkg.services.thingsboard import tb_cert
+# pylint: disable=W0212, W0621
 
 # Test constants
 TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR

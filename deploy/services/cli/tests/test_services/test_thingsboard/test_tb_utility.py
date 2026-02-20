@@ -1,5 +1,3 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard utility functions."""
 
 import os
@@ -9,8 +7,8 @@ from unittest.mock import patch, Mock, MagicMock
 import pytest
 import click
 import httpx
-import dtaas_services.pkg.services.thingsboard.tb_utility as tb_utility
-
+from dtaas_services.pkg.services.thingsboard import tb_utility
+# pylint: disable=W0212, W0621
 
 # Test constants
 TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR

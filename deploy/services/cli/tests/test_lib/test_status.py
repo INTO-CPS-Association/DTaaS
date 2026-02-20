@@ -1,42 +1,16 @@
-# pylint: disable=redefined-outer-name
 """Tests for Status methods (get_status, container matching, _fetch_status_data)"""
 
 from pathlib import Path
 from unittest.mock import patch, Mock, MagicMock
-import pytest
 from dtaas_services.pkg.lib import Service
-from dtaas_services.pkg.formatter import RemovedServiceEntry
-
-
-@pytest.fixture(autouse=True)
-def patch_service_deps(monkeypatch):
-    """Patch dependencies for Service tests"""
-    monkeypatch.setenv("HOSTNAME", "test-hostname")
-    with patch("dtaas_services.pkg.lib.initialization.Config") as mock_config, patch(
-        "dtaas_services.pkg.lib.initialization.DockerClient"
-    ) as mock_docker_client:
-        mock_config_instance = Mock()
-        mock_config_instance.env = {}
-        mock_config.return_value = mock_config_instance
-        yield mock_docker_client, mock_config
-
-
-def _make_service(patch_service_deps, base_dir=None):
-    """Helper to create a Service with mocked docker."""
-    mock_docker_client, mock_config = patch_service_deps
-    if base_dir is None:
-        base_dir = Path("/path/to/base")
-    mock_config.get_base_dir.return_value = base_dir
-    mock_docker = MagicMock()
-    mock_config_obj = MagicMock()
-    mock_config_obj.services = {"grafana": {}, "influxdb": {}}
-    mock_docker.compose.config.return_value = mock_config_obj
-    mock_docker_client.return_value = mock_docker
-    return Service(), mock_docker, mock_config
+from conftest import make_mock_container
+from .conftest import _make_service, _make_simple_service
+# pylint: disable=W0621, W0212
 
 
 def test_get_status_success(patch_service_deps):
     """Test successful get_status"""
+
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_container1 = Mock()
@@ -58,6 +32,7 @@ def test_get_status_success(patch_service_deps):
 
 def test_get_status_with_service_list(patch_service_deps):
     """Test get_status with specific services"""
+
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_container = Mock()
@@ -77,11 +52,12 @@ def test_get_status_with_service_list(patch_service_deps):
 
 def test_get_status_compose_file_not_found(patch_service_deps):
     """Test get_status when compose file does not exist"""
-    mock_docker_client, mock_config = patch_service_deps
-    mock_config.get_base_dir.return_value = Path("/nonexistent/base")
-    mock_docker = MagicMock()
-    mock_docker_client.return_value = mock_docker
-    service = Service()
+
+    service, _, _ = _make_simple_service(
+        patch_service_deps,
+        base_dir=Path("/nonexistent/base"),
+        use_magic_mock=True,
+    )
     with patch.object(Path, "exists", return_value=False):
         err, containers = service.get_status()
     assert err is not None
@@ -108,11 +84,8 @@ def test_get_status_docker_error(patch_service_deps):
 
 def test_container_compose_service_label_no_label(patch_service_deps):
     """Test _container_compose_service_label when container has no label"""
-    mock_docker_client, mock_config = patch_service_deps
-    mock_config.get_base_dir.return_value = Path("/path/to/base")
-    mock_docker = Mock()
-    mock_docker_client.return_value = mock_docker
-    service = Service()
+
+    service, _, _ = _make_simple_service(patch_service_deps)
     mock_container = Mock()
     mock_container.config.labels = {}
     label = service._container_compose_service_label(mock_container)
@@ -121,6 +94,7 @@ def test_container_compose_service_label_no_label(patch_service_deps):
 
 def test_fetch_status_data_get_service_names_error(patch_service_deps):
     """Test _fetch_status_data when get_all_service_names returns error"""
+
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
@@ -145,13 +119,10 @@ def test_get_all_service_names_empty(patch_service_deps):
 
 def test_get_running_services_returns_running(patch_service_deps):
     """Test get_running_services returns running service names"""
+
     service, mock_docker, _ = _make_service(patch_service_deps)
-    container1 = Mock()
-    container1.name = "grafana"
-    container1.state.status = "running"
-    container2 = Mock()
-    container2.name = "influxdb"
-    container2.state.status = "exited"
+    container1 = make_mock_container("grafana", "running")
+    container2 = make_mock_container("influxdb", "exited")
     mock_docker.container.list.return_value = [container1, container2]
     with patch.object(Path, "exists", return_value=True):
         result = service.get_running_services()
@@ -161,6 +132,7 @@ def test_get_running_services_returns_running(patch_service_deps):
 
 def test_get_running_services_docker_error(patch_service_deps):
     """Test get_running_services returns empty set on docker error"""
+
     service, mock_docker, _ = _make_service(patch_service_deps)
     mock_docker.container.list.side_effect = OSError("Docker error")
     result = service.get_running_services()
@@ -169,13 +141,10 @@ def test_get_running_services_docker_error(patch_service_deps):
 
 def test_get_running_or_restarting_services(patch_service_deps):
     """Test get_running_or_restarting_services categorizes correctly"""
+
     service, mock_docker, _ = _make_service(patch_service_deps)
-    container1 = Mock()
-    container1.name = "grafana"
-    container1.state.status = "running"
-    container2 = Mock()
-    container2.name = "influxdb"
-    container2.state.status = "restarting"
+    container1 = make_mock_container("grafana", "running")
+    container2 = make_mock_container("influxdb", "restarting")
     mock_docker.container.list.return_value = [container1, container2]
     with patch.object(Path, "exists", return_value=True):
         running, restarting = service.get_running_or_restarting_services()
@@ -185,6 +154,7 @@ def test_get_running_or_restarting_services(patch_service_deps):
 
 def test_get_running_or_restarting_services_error(patch_service_deps):
     """Test get_running_or_restarting_services returns empty on error"""
+
     service, mock_docker, _ = _make_service(patch_service_deps)
     mock_docker.container.list.side_effect = OSError("Docker error")
     running, restarting = service.get_running_or_restarting_services()
@@ -194,6 +164,7 @@ def test_get_running_or_restarting_services_error(patch_service_deps):
 
 def test_process_single_container_falls_back_to_label(patch_service_deps):
     """Test _process_single_container falls back to label matching"""
+
     service, _, _ = _make_service(patch_service_deps)
     container = Mock()
     container.name = "other-name"

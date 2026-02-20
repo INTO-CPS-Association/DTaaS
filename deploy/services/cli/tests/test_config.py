@@ -1,13 +1,11 @@
 """Tests for configuration module"""
 
-# pylint: disable=W0613
 from pathlib import Path
 from unittest.mock import patch
 import sys
-
 import pytest
-
 from dtaas_services.pkg.config import Config
+# pylint: disable=W0613, W0212
 
 
 def test_config_file_not_found():

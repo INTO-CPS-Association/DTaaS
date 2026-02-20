@@ -1,16 +1,12 @@
 """Tests for certificate management module"""
 
-import time
 from unittest.mock import patch, Mock
 from dtaas_services.pkg.cert import (
-    normalize_cert_candidates,
     copy_certs,
     _create_dummy_certs,
     _copy_cert_files,
-    _find_latest_cert,
     _remove_remaining_certs,
     _matches_cert_pattern,
-    _is_target_cert,
     create_combined_cert,
     set_service_cert_permissions,
     CertPermissionContext,
@@ -78,7 +74,7 @@ def test_copy_certs_source_not_found(mock_config_class, _, tmp_path):
     assert "not found" in message
 
 
-def test_matches_cert_pattern_exact_name(tmp_path):
+def test_matches_cert_pattern_exact_name():
     """Test _matches_cert_pattern with exact name"""
     assert _matches_cert_pattern("privkey.pem", "privkey")
     assert not _matches_cert_pattern("privkey-service.pem", "privkey")
@@ -147,7 +143,7 @@ def test_create_combined_cert_missing_fullchain(tmp_path):
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown")
 def test_set_service_cert_permissions_posix(
-    mock_chown, mock_is_ci, mock_platform, tmp_path
+    mock_chown, _mock_is_ci, _mock_platform, tmp_path
 ):
     """Test permission setting on POSIX system"""
     cert_path = tmp_path / "test.pem"
@@ -165,7 +161,7 @@ def test_set_service_cert_permissions_posix(
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown")
 def test_set_service_cert_permissions_posix_no_gid(
-    mock_chown, mock_is_ci, mock_platform, tmp_path
+    _mock_chown, _mock_is_ci, _mock_platform, tmp_path
 ):
     """Test permission setting on POSIX without gid"""
     cert_path = tmp_path / "test.pem"
@@ -180,7 +176,7 @@ def test_set_service_cert_permissions_posix_no_gid(
 
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Linux")
 @patch("dtaas_services.pkg.cert.is_ci", return_value=True)
-def test_set_service_cert_permissions_ci(mock_is_ci, mock_platform, tmp_path):
+def test_set_service_cert_permissions_ci(_mock_is_ci, _mock_platform, tmp_path):
     """Test permission skipped in CI"""
     cert_path = tmp_path / "test.pem"
     cert_path.write_text("cert")
@@ -196,7 +192,7 @@ def test_set_service_cert_permissions_ci(mock_is_ci, mock_platform, tmp_path):
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.shutil.chown", side_effect=OSError("Permission denied"))
 def test_set_service_cert_permissions_error(
-    mock_chown, mock_is_ci, mock_platform, tmp_path
+    _mock_chown, _mock_is_ci, _mock_platform, tmp_path
 ):
     """Test error handling in permission setting"""
     cert_path = tmp_path / "test.pem"
@@ -211,7 +207,7 @@ def test_set_service_cert_permissions_error(
 
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Windows")
-def test_skip_message_windows(mock_platform, mock_is_ci):
+def test_skip_message_windows(_mock_platform, _mock_is_ci):
     """Test skip message on Windows"""
     msg = _get_skip_permission_message("test.pem")
     assert "Windows" in msg or "POSIX" in msg
@@ -219,7 +215,7 @@ def test_skip_message_windows(mock_platform, mock_is_ci):
 
 @patch("dtaas_services.pkg.cert.is_ci", return_value=False)
 @patch("dtaas_services.pkg.cert.platform.system", return_value="Linux")
-def test_skip_message_posix(mock_platform, mock_is_ci):
+def test_skip_message_posix(_mock_platform, _mock_is_ci):
     """Test skip message on POSIX (permission changes skipped)"""
     msg = _get_skip_permission_message("test.pem")
     assert "test.pem" in msg

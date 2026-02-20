@@ -1,17 +1,16 @@
 """Tests for user_ops commands (user add)"""
 
-# pylint: disable=redefined-outer-name
 from unittest.mock import patch
-
 import pytest
 from click.testing import CliRunner
-
+from rich.console import Console
 from dtaas_services.cmd import services
 from dtaas_services.commands.user_ops import (
     _print_service_user_result,
     _setup_specific_service,
     UserSetupResult,
 )
+# pylint: disable=W0621
 
 
 @pytest.fixture
@@ -75,18 +74,16 @@ def test_add_users_both_fail(runner, mock_user_pkg):
     assert "RabbitMQ: RabbitMQ failed" in result.output
 
 
-def test_print_service_user_result_not_installed(capsys):
+def test_print_service_user_result_not_installed():
     """Test _print_service_user_result for 'not installed' message"""
-    from rich.console import Console
 
     console = Console()
     result = UserSetupResult("ThingsBoard", True, "Service not installed")
     _print_service_user_result(console, result)
 
 
-def test_setup_specific_service_unknown(capsys):
+def test_setup_specific_service_unknown():
     """Test _setup_specific_service with unknown service"""
-    from rich.console import Console
 
     console = Console()
     result = _setup_specific_service(console, "unknown_service")

@@ -1,9 +1,9 @@
 """Tests for service_ops commands (start, stop, restart, status, remove, clean)"""
 
-# pylint: disable=redefined-outer-name
-from unittest.mock import Mock, patch
-
+from unittest.mock import patch
+from conftest import make_mock_container
 from dtaas_services.cmd import services
+# pylint: disable=W0621
 
 
 def test_start_success(runner, mock_service_setup):
@@ -30,12 +30,8 @@ def test_stop_success(runner, mock_service_setup):
 
 def test_status_success(runner, mock_service_setup):
     """Test successful status check with rich formatting"""
-    mock_container1 = Mock()
-    mock_container1.name = "grafana"
-    mock_container1.state.status = "running"
-    mock_container2 = Mock()
-    mock_container2.name = "influxdb"
-    mock_container2.state.status = "exited"
+    mock_container1 = make_mock_container("grafana", "running")
+    mock_container2 = make_mock_container("influxdb", "exited")
     mock_service_setup["service_instance"].get_status.return_value = (
         None,
         [mock_container1, mock_container2],
@@ -131,7 +127,7 @@ def test_clean_success(runner, mock_service_setup):
     assert "Cleaned" in result.output
 
 
-def test_clean_aborted(runner, mock_service_setup):
+def test_clean_aborted(runner):
     """Test clean command when user aborts confirmation"""
     result = runner.invoke(services, ["clean"], input="n\n")
     assert result.exit_code != 0

@@ -1,11 +1,10 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard checker module."""
 
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 import pytest
 import click
-import dtaas_services.pkg.services.thingsboard.checker as checker
+from dtaas_services.pkg.services.thingsboard import checker
+# pylint: disable=W0212, W0621
 
 
 @pytest.fixture

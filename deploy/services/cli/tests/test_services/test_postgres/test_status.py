@@ -1,28 +1,9 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard PostgreSQL module."""
 
 import os
-import pytest
-from pathlib import Path
 from unittest.mock import patch, Mock
-import dtaas_services.pkg.services.postgres.status as status
-import dtaas_services.pkg.services.postgres.postgres as postgres
-
-
-@pytest.fixture
-def mock_docker():
-    """Mock Docker client"""
-    mock = Mock()
-    mock.execute = Mock()
-    mock.compose = Mock()
-    return mock
-
-
-@pytest.fixture
-def mock_console():
-    """Mock Rich console"""
-    return Mock()
+from dtaas_services.pkg.services.postgres import status, postgres
+# pylint: disable=W0212, W0621
 
 
 def test_check_pg_isready_tuple_result_success():

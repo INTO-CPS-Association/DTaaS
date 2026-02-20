@@ -187,6 +187,14 @@ def _handle_login_retry_failure(attempt: int, max_retries: int) -> None:
         time.sleep(wait_time)
 
 
+def _dispatch_login_exception(e: Exception, attempt: int, max_retries: int) -> None:
+    """Dispatch login exception to appropriate handler based on type."""
+    if isinstance(e, httpx.HTTPError):
+        _handle_login_retry_error(e, attempt, max_retries)
+    else:  # ValueError
+        _handle_login_retry_failure(attempt, max_retries)
+
+
 def _attempt_login(base_url: str, email: str, password: str) -> str | None:
     """Make a single login attempt.
 
@@ -221,10 +229,8 @@ def login(base_url: str, email: str, password: str) -> str | None:
     for attempt in range(max_retries):
         try:
             return _attempt_login(base_url, email, password)
-        except httpx.HTTPError as e:
-            _handle_login_retry_error(e, attempt, max_retries)
-        except ValueError:
-            _handle_login_retry_failure(attempt, max_retries)
+        except (httpx.HTTPError, ValueError) as e:
+            _dispatch_login_exception(e, attempt, max_retries)
 
     return None
 

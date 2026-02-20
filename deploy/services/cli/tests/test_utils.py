@@ -14,6 +14,7 @@ from dtaas_services.pkg.utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
+# pylint: disable=W0613
 
 # Test fixture constants (not real credentials)
 TEST_USER_1 = "testuser1"  # noqa: S105
@@ -111,7 +112,7 @@ def test_process_credentials_file_success(mock_get_path):
     mock_path = Path("/path/to/credentials.csv")
     mock_get_path.return_value = mock_path
 
-    def mock_process(creds_file):
+    def mock_process(_creds_file):
         return True, ""
 
     with patch("dtaas_services.pkg.utils.Path.exists", return_value=True), patch(
@@ -131,7 +132,7 @@ def test_process_credentials_file_not_found(mock_get_path):
     mock_path = Path("/path/to/credentials.csv")
     mock_get_path.return_value = mock_path
 
-    def mock_process(creds_file):
+    def mock_process():
         return True, ""
 
     with patch("dtaas_services.pkg.utils.Path.exists", return_value=False):
@@ -148,7 +149,7 @@ def test_process_credentials_file_os_error(mock_get_path):
     mock_path = Path("/path/to/credentials.csv")
     mock_get_path.return_value = mock_path
 
-    def mock_process(creds_file):
+    def mock_process():
         return True, ""
 
     with patch("dtaas_services.pkg.utils.Path.exists", return_value=True), patch(
@@ -168,7 +169,7 @@ def test_create_users_from_credentials_success():
 
     call_count = 0
 
-    def mock_user_creation(username, password):
+    def mock_user_creation(username, password):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return True, ""
@@ -191,7 +192,7 @@ def test_create_users_from_credentials_failure():
     csv_content = "username,password\nuser1,pass1"
     mock_file = mock_open(read_data=csv_content)
 
-    def mock_user_creation(username, password):
+    def mock_user_creation(username, password):  # noqa: ARG001
         if username == TEST_USER_1:
             return False, "User creation failed"
         return True, ""

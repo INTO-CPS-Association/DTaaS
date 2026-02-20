@@ -1,12 +1,10 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0613
 """Tests for MongoDB user management"""
 
 from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
-from dtaas_services.pkg.cert import create_combined_cert
 from dtaas_services.pkg.services.mongodb import permissions_mongodb
+# pylint: disable=W0621
 
 
 @pytest.fixture
@@ -24,7 +22,7 @@ def mock_config():
         yield mock
 
 
-def test_permissions_mongodb_success_linux(mock_config):
+def test_permissions_mongodb_success_linux():
     """Test successful MongoDB permissions setup on Linux"""
     with patch("dtaas_services.pkg.services.mongodb.Config") as mock_cfg, patch(
         "dtaas_services.pkg.services.mongodb.create_combined_cert",
@@ -47,7 +45,7 @@ def test_permissions_mongodb_success_linux(mock_config):
         assert success is True
 
 
-def test_permissions_mongodb_os_error(mock_config):
+def test_permissions_mongodb_os_error():
     """Test MongoDB permissions setup with OSError"""
     with patch("platform.system", return_value="Linux"), patch(
         "pathlib.Path.mkdir", side_effect=OSError("Directory creation failed")

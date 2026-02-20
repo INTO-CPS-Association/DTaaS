@@ -1,46 +1,19 @@
-# pylint: disable=redefined-outer-name
 """Tests for Manager methods (manage_services: start, stop, restart)"""
 
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
-import pytest
-from dtaas_services.pkg.lib import Service
-
-
-@pytest.fixture(autouse=True)
-def patch_service_deps(monkeypatch):
-    """Patch dependencies for Service tests"""
-    monkeypatch.setenv("HOSTNAME", "test-hostname")
-    with patch("dtaas_services.pkg.lib.initialization.Config") as mock_config, patch(
-        "dtaas_services.pkg.lib.initialization.DockerClient"
-    ) as mock_docker_client:
-        mock_config_instance = Mock()
-        mock_config_instance.env = {}
-        mock_config.return_value = mock_config_instance
-        yield mock_docker_client, mock_config
-
-
-def _make_service(patch_service_deps, base_dir=None):
-    """Helper to create a Service with mocked docker."""
-    mock_docker_client, mock_config = patch_service_deps
-    if base_dir is None:
-        base_dir = Path("/path/to/base")
-    mock_config.get_base_dir.return_value = base_dir
-    mock_docker = MagicMock()
-    mock_config_obj = MagicMock()
-    mock_config_obj.services = {"grafana": {}, "influxdb": {}}
-    mock_docker.compose.config.return_value = mock_config_obj
-    mock_docker_client.return_value = mock_docker
-    return Service(), mock_docker, mock_config
+from unittest.mock import patch, Mock
+from dtaas_services.pkg.lib.manager import ServiceActionResult
+from .conftest import _make_service, _make_simple_service
+# pylint: disable=W0621, W0212
 
 
 def test_start_services_compose_file_not_found(patch_service_deps):
     """Test start_services when compose file does not exist"""
-    mock_docker_client, mock_config = patch_service_deps
-    mock_config.get_base_dir.return_value = Path("/nonexistent/base")
-    mock_docker = MagicMock()
-    mock_docker_client.return_value = mock_docker
-    service = Service()
+    service, _, _ = _make_simple_service(
+        patch_service_deps,
+        base_dir=Path("/nonexistent/base"),
+        use_magic_mock=True,
+    )
     with patch.object(Path, "exists", return_value=False):
         err, _ = service.manage_services("start")
 
@@ -50,12 +23,10 @@ def test_start_services_compose_file_not_found(patch_service_deps):
 
 def test_start_services_docker_error(patch_service_deps):
     """Test start_services with Docker error"""
-    mock_docker_client, mock_config = patch_service_deps
-    mock_config.get_base_dir.return_value = Path("/path/to/base")
-    mock_docker = MagicMock()
+    service, mock_docker, _ = _make_simple_service(
+        patch_service_deps, use_magic_mock=True
+    )
     mock_docker.compose.up.side_effect = OSError("Docker error")
-    mock_docker_client.return_value = mock_docker
-    service = Service()
     with patch.object(Path, "exists", return_value=True), patch.object(
         service, "get_running_services", return_value=set()
     ), patch.object(service, "get_all_service_names", return_value=(None, {"grafana"})):
@@ -68,11 +39,9 @@ def test_start_services_docker_error(patch_service_deps):
 
 def test_stop_services_with_service_list(patch_service_deps):
     """Test stop_services with specific services"""
-    mock_docker_client, mock_config = patch_service_deps
-    mock_config.get_base_dir.return_value = Path("/path/to/base")
-    mock_docker = MagicMock()
-    mock_docker_client.return_value = mock_docker
-    service = Service()
+    service, mock_docker, _ = _make_simple_service(
+        patch_service_deps, use_magic_mock=True
+    )
     with patch.object(Path, "exists", return_value=True):
         err, _ = service.manage_services("stop", ["grafana", "influxdb"])
     assert err is None
@@ -107,7 +76,7 @@ def test_prepare_all_services_to_start_error(patch_service_deps):
     )
     assert to_start == []
     assert skipped == []
-    assert restarting == []
+    assert not restarting
 
 
 def test_filter_postgres_if_needed_stop_postgres_tb_running(patch_service_deps):
@@ -135,7 +104,6 @@ def test_filter_postgres_if_needed_stop_postgres_tb_not_running(patch_service_de
 
 def test_get_success_message_start_with_skipped(patch_service_deps):
     """Test _get_success_message for start with skipped services"""
-    from dtaas_services.pkg.lib.manager import ServiceActionResult
 
     service, _, _ = _make_service(patch_service_deps)
     result = ServiceActionResult(
@@ -148,7 +116,6 @@ def test_get_success_message_start_with_skipped(patch_service_deps):
 
 def test_get_success_message_start_with_restarting(patch_service_deps):
     """Test _get_success_message for start with restarting services"""
-    from dtaas_services.pkg.lib.manager import ServiceActionResult
 
     service, _, _ = _make_service(patch_service_deps)
     result = ServiceActionResult(skipped=[], affected=[], restarting=["grafana"])

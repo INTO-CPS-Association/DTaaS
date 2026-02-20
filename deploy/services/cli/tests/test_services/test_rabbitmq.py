@@ -1,5 +1,3 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0613
 """Tests for RabbitMQ user management"""
 
 from pathlib import Path
@@ -7,10 +5,10 @@ from unittest.mock import patch, Mock, mock_open
 import pytest
 from dtaas_services.pkg.services.rabbitmq import (
     _add_rabbitmq_user,
-    setup_rabbitmq_users,
     permissions_rabbitmq,
 )
 from dtaas_services.pkg.utils import create_users_from_credentials
+# pylint: disable=W0613, W0621
 
 
 @pytest.fixture

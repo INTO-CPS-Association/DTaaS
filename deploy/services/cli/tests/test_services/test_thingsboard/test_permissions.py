@@ -1,28 +1,9 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard permissions functions."""
 
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
-import pytest
+from unittest.mock import patch, MagicMock
 import dtaas_services.pkg.services.thingsboard.permissions as th_perm
-
-
-@pytest.fixture
-def mock_config():
-    """Mock Config class"""
-    with patch("dtaas_services.pkg.services.thingsboard.permissions.Config") as mock:
-        mock_instance = Mock()
-        mock_instance.get_value.side_effect = lambda key: {
-            "HOSTNAME": "test.example.com",
-            "POSTGRES_UID": "999",
-            "POSTGRES_GID": "999",
-            "THINGSBOARD_UID": "1000",
-            "THINGSBOARD_GID": "1000",
-        }.get(key, "default")
-        mock.return_value = mock_instance
-        mock.get_base_dir.return_value = Path("/test/base")
-        yield mock
+# pylint: disable=W0621, W0212
 
 
 def test_setup_thingsboard_certs_scenarios():
@@ -100,7 +81,7 @@ def test_verify_certificates_exist_scenarios(tmp_path):
         assert success is False
 
 
-def test_permissions_thingsboard_scenarios(mock_config):
+def test_permissions_thingsboard_scenarios():
     """Test ThingsBoard permissions setup with scenarios"""
     # Success
     with patch("platform.system", return_value="Linux"), patch(

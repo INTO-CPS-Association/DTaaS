@@ -1,9 +1,8 @@
 """Tests for setup_ops commands (setup, generate-project, install)"""
 
-# pylint: disable=redefined-outer-name
 from unittest.mock import patch
-
 from dtaas_services.cmd import services
+# pylint: disable=W0621
 
 
 def test_setup_success(runner, mock_service_setup):
@@ -58,7 +57,7 @@ def test_generate_project_failure(runner):
         assert "Failed to generate project" in result.output
 
 
-def test_install_invalid_service(runner, mock_service_setup):
+def test_install_invalid_service(runner):
     """Test install command with unsupported service name"""
     result = runner.invoke(services, ["install", "-s", "mysql"])
     assert result.exit_code != 0

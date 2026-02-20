@@ -1,5 +1,3 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for PostgreSQL management."""
 
 import time
@@ -7,37 +5,8 @@ from pathlib import Path
 from unittest.mock import patch, Mock
 import pytest
 import click
-import dtaas_services.pkg.services.postgres.postgres as postgres
-
-
-@pytest.fixture
-def mock_config():
-    """Mock Config class"""
-    with patch("dtaas_services.pkg.services.postgres.postgres.Config") as mock:
-        mock_instance = Mock()
-        mock_instance.get_value.side_effect = lambda key: {
-            "HOSTNAME": "test.example.com",
-            "POSTGRES_UID": "999",
-            "POSTGRES_GID": "999",
-        }.get(key, "default")
-        mock.return_value = mock_instance
-        mock.get_base_dir.return_value = Path("/test/base")
-        yield mock
-
-
-@pytest.fixture
-def mock_docker():
-    """Mock Docker client"""
-    mock = Mock()
-    mock.execute = Mock()
-    mock.compose = Mock()
-    return mock
-
-
-@pytest.fixture
-def mock_console():
-    """Mock Rich console"""
-    return Mock()
+from dtaas_services.pkg.services.postgres import postgres
+# pylint: disable=W0212, W0621
 
 
 def test_setup_postgres_certs_failure():
@@ -51,7 +20,7 @@ def test_setup_postgres_certs_failure():
         assert success is False
 
 
-def test_permissions_postgres_missing_certs(mock_config):
+def test_permissions_postgres_missing_certs():
     """Test Postgres permissions with missing certificates"""
     with patch("pathlib.Path.exists", return_value=False):
         success, msg = postgres.permissions_postgres()
@@ -59,7 +28,7 @@ def test_permissions_postgres_missing_certs(mock_config):
         assert "not found" in msg
 
 
-def test_permissions_postgres_exception(mock_config):
+def test_permissions_postgres_exception():
     """Test Postgres permissions with exception"""
     with patch(
         "dtaas_services.pkg.services.postgres.postgres.setup_postgres_certs",

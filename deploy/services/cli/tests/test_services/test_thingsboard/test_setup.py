@@ -1,11 +1,9 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
 """Tests for ThingsBoard admin user management functions."""
 
 from pathlib import Path
 from unittest.mock import patch, Mock, mock_open
-import pytest
 import dtaas_services.pkg.services.thingsboard.setup as th
+# pylint: disable=W0212, W0621
 
 # Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
@@ -14,24 +12,6 @@ TEST_EMAIL = "test@example.com"
 TEST_INVALID_EMAIL = ""
 
 
-@pytest.fixture
-def mock_config():
-    """Mock Config class"""
-    with patch("dtaas_services.pkg.services.thingsboard.setup.Config") as mock:
-        mock_instance = Mock()
-        mock_instance.get_value.side_effect = lambda key: {
-            "HOSTNAME": "test.example.com",
-            "POSTGRES_UID": "999",
-            "POSTGRES_GID": "999",
-            "THINGSBOARD_UID": "1000",
-            "THINGSBOARD_GID": "1000",
-        }.get(key, "default")
-        mock.return_value = mock_instance
-        mock.get_base_dir.return_value = Path("/test/base")
-        yield mock
-
-
-# Credentials Processing Tests
 def test_process_credentials_row_scenarios():
     """Test credentials row processing with multiple scenarios"""
     base_url = "https://localhost:8080"
@@ -104,7 +84,7 @@ def test_process_credentials_file_scenarios():
         assert success is False
 
 
-def test_setup_thingsboard_users_scenarios(mock_config):
+def test_setup_thingsboard_users_scenarios():
     """Test ThingsBoard users setup with multiple scenarios"""
     # File not found
     with patch("pathlib.Path.exists", return_value=False):
@@ -205,7 +185,7 @@ def test_handle_password_setup_with_password():
     assert should_continue is True
 
 
-def test_setup_helper_certs_value_error(mock_config):
+def test_setup_helper_certs_value_error():
     """Test _setup_helper_certs handles ValueError"""
     with patch("pathlib.Path.exists", return_value=True), patch(
         "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
@@ -219,7 +199,7 @@ def test_setup_helper_certs_value_error(mock_config):
     assert "Error" in msg
 
 
-def test_thingsboard_configure_success(mock_config):
+def test_thingsboard_configure_success():
     """Test thingsboard_configure on success"""
     with patch(
         "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
@@ -230,7 +210,7 @@ def test_thingsboard_configure_success(mock_config):
     assert "Users created" in msg
 
 
-def test_thingsboard_configure_failure(mock_config):
+def test_thingsboard_configure_failure():
     """Test thingsboard_configure on failure"""
     with patch(
         "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
