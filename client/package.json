@@ -67,7 +67,7 @@
     "@types/remarkable": "^2.0.8",
     "@types/styled-components": "^5.1.36",
     "@types/uuid": "10.0.0",
-    "cross-env": "7.0.3",
+    "cross-env": "10.1.0",
     "dotenv": "^17.2.3",
     "http-status-codes": "2.3.0",
     "katex": "^0.16.25",
