@@ -55,7 +55,10 @@ describe('DigitalTwin - CRUD and execution history', () => {
   });
 
   it('should create digital twin with files', async () => {
-    (mockBackendAPI.createRepositoryFile as jest.Mock).mockResolvedValue({});
+    (mockBackendAPI.commitMultipleActions as jest.Mock).mockResolvedValue({});
+    (mockBackendAPI.getRepositoryFileContent as jest.Mock).mockResolvedValue({
+      content: 'existing pipeline content',
+    });
     const result = await dt.create(files, [], []);
 
     expect(result).toBe(
@@ -64,7 +67,10 @@ describe('DigitalTwin - CRUD and execution history', () => {
   });
 
   it('should return error message when creating digital twin fails', async () => {
-    (mockBackendAPI.createRepositoryFile as jest.Mock).mockRejectedValue(
+    (mockBackendAPI.getRepositoryFileContent as jest.Mock).mockResolvedValue({
+      content: 'existing pipeline content',
+    });
+    (mockBackendAPI.commitMultipleActions as jest.Mock).mockRejectedValue(
       new Error('Create failed'),
     );
 

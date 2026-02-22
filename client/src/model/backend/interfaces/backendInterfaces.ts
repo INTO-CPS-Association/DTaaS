@@ -142,6 +142,21 @@ export interface BackendAPI {
    * @returns A promise that resolves to the pipeline status as a string.
    */
   getPipelineStatus(projectId: ProjectId, pipelineId: number): Promise<string>;
+
+  /**
+   * Creates a single commit with multiple file actions (create, update, delete).
+   * @param projectId - The ID of the project.
+   * @param branch - The branch to commit to.
+   * @param commitMessage - The commit message.
+   * @param actions - Array of file actions to include in the commit.
+   * @returns A promise that resolves when the commit is created.
+   */
+  commitMultipleActions(
+    projectId: ProjectId,
+    branch: string,
+    commitMessage: string,
+    actions: CommitAction[],
+  ): Promise<void>;
 }
 
 export interface ProjectProvider {
@@ -196,6 +211,12 @@ export type LogEntry = {
 };
 
 // Backend API return value interfaces
+export type CommitAction = {
+  action: 'create' | 'update' | 'delete';
+  filePath: string;
+  content?: string;
+};
+
 export type JobSummary = {
   id: number;
   name: string;

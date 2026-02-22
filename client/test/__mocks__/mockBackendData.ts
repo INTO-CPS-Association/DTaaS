@@ -22,6 +22,7 @@ export const mockBackendAPI = {
   getJobLog: jest.fn(),
   getPipelineStatus: jest.fn(),
   getTriggerToken: jest.fn(),
+  commitMultipleActions: jest.fn(),
 } as unknown as GitlabAPI;
 
 export const mockBackendInstance: BackendInterface = {

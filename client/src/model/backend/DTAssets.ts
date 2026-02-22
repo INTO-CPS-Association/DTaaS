@@ -1,4 +1,7 @@
-import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
+import {
+  BackendInterface,
+  CommitAction,
+} from 'model/backend/interfaces/backendInterfaces';
 import {
   DTAssetsInterface,
   FileHandlerInterface,
@@ -30,6 +33,91 @@ class DTAssets implements DTAssetsInterface {
     this.fileHandler = new FileHandler(DTName, backend);
   }
 
+  buildCreateFileActions(
+    files:
+      | FileState[]
+      | Array<{
+          name: string;
+          content: string;
+          isNew: boolean;
+          isFromCommonLibrary: boolean;
+        }>,
+    mainFolderPath: string,
+    lifecycleFolderPath: string,
+  ): CommitAction[] {
+    const newFiles = (
+      files as Array<
+        | FileState
+        | {
+            name: string;
+            content: string;
+            isNew: boolean;
+            isFromCommonLibrary: boolean;
+          }
+      >
+    ).filter(
+      (
+        file,
+      ): file is
+        | FileState
+        | {
+            name: string;
+            content: string;
+            isNew: boolean;
+            isFromCommonLibrary: boolean;
+          } => file.isNew,
+    );
+
+    return newFiles.map((file) => {
+      const fileType = (file as FileState).type;
+      const mainFolderPathUpdated = file.isFromCommonLibrary
+        ? `${mainFolderPath}/common`
+        : mainFolderPath;
+      const lifecycleFolderPathUpdated = file.isFromCommonLibrary
+        ? `${mainFolderPathUpdated}/lifecycle`
+        : lifecycleFolderPath;
+      const filePath =
+        fileType === FileType.LIFECYCLE
+          ? lifecycleFolderPathUpdated
+          : mainFolderPathUpdated;
+      return {
+        action: 'create' as const,
+        filePath: `${filePath}/${file.name}`,
+        content: file.content,
+      };
+    });
+  }
+
+  async buildTriggerAction(): Promise<CommitAction | null> {
+    const filePath = `.gitlab-ci.yml`;
+    const fileContent = await this.fileHandler.getFileContent(filePath);
+
+    const triggerKey = `trigger_${this.DTName}`;
+    if (fileContent.includes(triggerKey)) {
+      return null;
+    }
+
+    const triggerContent = `
+${triggerKey}:
+  stage: triggers
+  trigger:
+    include: digital_twins/${this.DTName}/.gitlab-ci.yml
+  rules:
+    - if: '$DTName == "${this.DTName}"'
+      when: always
+  variables:
+    RunnerTag: $RunnerTag
+`;
+
+    const updatedContent = `${fileContent.trimEnd()}\n${triggerContent}`;
+
+    return {
+      action: 'update' as const,
+      filePath,
+      content: updatedContent,
+    };
+  }
+
   async createFiles(
     files:
       | FileState[]
@@ -42,7 +130,7 @@ class DTAssets implements DTAssetsInterface {
     mainFolderPath: string,
     lifecycleFolderPath: string,
   ): Promise<void> {
-    const createPromises = (
+    const newFiles = (
       files as Array<
         | FileState
         | {
@@ -52,20 +140,21 @@ class DTAssets implements DTAssetsInterface {
             isFromCommonLibrary: boolean;
           }
       >
-    )
-      .filter(
-        (
-          file,
-        ): file is
-          | FileState
-          | {
-              name: string;
-              content: string;
-              isNew: boolean;
-              isFromCommonLibrary: boolean;
-            } => file.isNew,
-      )
-      .map(async (file) => {
+    ).filter(
+      (
+        file,
+      ): file is
+        | FileState
+        | {
+            name: string;
+            content: string;
+            isNew: boolean;
+            isFromCommonLibrary: boolean;
+          } => file.isNew,
+    );
+
+    await Promise.all(
+      newFiles.map(async (file) => {
         const fileType = (file as FileState).type;
         const mainFolderPathUpdated = file.isFromCommonLibrary
           ? `${mainFolderPath}/common`
@@ -78,10 +167,9 @@ class DTAssets implements DTAssetsInterface {
             ? lifecycleFolderPathUpdated
             : mainFolderPathUpdated;
         const commitMessage = `Add ${file.name} to ${fileType} folder`;
-        return this.fileHandler.createFile(file, filePath, commitMessage);
-      });
-
-    await Promise.all(createPromises);
+        await this.fileHandler.createFile(file, filePath, commitMessage);
+      }),
+    );
   }
 
   async getFilesFromAsset(assetPath: string, isPrivate: boolean) {

@@ -15,6 +15,7 @@ const mockApi = {
   listPipelineJobs: jest.fn(),
   getJobLog: jest.fn(),
   getPipelineStatus: jest.fn(),
+  commitMultipleActions: jest.fn(),
 };
 
 describe('DigitalTwinUtil', () => {

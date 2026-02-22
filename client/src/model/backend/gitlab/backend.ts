@@ -6,6 +6,7 @@
 import { Gitlab } from '@gitbeaker/rest';
 import {
   BackendAPI,
+  CommitAction,
   ProjectId,
   RepositoryFile,
   RepositoryTreeItem,
@@ -154,6 +155,15 @@ export class GitlabAPI implements BackendAPI {
   ): Promise<string> {
     const pipeline = await this.client.Pipelines.show(projectId, pipelineId);
     return pipeline.status;
+  }
+
+  public async commitMultipleActions(
+    projectId: ProjectId,
+    branch: string,
+    commitMessage: string,
+    actions: CommitAction[],
+  ): Promise<void> {
+    await this.client.Commits.create(projectId, branch, commitMessage, actions);
   }
 
   // Unique function of GitLab backendApi

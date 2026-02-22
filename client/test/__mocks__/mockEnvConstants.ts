@@ -1,11 +1,14 @@
-export const mockAppURL = 'https://example.com/';
-export const mockURLforDT = 'https://example.com/URL_DT';
-export const mockURLforLIB = 'https://example.com/URL_LIB';
-export const mockURLforWorkbench = 'https://example.com/URL_WORKBENCH';
+const createMockURL = (path: string) => `https://example.com/${path}`;
+
+export const mockAppURL = createMockURL('');
+export const mockURLforDT = createMockURL('URL_DT');
+export const mockURLforLIB = createMockURL('URL_LIB');
+export const mockURLforWorkbench = createMockURL('URL_WORKBENCH');
 export const mockClientID = 'mockedClientID';
-export const mockAuthority = 'https://example.com/AUTHORITY';
-export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
-export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
+export const mockAuthority = createMockURL('AUTHORITY');
+export const mockRedirectURI = createMockURL('REDIRECT_URI');
+export const mockLogoutRedirectURI = createMockURL('LOGOUT_REDIRECT_URI');
+
 export const mockGitLabScopes = 'openid profile read_user read_repository api';
 
 export type mockUserType = {

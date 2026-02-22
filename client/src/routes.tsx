@@ -4,7 +4,7 @@ import PrivateRoute from 'route/auth/PrivateRoute';
 import LibraryPreview from 'route/library/cart/LibraryPreview';
 import Library from 'route/library/Library';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
-import DigitalTwinsPreview from 'preview/route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview from 'route/digitaltwins/DigitalTwinsPreview';
 import SignIn from 'route/auth/Signin';
 import Account from 'route/account/Account';
 import Config from 'route/config/Config';

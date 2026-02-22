@@ -117,6 +117,7 @@ export const mockLibraryManager: LibraryManager = {
   getAssets: jest.fn(),
   getAsset: jest.fn(),
   deleteAsset: jest.fn(),
+  getFileContent: jest.fn(),
 } as unknown as LibraryManager;
 
 export const mockLibraryAsset: LibraryAsset = {
@@ -174,6 +175,8 @@ export const mockDTAssets = {
   getDescription: jest.fn(),
   getFullDescription: jest.fn(),
   getConfigFiles: jest.fn(),
+  buildCreateFileActions: jest.fn().mockReturnValue([]),
+  buildTriggerAction: jest.fn().mockResolvedValue(null),
   createFiles: jest.fn(),
   getFilesFromAsset: jest.fn(),
   updateFileContent: jest.fn(),
@@ -223,3 +226,50 @@ export const mockDigitalTwin: DigitalTwin = {
   getExecutionHistoryById: jest.fn(),
   getExecutionHistoryByDTName: jest.fn(),
 } as unknown as DigitalTwin;
+
+// Mock for execution history entries
+export const mockExecutionHistoryEntry = {
+  id: 'test-execution-id',
+  dtName: 'mockedDTName',
+  pipelineId: 123,
+  timestamp: Date.now(),
+  status: 'RUNNING',
+  jobLogs: [],
+};
+
+// Mock for indexedDBService
+export const mockIndexedDBService = {
+  init: createAsyncMock(undefined),
+  add: jest.fn().mockImplementation((entry) => Promise.resolve(entry.id)),
+  update: createAsyncMock(undefined),
+  getByDTName: createAsyncMock([]),
+  getAll: createAsyncMock([]),
+  getById: jest.fn().mockImplementation((entryId) =>
+    Promise.resolve({
+      ...mockExecutionHistoryEntry,
+      id: entryId,
+    }),
+  ),
+  delete: createAsyncMock(undefined),
+  deleteByDTName: createAsyncMock(undefined),
+};
+
+// Helper function to reset all indexedDBService mocks
+export const resetIndexedDBServiceMocks = () => {
+  for (const mockValue of Object.values(mockIndexedDBService)) {
+    if (
+      typeof mockValue === 'function' &&
+      typeof mockValue.mockClear === 'function'
+    ) {
+      mockValue.mockClear();
+    }
+  }
+};
+
+// Mock the initDigitalTwin function
+jest.mock('model/backend/util/init', () => ({
+  ...jest.requireActual('model/backend/util/init'),
+  initDigitalTwin: createAsyncMock(mockDigitalTwin),
+  fetchLibraryAssets: jest.fn(),
+  fetchDigitalTwins: jest.fn(),
+}));
