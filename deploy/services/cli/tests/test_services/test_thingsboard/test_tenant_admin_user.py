@@ -3,8 +3,8 @@
 """Tests for ThingsBoard user operations (low-level)."""
 
 from unittest.mock import Mock
-import pytest
 import httpx
+import pytest
 import dtaas_services.pkg.services.thingsboard.tenant_admin as th_util
 
 # Test constants (not real credentials, for testing only)
@@ -111,54 +111,3 @@ def test_handle_admin_already_exists_scenarios():
     user_id, error = th_util._handle_admin_already_exists(resp)
     assert user_id is None
     assert error != ""
-
-
-def test_get_activation_token_scenarios():
-    """Test activation token retrieval with multiple scenarios"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    # Success
-    session.get.return_value = Mock(status_code=200, text="link?activateToken=token123")
-    token, error = th_util._get_activation_token(base_url, session, "user123")
-    assert token == "token123"
-    assert error == ""
-    # No token
-    session.get.return_value = Mock(status_code=200, text="no token")
-    token, error = th_util._get_activation_token(base_url, session, "user123")
-    assert token is None
-    assert error != ""
-    # Exception
-    session.get.side_effect = httpx.HTTPError("Error")
-    token, error = th_util._get_activation_token(base_url, session, "user123")
-    assert token is None
-    assert error != ""
-    # Bad status code
-    session.get.side_effect = None
-    session.get.return_value = Mock(status_code=404, text="Not found")
-    token, error = th_util._get_activation_token(base_url, session, "user123")
-    assert token is None
-    assert "Failed" in error
-
-
-def test_activate_user_success(mocker):
-    """Test user activation - success"""
-    base_url = "https://localhost:8080"
-    mocker.patch("httpx.post", return_value=Mock(status_code=200))
-    success, _ = th_util._activate_user(base_url, "token", "pass")
-    assert success is True
-
-
-def test_activate_user_failure(mocker):
-    """Test user activation - failure"""
-    base_url = "https://localhost:8080"
-    mocker.patch("httpx.post", return_value=Mock(status_code=400, text="Error"))
-    success, _ = th_util._activate_user(base_url, "token", "pass")
-    assert success is False
-
-
-def test_activate_user_exception(mocker):
-    """Test user activation - exception"""
-    base_url = "https://localhost:8080"
-    mocker.patch("httpx.post", side_effect=httpx.HTTPError("Error"))
-    success, _ = th_util._activate_user(base_url, "token", "pass")
-    assert success is False

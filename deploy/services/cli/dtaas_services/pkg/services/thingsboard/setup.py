@@ -8,12 +8,15 @@ from typing import Tuple
 from pathlib import Path
 import httpx
 from ...config import Config
-from .tb_utility import get_ssl_verify
-from .sysadmin import change_sysadmin_password_if_needed, authenticate_session
+from .tb_utility import get_ssl_verify, login
+from .sysadmin import change_sysadmin_password_if_needed
+from .customer_user import CustomerUserContext, create_customer_and_user
 from .tenant_admin import (
+    change_tenant_admin_password,
     create_tenant_and_admin,
     TenantAdminContext,
     AdminCredentials,
+    DEFAULT_TENANT_ADMIN_PASSWORD,
 )
 from .tb_cert import (
     CredentialProcessContext,
@@ -24,10 +27,41 @@ from .tb_cert import (
 logger = logging.getLogger(__name__)
 
 
+def _try_login_and_set_token(
+    base_url: str, session: httpx.Client, email: str, password: str
+) -> bool:
+    """Attempt login and set session authorization token if successful."""
+    token = login(base_url, email, password)
+    if token:
+        session.headers["X-Authorization"] = f"Bearer {token}"
+    return token is not None
+
+
+def _authenticate_as_tenant_admin(
+    base_url: str, session: httpx.Client
+) -> Tuple[bool, str]:
+    """Authenticate session as tenant admin, trying default then configured pw."""
+    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL")
+    configured_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
+
+    if _try_login_and_set_token(
+        base_url, session, admin_email, DEFAULT_TENANT_ADMIN_PASSWORD
+    ):
+        return True, ""
+    if configured_pw and _try_login_and_set_token(
+        base_url, session, admin_email, configured_pw
+    ):
+        return True, ""
+    return False, (
+        "Failed to authenticate as tenant admin. "
+        "Verify TB_TENANT_ADMIN_EMAIL in config/services.env is correct."
+    )
+
+
 def _process_credentials_row(
     ctx: CredentialProcessContext, credential: dict
 ) -> Tuple[bool, str]:
-    """Process a single credential row."""
+    """Process a single credential row to create a customer user."""
     username = credential["username"]
     password = credential["password"]
 
@@ -40,9 +74,10 @@ def _process_credentials_row(
     ctx.seen_emails.add(email)
 
     logger.info(f"\nProcessing user '{username}'...")
-    tenant_admin_ctx = TenantAdminContext(ctx.base_url, ctx.session, username)
-    tenant_admin_ctx.admin_credentials = AdminCredentials(email, password)
-    success, error_msg = create_tenant_and_admin(tenant_admin_ctx)
+    user_ctx = CustomerUserContext(ctx.base_url, ctx.session, username)
+    user_ctx.user_email = email
+    user_ctx.user_password = password
+    success, error_msg = create_customer_and_user(user_ctx)
 
     return (
         (False, f"Failed for user {username}: {error_msg}")
@@ -54,7 +89,7 @@ def _process_credentials_row(
 def _process_credentials_file(
     base_url: str, session: httpx.Client, credentials_file: Path
 ) -> Tuple[bool, str]:
-    """Process credentials file and create tenants."""
+    """Process credentials file and create customer users."""
     ctx = CredentialProcessContext(base_url, session)
     with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
         credentials = csv.DictReader(creds_file, delimiter=",")
@@ -67,14 +102,7 @@ def _process_credentials_file(
             success, error_msg = _process_credentials_row(ctx, credential)
             if not success:
                 return False, error_msg
-    return True, "ThingsBoard users created successfully"
-
-
-def _is_password_change_recoverable(error_msg: str) -> bool:
-    """Check if password change error is recoverable."""
-    return any(
-        x in error_msg.lower() for x in ["not reachable", "unable to log in", "ssl"]
-    )
+    return True, "ThingsBoard customer users created successfully"
 
 
 def _change_password_with_logging(
@@ -104,70 +132,50 @@ def check_password_configured() -> str | None:
     return new_pw
 
 
-def _handle_password_change_result(
-    success: bool, error_msg: str
-) -> Tuple[bool, str | None]:
-    """Handle password change result and return error if not recoverable."""
-    if not success:
-        if _is_password_change_recoverable(error_msg):
-            logger.warning(
-                f"Could not change sysadmin password: {error_msg}. "
-                "Continuing with user setup..."
-            )
-            return True, None
-        return False, error_msg
-    return True, None
-
-
 def _create_session() -> httpx.Client:
     """Create HTTP session with SSL verification settings."""
-    # Increased timeout to 30s to handle self-signed certificates
-    # (SSL handshake can be slow with dummy/self-signed certs)
     return httpx.Client(verify=get_ssl_verify(), timeout=30)
 
 
-def _handle_password_setup(
-    base_url: str, session: httpx.Client, new_pw: str | None
-) -> Tuple[bool, str | None]:
-    """Handle password change if configured.
-
-    Args:
-        base_url: ThingsBoard URL
-        session: HTTP session
-        new_pw: New password or None
-
-    Returns:
-        Tuple of (should_continue, error_message or None)
-    """
-    if not new_pw:
-        return True, None
-
-    success, error_msg = _change_password_with_logging(base_url, session, new_pw)
-    return _handle_password_change_result(success, error_msg)
+def _authenticate_as_sysadmin(base_url: str, session: httpx.Client) -> Tuple[bool, str]:
+    """Authenticate session as sysadmin (tries configured password, then default)."""
+    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
+    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
+    if new_pw and _try_login_and_set_token(base_url, session, sys_email, new_pw):
+        return True, ""
+    if _try_login_and_set_token(base_url, session, sys_email, "sysadmin"):
+        return True, ""
+    return False, "Failed to authenticate as sysadmin"
 
 
-def _setup_helper_certs(credentials_file: Path) -> Tuple[bool, str]:
-    """Helper to set up credentials."""
-    try:
-        Config()  # Loads config/services.env into environment
-        base_url = build_base_url()
-        session = _create_session()
+def _create_tenant_setup(base_url: str, session: httpx.Client) -> Tuple[bool, str]:
+    """Authenticate as sysadmin and create tenant with tenant admin."""
+    auth_ok, auth_err = _authenticate_as_sysadmin(base_url, session)
+    if not auth_ok:
+        return False, auth_err
+    tenant_title = os.getenv("TB_TENANT_TITLE", "DTaaS")
+    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "dtaas-admin@example.org")
+    ctx = TenantAdminContext(base_url, session, tenant_title)
+    ctx.admin_credentials = AdminCredentials(admin_email, DEFAULT_TENANT_ADMIN_PASSWORD)
+    return create_tenant_and_admin(ctx)
 
-        # Authenticate session as sysadmin before making API calls
-        auth_ok, auth_err = authenticate_session(base_url, session)
-        if not auth_ok:
-            return False, auth_err
 
-        return _process_credentials_file(base_url, session, credentials_file)
-    except (OSError, httpx.HTTPError) as e:
-        logger.error(f"Connection error connecting to ThingsBoard: {e}")
-        return (
-            False,
-            f"Cannot connect to ThingsBoard at {build_base_url()}. Check HOSTNAME in services.env.",
-        )
-    except (ValueError, KeyError) as e:
-        logger.error(f"Error in ThingsBoard setup: {e}")
-        return False, f"Error in ThingsBoard setup: {e}"
+def _run_credential_setup(credentials_file: Path) -> Tuple[bool, str]:
+    """Create tenant+admin, authenticate as tenant admin, process CSV."""
+    Config()  # Loads config/services.env into environment
+    base_url = build_base_url()
+    session = _create_session()
+
+    # Step 1: Create tenant and admin (as sysadmin)
+    ok, err = _create_tenant_setup(base_url, session)
+    if not ok:
+        return False, err
+
+    # Step 2: Authenticate as tenant admin
+    auth_ok, auth_err = _authenticate_as_tenant_admin(base_url, session)
+    if not auth_ok:
+        return False, auth_err
+    return _process_credentials_file(base_url, session, credentials_file)
 
 
 def setup_thingsboard_users() -> Tuple[bool, str]:
@@ -179,17 +187,23 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         return False, f"Credentials file not found: {credentials_file}"
 
     try:
-        return _setup_helper_certs(credentials_file)
-    except (OSError, ValueError, KeyError) as e:
+        return _run_credential_setup(credentials_file)
+    except (OSError, httpx.HTTPError) as e:
+        logger.error(f"Connection error connecting to ThingsBoard: {e}")
+        return (
+            False,
+            f"Cannot connect to ThingsBoard at {build_base_url()}. Check HOSTNAME in services.env.",
+        )
+    except (ValueError, KeyError) as e:
         logger.error(f"Error adding ThingsBoard users: {e}")
         return False, f"Error adding ThingsBoard users: {e}"
 
 
 def reset_thingsboard_password() -> Tuple[bool, str]:
-    """Reset the ThingsBoard sysadmin password.
+    """Reset ThingsBoard sysadmin and tenant admin passwords.
 
-    Reads TB_SYSADMIN_NEW_PASSWORD from config/services.env and
-    changes the sysadmin password from the default to the configured value.
+    Reads TB_SYSADMIN_NEW_PASSWORD and TB_TENANT_ADMIN_PASSWORD from
+    config/services.env and changes passwords from their defaults.
 
     Returns:
         Tuple of (success, message)
@@ -209,7 +223,12 @@ def reset_thingsboard_password() -> Tuple[bool, str]:
         success, error_msg = _change_password_with_logging(base_url, session, new_pw)
         if not success:
             return False, error_msg
-        return True, "ThingsBoard sysadmin password updated successfully"
+
+        # Reset tenant admin password
+        ta_ok, ta_msg = change_tenant_admin_password(base_url, session)
+        if not ta_ok:
+            return False, ta_msg
+        return True, "ThingsBoard passwords updated successfully"
     except (OSError, httpx.HTTPError) as e:
         logger.error(f"Connection error connecting to ThingsBoard: {e}")
         return (
@@ -220,16 +239,3 @@ def reset_thingsboard_password() -> Tuple[bool, str]:
     except (ValueError, KeyError) as e:
         logger.error(f"Error resetting ThingsBoard password: {e}")
         return False, f"Error resetting ThingsBoard password: {e}"
-
-
-def thingsboard_configure() -> Tuple[bool, str]:
-    """Configure ThingsBoard users from credentials.csv."""
-    logger.info("Configuring ThingsBoard users...")
-    success, msg = setup_thingsboard_users()
-
-    if not success:
-        return False, f"Error: {msg}"
-
-    logger.info(f"\n{msg}")
-    logger.info("ThingsBoard configuration complete!")
-    return True, msg

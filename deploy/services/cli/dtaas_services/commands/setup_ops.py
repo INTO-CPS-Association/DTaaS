@@ -141,6 +141,7 @@ def install(service):
     This command automatically starts PostgreSQL if needed, then initializes
     the ThingsBoard database and creates the default system administrator account.
     It must be run only once after initial setup.
+
     """
     try:
         check_root_unix()
@@ -152,7 +153,11 @@ def install(service):
 
         wait_for_postgres_ready(console, docker)
         run_thingsboard_install(console, docker)
+
         console.print("[green]✅ ThingsBoard installation completed![/green]")
+        console.print("[cyan]Next steps:[/cyan]")
+        console.print("  1. Start ThingsBoard: dtaas-services start -s thingsboard-ce")
+        console.print("  2. Add users: dtaas-services user add -s thingsboard")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except Exception as e:

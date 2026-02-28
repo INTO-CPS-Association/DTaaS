@@ -2,14 +2,67 @@
 
 from pathlib import Path
 from unittest.mock import Mock, mock_open
+import httpx
 import dtaas_services.pkg.services.thingsboard.setup as th
 # pylint: disable=W0212, W0621
 
-# Test constants (not real credentials, for testing only)
 TEST_USERNAME = "testuser"
 TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR
 TEST_EMAIL = "test@example.com"
 TEST_INVALID_EMAIL = ""
+
+
+def test_try_login_and_set_token_success(mocker):
+    """Test _try_login_and_set_token sets header on success."""
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.login",
+        return_value="tok",
+    )
+    session = Mock()
+    session.headers = {}
+    result = th._try_login_and_set_token("url", session, "e", "p")
+    assert result is True
+    assert "Bearer tok" in session.headers["X-Authorization"]
+
+
+def test_authenticate_as_tenant_admin_default_pw(mocker, monkeypatch):
+    """Test auth with default password succeeds."""
+    monkeypatch.setenv("TB_TENANT_ADMIN_EMAIL", "admin@test.org")
+    monkeypatch.delenv("TB_TENANT_ADMIN_PASSWORD", raising=False)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        return_value=True,
+    )
+    session = Mock()
+    ok, _ = th._authenticate_as_tenant_admin("url", session)
+    assert ok is True
+
+
+def test_authenticate_as_tenant_admin_fallback_pw(mocker, monkeypatch):
+    """Test auth falls back to configured password."""
+    monkeypatch.setenv("TB_TENANT_ADMIN_EMAIL", "admin@test.org")
+    monkeypatch.setenv("TB_TENANT_ADMIN_PASSWORD", "configured")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        side_effect=[False, True],
+    )
+    session = Mock()
+    ok, _ = th._authenticate_as_tenant_admin("url", session)
+    assert ok is True
+
+
+def test_authenticate_as_tenant_admin_both_fail(mocker, monkeypatch):
+    """Test auth fails with both passwords."""
+    monkeypatch.setenv("TB_TENANT_ADMIN_EMAIL", "admin@test.org")
+    monkeypatch.setenv("TB_TENANT_ADMIN_PASSWORD", "configured")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        return_value=False,
+    )
+    session = Mock()
+    ok, err = th._authenticate_as_tenant_admin("url", session)
+    assert ok is False
+    assert "Failed" in err
 
 
 def test_process_credentials_row_success(mocker):
@@ -18,7 +71,7 @@ def test_process_credentials_row_success(mocker):
     session = Mock()
     ctx = th.CredentialProcessContext(base_url, session)
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
+        "dtaas_services.pkg.services.thingsboard.setup.create_customer_and_user",
         return_value=(True, ""),
     )
     cred = {
@@ -43,36 +96,6 @@ def test_process_credentials_row_missing_email():
     success, error = th._process_credentials_row(ctx, cred)
     assert success is False
     assert "Email field is required" in error
-
-
-def test_process_credentials_row_duplicate_email():
-    """Test credentials row processing - duplicate email"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    ctx = th.CredentialProcessContext(base_url, session)
-    ctx.seen_emails.add(TEST_EMAIL)
-    cred = {"username": TEST_USERNAME, "password": TEST_PASSWORD, "email": TEST_EMAIL}
-    success, error = th._process_credentials_row(ctx, cred)
-    assert success is False
-    assert "Duplicate email" in error
-
-
-def test_process_credentials_row_creation_fails(mocker):
-    """Test credentials row processing - creation fails"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    ctx = th.CredentialProcessContext(base_url, session)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
-        return_value=(False, "error"),
-    )
-    cred = {
-        "username": "user",
-        "password": "pass",  # noqa: S105 # NOSONAR
-        "email": "test@ex.com",
-    }
-    success, _ = th._process_credentials_row(ctx, cred)
-    assert success is False
 
 
 def test_process_credentials_file_success(mocker):
@@ -115,26 +138,6 @@ def test_setup_thingsboard_users_file_not_found(mocker):
     assert "not found" in msg
 
 
-def test_setup_thingsboard_users_success(mocker):
-    """Test ThingsBoard users setup - success"""
-    mocker.patch("pathlib.Path.exists", return_value=True)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
-        return_value="https://localhost:8080",
-    )
-    mocker.patch("httpx.Client")
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
-        return_value=(True, ""),
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_file",
-        return_value=(True, ""),
-    )
-    success, _ = th.setup_thingsboard_users()
-    assert success is True
-
-
 def test_setup_thingsboard_users_password_fails(mocker):
     """Test ThingsBoard users setup - authentication fails"""
     mocker.patch("pathlib.Path.exists", return_value=True)
@@ -144,7 +147,11 @@ def test_setup_thingsboard_users_password_fails(mocker):
     )
     mocker.patch("httpx.Client")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
+        "dtaas_services.pkg.services.thingsboard.setup._create_tenant_setup",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._authenticate_as_tenant_admin",
         return_value=(False, "auth error"),
     )
     success, _ = th.setup_thingsboard_users()
@@ -160,7 +167,11 @@ def test_setup_thingsboard_users_process_fails(mocker):
     )
     mocker.patch("httpx.Client")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
+        "dtaas_services.pkg.services.thingsboard.setup._create_tenant_setup",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._authenticate_as_tenant_admin",
         return_value=(True, ""),
     )
     mocker.patch(
@@ -183,35 +194,131 @@ def test_process_credentials_file_no_email_column(mocker):
     assert "Email column is required" in msg
 
 
-def test_thingsboard_configure_success(mocker):
-    """Test thingsboard_configure on success"""
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
-        return_value=(True, "Users created successfully"),
-    )
-    success, msg = th.thingsboard_configure()
-    assert success is True
-    assert "Users created" in msg
-
-
-def test_thingsboard_configure_failure(mocker):
-    """Test thingsboard_configure on failure"""
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.setup_thingsboard_users",
-        return_value=(False, "Connection refused"),
-    )
-    success, msg = th.thingsboard_configure()
-    assert success is False
-    assert "Error" in msg
-
-
 def test_setup_thingsboard_users_os_error(mocker):
-    """Test setup_thingsboard_users handles OSError from _setup_helper_certs"""
+    """Test setup_thingsboard_users handles OSError"""
     mocker.patch("pathlib.Path.exists", return_value=True)
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._setup_helper_certs",
+        "dtaas_services.pkg.services.thingsboard.setup._run_credential_setup",
         side_effect=OSError("disk error"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
     )
     success, msg = th.setup_thingsboard_users()
     assert success is False
-    assert "Error" in msg
+    assert "Cannot connect" in msg
+
+
+def test_setup_thingsboard_users_http_error(mocker):
+    """Test setup_thingsboard_users handles httpx.HTTPError"""
+    mocker.patch("pathlib.Path.exists", return_value=True)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._run_credential_setup",
+        side_effect=httpx.NetworkError("refused"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
+    )
+    success, msg = th.setup_thingsboard_users()
+    assert success is False
+    assert "Cannot connect" in msg
+
+
+def test_setup_thingsboard_users_tenant_setup_fails(mocker):
+    """Test setup_thingsboard_users when tenant creation fails"""
+    mocker.patch("pathlib.Path.exists", return_value=True)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
+    )
+    mocker.patch("httpx.Client")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._create_tenant_setup",
+        return_value=(False, "sysadmin auth failed"),
+    )
+    success, _ = th.setup_thingsboard_users()
+    assert success is False
+
+
+# --- _authenticate_as_sysadmin ---
+
+
+def test_authenticate_as_sysadmin_configured_pw(mocker, monkeypatch):
+    """Test sysadmin auth succeeds with configured password"""
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sys@tb.org")
+    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "newpw")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        return_value=True,
+    )
+    session = Mock()
+    ok, _ = th._authenticate_as_sysadmin("url", session)
+    assert ok is True
+
+
+def test_authenticate_as_sysadmin_default_pw(mocker, monkeypatch):
+    """Test sysadmin auth falls back to default password"""
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sys@tb.org")
+    monkeypatch.delenv("TB_SYSADMIN_NEW_PASSWORD", raising=False)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        return_value=True,
+    )
+    session = Mock()
+    ok, _ = th._authenticate_as_sysadmin("url", session)
+    assert ok is True
+
+
+def test_authenticate_as_sysadmin_both_fail(mocker, monkeypatch):
+    """Test sysadmin auth fails with both passwords"""
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sys@tb.org")
+    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "newpw")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._try_login_and_set_token",
+        return_value=False,
+    )
+    session = Mock()
+    ok, err = th._authenticate_as_sysadmin("url", session)
+    assert ok is False
+    assert "Failed" in err
+
+
+# --- _create_tenant_setup ---
+
+
+def test_create_tenant_setup_success(mocker, monkeypatch):
+    """Test tenant setup success"""
+    monkeypatch.setenv("TB_TENANT_TITLE", "TestTenant")
+    monkeypatch.setenv("TB_TENANT_ADMIN_EMAIL", "admin@test.org")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._authenticate_as_sysadmin",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
+        return_value=(True, ""),
+    )
+    session = Mock()
+    ok, _ = th._create_tenant_setup("url", session)
+    assert ok is True
+
+
+def test_create_tenant_setup_sysadmin_fails(mocker):
+    """Test tenant setup fails when sysadmin auth fails"""
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._authenticate_as_sysadmin",
+        return_value=(False, "auth error"),
+    )
+    session = Mock()
+    ok, err = th._create_tenant_setup("url", session)
+    assert ok is False
+    assert "auth error" in err
+
+
+def test_check_password_configured_not_set(monkeypatch):
+    """Test check_password_configured when env var is not set."""
+    monkeypatch.delenv("TB_SYSADMIN_NEW_PASSWORD", raising=False)
+    result = th.check_password_configured()
+    assert result is None

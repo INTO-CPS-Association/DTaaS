@@ -92,12 +92,14 @@ cli/
            │   └── status.py       # Container health and state checking
            └── thingsboard/
                ├── __init__.py
-               ├── setup.py        # ThingsBoard setup orchestration
-               ├── sysadmin.py     # System admin operations
-               ├── tenant_admin.py # Tenant admin provisioning
-│               ├── checker.py      # Installation checking
-│               ├── permissions.py  # Certificate setup
-│               ├── tb_cert.py      # Certificate operations
+               ├── activation.py    # Shared user activation utilities
+               ├── customer_user.py # Customer and customer user creation
+               ├── setup.py         # ThingsBoard setup orchestration
+               ├── sysadmin.py      # System admin operations
+               ├── tenant_admin.py  # Tenant admin provisioning and password reset
+│               ├── checker.py       # Installation checking
+│               ├── permissions.py   # Certificate setup
+│               ├── tb_cert.py       # Certificate operations
 │               └── tb_utility.py
 └── tests/
     ├── __init__.py
@@ -136,6 +138,8 @@ cli/
     │   │   └── test_status.py          # Tests for status.py
     │   └── test_thingsboard/
     │       ├── __init__.py
+    │       ├── test_activation.py
+    │       ├── test_customer_user.py
     │       ├── test_permissions.py
     │       ├── test_setup.py
     │       ├── test_reset_password.py
@@ -143,7 +147,8 @@ cli/
     │       ├── test_checker.py
     │       ├── test_tb_cert.py
     │       ├── test_tb_utility.py
-    │       └── test_tenant_admin.py
+    │       ├── test_tenant_admin_compose.py
+    │       └── test_tenant_admin_user.py
     ├── config/             # Test configuration files (REQUIRED for system tests)
     │   ├── services.env    # Test environment variables
     │   └── credentials.csv # Test user credentials
@@ -197,9 +202,13 @@ The package uses a modular, three-layer architecture:
   * `postgres.py`: Certificate setup and readiness waiting
   * `status.py`: Container health and state checking
 * **`thingsboard/`**: ThingsBoard modules
-  * `setup.py`: Setup orchestration
+  * `activation.py`: Shared user activation utilities (token extraction,
+    activation API calls)
+  * `customer_user.py`: Customer and CUSTOMER_USER creation from credentials.csv
+  * `setup.py`: Setup orchestration (creates tenant and admin, authenticates
+    as tenant admin, processes credentials file)
   * `sysadmin.py`: System admin operations
-  * `tenant_admin.py`: Tenant admin user provisioning
+  * `tenant_admin.py`: Tenant admin user provisioning and password reset
   * `checker.py`: Installation validation
   * `permissions.py`: Certificate setup
   * `tb_cert.py`: Certificate operations
@@ -283,14 +292,21 @@ Stops and removes Docker containers:
 
 #### ThingsBoard Users
 
-* **Tenant Management**: Each credential entry creates a separate tenant in ThingsBoard
-* **Admin Creation**: A tenant admin user is created for each tenant using the provided
-  credentials
-* **Credentials File**: ThingsBoard users are created from `config/credentials.csv`
-  using the `dtaas-services user add` command
-* **Password Reset**: The sysadmin password can be reset independently using
-  `dtaas-services user reset-password -s thingsboard`, which reads
-  `TB_SYSADMIN_NEW_PASSWORD` from `config/services.env`
+* **Install**: Running `dtaas-services install` only initializes the ThingsBoard
+  database schema. It does NOT create the tenant or tenant admin. After install,
+  start ThingsBoard manually.
+* **User Add**: Running `dtaas-services user add -s thingsboard` first
+  authenticates as sysadmin, creates the initial tenant and tenant admin
+  (using `TB_TENANT_TITLE` and `TB_TENANT_ADMIN_EMAIL` from
+  `config/services.env`, with the default password `"tenant"`), then
+  authenticates as the tenant admin and creates CUSTOMER_USER accounts
+  from `config/credentials.csv`
+* **Authentication**: The `user add` command authenticates as the tenant admin
+  (tries default password `"tenant"` first, falls back to
+  `TB_TENANT_ADMIN_PASSWORD`)
+* **Password Reset**: Running `dtaas-services user reset-password -s thingsboard`
+  resets both the sysadmin password (from default to `TB_SYSADMIN_NEW_PASSWORD`)
+  and the tenant admin password (from `"tenant"` to `TB_TENANT_ADMIN_PASSWORD`).
 * **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by
   the `SSL_VERIFY` environment variable (from `services.env`) and use
   verification enabled by default. For self-signed certificates in non-production

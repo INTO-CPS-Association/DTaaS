@@ -78,6 +78,7 @@ def test_install_success(runner, mock_service_setup, mocker):
     result = runner.invoke(services, ["install"])
     assert result.exit_code == 0
     assert "ThingsBoard installation completed" in result.output
+    assert "Next steps" in result.output
     mock_wait.assert_called_once()
     mock_install.assert_called_once()
 
