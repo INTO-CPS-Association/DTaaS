@@ -13,7 +13,7 @@ from .sysadmin import get_or_create_tenant
 logger = logging.getLogger(__name__)
 
 # Default password set during tenant admin creation
-DEFAULT_TENANT_ADMIN_PASSWORD = "tenant"  # noqa: S105
+DEFAULT_TENANT_ADMIN_PASSWORD = "tenant"  # noqa: S105 # NOSONAR
 
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
