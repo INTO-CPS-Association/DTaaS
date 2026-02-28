@@ -27,31 +27,17 @@ from .tb_cert import (
 logger = logging.getLogger(__name__)
 
 
-def _try_login_and_set_token(
-    base_url: str, session: httpx.Client, email: str, password: str
-) -> bool:
-    """Attempt login and set session authorization token if successful."""
-    token = login(base_url, email, password)
-    if token:
-        session.headers["X-Authorization"] = f"Bearer {token}"
-    return token is not None
-
-
 def _authenticate_as_tenant_admin(
     base_url: str, session: httpx.Client
 ) -> Tuple[bool, str]:
     """Authenticate session as tenant admin, trying default then configured pw."""
     admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL")
     configured_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
-
-    if _try_login_and_set_token(
-        base_url, session, admin_email, DEFAULT_TENANT_ADMIN_PASSWORD
-    ):
-        return True, ""
-    if configured_pw and _try_login_and_set_token(
-        base_url, session, admin_email, configured_pw
-    ):
-        return True, ""
+    for pw in filter(None, [DEFAULT_TENANT_ADMIN_PASSWORD, configured_pw]):
+        token = login(base_url, admin_email, pw)
+        if token:
+            session.headers["X-Authorization"] = f"Bearer {token}"
+            return True, ""
     return False, (
         "Failed to authenticate as tenant admin. "
         "Verify TB_TENANT_ADMIN_EMAIL in config/services.env is correct."
@@ -141,10 +127,11 @@ def _authenticate_as_sysadmin(base_url: str, session: httpx.Client) -> Tuple[boo
     """Authenticate session as sysadmin (tries configured password, then default)."""
     sys_email = os.getenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
-    if new_pw and _try_login_and_set_token(base_url, session, sys_email, new_pw):
-        return True, ""
-    if _try_login_and_set_token(base_url, session, sys_email, "sysadmin"):
-        return True, ""
+    for pw in filter(None, [new_pw, "sysadmin"]):
+        token = login(base_url, sys_email, pw)
+        if token:
+            session.headers["X-Authorization"] = f"Bearer {token}"
+            return True, ""
     return False, "Failed to authenticate as sysadmin"
 
 
@@ -199,6 +186,19 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
         return False, f"Error adding ThingsBoard users: {e}"
 
 
+def _do_password_reset(
+    base_url: str, session: httpx.Client, new_pw: str
+) -> Tuple[bool, str]:
+    """Change sysadmin and tenant admin passwords."""
+    ok, msg = _change_password_with_logging(base_url, session, new_pw)
+    if not ok:
+        return False, msg
+    ta_ok, ta_msg = change_tenant_admin_password(base_url, session)
+    if not ta_ok:
+        return False, ta_msg
+    return True, "ThingsBoard passwords updated successfully"
+
+
 def reset_thingsboard_password() -> Tuple[bool, str]:
     """Reset ThingsBoard sysadmin and tenant admin passwords.
 
@@ -213,29 +213,14 @@ def reset_thingsboard_password() -> Tuple[bool, str]:
         base_url = build_base_url()
         session = _create_session()
         new_pw = check_password_configured()
-
         if not new_pw:
             return False, (
                 "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
                 "Cannot reset password."
             )
-
-        success, error_msg = _change_password_with_logging(base_url, session, new_pw)
-        if not success:
-            return False, error_msg
-
-        # Reset tenant admin password
-        ta_ok, ta_msg = change_tenant_admin_password(base_url, session)
-        if not ta_ok:
-            return False, ta_msg
-        return True, "ThingsBoard passwords updated successfully"
-    except (OSError, httpx.HTTPError) as e:
-        logger.error(f"Connection error connecting to ThingsBoard: {e}")
-        return (
-            False,
-            f"Cannot connect to ThingsBoard at {build_base_url()}. "
-            "Check HOSTNAME in services.env.",
-        )
-    except (ValueError, KeyError) as e:
+        return _do_password_reset(base_url, session, new_pw)
+    except (OSError, httpx.HTTPError, ValueError, KeyError) as e:
         logger.error(f"Error resetting ThingsBoard password: {e}")
-        return False, f"Error resetting ThingsBoard password: {e}"
+        return False, (
+            f"Cannot connect to ThingsBoard at {build_base_url()}. Error: {e}"
+        )

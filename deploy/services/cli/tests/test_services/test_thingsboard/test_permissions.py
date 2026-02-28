@@ -140,3 +140,46 @@ def test_permissions_thingsboard_verify_fails(mocker):
     )
     success, _ = th_perm.permissions_thingsboard()
     assert success is False
+
+
+def test_permissions_thingsboard_copy_certs_fails(mocker):
+    """Test ThingsBoard permissions when copy_certs fails"""
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.permissions.copy_certs",
+        return_value=(False, "copy error"),
+    )
+    success, msg = th_perm.permissions_thingsboard()
+    assert success is False
+    assert "copy error" in msg
+
+
+def test_execute_setup_operations_first_fails(mocker):
+    """Test _execute_setup_operations returns early when an operation fails"""
+    mock_cfg = MagicMock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.permissions.setup_postgres_certs",
+        return_value=(False, "postgres cert error"),
+    )
+    success, messages = th_perm._execute_setup_operations(mock_cfg)
+    assert success is False
+    assert "postgres cert error" in messages[0]
+
+
+def test_execute_setup_operations_all_succeed(mocker):
+    """Test _execute_setup_operations returns True when all operations succeed"""
+    mock_cfg = MagicMock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.permissions.setup_postgres_certs",
+        return_value=(True, "postgres ok"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.permissions._setup_thingsboard_certs",
+        return_value=(True, "tb certs ok"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.permissions._setup_thingsboard_directories",
+        return_value=(True, "dirs ok"),
+    )
+    success, messages = th_perm._execute_setup_operations(mock_cfg)
+    assert success is True
+    assert len(messages) == 3

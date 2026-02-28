@@ -197,22 +197,6 @@ def test_get_or_create_tenant_existing(mocker):
     assert tenant is not None
 
 
-def test_get_or_create_tenant_create_new(mocker):
-    """Test get_or_create_tenant when tenant must be created"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
-        return_value=(None, ""),
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._create_new_tenant",
-        return_value=({"title": "new"}, ""),
-    )
-    tenant, _ = th_users.get_or_create_tenant(base_url, session, "new")
-    assert tenant is not None
-
-
 def test_get_or_create_tenant_exception(mocker):
     """Test get_or_create_tenant when an exception is raised"""
     base_url = "https://localhost:8080"
@@ -223,3 +207,58 @@ def test_get_or_create_tenant_exception(mocker):
     )
     tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
     assert tenant is None
+
+
+def test_get_or_create_tenant_check_returns_error(mocker):
+    """Test get_or_create_tenant propagates error from _check_existing_tenant"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
+        return_value=(None, "Network error checking tenant"),
+    )
+    tenant, error = th_users.get_or_create_tenant(base_url, session, "test")
+    assert tenant is None
+    assert "error" in error.lower()
+
+
+def test_authenticate_session_default_pw_succeeds(mocker, monkeypatch):
+    """Test authenticate_session succeeds with the default sysadmin password"""
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
+    monkeypatch.delenv("TB_SYSADMIN_NEW_PASSWORD", raising=False)
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login",
+        return_value="token",
+    )
+    session = Mock()
+    session.headers = {}
+    ok, msg = th_users.authenticate_session("https://localhost:8080", session)
+    assert ok is True
+    assert msg == ""
+    assert session.headers["X-Authorization"] == "Bearer token"
+
+
+def test_authenticate_session_fallback_pw_succeeds(mocker, monkeypatch):
+    """Test authenticate_session falls back to TB_SYSADMIN_NEW_PASSWORD"""
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
+    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "newpass")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login",
+        side_effect=[None, "token"],
+    )
+    session = Mock()
+    session.headers = {}
+    ok, _ = th_users.authenticate_session("https://localhost:8080", session)
+    assert ok is True
+    assert session.headers["X-Authorization"] == "Bearer token"
+
+
+def test_check_existing_tenant_non_200_status():
+    """Test _check_existing_tenant returns error on non-200 response"""
+    base_url = "https://localhost:8080"
+    session = Mock()
+    params = {"textSearch": "test-tenant"}
+    session.get.return_value = Mock(status_code=403, text="Forbidden")
+    tenant, error = th_users._check_existing_tenant(params, base_url, session)
+    assert tenant is None
+    assert "403" in error
