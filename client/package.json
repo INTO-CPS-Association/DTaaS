@@ -70,7 +70,7 @@
     "cross-env": "7.0.3",
     "dotenv": "^17.2.3",
     "http-status-codes": "2.3.0",
-    "katex": "^0.16.25",
+    "katex": "^0.16.33",
     "monaco-editor": "^0.52.2",
     "oidc-client-ts": "^3.4.1",
     "react": "^19.2.0",
