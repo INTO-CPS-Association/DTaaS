@@ -59,7 +59,7 @@
     "@gitbeaker/rest": "^43.8.0",
     "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "^7.3.5",
-    "@mui/material": "^7.3.5",
+    "@mui/material": "^7.3.8",
     "@mui/system": "^7.3.5",
     "@mui/x-tree-view": "^8.18.0",
     "@reduxjs/toolkit": "^2.10.1",
