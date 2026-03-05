@@ -1,92 +1,46 @@
-import { Gitlab } from '@gitbeaker/core';
-import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
-import GitlabAPI from 'model/backend/gitlab/backend';
+import LibraryAsset from 'model/backend/libraryAsset';
+import LibraryManager from 'model/backend/libraryManager';
+import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
+import DigitalTwin from 'model/backend/digitalTwin';
+import FileHandler from 'model/backend/fileHandler';
+import DTAssets from 'model/backend/DTAssets';
+import { mockBackendInstance } from 'test/__mocks__/mockBackendData';
+import {
+  mockAppURL,
+  mockURLforDT,
+  mockURLforLIB,
+  mockURLforWorkbench,
+  mockClientID,
+  mockAuthority,
+  mockRedirectURI,
+  mockLogoutRedirectURI,
+  mockGitLabScopes,
+} from 'test/__mocks__/mockEnvConstants';
 
-export const mockAppURL = 'https://example.com/';
-export const mockURLforDT = 'https://example.com/URL_DT';
-export const mockURLforLIB = 'https://example.com/URL_LIB';
-export const mockURLforWorkbench = 'https://example.com/URL_WORKBENCH';
-export const mockClientID = 'mockedClientID';
-export const mockAuthority = 'https://example.com/AUTHORITY';
-export const mockRedirectURI = 'https://example.com/REDIRECT_URI';
-export const mockLogoutRedirectURI = 'https://example.com/LOGOUT_REDIRECT_URI';
-export const mockGitLabScopes = 'openid profile read_user read_repository api';
+export {
+  mockBackendAPI,
+  mockBackendInstance,
+  mockGitlabClient,
+} from 'test/__mocks__/mockBackendData';
+export {
+  mockAppURL,
+  mockURLforDT,
+  mockURLforLIB,
+  mockURLforWorkbench,
+  mockClientID,
+  mockAuthority,
+  mockRedirectURI,
+  mockLogoutRedirectURI,
+  mockGitLabScopes,
+  mockUser,
+  mockAuthState,
+} from 'test/__mocks__/mockEnvConstants';
 
-export type mockUserType = {
-  access_token: string;
-  profile: {
-    groups: string[] | string | undefined;
-    picture: string | undefined;
-    preferred_username: string | undefined;
-    profile: string | undefined;
-  };
-};
-
-export const mockUser: mockUserType = {
-  access_token: 'example_token',
-  profile: {
-    groups: 'group-one',
-    picture: 'pfp.jpg',
-    preferred_username: 'username',
-    profile: 'example/username',
-  },
-};
-
-export type mockAuthStateType = {
-  user?: mockUserType | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  activeNavigator?: string;
-  error?: Error;
-};
-
-export const mockAuthState: mockAuthStateType = {
-  isAuthenticated: true,
-  isLoading: false,
-  user: mockUser,
-};
-
-export type mockGitlabInstanceType = {
-  projectId: number;
-  triggerToken: string;
-  getPipelineStatus: jest.Mock;
-};
-
-export const mockGitlabClient = new Gitlab({
-  host: 'mockedHost',
-  token: 'mockedToken',
-  requesterFn: jest.fn(),
-});
-
-export const mockBackendAPI = {
-  startPipeline: jest.fn(),
-  cancelPipeline: jest.fn(),
-  createRepositoryFile: jest.fn(),
-  editRepositoryFile: jest.fn(),
-  removeRepositoryFile: jest.fn(),
-  getRepositoryFileContent: jest.fn(),
-  listRepositoryFiles: jest.fn(),
-  getGroupByName: jest.fn(),
-  listGroupProjects: jest.fn(),
-  listPipelineJobs: jest.fn(),
-  getJobLog: jest.fn(),
-  getPipelineStatus: jest.fn(),
-  getTriggerToken: jest.fn(),
-} as unknown as GitlabAPI;
-
-export const mockBackendInstance: BackendInterface = {
-  projectName: 'mockedUsername',
-  api: mockBackendAPI,
-  logs: [],
-  init: jest.fn(),
-  getProjectId: jest.fn().mockReturnValue(1),
-  getCommonProjectId: jest.fn().mockReturnValue(3),
-  getExecutionLogs: jest.fn(),
-  getPipelineJobs: jest.fn(),
-  startPipeline: jest.fn(),
-  getJobTrace: jest.fn(),
-  getPipelineStatus: jest.fn(),
-};
+export type {
+  mockUserType,
+  mockAuthStateType,
+  mockGitlabInstanceType,
+} from 'test/__mocks__/mockEnvConstants';
 
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),
@@ -99,7 +53,7 @@ jest.mock('util/envUtil', () => ({
   getLogoutRedirectURI: () => mockLogoutRedirectURI,
   getGitLabScopes: () => mockGitLabScopes,
   getURLforWorkbench: () => mockURLforWorkbench,
-  getWorkbenchLinkValues: () => [
+  useWorkbenchLinkValues: () => [
     { key: '1', link: 'link1' },
     { key: '2', link: 'link2' },
     { key: '3', link: 'link3' },
@@ -150,3 +104,126 @@ jest.mock('react-syntax-highlighter', () => ({
 jest.mock('react-syntax-highlighter/dist/esm/styles/prism', () => ({
   materialDark: {},
 }));
+
+const createCommonMocks = () => ({
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  getConfigFiles: jest.fn(),
+});
+
+export const mockLibraryManager: LibraryManager = {
+  DTName: 'mockedDTName',
+  backend: mockBackendInstance,
+  assets: [],
+  assetFiles: [],
+  getAssets: jest.fn(),
+  getAsset: jest.fn(),
+  deleteAsset: jest.fn(),
+} as unknown as LibraryManager;
+
+export const mockLibraryAsset: LibraryAsset = {
+  name: 'Asset 1',
+  path: 'path',
+  type: 'Digital Twins',
+  isPrivate: true,
+  backend: mockBackendInstance,
+  description: 'description',
+  fullDescription: 'fullDescription',
+  libraryManager: mockLibraryManager,
+  configFiles: [],
+  ...createCommonMocks(),
+} as unknown as LibraryAsset;
+
+/**
+ * Creates a mock DigitalTwinData object for Redux state
+ * This creates clean serializable data for Redux, not DigitalTwin instances
+ */
+export const createMockDigitalTwinData = (dtName: string): DigitalTwinData => ({
+  DTName: dtName,
+  description: 'Test Digital Twin Description',
+  fullDescription: 'Test README',
+  jobLogs: [],
+  pipelineCompleted: false,
+  pipelineLoading: false,
+  pipelineId: undefined,
+  currentExecutionId: undefined,
+  lastExecutionStatus: undefined,
+  // Store only serializable data
+  gitlabProjectId: 123,
+});
+
+const createAsyncMock = <T,>(value: T) => jest.fn().mockResolvedValue(value);
+
+export const mockFileHandler = {
+  name: 'mockedName',
+  backend: mockBackendInstance,
+  createFile: jest.fn(),
+  updateFile: jest.fn(),
+  deleteDT: jest.fn(),
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getLibraryFileNames: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
+} as unknown as FileHandler;
+
+export const mockDTAssets = {
+  DTName: 'mockedDTName',
+  backend: mockBackendInstance,
+  fileHandler: mockFileHandler,
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  getConfigFiles: jest.fn(),
+  createFiles: jest.fn(),
+  getFilesFromAsset: jest.fn(),
+  updateFileContent: jest.fn(),
+  updateLibraryFileContent: jest.fn(),
+  appendTriggerToPipeline: jest.fn(),
+  removeTriggerFromPipeline: jest.fn(),
+  delete: jest.fn(),
+  getLibraryFileContent: jest.fn(),
+  getLibraryConfigFileNames: jest.fn(),
+  getFolders: jest.fn(),
+} as unknown as DTAssets;
+
+export const mockDigitalTwin: DigitalTwin = {
+  DTName: 'mockedDTName',
+  description: 'mockedDescription',
+  fullDescription: 'mockedFullDescription',
+  backend: mockBackendInstance,
+  DTAssets: mockDTAssets,
+  pipelineId: 1,
+  lastExecutionStatus: 'mockedStatus',
+  jobLogs: [{ jobName: 'job1', log: 'log1' }],
+  pipelineLoading: false,
+  pipelineCompleted: false,
+  descriptionFiles: ['descriptionFile'],
+  configFiles: ['configFile'],
+  lifecycleFiles: ['lifecycleFile'],
+  assetFiles: [
+    { assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] },
+  ],
+  currentExecutionId: 'test-execution-id',
+  getFileContent: jest.fn(),
+  getFileNames: jest.fn(),
+  getDescription: jest.fn(),
+  getFullDescription: jest.fn(),
+  getConfigFiles: createAsyncMock(['configFile']),
+  triggerPipeline: jest.fn(),
+  execute: createAsyncMock(123),
+  stop: jest.fn(),
+  create: createAsyncMock('Success'),
+  delete: jest.fn(),
+  getDescriptionFiles: createAsyncMock(['descriptionFile']),
+  getLifecycleFiles: createAsyncMock(['lifecycleFile']),
+  prepareAllAssetFiles: jest.fn(),
+  getAssetFiles: jest.fn(),
+  updateExecutionStatus: jest.fn(),
+  updateExecutionLogs: jest.fn(),
+  getExecutionHistoryById: jest.fn(),
+  getExecutionHistoryByDTName: jest.fn(),
+} as unknown as DigitalTwin;

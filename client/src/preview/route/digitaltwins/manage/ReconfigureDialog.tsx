@@ -5,27 +5,26 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  AlertColor,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   removeAllModifiedLibraryFiles,
   selectModifiedLibraryFiles,
-} from 'preview/store/libraryConfigFiles.slice';
+} from 'model/store/libraryConfigFiles.slice';
 import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import {
-  LibraryConfigFile,
-  FileState,
-} from 'model/backend/interfaces/sharedInterfaces';
-import {
   removeAllModifiedFiles,
   selectModifiedFiles,
-} from 'preview/store/file.slice';
-import { updateDescription } from 'model/backend/state/digitalTwin.slice';
-import { showSnackbar } from 'store/snackbar.slice';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
+} from 'model/store/file.slice';
+import { formatName } from 'model/backend/digitalTwin';
 import Editor from 'preview/route/digitaltwins/editor/Editor';
+import {
+  saveChanges,
+  handleFileUpdate,
+} from 'preview/route/digitaltwins/manage/reconfigureDialogHandlers';
+
+export { saveChanges, handleFileUpdate };
 
 interface ReconfigureDialogProps {
   showDialog: boolean;
@@ -125,76 +124,6 @@ function ReconfigureDialog({
     </>
   );
 }
-
-export const saveChanges = async (
-  modifiedFiles: FileState[],
-  modifiedLibraryFiles: LibraryConfigFile[],
-  digitalTwin: DigitalTwin,
-  dispatch: ReturnType<typeof useDispatch>,
-  name: string,
-) => {
-  const fileUpdatePromises = [
-    ...modifiedFiles.map((file) =>
-      handleFileUpdate(file, digitalTwin, dispatch),
-    ),
-    ...modifiedLibraryFiles.map((file) =>
-      handleFileUpdate(file, digitalTwin, dispatch),
-    ),
-  ];
-
-  await Promise.all(fileUpdatePromises);
-
-  showSuccessSnackbar(dispatch, name);
-  dispatch(removeAllModifiedFiles());
-  dispatch(removeAllModifiedLibraryFiles());
-};
-
-export const handleFileUpdate = async (
-  file: FileState | LibraryConfigFile,
-  digitalTwin: DigitalTwin,
-  dispatch: ReturnType<typeof useDispatch>,
-) => {
-  try {
-    if ('assetPath' in file) {
-      await digitalTwin.DTAssets.updateLibraryFileContent(
-        file.fileName,
-        file.fileContent,
-        file.assetPath,
-      );
-    } else {
-      await digitalTwin.DTAssets.updateFileContent(file.name, file.content);
-
-      if (file.name === 'description.md') {
-        dispatch(
-          updateDescription({
-            assetName: digitalTwin.DTName,
-            description: file.content,
-          }),
-        );
-      }
-    }
-  } catch (error) {
-    const fileName = 'assetPath' in file ? file.fileName : file.name;
-    dispatch(
-      showSnackbar({
-        message: `Error updating file ${fileName}: ${error}`,
-        severity: 'error',
-      }),
-    );
-  }
-};
-
-const showSuccessSnackbar = (
-  dispatch: ReturnType<typeof useDispatch>,
-  name: string,
-) => {
-  dispatch(
-    showSnackbar({
-      message: `${formatName(name)} reconfigured successfully`,
-      severity: 'success' as AlertColor,
-    }),
-  );
-};
 
 const ReconfigureMainDialog = ({
   showDialog,

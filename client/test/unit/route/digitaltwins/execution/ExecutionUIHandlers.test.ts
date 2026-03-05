@@ -7,7 +7,7 @@ import {
   updatePipelineStateOnStop,
 } from 'route/digitaltwins/execution/executionStatusHandlers';
 import { stopPipelines } from 'model/backend/gitlab/execution/pipelineCore';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 
 describe('ExecutionsUIHandlers', () => {
   const digitalTwin = mockDigitalTwin;

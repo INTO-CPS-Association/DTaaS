@@ -3,15 +3,15 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import ReconfigureDialog from 'preview/route/digitaltwins/manage/ReconfigureDialog';
-import assetsReducer from 'preview/store/assets.slice';
+import assetsReducer from 'model/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'model/backend/state/digitalTwin.slice';
 import snackbarSlice, { showSnackbar } from 'store/snackbar.slice';
-import fileSlice, { removeAllModifiedFiles } from 'preview/store/file.slice';
+import fileSlice, { removeAllModifiedFiles } from 'model/store/file.slice';
 import libraryConfigFilesSlice, {
   removeAllModifiedLibraryFiles,
-} from 'preview/store/libraryConfigFiles.slice';
+} from 'model/store/libraryConfigFiles.slice';
 import DigitalTwin from 'model/backend/digitalTwin';
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import { createMockDigitalTwinData } from 'test/preview/__mocks__/global_mocks';

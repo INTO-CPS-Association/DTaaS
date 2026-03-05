@@ -10,8 +10,8 @@ import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer from 'model/backend/state/digitalTwin.slice';
 import snackbarSlice from 'store/snackbar.slice';
-import fileSlice from 'preview/store/file.slice';
-import cartSlice from 'preview/store/cart.slice';
+import fileSlice from 'model/store/file.slice';
+import cartSlice from 'model/store/cart.slice';
 
 const store = configureStore({
   reducer: combineReducers({

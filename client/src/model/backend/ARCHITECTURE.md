@@ -57,7 +57,7 @@ The Backend communicates directly with the backend server for pipeline execution
 log retrieval, and or file management. The interface is described in
 `./backendInterfaces.ts` with a concrete implementation being `./backend.ts`. It is
 created before the Instance to be injected and may be initialized there. After
-this, it may be called through the Instance  directly (e.g.
+this, it may be called through the Instance directly (e.g.
 `myInstance.api.cancelPipeline(...)`). It may contain a client field from a
 library such as GitBeaker to manage communication with REST-API.
 
@@ -85,7 +85,7 @@ Here is an overview:
 These types represent the standardized data structures returned by different
 backend APIs. Example:
 
-* **`ProjectId`**: Flexible project identifier supporting different backend ID formats
+- **`ProjectId`**: Flexible project identifier supporting different backend ID formats
 
 ```typescript
 type ProjectId = number | string;
@@ -94,8 +94,8 @@ type ProjectId = number | string;
 **Logging and Execution Types**
 These types support execution tracking and debugging. Example:
 
-* **`LogEntry`**: Execution log entries of pipeline executions, including status,
-name and runner tag.
+- **`LogEntry`**: Execution log entries of pipeline executions, including status,
+  name and runner tag.
 
 ```typescript
 type LogEntry = {
@@ -109,7 +109,7 @@ type LogEntry = {
 **Digital Twin State Management Types**
 These types manage the complex state of digital twin instances. Example:
 
-* **`DigitalTwinPipelineState`**: Detailed pipeline execution state and job tracking
+- **`DigitalTwinPipelineState`**: Detailed pipeline execution state and job tracking
 
 ```typescript
 type DigitalTwinPipelineState = {
@@ -124,7 +124,7 @@ type DigitalTwinPipelineState = {
 **File Management Types**
 These types handle file operations and state tracking. Example:
 
-* **`FileState`**: Comprehensive file state tracking with modification flags
+- **`FileState`**: Comprehensive file state tracking with modification flags
 
 ```typescript
 type FileState = {
@@ -140,7 +140,7 @@ type FileState = {
 **Library Asset Types**
 These types manage reusable asset components. Example:
 
-* **`LibraryAssetFiles`**: Asset file organization with privacy controls. Example:
+- **`LibraryAssetFiles`**: Asset file organization with privacy controls. Example:
 
 ```typescript
 type LibraryAssetFiles = {
@@ -156,16 +156,16 @@ type LibraryAssetFiles = {
 The type system is designed around these principles:
 
 1. **Backend Agnosticism**: Types like `ProjectId` support both numeric and string
-identifiers, allowing compatibility with different backend systems (GitLab uses
-numbers, GitHub uses strings).
+   identifiers, allowing compatibility with different backend systems (GitLab uses
+   numbers, GitHub uses strings).
 
 1. **SOLID**: Complex state types like `DigitalTwinPipelineState` expose all
-necessary execution information while maintaining clear boundaries between
-different concerns, and only that functionality. The Liskov substitution
-principle is particularly important for the sake of dependency injection.
-It further allows the codebase to depend only on relevant subsets of interfaces,
-enabling easier testing, clearer separation of concerns, and greater reusability
-of functionality.
+   necessary execution information while maintaining clear boundaries between
+   different concerns, and only that functionality. The Liskov substitution
+   principle is particularly important for the sake of dependency injection.
+   It further allows the codebase to depend only on relevant subsets of interfaces,
+   enabling easier testing, clearer separation of concerns, and greater reusability
+   of functionality.
 
 ### 2. Implementation Layer
 
@@ -198,7 +198,7 @@ Below is a detailed guide:
 1. Modify the backend builder to use the new backend.
 1. Add both unit and integration tests for these files.
 1. Create and place new backends inside `src/model/backend/[YOUR BACKEND'S NAME]`
-folder.
+   folder.
 1. Name as [`backend name`] and [`backend name`]API respectively.
 
 ### Extending Existing Functionality

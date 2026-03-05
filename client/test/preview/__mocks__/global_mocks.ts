@@ -1,8 +1,9 @@
-import DigitalTwin from 'model/backend/digitalTwin';
-import FileHandler from 'model/backend/fileHandler';
-import DTAssets from 'model/backend/DTAssets';
 import LibraryManager from 'model/backend/libraryManager';
-import { mockBackendInstance as backend } from 'test/__mocks__/global_mocks';
+import {
+  mockBackendInstance as backend,
+  mockFileHandler,
+  mockDigitalTwin,
+} from 'test/__mocks__/global_mocks';
 import 'test/preview/__mocks__/constants.mock';
 import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 
@@ -13,6 +14,11 @@ export type {
   mockGitlabInstanceType,
 } from 'test/__mocks__/global_mocks';
 export { mockUser, mockAuthState } from 'test/__mocks__/global_mocks';
+export {
+  mockFileHandler,
+  mockDTAssets,
+  mockDigitalTwin,
+} from 'test/__mocks__/global_mocks';
 
 const createMockURL = (path: string) => `https://example.com/${path}`;
 
@@ -33,81 +39,13 @@ const createCommonMocks = () => ({
   getConfigFiles: jest.fn(),
 });
 
-export const mockFileHandler: FileHandler = {
-  name: 'mockedName',
-  backend,
-  createFile: jest.fn(),
-  updateFile: jest.fn(),
-  deleteDT: jest.fn(),
-  getFileContent: jest.fn(),
-  getFileNames: jest.fn(),
-  getLibraryFileNames: jest.fn(),
-  getLibraryConfigFileNames: jest.fn(),
-  getFolders: jest.fn(),
-};
-
-export const mockDTAssets: DTAssets = {
-  DTName: 'mockedDTName',
-  backend,
-  fileHandler: mockFileHandler,
-  ...createCommonMocks(),
-  createFiles: jest.fn(),
-  getFilesFromAsset: jest.fn(),
-  updateFileContent: jest.fn(),
-  updateLibraryFileContent: jest.fn(),
-  appendTriggerToPipeline: jest.fn(),
-  removeTriggerFromPipeline: jest.fn(),
-  delete: jest.fn(),
-  getLibraryFileContent: jest.fn(),
-  getLibraryConfigFileNames: jest.fn(),
-  getFolders: jest.fn(),
-};
-
 export const mockLibraryManager: LibraryManager = {
   assetName: 'mockedAssetName',
   backend,
   fileHandler: mockFileHandler,
   getFileContent: jest.fn(),
   getFileNames: jest.fn(),
-};
-
-const createAsyncMock = <T>(value: T) => jest.fn().mockResolvedValue(value);
-
-export const mockDigitalTwin: DigitalTwin = {
-  DTName: 'mockedDTName',
-  description: 'mockedDescription',
-  fullDescription: 'mockedFullDescription',
-  backend,
-  DTAssets: mockDTAssets,
-  pipelineId: 1,
-  lastExecutionStatus: 'mockedStatus',
-  jobLogs: [{ jobName: 'job1', log: 'log1' }],
-  pipelineLoading: false,
-  pipelineCompleted: false,
-  descriptionFiles: ['descriptionFile'],
-  configFiles: ['configFile'],
-  lifecycleFiles: ['lifecycleFile'],
-  assetFiles: [
-    { assetPath: 'assetPath', fileNames: ['assetFileName1', 'assetFileName2'] },
-  ],
-  currentExecutionId: 'test-execution-id',
-
-  ...createCommonMocks(),
-  getConfigFiles: createAsyncMock(['configFile']),
-  triggerPipeline: jest.fn(),
-  execute: createAsyncMock(123),
-  stop: jest.fn(),
-  create: createAsyncMock('Success'),
-  delete: jest.fn(),
-  getDescriptionFiles: createAsyncMock(['descriptionFile']),
-  getLifecycleFiles: createAsyncMock(['lifecycleFile']),
-  prepareAllAssetFiles: jest.fn(),
-  getAssetFiles: jest.fn(),
-  updateExecutionStatus: jest.fn(),
-  updateExecutionLogs: jest.fn(),
-  getExecutionHistoryById: jest.fn(),
-  getExecutionHistoryByDTName: jest.fn(),
-} as unknown as DigitalTwin;
+} as unknown as LibraryManager;
 
 export const mockLibraryAsset = {
   name: 'Asset 1',
@@ -131,6 +69,8 @@ export const mockExecutionHistoryEntry = {
   status: 'RUNNING',
   jobLogs: [],
 };
+
+const createAsyncMock = <T>(value: T) => jest.fn().mockResolvedValue(value);
 
 // Mock for indexedDBService
 export const mockIndexedDBService = {

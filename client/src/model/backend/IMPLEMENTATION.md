@@ -28,8 +28,8 @@ Initialization of Gitlab can be done with the `new` operator or by using the
 GitlabFactory as in this example:
 
 ```typescript
-    const gitlabInstance = createGitlabInstance();
-    await gitlabInstance.init();
+const gitlabInstance = createGitlabInstance();
+await gitlabInstance.init();
 ```
 
 This will create both the GitlabInstance and the GitlabAPI based on session
@@ -58,21 +58,21 @@ is not provided upon execution of a pipeline, it will also throw an error.
 
 ## API Mapping
 
-| Interface Method                      | Backend API Endpoint              | Parameters                                                    | Response Transformation               | Notes                                           |          |
-| ------------------------------------- | --------------------------------- | ------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------- | -------- |
-| `startPipeline(projectId, ref, vars)` | `PipelineTriggerTokens.trigger`   | `projectId`, `ref`, `triggerToken`, `{ variables }, triggerToken`           | `{ id: response.id }`                 |   Implemented both in Instance and Backend     |
-| `cancelPipeline(projectId, id)`       | `Pipelines.cancel`                | `projectId`, `pipelineId`                                     | `{ id: response.id }`                 |                                                 |          |
-| `createRepositoryFile(...)`           | `RepositoryFiles.create`          | `projectId`, `filePath`, `branch`, `content`, `commitMessage` | `{ content }`                         |                                                 |          |
-| `editRepositoryFile(...)`             | `RepositoryFiles.edit`            | Same as above                                                 | `{ content }`                         |                                                 |          |
-| `removeRepositoryFile(...)`           | `RepositoryFiles.remove`          | Same as above                                                 | `{ content: '' }`                     | Content is always empty string on delete        |          |
-| `getRepositoryFileContent(...)`       | `RepositoryFiles.show`            | `projectId`, `filePath`, `ref`                                | `{ content: atob(response.content) }` | Decodes base64 content                          |          |
-| `listRepositoryFiles(...)`            | `Repositories.allRepositoryTrees` | `projectId`, `{ path, ref, recursive }`                       | Maps to `{ name, type, path }[]`      | `type` is cast from response string to `'blob' \| 'tree'` ||
-| `getGroupByName(groupName)`           | `Groups.show`                     | `groupName`                                                   | Response passed directly              |                                                 |          |
-| `listGroupProjects(groupId)`          | `Groups.allProjects`              | `groupId`                                                     | Response passed directly              |                                                 |          |
-| `listPipelineJobs(projectId, id)`     | `Jobs.all`                        | `projectId`, `{ pipelineId }`                                 | Response passed directly              |                                                 |          |
-| `getJobLog(projectId, jobId)`         | `Jobs.showLog`                    | `projectId`, `jobId`                                          | Response passed directly (string)     |                                                 |          |
-| `getPipelineStatus(projectId, id)`    | `Pipelines.show`                  | `projectId`, `pipelineId`                                     | `pipeline.status`                     |                                                 |          |
-| `getTriggerToken(projectId)`          | `PipelineTriggerTokens.all`       | `projectId`                                                   | `triggers[0].token`                   | Unique to GitLab backend                        |          |
+| Interface Method                      | Backend API Endpoint              | Parameters                                                        | Response Transformation               | Notes                                                     |     |
+| ------------------------------------- | --------------------------------- | ----------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------- | --- |
+| `startPipeline(projectId, ref, vars)` | `PipelineTriggerTokens.trigger`   | `projectId`, `ref`, `triggerToken`, `{ variables }, triggerToken` | `{ id: response.id }`                 | Implemented both in Instance and Backend                  |
+| `cancelPipeline(projectId, id)`       | `Pipelines.cancel`                | `projectId`, `pipelineId`                                         | `{ id: response.id }`                 |                                                           |     |
+| `createRepositoryFile(...)`           | `RepositoryFiles.create`          | `projectId`, `filePath`, `branch`, `content`, `commitMessage`     | `{ content }`                         |                                                           |     |
+| `editRepositoryFile(...)`             | `RepositoryFiles.edit`            | Same as above                                                     | `{ content }`                         |                                                           |     |
+| `removeRepositoryFile(...)`           | `RepositoryFiles.remove`          | Same as above                                                     | `{ content: '' }`                     | Content is always empty string on delete                  |     |
+| `getRepositoryFileContent(...)`       | `RepositoryFiles.show`            | `projectId`, `filePath`, `ref`                                    | `{ content: atob(response.content) }` | Decodes base64 content                                    |     |
+| `listRepositoryFiles(...)`            | `Repositories.allRepositoryTrees` | `projectId`, `{ path, ref, recursive }`                           | Maps to `{ name, type, path }[]`      | `type` is cast from response string to `'blob' \| 'tree'` |     |
+| `getGroupByName(groupName)`           | `Groups.show`                     | `groupName`                                                       | Response passed directly              |                                                           |     |
+| `listGroupProjects(groupId)`          | `Groups.allProjects`              | `groupId`                                                         | Response passed directly              |                                                           |     |
+| `listPipelineJobs(projectId, id)`     | `Jobs.all`                        | `projectId`, `{ pipelineId }`                                     | Response passed directly              |                                                           |     |
+| `getJobLog(projectId, jobId)`         | `Jobs.showLog`                    | `projectId`, `jobId`                                              | Response passed directly (string)     |                                                           |     |
+| `getPipelineStatus(projectId, id)`    | `Pipelines.show`                  | `projectId`, `pipelineId`                                         | `pipeline.status`                     |                                                           |     |
+| `getTriggerToken(projectId)`          | `PipelineTriggerTokens.all`       | `projectId`                                                       | `triggers[0].token`                   | Unique to GitLab backend                                  |     |
 
 ## Configuration Requirements
 

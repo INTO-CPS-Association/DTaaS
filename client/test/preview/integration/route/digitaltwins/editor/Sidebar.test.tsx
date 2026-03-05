@@ -29,7 +29,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'model/backend/state/digitalTwin.slice';
-import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
+import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
 import Sidebar from 'preview/route/digitaltwins/editor/Sidebar';
 import {
   act,
@@ -46,9 +46,9 @@ import {
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import DigitalTwin from 'model/backend/digitalTwin';
 import * as SidebarFunctions from 'preview/route/digitaltwins/editor/sidebarFunctions';
-import cartSlice, { addToCart } from 'preview/store/cart.slice';
+import cartSlice, { addToCart } from 'model/store/cart.slice';
 import '@testing-library/jest-dom';
-import libraryConfigFilesSlice from 'preview/store/libraryConfigFiles.slice';
+import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
 
 jest.mock('model/backend/util/digitalTwinAdapter', () => ({
   createDigitalTwinFromData: jest.fn().mockResolvedValue(digitalTwinDataMock),

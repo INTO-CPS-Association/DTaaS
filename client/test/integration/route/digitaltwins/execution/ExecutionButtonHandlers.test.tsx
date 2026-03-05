@@ -1,6 +1,6 @@
 import * as PipelineHandlers from 'route/digitaltwins/execution/executionButtonHandlers';
 import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
 import digitalTwinReducer, {
   setDigitalTwin,

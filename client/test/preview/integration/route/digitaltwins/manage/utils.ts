@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
-import assetsReducer, { setAssets } from 'preview/store/assets.slice';
+import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
+import assetsReducer, { setAssets } from 'model/store/assets.slice';
 import digitalTwinReducer, {
   setDigitalTwin,
 } from 'model/backend/state/digitalTwin.slice';

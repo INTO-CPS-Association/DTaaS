@@ -6,7 +6,7 @@ import {
   handleCloseFileNameDialog,
   handleFileSubmit,
 } from 'preview/route/digitaltwins/editor/sidebarFunctions';
-import { updateFileState } from 'preview/util/fileUtils';
+import { updateFileState } from 'util/fileUtils';
 import { FileState } from 'model/backend/interfaces/sharedInterfaces';
 
 jest.mock('react-redux', () => ({
@@ -18,7 +18,7 @@ jest.mock('preview/route/digitaltwins/editor/sidebarFetchers', () => ({
   fetchAndSetFileLibraryContent: jest.fn(),
 }));
 
-jest.mock('preview/util/fileUtils', () => ({
+jest.mock('util/fileUtils', () => ({
   updateFileState: jest.fn(),
   getFileTypeFromExtension: jest.fn(),
 }));

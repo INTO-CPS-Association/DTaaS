@@ -6,7 +6,7 @@ import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'preview/components/asset/AssetBoard';
 import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { addOrUpdateFile } from 'preview/store/file.slice';
+import { addOrUpdateFile } from 'model/store/file.slice';
 import tabs from 'preview/route/digitaltwins/DigitalTwinTabDataPreview';
 import CreatePage from 'preview/route/digitaltwins/create/CreatePage';
 

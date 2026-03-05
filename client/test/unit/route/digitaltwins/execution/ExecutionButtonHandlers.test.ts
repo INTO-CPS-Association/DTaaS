@@ -2,7 +2,7 @@ import * as PipelineHandlers from 'route/digitaltwins/execution/executionButtonH
 import * as PipelineUtils from 'route/digitaltwins/execution/executionStatusHandlers';
 import * as PipelineChecks from 'route/digitaltwins/execution/executionStatusManager';
 import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { PipelineHandlerDispatch } from 'route/digitaltwins/execution/executionButtonHandlers';
 import { fetchExecutionHistory } from 'model/backend/state/executionHistory.slice';
 

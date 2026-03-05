@@ -9,7 +9,7 @@ import {
   getPollingInterval,
   stopPipelines,
 } from 'model/backend/gitlab/execution/pipelineCore';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 
 describe('pipelineCore', () => {
   describe('delay', () => {

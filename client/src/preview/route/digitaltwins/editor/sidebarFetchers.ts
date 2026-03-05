@@ -1,6 +1,6 @@
-import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
+import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
 import DigitalTwin from 'model/backend/digitalTwin';
-import { updateFileState } from 'preview/util/fileUtils';
+import { updateFileState } from 'util/fileUtils';
 import LibraryAsset from 'model/backend/libraryAsset';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
@@ -33,14 +33,14 @@ export const fetchAndSetFileContent = async (
       fileContent = await digitalTwin!.DTAssets.getFileContent(fileName);
     }
     if (fileContent) {
-      updateFileState(
+      updateFileState({
         fileName,
         fileContent,
         setFileName,
         setFileContent,
         setFileType,
         setFilePrivacy,
-      );
+      });
     }
   } catch {
     setFileContent(`Error fetching ${fileName} content`);
@@ -77,14 +77,14 @@ export const fetchAndSetFileLibraryContent = async (
       }),
     );
     if (fileContent) {
-      updateFileState(
+      updateFileState({
         fileName,
         fileContent,
         setFileName,
         setFileContent,
         setFileType,
         setFilePrivacy,
-      );
+      });
     }
     setIsLibraryFile(true);
     setLibraryAssetPath(libraryAsset!.path);

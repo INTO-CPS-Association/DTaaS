@@ -1,7 +1,6 @@
 import { getAuthority } from 'util/envUtil';
 import {
   getGroupName,
-  getRunnerTag,
   getDTDirectory,
   getBranchName,
 } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
@@ -18,16 +17,23 @@ import {
   BackendInterface,
   ProjectId,
 } from 'model/backend/interfaces/backendInterfaces';
-import { v4 as uuidv4 } from 'uuid';
-import indexedDBService from 'database/executionHistoryDB';
 import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
 import DTAssets from 'model/backend/DTAssets';
 import {
-  isValidInstance,
-  logError,
-  logSuccess,
-  getUpdatedLibraryFile,
-} from 'model/backend/util/digitalTwinUtils';
+  executeDT,
+  stopDT,
+} from 'model/backend/util/digitalTwinPipelineExecution';
+import {
+  getExecutionHistoryFn,
+  getExecutionHistoryByIdFn,
+  updateExecutionLogsFn,
+  updateExecutionStatusFn,
+} from 'model/backend/util/digitalTwinExecutionHistory';
+import {
+  getAssetFilesFn,
+  prepareAllAssetFilesFn,
+  createDT,
+} from 'model/backend/util/digitalTwinFileManagement';
 
 export const formatName = (name: string) =>
   name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase()); // replaceAll not supported
@@ -106,53 +112,12 @@ class DigitalTwin implements DigitalTwinInterface {
     }
   }
 
-  private async triggerPipeline() {
-    const runnerTag = getRunnerTag();
-    const variables = { DTName: this.DTName, RunnerTag: runnerTag };
-    return this.backend.startPipeline(
-      this.backend.getProjectId(),
-      getBranchName(),
-      variables,
-    );
-  }
-
   /**
    * Execute a Digital Twin and create an execution history entry
    * @returns Promise that resolves with the pipeline ID or null if execution failed
    */
   async execute(): Promise<number | null> {
-    const runnerTag = getRunnerTag();
-    if (!isValidInstance(this)) {
-      logError(this, runnerTag, 'Missing projectId or triggerToken');
-      return null;
-    }
-
-    try {
-      const response = await this.triggerPipeline();
-      logSuccess(this, runnerTag);
-      this.pipelineId = response.id;
-
-      this.activePipelineIds.push(response.id);
-
-      const executionId = uuidv4();
-      this.currentExecutionId = executionId;
-
-      const executionEntry: DTExecutionResult = {
-        id: executionId,
-        dtName: this.DTName,
-        pipelineId: response.id,
-        timestamp: Date.now(),
-        status: ExecutionStatus.RUNNING,
-        jobLogs: [],
-      };
-
-      await indexedDBService.add(executionEntry);
-
-      return response.id;
-    } catch (error) {
-      logError(this, runnerTag, String(error));
-      return null;
-    }
+    return executeDT(this);
   }
 
   /**
@@ -167,60 +132,7 @@ class DigitalTwin implements DigitalTwinInterface {
     pipeline: string,
     executionId?: string,
   ): Promise<void> {
-    const runnerTag = getRunnerTag();
-    const pipelineId = await this.resolvePipelineId(pipeline, executionId);
-
-    if (!pipelineId) {
-      return;
-    }
-
-    try {
-      await this.backend.api.cancelPipeline(projectId, pipelineId);
-      this.backend.logs.push({
-        status: 'canceled',
-        DTName: this.DTName,
-        runnerTag,
-      });
-      this.lastExecutionStatus = ExecutionStatus.CANCELED;
-
-      const idToUpdate = executionId || this.currentExecutionId;
-      if (idToUpdate) {
-        await this.updateExecutionStatus(idToUpdate, ExecutionStatus.CANCELED);
-      }
-
-      this.activePipelineIds = this.activePipelineIds.filter(
-        (id) => id !== pipelineId,
-      );
-    } catch (error) {
-      this.backend.logs.push({
-        status: 'error',
-        error: new Error(String(error)),
-        DTName: this.DTName,
-        runnerTag,
-      });
-      this.lastExecutionStatus = ExecutionStatus.ERROR;
-    }
-  }
-
-  /**
-   * Resolve the pipeline ID based on execution context
-   */
-  private async resolvePipelineId(
-    pipeline: string,
-    executionId?: string,
-  ): Promise<number | null> {
-    if (executionId) {
-      const execution = await indexedDBService.getById(executionId);
-      if (execution) {
-        return pipeline === 'parentPipeline'
-          ? execution.pipelineId
-          : execution.pipelineId + 1;
-      }
-      return null;
-    }
-    return pipeline === 'parentPipeline'
-      ? this.pipelineId
-      : this.pipelineId! + 1;
+    return stopDT(this, projectId, pipeline, executionId);
   }
 
   /**
@@ -228,7 +140,7 @@ class DigitalTwin implements DigitalTwinInterface {
    * @returns Promise that resolves with an array of execution history entries
    */
   async getExecutionHistory(): Promise<DTExecutionResult[]> {
-    return indexedDBService.getByDTName(this.DTName);
+    return getExecutionHistoryFn(this);
   }
 
   /**
@@ -236,12 +148,10 @@ class DigitalTwin implements DigitalTwinInterface {
    * @param executionId The execution ID
    * @returns Promise that resolves with the execution history entry or undefined if not found
    */
-
   async getExecutionHistoryById(
     executionId: string,
   ): Promise<DTExecutionResult | undefined> {
-    const result = await indexedDBService.getById(executionId);
-    return result || undefined;
+    return getExecutionHistoryByIdFn(this, executionId);
   }
 
   /**
@@ -254,16 +164,7 @@ class DigitalTwin implements DigitalTwinInterface {
     executionId: string,
     jobLogs: JobLog[],
   ): Promise<void> {
-    const execution = await indexedDBService.getById(executionId);
-    if (execution) {
-      execution.jobLogs = jobLogs;
-      await indexedDBService.update(execution);
-
-      // Update current job logs for backward compatibility
-      if (executionId === this.currentExecutionId) {
-        this.jobLogs = jobLogs;
-      }
-    }
+    return updateExecutionLogsFn(this, executionId, jobLogs);
   }
 
   /**
@@ -276,15 +177,7 @@ class DigitalTwin implements DigitalTwinInterface {
     executionId: string,
     status: ExecutionStatus,
   ): Promise<void> {
-    const execution = await indexedDBService.getById(executionId);
-    if (execution) {
-      execution.status = status;
-      await indexedDBService.update(execution);
-
-      if (executionId === this.currentExecutionId) {
-        this.lastExecutionStatus = status;
-      }
-    }
+    return updateExecutionStatusFn(this, executionId, status);
   }
 
   async create(
@@ -292,35 +185,7 @@ class DigitalTwin implements DigitalTwinInterface {
     cartAssets: LibraryAssetInterface[],
     libraryFiles: LibraryConfigFile[],
   ): Promise<string> {
-    const mainFolderPath = `digital_twins/${this.DTName}`;
-    const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
-
-    try {
-      const assetFilesToCreate = await this.prepareAllAssetFiles(
-        cartAssets,
-        libraryFiles,
-      );
-
-      await this.DTAssets.createFiles(
-        files,
-        mainFolderPath,
-        lifecycleFolderPath,
-      );
-
-      await this.DTAssets.createFiles(
-        assetFilesToCreate,
-        mainFolderPath,
-        lifecycleFolderPath,
-      );
-
-      await this.DTAssets.appendTriggerToPipeline();
-
-      return `${this.DTName} digital twin files initialized successfully.`;
-    } catch (error) {
-      return `Error initializing ${this.DTName} digital twin files: ${String(
-        error,
-      )}`;
-    }
+    return createDT(this, files, cartAssets, libraryFiles);
   }
 
   async delete() {
@@ -358,79 +223,11 @@ class DigitalTwin implements DigitalTwinInterface {
       isFromCommonLibrary: boolean;
     }>
   > {
-    const assetPromises = cartAssets.map(async (asset) => {
-      const assetFiles = await this.DTAssets.getFilesFromAsset(
-        asset.path,
-        asset.isPrivate,
-      );
-
-      return assetFiles.map((assetFile) => {
-        const updatedFile = getUpdatedLibraryFile(
-          assetFile.name,
-          asset.path,
-          asset.isPrivate,
-          libraryFiles,
-        );
-
-        return {
-          name: `${asset.name}/${assetFile.name}`,
-          content: updatedFile ? updatedFile.fileContent : assetFile.content,
-          isNew: true,
-          isFromCommonLibrary: !asset.isPrivate,
-        };
-      });
-    });
-
-    const nestedFiles = await Promise.all(assetPromises);
-    const assetFilesToCreate = nestedFiles.flat();
-    return assetFilesToCreate;
+    return prepareAllAssetFilesFn(this, cartAssets, libraryFiles);
   }
 
   async getAssetFiles(): Promise<{ assetPath: string; fileNames: string[] }[]> {
-    const mainFolderPath = `digital_twins/${this.DTName}`;
-    const excludeFolder = FileType.LIFECYCLE;
-    const result: { assetPath: string; fileNames: string[] }[] = [];
-
-    try {
-      const folders = await this.DTAssets.getFolders(mainFolderPath);
-
-      const validFolders = folders.filter(
-        (folder) => !folder.includes(excludeFolder),
-      );
-
-      const folderPromises = validFolders.map(async (folder) => {
-        if (folder.endsWith('/common')) {
-          const subFolders = await this.DTAssets.getFolders(folder);
-          const subFolderPromises = subFolders.map(async (subFolder) => {
-            const fileNames =
-              await this.DTAssets.getLibraryConfigFileNames(subFolder);
-
-            return {
-              assetPath: subFolder,
-              fileNames,
-            };
-          });
-          return Promise.all(subFolderPromises);
-        }
-
-        const fileNames = await this.DTAssets.getLibraryConfigFileNames(folder);
-
-        return [
-          {
-            assetPath: folder,
-            fileNames,
-          },
-        ];
-      });
-
-      const nestedResults = await Promise.all(folderPromises);
-      result.push(...nestedResults.flat());
-
-      this.assetFiles = result;
-    } catch {
-      return [];
-    }
-    return result;
+    return getAssetFilesFn(this);
   }
 }
 

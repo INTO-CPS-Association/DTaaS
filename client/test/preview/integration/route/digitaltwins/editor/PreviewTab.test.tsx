@@ -6,7 +6,7 @@ import * as React from 'react';
 import { createMockDigitalTwinData } from 'test/preview/__mocks__/global_mocks';
 import { Provider } from 'react-redux';
 import { act, render, screen } from '@testing-library/react';
-import fileSlice, { addOrUpdateFile } from 'preview/store/file.slice';
+import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
 import PreviewTab from 'preview/route/digitaltwins/editor/PreviewTab';
 
 describe('PreviewTab', () => {

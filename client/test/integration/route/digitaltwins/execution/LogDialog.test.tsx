@@ -17,7 +17,7 @@ import executionHistoryReducer, {
   setExecutionHistoryEntries,
 } from 'model/backend/state/executionHistory.slice';
 import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
-import { mockDigitalTwin } from 'test/preview/__mocks__/global_mocks';
+import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 
 jest.mock('database/executionHistoryDB', () => ({

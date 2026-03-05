@@ -44,6 +44,20 @@ export interface KeyLinkPair {
 }
 
 /**
+ * Pure function to build a user-scoped link from a pre-fetched username.
+ * Does not call any React hooks, safe to use inside loops.
+ */
+function buildUserLink(
+  username: string,
+  baseURL: string,
+  endpoint?: string,
+): string {
+  const cleanBaseURL = cleanURL(baseURL);
+  const cleanEndpoint = cleanURL(endpoint ?? '');
+  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
+}
+
+/**
  * @returns an array of `KeyLinkPair` objects, where each object contains a `key` and a `link`.
  *
  * The `key` is the `key` of the environment variable, with the prefix *"REACT_APP_WORKBENCHLINK_"* removed.
@@ -52,7 +66,9 @@ export interface KeyLinkPair {
  * The `link` is constructed by appending the `username` to the end of the *REACT_APP_URL_WORKBENCH*, and then appending the value of the environment variable to the end of that.
  * For example, if the *REACT_APP_URL_WORKBENCH* is https://foo.com, the `username` is *"user1"*, and the value of the environment variable is "/my-workbench", then the link will be https://foo.com/user1/my-workbench.
  */
-export function getWorkbenchLinkValues(): KeyLinkPair[] {
+export function useWorkbenchLinkValues(): KeyLinkPair[] {
+  const username = useSelector((state: RootState) => state.auth).userName ?? '';
+  const appURL = useAppURL();
   const prefix = 'REACT_APP_WORKBENCHLINK_';
   const workbenchLinkValues: KeyLinkPair[] = [];
 
@@ -66,7 +82,7 @@ export function getWorkbenchLinkValues(): KeyLinkPair[] {
           keyWithoutPrefix === 'DT_PREVIEW' ||
           keyWithoutPrefix === 'LIBRARY_PREVIEW'
             ? value
-            : useUserLink(useAppURL(), value);
+            : buildUserLink(username, appURL, value);
         workbenchLinkValues.push({
           key: keyWithoutPrefix,
           link: linkValue,

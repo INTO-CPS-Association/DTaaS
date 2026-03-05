@@ -1,7 +1,7 @@
 import {
   useURLforDT,
   useURLforLIB,
-  getWorkbenchLinkValues,
+  useWorkbenchLinkValues,
   cleanURL,
   useURLbasename,
 } from 'util/envUtil';
@@ -59,13 +59,13 @@ describe('envUtil', () => {
   });
 
   test('GetWorkbenchLinkValues should return an array', () => {
-    const result = getWorkbenchLinkValues();
+    const result = useWorkbenchLinkValues();
     expect(Array.isArray(result)).toBe(true);
   });
 
   // Test that array elements have the expected shape
   test('GetWorkbenchLinkValues should return an array of objects with "key" and "link" properties', () => {
-    const result = getWorkbenchLinkValues();
+    const result = useWorkbenchLinkValues();
     expect(
       result.every(
         (el) => typeof el.key === 'string' && typeof el.link === 'string',
@@ -75,7 +75,7 @@ describe('envUtil', () => {
 
   // Test that the links are correctly constructed
   it('should construct the links correctly', () => {
-    const result = getWorkbenchLinkValues();
+    const result = useWorkbenchLinkValues();
 
     result.forEach((el, i) => {
       expect(el.link).toEqual(

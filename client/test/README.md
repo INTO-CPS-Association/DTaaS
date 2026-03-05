@@ -39,10 +39,10 @@ Remember to add the correct callback URL in the OAuth
 application. Depending the location of the client website,
 one of the following URLs must be registered as callback URL.
 
-| Location of client application | URL |
-| : --- | : --- |
-| Localhost | `http://localhost:4000` |
-| External / Integration server | `https://foo.com` |
+| Location of client application | URL                     |
+| :----------------------------- | :---------------------- |
+| Localhost                      | `http://localhost:4000` |
+| External / Integration server  | `https://foo.com`       |
 
 The GitLab will still be running on a remote machine.
 It is not possible to run both the GitLab and react client website on localhost.
@@ -55,10 +55,10 @@ the client configuration file available at `config/test.js`.
 Make sure the configuration in `config/test.js` matches
 the details of your testing environment. For instance, you need to adjust:
 
-* `REACT_APP_URL`
-* `REACT_APP_AUTH_AUTHORITY`
-* `REACT_APP_REDIRECT_URI`
-* `REACT_APP_LOGOUT_REDIRECT_URI`
+- `REACT_APP_URL`
+- `REACT_APP_AUTH_AUTHORITY`
+- `REACT_APP_REDIRECT_URI`
+- `REACT_APP_LOGOUT_REDIRECT_URI`
 
 to reflect your test setup. More information on about the environment settings is
 available in [authorization](../../docs/admin/client/auth.md) and
@@ -81,7 +81,8 @@ window.env = {
   REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
   REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
-  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+  REACT_APP_CLIENT_ID:
+    '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
   REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
   REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
@@ -106,7 +107,8 @@ window.env = {
   REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
   REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
-  REACT_APP_CLIENT_ID: '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+  REACT_APP_CLIENT_ID:
+    '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
   REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
   REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
   REACT_APP_LOGOUT_REDIRECT_UR: 'https://foo.com/',

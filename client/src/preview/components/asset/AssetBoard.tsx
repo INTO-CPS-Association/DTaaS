@@ -4,16 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   deleteAsset,
   selectAssetsByTypeAndPrivacy,
-} from 'preview/store/assets.slice';
+} from 'model/store/assets.slice';
 import { fetchDigitalTwins } from 'model/backend/util/init';
 import { setShouldFetchDigitalTwins } from 'model/backend/state/digitalTwin.slice';
 import { RootState } from 'store/store';
-import Filter from 'preview/components/asset/Filter';
+import Filter from 'components/asset/Filter';
 import { Asset } from 'model/backend/Asset';
-import {
-  AssetCardExecute,
-  AssetCardManage,
-} from 'preview/components/asset/AssetCard';
+import { AssetCardExecute } from 'components/asset/AssetCard';
+import AssetCardManage from 'preview/components/asset/AssetCardManage';
 
 const outerGridContainerProps = {
   container: true,
@@ -71,7 +69,7 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
       }
     };
 
-    if (shouldFetchDigitalTwins === true) {
+    if (shouldFetchDigitalTwins) {
       fetchData();
     } else {
       setLoading(false);
@@ -90,32 +88,32 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
     return <em style={{ textAlign: 'center' }}>{error}</em>;
   }
 
+  if (loading) {
+    return (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ minHeight: '10rem' }}
+      >
+        <CircularProgress />
+      </Grid>
+    );
+  }
+
   return (
     <>
-      {loading ? (
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          sx={{ minHeight: '10rem' }}
-        >
-          <CircularProgress />
-        </Grid>
-      ) : (
-        <>
-          <Filter value={filter} onChange={setFilter} />
-          <Grid {...outerGridContainerProps}>
-            {filteredAssets.map((asset) => (
-              <AssetGridItem
-                key={asset.path}
-                asset={asset}
-                tab={tab}
-                onDelete={handleDelete}
-              />
-            ))}
-          </Grid>
-        </>
-      )}
+      <Filter value={filter} onChange={setFilter} />
+      <Grid {...outerGridContainerProps}>
+        {filteredAssets.map((asset) => (
+          <AssetGridItem
+            key={asset.path}
+            asset={asset}
+            tab={tab}
+            onDelete={handleDelete}
+          />
+        ))}
+      </Grid>
     </>
   );
 };

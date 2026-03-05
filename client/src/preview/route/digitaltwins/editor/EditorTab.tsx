@@ -1,8 +1,8 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
-import { addOrUpdateLibraryFile } from 'preview/store/libraryConfigFiles.slice';
-import { addOrUpdateFile } from 'preview/store/file.slice';
+import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
+import { addOrUpdateFile } from 'model/store/file.slice';
 
 interface EditorTabProps {
   tab: string;
