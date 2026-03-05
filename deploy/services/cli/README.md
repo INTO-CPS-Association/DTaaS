@@ -134,9 +134,13 @@ dtaas-services install
 ```
 
 ```bash
+dtaas-services start -s thingsboard
+```
 
-#  After installation, start ThingsBoard then run this command
-#  to create the tenant, tenant admin and users.
+```bash
+
+#  After installation, wait some time before adding users
+#  This creates the tenant, tenant admin and users.
 dtaas-services user add -s thingsboard
 ```
 

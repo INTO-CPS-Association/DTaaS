@@ -195,7 +195,8 @@ The package uses a modular, three-layer architecture:
 * **`mongodb.py`**: MongoDB certificate and permission setup
 * **`rabbitmq.py`**: RabbitMQ certificate, permission, and user management
 * **`influxdb/`**: InfluxDB service module
-  * `_utils.py`: Shared Docker command wrapper (`execute_influxdb_command`) and JSON parsing
+  * `_utils.py`: Shared Docker command wrapper (`execute_influxdb_command`)
+  and JSON parsing
   * `influxdb.py`: Certificate permissions and setup orchestration
   * `user_management.py`: User, organisation, and bucket management
 * **`postgres/`**: PostgreSQL service module
@@ -465,3 +466,13 @@ Aim for high test coverage, especially for:
 * Docker command execution
 * Configuration parsing
 * File operations
+
+## Building the package
+
+Finally to build the pip package run
+
+```bash
+poetry build
+```
+
+Then you can find the whl package in cli\dist.
