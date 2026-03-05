@@ -80,23 +80,23 @@ cli/
 │       │   └── utils.py    # Library utilities
 │       └── services/       # Service-specific modules
 │           ├── mongodb.py  # MongoDB certificate and permission setup
-           ├── rabbitmq.py # RabbitMQ certificate, permission, and user management
-           ├── influxdb/   # InfluxDB service module
-           │   ├── __init__.py
-           │   ├── _utils.py       # Shared Docker command wrapper and JSON parsing
-           │   ├── influxdb.py     # Certificate, permissions, and setup orchestration
-           │   └── user_management.py  # User, org, and bucket management
-           ├── postgres/   # PostgreSQL service module
-           │   ├── __init__.py
-           │   ├── postgres.py     # Certificate setup and readiness waiting
-           │   └── status.py       # Container health and state checking
-           └── thingsboard/
-               ├── __init__.py
-               ├── activation.py    # Shared user activation utilities
-               ├── customer_user.py # Customer and customer user creation
-               ├── setup.py         # ThingsBoard setup orchestration
-               ├── sysadmin.py      # System admin operations
-               ├── tenant_admin.py  # Tenant admin provisioning and password reset
+│           ├── rabbitmq.py # RabbitMQ certificate, permission, and user management
+│           ├── influxdb/   # InfluxDB service module
+│           │   ├── __init__.py
+│           │   ├── _utils.py       # Shared Docker command wrapper and JSON parsing
+│           │   ├── influxdb.py     # Certificate, permissions, and setup orchestration
+│           │   └── user_management.py  # User, org, and bucket management
+│           ├── postgres/   # PostgreSQL service module
+│           │   ├── __init__.py
+│           │   ├── postgres.py     # Certificate setup and readiness waiting
+│           │   └── status.py       # Container health and state checking
+│           └── thingsboard/
+│               ├── __init__.py
+│               ├── activation.py    # Shared user activation utilities
+│               ├── customer_user.py # Customer and customer user creation
+│               ├── setup.py         # ThingsBoard setup orchestration
+│               ├── sysadmin.py      # System admin operations
+│               ├── tenant_admin.py  # Tenant admin provisioning and password reset
 │               ├── checker.py       # Installation checking
 │               ├── permissions.py   # Certificate setup
 │               ├── tb_cert.py       # Certificate operations
