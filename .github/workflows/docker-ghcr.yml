@@ -75,6 +75,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         env:
+          # yamllint disable-line rule:line-length
           IMAGE_TAG: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
@@ -93,6 +94,7 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
+          # yamllint disable rule:line-length
           tags: |
             ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
             ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:latest

@@ -2,7 +2,7 @@ services:
   traefik:
     image: traefik:v2.10
     restart: unless-stopped
-    command: 
+    command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -72,7 +72,7 @@ services:
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
       - users
-  
+
   user2:
     image: mltooling/ml-workspace-minimal:0.13.2
     restart: unless-stopped

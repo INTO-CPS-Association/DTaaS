@@ -104,16 +104,16 @@ jobs:
       contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout Repository
-          # v6.0.1
-          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        - name: Install jq
-          run: sudo apt-get install -y jq
-        - name: get version
-          id: get-version
-          run: |
-            version=$(jq -r '.version' ./client/package.json)
-            echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: get-version
+        run: |
+          version=$(jq -r '.version' ./client/package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get-version.outputs.version }}
 
@@ -121,7 +121,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
       packages: write  # Push to github package registry
-    if: | 
+    if: |
       github.event_name == 'push' &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||

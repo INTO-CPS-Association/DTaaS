@@ -80,7 +80,7 @@ jobs:
           # Docker is pre-installed on Ubuntu runners
           # Just ensure the service is running
           docker --version
-
+        # yamllint disable rule:line-length
       - name: Install Docker on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -118,13 +118,18 @@ jobs:
         shell: bash
         run: |
           poetry run pylint ${{ inputs.src-directory }} ${{ inputs.tests-directory }} --rcfile=${GITHUB_WORKSPACE}/.pylintrc --fail-under=9.0
-            
+
+      - name: Run pyright (type checking)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          poetry run pyright ${{inputs.src-directory}} ${{ inputs.tests-directory }}
+
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |
           poetry run pytest --cov=${{ inputs.src-directory }} --cov-report=xml \
             --cov-report=term-missing
-
+        # yamllint enable rule:line-length
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
         # v5
