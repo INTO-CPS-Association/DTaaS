@@ -1,0 +1,27 @@
+issuer: http://localhost:5556/dex
+storage:
+  type: memory
+web:
+  http: 0.0.0.0:5556
+  allowedOrigins: ['*']
+staticClients:
+  - id: mock
+    redirectURIs:
+      - 'http://localhost/Library'
+    name: 'DTaaS'
+    public: true
+connectors:
+  - type: gitlab
+    id: gitlab
+    name: GitLab
+    config:
+      baseURL: https://gitlab.foo.com
+      clientID: xxx
+      clientSecret: xxx
+      redirectURI: http://localhost:5556/dex/callback
+      scopes:
+        - openid
+        - profile
+        - read_user
+        - read_repository
+        - api
