@@ -30,6 +30,7 @@ def copy_external_files():
     compose_files = [
         "compose.services.secure.yml",
         "compose.thingsboard.secure.yml",
+        "compose.gitlab.yml",
     ]
 
     for filename in compose_files:

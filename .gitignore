@@ -200,6 +200,7 @@ deploy/services/certs/*
 !deploy/services/certs/services.foo.com
 deploy/services/cli/certs/*
 deploy/services/cli/data
+deploy/services/cli/log
 
 # qlty config
 .qlty
@@ -220,6 +221,8 @@ deploy/services/cli/dtaas_services/certs/
 deploy/services/cli/dtaas_services/log/
 deploy/services/cli/dtaas_services/compose.services.secure.yml
 deploy/services/cli/dtaas_services/compose.thingsboard.secure.yml
+deploy/services/cli/dtaas_services/compose.gitlab.yml
+
 #ignore developer files
 docker/.env
 docker/conf.dev
@@ -238,6 +241,7 @@ deploy/services/cli/config/credentials.csv
 deploy/services/cli/config
 deploy/services/cli/compose.services.secure.yml
 deploy/services/cli/compose.thingsboard.secure.yml
+deploy/services/cli/compose.gitlab.yml
 
 deploy/services/cli/test-output
 

@@ -1,0 +1,30 @@
+# Reference: https://docs.gitlab.com/ee/install/docker/installation.html
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:17.9.2-ce.0'
+    container_name: gitlab
+    restart: always
+    hostname: ${SERVER_DNS}
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://${SERVER_DNS}/gitlab'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+        nginx['listen_port'] = 80
+        nginx['enable'] = true
+        nginx['listen_https'] = false
+        nginx['redirect_http_to_https'] = false
+        letsencrypt['enable'] = false
+    ports:
+      - '${GITLAB_PORT}:80'
+      - '2424:22'
+    volumes:
+      - './data/gitlab/config:/etc/gitlab'
+      - './log/gitlab:/var/log/gitlab'
+      - './data/gitlab/data:/var/opt/gitlab'
+    shm_size: '256m'
+    networks:
+      - platform-services
+
+networks:
+  platform-services:
+    name: dtaas-platform-services

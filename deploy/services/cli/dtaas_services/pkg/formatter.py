@@ -23,6 +23,7 @@ SERVICE_DISPLAY_NAMES = {
     "influxdb": "InfluxDB",
     "postgres": "PostgreSQL",
     "thingsboard-ce": "ThingsBoard",
+    "gitlab": "GitLab",
 }
 
 # User input to actual service name mapping

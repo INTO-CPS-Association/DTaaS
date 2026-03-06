@@ -1,4 +1,4 @@
-# DTaaS Services CLI - Developer Guide
+# Developer Guide
 
 This guide covers development setup, testing, and contribution workflows
 for the DTaaS Services CLI package.
@@ -51,6 +51,7 @@ cli/
 │   │   └── utility.py      # Command utilities
 │   ├── compose.services.secure.yml  # Main services Docker Compose configuration (copied by build.py)
 │   ├── compose.thingsboard.secure.yml  # ThingsBoard and PostgreSQL Docker Compose configuration (copied by build.py)
+│   ├── compose.gitlab.yml           # GitLab Docker Compose configuration (copied by build.py)
 │   ├── config/             # Configuration files (copied by build.py)
 │   │   ├── services.env.template
 │   │   ├── credentials.csv.template
@@ -91,16 +92,25 @@ cli/
 │           │   ├── postgres.py     # Certificate setup and readiness waiting
 │           │   └── status.py       # Container health and state checking
 │           └── thingsboard/
+│          │    ├── __init__.py
+│          │    ├── activation.py    # Shared user activation utilities
+│          │    ├── customer_user.py # Customer and customer user creation
+│          │    ├── setup.py         # ThingsBoard setup orchestration
+│          │    ├── sysadmin.py      # System admin operations
+│          │    ├── tenant_admin.py  # Tenant admin provisioning and password reset
+│          │    ├── checker.py       # Installation checking
+│          │    ├── permissions.py   # Certificate setup
+│          │    ├── tb_cert.py       # Certificate operations
+│          │    └── tb_utility.py
+│          └── gitlab/     # GitLab service module
 │               ├── __init__.py
-│               ├── activation.py    # Shared user activation utilities
-│               ├── customer_user.py # Customer and customer user creation
-│               ├── setup.py         # ThingsBoard setup orchestration
-│               ├── sysadmin.py      # System admin operations
-│               ├── tenant_admin.py  # Tenant admin provisioning and password reset
-│               ├── checker.py       # Installation checking
-│               ├── permissions.py   # Certificate setup
-│               ├── tb_cert.py       # Certificate operations
-│               └── tb_utility.py
+│               ├── _api.py         # Low-level httpx wrapper for GitLab REST API
+│               ├── app_token.py    # OAuth application creation, listing, and deletion
+│               ├── health.py       # Container health checking and readiness waiting
+│               ├── password.py     # Root password retrieval and reset
+│               ├── personal_token.py  # Personal Access Token creation via gitlab-rails
+│               ├── setup.py        # Full post-install orchestration
+│               └── users.py        # User creation from credentials.csv
 └── tests/
     ├── __init__.py
     ├── test_cert.py
@@ -129,26 +139,32 @@ cli/
     │   ├── test_rabbitmq.py
     │   ├── test_influxdb/
     │   │   ├── __init__.py
-    │   │   ├── test_utils.py           # Tests for _utils.py
-    │   │   ├── test_influxdb.py        # Tests for influxdb.py
-    │   │   └── test_user_management.py # Tests for user_management.py
+    │   │   ├── test_utils.py
+    │   │   ├── test_influxdb.py
+    │   │   └── test_user_management.py
     │   ├── test_postgres/
     │   │   ├── __init__.py
-    │   │   ├── test_postgres.py        # Tests for postgres.py
-    │   │   └── test_status.py          # Tests for status.py
-    │   └── test_thingsboard/
+    │   │   ├── test_postgres.py
+    │   │   └── test_status.py
+    │   ├── test_thingsboard/
+    │   │   ├── __init__.py
+    │   │   ├── test_permissions.py
+    │   │   ├── test_setup.py
+    │   │   ├── test_reset_password.py
+    │   │   ├── test_sysadmin.py
+    │   │   ├── test_checker.py
+    │   │   ├── test_tb_cert.py
+    │   │   ├── test_tb_utility.py
+    │   │   └── test_tenant_admin.py
+    │   └── test_gitlab/
     │       ├── __init__.py
-    │       ├── test_activation.py
-    │       ├── test_customer_user.py
-    │       ├── test_permissions.py
+    │       ├── test_api.py
+    │       ├── test_app_token.py
+    │       ├── test_health.py
+    │       ├── test_password.py
+    │       ├── test_personal_token.py
     │       ├── test_setup.py
-    │       ├── test_reset_password.py
-    │       ├── test_sysadmin.py
-    │       ├── test_checker.py
-    │       ├── test_tb_cert.py
-    │       ├── test_tb_utility.py
-    │       ├── test_tenant_admin_compose.py
-    │       └── test_tenant_admin_user.py
+    │       └── test_users.py
     ├── config/             # Test configuration files (REQUIRED for system tests)
     │   ├── services.env    # Test environment variables
     │   └── credentials.csv # Test user credentials
@@ -193,15 +209,19 @@ The package uses a modular, three-layer architecture:
 #### Service Layer (`pkg/services/`)
 
 * **`mongodb.py`**: MongoDB certificate and permission setup
+
 * **`rabbitmq.py`**: RabbitMQ certificate, permission, and user management
+
 * **`influxdb/`**: InfluxDB service module
   * `_utils.py`: Shared Docker command wrapper (`execute_influxdb_command`)
   and JSON parsing
   * `influxdb.py`: Certificate permissions and setup orchestration
   * `user_management.py`: User, organisation, and bucket management
+
 * **`postgres/`**: PostgreSQL service module
   * `postgres.py`: Certificate setup and readiness waiting
   * `status.py`: Container health and state checking
+
 * **`thingsboard/`**: ThingsBoard modules
   * `activation.py`: Shared user activation utilities (token extraction,
     activation API calls)
@@ -214,6 +234,24 @@ The package uses a modular, three-layer architecture:
   * `permissions.py`: Certificate setup
   * `tb_cert.py`: Certificate operations
   * `tb_utility.py`: ThingsBoard utility helpers
+
+  * **`gitlab/`**: GitLab service module
+  * `_api.py`: Low-level `httpx` wrapper for GitLab REST API calls;
+    merges all HTTP error types into a single `(bool, response, error)` return
+  * `app_token.py`: OAuth application creation, listing, and deletion;
+    used during post-install to register the DTaaS client
+  * `health.py`: Container health polling and readiness waiting;
+    exports `is_gitlab_running()` for pre-flight checks
+  * `password.py`: Reads the auto-generated root password from
+    `/etc/gitlab/initial_root_password` and resets it to
+    `GITLAB_ROOT_NEW_PASSWORD` via the API
+  * `personal_token.py`: Creates the initial root Personal Access Token
+    via `docker exec gitlab gitlab-rails runner`;
+    saves the result to `config/gitlab_tokens.json`
+  * `setup.py`: Post-install orchestration — waits for health, resets
+    password, creates PAT, and registers the OAuth application
+  * `users.py`: Creates GitLab user accounts from `config/credentials.csv`
+    using the root PAT
 
 ### Configuration Pattern
 
@@ -237,6 +275,12 @@ and ThingsBoard API URL.
 * **`THINGSBOARD_PORT`**: ThingsBoard API port (default: 8080)
 * **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`,
 default: `https`)
+* **`SERVER_DNS`**: Public DNS name of the DTaaS server (e.g. `foo.com`);
+  used in the GitLab `external_url` configuration
+* **`GITLAB_PORT`**: Port the local GitLab container listens on (default: `8090`);
+  must be set before any `gitlab/` module function is called
+* **`GITLAB_ROOT_NEW_PASSWORD`**: Strong password to apply to the GitLab `root`
+  admin account during post-install setup
 
 #### ThingsBoard SSL Configuration
 
@@ -290,6 +334,25 @@ Stops and removes Docker containers:
   initializing after startup.
 * **Error Handling**: "Already exists" errors are handled gracefully and do not
   cause the operation to fail.
+
+#### GitLab Users
+
+* **Prerequisites**: `dtaas-services install -s gitlab` must be run first to
+  complete post-install setup (health check → password reset → PAT creation).
+  The PAT stored in `config/gitlab_tokens.json` is used for all subsequent API calls.
+* **Credentials File**: GitLab users are created from `config/credentials.csv`
+  (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.
+  pattern in any new function that reads environment variables.
+* **Root user**: The `root` admin account (user ID `1`) is created automatically
+  by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the
+  auto-generated password and resets it to `GITLAB_ROOT_NEW_PASSWORD`.
+* **Password Reset**: The root password can be reset independently using
+  `dtaas-services user reset-password -s gitlab`, which reads
+  `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account
+  via `PUT /api/v4/users/1`.
+* **Token Storage**: The Personal Access Token created during install is written
+  to `config/gitlab_tokens.json`. All user-management API calls load the PAT from
+  this file at runtime.
 
 #### ThingsBoard Users
 
@@ -454,7 +517,6 @@ You can ignore the system tests for quick testing
 
 ```bash
 poetry run pytest tests --ignore=tests\system_tests  --cov=dtaas_services --cov-report=html --cov-report=term-missing
-
 ```
 
 ### Test Coverage

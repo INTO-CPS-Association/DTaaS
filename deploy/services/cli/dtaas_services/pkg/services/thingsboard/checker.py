@@ -2,6 +2,8 @@
 
 from typing import Optional, Tuple
 import logging
+from python_on_whales import DockerClient
+
 import sys
 import click
 from rich.console import Console
@@ -89,6 +91,17 @@ def _is_thingsboard_container_running(docker) -> bool:
     """
     containers = _find_thingsboard_containers(docker)
     return _has_running_container(containers)
+
+
+def is_thingsboard_running() -> bool:
+    """A wrapper around _is_thingsboard_container_running to create its own Docker client.
+
+    Returns:
+        True if the container is found and running, False otherwise
+    """
+
+    docker = DockerClient()
+    return _is_thingsboard_container_running(docker)
 
 
 def is_thingsboard_installed(docker, container_map: dict) -> bool:

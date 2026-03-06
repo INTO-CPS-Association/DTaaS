@@ -10,6 +10,12 @@ from ..pkg.services.thingsboard import (
     setup_thingsboard_users,
     reset_thingsboard_password,
 )
+from ..pkg.services.gitlab import (
+    setup_gitlab_users,
+    reset_gitlab_password,
+    is_gitlab_running,
+)
+from ..pkg.services.thingsboard import is_thingsboard_running
 from .utility import parse_service_list
 
 
@@ -58,6 +64,7 @@ def _setup_all_service_users(console: Console) -> list[bool]:
         _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users),
         _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users),
         _setup_service_users(console, "ThingsBoard", setup_thingsboard_users),
+        _setup_service_users(console, "GitLab", setup_gitlab_users),
     ]
 
 
@@ -71,6 +78,7 @@ def _setup_specific_service(console: Console, service_name: str) -> bool | None:
         "influxdb": ("InfluxDB", influxdb.setup_influxdb_users),
         "rabbitmq": ("RabbitMQ", rabbitmq.setup_rabbitmq_users),
         "thingsboard": ("ThingsBoard", setup_thingsboard_users),
+        "gitlab": ("GitLab", setup_gitlab_users),
     }
 
     service_lower = service_name.lower()
@@ -130,9 +138,22 @@ def _reset_password_for_service(console: Console, service_name: str) -> bool | N
     """
     service_lower = service_name.lower()
     if service_lower == "thingsboard":
+        if not is_thingsboard_running():
+            console.print("[yellow]⚠️  ThingsBoard is not running, skipping...[/yellow]")
+            return None
         console.print("\n[cyan]Resetting sysadmin password for ThingsBoard...[/cyan]")
         success, msg = reset_thingsboard_password()
         result = UserSetupResult("ThingsBoard", success, msg)
+        _print_service_user_result(console, result)
+        return success
+
+    if service_lower == "gitlab":
+        if not is_gitlab_running():
+            console.print("[yellow]⚠️  GitLab is not running, skipping...[/yellow]")
+            return None
+        console.print("\n[cyan]Resetting root password for GitLab...[/cyan]")
+        success, msg = reset_gitlab_password()
+        result = UserSetupResult("GitLab", success, msg)
         _print_service_user_result(console, result)
         return success
 
@@ -178,14 +199,15 @@ def _print_reset_password_summary(results: list[bool]) -> None:
 def reset_password(service_names):
     """
     Reset admin passwords for services.
-    Currently supports: thingsboard.
+    Currently supports: thingsboard, gitlab.
     Example:
         dtaas-services user reset-password
         dtaas-services user reset-password -s thingsboard
+        dtaas-services user reset-password -s gitlab
     """
     console = Console()
     console.print("[bold cyan]Resetting service passwords...[/bold cyan]")
-    service_list = parse_service_list(service_names) or ["thingsboard"]
+    service_list = parse_service_list(service_names) or ["thingsboard", "gitlab"]
 
     results = [_reset_password_for_service(console, s) for s in service_list]
     _print_reset_password_summary(results)

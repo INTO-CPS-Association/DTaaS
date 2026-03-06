@@ -1,10 +1,10 @@
 """Shared utilities and helper functions for file and directory manipulation."""
 
+import shutil
 import subprocess
 import os
 from pathlib import Path
 from typing import Optional, Tuple
-import click
 from ..config import Config
 
 
@@ -50,14 +50,19 @@ def _remove_directory_item(item: Path) -> None:
 def _process_directory_contents(directory: Path) -> None:
     """Process all items in a directory.
 
+    Falls back to shutil.rmtree when iterdir() fails, which can happen on
+    Windows when Docker containers create Linux symlinks (e.g. GitLab log dirs).
+
     Args:
         directory: Directory to process
     """
     try:
         for item in directory.iterdir():
             _remove_directory_item(item)
-    except OSError as e:
-        click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+    except OSError:
+        # If we can't iterate the directory (e.g. due to symlinks on Windows), use shutil.rmtree
+        shutil.rmtree(directory, ignore_errors=True)
+        directory.mkdir(parents=True, exist_ok=True)
 
 
 def remove_all_files_in_directory(directory: Path) -> None:
@@ -98,14 +103,18 @@ def _process_gitkeep_item(item: Path) -> None:
 def _process_gitkeep_directory(directory: Path) -> None:
     """Process all items in a directory for gitkeep removal.
 
+    Silently skips directories that cannot be iterated (e.g. broken symlinks
+    from Docker containers on Windows).
+
     Args:
         directory: Directory to process
     """
     try:
         for item in directory.iterdir():
             _process_gitkeep_item(item)
-    except OSError as e:
-        click.echo(f"Warning: Error accessing directory {directory}: {e}", err=True)
+    except OSError:
+        # Ignore errors when iterating directory (e.g. due to symlinks on Windows)
+        pass
 
 
 def remove_gitkeep_files(directory: Path) -> None:
@@ -216,4 +225,12 @@ def get_data_subdirectories(service_list: Optional[list] = None) -> list:
     """Get list of data subdirectories to clean."""
     if service_list:
         return service_list
-    return ["grafana", "influxdb", "mongodb", "postgres", "rabbitmq", "thingsboard"]
+    return [
+        "grafana",
+        "influxdb",
+        "mongodb",
+        "postgres",
+        "rabbitmq",
+        "thingsboard",
+        "gitlab",
+    ]

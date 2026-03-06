@@ -15,6 +15,7 @@ from ..pkg.template import generate_project_structure
 from ..pkg.services.thingsboard.permissions import permissions_thingsboard
 from ..pkg.services.postgres.postgres import wait_for_postgres_ready
 from ..pkg.services.thingsboard.tb_utility import run_thingsboard_install
+from ..pkg.services.gitlab import setup_gitlab
 
 
 def _run_setup_step(console: Console, step_name: str, step_func: Callable):
@@ -87,23 +88,25 @@ def setup():
         console.print("[cyan]Next steps:[/cyan]")
         console.print("  1. Start services: dtaas-services start")
         console.print("  2. Install ThingsBoard (if using it):")
-        console.print(
-            "     Run ThingsBoard installation (starts PostgreSQL "
-            "automatically): dtaas-services install"
-        )
+        console.print("     dtaas-services install -s thingsboard")
+        console.print("  3. Install GitLab (if using it):")
+        console.print("     dtaas-services install -s gitlab")
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
 
 
-def _validate_service_name(service: str) -> None:
-    """Validate that the service name is supported.
+SUPPORTED_INSTALL_SERVICES = ["thingsboard", "thingsboard-ce", "gitlab"]
+
+
+def _validate_service_name(service: str | None) -> None:
+    """Validate that the service name is supported for installation.
 
     Raises:
         click.ClickException: If service is not supported
     """
-    if service and service.lower() not in ["thingsboard", "thingsboard-ce"]:
+    if service is not None and service.lower() not in SUPPORTED_INSTALL_SERVICES:
         raise click.ClickException(
-            f"Installation is only supported for ThingsBoard. Got: {service}"
+            f"Installation is supported for ThingsBoard and GitLab. Got: {service}"
         )
 
 
@@ -124,24 +127,64 @@ def _ensure_postgres_running(console: Console, service_obj: Service) -> object:
     return service_obj.docker
 
 
+def _ensure_gitlab_running(console: Console, service_obj: Service) -> object:
+    """Start GitLab if needed and return docker client.
+
+    Returns:
+        docker_client
+
+    Raises:
+        click.ClickException: If GitLab fails to start
+    """
+    console.print("[cyan]Ensuring GitLab is running...[/cyan]")
+    err, msg = service_obj.manage_services("start", ["gitlab"])
+    if err is not None:
+        raise click.ClickException(f"Failed to start GitLab: {msg}")
+    console.print(f"[green]{msg}[/green]")
+    return service_obj.docker
+
+
+def _install_thingsboard(console: Console, service_obj: Service) -> None:
+    """Run ThingsBoard installation flow."""
+    docker = _ensure_postgres_running(console, service_obj)
+    wait_for_postgres_ready(console, docker)
+    run_thingsboard_install(console, docker)
+    console.print("[green]✅ ThingsBoard installation completed![/green]")
+
+
+def _install_gitlab(console: Console, service_obj: Service) -> None:
+    """Run GitLab post-install setup flow."""
+    docker = _ensure_gitlab_running(console, service_obj)
+    success, msg = setup_gitlab(console, docker)
+    if not success:
+        raise click.ClickException(f"GitLab installation failed: {msg}")
+    console.print(f"[green]✅ {msg}[/green]")
+
+
 @click.command()
 @click.option(
     "-s",
     "--service",
-    default="thingsboard",
-    help="Service to install (only 'thingsboard' is supported)",
+    default=None,
+    help="Service to install ('thingsboard' or 'gitlab'). Installs both if not specified.",
 )
 def install(service):
     """
-    Install service database schema.
+    Install service database schema or run post-install setup.
 
     Prerequisites:
     - dtaas-services setup must be completed
 
-    This command automatically starts PostgreSQL if needed, then initializes
-    the ThingsBoard database and creates the default system administrator account.
-    It must be run only once after initial setup.
+    For ThingsBoard: automatically starts PostgreSQL if needed, then
+    initializes the database and creates the default system administrator
+    account.
 
+    For GitLab: waits for readiness, retrieves the root password, creates
+    a Personal Access Token, and registers OAuth application tokens.
+
+    If no service is specified, both ThingsBoard and GitLab are installed.
+
+    Must be run only once after initial setup.
     """
     try:
         check_root_unix()
@@ -149,16 +192,19 @@ def install(service):
         _validate_service_name(service)
 
         service_obj = Service()
-        docker = _ensure_postgres_running(console, service_obj)
 
-        wait_for_postgres_ready(console, docker)
-        run_thingsboard_install(console, docker)
-
-        console.print("[green]✅ ThingsBoard installation completed![/green]")
-        console.print("[cyan]Next steps:[/cyan]")
-        console.print("  1. Start ThingsBoard: dtaas-services start -s thingsboard-ce")
-        console.print("  2. Add users: dtaas-services user add -s thingsboard")
+        if service is None:
+            _install_thingsboard(console, service_obj)
+            _install_gitlab(console, service_obj)
+        elif service.lower() in ["gitlab"]:
+            _install_gitlab(console, service_obj)
+        else:
+            _install_thingsboard(console, service_obj)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
+    except click.ClickException:
+        raise
     except Exception as e:
-        raise click.ClickException(f"ThingsBoard installation failed: {str(e)}") from e
+        raise click.ClickException(
+            f"Installation failed for {service}: {str(e)}"
+        ) from e

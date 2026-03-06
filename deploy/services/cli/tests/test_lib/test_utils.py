@@ -67,12 +67,10 @@ def test_remove_directory_item_directory(tmp_path):
     assert not test_dir.exists()
 
 
-def test_process_directory_contents_permission_error(tmp_path, capsys, mocker):
+def test_process_directory_contents_permission_error(tmp_path, mocker):
     """Test _process_directory_contents handles access errors"""
     mocker.patch.object(Path, "iterdir", side_effect=OSError("Permission denied"))
     _process_directory_contents(tmp_path)
-    captured = capsys.readouterr()
-    assert "Warning" in captured.err
 
 
 def test_remove_all_files_in_directory_nonexistent(tmp_path):
@@ -91,12 +89,10 @@ def test_process_gitkeep_item_directory(tmp_path):
     assert not gitkeep.exists()
 
 
-def test_process_gitkeep_directory_error(tmp_path, capsys, mocker):
+def test_process_gitkeep_directory_error(tmp_path, mocker):
     """Test _process_gitkeep_directory handles access errors"""
     mocker.patch.object(Path, "iterdir", side_effect=OSError("Access denied"))
     _process_gitkeep_directory(tmp_path)
-    captured = capsys.readouterr()
-    assert "Warning" in captured.err
 
 
 def test_remove_gitkeep_files_nonexistent(tmp_path):
@@ -150,4 +146,5 @@ def test_get_data_subdirectories_none():
     result = get_data_subdirectories(None)
     assert "grafana" in result
     assert "influxdb" in result
-    assert len(result) == 6
+    assert "gitlab" in result
+    assert len(result) == 7

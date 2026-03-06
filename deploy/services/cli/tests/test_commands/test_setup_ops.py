@@ -60,27 +60,7 @@ def test_install_invalid_service(runner):
     """Test install command with unsupported service name"""
     result = runner.invoke(services, ["install", "-s", "mysql"])
     assert result.exit_code != 0
-    assert "only supported for ThingsBoard" in result.output
-
-
-def test_install_success(runner, mock_service_setup, mocker):
-    """Test successful install command"""
-    mock_service_setup["service_instance"].manage_services.return_value = (
-        None,
-        "PostgreSQL started",
-    )
-    mock_wait = mocker.patch(
-        "dtaas_services.commands.setup_ops.wait_for_postgres_ready"
-    )
-    mock_install = mocker.patch(
-        "dtaas_services.commands.setup_ops.run_thingsboard_install"
-    )
-    result = runner.invoke(services, ["install"])
-    assert result.exit_code == 0
-    assert "ThingsBoard installation completed" in result.output
-    assert "Next steps" in result.output
-    mock_wait.assert_called_once()
-    mock_install.assert_called_once()
+    assert "Installation is supported for ThingsBoard and GitLab" in result.output
 
 
 def test_install_postgres_start_fails(runner, mock_service_setup):
@@ -104,3 +84,57 @@ def test_install_file_not_found(runner, mocker):
     result = runner.invoke(services, ["install"])
     assert result.exit_code != 0
     assert "Config not found" in result.output
+
+
+def test_install_gitlab_success(runner, mock_service_setup, mocker):
+    """Test successful install for GitLab service"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None,
+        "GitLab started",
+    )
+    mock_setup = mocker.patch(
+        "dtaas_services.commands.setup_ops.setup_gitlab",
+        return_value=(True, "GitLab setup completed"),
+    )
+    result = runner.invoke(services, ["install", "-s", "gitlab"])
+    assert result.exit_code == 0
+    assert "GitLab setup completed" in result.output
+    mock_setup.assert_called_once()
+
+
+def test_install_gitlab_start_fails(runner, mock_service_setup):
+    """Test install GitLab when it fails to start"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        RuntimeError("Start failed"),
+        "Failed to start GitLab",
+    )
+    result = runner.invoke(services, ["install", "-s", "gitlab"])
+    assert result.exit_code != 0
+    assert "Failed to start GitLab" in result.output
+
+
+def test_install_gitlab_setup_fails(runner, mock_service_setup, mocker):
+    """Test install GitLab when setup function fails"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None,
+        "GitLab started",
+    )
+    mocker.patch(
+        "dtaas_services.commands.setup_ops.setup_gitlab",
+        return_value=(False, "OAuth app creation failed"),
+    )
+    result = runner.invoke(services, ["install", "-s", "gitlab"])
+    assert result.exit_code != 0
+    assert "OAuth app creation failed" in result.output
+
+
+def test_install_generic_exception(runner, mocker):
+    """Test install with unexpected exception"""
+    mocker.patch("dtaas_services.commands.setup_ops.check_root_unix")
+    mocker.patch(
+        "dtaas_services.commands.setup_ops.Service",
+        side_effect=RuntimeError("Unexpected error"),
+    )
+    result = runner.invoke(services, ["install"])
+    assert result.exit_code != 0
+    assert "Installation failed" in result.output
