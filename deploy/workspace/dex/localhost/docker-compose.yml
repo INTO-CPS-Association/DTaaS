@@ -18,7 +18,7 @@ services:
     image: intocps/dtaas-web:new-workspace
     restart: unless-stopped
     volumes:
-      - ./env.local.js:/dtaas/client/build/env.js
+      - ./config/env.local.js:/dtaas/client/build/env.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
