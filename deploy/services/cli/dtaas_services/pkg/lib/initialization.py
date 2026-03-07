@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import os
+from typing import Any
 from python_on_whales import DockerClient
 from ..config import Config
 # pylint: disable=too-few-public-methods
@@ -21,7 +22,7 @@ class ServiceInitializer:
         self._setup_project_name()
 
         # Use all available compose files
-        compose_files = [self.compose_file]
+        compose_files: list[Any] = [self.compose_file]
         if self.thingsboard_compose_file.exists():
             compose_files.append(self.thingsboard_compose_file)
         if self.gitlab_compose_file.exists():

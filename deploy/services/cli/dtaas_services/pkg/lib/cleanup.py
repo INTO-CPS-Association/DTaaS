@@ -98,7 +98,7 @@ class Cleanup(DockerExecutor):
 
         err, msg = self._check_remove_prerequisites(service_list)
         if err:
-            return err, msg
+            return err, msg or str(err)
 
         try:
             self.remove_docker_services(service_list, remove_volumes)
@@ -209,7 +209,7 @@ class Cleanup(DockerExecutor):
             directories = self._get_directories_to_clean(service_list, include_certs)
             err, msg = self._validate_clean_directories(directories, service_list)
             if err or msg:
-                return err, msg
+                return err, msg or ""
 
             self._perform_cleanup(directories, service_list)
             message = self._build_cleanup_message(service_list, include_certs)

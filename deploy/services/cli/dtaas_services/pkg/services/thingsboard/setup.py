@@ -31,7 +31,7 @@ def _authenticate_as_tenant_admin(
     base_url: str, session: httpx.Client
 ) -> Tuple[bool, str]:
     """Authenticate session as tenant admin, trying default then configured pw."""
-    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL")
+    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "")
     configured_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
     for pw in filter(None, [DEFAULT_TENANT_ADMIN_PASSWORD, configured_pw]):
         token = login(base_url, admin_email, pw)
@@ -81,7 +81,7 @@ def _process_credentials_file(
         credentials = csv.DictReader(creds_file, delimiter=",")
 
         # Validate required columns
-        if "email" not in credentials.fieldnames:
+        if not credentials.fieldnames or "email" not in credentials.fieldnames:
             return False, "Email column is required in credentials.csv"
 
         for credential in credentials:

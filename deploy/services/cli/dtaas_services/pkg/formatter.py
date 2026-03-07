@@ -1,10 +1,17 @@
 """Output formatting utilities using rich library"""
 
-from typing import List, Union
+from typing import List, Optional, Union
 from rich.console import Console
 from rich.table import Table
 from python_on_whales import Container
 # pylint: disable=too-few-public-methods
+
+
+class _ServiceState:
+    """Typed state object for RemovedServiceEntry."""
+
+    def __init__(self, status: str) -> None:
+        self.status = status
 
 
 class RemovedServiceEntry:
@@ -12,7 +19,7 @@ class RemovedServiceEntry:
 
     def __init__(self, name: str) -> None:
         self.name = name
-        self.state = type("obj", (object,), {"status": "removed"})
+        self.state = _ServiceState("removed")
 
 
 # Service name mapping for display
@@ -65,7 +72,8 @@ def _format_status_display(state: str) -> str:
 
 
 def format_container_status(
-    containers: List[Union[Container, RemovedServiceEntry]], console: Console = None
+    containers: List[Union[Container, RemovedServiceEntry]],
+    console: Optional[Console] = None,
 ) -> None:
     """
     Format and display container status in a nice table.
@@ -88,7 +96,7 @@ def format_container_status(
     for container in sorted_containers:
         display_name = _get_display_name(container.name)
         container_name = container.name
-        state = container.state.status
+        state = container.state.status or "unknown"
         status_display = _format_status_display(state)
         table.add_row(display_name, container_name, status_display)
     console.print(table)
@@ -111,10 +119,11 @@ def _sort_service_names(
             state = container.state.status
             status_display = _format_status_display(state)
         table.add_row(display_name, container_name, status_display)
+    return sorted_services
 
 
 def format_service_list_status(
-    services: dict, all_services: List[str], console: Console = None
+    services: dict, all_services: List[str], console: Optional[Console] = None
 ) -> None:
     """
     Format and display status of specific services, showing which are installed and their status.

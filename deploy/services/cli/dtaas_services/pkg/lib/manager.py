@@ -23,7 +23,7 @@ class Manager(Status):
     """Mixin for high-level service management operations."""
 
     def prepare_services_to_start(
-        self, service_list: Optional[list], skip_services: Set[str]
+        self, service_list: list, skip_services: Set[str]
     ) -> Tuple[list, list, list]:
         """Prepare lists of services to start, skip, and those restarting."""
         running_services, restarting_services = (
@@ -223,7 +223,7 @@ class Manager(Status):
             action, service_list
         )
         if pg_err:
-            return pg_err, pg_msg
+            return pg_err, pg_msg or str(pg_err)
 
         # Execute action and return result
         return self._perform_action(action, service_list)

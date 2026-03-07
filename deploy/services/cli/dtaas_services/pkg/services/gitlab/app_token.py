@@ -261,7 +261,7 @@ def delete_application(private_token: str, application_id: int) -> tuple[bool, s
         "DELETE", f"/applications/{application_id}", private_token
     )
 
-    if not success:
+    if not success or response is None:
         return False, f"Failed to delete application {application_id}: {error_msg}"
 
     if response.status_code == 204:

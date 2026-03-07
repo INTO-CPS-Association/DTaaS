@@ -81,6 +81,7 @@ def test_create_server_application_success(monkeypatch, mocker):
     )
     success, result, _ = app_token.create_server_application(TEST_TOKEN)
     assert success is True
+    assert result is not None
     assert result.client_id == "s-cid"
 
 
@@ -101,6 +102,7 @@ def test_create_client_application_success(monkeypatch, mocker):
     )
     success, result, _ = app_token.create_client_application(TEST_TOKEN)
     assert success is True
+    assert result is not None
     assert result.client_id == "c-cid"
 
 

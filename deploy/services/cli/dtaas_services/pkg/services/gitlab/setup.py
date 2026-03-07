@@ -231,6 +231,9 @@ def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
     if not success:
         return False, error_msg
 
+    if server_result is None or client_result is None:
+        return False, "Unexpected error: OAuth app results are missing"
+
     ok, msg = _step_save_tokens(
         console, root_password, pat, server_result, client_result
     )

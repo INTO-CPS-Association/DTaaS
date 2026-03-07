@@ -105,7 +105,7 @@ def execute_docker_command(
         return False, error_msg
     if verbose:
         print("Output:", result)
-    return True, result
+    return True, str(result) if result is not None else ""
 
 
 def _is_running_unix_system() -> bool:
@@ -116,7 +116,7 @@ def _is_running_unix_system() -> bool:
 def _is_current_user_root() -> bool:
     """Check if current user is root."""
     try:
-        return os.geteuid() == 0
+        return os.geteuid() == 0  # type: ignore[attr-defined]
     except AttributeError:
         return False
 

@@ -24,7 +24,8 @@ AVAILABLE_SERVICES = [
 
 def is_running_as_root():
     """Check if running as root (Unix) or admin (Windows)"""
-    return os.geteuid() == 0 if hasattr(os, "geteuid") else True
+    geteuid = getattr(os, "geteuid", None)
+    return geteuid() == 0 if geteuid else True
 
 
 def setup_services():

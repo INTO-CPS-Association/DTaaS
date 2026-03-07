@@ -1,6 +1,6 @@
 """Service status & inspection"""
 
-from typing import Tuple, Optional, Set
+from typing import Any, Tuple, Optional, Set
 from .utils import check_compose_file, DOCKER_OPERATION_EXCEPTIONS
 from ..formatter import RemovedServiceEntry
 from .docker_executor import DockerExecutor, handle_docker_not_running
@@ -19,7 +19,7 @@ class Status(DockerExecutor):
             state_sets["restarting"].add(service_name)
 
     def _match_container_by_name(
-        self, container: object, container_map: dict, all_services: set
+        self, container: Any, container_map: dict, all_services: set
     ) -> bool:
         """Try to match container by name. Returns True if matched."""
         if container.name in all_services:
@@ -193,7 +193,7 @@ class Status(DockerExecutor):
             )
 
     def _process_single_container(
-        self, container: object, container_map: dict, all_services: set
+        self, container: Any, container_map: dict, all_services: set
     ) -> None:
         """Process a single container and add to map if it matches a service."""
         if not self._match_container_by_name(container, container_map, all_services):

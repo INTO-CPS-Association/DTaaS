@@ -106,7 +106,7 @@ def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
         pat,
         json={"password": new_pw, "skip_reconfirmation": True},
     )
-    if not success:
+    if not success or response is None:
         return False, f"Failed to reset root password: {error_msg}"
     if response.status_code == 200:
         logger.info("GitLab root password reset successfully")

@@ -97,17 +97,19 @@ class DockerExecutor(ServiceInitializer):
             Tuple of (skipped running services, started services, restarting services)
         """
         running_services, restarting_services = (
-            self.get_running_or_restarting_services()
+            self.get_running_or_restarting_services()  # type: ignore[attr-defined]
         )
         skip_services = running_services | restarting_services
 
         if service_list is not None:
             services_to_start, skipped_services, restarting_list = (
-                self.prepare_services_to_start(service_list, skip_services)
+                self.prepare_services_to_start(  # type: ignore[attr-defined]
+                    service_list, skip_services
+                )
             )
         else:
             services_to_start, skipped_services, restarting_list = (
-                self.prepare_all_services_to_start(skip_services)
+                self.prepare_all_services_to_start(skip_services)  # type: ignore[attr-defined]
             )
 
         if services_to_start:
@@ -159,7 +161,7 @@ class DockerExecutor(ServiceInitializer):
         if service_list is not None:
             return service_list
 
-        _, all_services = self.get_all_service_names()
+        _, all_services = self.get_all_service_names()  # type: ignore[attr-defined]
         return list(all_services) if all_services else []
 
     def _perform_post_removal_cleanup(
@@ -172,8 +174,8 @@ class DockerExecutor(ServiceInitializer):
             remove_volumes: Whether volumes were removed
         """
         if remove_volumes:
-            self.clean_data_directories(service_list)
-            self.remove_influx_config(service_list)
+            self.clean_data_directories(service_list)  # type: ignore[attr-defined]
+            self.remove_influx_config(service_list)  # type: ignore[attr-defined]
 
     def remove_docker_services(
         self, service_list: Optional[list] = None, remove_volumes: bool = False

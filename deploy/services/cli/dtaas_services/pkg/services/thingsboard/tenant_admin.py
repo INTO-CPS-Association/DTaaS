@@ -4,7 +4,7 @@ verifies the admin can log in."""
 # pylint: disable=W1203, R0903
 import logging
 import os
-from typing import Tuple
+from typing import Optional, Tuple
 import httpx
 from .tb_utility import login, verify_admin_login, is_json_parse_error
 from .activation import get_activation_token, activate_user
@@ -56,7 +56,7 @@ class TenantAdminContext:
         self.base_url = base_url
         self.session = session
         self.tenant_name = tenant_name
-        self.admin_credentials = None
+        self.admin_credentials: Optional[AdminCredentials] = None
 
 
 def _create_tenant_api_call(
@@ -177,6 +177,9 @@ def create_tenant_and_admin(ctx: TenantAdminContext) -> Tuple[bool, str]:
     if not tenant:
         return False, error_msg
 
+    if ctx.admin_credentials is None:
+        return False, "Admin credentials not set"
+
     admin_ctx = _AdminContext(
         ctx.base_url, ctx.session, ctx.admin_credentials.admin_email
     )
@@ -237,7 +240,7 @@ def change_tenant_admin_password(
     Reads TB_TENANT_ADMIN_EMAIL and TB_TENANT_ADMIN_PASSWORD from env.
     If TB_TENANT_ADMIN_PASSWORD is not set, skips the change.
     """
-    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL")
+    admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "")
     new_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
     if not new_pw:
         logger.info("TB_TENANT_ADMIN_PASSWORD not set, skipping tenant admin reset.")

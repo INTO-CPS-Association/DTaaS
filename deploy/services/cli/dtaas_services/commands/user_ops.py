@@ -1,6 +1,6 @@
 """User management commands, user add."""
 
-from typing import Callable
+from typing import Callable, Sequence
 from dataclasses import dataclass
 import click
 from rich.console import Console
@@ -90,7 +90,7 @@ def _setup_specific_service(console: Console, service_name: str) -> bool | None:
     return None
 
 
-def _print_user_add_summary(results: list[bool]) -> None:
+def _print_user_add_summary(results: Sequence[bool | None]) -> None:
     """Print summary of user addition results."""
     console = Console()
     # Filter out None values from unknown services
@@ -164,7 +164,7 @@ def _reset_password_for_service(console: Console, service_name: str) -> bool | N
     return None
 
 
-def _print_reset_password_summary(results: list[bool]) -> None:
+def _print_reset_password_summary(results: list[bool | None]) -> None:
     """Print summary of password reset results."""
     console = Console()
     valid_results = [r for r in results if r is not None]

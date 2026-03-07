@@ -1,12 +1,15 @@
 """Tests for the formatter module"""
 
 from io import StringIO
+from typing import cast, List, Union
 
 from rich.console import Console
+from python_on_whales import Container
 
 from dtaas_services.pkg.formatter import (
     format_container_status,
     format_service_list_status,
+    RemovedServiceEntry,
 )
 from conftest import make_mock_container
 
@@ -16,7 +19,7 @@ def test_format_container_status_with_running_containers():
     # Create mock containers
     container1 = make_mock_container("grafana", "running")
     container2 = make_mock_container("influxdb", "exited")
-    containers = [container1, container2]
+    containers = cast(List[Union[Container, RemovedServiceEntry]], [container1, container2])
     # Capture console output
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=True)

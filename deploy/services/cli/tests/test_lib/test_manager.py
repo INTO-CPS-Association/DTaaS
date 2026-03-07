@@ -90,6 +90,7 @@ def test_filter_postgres_if_needed_stop_postgres_tb_running(patch_service_deps, 
     )
     _, err, msg = service._filter_postgres_if_needed("stop", ["postgres"])
     assert err is not None
+    assert msg is not None
     assert "thingsboard" in msg.lower()
 
 

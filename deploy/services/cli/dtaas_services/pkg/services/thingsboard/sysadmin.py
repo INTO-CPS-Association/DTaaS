@@ -29,7 +29,7 @@ def authenticate_session(base_url: str, session: httpx.Client) -> Tuple[bool, st
     Returns:
         Tuple of (success, error_message)
     """
-    sys_email = os.getenv("TB_SYSADMIN_EMAIL")
+    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
     new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
 
     token = login(base_url, sys_email, "sysadmin")
@@ -110,7 +110,7 @@ def change_sysadmin_password_if_needed(
     new_pw: str,
 ) -> Tuple[bool, str]:
     """Change the sysadmin password if configured."""
-    sys_email = os.getenv("TB_SYSADMIN_EMAIL")
+    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
     default_pw = "sysadmin"
 
     # If default login succeeds, the password hasn't been changed yet

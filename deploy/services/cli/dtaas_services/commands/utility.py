@@ -126,7 +126,9 @@ def build_clean_confirmation_prompt(certs: bool) -> str:
 
 
 def check_running_services_for_clean(
-    console: Console, running_services: list[str], service_list: Optional[list[str]]
+    console: Console,
+    running_services: list[str] | set[str],
+    service_list: Optional[list[str]],
 ) -> None:
     """Check if any services are running and raise error if they must be stopped.
 
