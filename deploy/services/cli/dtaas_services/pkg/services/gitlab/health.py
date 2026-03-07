@@ -68,7 +68,6 @@ def _check_container_health(container) -> str:
             return container.state.health.status
     except (AttributeError, TypeError):
         logger.warning("Could not get health status for gitlab.")
-        pass
     return "unknown state"
 
 
@@ -99,7 +98,7 @@ def _build_progress_text(ctx: GitLabWaitContext) -> str:
     elapsed = _get_elapsed_seconds(ctx)
     remaining = ctx.timeout - elapsed
     status_label = _get_status_label(ctx.last_status or "starting")
-    return f"GitLab is {status_label}: " f"{elapsed}s elapsed, {remaining}s remaining"
+    return f"GitLab is {status_label}: {elapsed}s elapsed, {remaining}s remaining"
 
 
 def _poll_gitlab_health(ctx: GitLabWaitContext, spinner) -> bool:
