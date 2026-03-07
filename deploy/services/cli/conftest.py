@@ -32,7 +32,7 @@ def pytest_configure(config):
             print(f"\nTest environment setup: {message}")
         else:
             print(f"\nTest environment setup warning: {message}")
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(f"\nWarning: Failed to set up test environment: {e}")
         traceback.print_exc()
 

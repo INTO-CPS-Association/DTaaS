@@ -77,7 +77,7 @@ def test_prepare_all_services_to_start_error(patch_service_deps):
         skip_services=set()
     )
     assert to_start == []
-    assert skipped == []
+    assert not skipped
     assert not restarting
 
 
