@@ -21,21 +21,22 @@ def build_base_url() -> str:
     GitLab's nginx serves HTTP on port 80 inside the container,
     mapped to GITLAB_PORT on the host.  The ``external_url`` includes
     ``/gitlab`` as a path prefix, so the API lives at
-    ``http://localhost:GITLAB_PORT/gitlab/api/v4``.
+    ``<scheme>://localhost:GITLAB_PORT/gitlab/api/v4``.
 
     Returns:
         Base URL string, e.g. "http://localhost:8090/gitlab/api/v4"
 
     Raises:
-        RuntimeError: If GITLAB_PORT is not set
+        RuntimeError: If GITLAB_PORT or HOSTNAME is not set
     """
     gitlab_port = os.getenv("GITLAB_PORT")
     server = os.getenv("HOSTNAME")
+    scheme = os.getenv("GITLAB_SCHEME", "http").strip().lower()
     if not gitlab_port:
         raise RuntimeError("GITLAB_PORT is not set in config/services.env. ")
     if not server:
         raise RuntimeError("HOSTNAME is not set in config/services.env. ")
-    return f"http://{server}:{gitlab_port}/gitlab/api/v4"
+    return f"{scheme}://{server}:{gitlab_port}/gitlab/api/v4"
 
 
 def _build_headers(private_token: str) -> dict[str, str]:

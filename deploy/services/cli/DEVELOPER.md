@@ -279,6 +279,7 @@ default: `https`)
   used in the GitLab `external_url` configuration
 * **`GITLAB_PORT`**: Port the local GitLab container listens on (default: `8090`);
   must be set before any `gitlab/` module function is called
+* **`GITLAB_SCHEME`**: Protocol for GitLab API calls (`http` or `https`).
 * **`GITLAB_ROOT_NEW_PASSWORD`**: Strong password to apply to the GitLab `root`
   admin account during post-install setup
 

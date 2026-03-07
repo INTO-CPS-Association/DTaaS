@@ -175,16 +175,17 @@ def test_step_create_oauth_apps_client_fails(
 
 
 def test_step_save_tokens_success(
-    mock_console, mocker, sample_server_result, sample_client_result
+    mock_console, mocker, sample_server_result, sample_client_result, tmp_path
 ):
     """Test save tokens step success."""
+    output_path = tmp_path / "tokens.json"
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.setup._get_tokens_output_path",
-        return_value=Path("/tmp/tokens.json"),
+        return_value=output_path,
     )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.setup._save_tokens",
-        return_value=(True, "Tokens saved to /tmp/tokens.json"),
+        return_value=(True, f"Tokens saved to {output_path}"),
     )
     success, _ = setup._step_save_tokens(
         mock_console,
@@ -197,12 +198,13 @@ def test_step_save_tokens_success(
 
 
 def test_step_save_tokens_failure(
-    mock_console, mocker, sample_server_result, sample_client_result
+    mock_console, mocker, sample_server_result, sample_client_result, tmp_path
 ):
     """Test save tokens step failure."""
+    output_path = tmp_path / "readonly" / "tokens.json"
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.setup._get_tokens_output_path",
-        return_value=Path("/bad/path.json"),
+        return_value=output_path,
     )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.setup._save_tokens",
