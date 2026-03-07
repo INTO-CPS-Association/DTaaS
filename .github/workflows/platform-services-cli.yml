@@ -26,3 +26,4 @@ jobs:
       artifact-path: |
         deploy/services/cli/dist/*.whl
         deploy/services/cli/dist/*.tar.gz
+      run-pyright: true
