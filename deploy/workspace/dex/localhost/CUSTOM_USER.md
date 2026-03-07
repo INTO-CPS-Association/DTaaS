@@ -1,7 +1,7 @@
 ![DTaaS logo](dtaas.png)
 
 ℹ️ The instructions in this document help update the username and
-password for your local **DTaaS** installation.
+password for your localhost version of the **DTaaS** installation.
 
 ## ⚙️ Update Configuration
 
@@ -12,9 +12,7 @@ Update these fields in `config/dex-config.yaml`:
 - `hash` (bcrypt hash of your chosen password)
 - `username`, `name`, `preferredUsername`
 
-Dex configuration details are documented in:
-
-- [`config/DEX.md`](config/DEX.md)
+Dex configuration details are documented in [`config/DEX.md`](config/DEX.md).
 
 Edit `.env`.
 
@@ -35,14 +33,12 @@ Edit `.env`.
 Start the application:
 
 ```bash
-docker compose -f docker-compose.dex.yml up -d
 docker compose up -d
 ```
 
 Stop the application:
 
 ```bash
-docker compose -f docker-compose.dex.yml down
 docker compose down
 ```
 
@@ -77,4 +73,4 @@ expectation for username extraction.
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
-[gitlab](https://gitlab.com)
+[Dex IdP](https://dexidp.io/)

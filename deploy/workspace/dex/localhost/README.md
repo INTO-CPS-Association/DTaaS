@@ -35,7 +35,6 @@ cp config/dex-config.yaml.example config/dex-config.yaml
 ▶️ Start the demo:
 
 ```bash
-docker compose -f docker-compose.dex.yml up -d
 docker compose up -d
 ```
 
@@ -45,13 +44,12 @@ Login using the default credentials.
 **👤 User email:** `user@foo.com`
 **🔑 Password:** `user`
 
-⚠️ All the functionality of DTaaS except DevOps features should be available to you
-through the single page client now.
+⚠️ All the functionality of DTaaS except DevOps features should be
+available to you through the single page client now.
 
 ⏹️ Stop the demo:
 
 ```bash
-docker compose -f docker-compose.dex.yml down
 docker compose down
 ```
 

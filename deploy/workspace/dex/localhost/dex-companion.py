@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# pylint: disable=invalid-name
+
+"""Reverse proxy helper for Dex local passwordDB mode."""
+
 from __future__ import annotations
 
 import json
@@ -30,7 +34,11 @@ RESPONSE_HEADERS_TO_SUPPRESS = HOP_BY_HOP_HEADERS | {"server", "date"}
 
 
 class NoRedirect(HTTPRedirectHandler):
+    """Disable automatic redirect handling for upstream responses."""
+
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def redirect_request(self, req, fp, code, msg, headers, newurl):
+        """Return ``None`` so redirects are passed back to the caller."""
         return None
 
 
@@ -61,7 +69,11 @@ def _is_json_response(headers: Iterable[tuple[str, str]]) -> bool:
     return False
 
 
-def _inject_profile_claim(path: str, response_headers: list[tuple[str, str]], response_body: bytes) -> bytes:
+def _inject_profile_claim(
+    path: str,
+    response_headers: list[tuple[str, str]],
+    response_body: bytes,
+) -> bytes:
     if not path.startswith("/dex/userinfo") or not _is_json_response(response_headers):
         return response_body
 
@@ -78,16 +90,26 @@ def _inject_profile_claim(path: str, response_headers: list[tuple[str, str]], re
         return response_body
 
     issuer = str(payload.get("iss") or "").rstrip("/")
-    payload["profile"] = f"{issuer}/{preferred_username}" if issuer else f"/users/{preferred_username}"
+    payload["profile"] = (
+        f"{issuer}/{preferred_username}"
+        if issuer
+        else f"/users/{preferred_username}"
+    )
     return json.dumps(payload, separators=(",", ":")).encode("utf-8")
 
 
 class DexCompanionHandler(BaseHTTPRequestHandler):
+    """Proxy HTTP requests to Dex and adjust userinfo responses."""
+
     protocol_version = "HTTP/1.1"
 
     def _proxy(self) -> None:
         request_body = self._read_request_body()
-        request = Request(_normalize_target_url(self.path), data=request_body, method=self.command)
+        request = Request(
+            _normalize_target_url(self.path),
+            data=request_body,
+            method=self.command,
+        )
         self._copy_request_headers(request)
 
         status_code, response_headers, response_body = self._forward_request(request)
@@ -107,14 +129,24 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
                 continue
             outbound_request.add_header(key, value)
 
-    def _forward_request(self, request: Request) -> tuple[int, list[tuple[str, str]], bytes]:
+    def _forward_request(
+        self,
+        request: Request,
+    ) -> tuple[int, list[tuple[str, str]], bytes]:
         try:
-            with NO_REDIRECT_OPENER.open(request, timeout=UPSTREAM_TIMEOUT_SECONDS) as response:
+            with NO_REDIRECT_OPENER.open(
+                request,
+                timeout=UPSTREAM_TIMEOUT_SECONDS,
+            ) as response:
                 return response.getcode(), list(response.getheaders()), response.read()
         except HTTPError as exc:
             return exc.code, list(exc.headers.items()), exc.read()
         except URLError:
-            return 502, [("Content-Type", "application/json")], b'{"error":"dex_upstream_unreachable"}'
+            return (
+                502,
+                [("Content-Type", "application/json")],
+                b'{"error":"dex_upstream_unreachable"}',
+            )
 
     def _write_response(
         self,
@@ -132,30 +164,42 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
         self.wfile.write(response_body)
 
     def do_GET(self) -> None:  # noqa: N802
+        """Proxy HTTP GET requests to Dex."""
         self._proxy()
 
     def do_POST(self) -> None:  # noqa: N802
+        """Proxy HTTP POST requests to Dex."""
         self._proxy()
 
     def do_PUT(self) -> None:  # noqa: N802
+        """Proxy HTTP PUT requests to Dex."""
         self._proxy()
 
     def do_PATCH(self) -> None:  # noqa: N802
+        """Proxy HTTP PATCH requests to Dex."""
         self._proxy()
 
     def do_DELETE(self) -> None:  # noqa: N802
+        """Proxy HTTP DELETE requests to Dex."""
         self._proxy()
 
     def do_OPTIONS(self) -> None:  # noqa: N802
+        """Proxy HTTP OPTIONS requests to Dex."""
         self._proxy()
 
+    # pylint: disable=arguments-differ,redefined-builtin,unused-argument
     def log_message(self, format: str, *args) -> None:
+        """Suppress the default HTTP server request logging."""
         return
 
 
 def main() -> None:
+    """Start the companion HTTP server."""
     server = ThreadingHTTPServer((BIND, PORT), DexCompanionHandler)
-    print(f"dex-companion listening on {BIND}:{PORT}, upstream={UPSTREAM}")
+    print(
+        f"dex-companion listening on {BIND}:{PORT}, "
+        f"upstream={UPSTREAM}"
+    )
     server.serve_forever()
 
 

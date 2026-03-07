@@ -1,4 +1,28 @@
 services:
+  dex:
+    image: dexidp/dex:latest
+    restart: unless-stopped
+    command: ["dex", "serve", "/etc/dex/config.yaml"]
+    volumes:
+      - ./config/dex-config.yaml:/etc/dex/config.yaml:ro
+    expose:
+      - "5556"
+
+  dex-companion:
+    image: python:3.12-alpine
+    restart: unless-stopped
+    depends_on:
+      - dex
+    environment:
+      DEX_UPSTREAM: http://dex:5556
+      COMPANION_BIND: 0.0.0.0
+      COMPANION_PORT: 5556
+    command: ["python", "/app/dex-companion.py"]
+    volumes:
+      - ./dex-companion.py:/app/dex-companion.py:ro
+    ports:
+      - "5556:5556"
+
   traefik:
     image: traefik:v3.6.4
     restart: unless-stopped
