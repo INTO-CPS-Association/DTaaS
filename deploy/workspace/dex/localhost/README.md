@@ -44,14 +44,19 @@ Login using the default credentials.
 **👤 User email:** `user@foo.com`
 **🔑 Password:** `user`
 
-⚠️ All the functionality of DTaaS except DevOps features should be
-available to you through the single page client now.
-
 ⏹️ Stop the demo:
 
 ```bash
 docker compose down
 ```
+
+## 🌵Limitations
+
+1. All the functionality of DTaaS except DevOps features should be
+   available to you through the single page client now.
+1. The installation has default user credentials.
+   See [instructions](CUSTOM_USER.md) for help with changing
+   the user credentials.
 
 ## 📚 Documentation
 
