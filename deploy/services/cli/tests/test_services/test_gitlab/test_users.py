@@ -122,8 +122,8 @@ def test_create_users_from_rows_success(mocker):
         return_value=(True, ""),
     )
     rows = [
-        {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105
-        {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105
+        {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105 # NOSONAR
+        {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
     ]
     success, error = users._create_users_from_rows(TEST_TOKEN, iter(rows))
     assert success is True
@@ -137,9 +137,9 @@ def test_create_users_from_rows_failure_stops(mocker):
         side_effect=[(True, ""), (False, "user2 failed")],
     )
     rows = [
-        {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105
-        {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105
-        {"username": "user3", "email": "u3@x.com", "password": "pass3"},  # noqa: S105
+        {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105 # NOSONAR
+        {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
+        {"username": "user3", "email": "u3@x.com", "password": "pass3"},  # noqa: S105 # NOSONAR
     ]
     success, error = users._create_users_from_rows(TEST_TOKEN, iter(rows))
     assert success is False
