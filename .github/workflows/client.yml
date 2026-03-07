@@ -1,6 +1,6 @@
 name: React website
 
-on:
+'on':
   push:
     paths:
       - 'client/**'

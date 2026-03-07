@@ -5,7 +5,7 @@
 
 name: Build and Push Docker Image (GHCR)
 
-on:
+'on':
   workflow_call:
     inputs:
       image-name:

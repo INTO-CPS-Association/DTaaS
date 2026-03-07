@@ -1,6 +1,6 @@
 name: CLI for DTaaS
 
-on:
+'on':
   push:
     paths:
       - 'cli/**'

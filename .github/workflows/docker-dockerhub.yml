@@ -16,7 +16,7 @@ permissions:
   contents: read  # Required for checking out the code
   packages: write  # Push to github package registry
 
-on:
+'on':
   workflow_call:
     inputs:
       image-name:
@@ -89,7 +89,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         env:
-        # yamllint disable-line rule:line-length
+          # yamllint disable-line rule:line-length
           IMAGE_TAG: "${{ env.registry }}/${{ env.dockerhub-scope }}/${{ inputs.image-name }}:${{ inputs.version }}"
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then

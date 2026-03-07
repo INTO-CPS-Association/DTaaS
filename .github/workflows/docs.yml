@@ -1,6 +1,6 @@
 name: Build documentation
 
-on:
+'on':
   push:
     paths:
       - 'docs/**'

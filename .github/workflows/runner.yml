@@ -1,6 +1,6 @@
 name: Digital twin runner
 
-on:
+'on':
   push:
     paths:
       - 'servers/execution/**'

@@ -1,6 +1,6 @@
 name: Platform Services CLI
 
-on:
+'on':
   push:
     paths:
       - 'deploy/services/cli/**'
