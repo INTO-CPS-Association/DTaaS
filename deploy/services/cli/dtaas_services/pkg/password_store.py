@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from dotenv import dotenv_values, set_key
+from dotenv import dotenv_values, set_key, unset_key
 from .config import Config
 
 logger = logging.getLogger(__name__)
@@ -76,9 +76,6 @@ def remove_service_passwords(service_name: str) -> None:
     if not path.exists():
         return
 
-    lines = path.read_text(encoding="utf-8").splitlines()
-    filtered = [
-        line for line in lines if not any(line.startswith(f"{k}=") for k in keys)
-    ]
-    path.write_text("\n".join(filtered) + "\n" if filtered else "", encoding="utf-8")
+    for key in keys:
+        unset_key(str(path), key)
     logger.debug("Removed %s entries from %s", service_name, PASSWORDS_FILE)
