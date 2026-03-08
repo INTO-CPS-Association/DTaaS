@@ -2,6 +2,12 @@
 
 This guide explains how to configure Keycloak for authentication in the DTaaS workspace deployment.
 
+## Key Benefits
+
+✅ **Standards-Based**: Uses OIDC/OAuth2 standards
+✅ **Enterprise-Ready**: Supports SSO, MFA, user federation
+✅ **Minimal Changes**: Environment-variable based configuration
+
 ## Overview
 
 The configuration uses:
@@ -25,11 +31,21 @@ User Request → Traefik → Forward Auth → Keycloak (OIDC)
 Copy the example environment file and update it:
 
 ```bash
-cd workspaces/test/dtaas
 cp config/.env.example config/.env
 ```
 
-Edit `config/.env`:
+Keyclak-specific environment variables are:
+
+| Variable | Purpose | Example |
+|----------|---------|---------|
+| `KEYCLOAK_ADMIN` | Admin username | `admin` |
+| `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `changeme` |
+| `KEYCLOAK_REALM` | Realm name | `dtaas` |
+| `KEYCLOAK_CLIENT_ID` | OIDC client ID | `dtaas-workspace` |
+| `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
+| `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://foo.com/auth/realms/dtaas` |
+
+Edit Keycloak-configuration in `config/.env`:
 
 ```bash
 # Keycloak Admin Credentials (for initial setup)
@@ -39,31 +55,14 @@ KEYCLOAK_ADMIN_PASSWORD=changeme
 # Keycloak Realm
 KEYCLOAK_REALM=dtaas
 
-# Keycloak Client Configuration (will be created in step 2)
+# Keycloak Client Configuration (will be created in post-install step)
 KEYCLOAK_CLIENT_ID=dtaas-workspace
 KEYCLOAK_CLIENT_SECRET=<generated-secret>
-
-# Server Configuration
-SERVER_DNS=foo.com
-
-# Generate a secure secret for OAuth sessions (run locally)
-OAUTH_SECRET=$(openssl rand -base64 32)
-
-# Usernames
-USERNAME1=user1
-USERNAME2=user2
 ```
 
-### 2. Start Services
+### 2. Configure Keycloak
 
-Build and start all services:
-
-```bash
-docker compose -f compose.traefik.secure.tls.yml build
-docker compose -f compose.traefik.secure.tls.yml --env-file config/.env up -d
-```
-
-### 3. Configure Keycloak
+The following instructions are part of post-install step.
 
 #### Access Keycloak Admin Console
 
@@ -121,7 +120,7 @@ docker compose -f compose.traefik.secure.tls.yml --env-file config/.env up -d
    - Click **Save**
 6. Repeat for additional users (e.g., `user2`)
 
-### 4. Restart Services
+### 3. Restart Services
 
 After configuring Keycloak, restart the services to apply the new client secret:
 
@@ -130,38 +129,14 @@ docker compose down
 docker compose up -d
 ```
 
-### 5. Test Authentication
+### 4. Test Authentication
 
 1. Navigate to `https://foo.com/`
 2. You should be redirected to Keycloak login
 3. Login with one of the users you created
-4. You should be redirected back to the DTaaS interface
-
-## Access Control Configuration
-
-Copy `config/conf.example` to `config/conf` and edit it:
-
-```ini
-# Allow only user1 to access /user1 paths
-rule.user1_access.action=auth
-rule.user1_access.rule=PathPrefix(`/user1`)
-rule.user1_access.whitelist=user1@localhost
-
-# Allow only user2 to access /user2 paths
-rule.user2_access.action=auth
-rule.user2_access.rule=PathPrefix(`/user2`)
-rule.user2_access.whitelist=user2@localhost
-```
-
-**Note**: The whitelist uses the email address from Keycloak. Adjust accordingly.
+4. You should be redirected back to the DTaaS landing page
 
 ## Production Considerations
-
-### 1. Use HTTPS
-
-Use `compose.traefik.secure.tls.yml` for TLS/HTTPS in production.
-
-### 2. External Keycloak
 
 To use an external Keycloak instance (recommended for production):
 
@@ -170,21 +145,16 @@ To use an external Keycloak instance (recommended for production):
    KEYCLOAK_ISSUER_URL=https://keycloak.example.com/auth/realms/dtaas
    ```
 
-2. Optionally remove the `keycloak` service from `compose.traefik.secure.tls.yml`:
-   - Comment out or delete the `keycloak` service section
-   - Remove `keycloak` from `depends_on` in `traefik-forward-auth`
-   - Remove the `keycloak-data` volume
+Update client redirect URIs in Keycloak to use your production domain
 
-3. Update client redirect URIs in Keycloak to use your production domain
-
-### 3. Secure Credentials
+### 1. Secure Credentials
 
 - Change the default Keycloak admin password
 - Use strong client secrets
 - Store secrets securely (Docker secrets or external secret managers)
 - Rotate secrets regularly
 
-### 4. Database Backend
+### 2. Database Backend
 
 For production, configure Keycloak with a proper database (PostgreSQL, MySQL):
 
@@ -241,15 +211,6 @@ RBAC is supported in Keycloak but not implemented in the traefik-forward-auth se
 ### Single Sign-On (SSO)
 
 Keycloak supports SSO across multiple applications. Configure additional clients for other services as needed.
-
-## Migration from GitLab OAuth
-
-If you're migrating from the previous GitLab OAuth setup:
-
-1. Backup your current `.env` file
-2. Update `.env` with Keycloak configuration
-3. Update user whitelist in `config/conf` to use Keycloak usernames/emails
-4. Test with a single user before migrating all users
 
 ## References
 

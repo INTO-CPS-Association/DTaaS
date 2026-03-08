@@ -21,11 +21,6 @@ User Request → Traefik → Forward Auth → Keycloak (OIDC)
          User Workspace
 ```
 
-## ⚙️ Configuration
-
-Please follow the steps in [`CONFIGURATION.md`](CONFIGURATION.md)
-for creating valid configuration.
-
 ## 📁 User Directories
 
 All the deployment options require user directories for
@@ -40,11 +35,19 @@ cp -R files/user1 files/<USERNAME2>
 sudo chown -R 1000:100 files
 ```
 
+## ⚙️ Configuration
+
+Please follow the pre-installation steps in
+[`CONFIGURATION.md`](CONFIGURATION.md) for creating valid configuration.
+
 ▶️ Start the application:
 
 ```bash
 docker compose up -d
 ```
+
+Now complete the post-installation steps in
+[`CONFIGURATION.md`](CONFIGURATION.md).
 
 The application will be accessible at <https://foo.com> from web browser.
 Login using the user credentials set in **keycloak**.
@@ -65,15 +68,21 @@ docker compose down -v
 
 ### Adding More Users
 
-To add additional workspace instances, add a new service in `compose.traefik.secure.tls.yml`:
+Create user account for USERNAME3 in **Keycloak**.
+
+Create the user's workspace directory:
+
+```bash
+cp -r files/user1 /files/<USERNAME3>
+sudo chown -R 1000:100 /files/<USERNAME3>
+```
+
+Add a new service in `docker-compose.yml`:
 
 ```yaml
   user3:
     image: intocps/workspace:latest
     restart: unless-stopped
-    build:
-      context: ../..
-      dockerfile: Dockerfile.ubuntu.noble.gnome
     environment:
       - MAIN_USER=${USERNAME3:-user3}
     volumes:
@@ -88,7 +97,7 @@ To add additional workspace instances, add a new service in `compose.traefik.sec
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](./config/.env):
+Add the desired `USERNAME3` variable in [`.env`](.env):
 
 ```bash
 # Username Configuration
@@ -99,48 +108,13 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`conf`](./config/conf):
+Add Forward Auth config for user3 in [`conf`](config/forward-auth-conf):
 
 ```txt
 
 rule.user3_access.action=auth
 rule.user3_access.rule=PathPrefix(`/user3`)
 rule.user3_access.whitelist = user3@localhost 
-```
-
-Ensure that the username and email correspond to the workspaces GitLab user.
-
-Don't forget to create the user's directory:
-
-```bash
-cp -r ./workspaces/test/dtaas/files/user1 ./workspaces/test/dtaas/files/user3
-sudo chown -R 1000:100 workspaces/test/dtaas/files
-```
-
-### Using Different OAuth2 Providers
-
-The configuration can be adapted for different OAuth2 providers by changing
-the environment variables in the `traefik-forward-auth` service:
-
-#### Google OAuth2
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=google
-  - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-  - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
-```
-
-#### Generic OIDC Provider
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=oidc
-  - PROVIDERS_OIDC_ISSUER_URL=https://your-oidc-provider.com
-  - PROVIDERS_OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
-  - PROVIDERS_OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
 ```
 
 ## 🐛 Troubleshooting

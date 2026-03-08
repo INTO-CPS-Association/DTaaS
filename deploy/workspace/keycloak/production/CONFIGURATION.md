@@ -1,13 +1,23 @@
 # ⚙️ DTaaS Configuration
 
 This document outlines the configuration needed for the docker compose file.
+The configuration can be divided into pre and post-install parts.
+The pre-install configuration tasks must be completed before bringing up
+the docker compose services, while the post-install configuration tasks must be
+completed after bringing up the docker compose services.
+
+**Pre-install Configuration Tasks:**
+
 - [Environment](#-environment)
-- [Usernames](#-usernames)
 - [Domain](#-domain)
 - [TLS Certificates](#-tls-certificates)
+- [Usernames](#-usernames)
+- [Forward Auth](#-traefik-forward-auth-configuration)
+
+**Post-install Configuration Tasks:**
+
 - [Web Client](#️-dtaas-web-client-config)
 - [OAuth2](#-oauth2-configuration)
-- [Forward Auth](#-traefik-forward-auth-configuration)
 
 ## 🌍 Environment
 
@@ -20,23 +30,6 @@ Create a copy of this example file without the example suffix:
 ```bash
 cp .env.example .env
 ```
-
-## 👥 Usernames
-
-The usernames of the main users for the workspaces can be changed in
-the [environment variable file](#-environment) `config/.env`.
-Change the default values (`user1` and `user2`) to your desired usernames:
-
-```bash
-# Username Configuration
-# These usernames will be used as path prefixes for user workspaces
-# Example: https://foo.com/user1, https://foo.com/user2
-USERNAME1=user1
-USERNAME2=user2
-```
-
-**NOTE:** These
-usernames must match the names of the keycloak users used in the forward auth.
 
 ## 🌐 Domain
 
@@ -79,6 +72,53 @@ sudo chown $USER:$USER ./certs/*.pem
 chmod 644 ./certs/fullchain.pem
 chmod 600 ./certs/privkey.pem
 ```
+
+## 👥 Usernames
+
+The usernames of the main users for the workspaces can be changed in
+the [environment variable file](#-environment) `config/.env`.
+Change the default values (`user1` and `user2`) to your desired usernames:
+
+```bash
+# Username Configuration
+# These usernames will be used as path prefixes for user workspaces
+# Example: https://foo.com/user1, https://foo.com/user2
+USERNAME1=user1
+USERNAME2=user2
+```
+
+**NOTE:** These usernames must match the names of the keycloak users
+used in the forward auth.
+
+## 🚪 Traefik Forward Auth Configuration
+
+The [`config/conf.example`](./config/conf.example) contains
+example configuration for the forward-auth service.
+
+Create a copy of this example file without the example suffix:
+
+```bash
+cp config/conf.example config/conf
+```
+
+Then update the configuration file with the usernames and emails of
+the GitLab users that correspond to user 1 and 2 respectively.
+(You must either have two seperate GitLab users, or skip the configuration of
+one of the two users).
+
+```txt
+rule.user1_access.action=auth
+rule.user1_access.rule=PathPrefix(`/<USERNAME_USER1>`)
+rule.user1_access.whitelist = <EMAIL_USER1>
+
+rule.user2_access.action=auth
+rule.user2_access.rule=PathPrefix(`/<USERNAME_USER2>`)
+rule.user2_access.whitelist = <EMAIL_USER2>
+```
+
+**NOTE:** Ensure that the usernames set in the
+[Usernames configuration step](#-usernames) are the same as those set
+in the Traefik Forward Auth configuration file.
 
 ## 🖥️ DTaaS Web Client Config
 
@@ -136,8 +176,8 @@ enterprise-grade identity and access management solution.
 **For detailed Keycloak setup instructions, see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
 Quick overview:
-1. Start services with `docker compose -f compose.traefik.secure.yml up -d`
-2. Access Keycloak at `http://localhost/auth`
+1. Start services with `docker compose up -d`
+2. Access Keycloak at `https://foo.com/auth`
 3. Create a realm and OIDC client
 4. Create users in Keycloak
 5. Update `.env` with client credentials
@@ -167,32 +207,8 @@ Quick overview:
    OAUTH_SECRET=$(openssl rand -base64 32)
    ```
 
-## 🚪 Traefik Forward Auth Configuration
+## 📚 Additional Resources
 
-The [`config/conf.example`](./config/conf.example) contains
-example configuration for the forward-auth service.
-
-Create a copy of this example file without the example suffix:
-
-```bash
-cp config/conf.example config/conf
-```
-
-Then update the configuration file with the usernames and emails of
-the GitLab users that correspond to user 1 and 2 respectively.
-(You must either have two seperate GitLab users, or skip the configuration of
-one of the two users).
-
-```txt
-rule.user1_access.action=auth
-rule.user1_access.rule=PathPrefix(`/<USERNAME_USER1>`)
-rule.user1_access.whitelist = <EMAIL_USER1>
-
-rule.user2_access.action=auth
-rule.user2_access.rule=PathPrefix(`/<USERNAME_USER2>`)
-rule.user2_access.whitelist = <EMAIL_USER2>
-```
-
-**NOTE:** Ensure that the usernames set in the
-[Usernames configuration step](#-usernames) are the same as those set
-in the Traefik Forward Auth configuration file.
+- [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [OAuth 2.0 Specification](https://oauth.net/2/)
