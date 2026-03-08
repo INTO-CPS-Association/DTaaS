@@ -9,7 +9,10 @@ from pathlib import Path
 import httpx
 from ...config import Config
 from .tb_utility import get_ssl_verify, login
-from .sysadmin import change_sysadmin_password_if_needed
+from .sysadmin import (
+    change_sysadmin_password_if_needed,
+    _build_sysadmin_password_candidates,
+)
 from .customer_user import CustomerUserContext, create_customer_and_user
 from .tenant_admin import (
     change_tenant_admin_password,
@@ -17,12 +20,14 @@ from .tenant_admin import (
     TenantAdminContext,
     AdminCredentials,
     DEFAULT_TENANT_ADMIN_PASSWORD,
+    TENANT_PW_KEY,
 )
 from .tb_cert import (
     CredentialProcessContext,
     validate_credential_row,
     build_base_url,
 )
+from ...password_store import get_current_password
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +35,12 @@ logger = logging.getLogger(__name__)
 def _authenticate_as_tenant_admin(
     base_url: str, session: httpx.Client
 ) -> Tuple[bool, str]:
-    """Authenticate session as tenant admin, trying default then configured pw."""
+    """Authenticate session as tenant admin, trying stored, default, then configured pw."""
     admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "")
     configured_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
-    for pw in filter(None, [DEFAULT_TENANT_ADMIN_PASSWORD, configured_pw]):
+    stored_pw = get_current_password(TENANT_PW_KEY)
+    candidates = [stored_pw, DEFAULT_TENANT_ADMIN_PASSWORD, configured_pw]
+    for pw in filter(None, candidates):
         token = login(base_url, admin_email, pw)
         if token:
             session.headers["X-Authorization"] = f"Bearer {token}"
@@ -124,10 +131,9 @@ def _create_session() -> httpx.Client:
 
 
 def _authenticate_as_sysadmin(base_url: str, session: httpx.Client) -> Tuple[bool, str]:
-    """Authenticate session as sysadmin (tries configured password, then default)."""
+    """Authenticate session as sysadmin (tries stored, configured, then default)."""
     sys_email = os.getenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
-    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
-    for pw in filter(None, [new_pw, "sysadmin"]):
+    for pw in _build_sysadmin_password_candidates():
         token = login(base_url, sys_email, pw)
         if token:
             session.headers["X-Authorization"] = f"Bearer {token}"
@@ -189,14 +195,22 @@ def setup_thingsboard_users() -> Tuple[bool, str]:
 def _do_password_reset(
     base_url: str, session: httpx.Client, new_pw: str
 ) -> Tuple[bool, str]:
-    """Change sysadmin and tenant admin passwords."""
-    ok, msg = _change_password_with_logging(base_url, session, new_pw)
-    if not ok:
-        return False, msg
+    """Change sysadmin and tenant admin passwords.
+
+    Sysadmin failure does NOT block tenant admin password change.
+    """
+    messages = []
+    sysadmin_ok, sysadmin_msg = _change_password_with_logging(base_url, session, new_pw)
+    if not sysadmin_ok:
+        messages.append(f"Sysadmin: {sysadmin_msg}")
+
     ta_ok, ta_msg = change_tenant_admin_password(base_url, session)
     if not ta_ok:
-        return False, ta_msg
-    return True, "ThingsBoard passwords updated successfully"
+        messages.append(f"Tenant admin: {ta_msg}")
+
+    if sysadmin_ok and ta_ok:
+        return True, "ThingsBoard passwords updated successfully"
+    return False, "; ".join(messages)
 
 
 def reset_thingsboard_password() -> Tuple[bool, str]:

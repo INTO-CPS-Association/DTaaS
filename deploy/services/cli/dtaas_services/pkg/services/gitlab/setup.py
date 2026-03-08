@@ -10,7 +10,7 @@ from rich.console import Console
 
 from ...config import Config
 from .health import wait_for_gitlab_ready
-from .password import get_initial_root_password
+from .password import get_initial_root_password, reset_gitlab_password
 from .personal_token import create_personal_access_token
 from .app_token import (
     OAuthAppResult,
@@ -34,15 +34,7 @@ class GitLabTokens:
 
 
 def _save_tokens(tokens: GitLabTokens, output_path: Path) -> Tuple[bool, str]:
-    """Save tokens to a JSON file.
-
-    Args:
-        tokens: All produced tokens
-        output_path: Path to write the JSON file
-
-    Returns:
-        Tuple of (success, message)
-    """
+    """Save tokens to a JSON file."""
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open("w", encoding="utf-8") as fh:
@@ -53,51 +45,25 @@ def _save_tokens(tokens: GitLabTokens, output_path: Path) -> Tuple[bool, str]:
 
 
 def _get_tokens_output_path() -> Path:
-    """Get the path where tokens should be saved.
-
-    Returns:
-        Path to config/gitlab_tokens.json
-    """
+    """Return path to config/gitlab_tokens.json."""
     base_dir = Config.get_base_dir()
     return base_dir / "config" / TOKENS_FILENAME
 
 
 def _app_result_to_dict(result: OAuthAppResult) -> dict:
-    """Convert an OAuthAppResult to a plain dict for serialization.
-
-    Args:
-        result: OAuth application result
-
-    Returns:
-        Dict representation
-    """
+    """Convert an OAuthAppResult to a plain dict for serialization."""
     return asdict(result)
 
 
 def _step_wait_for_health(console: Console, docker) -> Tuple[bool, str]:
-    """Wait for GitLab to be healthy.
-
-    Args:
-        console: Rich console
-        docker: Docker client
-
-    Returns:
-        Tuple of (success, error_message)
-    """
+    """Wait for GitLab to be healthy."""
     if not wait_for_gitlab_ready(console, docker):
         return False, "GitLab did not become healthy in time."
     return True, ""
 
 
 def _step_get_password(console: Console) -> Tuple[bool, str]:
-    """Retrieve the initial root password.
-
-    Args:
-        console: Rich console
-
-    Returns:
-        Tuple of (success, password_or_error)
-    """
+    """Retrieve the initial root password."""
     console.print("[cyan]Retrieving initial root password...[/cyan]")
     success, password = get_initial_root_password()
     if not success:
@@ -107,14 +73,7 @@ def _step_get_password(console: Console) -> Tuple[bool, str]:
 
 
 def _step_create_pat(console: Console) -> Tuple[bool, str]:
-    """Create a Personal Access Token.
-
-    Args:
-        console: Rich console
-
-    Returns:
-        Tuple of (success, token_or_error)
-    """
+    """Create a Personal Access Token."""
     console.print("[cyan]Creating Personal Access Token...[/cyan]")
     success, token = create_personal_access_token()
     if not success:
@@ -126,15 +85,7 @@ def _step_create_pat(console: Console) -> Tuple[bool, str]:
 def _step_create_oauth_apps(
     console: Console, pat: str
 ) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
-    """Create both OAuth application tokens.
-
-    Args:
-        console: Rich console
-        pat: Personal Access Token for API authentication
-
-    Returns:
-        Tuple of (success, server_result, client_result, error_message)
-    """
+    """Create both OAuth application tokens."""
     console.print("[cyan]Creating OAuth application tokens...[/cyan]")
 
     success, server_result, error_msg = create_server_application(pat)
@@ -157,18 +108,7 @@ def _step_save_tokens(
     server_result: OAuthAppResult,
     client_result: OAuthAppResult,
 ) -> Tuple[bool, str]:
-    """Save all tokens to a JSON file.
-
-    Args:
-        console: Rich console
-        root_password: GitLab root password
-        pat: Personal Access Token
-        server_result: Server OAuth app details
-        client_result: Client OAuth app details
-
-    Returns:
-        Tuple of (success, message)
-    """
+    """Save all tokens to a JSON file."""
     tokens = GitLabTokens(
         root_password=root_password,
         personal_access_token=pat,
@@ -185,15 +125,7 @@ def _step_save_tokens(
 
 
 def _run_prereq_steps(console: Console, docker) -> Tuple[bool, str, str, str]:
-    """Run health check, password retrieval, PAT creation.
-
-    Args:
-        console: Rich console for output
-        docker: Docker client
-
-    Returns:
-        Tuple of (success, root_password, pat, error_message)
-    """
+    """Run health check, password retrieval, PAT creation."""
     success, error_msg = _step_wait_for_health(console, docker)
     if not success:
         return False, "", "", error_msg
@@ -207,17 +139,23 @@ def _run_prereq_steps(console: Console, docker) -> Tuple[bool, str, str, str]:
     return success, root_password, pat, error
 
 
-def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
-    """Run the full GitLab post-install setup.
-
-    Check health → password → PAT → OAuth apps → save.
-
-    Args:
-        console: Rich console for output
-        docker: Docker client (python-on-whales DockerClient)
+def _step_reset_root_password(console: Console) -> Tuple[bool, str]:
+    """Reset root password to GITLAB_ROOT_NEW_PASSWORD right after install.
 
     Returns:
         Tuple of (success, message)
+    """
+    console.print("[cyan]Resetting root password to configured value...[/cyan]")
+    success, msg = reset_gitlab_password()
+    if success:
+        console.print("[green]\u2705 Root password updated.[/green]")
+    return success, msg
+
+
+def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
+    """Run the full GitLab post-install setup.
+
+    Check health → password → PAT → OAuth apps → save → reset root password.
     """
     console.print("[bold cyan]Starting GitLab setup...[/bold cyan]")
 
@@ -237,4 +175,13 @@ def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
     ok, msg = _step_save_tokens(
         console, root_password, pat, server_result, client_result
     )
-    return ok, "GitLab setup completed successfully." if ok else msg
+    if not ok:
+        return False, msg
+
+    pw_ok, pw_msg = _step_reset_root_password(console)
+    if not pw_ok:
+        console.print(
+            f"[yellow]\u26a0\ufe0f  Root password reset failed: {pw_msg}[/yellow]"
+        )
+
+    return True, "GitLab setup completed successfully."

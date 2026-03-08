@@ -3,9 +3,11 @@
 import logging
 import os
 from typing import Tuple
+import httpx
 from .users import _load_pat_from_tokens
 from ...config import Config
 from ...utils import execute_docker_command
+from ...password_store import save_password
 from ._api import gitlab_request
 
 logger = logging.getLogger(__name__)
@@ -13,6 +15,7 @@ logger = logging.getLogger(__name__)
 PASSWORD_FILE_PATH = "/etc/gitlab/initial_root_password"
 GITLAB_CONTAINER_NAME = "gitlab"
 ROOT_USER_ID = 1
+GITLAB_PW_KEY = "GITLAB_ROOT_CURRENT_PASSWORD"
 
 
 def _parse_password_from_output(raw_output: str) -> str | None:
@@ -90,6 +93,22 @@ def _get_root_new_password() -> Tuple[bool, str]:
     return True, password
 
 
+def _parse_gitlab_password_error(response: httpx.Response) -> str:
+    """Extract a human-readable error from a GitLab password-change response."""
+    try:
+        body = response.json()
+        msg_obj = body.get("message", body.get("error", ""))
+        if isinstance(msg_obj, dict):
+            parts = []
+            for field, errors in msg_obj.items():
+                for err in errors:
+                    parts.append(f"{field}: {err}")
+            return "; ".join(parts) if parts else f"HTTP {response.status_code}"
+        return str(msg_obj) or f"HTTP {response.status_code}"
+    except Exception:
+        return f"HTTP {response.status_code} \u2014 {response.text[:200]}"
+
+
 def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
     """Call the GitLab API to update the root user's password.
 
@@ -110,11 +129,10 @@ def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
         return False, f"Failed to reset root password: {error_msg}"
     if response.status_code == 200:
         logger.info("GitLab root password reset successfully")
+        save_password(GITLAB_PW_KEY, new_pw)
         return True, "GitLab root password updated successfully"
-    return False, (
-        f"Failed to reset root password: "
-        f"HTTP {response.status_code} \u2014 {response.text}"
-    )
+    detail = _parse_gitlab_password_error(response)
+    return False, f"Failed to reset root password: {detail}"
 
 
 def reset_gitlab_password() -> Tuple[bool, str]:

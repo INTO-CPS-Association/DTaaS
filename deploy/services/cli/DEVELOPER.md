@@ -69,6 +69,7 @@ cli/
 │       ├── config.py       # Configuration loader
 │       ├── cert.py         # TLS certificate operations
 │       ├── formatter.py    # Output formatting utilities
+│       ├── password_store.py # Tracks current service passwords in current.passwords.env
 │       ├── template.py     # Project structure and template file management
 │       ├── utils.py        # Shared utilities (Docker, file operations)
 │       ├── lib/            # Core service management
@@ -196,6 +197,9 @@ The package uses a modular, three-layer architecture:
  directory detection
 * **`cert.py`**: TLS certificate copying and normalization
 * **`formatter.py`**: Output formatting utilities
+* **`password_store.py`**: Read/write access to `config/current.passwords.env`;
+  tracks the last-known password for each service account so that
+  `reset-password` can be run repeatedly
 * **`template.py`**: Project structure and template file management
 * **`utils.py`**: Shared utilities (Docker operations, credentials handling)
 * **`lib/`**: Core service management modules
@@ -347,10 +351,14 @@ Stops and removes Docker containers:
 * **Root user**: The `root` admin account (user ID `1`) is created automatically
   by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the
   auto-generated password and resets it to `GITLAB_ROOT_NEW_PASSWORD`.
+  During `dtaas-services install -s gitlab`, the root password is automatically
+  changed to `GITLAB_ROOT_NEW_PASSWORD` and recorded in
+  `config/current.passwords.env`.
 * **Password Reset**: The root password can be reset independently using
   `dtaas-services user reset-password -s gitlab`, which reads
   `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account
-  via `PUT /api/v4/users/1`.
+  via `PUT /api/v4/users/1`. The new password is saved to
+  `config/current.passwords.env` on success.
 * **Token Storage**: The Personal Access Token created during install is written
   to `config/gitlab_tokens.json`. All user-management API calls load the PAT from
   this file at runtime.
@@ -370,12 +378,30 @@ Stops and removes Docker containers:
   (tries default password `"tenant"` first, falls back to
   `TB_TENANT_ADMIN_PASSWORD`)
 * **Password Reset**: Running `dtaas-services user reset-password -s thingsboard`
-  resets both the sysadmin password (from default to `TB_SYSADMIN_NEW_PASSWORD`)
-  and the tenant admin password (from `"tenant"` to `TB_TENANT_ADMIN_PASSWORD`).
+  resets both the sysadmin password (to `TB_SYSADMIN_NEW_PASSWORD`)
+  and the tenant admin password (to `TB_TENANT_ADMIN_PASSWORD`).
+  Passwords can be reset as many times as needed — the current password
+  is tracked in `config/current.passwords.env` so subsequent resets
+  always know the correct current password.
+  If sysadmin password change fails, the tenant admin change still proceeds.
 * **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by
   the `SSL_VERIFY` environment variable (from `services.env`) and use
   verification enabled by default. For self-signed certificates in non-production
   environments, set `SSL_VERIFY=false`.
+
+### Password Store (`config/current.passwords.env`)
+
+The file `config/current.passwords.env` tracks the current passwords for
+ThingsBoard sysadmin, ThingsBoard tenant admin, and GitLab root accounts.
+It is managed by `pkg/password_store.py`.
+
+* **Created** automatically on first write (by `save_password`); do not create
+  or edit this file manually.
+* **Updated** automatically whenever a password is changed via
+  `dtaas-services user reset-password` or during
+  `dtaas-services install -s gitlab`.
+* **Cleaned** when a service is removed via `dtaas-services remove`.
+  Only entries belonging to the removed service are deleted.
 
 ### Error Handling Pattern
 

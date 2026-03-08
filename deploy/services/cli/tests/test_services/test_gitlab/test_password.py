@@ -121,13 +121,14 @@ def test_apply_password_reset_bad_status(mocker):
     mock_response = Mock()
     mock_response.status_code = 403
     mock_response.text = "Forbidden"
+    mock_response.json.return_value = {"error": "forbidden"}
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.password.gitlab_request",
         return_value=(True, mock_response, ""),
     )
     success, msg = password._apply_password_reset(TEST_TOKEN, TEST_NEW_PASSWORD)
     assert success is False
-    assert "403" in msg
+    assert "403" in msg or "forbidden" in msg.lower()
 
 
 def test_reset_gitlab_password_success(mocker):

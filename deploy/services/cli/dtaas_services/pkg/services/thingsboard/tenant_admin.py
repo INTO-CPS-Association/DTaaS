@@ -8,12 +8,12 @@ from typing import Optional, Tuple
 import httpx
 from .tb_utility import login, verify_admin_login, is_json_parse_error
 from .activation import get_activation_token, activate_user
-from .sysadmin import get_or_create_tenant
+from .sysadmin import get_or_create_tenant, parse_tb_password_error
+from ...password_store import get_current_password, save_password
 
 logger = logging.getLogger(__name__)
-
-# Default password set during tenant admin creation
 DEFAULT_TENANT_ADMIN_PASSWORD = "tenant"  # noqa: S105 # NOSONAR
+TENANT_PW_KEY = "TB_TENANT_ADMIN_CURRENT_PASSWORD"
 
 
 def _check_admin_exists(base_url: str, admin_email: str, admin_password: str) -> bool:
@@ -79,8 +79,7 @@ def _handle_admin_already_exists(resp: httpx.Response) -> Tuple[str | None, str]
     """Handle case where admin user already exists."""
     try:
         error_data = resp.json()
-        error_message = error_data.get("message", "")
-        if "already" in error_message.lower():
+        if "already" in error_data.get("message", "").lower():
             logger.info(" Tenant admin already exists, skipping...")
             return None, ""
     except Exception:
@@ -110,18 +109,13 @@ def _create_tenant_admin_user(
         "authority": "TENANT_ADMIN",
         "tenantId": {"id": tenant_id, "entityType": "TENANT"},
     }
-
     resp, error_msg = _create_tenant_api_call(ctx, user_payload)
     if not resp:
         return None, error_msg
-
-    # Handle non-success status codes
     if resp.status_code == 400:
         return _handle_admin_already_exists(resp)
-    elif resp.status_code not in (200, 201):
+    if resp.status_code not in (200, 201):
         return None, f"Failed to create tenant admin: {resp.status_code}"
-
-    # Extract user ID from successful response
     return _extract_user_id_from_response(resp)
 
 
@@ -141,7 +135,6 @@ def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:
 
 def _create_and_activate_admin(ctx: _AdminContext, tenant_id: str) -> Tuple[bool, str]:
     """Create tenant admin user and activate."""
-    # Create tenant admin user
     user_id, error_msg = _create_tenant_admin_user(ctx, tenant_id)
     if not user_id:
         if error_msg == "":
@@ -160,7 +153,6 @@ def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
         if not tenant_id:
             return False, "Invalid tenant object, missing id"
 
-        # Check if admin already exists or create new one
         return (
             (True, "")
             if _check_admin_exists(ctx.base_url, ctx.admin_email, ctx.admin_password)
@@ -172,11 +164,9 @@ def _ensure_tenant_admin(ctx: _AdminContext, tenant: dict) -> Tuple[bool, str]:
 
 def create_tenant_and_admin(ctx: TenantAdminContext) -> Tuple[bool, str]:
     """Create a tenant and its admin user."""
-
     tenant, error_msg = get_or_create_tenant(ctx.base_url, ctx.session, ctx.tenant_name)
     if not tenant:
         return False, error_msg
-
     if ctx.admin_credentials is None:
         return False, "Admin credentials not set"
 
@@ -187,47 +177,57 @@ def create_tenant_and_admin(ctx: TenantAdminContext) -> Tuple[bool, str]:
     return _ensure_tenant_admin(admin_ctx, tenant)
 
 
+def _build_tenant_password_candidates(new_pw: str) -> list[str]:
+    """Build ordered list of password candidates for tenant admin login."""
+    stored = get_current_password(TENANT_PW_KEY)
+    candidates = [stored, new_pw, DEFAULT_TENANT_ADMIN_PASSWORD]
+    return [pw for pw in candidates if pw]
+
+
 def _login_as_tenant_admin(
     base_url: str, admin_email: str, new_pw: str
-) -> Tuple[str | None, str]:
-    """Try to log in as tenant admin with default or configured password.
+) -> Tuple[str | None, str, str]:
+    """Try to log in as tenant admin with stored, configured, or default password.
 
     Returns:
-        Tuple of (token_or_None, message).
-        If token is returned, the default password is still in use.
-        If token is None and message is empty, already using new password.
+        Tuple of (token_or_None, current_password_used, message).
     """
-    token = login(base_url, admin_email, DEFAULT_TENANT_ADMIN_PASSWORD)
-    if token:
-        return token, ""
-    # Already using new password or can't authenticate
-    if login(base_url, admin_email, new_pw):
-        logger.info("Tenant admin already uses the configured password.")
-        return None, ""
-    return None, (
-        "Failed to authenticate as tenant admin. "
-        "Verify TB_TENANT_ADMIN_EMAIL in config/services.env."
+    for pw in _build_tenant_password_candidates(new_pw):
+        token = login(base_url, admin_email, pw)
+        if token:
+            if pw == new_pw:
+                return None, "", ""
+            return token, pw, ""
+    return (
+        None,
+        "",
+        (
+            "Failed to authenticate as tenant admin. "
+            "Verify TB_TENANT_ADMIN_EMAIL in config/services.env."
+        ),
     )
 
 
 def _call_change_password_api(
-    base_url: str, session: httpx.Client, new_pw: str
+    base_url: str, session: httpx.Client, current_pw: str, new_pw: str
 ) -> Tuple[bool, str]:
-    """Call ThingsBoard API to change password from default to new."""
+    """Call ThingsBoard API to change password from current to new."""
     url = f"{base_url}/api/auth/changePassword"
     try:
         resp = session.post(
             url,
             json={
-                "currentPassword": DEFAULT_TENANT_ADMIN_PASSWORD,
+                "currentPassword": current_pw,
                 "newPassword": new_pw,
             },
             timeout=10,
         )
-        if resp.status_code != 200:
-            return False, f"Failed to change tenant admin password: {resp.status_code}"
-        logger.info("Tenant admin password changed successfully.")
-        return True, ""
+        if resp.status_code == 200:
+            logger.info("Tenant admin password changed successfully.")
+            save_password(TENANT_PW_KEY, new_pw)
+            return True, ""
+        detail = parse_tb_password_error(resp)
+        return False, f"Failed to change tenant admin password: {detail}"
     except httpx.HTTPError as e:
         return False, f"Network error changing tenant admin password: {e}"
 
@@ -235,7 +235,7 @@ def _call_change_password_api(
 def change_tenant_admin_password(
     base_url: str, session: httpx.Client
 ) -> Tuple[bool, str]:
-    """Change tenant admin password from default to configured value.
+    """Change tenant admin password from current to configured value.
 
     Reads TB_TENANT_ADMIN_EMAIL and TB_TENANT_ADMIN_PASSWORD from env.
     If TB_TENANT_ADMIN_PASSWORD is not set, skips the change.
@@ -246,11 +246,12 @@ def change_tenant_admin_password(
         logger.info("TB_TENANT_ADMIN_PASSWORD not set, skipping tenant admin reset.")
         return True, "Skipped (TB_TENANT_ADMIN_PASSWORD not set)"
 
-    token, error_msg = _login_as_tenant_admin(base_url, admin_email, new_pw)
+    token, current_pw, error_msg = _login_as_tenant_admin(base_url, admin_email, new_pw)
     if not token:
         if error_msg:
             return False, error_msg
+        save_password(TENANT_PW_KEY, new_pw)
         return True, "Tenant admin password already updated"
 
     session.headers["X-Authorization"] = f"Bearer {token}"
-    return _call_change_password_api(base_url, session, new_pw)
+    return _call_change_password_api(base_url, session, current_pw, new_pw)

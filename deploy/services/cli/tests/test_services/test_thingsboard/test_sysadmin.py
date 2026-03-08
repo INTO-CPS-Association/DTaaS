@@ -25,13 +25,15 @@ TEST_CONFIGURED_PASSWORD = "newpassword"  # noqa: S105 # NOSONAR
 def test_change_password_api_call(status_code, expected_success):
     """Test password change API call with different responses"""
     mock_session = Mock()
-    mock_session.post.return_value = Mock(status_code=status_code, text="error")
+    mock_resp = Mock(status_code=status_code, text="error")
+    mock_resp.json.return_value = {"message": "error"}
+    mock_session.post.return_value = mock_resp
     pw_config = th_users._PasswordConfig(TEST_OLD_PASSWORD, TEST_NEW_PASSWORD)
     ctx = th_users._PasswordChangeContext(
         "https://localhost:8080", mock_session, pw_config
     )
-    result = th_users._change_password_api_call(ctx)
-    assert result == expected_success
+    success, _ = th_users._change_password_api_call(ctx)
+    assert success == expected_success
 
 
 def test_change_password_api_call_exception():
@@ -42,7 +44,8 @@ def test_change_password_api_call_exception():
     ctx = th_users._PasswordChangeContext(
         "https://localhost:8080", mock_session, pw_config
     )
-    assert th_users._change_password_api_call(ctx) is False
+    success, _ = th_users._change_password_api_call(ctx)
+    assert success is False
 
 
 def test_perform_password_change_success(mocker):
@@ -53,7 +56,7 @@ def test_perform_password_change_success(mocker):
     ctx = th_users._PasswordChangeContext(base_url, session, pw_config)
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
-        return_value=True,
+        return_value=(True, ""),
     )
     success, _ = th_users._perform_password_change(ctx)
     assert success is True
@@ -67,20 +70,26 @@ def test_perform_password_change_api_fails(mocker):
     ctx = th_users._PasswordChangeContext(base_url, session, pw_config)
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._change_password_api_call",
-        return_value=False,
+        return_value=(False, "error"),
     )
     success, _ = th_users._perform_password_change(ctx)
     assert success is False
 
 
-def test_change_sysadmin_password_already_changed(mocker):
+def test_change_sysadmin_password_already_changed(mocker, monkeypatch):
     """Test sysadmin password already changed (default login fails, new succeeds)"""
     base_url = "https://localhost:8080"
     session = Mock()
+    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "new")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.get_current_password",
+        return_value="",
+    )
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login",
-        side_effect=[None, "token"],
+        side_effect=["token"],
     )
+    mocker.patch("dtaas_services.pkg.services.thingsboard.sysadmin.save_password")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
     )
@@ -88,12 +97,18 @@ def test_change_sysadmin_password_already_changed(mocker):
     assert success is True
 
 
-def test_change_sysadmin_password_change_needed(mocker):
+def test_change_sysadmin_password_change_needed(mocker, monkeypatch):
     """Test sysadmin password change when default login succeeds"""
     base_url = "https://localhost:8080"
     session = Mock()
+    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "new")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value="token"
+        "dtaas_services.pkg.services.thingsboard.sysadmin.get_current_password",
+        return_value="",
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.login",
+        side_effect=[None, "token"],
     )
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
@@ -107,9 +122,13 @@ def test_change_sysadmin_password_change_needed(mocker):
 
 
 def test_change_sysadmin_password_all_logins_fail(mocker):
-    """Test sysadmin password change when both logins fail"""
+    """Test sysadmin password change when all logins fail"""
     base_url = "https://localhost:8080"
     session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.sysadmin.get_current_password",
+        return_value="",
+    )
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
     )

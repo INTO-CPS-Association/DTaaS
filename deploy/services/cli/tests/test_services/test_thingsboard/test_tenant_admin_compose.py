@@ -140,10 +140,14 @@ def test_create_tenant_and_admin_tenant_fails(mocker):
 def test_login_as_tenant_admin_default_pw(mocker):
     """Test login succeeds with default password"""
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.tenant_admin.login",
-        return_value="token123",
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.get_current_password",
+        return_value="",
     )
-    token, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.login",
+        side_effect=[None, "token123"],
+    )
+    token, _, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
     assert token == "token123"
     assert msg == ""
 
@@ -151,10 +155,14 @@ def test_login_as_tenant_admin_default_pw(mocker):
 def test_login_as_tenant_admin_already_changed(mocker):
     """Test tenant admin already uses configured password"""
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.tenant_admin.login",
-        side_effect=[None, "token456"],
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.get_current_password",
+        return_value="",
     )
-    token, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.login",
+        side_effect=["token456"],
+    )
+    token, _, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
     assert token is None
     assert msg == ""
 
@@ -162,10 +170,14 @@ def test_login_as_tenant_admin_already_changed(mocker):
 def test_login_as_tenant_admin_both_fail(mocker):
     """Test both default and configured password fail"""
     mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.tenant_admin.get_current_password",
+        return_value="",
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tenant_admin.login",
         return_value=None,
     )
-    token, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
+    token, _, msg = th_util._login_as_tenant_admin("url", "a@b.com", "newpw")
     assert token is None
     assert "Failed to authenticate" in msg
 
@@ -174,15 +186,17 @@ def test_call_change_password_api_success():
     """Test successful API call to change password"""
     session = Mock()
     session.post.return_value = Mock(status_code=200)
-    success, _ = th_util._call_change_password_api("url", session, "newpw")
+    success, _ = th_util._call_change_password_api("url", session, "oldpw", "newpw")
     assert success is True
 
 
 def test_call_change_password_api_failure():
     """Test API call returns non-200"""
     session = Mock()
-    session.post.return_value = Mock(status_code=400)
-    success, msg = th_util._call_change_password_api("url", session, "newpw")
+    mock_resp = Mock(status_code=400, text="error")
+    mock_resp.json.return_value = {"message": "error"}
+    session.post.return_value = mock_resp
+    success, msg = th_util._call_change_password_api("url", session, "oldpw", "newpw")
     assert success is False
     assert "Failed to change" in msg
 
@@ -191,7 +205,7 @@ def test_call_change_password_api_network_error():
     """Test API call raises network error"""
     session = Mock()
     session.post.side_effect = httpx.NetworkError("timeout")
-    success, msg = th_util._call_change_password_api("url", session, "newpw")
+    success, msg = th_util._call_change_password_api("url", session, "oldpw", "newpw")
     assert success is False
     assert "Network error" in msg
 
@@ -212,7 +226,7 @@ def test_change_tenant_admin_password_success(mocker, monkeypatch):
     monkeypatch.setenv("TB_TENANT_ADMIN_PASSWORD", "newpw")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tenant_admin._login_as_tenant_admin",
-        return_value=("token123", ""),
+        return_value=("token123", "oldpw", ""),
     )
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tenant_admin._call_change_password_api",
@@ -230,8 +244,9 @@ def test_change_tenant_admin_password_already_updated(mocker, monkeypatch):
     monkeypatch.setenv("TB_TENANT_ADMIN_PASSWORD", "newpw")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tenant_admin._login_as_tenant_admin",
-        return_value=(None, ""),
+        return_value=(None, "", ""),
     )
+    mocker.patch("dtaas_services.pkg.services.thingsboard.tenant_admin.save_password")
     session = Mock()
     success, msg = th_util.change_tenant_admin_password("url", session)
     assert success is True
@@ -244,7 +259,7 @@ def test_change_tenant_admin_password_auth_fails(mocker, monkeypatch):
     monkeypatch.setenv("TB_TENANT_ADMIN_PASSWORD", "newpw")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.tenant_admin._login_as_tenant_admin",
-        return_value=(None, "Failed to authenticate"),
+        return_value=(None, "", "Failed to authenticate"),
     )
     session = Mock()
     success, msg = th_util.change_tenant_admin_password("url", session)

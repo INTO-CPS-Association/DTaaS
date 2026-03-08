@@ -6,8 +6,12 @@ import os
 from typing import Tuple
 import httpx
 from .tb_utility import login, is_json_parse_error
+from ...password_store import get_current_password, save_password
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_SYSADMIN_PASSWORD = "sysadmin"  # noqa: S105 # NOSONAR
+SYSADMIN_PW_KEY = "TB_SYSADMIN_CURRENT_PASSWORD"
 
 
 def _update_session_token(session: httpx.Client, token: str) -> None:
@@ -15,12 +19,18 @@ def _update_session_token(session: httpx.Client, token: str) -> None:
     session.headers["X-Authorization"] = f"Bearer {token}"
 
 
+def _build_sysadmin_password_candidates() -> list[str]:
+    """Build ordered list of password candidates for sysadmin login."""
+    stored = get_current_password(SYSADMIN_PW_KEY)
+    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD", "")
+    candidates = [stored, new_pw, DEFAULT_SYSADMIN_PASSWORD]
+    return [pw for pw in candidates if pw]
+
+
 def authenticate_session(base_url: str, session: httpx.Client) -> Tuple[bool, str]:
     """Authenticate the session as sysadmin.
 
-    Tries the default ThingsBoard password ("sysadmin") first, then falls
-    back to TB_SYSADMIN_NEW_PASSWORD if the default fails (i.e. reset-password
-    has already been run).
+    Tries stored password, configured password, then default.
 
     Args:
         base_url: ThingsBoard base URL
@@ -30,21 +40,9 @@ def authenticate_session(base_url: str, session: httpx.Client) -> Tuple[bool, st
         Tuple of (success, error_message)
     """
     sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
-    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
-
-    token = login(base_url, sys_email, "sysadmin")
-    if token:
-        _update_session_token(session, token)
-        return True, ""
-
-    # Fall back to the configured new password
-    if new_pw:
-        token = login(base_url, sys_email, new_pw)
+    for pw in _build_sysadmin_password_candidates():
+        token = login(base_url, sys_email, pw)
         if token:
-            logger.info(
-                "Authenticated with TB_SYSADMIN_NEW_PASSWORD "
-                "(sysadmin password has already been changed)."
-            )
             _update_session_token(session, token)
             return True, ""
 
@@ -75,8 +73,26 @@ class _PasswordChangeContext:
         self.new_pw = pw_config.new_pw
 
 
-def _change_password_api_call(ctx: _PasswordChangeContext) -> bool:
-    """Call API to change password."""
+def parse_tb_password_error(resp: httpx.Response) -> str:
+    """Extract error from a ThingsBoard password-change response."""
+    try:
+        body = resp.json()
+        msg = body.get("message", "")
+        if "same" in msg.lower():
+            return "New password is the same as the current password."
+        if "short" in msg.lower() or "weak" in msg.lower():
+            return f"Password rejected: {msg}"
+        return msg or f"HTTP {resp.status_code}"
+    except Exception:
+        return f"HTTP {resp.status_code}: {resp.text[:200]}"
+
+
+def _change_password_api_call(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
+    """Call API to change password.
+
+    Returns:
+        Tuple of (success, error_detail)
+    """
     url = f"{ctx.base_url}/api/auth/changePassword"
     try:
         resp = ctx.session.post(
@@ -86,22 +102,20 @@ def _change_password_api_call(ctx: _PasswordChangeContext) -> bool:
         )
         if resp.status_code == 200:
             logger.info("Sysadmin password changed successfully.")
-            return True
-        logger.error(f"Failed to change sysadmin password: {resp.status_code}")
-        return False
+            save_password(SYSADMIN_PW_KEY, ctx.new_pw)
+            return True, ""
+        detail = parse_tb_password_error(resp)
+        logger.error(f"Failed to change sysadmin password: {detail}")
+        return False, detail
     except httpx.HTTPError as e:
         logger.error(f"Network error during password change: {e}")
-        return False
+        return False, f"Network error: {e}"
 
 
 def _perform_password_change(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
     """Perform the password change operation."""
-    logger.info("Logged in with default sysadmin password. Changing to new password...")
-
-    if not _change_password_api_call(ctx):
-        return False, "Failed to change sysadmin password"
-
-    return True, ""
+    logger.info("Changing sysadmin password to new value...")
+    return _change_password_api_call(ctx)
 
 
 def change_sysadmin_password_if_needed(
@@ -109,26 +123,32 @@ def change_sysadmin_password_if_needed(
     session: httpx.Client,
     new_pw: str,
 ) -> Tuple[bool, str]:
-    """Change the sysadmin password if configured."""
+    """Change the sysadmin password.
+
+    Tries stored password, then the platform default ("sysadmin").
+    On success the new password is persisted to current.passwords.env.
+    """
     sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
-    default_pw = "sysadmin"
+    candidates = _build_sysadmin_password_candidates()
 
-    # If default login succeeds, the password hasn't been changed yet
-    token = login(base_url, sys_email, default_pw)
-    if not token:
-        # Already using new password — nothing to do
-        if login(base_url, sys_email, new_pw):
+    for current_pw in candidates:
+        token = login(base_url, sys_email, current_pw)
+        if not token:
+            continue
+        # Already using the target password
+        if current_pw == new_pw:
             logger.info("Sysadmin already uses the new password. No change needed.")
+            save_password(SYSADMIN_PW_KEY, new_pw)
             return True, "Password already updated"
-        return False, (
-            "Failed to get authentication token for sysadmin. "
-            "Verify the configuration in config/services.env."
-        )
+        _update_session_token(session, token)
+        pw_config = _PasswordConfig(current_pw, new_pw)
+        ctx = _PasswordChangeContext(base_url, session, pw_config)
+        return _perform_password_change(ctx)
 
-    _update_session_token(session, token)
-    pw_config = _PasswordConfig(default_pw, new_pw)
-    ctx = _PasswordChangeContext(base_url, session, pw_config)
-    return _perform_password_change(ctx)
+    return False, (
+        "Failed to get authentication token for sysadmin. "
+        "Verify the configuration in config/services.env."
+    )
 
 
 def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:

@@ -162,6 +162,10 @@ dtaas-services install -s gitlab
 
 The generated access token is saved to `config/gitlab_tokens.json`.
 
+> **Warning:** `config/current.passwords.env` is managed automatically by
+> the CLI and tracks the current service passwords. Do **not** edit or delete
+> this file manually doing so may cause password reset commands to fail.
+
 ### Service Management
 
 Start all services:

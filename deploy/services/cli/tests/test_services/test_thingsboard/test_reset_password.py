@@ -116,6 +116,10 @@ def test_reset_thingsboard_password_change_fails(mocker):
         "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
         return_value=(False, "Auth failed"),
     )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.change_tenant_admin_password",
+        return_value=(True, ""),
+    )
     success, msg = th.reset_thingsboard_password()
     assert success is False
     assert "Auth failed" in msg

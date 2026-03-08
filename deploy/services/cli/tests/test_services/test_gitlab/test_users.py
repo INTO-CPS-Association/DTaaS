@@ -150,7 +150,8 @@ def test_process_credentials_success(mocker, tmp_path):
     """Test processing credentials file successfully."""
     creds_file = tmp_path / "credentials.csv"
     creds_file.write_text(
-        "username,password,email\nuser1,pass1,u1@x.com\n", encoding="utf-8"  # noqa: S105
+        "username,password,email\nuser1,pass1,u1@x.com\n",
+        encoding="utf-8",  # noqa: S105
     )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_users_from_rows",
