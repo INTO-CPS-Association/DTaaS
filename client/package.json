@@ -78,7 +78,7 @@
     "react-iframe": "^1.8.5",
     "react-oidc-context": "^3.3.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.9.6",
+    "react-router-dom": "^7.13.1",
     "react-scripts": "^5.0.1",
     "react-syntax-highlighter": "^16.1.0",
     "react-tabs": "^6.1.0",
