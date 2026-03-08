@@ -17,13 +17,16 @@ setup is shown here.
 
 <img src="localhost.png" alt="DTaaS Localhost" width="600px" />
 
-Docker desktop / docker CLI with compose plugin is a requirement to
-run the DTaaS.
+## Prerequisites
+
+✅ Docker Engine v27 or later
+✅ Port 80 available on your host
+✅ At least 2GB RAM available
+
+## ⚡ Quick Demo
 
 The description below refers to filenames. All the commands
 mentioned below are to be run this directory.
-
-## ⚡ Quick Demo
 
 Copy example configuration files first:
 

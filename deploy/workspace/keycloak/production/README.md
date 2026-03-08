@@ -1,0 +1,200 @@
+![DTaaS logo](dtaas.png)
+
+🎉 Thank you for downloading **Digital Twin as a Service**.
+
+This guide explains how to deploy the application for
+secure multi-user deployments.
+
+## ❓ Prerequisites
+
+✅ Docker Engine v27 or later
+✅ Sufficient system resources (at least 2GB RAM per workspace instance)
+✅ Port 80 available on your host
+✅ Valid TLS certificates
+✅ Domain name pointing to your server
+
+## 🗒️ Design
+
+```text
+User Request → Traefik → Forward Auth → Keycloak (OIDC)
+               ↓
+         User Workspace
+```
+
+## ⚙️ Configuration
+
+Please follow the steps in [`CONFIGURATION.md`](CONFIGURATION.md)
+for creating valid configuration.
+
+## 📁 User Directories
+
+All the deployment options require user directories for
+storing workspace files. These need to
+be created for `USERNAME1` and `USERNAME2` set in `.env` file.
+
+```bash
+# create required files
+cp -R files/user1 files/<USERNAME1>
+cp -R files/user1 files/<USERNAME2>
+# set file permissions for use inside the container
+sudo chown -R 1000:100 files
+```
+
+▶️ Start the application:
+
+```bash
+docker compose up -d
+```
+
+The application will be accessible at <https://foo.com> from web browser.
+Login using the user credentials set in **keycloak**.
+
+⏹️ Stop the demo:
+
+```bash
+docker compose down
+```
+
+To stop and remove volumes:
+
+```bash
+docker compose down -v
+```
+
+## 🔧 Customization
+
+### Adding More Users
+
+To add additional workspace instances, add a new service in `compose.traefik.secure.tls.yml`:
+
+```yaml
+  user3:
+    image: intocps/workspace:latest
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: Dockerfile.ubuntu.noble.gnome
+    environment:
+      - MAIN_USER=${USERNAME3:-user3}
+    volumes:
+      - "./files/common:/workspace/common"
+      - "./files/user3:/workspace"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME3:-user3}`)"
+      - "traefik.http.routers.u3.tls=true"
+      - "traefik.http.routers.u3.middlewares=traefik-forward-auth"
+    networks:
+      - users
+```
+
+Add the desired `USERNAME3` variable in [`.env`](./config/.env):
+
+```bash
+# Username Configuration
+# These usernames will be used as path prefixes for user workspaces
+# Example: http://localhost/user1, http://localhost/user2
+USERNAME1=user1
+USERNAME2=user2
+USERNAME3=user3 # <--- replace "user3" with your desired username
+```
+
+Add Forward Auth config for user3 in [`conf`](./config/conf):
+
+```txt
+
+rule.user3_access.action=auth
+rule.user3_access.rule=PathPrefix(`/user3`)
+rule.user3_access.whitelist = user3@localhost 
+```
+
+Ensure that the username and email correspond to the workspaces GitLab user.
+
+Don't forget to create the user's directory:
+
+```bash
+cp -r ./workspaces/test/dtaas/files/user1 ./workspaces/test/dtaas/files/user3
+sudo chown -R 1000:100 workspaces/test/dtaas/files
+```
+
+### Using Different OAuth2 Providers
+
+The configuration can be adapted for different OAuth2 providers by changing
+the environment variables in the `traefik-forward-auth` service:
+
+#### Google OAuth2
+
+```yaml
+environment:
+  - DEFAULT_PROVIDER=google
+  - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+  - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+  - SECRET=${OAUTH_SECRET}
+```
+
+#### Generic OIDC Provider
+
+```yaml
+environment:
+  - DEFAULT_PROVIDER=oidc
+  - PROVIDERS_OIDC_ISSUER_URL=https://your-oidc-provider.com
+  - PROVIDERS_OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+  - PROVIDERS_OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+  - SECRET=${OAUTH_SECRET}
+```
+
+## 🐛 Troubleshooting
+
+### Certificate Issues
+
+**Problem**: "NET::ERR_CERT_INVALID" in browser
+
+**Solutions**:
+
+- Verify certificate files exist in `./certs/` directory
+- Check certificate file permissions
+- Ensure `dynamic/tls.yml` correctly references certificate paths
+- For self-signed certs, add security exception in browser
+
+### OAuth2 Issues
+
+**Problem**: Redirect loop after OAuth2 login
+
+**Solutions**:
+
+- Verify OAuth2 callback URL matches `https://foo.com/_oauth`
+- Check `SERVER_DNS` environment variable is set correctly
+- Ensure `COOKIE_DOMAIN` matches your domain
+- Verify OAuth2 application is approved and active
+
+### Service Access Issues
+
+**Problem**: Cannot access workspace after authentication
+
+**Solutions**:
+
+- Check service health:
+  `docker compose -f compose.traefik.secure.tls.yml ps`
+- View logs: `docker compose -f compose.traefik.secure.tls.yml logs`
+- Verify Traefik routes:
+  `docker compose -f compose.traefik.secure.tls.yml logs traefik`
+- Test OAuth2 service:
+  `docker compose -f compose.traefik.secure.tls.yml logs traefik-forward-auth`
+
+### Port Conflicts
+
+**Problem**: Ports 80 or 443 already in use
+
+**Solutions**:
+
+- Check for other services: `sudo netstat -tlnp | grep -E ':(80|443)'`
+- Stop conflicting services
+- Or modify port mappings in compose file (not recommended for production)
+
+## 📚 Additional Resources
+
+- [Traefik Documentation](https://doc.traefik.io/traefik/)
+- [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)
+- [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [OAuth 2.0 Specification](https://oauth.net/2/)
