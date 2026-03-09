@@ -17,7 +17,7 @@ secure multi-user deployments.
 
 ```text
 User Request → Traefik → Forward Auth → Keycloak (OIDC)
-               ↓
+                 ↓
          User Workspace
 ```
 
@@ -46,6 +46,14 @@ Please follow the pre-installation steps in
 docker compose up -d
 ```
 
+### 🌵 Temporary Issues
+
+The following issues in application startup are expected behavior.
+This problem will be resolved during post-installation.
+
+👉 `dtaas-production-traefik-forward-auth-1` will be restarting at this stage.
+👉 Visiting `https://foo.com` shows `HTTP ERROR 500`.
+
 Now complete the post-installation steps in
 [`CONFIGURATION.md`](CONFIGURATION.md).
 
@@ -55,6 +63,7 @@ Login using the user credentials set in **keycloak**.
 ⏹️ Stop the demo:
 
 ```bash
+docker compose up -d --force-recreate traefik-forward-auth
 docker compose down
 ```
 
@@ -148,12 +157,12 @@ rule.user3_access.whitelist = user3@localhost
 **Solutions**:
 
 - Check service health:
-  `docker compose -f compose.traefik.secure.tls.yml ps`
-- View logs: `docker compose -f compose.traefik.secure.tls.yml logs`
+  `docker compose ps`
+- View logs: `docker logs`
 - Verify Traefik routes:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik`
+  `docker compose logs traefik`
 - Test OAuth2 service:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik-forward-auth`
+  `docker compose logs traefik-forward-auth`
 
 ### Port Conflicts
 

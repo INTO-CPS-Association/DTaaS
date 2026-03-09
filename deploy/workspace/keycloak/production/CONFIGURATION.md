@@ -16,8 +16,8 @@ completed after bringing up the docker compose services.
 
 **Post-install Configuration Tasks:**
 
+- [Keycloak Integration](#-keycloak-integration)
 - [Web Client](#️-dtaas-web-client-config)
-- [OAuth2](#-oauth2-configuration)
 
 ## 🌍 Environment
 
@@ -120,72 +120,21 @@ rule.user2_access.whitelist = <EMAIL_USER2>
 [Usernames configuration step](#-usernames) are the same as those set
 in the Traefik Forward Auth configuration file.
 
-## 🖥️ DTaaS Web Client Config
+## 🎯 Keycloak Integration
 
-The DTaaS Web Client can be configured with a small javascript file,
-an example of which can be found at
-[`config/client.js.example`](config/client.js.example).
-
-Create a copy of this example file without the example suffix:
-
-```bash
-cp config/client.js.example config/client.js
-```
-
-Then, edit the new DTaaS Web Client config file, updating the following values:
-
-### 🔑🖥️ Client OAuth2 Setup
-
-In addition, the DTaaS web client uses OAuth2 authorization as well.
-It needs a client application.
-The following steps explain creation of Client OAuth2 application
-on a Gitlab installation.
-
-1. Go to your GitLab instance → Edit Profile Settings → Applications
-2. Create a new OAuth App with:
-   - **Application name**: DTaaS Workspace
-   - **Homepage URL**: `https://yourdomain.com`
-   - **Authorization callback URL**: `https://yourdomain.com/Library`
-   - **Scopes**: `openid`, `profile`, `read_user`, `read_repository`, `api`
-3. Save the **Client ID**
-
-Create and update the DTaaS web client configuration.
-
-```bash
-cp dtaas/client.js.example dtaas/client.js
-```
-
-Update the `REACT_APP_CLIENT_ID` with the **Client ID** generated above
-and `REACT_APP_AUTH_AUTHORITY` with URL of your GitLab instance, for example
-`https://gitlab.com`.
-
-## 🔑 OAuth2 Configuration
-
-Both this composition and the contained DTaaS Web Client uses
-OAuth2 for authentication. You'll need to configure an OAuth2 apllication
-for each, with your OAuth2 provider. This guide assumes that you use
-Gitlab as your provider; other providers are possible but are not covered
-by this guide.
-
-### 🎯 Keycloak Authentication
-
-The default configuration for `compose.traefik.secure.yml` now uses **Keycloak** 
+The default configuration for `docker-compose.yml` now uses **Keycloak** 
 for authentication via OIDC (OpenID Connect). Keycloak provides a robust, 
 enterprise-grade identity and access management solution.
+The `traefik-forward-auth` and the DTaaS `client` docker services use
+**Keycloak** for authentication and authorization. You'll need to configure
+an OAuth2 apllication for each, with your integrated **Keycloack** service.
 
-**For detailed Keycloak setup instructions, see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
-
-Quick overview:
-1. Start services with `docker compose up -d`
-2. Access Keycloak at `https://foo.com/auth`
-3. Create a realm and OIDC client
-4. Create users in Keycloak
-5. Update `.env` with client credentials
-
+**For detailed Keycloak setup instructions,
+see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
 #### Configure Environment Variables
 
-1. **For Keycloak (default)**, edit `config/.env` and fill in your Keycloak credentials:
+1. **For Keycloak (default)**, edit `.env` and fill in your Keycloak credentials:
 
    ```bash
    # Keycloak Admin Credentials
@@ -206,6 +155,49 @@ Quick overview:
    # Generate a random string (at least 16 characters)
    OAUTH_SECRET=$(openssl rand -base64 32)
    ```
+
+## 🖥️ DTaaS Web Client Config
+
+The DTaaS Web Client can be configured with a small javascript file,
+an example of which can be found at
+[`config/client.js.example`](config/client.js.example).
+
+Create a copy of this example file without the example suffix:
+
+```bash
+cp config/client.js.example config/client.js
+```
+
+Then, edit the new DTaaS Web Client config file, updating the following values:
+
+### 🔑🖥️ Client OAuth2 Setup
+
+The DTaaS web client is a React SPA that authenticates via Keycloak using
+the **Authorization Code flow with PKCE**. Follow the
+[Create OAuth2 Client for DTaaS Client Service](KEYCLOAK_SETUP.md#create-oauth2-client-for-dtaas-client-service)
+instructions in `KEYCLOAK_SETUP.md` to create the public PKCE client in
+Keycloak, then update `config/client.js`:
+
+```js
+REACT_APP_CLIENT_ID: 'dtaas-client',          // Client ID set in Keycloak
+REACT_APP_AUTH_AUTHORITY: 'https://<DOMAIN_NAME>/auth/realms/dtaas',
+REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/Library',
+REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
+REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
+```
+
+`openid` and `profile` are standard OIDC scopes provided by Keycloak by default.
+`openid` is required for OIDC authentication and issues the ID token.
+`profile` triggers the `profile` claim mapper configured on the Keycloak client,
+which returns a URL of the form `https://<DOMAIN_NAME>/<username>` set as a
+user attribute in Keycloak. The DTaaS web client extracts the username from
+the last path segment of this URL.
+The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
+it now carries the Keycloak OIDC scopes.
+
+Replace `<DOMAIN_NAME>` with the value set in the
+[Domain](#-domain) section and `dtaas` with your Keycloak realm name
+if you chose a different one.
 
 ## 📚 Additional Resources
 

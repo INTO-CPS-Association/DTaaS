@@ -75,8 +75,35 @@ The following instructions are part of post-install step.
 1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
 2. **Realm name**: `dtaas` (or match your `KEYCLOAK_REALM` in `.env`)  
 3. Click **Create**
+4. Click on **User Profile**
+5. Click on **Create attribute** with
+   - name: profile
+   - display name: profile
+   - Permission: **who can edit** ✅ on admin
+6. Click **Create**
 
-#### Create a Client
+#### Create Users
+
+1. In the left sidebar, click **Users**
+2. Click **Create new user**
+3. Fill in user details:
+   - **Username**: `user1` (or desired username)
+   - **Email**: user's email
+   - **First name** / **Last name**: required
+   - **Email verified**: OFF
+   - **Profile**: `https://foo.com/auth/realms/dtaas/<USERNAME>`
+     The profile URL is created by adding `/<USERNAME>` to
+     the `<REACT_APP_AUTH_AUTHORITY>` URL used in the `client.js`
+4. Click **Create**
+5. Set password:
+   - Go to the **Credentials** tab
+   - Click **Set password**
+   - Enter a password
+   - **Temporary**: OFF (so users don't have to change it on first login)  
+   - Click **Save**
+6. Repeat for additional users (e.g., `user2`)
+
+#### Create OAuth2 Client for Traefik Forward-Auth Service
 
 1. In the left sidebar, click **Clients**
 2. Click **Create client**
@@ -102,23 +129,39 @@ The following instructions are part of post-install step.
    - Copy the **Client secret** value
    - Update `KEYCLOAK_CLIENT_SECRET` in your `.env` file
 
-#### Create Users
+#### Create OAuth2 Client for DTaaS Client Service
 
-1. In the left sidebar, click **Users**
-2. Click **Create new user**
-3. Fill in user details:
-   - **Username**: `user1` (or desired username)
-   - **Email**: user's email (optional)
-   - **First name** / **Last name**: optional
-   - **Email verified**: ON (optional, for testing)
-4. Click **Create**
-5. Set password:
-   - Go to the **Credentials** tab
-   - Click **Set password**
-   - Enter a password
-   - **Temporary**: OFF (so users don't have to change it on first login)  
+The DTaaS web client is a React single-page application (SPA) that uses
+the **Authorization Code flow with PKCE** (Proof Key for Code Exchange).
+This requires a **public** client (no client secret) with PKCE enforced.
+
+1. In the left sidebar, click **Clients**
+2. Click **Create client**
+3. Configure the client:
+   - **Client type**: OpenID Connect
+   - **Client ID**: `dtaas-client`
+   - Click **Next**
+4. Capability config:
+   - **Client authentication**: OFF (public client — no secret needed)
+   - **Authorization**: OFF
+   - **Authentication flow**: enable **Standard flow** only
+   - Click **Next**
+5. Login settings:
+   - **Root URL**: `https://foo.com`
+   - **Valid redirect URIs**: `https://foo.com/*`
+   - **Valid post logout redirect URIs**: `https://foo.com/*`
+   - **Web origins**: `https://foo.com`
    - Click **Save**
-6. Repeat for additional users (e.g., `user2`)
+6. Enforce PKCE:
+   - Go to the **Advanced** tab of the client
+   - Under **Advanced Settings**, set
+     **Proof Key for Code Exchange Code Challenge Method** to `S256`
+   - Click **Save**
+7. Verify scopes:
+   - Go to the **Client Scopes** tab of the client
+   - Confirm that `openid` and `profile` are listed as assigned scopes
+8. Note the **Client ID** (`dtaas-client`) —
+   it is needed in `config/client.js` as `REACT_APP_CLIENT_ID`
 
 ### 3. Restart Services
 
@@ -142,7 +185,7 @@ To use an external Keycloak instance (recommended for production):
 
 1. Update `KEYCLOAK_ISSUER_URL` in `.env`:
    ```bash
-   KEYCLOAK_ISSUER_URL=https://keycloak.example.com/auth/realms/dtaas
+   KEYCLOAK_ISSUER_URL=https://keycloak.foo.com/auth/realms/dtaas
    ```
 
 Update client redirect URIs in Keycloak to use your production domain
