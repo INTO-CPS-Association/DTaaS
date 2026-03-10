@@ -110,43 +110,30 @@ def _validate_service_name(service: str | None) -> None:
         )
 
 
-def _ensure_postgres_running(console: Console, service_obj: Service) -> object:
-    """Start PostgreSQL if needed and return docker client.
+def _ensure_service_running(
+    console: Console, service_obj: Service, service_name: str
+) -> object:
+    """Start a service if needed and return docker client.
 
+    Args:
+        console: Rich console for output
+        service_obj: Service object to manage services
+        service_name: Name of the service to start (e.g. 'postgres', 'gitlab')
     Returns:
         docker_client
-
-    Raises:
-        click.ClickException: If PostgreSQL fails to start
     """
-    console.print("[cyan]Ensuring PostgreSQL is running...[/cyan]")
-    err, msg = service_obj.manage_services("start", ["postgres"])
+
+    console.print(f"[cyan]Ensuring {service_name} is running...[/cyan]")
+    err, msg = service_obj.manage_services("start", [service_name])
     if err is not None:
-        raise click.ClickException(f"Failed to start PostgreSQL: {msg}")
-    console.print(f"[green]{msg}[/green]")
-    return service_obj.docker
-
-
-def _ensure_gitlab_running(console: Console, service_obj: Service) -> object:
-    """Start GitLab if needed and return docker client.
-
-    Returns:
-        docker_client
-
-    Raises:
-        click.ClickException: If GitLab fails to start
-    """
-    console.print("[cyan]Ensuring GitLab is running...[/cyan]")
-    err, msg = service_obj.manage_services("start", ["gitlab"])
-    if err is not None:
-        raise click.ClickException(f"Failed to start GitLab: {msg}")
+        raise click.ClickException(f"Failed to start {service_name}: {msg}")
     console.print(f"[green]{msg}[/green]")
     return service_obj.docker
 
 
 def _install_thingsboard(console: Console, service_obj: Service) -> None:
     """Run ThingsBoard installation flow."""
-    docker = _ensure_postgres_running(console, service_obj)
+    docker = _ensure_service_running(console, service_obj, "postgres")
     wait_for_postgres_ready(console, docker)
     run_thingsboard_install(console, docker)
     console.print("[green]✅ ThingsBoard installation completed![/green]")
@@ -154,7 +141,7 @@ def _install_thingsboard(console: Console, service_obj: Service) -> None:
 
 def _install_gitlab(console: Console, service_obj: Service) -> None:
     """Run GitLab post-install setup flow."""
-    docker = _ensure_gitlab_running(console, service_obj)
+    docker = _ensure_service_running(console, service_obj, "gitlab")
     success, msg = setup_gitlab(console, docker)
     if not success:
         raise click.ClickException(f"GitLab installation failed: {msg}")

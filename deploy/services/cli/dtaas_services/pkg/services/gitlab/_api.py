@@ -52,8 +52,7 @@ def _build_headers(private_token: str) -> dict[str, str]:
 
 
 def gitlab_request(
-    method: str,
-    endpoint: str,
+    http_params: dict[str, Any],
     private_token: str,
     **kwargs: Any,
 ) -> tuple[bool, httpx.Response | None, str]:
@@ -69,6 +68,8 @@ def gitlab_request(
     Returns:
         Tuple of (success, response object or None, error message)
     """
+    method: str = http_params.get("method") or ""
+    endpoint = http_params.get("endpoint")
     base_url = build_base_url()
     url = f"{base_url}{endpoint}"
     headers = _build_headers(private_token)

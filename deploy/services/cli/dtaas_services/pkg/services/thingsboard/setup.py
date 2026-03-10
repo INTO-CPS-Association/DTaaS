@@ -10,7 +10,7 @@ import httpx
 from ...config import Config
 from .tb_utility import get_ssl_verify, login
 from .sysadmin import (
-    change_sysadmin_password_if_needed,
+    change_sysadmin_password,
     _build_sysadmin_password_candidates,
 )
 from .customer_user import CustomerUserContext, create_customer_and_user
@@ -79,22 +79,29 @@ def _process_credentials_row(
     )
 
 
+def _read_and_process_credentials(
+    creds_file, ctx: CredentialProcessContext
+) -> Tuple[bool, str]:
+    """Validate columns and process credentials from an open CSV file."""
+    credentials = csv.DictReader(creds_file, delimiter=",")
+    if not credentials.fieldnames or "email" not in credentials.fieldnames:
+        return False, "Email column is required in credentials.csv"
+    for credential in credentials:
+        success, error_msg = _process_credentials_row(ctx, credential)
+        if not success:
+            return False, error_msg
+    return True, "All users processed successfully"
+
+
 def _process_credentials_file(
     base_url: str, session: httpx.Client, credentials_file: Path
 ) -> Tuple[bool, str]:
     """Process credentials file and create customer users."""
     ctx = CredentialProcessContext(base_url, session)
     with credentials_file.open(mode="r", newline="", encoding="utf-8") as creds_file:
-        credentials = csv.DictReader(creds_file, delimiter=",")
-
-        # Validate required columns
-        if not credentials.fieldnames or "email" not in credentials.fieldnames:
-            return False, "Email column is required in credentials.csv"
-
-        for credential in credentials:
-            success, error_msg = _process_credentials_row(ctx, credential)
-            if not success:
-                return False, error_msg
+        success, error_msg = _read_and_process_credentials(creds_file, ctx)
+        if not success:
+            return False, error_msg
     return True, "ThingsBoard customer users created successfully"
 
 
@@ -109,7 +116,7 @@ def _change_password_with_logging(
     tb_logger.setLevel(logging.CRITICAL)
 
     try:
-        return change_sysadmin_password_if_needed(base_url, session, new_pw)
+        return change_sysadmin_password(base_url, session, new_pw)
     finally:
         tb_logger.setLevel(old_level)
 

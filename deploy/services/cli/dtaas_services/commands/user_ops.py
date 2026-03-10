@@ -137,20 +137,14 @@ def _reset_password_for_service(console: Console, service_name: str) -> bool | N
         True if successful, False on error, None if service unknown
     """
     service_lower = service_name.lower()
-    if service_lower == "thingsboard":
-        if not is_thingsboard_running():
-            console.print("[yellow]⚠️  ThingsBoard is not running, skipping...[/yellow]")
-            return None
+    if service_lower == "thingsboard" and is_thingsboard_running():
         console.print("\n[cyan]Resetting sysadmin password for ThingsBoard...[/cyan]")
         success, msg = reset_thingsboard_password()
         result = UserSetupResult("ThingsBoard", success, msg)
         _print_service_user_result(console, result)
         return success
 
-    if service_lower == "gitlab":
-        if not is_gitlab_running():
-            console.print("[yellow]⚠️  GitLab is not running, skipping...[/yellow]")
-            return None
+    if service_lower == "gitlab" and is_gitlab_running():
         console.print("\n[cyan]Resetting root password for GitLab...[/cyan]")
         success, msg = reset_gitlab_password()
         result = UserSetupResult("GitLab", success, msg)
@@ -159,7 +153,7 @@ def _reset_password_for_service(console: Console, service_name: str) -> bool | N
 
     console.print(
         f"[yellow]Password reset is not supported for: "
-        f"{service_name}, skipping...[/yellow]"
+        f"{service_name}, or the service is not running.[/yellow]"
     )
     return None
 

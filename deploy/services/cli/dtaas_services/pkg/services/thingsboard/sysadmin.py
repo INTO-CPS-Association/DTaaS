@@ -118,32 +118,37 @@ def _perform_password_change(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
     return _change_password_api_call(ctx)
 
 
-def change_sysadmin_password_if_needed(
+def _handle_successful_login(
+    base_url: str, session: httpx.Client, token: str, current_pw: str, new_pw: str
+) -> Tuple[bool, str]:
+    """Handle a successful login during password change."""
+    if current_pw == new_pw:
+        logger.info("Sysadmin already uses the new password. No change needed.")
+        save_password(SYSADMIN_PW_KEY, new_pw)
+        return True, "Password already updated"
+    _update_session_token(session, token)
+    pw_config = _PasswordConfig(current_pw, new_pw)
+    ctx = _PasswordChangeContext(base_url, session, pw_config)
+    return _perform_password_change(ctx)
+
+
+def change_sysadmin_password(
     base_url: str,
     session: httpx.Client,
     new_pw: str,
 ) -> Tuple[bool, str]:
     """Change the sysadmin password.
-
     Tries stored password, then the platform default ("sysadmin").
-    On success the new password is persisted to current.passwords.env.
     """
     sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
     candidates = _build_sysadmin_password_candidates()
 
     for current_pw in candidates:
         token = login(base_url, sys_email, current_pw)
-        if not token:
-            continue
-        # Already using the target password
-        if current_pw == new_pw:
-            logger.info("Sysadmin already uses the new password. No change needed.")
-            save_password(SYSADMIN_PW_KEY, new_pw)
-            return True, "Password already updated"
-        _update_session_token(session, token)
-        pw_config = _PasswordConfig(current_pw, new_pw)
-        ctx = _PasswordChangeContext(base_url, session, pw_config)
-        return _perform_password_change(ctx)
+        if token:
+            return _handle_successful_login(
+                base_url, session, token, current_pw, new_pw
+            )
 
     return False, (
         "Failed to get authentication token for sysadmin. "

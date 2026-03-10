@@ -43,7 +43,8 @@ def test_gitlab_request_success(monkeypatch, mocker):
     mock_response.status_code = 200
     mocker.patch("httpx.request", return_value=mock_response)
 
-    success, response, error = api.gitlab_request("GET", "/users", TEST_TOKEN)
+    http_params = {"method": "GET", "endpoint": "/users"}
+    success, response, error = api.gitlab_request(http_params, TEST_TOKEN)
     assert success is True
     assert response is mock_response
     assert error == ""
@@ -56,8 +57,8 @@ def test_gitlab_request_connect_error(monkeypatch, mocker):
     monkeypatch.setenv("SSL_VERIFY", "false")
 
     mocker.patch("httpx.request", side_effect=httpx.ConnectError("refused"))
-
-    success, response, error = api.gitlab_request("GET", "/users", TEST_TOKEN)
+    http_params = {"method": "GET", "endpoint": "/users"}
+    success, response, error = api.gitlab_request(http_params, TEST_TOKEN)
     assert success is False
     assert response is None
     assert "HTTP request failed" in error

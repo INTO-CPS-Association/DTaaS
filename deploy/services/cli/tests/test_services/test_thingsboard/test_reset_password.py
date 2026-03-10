@@ -17,7 +17,7 @@ def test_change_password_with_logging_success(mocker):
     """Test _change_password_with_logging suppresses logging"""
     session = Mock()
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password_if_needed",
+        "dtaas_services.pkg.services.thingsboard.setup.change_sysadmin_password",
         return_value=(True, "Password changed"),
     )
     success, _ = th._change_password_with_logging(

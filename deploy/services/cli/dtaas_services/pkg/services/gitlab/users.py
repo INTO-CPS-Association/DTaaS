@@ -109,25 +109,21 @@ def _evaluate_user_response(response, username: str) -> Tuple[bool, str]:
     )
 
 
-def _create_single_user(
-    pat: str, username: str, email: str, password: str
-) -> Tuple[bool, str]:
+def _create_single_user(pat: str, row: dict) -> Tuple[bool, str]:
     """Create one GitLab user via the REST API.
 
     Args:
         pat: Personal Access Token for authentication
-        username: GitLab username
-        email: User email address
-        password: User password
-
+        row: Dict with keys 'username', 'email', 'password' from the CSV
     Returns:
         Tuple of (success, error_message)
     """
+    username = row.get("username", "").strip()
+    email = row.get("email", "").strip()
+    password = row.get("password", "").strip()
     payload = _build_user_payload(username, email, password)
-
-    success, response, error_msg = gitlab_request(
-        "POST", USERS_ENDPOINT, pat, json=payload
-    )
+    http_params = {"method": "POST", "endpoint": USERS_ENDPOINT}
+    success, response, error_msg = gitlab_request(http_params, pat, json=payload)
 
     if not success:
         return False, f"Failed to create user '{username}': {error_msg}"
@@ -146,9 +142,7 @@ def _create_users_from_rows(pat: str, reader) -> Tuple[bool, str]:
         Tuple of (success, error_message)
     """
     for row in reader:
-        success, error_msg = _create_single_user(
-            pat, row["username"], row["email"], row["password"]
-        )
+        success, error_msg = _create_single_user(pat, row)
         if not success:
             return False, error_msg
     return True, ""

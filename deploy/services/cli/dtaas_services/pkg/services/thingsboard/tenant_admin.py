@@ -1,5 +1,4 @@
-"""Creates (or fetches) a tenant, creates/activates a tenant-admin account, and
-verifies the admin can log in."""
+"""Createsa tenant and the admin account."""
 
 # pylint: disable=W1203, R0903
 import logging
@@ -99,6 +98,15 @@ def _extract_user_id_from_response(resp: httpx.Response) -> Tuple[str | None, st
         return None, f"{error_type} response creating tenant admin: {e}"
 
 
+def _handle_respone(resp: httpx.Response) -> Tuple[str | None, str]:
+    """Handle API response for tenant admin creation."""
+    if resp.status_code == 400:
+        return _handle_admin_already_exists(resp)
+    if resp.status_code in (200, 201):
+        return _extract_user_id_from_response(resp)
+    return None, f"Failed to create tenant admin: {resp.status_code}"
+
+
 def _create_tenant_admin_user(
     ctx: _AdminContext, tenant_id: str
 ) -> Tuple[str | None, str]:
@@ -112,11 +120,7 @@ def _create_tenant_admin_user(
     resp, error_msg = _create_tenant_api_call(ctx, user_payload)
     if not resp:
         return None, error_msg
-    if resp.status_code == 400:
-        return _handle_admin_already_exists(resp)
-    if resp.status_code not in (200, 201):
-        return None, f"Failed to create tenant admin: {resp.status_code}"
-    return _extract_user_id_from_response(resp)
+    return _handle_respone(resp)
 
 
 def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:
@@ -184,6 +188,13 @@ def _build_tenant_password_candidates(new_pw: str) -> list[str]:
     return [pw for pw in candidates if pw]
 
 
+def _make_login_result(token: str, pw: str, new_pw: str) -> Tuple[str | None, str, str]:
+    """Build login result tuple; returns empty token if password already matches target."""
+    if pw == new_pw:
+        return None, "", ""
+    return token, pw, ""
+
+
 def _login_as_tenant_admin(
     base_url: str, admin_email: str, new_pw: str
 ) -> Tuple[str | None, str, str]:
@@ -195,23 +206,19 @@ def _login_as_tenant_admin(
     for pw in _build_tenant_password_candidates(new_pw):
         token = login(base_url, admin_email, pw)
         if token:
-            if pw == new_pw:
-                return None, "", ""
-            return token, pw, ""
+            return _make_login_result(token, pw, new_pw)
     return (
         None,
         "",
-        (
-            "Failed to authenticate as tenant admin. "
-            "Verify TB_TENANT_ADMIN_EMAIL in config/services.env."
-        ),
+        ("Failed to authenticate as tenant admin. "),
     )
 
 
 def _call_change_password_api(
-    base_url: str, session: httpx.Client, current_pw: str, new_pw: str
+    base_url: str, session: httpx.Client, passwords: Tuple[str, str]
 ) -> Tuple[bool, str]:
     """Call ThingsBoard API to change password from current to new."""
+    current_pw, new_pw = passwords
     url = f"{base_url}/api/auth/changePassword"
     try:
         resp = session.post(
@@ -235,11 +242,7 @@ def _call_change_password_api(
 def change_tenant_admin_password(
     base_url: str, session: httpx.Client
 ) -> Tuple[bool, str]:
-    """Change tenant admin password from current to configured value.
-
-    Reads TB_TENANT_ADMIN_EMAIL and TB_TENANT_ADMIN_PASSWORD from env.
-    If TB_TENANT_ADMIN_PASSWORD is not set, skips the change.
-    """
+    """Change tenant admin password from current to configured value."""
     admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "")
     new_pw = os.getenv("TB_TENANT_ADMIN_PASSWORD")
     if not new_pw:
@@ -254,4 +257,5 @@ def change_tenant_admin_password(
         return True, "Tenant admin password already updated"
 
     session.headers["X-Authorization"] = f"Bearer {token}"
-    return _call_change_password_api(base_url, session, current_pw, new_pw)
+    passwords = (current_pw, new_pw)
+    return _call_change_password_api(base_url, session, passwords)

@@ -156,9 +156,9 @@ def create_application(
         Tuple of (success, OAuthAppResult or None, error message)
     """
     payload = _build_payload(config)
-
+    http_params = {"method": "POST", "endpoint": "/applications"}
     success, response, error_msg = gitlab_request(
-        "POST", "/applications", private_token, data=payload
+        http_params, private_token, data=payload
     )
 
     if not success:
@@ -239,7 +239,8 @@ def list_all_applications(
     Returns:
         Tuple of (success, list of application dicts, error message)
     """
-    success, response, error_msg = gitlab_request("GET", "/applications", private_token)
+    http_params = {"method": "GET", "endpoint": "/applications"}
+    success, response, error_msg = gitlab_request(http_params, private_token)
 
     if not success:
         return False, [], f"Failed to list applications: {error_msg}"
@@ -257,9 +258,8 @@ def delete_application(private_token: str, application_id: int) -> tuple[bool, s
     Returns:
         Tuple of (success, message)
     """
-    success, response, error_msg = gitlab_request(
-        "DELETE", f"/applications/{application_id}", private_token
-    )
+    http_params = {"method": "DELETE", "endpoint": f"/applications/{application_id}"}
+    success, response, error_msg = gitlab_request(http_params, private_token)
 
     if not success or response is None:
         return False, f"Failed to delete application {application_id}: {error_msg}"

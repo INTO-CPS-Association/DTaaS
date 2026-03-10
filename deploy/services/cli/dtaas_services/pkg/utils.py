@@ -103,8 +103,6 @@ def execute_docker_command(
         if verbose:
             print(error_msg)
         return False, error_msg
-    if verbose:
-        print("Output:", result)
     return True, str(result) if result is not None else ""
 
 

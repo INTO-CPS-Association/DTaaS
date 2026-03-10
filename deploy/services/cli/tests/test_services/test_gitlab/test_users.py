@@ -95,9 +95,8 @@ def test_create_single_user_success(mocker):
         "dtaas_services.pkg.services.gitlab.users.gitlab_request",
         return_value=(True, mock_response, ""),
     )
-    success, error = users._create_single_user(
-        TEST_TOKEN, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
-    )
+    row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
+    success, error = users._create_single_user(TEST_TOKEN, row)
     assert success is True
     assert error == ""
 
@@ -108,9 +107,8 @@ def test_create_single_user_request_failure(mocker):
         "dtaas_services.pkg.services.gitlab.users.gitlab_request",
         return_value=(False, None, "connection refused"),
     )
-    success, error = users._create_single_user(
-        TEST_TOKEN, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
-    )
+    row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
+    success, error = users._create_single_user(TEST_TOKEN, row)
     assert success is False
     assert "connection refused" in error
 

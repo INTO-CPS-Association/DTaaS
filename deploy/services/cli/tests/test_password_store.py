@@ -17,7 +17,10 @@ def patch_base_dir(tmp_path, mocker):
 def test_get_current_password_missing_file():
     """Returns default when the passwords file does not exist."""
     assert ps.get_current_password("TB_SYSADMIN_CURRENT_PASSWORD") == ""
-    assert ps.get_current_password("TB_SYSADMIN_CURRENT_PASSWORD", "fallback") == "fallback"
+    assert (
+        ps.get_current_password("TB_SYSADMIN_CURRENT_PASSWORD", "fallback")
+        == "fallback"
+    )
 
 
 def test_remove_service_passwords_unknown_service():

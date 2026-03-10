@@ -93,18 +93,27 @@ def _get_root_new_password() -> Tuple[bool, str]:
     return True, password
 
 
+def _format_dict_error(msg_obj: dict, status_code: int) -> str:
+    """Format a dict error message from GitLab response body."""
+    parts = []
+    for field, errors in msg_obj.items():
+        for err in errors:
+            parts.append(f"{field}: {err}")
+    return "; ".join(parts) if parts else f"HTTP {status_code}"
+
+
+def _extract_error_message(body: dict, status_code: int) -> str:
+    """Extract error string from parsed GitLab response body."""
+    msg_obj = body.get("message", body.get("error", ""))
+    if isinstance(msg_obj, dict):
+        return _format_dict_error(msg_obj, status_code)
+    return str(msg_obj) or f"HTTP {status_code}"
+
+
 def _parse_gitlab_password_error(response: httpx.Response) -> str:
     """Extract a human-readable error from a GitLab password-change response."""
     try:
-        body = response.json()
-        msg_obj = body.get("message", body.get("error", ""))
-        if isinstance(msg_obj, dict):
-            parts = []
-            for field, errors in msg_obj.items():
-                for err in errors:
-                    parts.append(f"{field}: {err}")
-            return "; ".join(parts) if parts else f"HTTP {response.status_code}"
-        return str(msg_obj) or f"HTTP {response.status_code}"
+        return _extract_error_message(response.json(), response.status_code)
     except Exception:
         return f"HTTP {response.status_code} \u2014 {response.text[:200]}"
 
@@ -119,9 +128,9 @@ def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
     Returns:
         Tuple of (success, message_or_error)
     """
+    http_params = {"method": "PUT", "endpoint": f"/users/{ROOT_USER_ID}"}
     success, response, error_msg = gitlab_request(
-        "PUT",
-        f"/users/{ROOT_USER_ID}",
+        http_params,
         pat,
         json={"password": new_pw, "skip_reconfirmation": True},
     )

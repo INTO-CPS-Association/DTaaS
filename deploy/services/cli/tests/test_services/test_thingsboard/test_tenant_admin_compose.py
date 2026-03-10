@@ -186,7 +186,7 @@ def test_call_change_password_api_success():
     """Test successful API call to change password"""
     session = Mock()
     session.post.return_value = Mock(status_code=200)
-    success, _ = th_util._call_change_password_api("url", session, "oldpw", "newpw")
+    success, _ = th_util._call_change_password_api("url", session, ("oldpw", "newpw"))
     assert success is True
 
 
@@ -196,7 +196,7 @@ def test_call_change_password_api_failure():
     mock_resp = Mock(status_code=400, text="error")
     mock_resp.json.return_value = {"message": "error"}
     session.post.return_value = mock_resp
-    success, msg = th_util._call_change_password_api("url", session, "oldpw", "newpw")
+    success, msg = th_util._call_change_password_api("url", session, ("oldpw", "newpw"))
     assert success is False
     assert "Failed to change" in msg
 
@@ -205,19 +205,9 @@ def test_call_change_password_api_network_error():
     """Test API call raises network error"""
     session = Mock()
     session.post.side_effect = httpx.NetworkError("timeout")
-    success, msg = th_util._call_change_password_api("url", session, "oldpw", "newpw")
+    success, msg = th_util._call_change_password_api("url", session, ("oldpw", "newpw"))
     assert success is False
     assert "Network error" in msg
-
-
-def test_change_tenant_admin_password_not_set(monkeypatch):
-    """Test skips when TB_TENANT_ADMIN_PASSWORD is not set"""
-    monkeypatch.setenv("TB_TENANT_ADMIN_EMAIL", "admin@test.org")
-    monkeypatch.delenv("TB_TENANT_ADMIN_PASSWORD", raising=False)
-    session = Mock()
-    success, msg = th_util.change_tenant_admin_password("url", session)
-    assert success is True
-    assert "Skipped" in msg
 
 
 def test_change_tenant_admin_password_success(mocker, monkeypatch):

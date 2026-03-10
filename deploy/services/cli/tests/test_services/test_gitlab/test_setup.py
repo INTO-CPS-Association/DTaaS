@@ -187,12 +187,15 @@ def test_step_save_tokens_success(
         "dtaas_services.pkg.services.gitlab.setup._save_tokens",
         return_value=(True, f"Tokens saved to {output_path}"),
     )
+    results = {
+        "pat": TEST_TOKEN,
+        "server_result": sample_server_result,
+        "client_result": sample_client_result,
+    }
     success, _ = setup._step_save_tokens(
         mock_console,
         TEST_PASSWORD,
-        TEST_TOKEN,
-        sample_server_result,
-        sample_client_result,
+        results,
     )
     assert success is True
 
@@ -210,12 +213,15 @@ def test_step_save_tokens_failure(
         "dtaas_services.pkg.services.gitlab.setup._save_tokens",
         return_value=(False, "Permission denied"),
     )
+    results = {
+        "pat": TEST_TOKEN,
+        "server_result": sample_server_result,
+        "client_result": sample_client_result,
+    }
     success, _ = setup._step_save_tokens(
         mock_console,
         TEST_PASSWORD,
-        TEST_TOKEN,
-        sample_server_result,
-        sample_client_result,
+        results,
     )
     assert success is False
 

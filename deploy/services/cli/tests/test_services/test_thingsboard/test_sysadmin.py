@@ -93,7 +93,7 @@ def test_change_sysadmin_password_already_changed(mocker, monkeypatch):
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin._update_session_token"
     )
-    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    success, _ = th_users.change_sysadmin_password(base_url, session, "new")
     assert success is True
 
 
@@ -117,7 +117,7 @@ def test_change_sysadmin_password_change_needed(mocker, monkeypatch):
         "dtaas_services.pkg.services.thingsboard.sysadmin._perform_password_change",
         return_value=(True, "OK"),
     )
-    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    success, _ = th_users.change_sysadmin_password(base_url, session, "new")
     assert success is True
 
 
@@ -132,7 +132,7 @@ def test_change_sysadmin_password_all_logins_fail(mocker):
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.login", return_value=None
     )
-    success, _ = th_users.change_sysadmin_password_if_needed(base_url, session, "new")
+    success, _ = th_users.change_sysadmin_password(base_url, session, "new")
     assert success is False
 
 

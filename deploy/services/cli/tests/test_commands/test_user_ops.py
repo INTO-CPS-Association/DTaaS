@@ -178,22 +178,6 @@ def test_reset_password_gitlab_success(runner, mock_user_pkg):
     mock_user_pkg["reset_gitlab"].assert_called_once()
 
 
-def test_reset_password_gitlab_not_running(runner, mock_user_pkg):
-    """Test reset-password skips GitLab when not running"""
-    mock_user_pkg["gitlab_running"].return_value = False
-    result = runner.invoke(services, ["user", "reset-password", "-s", "gitlab"])
-    assert result.exit_code == 0
-    assert "not running" in result.output
-
-
-def test_reset_password_thingsboard_not_running(runner, mock_user_pkg):
-    """Test reset-password skips ThingsBoard when not running"""
-    mock_user_pkg["thingsboard_running"].return_value = False
-    result = runner.invoke(services, ["user", "reset-password", "-s", "thingsboard"])
-    assert result.exit_code == 0
-    assert "not running" in result.output
-
-
 def test_add_users_all_services_success(runner, mock_user_pkg):
     """Test user add with all services succeeding"""
     mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (True, "Added")

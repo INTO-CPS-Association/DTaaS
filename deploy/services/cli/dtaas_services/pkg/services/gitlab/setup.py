@@ -3,7 +3,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, cast
 from dataclasses import dataclass, asdict
 
 from rich.console import Console
@@ -82,38 +82,21 @@ def _step_create_pat(console: Console) -> Tuple[bool, str]:
     return True, token
 
 
-def _step_create_oauth_apps(
-    console: Console, pat: str
-) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
-    """Create both OAuth application tokens."""
-    console.print("[cyan]Creating OAuth application tokens...[/cyan]")
-
-    success, server_result, error_msg = create_server_application(pat)
-    if not success:
-        return False, None, None, error_msg
-    console.print("[green]  ✅ Server Authorization app created.[/green]")
-
-    success, client_result, error_msg = create_client_application(pat)
-    if not success:
-        return False, None, None, error_msg
-    console.print("[green]  ✅ Client Authorization app created.[/green]")
-
-    return True, server_result, client_result, ""
-
-
 def _step_save_tokens(
     console: Console,
     root_password: str,
-    pat: str,
-    server_result: OAuthAppResult,
-    client_result: OAuthAppResult,
+    results: dict,
 ) -> Tuple[bool, str]:
     """Save all tokens to a JSON file."""
     tokens = GitLabTokens(
         root_password=root_password,
-        personal_access_token=pat,
-        server_app=_app_result_to_dict(server_result),
-        client_app=_app_result_to_dict(client_result),
+        personal_access_token=cast(str, results.get("pat")),
+        server_app=_app_result_to_dict(
+            cast(OAuthAppResult, results.get("server_result"))
+        ),
+        client_app=_app_result_to_dict(
+            cast(OAuthAppResult, results.get("client_result"))
+        ),
     )
 
     output_path = _get_tokens_output_path()
@@ -152,6 +135,47 @@ def _step_reset_root_password(console: Console) -> Tuple[bool, str]:
     return success, msg
 
 
+def _step_create_oauth_apps(
+    console: Console, pat: str
+) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
+    """Create both OAuth application tokens."""
+    console.print("[cyan]Creating OAuth application tokens...[/cyan]")
+
+    success, server_result, error_msg = create_server_application(pat)
+    if not success:
+        return False, None, None, error_msg
+    console.print("[green]  ✅ Server Authorization app created.[/green]")
+
+    success, client_result, error_msg = create_client_application(pat)
+    if not success:
+        return False, None, None, error_msg
+    console.print("[green]  ✅ Client Authorization app created.[/green]")
+
+    return True, server_result, client_result, ""
+
+
+def _setup_tokens_phase(
+    console: Console, pat: str, root_password: str
+) -> Tuple[bool, str]:
+    """Create OAuth apps, validate results, and save all tokens."""
+    success, server_result, client_result, error_msg = _step_create_oauth_apps(
+        console, pat
+    )
+    if not success:
+        return False, error_msg
+
+    if server_result is None or client_result is None:
+        return False, "Unexpected error: OAuth app results are missing"
+
+    # Combiner the returns
+    results = {
+        "pat": pat,
+        "server_result": server_result,
+        "client_result": client_result,
+    }
+    return _step_save_tokens(console, root_password, results)
+
+
 def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
     """Run the full GitLab post-install setup.
 
@@ -163,18 +187,7 @@ def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
     if not success:
         return False, error_msg
 
-    success, server_result, client_result, error_msg = _step_create_oauth_apps(
-        console, pat
-    )
-    if not success:
-        return False, error_msg
-
-    if server_result is None or client_result is None:
-        return False, "Unexpected error: OAuth app results are missing"
-
-    ok, msg = _step_save_tokens(
-        console, root_password, pat, server_result, client_result
-    )
+    ok, msg = _setup_tokens_phase(console, pat, root_password)
     if not ok:
         return False, msg
 
