@@ -1,6 +1,7 @@
 # Keycloak Setup Guide for DTaaS
 
-This guide explains how to configure Keycloak for authentication in the DTaaS workspace deployment.
+This guide explains how to configure Keycloak for authentication
+in the DTaaS workspace deployment.
 
 ## Key Benefits
 
@@ -68,12 +69,15 @@ The following instructions are part of post-install step.
 
 1. Navigate to `https://foo.com/auth`
 2. Click **Administration Console**
-3. Login with credentials from your `.env` file (default: `admin` / `admin`)
+3. Login with credentials from your `.env` file
+   (default: `admin` / `admin`)
 
 #### Create a Realm
 
-1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
-2. **Realm name**: `dtaas` (or match your `KEYCLOAK_REALM` in `.env`)  
+1. In the top-left dropdown (currently showing "Master"),
+   click **Create Realm**
+2. **Realm name**: `dtaas`
+   (or match your `KEYCLOAK_REALM` in `.env`)
 3. Click **Create**
 4. Click on **User Profile**
 5. Click on **Create attribute** with
@@ -99,7 +103,8 @@ The following instructions are part of post-install step.
    - Go to the **Credentials** tab
    - Click **Set password**
    - Enter a password
-   - **Temporary**: OFF (so users don't have to change it on first login)  
+   - **Temporary**: OFF
+      (so users don't have to change it on first login)
    - Click **Save**
 6. Repeat for additional users (e.g., `user2`)
 
@@ -109,7 +114,8 @@ The following instructions are part of post-install step.
 2. Click **Create client**
 3. Configure the client:
    - **Client type**: OpenID Connect
-   - **Client ID**: `dtaas-workspace` (match `KEYCLOAK_CLIENT_ID` in `.env`)
+   - **Client ID**: `dtaas-workspace`
+      (match `KEYCLOAK_CLIENT_ID` in `.env`)
    - Click **Next**
 4. Capability config:
    - Client authentication: ON
@@ -119,8 +125,8 @@ The following instructions are part of post-install step.
 5. Login settings:
    - **Root URL**: `https://foo.com`
    - **Valid redirect URIs**:
-    - `https://foo.com/_oauth/*`
-    - `https://foo.com/*`
+      - `https://foo.com/_oauth/*`
+      - `https://foo.com/*`
    - **Valid post logout redirect URIs**: `https://foo.com/*`
    - **Web origins**: `https://foo.com`
    - Click **Save**
@@ -165,7 +171,8 @@ This requires a **public** client (no client secret) with PKCE enforced.
 
 ### 3. Restart Services
 
-After configuring Keycloak, restart the services to apply the new client secret:
+After configuring Keycloak, restart the services to apply the
+new client secret:
 
 ```bash
 docker compose down
@@ -184,6 +191,7 @@ docker compose up -d
 To use an external Keycloak instance (recommended for production):
 
 1. Update `KEYCLOAK_ISSUER_URL` in `.env`:
+
    ```bash
    KEYCLOAK_ISSUER_URL=https://keycloak.foo.com/auth/realms/dtaas
    ```
@@ -199,7 +207,8 @@ Update client redirect URIs in Keycloak to use your production domain
 
 ### 2. Database Backend
 
-For production, configure Keycloak with a proper database (PostgreSQL, MySQL):
+For production, configure Keycloak with a proper database
+(PostgreSQL, MySQL):
 
 ```yaml
 keycloak:
@@ -233,7 +242,8 @@ keycloak:
 
 ### Forward Auth Not Working
 
-- Check traefik-forward-auth logs: `docker compose logs traefik-forward-auth`
+- Check traefik-forward-auth logs:
+   `docker compose logs traefik-forward-auth`
 - Verify environment variables are set correctly
 - Ensure Keycloak is reachable from the traefik-forward-auth container
 
@@ -249,14 +259,20 @@ To access custom user attributes:
 
 ### Role-Based Access Control (RBAC)
 
-RBAC is supported in Keycloak but not implemented in the traefik-forward-auth service by default.
+RBAC is supported in Keycloak but not implemented in the
+traefik-forward-auth service by default.
 
 ### Single Sign-On (SSO)
 
-Keycloak supports SSO across multiple applications. Configure additional clients for other services as needed.
+Keycloak supports SSO across multiple applications.
+Configure additional clients for other services as needed.
 
 ## References
 
 - [Keycloak Documentation](https://www.keycloak.org/documentation)
-- [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)
-- [OIDC Specification](https://openid.net/specs/openid-connect-core-1_0.html)
+- [Traefik Forward Auth](
+   https://github.com/thomseddon/traefik-forward-auth
+   )
+- [OIDC Specification](
+   https://openid.net/specs/openid-connect-core-1_0.html
+   )

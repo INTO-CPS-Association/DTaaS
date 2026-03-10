@@ -1,7 +1,8 @@
 # 🧩 Dex configuration guide
 
-ℹ️ The `dex-config.yaml.example` file contains Dex configuration template.
-Duplicate `config/dex-config.yaml.example` to `config/dex-config.yaml` file.
+ℹ️ The `dex-config.yaml.example` file contains Dex configuration
+template. Duplicate `config/dex-config.yaml.example` to
+`config/dex-config.yaml`.
 
 ## 📁 Files
 
@@ -59,7 +60,8 @@ Configured user fields:
 - `groups`: included when `groups` scope is requested
 - `userID`: stable Dex subject identifier
 
-ℹ️ In `dex-config.yaml.example`, the sample user password is `user` (bcrypt-hashed).
+ℹ️ In `dex-config.yaml.example`, the sample user password is `user`
+(bcrypt-hashed).
 
 ### 🔑 Generate a bcrypt password hash
 
@@ -83,7 +85,8 @@ print(bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8'))
 PY
 ```
 
-✅ Copy the printed hash into `config/dex-config.yaml` as the value of `hash`.
+✅ Copy the printed hash into `config/dex-config.yaml`
+as the value of `hash`.
 
 ## 👤 Username alignment with `.env`
 
@@ -92,7 +95,7 @@ DTaaS routes and workspace paths use `.env` value `username`.
 For local/passwordDB mode, keep these aligned:
 
 - `.env`: `username=<your-user>`
-- `config/dex-config.yaml`: set static user `username` and `preferredUsername`
-  to the same `<your-user>`
+- `config/dex-config.yaml`: set static user `username`
+  and `preferredUsername` to the same `<your-user>`
 
 ✅ This prevents path mismatches in user-scoped URLs.

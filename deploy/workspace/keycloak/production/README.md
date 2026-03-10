@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
 🎉 Thank you for downloading **Digital Twin as a Service**.
@@ -8,7 +9,8 @@ secure multi-user deployments.
 ## ❓ Prerequisites
 
 ✅ Docker Engine v27 or later
-✅ Sufficient system resources (at least 2GB RAM per workspace instance)
+✅ Sufficient system resources
+(at least 2GB RAM per workspace instance)
 ✅ Port 80 available on your host
 ✅ Valid TLS certificates
 ✅ Domain name pointing to your server
@@ -51,7 +53,8 @@ docker compose up -d
 The following issues in application startup are expected behavior.
 This problem will be resolved during post-installation.
 
-👉 `dtaas-production-traefik-forward-auth-1` will be restarting at this stage.
+👉 `dtaas-production-traefik-forward-auth-1`
+will be restarting at this stage.
 👉 Visiting `https://foo.com` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
@@ -99,7 +102,9 @@ Add a new service in `docker-compose.yml`:
       - "./files/user3:/workspace"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME3:-user3}`)"
+      - >-
+        traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/${USERNAME3:-user3}`)
       - "traefik.http.routers.u3.tls=true"
       - "traefik.http.routers.u3.middlewares=traefik-forward-auth"
     networks:
@@ -123,7 +128,7 @@ Add Forward Auth config for user3 in [`conf`](config/forward-auth-conf):
 
 rule.user3_access.action=auth
 rule.user3_access.rule=PathPrefix(`/user3`)
-rule.user3_access.whitelist = user3@localhost 
+rule.user3_access.whitelist = user3@localhost
 ```
 
 ## 🐛 Troubleshooting
@@ -177,7 +182,9 @@ rule.user3_access.whitelist = user3@localhost
 ## 📚 Additional Resources
 
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
-- [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)
+- [Traefik Forward Auth](
+  https://github.com/thomseddon/traefik-forward-auth
+  )
 - [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [OAuth 2.0 Specification](https://oauth.net/2/)

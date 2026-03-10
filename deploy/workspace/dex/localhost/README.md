@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
 🎉 Thank you for downloading **Digital Twin as a Service**.
@@ -70,5 +71,9 @@ for complete documentation.
 ## 🔗 References
 
 Image sources:
-[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
-[Dex IdP](https://dexidp.io/)
+
+Traefik logo:
+<https://www.laub-home.de/wiki/>
+
+Dex IdP:
+<https://dexidp.io/>

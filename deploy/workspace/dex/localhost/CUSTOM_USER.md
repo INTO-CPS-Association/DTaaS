@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
 ℹ️ The instructions in this document help update the username and
@@ -5,7 +6,8 @@ password for your localhost version of the **DTaaS** installation.
 
 ## ⚙️ Update Configuration
 
-Duplicate `config/dex-config.yaml.example` to `config/dex-config.yaml` file.
+Duplicate `config/dex-config.yaml.example` to
+`config/dex-config.yaml`.
 Update these fields in `config/dex-config.yaml`:
 
 - `email`
@@ -23,8 +25,8 @@ Edit `.env`.
 ⚠️ Important alignment for local/passwordDB mode:
 
 - In `.env`, choose `username=<your-user>`.
-- In `config/dex-config.yaml`, set static user `username` and `preferredUsername`
-  to the same value.
+- In `config/dex-config.yaml`, set static user `username`
+  and `preferredUsername` to the same value.
 
 ✅ This keeps DTaaS user-scoped routes aligned with OIDC identity claims.
 
@@ -59,9 +61,10 @@ for complete documentation.
 
 ## 🧩 Dex Companion in Detail
 
-The companion service proxies all Dex endpoints and injects a `profile` claim into
-`/dex/userinfo` when `preferred_username` is present. This keeps the setup
-self-contained (no GitLab connector) while matching the DTaaS client
+The companion service proxies all Dex endpoints and injects a
+`profile` claim into `/dex/userinfo` when `preferred_username`
+is present. This keeps the setup self-contained
+(no GitLab connector) while matching the DTaaS client
 expectation for username extraction.
 
 ℹ️ Scope note for local/passwordDB mode:
@@ -72,5 +75,9 @@ expectation for username extraction.
 ## 🔗 References
 
 Image sources:
-[Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
-[Dex IdP](https://dexidp.io/)
+
+Traefik logo:
+<https://www.laub-home.de/wiki/>
+
+Dex IdP:
+<https://dexidp.io/>

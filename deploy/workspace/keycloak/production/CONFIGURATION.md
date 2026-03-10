@@ -1,10 +1,12 @@
 # ⚙️ DTaaS Configuration
 
-This document outlines the configuration needed for the docker compose file.
+This document outlines the configuration needed for the
+docker compose file.
 The configuration can be divided into pre and post-install parts.
 The pre-install configuration tasks must be completed before bringing up
-the docker compose services, while the post-install configuration tasks must be
-completed after bringing up the docker compose services.
+the docker compose services, while the post-install configuration
+tasks must be completed after bringing up the docker compose
+services.
 
 **Pre-install Configuration Tasks:**
 
@@ -103,8 +105,8 @@ cp config/conf.example config/conf
 
 Then update the configuration file with the usernames and emails of
 the GitLab users that correspond to user 1 and 2 respectively.
-(You must either have two seperate GitLab users, or skip the configuration of
-one of the two users).
+(You must either have two seperate GitLab users,
+or skip the configuration of one of the two users).
 
 ```txt
 rule.user1_access.action=auth
@@ -122,8 +124,8 @@ in the Traefik Forward Auth configuration file.
 
 ## 🎯 Keycloak Integration
 
-The default configuration for `docker-compose.yml` now uses **Keycloak** 
-for authentication via OIDC (OpenID Connect). Keycloak provides a robust, 
+The default configuration for `docker-compose.yml` now uses **Keycloak**
+for authentication via OIDC (OpenID Connect). Keycloak provides a robust,
 enterprise-grade identity and access management solution.
 The `traefik-forward-auth` and the DTaaS `client` docker services use
 **Keycloak** for authentication and authorization. You'll need to configure
@@ -132,9 +134,10 @@ an OAuth2 apllication for each, with your integrated **Keycloack** service.
 **For detailed Keycloak setup instructions,
 see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
-#### Configure Environment Variables
+### Configure Environment Variables
 
-1. **For Keycloak (default)**, edit `.env` and fill in your Keycloak credentials:
+1. **For Keycloak (default)**, edit `.env`
+   and fill in your Keycloak credentials:
 
    ```bash
    # Keycloak Admin Credentials
@@ -144,7 +147,8 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
    # Keycloak Realm
    KEYCLOAK_REALM=dtaas
 
-   # Keycloak Client Credentials (obtain from Keycloak after creating client)
+   # Keycloak Client Credentials
+   # (obtain from Keycloak after creating client)
    KEYCLOAK_CLIENT_ID=dtaas-workspace
    KEYCLOAK_CLIENT_SECRET=your_client_secret_here
 
@@ -168,30 +172,39 @@ Create a copy of this example file without the example suffix:
 cp config/client.js.example config/client.js
 ```
 
-Then, edit the new DTaaS Web Client config file, updating the following values:
+Then edit the new DTaaS Web Client config file,
+updating the following values:
 
 ### 🔑🖥️ Client OAuth2 Setup
 
 The DTaaS web client is a React SPA that authenticates via Keycloak using
 the **Authorization Code flow with PKCE**. Follow the
-[Create OAuth2 Client for DTaaS Client Service](KEYCLOAK_SETUP.md#create-oauth2-client-for-dtaas-client-service)
+[Create OAuth2 Client for DTaaS Client Service](
+KEYCLOAK_SETUP.md#create-oauth2-client-for-dtaas-client-service
+)
 instructions in `KEYCLOAK_SETUP.md` to create the public PKCE client in
 Keycloak, then update `config/client.js`:
 
 ```js
-REACT_APP_CLIENT_ID: 'dtaas-client',          // Client ID set in Keycloak
+REACT_APP_CLIENT_ID: 'dtaas-client',
 REACT_APP_AUTH_AUTHORITY: 'https://<DOMAIN_NAME>/auth/realms/dtaas',
 REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/Library',
 REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
-REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
+REACT_APP_GITLAB_SCOPES: 'openid profile',
 ```
 
-`openid` and `profile` are standard OIDC scopes provided by Keycloak by default.
+The `REACT_APP_CLIENT_ID` value must match the client ID in Keycloak.
+The `REACT_APP_GITLAB_SCOPES` value carries the OIDC scopes
+requested from Keycloak.
+
+`openid` and `profile` are standard OIDC scopes provided by
+Keycloak by default.
 `openid` is required for OIDC authentication and issues the ID token.
-`profile` triggers the `profile` claim mapper configured on the Keycloak client,
-which returns a URL of the form `https://<DOMAIN_NAME>/<username>` set as a
-user attribute in Keycloak. The DTaaS web client extracts the username from
-the last path segment of this URL.
+`profile` triggers the `profile` claim mapper configured on the
+Keycloak client, which returns a URL of the form
+`https://<DOMAIN_NAME>/<username>` set as a user attribute in
+Keycloak. The DTaaS web client extracts the username from the
+last path segment of this URL.
 The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
 it now carries the Keycloak OIDC scopes.
 

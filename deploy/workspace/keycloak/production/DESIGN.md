@@ -1,16 +1,17 @@
 # Workspace with Traefik, OAuth2, and TLS
 
-This guide explains how to deploy the workspace container with Traefik reverse
-proxy, OAuth2 authentication, and TLS/HTTPS support for secure multi-user
-deployments.
+This guide explains how to deploy the workspace container with
+Traefik reverse proxy, OAuth2 authentication, and TLS/HTTPS
+support for secure multi-user deployments.
 
 ## ❓ Prerequisites
 
-✅ Docker Engine v27 or later  
-✅ Docker Compose v2.x  
-✅ Sufficient system resources (at least 1GB RAM per workspace instance)  
+✅ Docker Engine v27 or later
+✅ Docker Compose v2.x
+✅ Sufficient system resources
+(at least 1GB RAM per workspace instance)
 ✅ Valid TLS certificates (production) or self-signed certs (testing)
-✅ OAuth2 provider (GitLab, GitHub, Google, etc.)  
+✅ OAuth2 provider (GitLab, GitHub, Google, etc.)
 ✅ Domain name pointing to your server (production) or localhost (testing)
 
 ## 🗒️ Design
@@ -70,11 +71,13 @@ This will:
 
 ## :technologist: Accessing Workspaces
 
-Once all services are running, access the workspaces through Traefik with HTTPS:
+Once all services are running,
+access the workspaces through Traefik with HTTPS:
 
 ### User Workspace (workspace)
 
-- **VNC Desktop**: `https://foo.com/user1/tools/vnc?path=user1%2Ftools%2Fvnc%2Fwebsockify`
+- **VNC Desktop**:
+  `https://foo.com/user1/tools/vnc?path=user1%2Ftools%2Fvnc%2Fwebsockify`
 - **VS Code**: `https://foo.com/user1/tools/vscode`
 - **Jupyter Notebook**: `https://foo.com/user1`
 - **Jupyter Lab**: `https://foo.com/user1/lab`
@@ -118,9 +121,9 @@ curl https://foo.com/user1/services
 }
 ```
 
-The endpoint values are dynamically populated with the user's username from the
-`MAIN_USER` environment variable. This variable corresponds to `USERNAME1` of
-`.env` file.
+The endpoint values are dynamically populated with the user's
+username from the `MAIN_USER` environment variable.
+This variable corresponds to `USERNAME1` in `.env`.
 
 ## 🔒 Authentication Flow
 
@@ -150,7 +153,8 @@ docker compose down -v
 
 ### Adding More Users
 
-To add additional workspace instances, add a new service in `compose.traefik.secure.tls.yml`:
+To add additional workspace instances,
+add a new service in `docker-compose.yml`:
 
 ```yaml
   user3:
@@ -166,66 +170,43 @@ To add additional workspace instances, add a new service in `compose.traefik.sec
       - "./files/user3:/workspace"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME3:-user3}`)"
+      - >-
+        traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/${USERNAME3:-user3}`)
       - "traefik.http.routers.u3.tls=true"
       - "traefik.http.routers.u3.middlewares=traefik-forward-auth"
     networks:
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](./config/.env):
+Add the desired `USERNAME3` variable in [`.env`](config/.env):
 
 ```bash
 # Username Configuration
 # These usernames will be used as path prefixes for user workspaces
-# Example: http://localhost/user1, http://localhost/user2
+# Example: https://foo.com/user1, https://foo.com/user2
 USERNAME1=user1
 USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`conf`](./config/conf):
+Add Forward Auth config for user3 in [`conf`](config/conf):
 
 ```txt
 
 rule.user3_access.action=auth
 rule.user3_access.rule=PathPrefix(`/user3`)
-rule.user3_access.whitelist = user3@localhost 
+rule.user3_access.whitelist = user3@localhost
 ```
 
-Ensure that the username and email correspond to the workspaces GitLab user.
+Ensure that the username and email correspond to the
+workspace's GitLab user.
 
 Don't forget to create the user's directory:
 
 ```bash
-cp -r ./workspaces/test/dtaas/files/user1 ./workspaces/test/dtaas/files/user3
-sudo chown -R 1000:100 workspaces/test/dtaas/files
-```
-
-### Using Different OAuth2 Providers
-
-The configuration can be adapted for different OAuth2 providers by changing
-the environment variables in the `traefik-forward-auth` service:
-
-#### Google OAuth2
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=google
-  - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-  - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
-```
-
-#### Generic OIDC Provider
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=oidc
-  - PROVIDERS_OIDC_ISSUER_URL=https://your-oidc-provider.com
-  - PROVIDERS_OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
-  - PROVIDERS_OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
+cp -r files/user1 files/user3
+sudo chown -R 1000:100 files
 ```
 
 ## 🐛 Troubleshooting
@@ -258,13 +239,10 @@ environment:
 
 **Solutions**:
 
-- Check service health:
-  `docker compose -f compose.traefik.secure.tls.yml ps`
-- View logs: `docker compose -f compose.traefik.secure.tls.yml logs`
-- Verify Traefik routes:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik`
-- Test OAuth2 service:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik-forward-auth`
+- Check service health: `docker compose ps`
+- View logs: `docker compose logs`
+- Verify Traefik routes: `docker compose logs traefik`
+- Test OAuth2 service: `docker compose logs traefik-forward-auth`
 
 ### Port Conflicts
 
@@ -279,7 +257,9 @@ environment:
 ## 📚 Additional Resources
 
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
-- [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)
+- [Traefik Forward Auth](
+  https://github.com/thomseddon/traefik-forward-auth
+  )
 - [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [OAuth 2.0 Specification](https://oauth.net/2/)
