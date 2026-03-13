@@ -33,7 +33,7 @@ def copy_external_files():
         shutil.rmtree(dst_templates)
 
     shutil.copytree(src_templates, dst_templates)
-    print(f"Copied templates/ -> dtaas_services/templates/")
+    print("Copied templates/ -> dtaas_services/templates/")
 
 
 if __name__ == "__main__":
