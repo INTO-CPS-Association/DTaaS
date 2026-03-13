@@ -12,9 +12,8 @@ services:
       RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'
     volumes:
       - './data/rabbitmq:/var/lib/rabbitmq'
-      - './certs/${HOSTNAME}:/etc/rabbitmq/certs'
-      - './config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf'
-      - './config/rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins'
+      - './certs/${HOSTNAME}:/etc/rabbitmq/certs:ro'
+      - './config/rabbitmq:/etc/rabbitmq/conf.d:ro'
     networks:
       - platform-services
 
@@ -27,8 +26,8 @@ services:
       - '${MONGODB_PORT}:27017'
     volumes:
       - './data/mongodb:/data/db'
-      - './config/mongod.conf.secure:/etc/mongod.conf'
-      - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem'
+      - './config/mongod.conf.secure:/etc/mongod.conf:ro'
+      - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem:ro'
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGODB_ADMIN_USERNAME}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_ADMIN_PASSWORD}'
@@ -45,7 +44,7 @@ services:
       - '${GRAFANA_PORT}:3000'
     volumes:
       - './data/grafana:/var/lib/grafana'
-      - './certs/${HOSTNAME}:/etc/ssl/certs'
+      - './certs/${HOSTNAME}:/etc/ssl/certs:ro'
     environment:
       GF_AUTH_BASIC_ENABLED: false
       GF_AUTH_PROXY_ENABLED: false
@@ -78,8 +77,8 @@ services:
       - '${INFLUXDB_PORT}:8086'
     volumes:
       - './data/influxdb:/var/lib/influxdb2'
-      - './config/influxdb:/etc/influxdb2'
-      - './certs/${HOSTNAME}:/etc/ssl'
+      - './config/influxdb:/etc/influxdb2:ro'
+      - './certs/${HOSTNAME}:/etc/ssl:ro'
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: '${INFLUXDB_ADMIN_USERNAME}'
