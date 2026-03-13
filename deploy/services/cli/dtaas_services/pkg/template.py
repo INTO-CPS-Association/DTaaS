@@ -51,6 +51,7 @@ def copy_template_to_config(
 
 def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -> None:
     """Copy template directories and files to target."""
+    templates_root = package_root / "templates"
     items_to_copy = [
         ("config", "config"),
         ("data", "data"),
@@ -61,7 +62,7 @@ def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -
         ("compose.gitlab.yml", "compose.gitlab.yml"),
     ]
     for src_item, dest_item in items_to_copy:
-        src_path = package_root / src_item
+        src_path = templates_root / src_item
         dest_path = target_dir / dest_item
         msg = copy_directory_or_file(src_path, dest_path, dest_item)
         if msg:
@@ -86,6 +87,7 @@ def _create_data_subdirs(target_dir: Path) -> None:
     data_dir = target_dir / "data"
     data_subdirs = [
         "grafana",
+        "gitlab",
         "influxdb",
         "mongodb",
         "postgres",

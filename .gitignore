@@ -222,13 +222,14 @@ deploy/services/cli/dtaas_services/log/
 deploy/services/cli/dtaas_services/compose.services.secure.yml
 deploy/services/cli/dtaas_services/compose.thingsboard.secure.yml
 deploy/services/cli/dtaas_services/compose.gitlab.yml
+deploy/services/cli/dtaas_services/templates
 
 #ignore developer files
 docker/.env
 docker/conf.dev
 
 # Deploy services data
-deploy/services/data/*
+#deploy/services/data/*
 !deploy/services/data/.gitkeep
 deploy/services/data/*/*
 !deploy/services/data/*/.gitkeep

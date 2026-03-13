@@ -57,7 +57,7 @@ RabbitMQ, ThingsBoard, and GitLab
 Install the standalone wheel package using pip:
 
 ```bash
-pip install dtaas_services-0.1.0-py3-none-any.whl
+pip install dtaas_services-0.3.0-py3-none-any.whl
 ```
 
 This installs the `dtaas-services` command.
@@ -152,6 +152,19 @@ dtaas-services user add -s thingsboard
 
 ### GitLab Installation
 
+**Prerequisites:**
+
+* The DTaaS server must be running before starting GitLab, as the GitLab
+  container uses the `dtaas-frontend` Docker network.
+* Set `REACT_APP_AUTH_AUTHORITY` in the client config file
+  (`deploy/config/client/env.js` for server deployments, or
+  `deploy/config/client/env.local.js` for localhost) to
+  `https://<hostname>/gitlab`.
+
+> **Note:** The DTaaS client uses `react-oidc-context`, which forces
+> redirects to use HTTPS. GitLab must therefore be served over HTTPS —
+> either at `https://<hostname>/gitlab` or `https://localhost/gitlab`.
+
 To install and configure the local GitLab instance:
 
 ```bash
@@ -165,6 +178,37 @@ The generated access token is saved to `config/gitlab_tokens.json`.
 > **Warning:** `config/current.passwords.env` is managed automatically by
 > the CLI and tracks the current service passwords. Do **not** edit or delete
 > this file manually doing so may cause password reset commands to fail.
+
+#### GitLab Post-Install Configuration
+
+After the install, configure nginx inside the GitLab container:
+
+```bash
+docker exec -it gitlab bash
+```
+
+Edit `/etc/gitlab/gitlab.rb` and set:
+
+```rb
+external_url 'https://<hostname>/gitlab'
+nginx['enable'] = true
+nginx['redirect_http_to_https'] = false
+nginx['listen_port'] = 80
+nginx['listen_https'] = false
+letsencrypt['enable'] = false
+```
+
+Then apply the changes and exit:
+
+```bash
+# inside the gitlab docker container
+gitlab-ctl reconfigure
+exit
+```
+
+To complete the OAuth2 integration with DTaaS and set up GitLab Runner,
+follow the [integration guide](../gitlab/INTEGRATION.md) and
+[runner setup guide](../runner/GITLAB-RUNNER.md).
 
 ### Service Management
 

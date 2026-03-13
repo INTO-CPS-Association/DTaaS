@@ -7,11 +7,7 @@ license = "INTO-CPS-Association"
 readme = "README.md"
 packages = [{include = "dtaas_services"}]
 include = [
-    { path = "dtaas_services/config/*", format = ["sdist", "wheel"] },
-    { path = "dtaas_services/data/**/*", format = ["sdist", "wheel"] },
-    { path = "dtaas_services/log/*", format = ["sdist", "wheel"] },
-    { path = "dtaas_services/certs/*", format = ["sdist", "wheel"] },
-    { path = "dtaas_services/*.yml", format = ["sdist", "wheel"] }
+    { path = "dtaas_services/templates/**/*", format = ["sdist", "wheel"] }
 ]
 
 [tool.poetry.dependencies]
