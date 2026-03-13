@@ -86,7 +86,7 @@ def _print_remove_status(console: Console, service_list: Optional[list[str]]):
         console.print("[red]Removing all services...[/red]")
 
 
-def _clean_removed_service_passwords(service_list: Optional[list[str]]) -> None:
+def _clean_passwords(service_list: Optional[list[str]]) -> None:
     """Remove password-store entries for removed services."""
     targets = service_list or ["thingsboard", "gitlab"]
     for svc in targets:
@@ -114,7 +114,7 @@ def remove(service_names, volumes):
             err, msg = setup_obj.remove_services(service_list, remove_volumes=volumes)
         if err is not None:
             raise click.ClickException(msg)
-        _clean_removed_service_passwords(service_list)
+        _clean_passwords(service_list)
         console.print(f"[green]✅ {msg}[/green]")
 
     except FileNotFoundError as e:

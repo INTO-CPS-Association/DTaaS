@@ -75,8 +75,9 @@ jobs:
       - name: Check if version exists
         id: check_version
         env:
-          # yamllint disable-line rule:line-length
-          IMAGE_TAG: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
+          IMAGE_TAG: >
+            ${{ env.registry }}/${{ env.ghcr-scope }}/
+            ${{ inputs.image-name }}:${{ inputs.version }}
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
@@ -90,11 +91,14 @@ jobs:
         if: env.exists == 'false'
         # v6.18.0
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        env:
+          IMAGE_REPO: >-
+            ${{ format('{0}/{1}/{2}', env.registry, env.ghcr-scope,
+            inputs.image-name) }}
         with:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
-          # yamllint disable rule:line-length
           tags: |
-            ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
-            ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:latest
+            ${{ env.IMAGE_REPO }}:${{ inputs.version }}
+            ${{ env.IMAGE_REPO }}:latest
