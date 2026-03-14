@@ -2,8 +2,7 @@
 
 from pathlib import Path
 import os
-from os import PathLike
-from typing import Union
+from typing import cast, List
 from python_on_whales import DockerClient
 from ..config import Config
 # pylint: disable=too-few-public-methods
@@ -23,14 +22,13 @@ class ServiceInitializer:
         self._setup_project_name()
 
         # Use all available compose files
-        ComposePath = Union[str, PathLike[str]]
-        compose_files: list[ComposePath] = [self.compose_file]
+        compose_files: list[Path] = [self.compose_file]
         if self.thingsboard_compose_file.exists():
             compose_files.append(self.thingsboard_compose_file)
         if self.gitlab_compose_file.exists():
             compose_files.append(self.gitlab_compose_file)
 
-        self.docker = DockerClient(compose_files=compose_files)
+        self.docker = DockerClient(compose_files=cast(List, compose_files))
 
     def _resolve_compose_file(self) -> Path:
         """Resolve compose file path with fallback to package location."""

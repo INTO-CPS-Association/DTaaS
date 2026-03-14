@@ -42,12 +42,12 @@ class Status(DockerExecutor):
             return set(service_list) & all_services
         return all_services
 
-    def _is_container_running(self, container) -> bool:
+    def _is_container_running(self, container: Container) -> bool:
         """Check if a container is running."""
         return hasattr(container, "state") and container.state.status == "running"
 
     def _match_container_by_label(
-        self, container: object, container_map: dict, all_services: set
+        self, container: Container, container_map: dict, all_services: set
     ) -> None:
         """Try to match container by service label and add to map if matched."""
         service_label = self._container_compose_service_label(container)
