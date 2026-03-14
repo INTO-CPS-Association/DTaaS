@@ -118,7 +118,7 @@ def test_get_certs_directory_exists(patch_service_deps, tmp_path):
     _, mock_config = patch_service_deps
     base_dir = tmp_path / "base"
     base_dir.mkdir()
-    certs_dir = base_dir / "certs" / "test-hostname"
+    certs_dir = base_dir / "certs"
     certs_dir.mkdir(parents=True)
     mock_config.get_base_dir.return_value = base_dir
     result = get_certs_directory()

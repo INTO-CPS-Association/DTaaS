@@ -219,8 +219,8 @@ deploy/services/cli/dtaas_services/config/
 deploy/services/cli/dtaas_services/data/
 deploy/services/cli/dtaas_services/certs/
 deploy/services/cli/dtaas_services/log/
-deploy/services/cli/dtaas_services/compose.services.secure.yml
-deploy/services/cli/dtaas_services/compose.thingsboard.secure.yml
+deploy/services/cli/dtaas_services/compose.services.yml
+deploy/services/cli/dtaas_services/compose.thingsboard.yml
 deploy/services/cli/dtaas_services/compose.gitlab.yml
 deploy/services/cli/dtaas_services/templates
 
@@ -240,8 +240,8 @@ deploy/services/cli/log/thingsboard
 deploy/services/config/credentials.csv
 deploy/services/cli/config/credentials.csv
 deploy/services/cli/config
-deploy/services/cli/compose.services.secure.yml
-deploy/services/cli/compose.thingsboard.secure.yml
+deploy/services/cli/compose.services.yml
+deploy/services/cli/compose.thingsboard.yml
 deploy/services/cli/compose.gitlab.yml
 
 deploy/services/cli/test-output

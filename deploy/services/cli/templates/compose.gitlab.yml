@@ -4,27 +4,26 @@ services:
     image: 'gitlab/gitlab-ce:17.9.2-ce.0'
     container_name: gitlab
     restart: always
-    hostname: ${SERVER_DNS}
+    hostname: ${HOSTNAME}
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://${SERVER_DNS}/gitlab'
+        external_url 'https://${HOSTNAME}/gitlab'
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
-        nginx['listen_port'] = 80
-        nginx['enable'] = true
-        nginx['listen_https'] = false
-        nginx['redirect_http_to_https'] = false
+        nginx['ssl_certificate'] = "/certs/fullchain.pem"
+        nginx['ssl_certificate_key'] = "/certs/privkey.pem"
         letsencrypt['enable'] = false
     ports:
-      - '${GITLAB_PORT}:80'
+      - '${GITLAB_PORT}:443'
       - '2424:22'
     volumes:
       - './data/gitlab/config:/etc/gitlab'
       - './log/gitlab:/var/log/gitlab'
       - './data/gitlab/data:/var/opt/gitlab'
+      - './certs/${HOSTNAME}:/certs:ro'
     shm_size: '256m'
     networks:
       - platform-services
 
 networks:
   platform-services:
-    name: dtaas-platform-services
+    name: dtaas-services

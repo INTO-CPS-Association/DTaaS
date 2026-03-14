@@ -33,19 +33,19 @@ class ServiceInitializer:
     def _resolve_compose_file(self) -> Path:
         """Resolve compose file path with fallback to package location."""
         base_dir = Config.get_base_dir()
-        compose_file = base_dir / "compose.services.secure.yml"
+        compose_file = base_dir / "compose.services.yml"
         if not compose_file.exists():
             package_dir = Path(__file__).parent.parent
-            compose_file = package_dir / "compose.services.secure.yml"
+            compose_file = package_dir / "compose.services.yml"
         return compose_file
 
     def _resolve_thingsboard_compose_file(self) -> Path:
         """Resolve ThingsBoard compose file path with fallback to package location."""
         base_dir = Config.get_base_dir()
-        compose_file = base_dir / "compose.thingsboard.secure.yml"
+        compose_file = base_dir / "compose.thingsboard.yml"
         if not compose_file.exists():
             package_dir = Path(__file__).parent.parent
-            compose_file = package_dir / "compose.thingsboard.secure.yml"
+            compose_file = package_dir / "compose.thingsboard.yml"
         return compose_file
 
     def _resolve_gitlab_compose_file(self) -> Path:

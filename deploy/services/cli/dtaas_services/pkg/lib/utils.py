@@ -212,10 +212,7 @@ def get_certs_directory() -> Optional[Path]:
         Path to certs directory if it exists, None otherwise
     """
     base_dir = Config.get_base_dir()
-    host_name = os.environ.get("HOSTNAME")
-    certs_host_dir = (
-        (base_dir / "certs" / host_name) if host_name else (base_dir / "certs")
-    )
+    certs_host_dir = base_dir / "certs"
     if certs_host_dir.exists():
         return certs_host_dir
     return None

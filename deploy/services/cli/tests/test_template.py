@@ -16,14 +16,14 @@ def test_generate_project_structure_success(tmp_path):
     (templates_root / "config" / "services.env.template").write_text("ENV=value")
     (templates_root / "config" / "credentials.csv.template").write_text("user,pass")
     (templates_root / "data").mkdir()
-    (templates_root / "compose.services.secure.yml").write_text("version: '3'")
+    (templates_root / "compose.services.yml").write_text("version: '3'")
     success, message = generate_project_structure(target_dir, package_root)
     assert success is True
     assert "Project structure generated successfully" in message
     assert target_dir.exists()
     assert (target_dir / "config").exists()
     assert (target_dir / "data").exists()
-    assert (target_dir / "compose.services.secure.yml").exists()
+    assert (target_dir / "compose.services.yml").exists()
     assert (target_dir / "config" / "services.env").exists()
     assert (target_dir / "config" / "credentials.csv").exists()
     # Check data subdirectories

@@ -11,9 +11,9 @@ TEST_SERVER_DNS = "foo.com"
 
 
 def test_get_server_dns_missing(monkeypatch):
-    """Test RuntimeError when SERVER_DNS is not set."""
-    monkeypatch.delenv("SERVER_DNS", raising=False)
-    with pytest.raises(RuntimeError, match="SERVER_DNS"):
+    """Test RuntimeError when HOSTNAME is not set."""
+    monkeypatch.delenv("HOSTNAME", raising=False)
+    with pytest.raises(RuntimeError, match="HOSTNAME"):
         app_token._get_server_dns()
 
 
@@ -66,7 +66,7 @@ def test_create_application_request_failure(mocker):
 
 def test_create_server_application_success(monkeypatch, mocker):
     """Test creating the server OAuth app."""
-    monkeypatch.setenv("SERVER_DNS", TEST_SERVER_DNS)
+    monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
     mock_response = Mock()
     mock_response.status_code = 201
     mock_response.json.return_value = {
@@ -87,7 +87,7 @@ def test_create_server_application_success(monkeypatch, mocker):
 
 def test_create_client_application_success(monkeypatch, mocker):
     """Test creating the client OAuth app."""
-    monkeypatch.setenv("SERVER_DNS", TEST_SERVER_DNS)
+    monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
     mock_response = Mock()
     mock_response.status_code = 201
     mock_response.json.return_value = {

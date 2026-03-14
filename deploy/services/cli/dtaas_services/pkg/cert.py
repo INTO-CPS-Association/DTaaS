@@ -295,8 +295,7 @@ def copy_certs() -> Tuple[bool, str]:
     """
     config = Config()
     base_dir = Config.get_base_dir()
-    host_name = config.get_value("HOSTNAME")
-    certs_dir = base_dir / "certs" / host_name
+    certs_dir = base_dir / "certs"
     source_dir = Path(config.get_value("CERTS_SRC"))
 
     # Handle missing source directory

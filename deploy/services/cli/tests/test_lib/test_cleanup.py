@@ -54,7 +54,7 @@ def test_get_directories_to_clean_with_certs(patch_service_deps, tmp_path):
     """Test _get_directories_to_clean with certificates"""
     service, _, _ = _make_service(patch_service_deps, tmp_path)
     (tmp_path / "data").mkdir()
-    certs_dir = tmp_path / "certs" / "test-hostname"
+    certs_dir = tmp_path / "certs"
     certs_dir.mkdir(parents=True)
     dirs = service._get_directories_to_clean(None, include_certs=True)
     assert certs_dir in dirs

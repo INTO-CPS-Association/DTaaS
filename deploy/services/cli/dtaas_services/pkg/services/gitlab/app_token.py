@@ -32,17 +32,17 @@ class OAuthAppResult:
 
 
 def _get_server_dns() -> str:
-    """Read SERVER_DNS from environment.
-
+    """Read HOSTNAME from environment.
+    Uses HOSTNAME as the server DNS.
     Returns:
         Server DNS value
 
     Raises:
-        RuntimeError: If SERVER_DNS is not configured
+        RuntimeError: If HOSTNAME is not configured
     """
-    server_dns = os.getenv("SERVER_DNS")
+    server_dns = os.getenv("HOSTNAME")
     if not server_dns:
-        raise RuntimeError("SERVER_DNS is not set in config/services.env.")
+        raise RuntimeError("HOSTNAME is not set in config/services.env.")
     return server_dns
 
 

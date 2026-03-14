@@ -57,8 +57,8 @@ def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -
         ("data", "data"),
         ("log", "log"),
         ("certs", "certs"),
-        ("compose.services.secure.yml", "compose.services.secure.yml"),
-        ("compose.thingsboard.secure.yml", "compose.thingsboard.secure.yml"),
+        ("compose.services.yml", "compose.services.yml"),
+        ("compose.thingsboard.yml", "compose.thingsboard.yml"),
         ("compose.gitlab.yml", "compose.gitlab.yml"),
     ]
     for src_item, dest_item in items_to_copy:

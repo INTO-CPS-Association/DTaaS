@@ -41,8 +41,8 @@ cli/
 ├── README.md               # User documentation
 ├── DEVELOPER.md            # This file
 ├── templates/              # Source of truth for generate-project (copied into dtaas_services/ by build.py)
-│   ├── compose.services.secure.yml
-│   ├── compose.thingsboard.secure.yml
+│   ├── compose.services.yml
+│   ├── compose.thingsboard.yml
 │   ├── compose.gitlab.yml
 │   ├── certs/
 │   ├── config/
@@ -279,8 +279,8 @@ Docker Compose variables are properly configured without additional setup.
 
 #### Key Environment Variables
 
-* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`)
-and ThingsBoard API URL.
+* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`),
+  ThingsBoard API URL, and GitLab `external_url` configuration.
   Must match certificate domain name for SSL to work.
 * **`SSL_VERIFY`**: Enable/disable SSL certificate verification for API calls
 (`True` or `False`).
@@ -288,11 +288,8 @@ and ThingsBoard API URL.
 * **`THINGSBOARD_PORT`**: ThingsBoard API port (default: 8080)
 * **`THINGSBOARD_SCHEME`**: Protocol for ThingsBoard API (`http` or `https`,
 default: `https`)
-* **`SERVER_DNS`**: Public DNS name of the DTaaS server (e.g. `foo.com`);
-  used in the GitLab `external_url` configuration
 * **`GITLAB_PORT`**: Port the local GitLab container listens on (default: `8090`);
   must be set before any `gitlab/` module function is called
-* **`GITLAB_SCHEME`**: Protocol for GitLab API calls (`http` or `https`).
 * **`GITLAB_ROOT_NEW_PASSWORD`**: Strong password to apply to the GitLab `root`
   admin account during post-install setup
 

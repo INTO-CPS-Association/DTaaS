@@ -133,7 +133,7 @@ def remove(service_names, volumes):
     is_flag=True,
     default=False,
     help=(
-        "Also delete copied TLS cert files under certs/<HOSTNAME>. "
+        "Also delete copied TLS cert files under certs. "
         "This will require re-running dtaas-services setup."
     ),
 )
@@ -144,7 +144,7 @@ def clean(service_names, certs):
     This removes all files from data and log directories for the specified services,
     including .gitkeep files. Useful for preparing to reinstall services.
 
-    By default, certificates under certs/<HOSTNAME> are preserved. Use --certs to delete them.
+    By default, certificates under certs are preserved. Use --certs to delete them.
 
     Services must be stopped before cleaning.
     """

@@ -18,25 +18,24 @@ def get_ssl_verify() -> bool:
 def build_base_url() -> str:
     """Build the GitLab API base URL for direct container access.
 
-    GitLab's nginx serves HTTP on port 80 inside the container,
+    GitLab's nginx serves HTTPS on port 443 inside the container,
     mapped to GITLAB_PORT on the host.  The ``external_url`` includes
     ``/gitlab`` as a path prefix, so the API lives at
-    ``<scheme>://localhost:GITLAB_PORT/gitlab/api/v4``.
+    ``https://HOSTNAME:GITLAB_PORT/gitlab/api/v4``.
 
     Returns:
-        Base URL string, e.g. "http://localhost:8090/gitlab/api/v4"
+        Base URL string, e.g. "https://foo.com:8090/gitlab/api/v4"
 
     Raises:
         RuntimeError: If GITLAB_PORT or HOSTNAME is not set
     """
     gitlab_port = os.getenv("GITLAB_PORT")
     server = os.getenv("HOSTNAME")
-    scheme = os.getenv("GITLAB_SCHEME", "http").strip().lower()
     if not gitlab_port:
         raise RuntimeError("GITLAB_PORT is not set in config/services.env. ")
     if not server:
         raise RuntimeError("HOSTNAME is not set in config/services.env. ")
-    return f"{scheme}://{server}:{gitlab_port}/gitlab/api/v4"
+    return f"https://{server}:{gitlab_port}/gitlab/api/v4"
 
 
 def _build_headers(private_token: str) -> dict[str, str]:

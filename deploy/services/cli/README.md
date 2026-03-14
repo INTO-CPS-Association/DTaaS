@@ -80,8 +80,8 @@ structure and run:
    This creates:
    * `config/` directory with configuration templates
    * `data/` directory for service data
-   * `compose.services.secure.yml` for main services
-   * `compose.thingsboard.secure.yml` for ThingsBoard and PostgreSQL
+   * `compose.services.yml` for main services
+   * `compose.thingsboard.yml` for ThingsBoard and PostgreSQL
 
 2. Update `config/services.env` with your environment values:
    * `HOSTNAME`: Public hostname of the DTaaS server (used for certificate paths)

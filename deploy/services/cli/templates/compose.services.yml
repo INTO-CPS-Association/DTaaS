@@ -90,6 +90,32 @@ services:
     networks:
       - platform-services
 
+  postgres:
+    image: 'postgres:16.11'
+    container_name: postgres
+    restart: always
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data/pgdata'
+      - './certs/${HOSTNAME}:/etc/ssl'
+    environment:
+      POSTGRES_DB: '${POSTGRES_DB}'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    entrypoint: |
+      bash -c '
+      chmod 600 /etc/ssl/postgres.key &&
+      chown postgres:postgres /etc/ssl/postgres.key /etc/ssl/postgres.crt &&
+      exec docker-entrypoint.sh postgres \
+        -c ssl=on \
+        -c ssl_cert_file=/etc/ssl/postgres.crt \
+        -c ssl_key_file=/etc/ssl/postgres.key
+      '
+    networks:
+      - platform-services
+
 networks:
   platform-services:
-    name: dtaas-platform-services
+    name: dtaas-services

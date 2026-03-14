@@ -71,6 +71,7 @@ of documentation and reference.
 ```toml
 [common]
 # absolute path to the DTaaS application directory
+# TODO : Update, we are now reusing hostname for this 
 server-dns = "foo.com"
 # Specify the directory of DTaaS installation
 # Linux example

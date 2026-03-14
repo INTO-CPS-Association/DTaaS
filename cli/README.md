@@ -48,6 +48,7 @@ git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 [common]
 # Server hostname either localhost or a valid hostname, ex: foo.com
+# TODO : Update, we are now reusing hostname for this
 server-dns = "localhost"
 # absolute path to the DTaaS application directory
 # Specify the directory of DTaaS installation
@@ -55,7 +56,7 @@ server-dns = "localhost"
 path = "/Users/username/DTaaS"
 # Windows example
 #path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get 
+# Note: You have to either use / or \\ when specifying path, else you would get
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
 [common.resources]
