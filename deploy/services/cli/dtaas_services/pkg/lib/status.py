@@ -1,6 +1,7 @@
 """Service status & inspection"""
 
 from typing import Any, Tuple, Optional, Set
+from python_on_whales import Container
 from .utils import check_compose_file, DOCKER_OPERATION_EXCEPTIONS
 from ..formatter import RemovedServiceEntry
 from .docker_executor import DockerExecutor, handle_docker_not_running
@@ -19,7 +20,7 @@ class Status(DockerExecutor):
             state_sets["restarting"].add(service_name)
 
     def _match_container_by_name(
-        self, container: Any, container_map: dict, all_services: set
+        self, container: Container, container_map: dict, all_services: set
     ) -> bool:
         """Try to match container by name. Returns True if matched."""
         if container.name in all_services:
@@ -27,7 +28,7 @@ class Status(DockerExecutor):
             return True
         return False
 
-    def _container_compose_service_label(self, container) -> Optional[str]:
+    def _container_compose_service_label(self, container: Container) -> Optional[str]:
         """Get the compose service label from a container if it exists."""
         if hasattr(container, "config") and container.config.labels:
             return container.config.labels.get("com.docker.compose.service")

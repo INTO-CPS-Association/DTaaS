@@ -2,7 +2,6 @@
 
 import shutil
 import subprocess
-import os
 from pathlib import Path
 from typing import Optional, Tuple
 from ..config import Config

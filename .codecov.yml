@@ -31,3 +31,11 @@ component_management:
       name: Lib Microservice
       paths:
         - servers/lib/**
+    - component_id: dtaas_services
+      name: dtaas-Services
+      paths:
+        - deploy/services/cli/**
+    - component_id: dtaas_cli
+      name: dtaas-CLI
+      paths:
+        - cli/**
