@@ -102,6 +102,22 @@ def test_install_gitlab_success(runner, mock_service_setup, mocker):
     mock_setup.assert_called_once()
 
 
+def test_install_gitlab_not_ready(runner, mock_service_setup, mocker):
+    """Test install GitLab when it is still starting up"""
+    mock_service_setup["service_instance"].manage_services.return_value = (
+        None,
+        "GitLab started",
+    )
+    mocker.patch(
+        "dtaas_services.commands.setup_ops.setup_gitlab",
+        return_value=(False, "starting"),
+    )
+    result = runner.invoke(services, ["install", "-s", "gitlab"])
+    assert result.exit_code == 0
+    assert "not ready yet" in result.output
+    assert "dtaas-services install -s gitlab" in result.output
+
+
 def test_install_gitlab_start_fails(runner, mock_service_setup):
     """Test install GitLab when it fails to start"""
     mock_service_setup["service_instance"].manage_services.return_value = (

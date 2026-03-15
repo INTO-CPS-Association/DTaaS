@@ -9,7 +9,7 @@ from dataclasses import dataclass, asdict
 from rich.console import Console
 
 from ...config import Config
-from .health import wait_for_gitlab_ready
+from .health import is_gitlab_healthy
 from .password import get_initial_root_password, reset_gitlab_password
 from .personal_token import create_personal_access_token
 from .app_token import (
@@ -55,11 +55,17 @@ def _app_result_to_dict(result: OAuthAppResult) -> dict:
     return asdict(result)
 
 
-def _step_wait_for_health(console: Console, docker) -> Tuple[bool, str]:
-    """Wait for GitLab to be healthy."""
-    if not wait_for_gitlab_ready(console, docker):
-        return False, "GitLab did not become healthy in time."
-    return True, ""
+def _check_gitlab_health(console: Console, docker) -> Tuple[bool, str]:
+    """Check if GitLab is healthy (non-blocking).
+
+    Returns:
+        Tuple of (is_healthy, status_or_error_msg)
+    """
+    health_status = is_gitlab_healthy(docker)
+    if health_status == "healthy":
+        console.print("[green]\u2705 GitLab is healthy.[/green]")
+        return True, ""
+    return False, health_status
 
 
 def _step_get_password(console: Console) -> Tuple[bool, str]:
@@ -109,9 +115,9 @@ def _step_save_tokens(
 
 def _run_prereq_steps(console: Console, docker) -> Tuple[bool, str, str, str]:
     """Run health check, password retrieval, PAT creation."""
-    success, error_msg = _step_wait_for_health(console, docker)
-    if not success:
-        return False, "", "", error_msg
+    healthy, status_msg = _check_gitlab_health(console, docker)
+    if not healthy:
+        return False, "", "", status_msg
 
     success, root_password = _step_get_password(console)
     if not success:

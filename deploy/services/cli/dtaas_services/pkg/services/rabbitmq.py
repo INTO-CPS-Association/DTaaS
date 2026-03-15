@@ -171,8 +171,7 @@ def permissions_rabbitmq() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        host_name = config.get_value("HOSTNAME")
-        certs_dir = base_dir / "certs" / host_name
+        certs_dir = base_dir / "certs"
         privkey_path = certs_dir / "privkey.pem"
         rabbit_key_path = certs_dir / "privkey-rabbitmq.pem"
         rabbit_uid = int(config.get_value("RABBIT_UID"))

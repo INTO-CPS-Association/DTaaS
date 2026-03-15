@@ -139,13 +139,29 @@ def _install_thingsboard(console: Console, service_obj: Service) -> None:
     console.print("[green]✅ ThingsBoard installation completed![/green]")
 
 
+GITLAB_NOT_READY_STATUSES = {"starting", "unhealthy", "not found", "unknown state"}
+
+GITLAB_NOT_READY_HINT = (
+    "[yellow]GitLab is not ready yet. "
+    "It typically takes 5\u201310 minutes after first start.[/yellow]\n"
+    "[cyan]Next steps:[/cyan]\n"
+    "  1. Check status:  dtaas-services status -s gitlab\n"
+    "  2. When status shows 'healthy', re-run:  "
+    "dtaas-services install -s gitlab"
+)
+
+
 def _install_gitlab(console: Console, service_obj: Service) -> None:
     """Run GitLab post-install setup flow."""
     docker = _ensure_service_running(console, service_obj, "gitlab")
     success, msg = setup_gitlab(console, docker)
-    if not success:
-        raise click.ClickException(f"GitLab installation failed: {msg}")
-    console.print(f"[green]✅ {msg}[/green]")
+    if success:
+        console.print(f"[green]\u2705 {msg}[/green]")
+        return
+    if msg in GITLAB_NOT_READY_STATUSES:
+        console.print(GITLAB_NOT_READY_HINT)
+        return
+    raise click.ClickException(f"GitLab installation failed: {msg}")
 
 
 @click.command()

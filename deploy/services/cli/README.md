@@ -92,7 +92,6 @@ structure and run:
    * `TB_TENANT_NEW_PASSWORD`: New password for the tenant admin
    * `SERVICES_UID`: User ID for service file ownership
    * `SERVICES_GID`: Group ID for service file ownership
-   * `SERVER_DNS`: Your server hostname
 
 3. Update `config/credentials.csv` with user accounts (format: `username,password,email`)
 
@@ -168,43 +167,23 @@ dtaas-services user add -s thingsboard
 To install and configure the local GitLab instance:
 
 ```bash
-#  (Starts GitLab, waits for it to become healthy, resets the root
-#   password, and creates the initial Personal Access Token)
 dtaas-services install -s gitlab
 ```
 
-The generated access token is saved to `config/gitlab_tokens.json`.
+GitLab takes 5–10 minutes to become healthy after the first start.
+The install command checks GitLab’s readiness and returns immediately:
+
+* **If GitLab is healthy**: the command runs post-install setup
+  (password reset, PAT creation, OAuth app registration) and
+  saves the access token to `config/gitlab_tokens.json`.
+* **If GitLab is still starting**: the command prints a status hint
+  and exits. Check progress with `dtaas-services status -s gitlab`
+  and re-run `dtaas-services install -s gitlab` once the status
+  shows "healthy".
 
 > **Warning:** `config/current.passwords.env` is managed automatically by
 > the CLI and tracks the current service passwords. Do **not** edit or delete
-> this file manually doing so may cause password reset commands to fail.
-
-#### GitLab Post-Install Configuration
-
-After the install, configure nginx inside the GitLab container:
-
-```bash
-docker exec -it gitlab bash
-```
-
-Edit `/etc/gitlab/gitlab.rb` and set:
-
-```rb
-external_url 'https://<hostname>/gitlab'
-nginx['enable'] = true
-nginx['redirect_http_to_https'] = false
-nginx['listen_port'] = 80
-nginx['listen_https'] = false
-letsencrypt['enable'] = false
-```
-
-Then apply the changes and exit:
-
-```bash
-# inside the gitlab docker container
-gitlab-ctl reconfigure
-exit
-```
+> this file manually — doing so may cause password reset commands to fail.
 
 To complete the OAuth2 integration with DTaaS and set up GitLab Runner,
 follow the [integration guide](../gitlab/INTEGRATION.md) and

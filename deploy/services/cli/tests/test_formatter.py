@@ -55,3 +55,29 @@ def test_format_service_list_status():
     # Both services should appear
     assert "Grafana" in output or "grafana" in output
     assert "InfluxDB" in output or "influxdb" in output
+
+
+def test_format_container_status_starting():
+    """Test formatting containers with health status 'starting'"""
+    container = make_mock_container("gitlab", "running", health_status="starting")
+    containers = cast(
+        List[Union[Container, RemovedServiceEntry]], [container]
+    )
+    string_io = StringIO()
+    console = Console(file=string_io, force_terminal=True)
+    format_container_status(containers, console)
+    output = string_io.getvalue()
+    assert "starting" in output
+
+
+def test_format_container_status_unhealthy():
+    """Test formatting containers with health status 'unhealthy'"""
+    container = make_mock_container("gitlab", "running", health_status="unhealthy")
+    containers = cast(
+        List[Union[Container, RemovedServiceEntry]], [container]
+    )
+    string_io = StringIO()
+    console = Console(file=string_io, force_terminal=True)
+    format_container_status(containers, console)
+    output = string_io.getvalue()
+    assert "not ready" in output

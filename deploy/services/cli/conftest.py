@@ -37,12 +37,13 @@ def pytest_configure(config):
         traceback.print_exc()
 
 
-def make_mock_container(name, status):
+def make_mock_container(name, status, health_status=None):
     """Create a mock container with the specified name and status.
 
     Args:
         name: Container name
         status: Container state status
+        health_status: Optional health check status (e.g. 'starting', 'healthy')
 
     Returns:
         Mock object with name and state.status attributes
@@ -50,4 +51,8 @@ def make_mock_container(name, status):
     container = Mock()
     container.name = name
     container.state.status = status
+    if health_status is not None:
+        container.state.health.status = health_status
+    else:
+        container.state.health = None
     return container

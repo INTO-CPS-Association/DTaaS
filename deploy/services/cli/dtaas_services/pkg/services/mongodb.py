@@ -20,8 +20,7 @@ def permissions_mongodb() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        host_name = config.get_value("HOSTNAME")
-        certs_dir = base_dir / "certs" / host_name
+        certs_dir = base_dir / "certs"
         privkey_path = certs_dir / "privkey.pem"
         fullchain_path = certs_dir / "fullchain.pem"
         combined_path = certs_dir / "combined.pem"

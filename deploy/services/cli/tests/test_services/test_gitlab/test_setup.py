@@ -83,15 +83,26 @@ def test_get_tokens_output_path(mocker):
     assert result == Path("/srv/dtaas/config/gitlab_tokens.json")
 
 
-def test_step_wait_for_health_success(mock_console, mock_docker, mocker):
-    """Test health wait step success."""
+def test_check_gitlab_health_success(mock_console, mock_docker, mocker):
+    """Test health check step success."""
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup.wait_for_gitlab_ready",
-        return_value=True,
+        "dtaas_services.pkg.services.gitlab.setup.is_gitlab_healthy",
+        return_value="healthy",
     )
-    success, error = setup._step_wait_for_health(mock_console, mock_docker)
+    success, error = setup._check_gitlab_health(mock_console, mock_docker)
     assert success is True
     assert error == ""
+
+
+def test_check_gitlab_health_not_ready(mock_console, mock_docker, mocker):
+    """Test health check step when GitLab is still starting."""
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup.is_gitlab_healthy",
+        return_value="starting",
+    )
+    success, status = setup._check_gitlab_health(mock_console, mock_docker)
+    assert success is False
+    assert status == "starting"
 
 
 def test_step_get_password_success(mock_console, mocker):
@@ -229,7 +240,7 @@ def test_step_save_tokens_failure(
 def test_run_prereq_steps_success(mock_console, mock_docker, mocker):
     """Test all prerequisite steps succeed."""
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup._step_wait_for_health",
+        "dtaas_services.pkg.services.gitlab.setup._check_gitlab_health",
         return_value=(True, ""),
     )
     mocker.patch(

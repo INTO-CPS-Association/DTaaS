@@ -79,8 +79,7 @@ def permissions_influxdb() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        host_name = config.get_value("HOSTNAME")
-        certs_dir = base_dir / "certs" / host_name
+        certs_dir = base_dir / "certs"
         privkey_path = certs_dir / "privkey.pem"
         influx_key_path = certs_dir / "privkey-influxdb.pem"
         influx_uid = int(config.get_value("INFLUX_UID"))

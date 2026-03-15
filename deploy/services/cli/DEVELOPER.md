@@ -254,15 +254,18 @@ The package uses a modular, three-layer architecture:
   * `app_token.py`: OAuth application creation, listing, and deletion;
     used during post-install to register the DTaaS client
   * `health.py`: Container health polling and readiness waiting;
-    exports `is_gitlab_running()` for pre-flight checks
+    exports `is_gitlab_running()` for pre-flight checks and
+    `is_gitlab_healthy()` for non-blocking health status queries
   * `password.py`: Reads the auto-generated root password from
     `/etc/gitlab/initial_root_password` and resets it to
     `GITLAB_ROOT_NEW_PASSWORD` via the API
   * `personal_token.py`: Creates the initial root Personal Access Token
     via `docker exec gitlab gitlab-rails runner`;
     saves the result to `config/gitlab_tokens.json`
-  * `setup.py`: Post-install orchestration — waits for health, resets
-    password, creates PAT, and registers the OAuth application
+  * `setup.py`: Post-install orchestration — checks health (non-blocking),
+    and when healthy: resets password, creates PAT, and registers
+    the OAuth application. Returns immediately with a status hint
+    if GitLab is still starting.
   * `users.py`: Creates GitLab user accounts from `config/credentials.csv`
     using the root PAT
 
@@ -348,8 +351,11 @@ Stops and removes Docker containers:
 
 #### GitLab Users
 
-* **Prerequisites**: `dtaas-services install -s gitlab` must be run first to
+* **Prerequisites**: `dtaas-services install -s gitlab` must be run to
   complete post-install setup (health check → password reset → PAT creation).
+  The install command is non-blocking: if GitLab is still starting it returns
+  immediately with a status hint. Re-run the command once
+  `dtaas-services status -s gitlab` shows the container as healthy.
   The PAT stored in `config/gitlab_tokens.json` is used for all subsequent API calls.
 * **Credentials File**: GitLab users are created from `config/credentials.csv`
   (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.

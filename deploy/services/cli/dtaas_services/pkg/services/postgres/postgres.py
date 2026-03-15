@@ -70,8 +70,7 @@ def permissions_postgres() -> Tuple[bool, str]:
     try:
         config = Config()
         base_dir = Config.get_base_dir()
-        host_name = config.get_value("HOSTNAME")
-        certs_dir = base_dir / "certs" / host_name
+        certs_dir = base_dir / "certs"
         postgres_uid = int(config.get_value("POSTGRES_UID"))
         postgres_gid = int(config.get_value("POSTGRES_GID"))
 

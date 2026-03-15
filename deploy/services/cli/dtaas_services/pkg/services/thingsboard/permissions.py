@@ -42,8 +42,7 @@ class _SetupConfig:
         self.config = Config()
         self.base_dir = Config.get_base_dir()
         self.os_type = platform.system().lower()
-        self.host_name = self.config.get_value("HOSTNAME")
-        self.certs_dir = self.base_dir / "certs" / self.host_name
+        self.certs_dir = self.base_dir / "certs"
         self.postgres_uid = int(self.config.get_value("POSTGRES_UID"))
         self.postgres_gid = int(self.config.get_value("POSTGRES_GID"))
         self.thingsboard_uid = int(self.config.get_value("THINGSBOARD_UID"))

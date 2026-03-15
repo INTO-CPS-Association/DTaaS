@@ -45,6 +45,8 @@ STATUS_INFO = {
     "restarting": ("🔃", "restarting", "yellow"),
     "exited": ("🔴", "stopped", "red"),
     "removed": ("🗑️", "removed", "dim"),
+    "starting": ("⏳", "starting", "cyan"),
+    "unhealthy": ("⚠️", "not ready", "yellow"),
 }
 
 
@@ -63,6 +65,24 @@ def normalize_service_name(user_input: str) -> str:
         Actual service name in compose file (e.g., 'thingsboard-ce')
     """
     return USER_TO_SERVICE_NAME.get(user_input.lower(), user_input.lower())
+
+
+def _effective_status(container) -> str:
+    """Return the most informative status for a container.
+
+    When Docker reports 'running' but the health check is 'starting' or
+    'unhealthy', return the health status instead so the user sees the
+    real readiness state.
+    """
+    state = container.state.status or "unknown"
+    if state == "running":
+        try:
+            health = getattr(container.state, "health", None)
+            if health and health.status in ("starting", "unhealthy"):
+                return health.status
+        except (AttributeError, TypeError):
+            pass
+    return state
 
 
 def _format_status_display(state: str) -> str:
@@ -96,8 +116,7 @@ def format_container_status(
     for container in sorted_containers:
         display_name = _get_display_name(container.name)
         container_name = container.name
-        state = container.state.status or "unknown"
-        status_display = _format_status_display(state)
+        status_display = _format_status_display(_effective_status(container))
         table.add_row(display_name, container_name, status_display)
     console.print(table)
 
@@ -116,8 +135,7 @@ def _sort_service_names(
             status_display = "❌ [red]not installed[/red]"
         else:
             container_name = container.name
-            state = container.state.status
-            status_display = _format_status_display(state)
+            status_display = _format_status_display(_effective_status(container))
         table.add_row(display_name, container_name, status_display)
     return sorted_services
 

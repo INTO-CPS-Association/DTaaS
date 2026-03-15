@@ -19,7 +19,7 @@ services:
       - './data/gitlab/config:/etc/gitlab'
       - './log/gitlab:/var/log/gitlab'
       - './data/gitlab/data:/var/opt/gitlab'
-      - './certs/${HOSTNAME}:/certs:ro'
+      - './certs:/certs:ro'
     shm_size: '256m'
     networks:
       - platform-services
