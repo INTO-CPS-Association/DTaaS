@@ -80,7 +80,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.6",
     "react-scripts": "^5.0.1",
-    "react-syntax-highlighter": "^16.1.0",
+    "react-syntax-highlighter": "^16.1.1",
     "react-tabs": "^6.1.0",
     "redux": "^5.0.1",
     "remarkable": "^2.0.1",
