@@ -1506,10 +1506,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.10.tgz#a2a1e3812d14525f725d011a73eceb41fef5bc1c"
   integrity sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==
 
-"@fontsource/roboto@^5.2.8":
-  version "5.2.9"
-  resolved "https://registry.yarnpkg.com/@fontsource/roboto/-/roboto-5.2.9.tgz#55092cf992ab8d5082be73b79b42f383a9c0903c"
-  integrity sha512-ZTkyHiPk74B/aj8BZWbsxD5Yu+Lq+nR64eV4wirlrac2qXR7jYk2h6JlLYuOuoruTkGQWNw2fMuKNavw7/rg0w==
+"@fontsource/roboto@^5.2.10":
+  version "5.2.10"
+  resolved "https://registry.yarnpkg.com/@fontsource/roboto/-/roboto-5.2.10.tgz#b985d34de475913b41d0fb57e2dcd0b16ab9ecb5"
+  integrity sha512-8HlA5FtSfz//oFSr2eL7GFXAiE7eIkcGOtx7tjsLKq+as702x9+GU7K95iDeWFapHC4M2hv9RrpXKRTGGBI8Zg==
 
 "@gitbeaker/core@^43.8.0":
   version "43.8.0"
