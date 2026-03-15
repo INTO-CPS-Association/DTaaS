@@ -378,11 +378,11 @@
   integrity sha512-EriSTlt5OC9/7SXkRSCAhfSxxoSUgBm33OH+IkwbdpgoqsSsUg7y3uh+IICI/Qg4BBWr3U2i39RpmycbxMq4ew==
 
 "@eslint/compat@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@eslint/compat/-/compat-2.0.0.tgz#0c98f24fdac8717eff6b6530971c1fa25e8612a8"
-  integrity sha512-T9AfE1G1uv4wwq94ozgTGio5EUQBqAVe1X9qsQtSNVEYW6j3hvtZVm8Smr4qL1qDPFg+lOB2cL5RxTRMzq4CTA==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@eslint/compat/-/compat-2.0.3.tgz#860bdd23d0df1c71a8d751f0aa1430e05bc056dd"
+  integrity sha512-SjIJhGigp8hmd1YGIBwh7Ovri7Kisl42GYFjrOyHhtfYGGoLW6teYi/5p8W50KSsawUPpuLOSmsq1bD0NGQLBw==
   dependencies:
-    "@eslint/core" "^1.0.0"
+    "@eslint/core" "^1.1.1"
 
 "@eslint/config-array@^0.21.1":
   version "0.21.1"
@@ -407,10 +407,10 @@
   dependencies:
     "@types/json-schema" "^7.0.15"
 
-"@eslint/core@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@eslint/core/-/core-1.0.0.tgz#6e371a1ce8dc56224f3b9b97fb6b815cd41f9b87"
-  integrity sha512-PRfWP+8FOldvbApr6xL7mNCw4cJcSTq4GA7tYbgq15mRb0kWKO/wEB2jr+uwjFH3sZvEZneZyCUGTxsv4Sahyw==
+"@eslint/core@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@eslint/core/-/core-1.1.1.tgz#450f3d2be2d463ccd51119544092256b4e88df32"
+  integrity sha512-QUPblTtE51/7/Zhfv8BDwO0qkkzQL7P/aWWbqcf4xWLEYn1oKjdO0gglQBB4GAsu7u6wjijbCmzsUTy6mnk6oQ==
   dependencies:
     "@types/json-schema" "^7.0.15"
 
