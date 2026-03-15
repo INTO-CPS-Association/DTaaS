@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
 
+import gitlab
+import gitlab.exceptions
+
 from ...config import Config
 from ...utils import execute_docker_command
-from ._api import gitlab_request
 
 logger = logging.getLogger(__name__)
 
@@ -156,31 +158,11 @@ def _load_pat_from_tokens() -> Tuple[bool, str]:
     return _read_tokens_file(tokens_path)
 
 
-def _parse_user_pat_response(response, username: str) -> Tuple[bool, str]:
-    """Parse the API response from a user PAT creation request.
-
-    Returns:
-        Tuple of (success, token_or_error)
-    """
-    if response.status_code not in (200, 201):
-        return False, (
-            f"Failed to create PAT for '{username}': "
-            f"HTTP {response.status_code}: {response.text}"
-        )
-    try:
-        token = response.json().get("token", "")
-        if not token:
-            return False, f"Empty token in PAT response for '{username}'"
-        return True, token
-    except (KeyError, json.JSONDecodeError) as exc:
-        return False, f"Failed to parse PAT response for '{username}': {exc}"
-
-
-def create_user_pat(admin_pat: str, user_id: int, username: str) -> Tuple[bool, str]:
+def create_user_pat(gl: gitlab.Gitlab, user_id: int, username: str) -> Tuple[bool, str]:
     """Create a Personal Access Token for a GitLab user via the admin API.
 
     Args:
-        admin_pat: Admin Personal Access Token
+        gl: Authenticated gitlab.Gitlab client
         user_id: GitLab user ID
         username: Username (for log messages)
 
@@ -188,16 +170,18 @@ def create_user_pat(admin_pat: str, user_id: int, username: str) -> Tuple[bool, 
         Tuple of (success, token_or_error)
     """
     expires_at = (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d")
-    payload = {
-        "name": USER_PAT_NAME,
-        "scopes": USER_PAT_SCOPES,
-        "expires_at": expires_at,
-    }
-    http_params = {
-        "method": "POST",
-        "endpoint": f"/users/{user_id}/personal_access_tokens",
-    }
-    success, response, error_msg = gitlab_request(http_params, admin_pat, json=payload)
-    if not success:
-        return False, f"Failed to create PAT for '{username}': {error_msg}"
-    return _parse_user_pat_response(response, username)
+    try:
+        user = gl.users.get(user_id)
+        pat = user.personal_access_tokens.create(
+            {
+                "name": USER_PAT_NAME,
+                "scopes": USER_PAT_SCOPES,
+                "expires_at": expires_at,
+            }
+        )
+        token = pat.token
+        if not token:
+            return False, f"Empty token in PAT response for '{username}'"
+        return True, token
+    except gitlab.exceptions.GitlabError as exc:
+        return False, f"Failed to create PAT for '{username}': {exc}"

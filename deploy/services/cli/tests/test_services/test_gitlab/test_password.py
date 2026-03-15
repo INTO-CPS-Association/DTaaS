@@ -1,6 +1,9 @@
 """Tests for GitLab root password retrieval and reset (password.py)."""
 
-from unittest.mock import Mock
+from unittest.mock import MagicMock
+
+import gitlab
+
 from dtaas_services.pkg.services.gitlab import password
 # pylint: disable=W0212
 
@@ -94,41 +97,31 @@ def test_get_root_new_password_not_set(monkeypatch):
 
 def test_apply_password_reset_success(mocker):
     """Test successful password reset via API."""
-    mock_response = Mock()
-    mock_response.status_code = 200
+    mock_gl = MagicMock()
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.password.gitlab_request",
-        return_value=(True, mock_response, ""),
+        "dtaas_services.pkg.services.gitlab.password.get_gitlab_client",
+        return_value=mock_gl,
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.password.save_password",
     )
     success, msg = password._apply_password_reset(TEST_TOKEN, TEST_NEW_PASSWORD)
     assert success is True
     assert "updated successfully" in msg
+    mock_gl.users.get.assert_called_once_with(password.ROOT_USER_ID)
 
 
-def test_apply_password_reset_http_failure(mocker):
-    """Test password reset when HTTP request fails."""
+def test_apply_password_reset_api_failure(mocker):
+    """Test password reset when API request fails."""
+    mock_gl = MagicMock()
+    mock_gl.users.get.side_effect = gitlab.exceptions.GitlabError("connection refused")
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.password.gitlab_request",
-        return_value=(False, None, "connection refused"),
+        "dtaas_services.pkg.services.gitlab.password.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, msg = password._apply_password_reset(TEST_TOKEN, TEST_NEW_PASSWORD)
     assert success is False
     assert "connection refused" in msg
-
-
-def test_apply_password_reset_bad_status(mocker):
-    """Test password reset with non-200 status code."""
-    mock_response = Mock()
-    mock_response.status_code = 403
-    mock_response.text = "Forbidden"
-    mock_response.json.return_value = {"error": "forbidden"}
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.password.gitlab_request",
-        return_value=(True, mock_response, ""),
-    )
-    success, msg = password._apply_password_reset(TEST_TOKEN, TEST_NEW_PASSWORD)
-    assert success is False
-    assert "403" in msg or "forbidden" in msg.lower()
 
 
 def test_reset_gitlab_password_success(mocker):

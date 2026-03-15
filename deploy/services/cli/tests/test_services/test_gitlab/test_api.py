@@ -1,10 +1,8 @@
-"""Tests for GitLab low-level REST API client (_api.py)."""
+"""Tests for GitLab API client factory (_api.py)."""
 
-from unittest.mock import Mock
+import gitlab
 import pytest
-import httpx
 import dtaas_services.pkg.services.gitlab._api as api
-# pylint: disable=W0212
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
 TEST_HOSTNAME = "services.foo.com"
@@ -27,38 +25,33 @@ def test_build_base_url_missing_hostname(monkeypatch):
         api.build_base_url()
 
 
-def test_build_headers():
-    """Test header dict contains PRIVATE-TOKEN."""
-    headers = api._build_headers(TEST_TOKEN)
-    assert headers == {"PRIVATE-TOKEN": TEST_TOKEN}
+def test_build_base_url_success(monkeypatch):
+    """Test base URL is built correctly from environment."""
+    monkeypatch.setenv("GITLAB_PORT", TEST_PORT)
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
+    url = api.build_base_url()
+    assert url == f"https://{TEST_HOSTNAME}:{TEST_PORT}/gitlab"
 
 
-def test_gitlab_request_success(monkeypatch, mocker):
-    """Test successful API request."""
+def test_get_gitlab_client_returns_client(monkeypatch):
+    """Test that get_gitlab_client returns a configured gitlab.Gitlab instance."""
     monkeypatch.setenv("GITLAB_PORT", TEST_PORT)
     monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     monkeypatch.setenv("SSL_VERIFY", "false")
 
-    mock_response = Mock(spec=httpx.Response)
-    mock_response.status_code = 200
-    mocker.patch("httpx.request", return_value=mock_response)
-
-    http_params = {"method": "GET", "endpoint": "/users"}
-    success, response, error = api.gitlab_request(http_params, TEST_TOKEN)
-    assert success is True
-    assert response is mock_response
-    assert error == ""
+    gl = api.get_gitlab_client(TEST_TOKEN)
+    assert isinstance(gl, gitlab.Gitlab)
+    assert gl.url == f"https://{TEST_HOSTNAME}:{TEST_PORT}/gitlab"
+    assert gl.private_token == TEST_TOKEN
 
 
-def test_gitlab_request_connect_error(monkeypatch, mocker):
-    """Test API request with connection error."""
-    monkeypatch.setenv("GITLAB_PORT", TEST_PORT)
-    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
+def test_get_ssl_verify_default(monkeypatch):
+    """Test SSL verification is enabled by default."""
+    monkeypatch.delenv("SSL_VERIFY", raising=False)
+    assert api.get_ssl_verify() is True
+
+
+def test_get_ssl_verify_disabled(monkeypatch):
+    """Test SSL verification can be disabled."""
     monkeypatch.setenv("SSL_VERIFY", "false")
-
-    mocker.patch("httpx.request", side_effect=httpx.ConnectError("refused"))
-    http_params = {"method": "GET", "endpoint": "/users"}
-    success, response, error = api.gitlab_request(http_params, TEST_TOKEN)
-    assert success is False
-    assert response is None
-    assert "HTTP request failed" in error
+    assert api.get_ssl_verify() is False

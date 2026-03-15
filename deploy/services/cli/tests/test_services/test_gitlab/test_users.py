@@ -1,8 +1,11 @@
-"""Tests for GitLab user management via REST API (users.py)."""
+"""Tests for GitLab user management via python-gitlab (users.py)."""
 
 import json
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
+
+import gitlab
+
 from dtaas_services.pkg.services.gitlab import users
 # pylint: disable=W0212, W0621
 
@@ -12,62 +15,42 @@ TEST_USERNAME = "testuser"
 TEST_EMAIL = "test@example.com"
 
 
-def test_evaluate_user_response_201():
-    """Test evaluating a 201 Created response returns user_id."""
-    response = Mock()
-    response.status_code = 201
-    response.json.return_value = {"id": 42}
-    success, user_id, error = users._evaluate_user_response(response, TEST_USERNAME)
-    assert success is True
-    assert user_id == 42
-    assert error == ""
+def _make_gl_mock():
+    """Create a mock gitlab.Gitlab client."""
+    return MagicMock()
 
 
-def test_evaluate_user_response_409():
-    """Test evaluating a 409 Conflict (user exists) response."""
-    response = Mock()
-    response.status_code = 409
-    success, user_id, error = users._evaluate_user_response(response, TEST_USERNAME)
-    assert success is True
-    assert user_id is None
-    assert error == ""
-
-
-def test_evaluate_user_response_422():
-    """Test evaluating a 422 validation error response."""
-    response = Mock()
-    response.status_code = 422
-    response.text = "Validation failed"
-    success, user_id, error = users._evaluate_user_response(response, TEST_USERNAME)
-    assert success is False
-    assert user_id is None
-    assert "422" in error
-
-
-def test_create_single_user_success(mocker):
+def test_create_single_user_success():
     """Test creating a single user successfully."""
-    mock_response = Mock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {"id": 7}
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.users.gitlab_request",
-        return_value=(True, mock_response, ""),
-    )
+    gl = _make_gl_mock()
+    mock_user = Mock()
+    mock_user.id = 7
+    gl.users.create.return_value = mock_user
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-    success, error, user_id = users._create_single_user(TEST_TOKEN, row)
+    success, error, user_id = users._create_single_user(gl, row)
     assert success is True
     assert error == ""
     assert user_id == 7
 
 
-def test_create_single_user_request_failure(mocker):
-    """Test creating a user when HTTP request fails."""
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.users.gitlab_request",
-        return_value=(False, None, "connection refused"),
-    )
+def test_create_single_user_already_exists():
+    """Test creating a user that already exists (409)."""
+    gl = _make_gl_mock()
+    exc = gitlab.exceptions.GitlabCreateError(response_code=409)
+    gl.users.create.side_effect = exc
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-    success, error, user_id = users._create_single_user(TEST_TOKEN, row)
+    success, error, user_id = users._create_single_user(gl, row)
+    assert success is True
+    assert error == ""
+    assert user_id is None
+
+
+def test_create_single_user_request_failure():
+    """Test creating a user when API request fails."""
+    gl = _make_gl_mock()
+    gl.users.create.side_effect = gitlab.exceptions.GitlabError("connection refused")
+    row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
+    success, error, user_id = users._create_single_user(gl, row)
     assert success is False
     assert "connection refused" in error
     assert user_id is None
@@ -75,6 +58,7 @@ def test_create_single_user_request_failure(mocker):
 
 def test_create_user_and_pat_new_user(mocker):
     """Test _create_user_and_pat creates a PAT for a newly created user."""
+    gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_single_user",
         return_value=(True, "", 42),
@@ -84,7 +68,7 @@ def test_create_user_and_pat_new_user(mocker):
         return_value=(True, TEST_TOKEN),
     )
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-    success, error, token = users._create_user_and_pat(TEST_TOKEN, row)
+    success, error, token = users._create_user_and_pat(gl, row)
     assert success is True
     assert error == ""
     assert token == TEST_TOKEN
@@ -92,13 +76,14 @@ def test_create_user_and_pat_new_user(mocker):
 
 def test_create_user_and_pat_existing_user(mocker):
     """Test _create_user_and_pat skips PAT for already-existing user."""
+    gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_single_user",
         return_value=(True, "", None),
     )
     pat_mock = mocker.patch("dtaas_services.pkg.services.gitlab.users.create_user_pat")
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-    success, _, token = users._create_user_and_pat(TEST_TOKEN, row)
+    success, _, token = users._create_user_and_pat(gl, row)
     assert success is True
     assert token == ""
     pat_mock.assert_not_called()
@@ -106,18 +91,20 @@ def test_create_user_and_pat_existing_user(mocker):
 
 def test_create_user_and_pat_user_creation_fails(mocker):
     """Test _create_user_and_pat propagates user creation failure."""
+    gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_single_user",
         return_value=(False, "bad request", None),
     )
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-    success, error, _ = users._create_user_and_pat(TEST_TOKEN, row)
+    success, error, _ = users._create_user_and_pat(gl, row)
     assert success is False
     assert "bad request" in error
 
 
 def test_create_users_from_rows_success(mocker):
     """Test creating users from CSV rows."""
+    gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_user_and_pat",
         return_value=(True, "", TEST_TOKEN),
@@ -126,7 +113,7 @@ def test_create_users_from_rows_success(mocker):
         {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105 # NOSONAR
         {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
     ]
-    success, error, tokens = users._create_users_from_rows(TEST_TOKEN, iter(rows))
+    success, error, tokens = users._create_users_from_rows(gl, iter(rows))
     assert success is True
     assert error == ""
     assert tokens == {"user1": TEST_TOKEN, "user2": TEST_TOKEN}
@@ -134,6 +121,7 @@ def test_create_users_from_rows_success(mocker):
 
 def test_create_users_from_rows_failure_stops(mocker):
     """Test that row processing stops on first failure."""
+    gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_user_and_pat",
         side_effect=[(True, "", TEST_TOKEN), (False, "user2 failed", "")],
@@ -143,13 +131,14 @@ def test_create_users_from_rows_failure_stops(mocker):
         {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
         {"username": "user3", "email": "u3@x.com", "password": "pass3"},  # noqa: S105 # NOSONAR
     ]
-    success, error, _ = users._create_users_from_rows(TEST_TOKEN, iter(rows))
+    success, error, _ = users._create_users_from_rows(gl, iter(rows))
     assert success is False
     assert "user2 failed" in error
 
 
 def test_process_credentials_success(mocker, tmp_path):
     """Test processing credentials file successfully."""
+    gl = _make_gl_mock()
     creds_file = tmp_path / "credentials.csv"
     creds_file.write_text(
         "username,password,email\nuser1,pass1,u1@x.com\n",
@@ -159,19 +148,20 @@ def test_process_credentials_success(mocker, tmp_path):
         "dtaas_services.pkg.services.gitlab.users._create_users_from_rows",
         return_value=(True, "", {"user1": TEST_TOKEN}),
     )
-    success, _, tokens = users._process_credentials(TEST_TOKEN, creds_file)
+    success, _, tokens = users._process_credentials(gl, creds_file)
     assert success is True
     assert tokens == {"user1": TEST_TOKEN}
 
 
 def test_process_credentials_file_not_found():
     """Test processing credentials when file does not exist."""
+    gl = _make_gl_mock()
     success, error, tokens = users._process_credentials(
-        TEST_TOKEN, Path("/nonexistent/creds.csv")
+        gl, Path("/nonexistent/creds.csv")
     )
     assert success is False
     assert "Error reading credentials file" in error
-    assert tokens == {}
+    assert not tokens
 
 
 def test_load_gitlab_prerequisites_success(mocker, tmp_path):
@@ -211,6 +201,9 @@ def test_setup_gitlab_users_saves_tokens(mocker, tmp_path):
         return_value=(True, TEST_TOKEN, Path("/test/creds.csv")),
     )
     mocker.patch(
+        "dtaas_services.pkg.services.gitlab.users.get_gitlab_client",
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._process_credentials",
         return_value=(True, "", {"user1": TEST_TOKEN}),
     )
@@ -245,6 +238,9 @@ def test_setup_gitlab_users_process_fails(mocker):
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._load_gitlab_prerequisites",
         return_value=(True, TEST_TOKEN, Path("/test/creds.csv")),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.users.get_gitlab_client",
     )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._process_credentials",

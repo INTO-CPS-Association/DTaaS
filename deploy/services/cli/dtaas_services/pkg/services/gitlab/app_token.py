@@ -1,12 +1,14 @@
 """Create, list, and delete GitLab OAuth Application tokens."""
 
-import json
 import logging
 import os
 from dataclasses import dataclass
 from typing import Any
 
-from ._api import gitlab_request
+import gitlab
+import gitlab.exceptions
+
+from ._api import get_gitlab_client
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class OAuthAppResult:
 
 def _get_server_dns() -> str:
     """Read HOSTNAME from environment.
-    Uses HOSTNAME as the server DNS.
+
     Returns:
         Server DNS value
 
@@ -47,14 +49,7 @@ def _get_server_dns() -> str:
 
 
 def _build_server_app_config(server_dns: str) -> OAuthAppConfig:
-    """Build the OAuth config for the DTaaS Server Authorization app.
-
-    Args:
-        server_dns: Server hostname (e.g. ``foo.com``)
-
-    Returns:
-        OAuthAppConfig for the server authorization app
-    """
+    """Build the OAuth config for the DTaaS Server Authorization app."""
     return OAuthAppConfig(
         name="DTaaS Server Authorization",
         redirect_uri=f"https://{server_dns}/_oauth",
@@ -64,14 +59,7 @@ def _build_server_app_config(server_dns: str) -> OAuthAppConfig:
 
 
 def _build_client_app_config(server_dns: str) -> OAuthAppConfig:
-    """Build the OAuth config for the DTaaS Client Authorization app.
-
-    Args:
-        server_dns: Server hostname (e.g. ``foo.com``)
-
-    Returns:
-        OAuthAppConfig for the client authorization app
-    """
+    """Build the OAuth config for the DTaaS Client Authorization app."""
     return OAuthAppConfig(
         name="DTaaS Client Authorization",
         redirect_uri=f"https://{server_dns}/Library",
@@ -80,67 +68,14 @@ def _build_client_app_config(server_dns: str) -> OAuthAppConfig:
     )
 
 
-def _build_payload(config: OAuthAppConfig) -> dict[str, str]:
-    """Build the POST payload for creating an application.
-
-    Args:
-        config: OAuth application configuration
-
-    Returns:
-        Dict suitable for ``data=`` in an HTTP request
-    """
-    return {
-        "name": config.name,
-        "redirect_uri": config.redirect_uri,
-        "confidential": "true" if config.confidential else "false",
-        "scopes": config.scopes,
-    }
-
-
-def _parse_app_response(response_data: dict[str, Any]) -> OAuthAppResult:
-    """Parse the GitLab API response into an OAuthAppResult.
-
-    Args:
-        response_data: Parsed JSON from the API response
-
-    Returns:
-        OAuthAppResult with the created application's details
-    """
+def _to_result(app) -> OAuthAppResult:
+    """Convert a python-gitlab Application object to OAuthAppResult."""
     return OAuthAppResult(
-        application_id=response_data["id"],
-        name=response_data.get("application_name", ""),
-        client_id=response_data["application_id"],
-        client_secret=response_data.get("secret", ""),
+        application_id=app.id,
+        name=getattr(app, "application_name", ""),
+        client_id=app.application_id,
+        client_secret=getattr(app, "secret", ""),
     )
-
-
-def _validate_and_parse_app_response(
-    response, config: OAuthAppConfig
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Validate response and parse OAuth app result.
-
-    Args:
-        response: HTTP response object
-        config: Application configuration (for error messages)
-
-    Returns:
-        Tuple of (success, OAuthAppResult or None, error message)
-    """
-    if response.status_code not in (200, 201):
-        return (
-            False,
-            None,
-            (
-                f"Failed to create '{config.name}': "
-                f"HTTP {response.status_code}:{response.text}"
-            ),
-        )
-
-    try:
-        result = _parse_app_response(response.json())
-        return True, result, ""
-    except (KeyError, json.JSONDecodeError) as exc:
-        return False, None, f"Failed to parse response for '{config.name}': {exc}"
 
 
 def create_application(
@@ -155,29 +90,25 @@ def create_application(
     Returns:
         Tuple of (success, OAuthAppResult or None, error message)
     """
-    payload = _build_payload(config)
-    http_params = {"method": "POST", "endpoint": "/applications"}
-    success, response, error_msg = gitlab_request(
-        http_params, private_token, data=payload
-    )
-
-    if not success:
-        return False, None, f"Failed to create '{config.name}': {error_msg}"
-
-    return _validate_and_parse_app_response(response, config)
+    try:
+        gl = get_gitlab_client(private_token)
+        app = gl.applications.create(
+            {
+                "name": config.name,
+                "redirect_uri": config.redirect_uri,
+                "confidential": config.confidential,
+                "scopes": config.scopes,
+            }
+        )
+        return True, _to_result(app), ""
+    except gitlab.exceptions.GitlabError as exc:
+        return False, None, f"Failed to create '{config.name}': {exc}"
 
 
 def create_server_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Server Authorization OAuth application.
-
-    Args:
-        private_token: GitLab PAT
-
-    Returns:
-        Tuple of (success, OAuthAppResult or None, error message)
-    """
+    """Create the DTaaS Server Authorization OAuth application."""
     server_dns = _get_server_dns()
     config = _build_server_app_config(server_dns)
     logger.info("Creating '%s'...", config.name)
@@ -187,45 +118,11 @@ def create_server_application(
 def create_client_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Client Authorization OAuth application.
-
-    Args:
-        private_token: GitLab PAT
-
-    Returns:
-        Tuple of (success, OAuthAppResult or None, error message)
-    """
+    """Create the DTaaS Client Authorization OAuth application."""
     server_dns = _get_server_dns()
     config = _build_client_app_config(server_dns)
     logger.info("Creating '%s'...", config.name)
     return create_application(private_token, config)
-
-
-def _validate_and_parse_app_list(
-    response,
-) -> tuple[bool, list[dict[str, Any]], str]:
-    """Validate response and parse application list.
-
-    Args:
-        response: HTTP response object
-
-    Returns:
-        Tuple of (success, list of applications, error message)
-    """
-    if response.status_code != 200:
-        return (
-            False,
-            [],
-            (
-                f"Failed to list applications: "
-                f"HTTP {response.status_code}:{response.text}"
-            ),
-        )
-
-    try:
-        return True, response.json(), ""
-    except json.JSONDecodeError as exc:
-        return False, [], f"Failed to parse application list: {exc}"
 
 
 def list_all_applications(
@@ -233,41 +130,26 @@ def list_all_applications(
 ) -> tuple[bool, list[dict[str, Any]], str]:
     """List all registered OAuth applications.
 
-    Args:
-        private_token: GitLab PAT
-
     Returns:
         Tuple of (success, list of application dicts, error message)
     """
-    http_params = {"method": "GET", "endpoint": "/applications"}
-    success, response, error_msg = gitlab_request(http_params, private_token)
-
-    if not success:
-        return False, [], f"Failed to list applications: {error_msg}"
-
-    return _validate_and_parse_app_list(response)
+    try:
+        gl = get_gitlab_client(private_token)
+        apps = gl.applications.list()
+        return True, [app.attributes for app in apps], ""
+    except gitlab.exceptions.GitlabError as exc:
+        return False, [], f"Failed to list applications: {exc}"
 
 
 def delete_application(private_token: str, application_id: int) -> tuple[bool, str]:
     """Delete an OAuth application by its ID.
 
-    Args:
-        private_token: GitLab PAT
-        application_id: ID of the application to delete
-
     Returns:
         Tuple of (success, message)
     """
-    http_params = {"method": "DELETE", "endpoint": f"/applications/{application_id}"}
-    success, response, error_msg = gitlab_request(http_params, private_token)
-
-    if not success or response is None:
-        return False, f"Failed to delete application {application_id}: {error_msg}"
-
-    if response.status_code == 204:
+    try:
+        gl = get_gitlab_client(private_token)
+        gl.applications.delete(application_id)
         return True, "Application successfully deleted."
-
-    return False, (
-        f"Failed to delete application {application_id}: "
-        f"HTTP {response.status_code}:{response.text}"
-    )
+    except gitlab.exceptions.GitlabError as exc:
+        return False, f"Failed to delete application {application_id}: {exc}"

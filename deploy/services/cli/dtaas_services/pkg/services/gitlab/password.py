@@ -3,12 +3,15 @@
 import logging
 import os
 from typing import Tuple
-import httpx
-from .users import _load_pat_from_tokens
+
+import gitlab
+import gitlab.exceptions
+
+from .personal_token import _load_pat_from_tokens
 from ...config import Config
 from ...utils import execute_docker_command
 from ...password_store import save_password
-from ._api import gitlab_request
+from ._api import get_gitlab_client
 
 logger = logging.getLogger(__name__)
 
@@ -93,31 +96,6 @@ def _get_root_new_password() -> Tuple[bool, str]:
     return True, password
 
 
-def _format_dict_error(msg_obj: dict, status_code: int) -> str:
-    """Format a dict error message from GitLab response body."""
-    parts = []
-    for field, errors in msg_obj.items():
-        for err in errors:
-            parts.append(f"{field}: {err}")
-    return "; ".join(parts) if parts else f"HTTP {status_code}"
-
-
-def _extract_error_message(body: dict, status_code: int) -> str:
-    """Extract error string from parsed GitLab response body."""
-    msg_obj = body.get("message", body.get("error", ""))
-    if isinstance(msg_obj, dict):
-        return _format_dict_error(msg_obj, status_code)
-    return str(msg_obj) or f"HTTP {status_code}"
-
-
-def _parse_gitlab_password_error(response: httpx.Response) -> str:
-    """Extract a human-readable error from a GitLab password-change response."""
-    try:
-        return _extract_error_message(response.json(), response.status_code)
-    except Exception:
-        return f"HTTP {response.status_code} \u2014 {response.text[:200]}"
-
-
 def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
     """Call the GitLab API to update the root user's password.
 
@@ -128,20 +106,17 @@ def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
     Returns:
         Tuple of (success, message_or_error)
     """
-    http_params = {"method": "PUT", "endpoint": f"/users/{ROOT_USER_ID}"}
-    success, response, error_msg = gitlab_request(
-        http_params,
-        pat,
-        json={"password": new_pw, "skip_reconfirmation": True},
-    )
-    if not success or response is None:
-        return False, f"Failed to reset root password: {error_msg}"
-    if response.status_code == 200:
+    try:
+        gl = get_gitlab_client(pat)
+        user = gl.users.get(ROOT_USER_ID)
+        user.password = new_pw
+        user.skip_reconfirmation = True
+        user.save()
         logger.info("GitLab root password reset successfully")
         save_password(GITLAB_PW_KEY, new_pw)
         return True, "GitLab root password updated successfully"
-    detail = _parse_gitlab_password_error(response)
-    return False, f"Failed to reset root password: {detail}"
+    except gitlab.exceptions.GitlabError as exc:
+        return False, f"Failed to reset root password: {exc}"
 
 
 def reset_gitlab_password() -> Tuple[bool, str]:

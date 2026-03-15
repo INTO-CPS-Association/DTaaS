@@ -1,8 +1,10 @@
-"""Low-level GitLab REST API client."""
+"""GitLab API client factory using python-gitlab."""
 
 import os
-from typing import Any
-import httpx
+import warnings
+
+import gitlab
+import urllib3
 
 
 def get_ssl_verify() -> bool:
@@ -16,15 +18,14 @@ def get_ssl_verify() -> bool:
 
 
 def build_base_url() -> str:
-    """Build the GitLab API base URL for direct container access.
+    """Build the GitLab instance URL for direct container access.
 
     GitLab's nginx serves HTTPS on port 443 inside the container,
     mapped to GITLAB_PORT on the host.  The ``external_url`` includes
-    ``/gitlab`` as a path prefix, so the API lives at
-    ``https://HOSTNAME:GITLAB_PORT/gitlab/api/v4``.
+    ``/gitlab`` as a path prefix.
 
     Returns:
-        Base URL string, e.g. "https://foo.com:8090/gitlab/api/v4"
+        Base URL string, e.g. "https://foo.com:8090/gitlab"
 
     Raises:
         RuntimeError: If GITLAB_PORT or HOSTNAME is not set
@@ -35,55 +36,26 @@ def build_base_url() -> str:
         raise RuntimeError("GITLAB_PORT is not set in config/services.env. ")
     if not server:
         raise RuntimeError("HOSTNAME is not set in config/services.env. ")
-    return f"https://{server}:{gitlab_port}/gitlab/api/v4"
+    return f"https://{server}:{gitlab_port}/gitlab"
 
 
-def _build_headers(private_token: str) -> dict[str, str]:
-    """Build request headers with authentication.
+def get_gitlab_client(private_token: str) -> gitlab.Gitlab:
+    """Create an authenticated python-gitlab client.
+
+    When SSL verification is disabled (SSL_VERIFY=false), urllib3 warnings
+    are suppressed since the user has explicitly opted out of verification.
 
     Args:
         private_token: GitLab Personal Access Token
 
     Returns:
-        Headers dict with PRIVATE-TOKEN set
+        Configured gitlab.Gitlab instance
     """
-    return {"PRIVATE-TOKEN": private_token}
-
-
-def gitlab_request(
-    http_params: dict[str, Any],
-    private_token: str,
-    **kwargs: Any,
-) -> tuple[bool, httpx.Response | None, str]:
-    """Make an authenticated request to the GitLab API.
-
-    Args:
-        method: HTTP method (GET, POST, DELETE, etc.)
-        endpoint: API endpoint path, e.g. "/applications"
-        private_token: GitLab Personal Access Token
-        **kwargs: Additional keyword arguments passed to httpx.request
-                  (e.g. data, json, params, timeout)
-
-    Returns:
-        Tuple of (success, response object or None, error message)
-    """
-    method: str = http_params.get("method") or ""
-    endpoint = http_params.get("endpoint")
-    base_url = build_base_url()
-    url = f"{base_url}{endpoint}"
-    headers = _build_headers(private_token)
+    url = build_base_url()
     verify = get_ssl_verify()
-
-    kwargs.setdefault("timeout", 30)
-
-    try:
-        response = httpx.request(
-            method,
-            url,
-            headers=headers,
-            verify=verify,
-            **kwargs,
+    if not verify:
+        warnings.filterwarnings(
+            "ignore",
+            category=urllib3.exceptions.InsecureRequestWarning,
         )
-        return True, response, ""
-    except (httpx.ConnectError, httpx.TimeoutException, httpx.HTTPError) as exc:
-        return False, None, f"HTTP request failed: {exc}"
+    return gitlab.Gitlab(url, private_token=private_token, ssl_verify=verify)

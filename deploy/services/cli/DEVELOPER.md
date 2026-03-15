@@ -114,7 +114,7 @@ cli/
 │          │    └── tb_utility.py
 │          └── gitlab/     # GitLab service module
 │               ├── __init__.py
-│               ├── _api.py         # Low-level httpx wrapper for GitLab REST API
+│               ├── _api.py         # python-gitlab client factory
 │               ├── app_token.py    # OAuth application creation, listing, and deletion
 │               ├── health.py       # Container health checking and readiness waiting
 │               ├── password.py     # Root password retrieval and reset
@@ -249,10 +249,11 @@ The package uses a modular, three-layer architecture:
   * `tb_utility.py`: ThingsBoard utility helpers
 
   * **`gitlab/`**: GitLab service module
-  * `_api.py`: Low-level `httpx` wrapper for GitLab REST API calls;
-    merges all HTTP error types into a single `(bool, response, error)` return
-  * `app_token.py`: OAuth application creation, listing, and deletion;
-    used during post-install to register the DTaaS client
+  * `_api.py`: `python-gitlab` client factory; builds an authenticated
+    `gitlab.Gitlab` instance from environment variables (`HOSTNAME`,
+    `GITLAB_PORT`, `SSL_VERIFY`)
+  * `app_token.py`: OAuth application creation, listing, and deletion
+    via `python-gitlab`; used during post-install to register the DTaaS client
   * `health.py`: Container health polling and readiness waiting;
     exports `is_gitlab_running()` for pre-flight checks and
     `is_gitlab_healthy()` for non-blocking health status queries
@@ -267,7 +268,7 @@ The package uses a modular, three-layer architecture:
     the OAuth application. Returns immediately with a status hint
     if GitLab is still starting.
   * `users.py`: Creates GitLab user accounts from `config/credentials.csv`
-    using the root PAT
+    using `python-gitlab` and the root PAT
 
 ### Configuration Pattern
 
@@ -360,9 +361,8 @@ Stops and removes Docker containers:
 * **Credentials File**: GitLab users are created from `config/credentials.csv`
   (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.
 * **Per-user PATs**: After creating each user, the CLI creates a Personal Access
-  Token for that user via `POST /api/v4/users/:id/personal_access_tokens` (admin
-  API) with scopes `api`, `read_repository`, `write_repository` and a 1-year
-  expiry. Tokens for newly created users are written to
+  Token for that user via the `python-gitlab` admin API with scopes `api`,
+  `read_repository`, `write_repository` and a 1-year expiry. Tokens for newly created users are written to
   `config/gitlab_user_tokens.json`.
 * **Root user**: The `root` admin account (user ID `1`) is created automatically
   by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the
@@ -373,7 +373,7 @@ Stops and removes Docker containers:
 * **Password Reset**: The root password can be reset independently using
   `dtaas-services user reset-password -s gitlab`, which reads
   `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account
-  via `PUT /api/v4/users/1`. The new password is saved to
+  via the `python-gitlab` library. The new password is saved to
   `config/current.passwords.env` on success.
 * **Token Storage**: The Personal Access Token created during install is written
   to `config/gitlab_tokens.json`. All user-management API calls load the PAT from

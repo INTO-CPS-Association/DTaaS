@@ -1,8 +1,8 @@
 """Tests for GitLab OAuth application token management (app_token.py)."""
 
-from unittest.mock import Mock
-import json
+from unittest.mock import Mock, MagicMock
 import pytest
+import gitlab
 from dtaas_services.pkg.services.gitlab import app_token
 # pylint: disable=W0212
 
@@ -17,43 +17,15 @@ def test_get_server_dns_missing(monkeypatch):
         app_token._get_server_dns()
 
 
-def test_validate_and_parse_app_response_http_error():
-    """Test validation failure on non-200/201 status."""
-    response = Mock()
-    response.status_code = 422
-    response.text = "Validation failed"
-    config = app_token.OAuthAppConfig(
-        name="App", redirect_uri="https://x", confidential=True, scopes="api"
-    )
-    success, result, error = app_token._validate_and_parse_app_response(
-        response, config
-    )
-    assert success is False
-    assert result is None
-    assert "422" in error
-
-
-def test_validate_and_parse_app_response_bad_json():
-    """Test validation failure on JSON parse error."""
-    response = Mock()
-    response.status_code = 200
-    response.json.side_effect = json.JSONDecodeError("x", "y", 0)
-    config = app_token.OAuthAppConfig(
-        name="App", redirect_uri="https://x", confidential=True, scopes="api"
-    )
-    success, result, error = app_token._validate_and_parse_app_response(
-        response, config
-    )
-    assert success is False
-    assert result is None
-    assert "parse" in error.lower()
-
-
 def test_create_application_request_failure(mocker):
-    """Test creating an application when the HTTP request itself fails."""
+    """Test creating an application when the API request fails."""
+    mock_gl = MagicMock()
+    mock_gl.applications.create.side_effect = gitlab.exceptions.GitlabError(
+        "connection refused"
+    )
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(False, None, "connection refused"),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     config = app_token.OAuthAppConfig(
         name="MyApp", redirect_uri="https://x", confidential=True, scopes="api"
@@ -67,17 +39,16 @@ def test_create_application_request_failure(mocker):
 def test_create_server_application_success(monkeypatch, mocker):
     """Test creating the server OAuth app."""
     monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
-    mock_response = Mock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {
-        "id": 1,
-        "application_name": "DTaaS Server Authorization",
-        "application_id": "s-cid",
-        "secret": "s-sec",
-    }
+    mock_gl = MagicMock()
+    mock_app = Mock()
+    mock_app.id = 1
+    mock_app.application_name = "DTaaS Server Authorization"
+    mock_app.application_id = "s-cid"
+    mock_app.secret = "s-sec"
+    mock_gl.applications.create.return_value = mock_app
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(True, mock_response, ""),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, result, _ = app_token.create_server_application(TEST_TOKEN)
     assert success is True
@@ -88,17 +59,16 @@ def test_create_server_application_success(monkeypatch, mocker):
 def test_create_client_application_success(monkeypatch, mocker):
     """Test creating the client OAuth app."""
     monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
-    mock_response = Mock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {
-        "id": 2,
-        "application_name": "DTaaS Client Authorization",
-        "application_id": "c-cid",
-        "secret": "c-sec",
-    }
+    mock_gl = MagicMock()
+    mock_app = Mock()
+    mock_app.id = 2
+    mock_app.application_name = "DTaaS Client Authorization"
+    mock_app.application_id = "c-cid"
+    mock_app.secret = "c-sec"
+    mock_gl.applications.create.return_value = mock_app
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(True, mock_response, ""),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, result, _ = app_token.create_client_application(TEST_TOKEN)
     assert success is True
@@ -106,47 +76,29 @@ def test_create_client_application_success(monkeypatch, mocker):
     assert result.client_id == "c-cid"
 
 
-def test_validate_and_parse_app_list_http_error():
-    """Test list parsing with non-200 status."""
-    response = Mock()
-    response.status_code = 403
-    response.text = "Forbidden"
-    success, apps, error = app_token._validate_and_parse_app_list(response)
-    assert success is False
-    assert apps == []
-    assert "403" in error
-
-
-def test_validate_and_parse_app_list_bad_json():
-    """Test list parsing with bad JSON."""
-    response = Mock()
-    response.status_code = 200
-    response.json.side_effect = json.JSONDecodeError("x", "y", 0)
-    success, apps, error = app_token._validate_and_parse_app_list(response)
-    assert success is False
-    assert apps == []
-    assert "parse" in error.lower()
-
-
 def test_list_all_applications_success(mocker):
     """Test listing all applications successfully."""
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{"id": 1}]
+    mock_gl = MagicMock()
+    mock_app = Mock()
+    mock_app.attributes = {"id": 1}
+    mock_gl.applications.list.return_value = [mock_app]
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(True, mock_response, ""),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, apps, _ = app_token.list_all_applications(TEST_TOKEN)
     assert success is True
     assert len(apps) == 1
+    assert apps[0] == {"id": 1}
 
 
 def test_list_all_applications_request_failure(mocker):
     """Test listing applications when request fails."""
+    mock_gl = MagicMock()
+    mock_gl.applications.list.side_effect = gitlab.exceptions.GitlabError("timeout")
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(False, None, "timeout"),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, apps, error = app_token.list_all_applications(TEST_TOKEN)
     assert success is False
@@ -155,38 +107,28 @@ def test_list_all_applications_request_failure(mocker):
 
 
 def test_delete_application_success(mocker):
-    """Test deleting an application successfully (HTTP 204)."""
-    mock_response = Mock()
-    mock_response.status_code = 204
+    """Test deleting an application successfully."""
+    mock_gl = MagicMock()
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(True, mock_response, ""),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, msg = app_token.delete_application(TEST_TOKEN, 42)
     assert success is True
     assert "deleted" in msg.lower()
+    mock_gl.applications.delete.assert_called_once_with(42)
 
 
 def test_delete_application_request_failure(mocker):
     """Test deleting an application when request fails."""
+    mock_gl = MagicMock()
+    mock_gl.applications.delete.side_effect = gitlab.exceptions.GitlabError(
+        "connection error"
+    )
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(False, None, "connection error"),
+        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
+        return_value=mock_gl,
     )
     success, msg = app_token.delete_application(TEST_TOKEN, 42)
     assert success is False
     assert "connection error" in msg
-
-
-def test_delete_application_wrong_status(mocker):
-    """Test deleting an application with unexpected status code."""
-    mock_response = Mock()
-    mock_response.status_code = 404
-    mock_response.text = "Not Found"
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.gitlab_request",
-        return_value=(True, mock_response, ""),
-    )
-    success, msg = app_token.delete_application(TEST_TOKEN, 99)
-    assert success is False
-    assert "404" in msg

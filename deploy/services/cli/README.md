@@ -307,7 +307,7 @@ dtaas-services user reset-password -s thingsboard
 
 This command:
 
-* Changes the sysadmin password from the default to `TB_SYSADMIN_NEW_PASSWORD`
+* Changes the sysadmin password from the default (`"sysadmin"`) to `TB_SYSADMIN_NEW_PASSWORD`
 * Changes the tenant admin password from the default (`"tenant"`) to
   `TB_TENANT_ADMIN_PASSWORD`
 
