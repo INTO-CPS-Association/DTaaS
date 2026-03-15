@@ -286,6 +286,8 @@ dtaas-services clean -s "postgres,thingsboard"
 
    This creates user accounts in InfluxDB, RabbitMQ, ThingsBoard, and GitLab
    (each service is skipped gracefully if it is not running).
+   For GitLab, a Personal Access Token is created for each new user and
+   saved to `config/gitlab_user_tokens.json`.
 
 3. Add users to a specific service:
 
@@ -353,7 +355,7 @@ The `dtaas-services install -s gitlab` command performs the following steps
 automatically:
 
 1. Starts the GitLab Docker container
-2. Waits for GitLab to become healthy
+2. Checks if GitLab is healthy (non-blocking — exits immediately if not ready)
 3. Reads the auto-generated root password from the container
    (`/etc/gitlab/initial_root_password`)
 4. Creates an initial Personal Access Token and saves it to
