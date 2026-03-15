@@ -61,7 +61,7 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "@mui/system": "^7.3.5",
-    "@mui/x-tree-view": "^8.18.0",
+    "@mui/x-tree-view": "^8.27.2",
     "@reduxjs/toolkit": "^2.10.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/remarkable": "^2.0.8",
