@@ -12,6 +12,9 @@ from ._api import get_gitlab_client
 
 logger = logging.getLogger(__name__)
 
+SERVER_OAUTH_SCOPES = "read_user"
+CLIENT_OAUTH_SCOPES = "api openid profile read_repository read_user"
+
 
 @dataclass
 class OAuthAppConfig:
@@ -54,7 +57,7 @@ def _build_server_app_config(server_dns: str) -> OAuthAppConfig:
         name="DTaaS Server Authorization",
         redirect_uri=f"https://{server_dns}/_oauth",
         confidential=True,
-        scopes="read_user",
+        scopes=SERVER_OAUTH_SCOPES,
     )
 
 
@@ -64,7 +67,7 @@ def _build_client_app_config(server_dns: str) -> OAuthAppConfig:
         name="DTaaS Client Authorization",
         redirect_uri=f"https://{server_dns}/Library",
         confidential=False,
-        scopes="api openid profile read_repository read_user",
+        scopes=CLIENT_OAUTH_SCOPES,
     )
 
 

@@ -3,9 +3,7 @@
 import json
 from pathlib import Path
 from unittest.mock import Mock, MagicMock
-
-import gitlab
-
+from gitlab.exceptions import GitlabCreateError, GitlabError
 from dtaas_services.pkg.services.gitlab import users
 # pylint: disable=W0212, W0621
 
@@ -36,7 +34,7 @@ def test_create_single_user_success():
 def test_create_single_user_already_exists():
     """Test creating a user that already exists (409)."""
     gl = _make_gl_mock()
-    exc = gitlab.exceptions.GitlabCreateError(response_code=409)
+    exc = GitlabCreateError(response_code=409)
     gl.users.create.side_effect = exc
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
     success, error, user_id = users._create_single_user(gl, row)
@@ -48,7 +46,7 @@ def test_create_single_user_already_exists():
 def test_create_single_user_request_failure():
     """Test creating a user when API request fails."""
     gl = _make_gl_mock()
-    gl.users.create.side_effect = gitlab.exceptions.GitlabError("connection refused")
+    gl.users.create.side_effect = GitlabError("connection refused")
     row = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
     success, error, user_id = users._create_single_user(gl, row)
     assert success is False

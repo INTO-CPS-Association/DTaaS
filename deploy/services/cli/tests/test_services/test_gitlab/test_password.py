@@ -1,9 +1,7 @@
 """Tests for GitLab root password retrieval and reset (password.py)."""
 
 from unittest.mock import MagicMock
-
-import gitlab
-
+from gitlab.exceptions import GitlabError
 from dtaas_services.pkg.services.gitlab import password
 # pylint: disable=W0212
 
@@ -114,7 +112,7 @@ def test_apply_password_reset_success(mocker):
 def test_apply_password_reset_api_failure(mocker):
     """Test password reset when API request fails."""
     mock_gl = MagicMock()
-    mock_gl.users.get.side_effect = gitlab.exceptions.GitlabError("connection refused")
+    mock_gl.users.get.side_effect = GitlabError("connection refused")
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.password.get_gitlab_client",
         return_value=mock_gl,

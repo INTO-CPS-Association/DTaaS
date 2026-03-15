@@ -17,6 +17,7 @@ from dtaas_services.pkg.lib.utils import (
 from .conftest import _make_simple_service
 # pylint: disable=W0621
 
+DATA_SUBDIRECTORIES = 7
 
 def test_check_compose_file_exists(patch_service_deps, mocker):
     """Test check_compose_file when file exists"""
@@ -147,4 +148,4 @@ def test_get_data_subdirectories_none():
     assert "grafana" in result
     assert "influxdb" in result
     assert "gitlab" in result
-    assert len(result) == 7
+    assert len(result) == DATA_SUBDIRECTORIES

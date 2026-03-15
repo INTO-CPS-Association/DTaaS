@@ -12,8 +12,9 @@ services:
       RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'
     volumes:
       - './data/rabbitmq:/var/lib/rabbitmq'
-      - './certs/${HOSTNAME}:/etc/rabbitmq/certs:ro'
-      - './config/rabbitmq:/etc/rabbitmq/conf.d:ro'
+      - './certs:/etc/rabbitmq/certs:ro'
+      - './config/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro'
+      - './config/rabbitmq/rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins:ro'
     networks:
       - platform-services
 
@@ -27,7 +28,7 @@ services:
     volumes:
       - './data/mongodb:/data/db'
       - './config/mongod.conf.secure:/etc/mongod.conf:ro'
-      - './certs/${HOSTNAME}/combined.pem:/etc/ssl/cert.pem:ro'
+      - './certs/combined.pem:/etc/ssl/cert.pem:ro'
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGODB_ADMIN_USERNAME}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_ADMIN_PASSWORD}'
@@ -44,7 +45,7 @@ services:
       - '${GRAFANA_PORT}:3000'
     volumes:
       - './data/grafana:/var/lib/grafana'
-      - './certs/${HOSTNAME}:/etc/ssl/certs:ro'
+      - './certs:/etc/ssl/certs:ro'
     environment:
       GF_AUTH_BASIC_ENABLED: false
       GF_AUTH_PROXY_ENABLED: false
@@ -78,7 +79,7 @@ services:
     volumes:
       - './data/influxdb:/var/lib/influxdb2'
       - './config/influxdb:/etc/influxdb2:ro'
-      - './certs/${HOSTNAME}:/etc/ssl:ro'
+      - './certs:/etc/ssl:ro'
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: '${INFLUXDB_ADMIN_USERNAME}'
@@ -98,7 +99,7 @@ services:
       - '${POSTGRES_PORT}:5432'
     volumes:
       - './data/postgres:/var/lib/postgresql/data/pgdata'
-      - './certs/${HOSTNAME}:/etc/ssl'
+      - './certs:/etc/ssl'
     environment:
       POSTGRES_DB: '${POSTGRES_DB}'
       POSTGRES_USER: '${POSTGRES_USER}'

@@ -2,7 +2,7 @@
 
 import json
 from unittest.mock import Mock, MagicMock
-import gitlab
+from gitlab.exceptions import GitlabError
 from dtaas_services.pkg.services.gitlab import personal_token as pt
 # pylint: disable=W0212
 
@@ -108,7 +108,7 @@ def test_create_user_pat_success():
 def test_create_user_pat_request_failure():
     """Test creating a PAT fails on API error."""
     gl = MagicMock()
-    gl.users.get.side_effect = gitlab.exceptions.GitlabError("timeout")
+    gl.users.get.side_effect = GitlabError("timeout")
 
     success, error = pt.create_user_pat(gl, 42, TEST_USERNAME)
     assert success is False

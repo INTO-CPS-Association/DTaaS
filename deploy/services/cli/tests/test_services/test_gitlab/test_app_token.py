@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock, MagicMock
 import pytest
-import gitlab
+from gitlab.exceptions import GitlabError
 from dtaas_services.pkg.services.gitlab import app_token
 # pylint: disable=W0212
 
@@ -20,9 +20,7 @@ def test_get_server_dns_missing(monkeypatch):
 def test_create_application_request_failure(mocker):
     """Test creating an application when the API request fails."""
     mock_gl = MagicMock()
-    mock_gl.applications.create.side_effect = gitlab.exceptions.GitlabError(
-        "connection refused"
-    )
+    mock_gl.applications.create.side_effect = GitlabError("connection refused")
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
         return_value=mock_gl,
@@ -95,7 +93,7 @@ def test_list_all_applications_success(mocker):
 def test_list_all_applications_request_failure(mocker):
     """Test listing applications when request fails."""
     mock_gl = MagicMock()
-    mock_gl.applications.list.side_effect = gitlab.exceptions.GitlabError("timeout")
+    mock_gl.applications.list.side_effect = GitlabError("timeout")
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
         return_value=mock_gl,
@@ -122,9 +120,7 @@ def test_delete_application_success(mocker):
 def test_delete_application_request_failure(mocker):
     """Test deleting an application when request fails."""
     mock_gl = MagicMock()
-    mock_gl.applications.delete.side_effect = gitlab.exceptions.GitlabError(
-        "connection error"
-    )
+    mock_gl.applications.delete.side_effect = GitlabError("connection error")
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
         return_value=mock_gl,
