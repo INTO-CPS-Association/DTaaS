@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
@@ -19,6 +20,23 @@ PAT_NAME = "dtaas-services"
 TOKENS_FILENAME = "gitlab_tokens.json"
 USER_PAT_NAME = "dtaas"
 USER_PAT_SCOPES = ["api", "read_repository", "write_repository"]
+TOKEN_NAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,100}$")
+TOKEN_VALUE_PATTERN = re.compile(r"^[A-Za-z0-9_-]{10,255}$")
+
+
+def _escape_ruby_single_quoted(value: str) -> str:
+    """Escape a string for safe embedding in a Ruby single-quoted literal."""
+    return value.replace("\\", "\\\\").replace("'", "\\'")
+
+
+def _validate_token_name(token_name: str) -> tuple[bool, str]:
+    """Validate token names used in the root Rails runner script."""
+    if not TOKEN_NAME_PATTERN.fullmatch(token_name):
+        return False, (
+            "Invalid token name. Allowed characters are letters, digits, dot, "
+            "underscore, and hyphen (max length: 100)."
+        )
+    return True, ""
 
 
 def _build_rails_script(token_name: str) -> str:
@@ -36,11 +54,18 @@ def _build_rails_script(token_name: str) -> str:
     Returns:
         Ruby script as a string
     """
+    is_valid, error_message = _validate_token_name(token_name)
+    if not is_valid:
+        raise ValueError(error_message)
+
+    escaped_token_name = _escape_ruby_single_quoted(token_name)
+
     return (
         "user = User.find(1); "
-        f"user.personal_access_tokens.where(name: '{token_name}').each(&:revoke!); "
+        "user.personal_access_tokens.where(name: "
+        f"'{escaped_token_name}').each(&:revoke!); "
         "token = user.personal_access_tokens.create!("
-        f"name: '{token_name}', "
+        f"name: '{escaped_token_name}', "
         "scopes: ['api'], "
         "expires_at: 365.days.from_now"
         "); "
@@ -63,9 +88,9 @@ def _parse_token_from_output(output: str) -> str | None:
 
     token = lines[-1]
 
-    if len(token) < 10:
+    if not TOKEN_VALUE_PATTERN.fullmatch(token):
         logger.warning(
-            f"Token parsing warning: extracted token is too short: '{token}'"
+            "Token parsing warning: extracted token has an invalid format."
         )
         return None
 
@@ -78,7 +103,11 @@ def _execute_rails_command() -> tuple[bool, str]:
     Returns:
         Tuple of (success, output_or_error)
     """
-    script = _build_rails_script(PAT_NAME)
+    try:
+        script = _build_rails_script(PAT_NAME)
+    except ValueError as exc:
+        return False, str(exc)
+
     cmd = ["gitlab-rails", "runner", script]
 
     logger.info("Creating Personal Access Token via gitlab-rails runner...")

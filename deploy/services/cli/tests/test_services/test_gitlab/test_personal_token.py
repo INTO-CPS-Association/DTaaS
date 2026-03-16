@@ -16,6 +16,22 @@ def test_parse_token_from_output_too_short():
     assert pt._parse_token_from_output(output) is None
 
 
+def test_parse_token_from_output_invalid_characters():
+    """Test parsing when token contains unexpected characters."""
+    output = "glpat-bad-token;rm\n"
+    assert pt._parse_token_from_output(output) is None
+
+
+def test_build_rails_script_invalid_token_name_raises():
+    """Test rails script generation rejects unsafe token names."""
+    unsafe_name = "bad'; system('id'); '"
+    try:
+        pt._build_rails_script(unsafe_name)
+        assert False, "Expected ValueError for invalid token name"
+    except ValueError as exc:
+        assert "Invalid token name" in str(exc)
+
+
 def test_execute_rails_command_success(mocker):
     """Test successful rails command execution."""
     mocker.patch(
@@ -25,6 +41,20 @@ def test_execute_rails_command_success(mocker):
     success, output = pt._execute_rails_command()
     assert success is True
     assert "glpat" in output
+
+
+def test_execute_rails_command_invalid_pat_name(mocker):
+    """Test rails command fails early for invalid PAT names."""
+    mock_exec = mocker.patch(
+        "dtaas_services.pkg.services.gitlab.personal_token.execute_docker_command"
+    )
+    mocker.patch("dtaas_services.pkg.services.gitlab.personal_token.PAT_NAME", "bad name")
+
+    success, output = pt._execute_rails_command()
+
+    assert success is False
+    assert "Invalid token name" in output
+    mock_exec.assert_not_called()
 
 
 def test_extract_and_validate_token_parse_failure():

@@ -3,6 +3,7 @@
 import csv
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Tuple
 
@@ -17,6 +18,54 @@ from .personal_token import _load_pat_from_tokens, create_user_pat
 logger = logging.getLogger(__name__)
 
 USER_TOKENS_FILENAME = "gitlab_user_tokens.json"
+USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,254}$")
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def _validate_username(username: str) -> str | None:
+    """Validate username input."""
+    if not username:
+        return "Invalid user input: username is required."
+    if not USERNAME_PATTERN.fullmatch(username):
+        return "Invalid user input: username contains invalid characters or length."
+    return None
+
+
+def _validate_email(email: str) -> str | None:
+    """Validate email input."""
+    if not email:
+        return "Invalid user input: email is required."
+    if len(email) > 50 or not EMAIL_PATTERN.fullmatch(email):
+        return "Invalid user input: email format is invalid."
+    return None
+
+
+def _validate_password(password: str) -> str | None:
+    """Validate password input."""
+    if not password:
+        return "Invalid user input: password is required."
+    if len(password) > 55 or any(ord(char) < 32 for char in password):
+        return "Invalid user input: password format is invalid."
+    return None
+
+
+def _validate_user_row(username: str, email: str, password: str) -> Tuple[bool, str]:
+    """Validate user inputs before calling the GitLab API."""
+    validation_error = next(
+        (
+            error
+            for error in (
+                _validate_username(username),
+                _validate_email(email),
+                _validate_password(password),
+            )
+            if error
+        ),
+        "",
+    )
+    if validation_error:
+        return False, validation_error
+    return True, ""
 
 
 def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | None]:
@@ -29,9 +78,14 @@ def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | 
     Returns:
         Tuple of (success, error_message, user_id_or_None)
     """
-    username = row.get("username", "").strip()
-    email = row.get("email", "").strip()
-    password = row.get("password", "").strip()
+    username = (row.get("username") or "").strip()
+    email = (row.get("email") or "").strip()
+    password = (row.get("password") or "").strip()
+
+    is_valid, validation_error = _validate_user_row(username, email, password)
+    if not is_valid:
+        return False, validation_error, None
+
     try:
         user = gl.users.create(
             {
@@ -63,7 +117,7 @@ def _create_user_and_pat(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, str]:
     Returns:
         Tuple of (success, error_msg, pat_token_or_empty)
     """
-    username = row.get("username", "").strip()
+    username = (row.get("username") or "").strip()
     success, error, user_id = _create_single_user(gl, row)
     if not success:
         return False, error, ""
@@ -89,7 +143,7 @@ def _create_users_from_rows(
     """
     tokens: dict[str, str] = {}
     for row in reader:
-        username = row.get("username", "").strip()
+        username = (row.get("username") or "").strip()
         success, error_msg, token = _create_user_and_pat(gl, row)
         if not success:
             return False, error_msg, {}

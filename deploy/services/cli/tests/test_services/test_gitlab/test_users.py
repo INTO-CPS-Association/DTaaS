@@ -54,6 +54,34 @@ def test_create_single_user_request_failure():
     assert user_id is None
 
 
+def test_create_single_user_invalid_username_rejected():
+    """Test creating a user rejects invalid usernames before API call."""
+    gl = _make_gl_mock()
+    row = {
+        "username": "bad user",
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD,
+    }
+    success, error, user_id = users._create_single_user(gl, row)
+
+    assert success is False
+    assert "Invalid user input" in error
+    assert user_id is None
+    gl.users.create.assert_not_called()
+
+
+def test_create_single_user_none_values_rejected():
+    """Test creating a user handles None values safely."""
+    gl = _make_gl_mock()
+    row = {"username": None, "email": None, "password": None}
+    success, error, user_id = users._create_single_user(gl, row)
+
+    assert success is False
+    assert "Invalid user input" in error
+    assert user_id is None
+    gl.users.create.assert_not_called()
+
+
 def test_create_user_and_pat_new_user(mocker):
     """Test _create_user_and_pat creates a PAT for a newly created user."""
     gl = _make_gl_mock()
