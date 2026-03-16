@@ -1,6 +1,6 @@
 """Service status & inspection"""
 
-from typing import Any, Tuple, Optional, Set
+from typing import Tuple, Optional, Set
 from python_on_whales import Container
 from .utils import check_compose_file, DOCKER_OPERATION_EXCEPTIONS
 from ..formatter import RemovedServiceEntry
@@ -194,7 +194,7 @@ class Status(DockerExecutor):
             )
 
     def _process_single_container(
-        self, container: Any, container_map: dict, all_services: set
+        self, container: Container, container_map: dict, all_services: set
     ) -> None:
         """Process a single container and add to map if it matches a service."""
         if not self._match_container_by_name(container, container_map, all_services):

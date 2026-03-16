@@ -13,6 +13,7 @@ from .utility import (
     check_running_services_for_clean,
     print_clean_status,
     build_clean_status_message,
+    _handle_operation_result,
 )
 
 
@@ -165,10 +166,7 @@ def clean(service_names, certs):
         with console.status(status_msg, spinner="dots"):
             err, msg = setup_obj.clean_services(service_list, include_certs=certs)
 
-        if err is not None:
-            raise click.ClickException(msg)
-
-        console.print(f"[green]✅ {msg}[/green]")
+        _handle_operation_result(console, err, msg)
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e

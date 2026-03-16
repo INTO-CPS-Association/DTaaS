@@ -30,13 +30,6 @@ def test_get_gitlab_container_exception(mock_docker):
     assert health._get_gitlab_container(mock_docker) is None
 
 
-def test_check_container_health_attribute_error():
-    """Test container where health.status raises AttributeError."""
-    container = Mock()
-    container.state.health = True
-    assert health._check_container_health(container) == "unknown state"
-
-
 def test_is_gitlab_running_true(mocker):
     """Test is_gitlab_running returns True when container is running."""
     container = Mock()
@@ -91,3 +84,15 @@ def test_is_gitlab_healthy_not_found(mock_docker, mocker):
         return_value=None,
     )
     assert health.is_gitlab_healthy(mock_docker) == "not found"
+
+
+def test_is_gitlab_healthy_unknown_state(mock_docker, mocker):
+    """Test is_gitlab_healthy returns fallback when health is unavailable."""
+    container = Mock()
+    container.name = "gitlab"
+    container.state.health = True
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.health._get_gitlab_container",
+        return_value=container,
+    )
+    assert health.is_gitlab_healthy(mock_docker) == "unknown state"

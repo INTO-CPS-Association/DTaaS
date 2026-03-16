@@ -3,6 +3,7 @@
 import shutil
 from pathlib import Path
 from typing import Tuple
+from .lib.utils import SERVICE_DATA_SUBDIRS
 
 
 def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> str:
@@ -85,16 +86,7 @@ def _copy_template_configs(target_dir: Path, messages: list) -> None:
 def _create_data_subdirs(target_dir: Path) -> None:
     """Create data subdirectories for services."""
     data_dir = target_dir / "data"
-    data_subdirs = [
-        "grafana",
-        "gitlab",
-        "influxdb",
-        "mongodb",
-        "postgres",
-        "rabbitmq",
-        "thingsboard",
-    ]
-    for subdir in data_subdirs:
+    for subdir in SERVICE_DATA_SUBDIRS:
         (data_dir / subdir).mkdir(parents=True, exist_ok=True)
 
 

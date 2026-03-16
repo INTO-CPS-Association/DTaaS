@@ -3,6 +3,7 @@
 from unittest.mock import Mock
 import httpx
 from dtaas_services.pkg.services.thingsboard import setup as th
+from .conftest import _setup_thingsboard_error_test
 # pylint: disable=W0212, W0621
 
 
@@ -28,15 +29,7 @@ def test_change_password_with_logging_success(mocker):
 
 def test_setup_thingsboard_users_value_error(mocker):
     """Test setup_thingsboard_users handles ValueError"""
-    mocker.patch("pathlib.Path.exists", return_value=True)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._run_credential_setup",
-        side_effect=ValueError("Bad config"),
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
-        return_value="https://localhost:8080",
-    )
+    _setup_thingsboard_error_test(mocker, ValueError, "Bad config")
     success, msg = th.setup_thingsboard_users()
     assert success is False
     assert "Error" in msg

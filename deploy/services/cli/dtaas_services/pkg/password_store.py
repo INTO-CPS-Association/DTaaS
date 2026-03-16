@@ -7,7 +7,7 @@ from .config import Config
 
 logger = logging.getLogger(__name__)
 
-PASSWORDS_FILE = "current.passwords.env"
+PASSWORDS_FILE = "password.env.current"
 
 # Keys belonging to each service (used by remove_service_passwords)
 SERVICE_KEYS = {

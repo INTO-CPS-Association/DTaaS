@@ -15,6 +15,17 @@ DOCKER_OPERATION_EXCEPTIONS = (
     TypeError,
 )
 
+# List of service names for data/log directory management
+SERVICE_DATA_SUBDIRS = [
+    "grafana",
+    "gitlab",
+    "influxdb",
+    "mongodb",
+    "postgres",
+    "rabbitmq",
+    "thingsboard",
+]
+
 
 def try_remove_file(path: Path) -> None:
     """Try to remove a file with permission handling."""
@@ -221,12 +232,4 @@ def get_data_subdirectories(service_list: Optional[list] = None) -> list:
     """Get list of data subdirectories to clean."""
     if service_list:
         return service_list
-    return [
-        "grafana",
-        "influxdb",
-        "mongodb",
-        "postgres",
-        "rabbitmq",
-        "thingsboard",
-        "gitlab",
-    ]
+    return SERVICE_DATA_SUBDIRS

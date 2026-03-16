@@ -5,7 +5,10 @@ from unittest.mock import Mock, mock_open
 from python_on_whales.exceptions import DockerException
 from dtaas_services.pkg.utils import (
     check_root_unix,
+    get_container_health_status,
     execute_docker_command,
+    has_running_container,
+    is_container_running,
     get_credentials_path,
     is_ci,
     _process_stderr_lines,
@@ -74,6 +77,35 @@ def test_get_credentials_path(mocker):
     mock_get_base_dir.return_value = Path("/path/to/base")
     path = get_credentials_path()
     assert path == Path("/path/to/base") / "config" / "credentials.csv"
+
+
+def test_is_container_running_true():
+    """Test running container detection."""
+    container = Mock()
+    container.state.status = "running"
+    assert is_container_running(container) is True
+
+
+def test_is_container_running_false_without_state():
+    """Test stopped container detection when state is missing."""
+    container = Mock(spec=[])
+    assert is_container_running(container) is False
+
+
+def test_has_running_container_true():
+    """Test list detection when one container is running."""
+    stopped = Mock()
+    stopped.state.status = "exited"
+    running = Mock()
+    running.state.status = "running"
+    assert has_running_container([stopped, running]) is True
+
+
+def test_get_container_health_status_unknown_state():
+    """Test health fallback when status is unavailable."""
+    container = Mock()
+    container.state.health = True
+    assert get_container_health_status(container) == "unknown state"
 
 
 def test_is_ci_with_ci_env(mocker):

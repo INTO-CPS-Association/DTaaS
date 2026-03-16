@@ -52,3 +52,22 @@ def _make_simple_service(patch_service_deps, base_dir=None, use_magic_mock=False
     mock_docker = MagicMock() if use_magic_mock else Mock()
     mock_docker_client.return_value = mock_docker
     return Service(), mock_docker, mock_config
+
+
+def _setup_service_with_compose_not_found(patch_service_deps, mocker):
+    """Setup a service where the compose file does not exist.
+
+    Args:
+        patch_service_deps: The patch_service_deps fixture value.
+        mocker: The pytest mocker fixture.
+
+    Returns:
+        A Service instance configured with a nonexistent compose file.
+    """
+    service, _, _ = _make_simple_service(
+        patch_service_deps,
+        base_dir=Path("/nonexistent/base"),
+        use_magic_mock=True,
+    )
+    mocker.patch.object(Path, "exists", return_value=False)
+    return service

@@ -3,6 +3,7 @@
 from pathlib import Path
 from unittest.mock import Mock, mock_open
 from dtaas_services.pkg.services.thingsboard import setup as th
+from .conftest import _setup_thingsboard_error_test
 # pylint: disable=W0212, W0621
 
 TEST_USERNAME = "testuser"
@@ -146,15 +147,7 @@ def test_process_credentials_file_no_email_column(mocker):
 
 def test_setup_thingsboard_users_os_error(mocker):
     """Test setup_thingsboard_users handles OSError"""
-    mocker.patch("pathlib.Path.exists", return_value=True)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._run_credential_setup",
-        side_effect=OSError("disk error"),
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
-        return_value="https://localhost:8080",
-    )
+    _setup_thingsboard_error_test(mocker, OSError, "disk error")
     success, msg = th.setup_thingsboard_users()
     assert success is False
     assert "Cannot connect" in msg

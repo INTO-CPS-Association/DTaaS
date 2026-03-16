@@ -146,7 +146,7 @@ GITLAB_NOT_READY_HINT = (
     "It typically takes 5\u201310 minutes after first start.[/yellow]\n"
     "[cyan]Next steps:[/cyan]\n"
     "  1. Check status:  dtaas-services status -s gitlab\n"
-        "It will be 'starting' while it's initlizing, then 'not ready' while it's installing."
+    "It will be 'starting' while it's initializing, then 'not ready' while it's installing."
     "  2. When status shows 'running', re-run:  "
     "dtaas-services install -s gitlab"
 )

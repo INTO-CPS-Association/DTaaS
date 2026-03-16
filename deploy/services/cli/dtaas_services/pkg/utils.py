@@ -22,6 +22,26 @@ def get_credentials_path() -> Path:
     return base_dir / "config" / "credentials.csv"
 
 
+def is_container_running(container) -> bool:
+    """Check if a container has a running state."""
+    return hasattr(container, "state") and container.state.status == "running"
+
+
+def has_running_container(containers: list) -> bool:
+    """Check if any container in a list is running."""
+    return any(is_container_running(container) for container in containers)
+
+
+def get_container_health_status(container) -> str:
+    """Get a container health status when Docker exposes one."""
+    try:
+        if hasattr(container.state, "health") and container.state.health:
+            return container.state.health.status
+    except (AttributeError, TypeError):
+        return "unknown state"
+    return "unknown state"
+
+
 def _get_stderr_content(error_str: str) -> str:
     """Extract stderr content from Docker error string.
 

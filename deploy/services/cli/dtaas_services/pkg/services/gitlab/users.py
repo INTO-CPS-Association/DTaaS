@@ -53,9 +53,7 @@ def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | 
         return False, f"Failed to create user '{username}': {exc}", None
 
 
-def _create_user_and_pat(
-    gl: gitlab.Gitlab, row: dict
-) -> Tuple[bool, str, str]:
+def _create_user_and_pat(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, str]:
     """Create a user and, if newly created, their Personal Access Token.
 
     Args:

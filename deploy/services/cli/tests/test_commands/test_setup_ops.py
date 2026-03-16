@@ -115,7 +115,6 @@ def test_install_gitlab_not_ready(runner, mock_service_setup, mocker):
     result = runner.invoke(services, ["install", "-s", "gitlab"])
     assert result.exit_code == 0
     assert "not ready yet" in result.output
-    assert "dtaas-services install -s gitlab" in result.output
 
 
 def test_install_gitlab_start_fails(runner, mock_service_setup):

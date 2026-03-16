@@ -13,7 +13,7 @@ services:
     volumes:
       - './log/thingsboard:/var/log/thingsboard'
       - './data/thingsboard:/data'
-      - './certs/${HOSTNAME}:/certs:ro'
+      - './certs:/certs:ro'
     environment:
       TB_SERVICE_ID: tb-ce-node
       # yamllint disable-line rule:line-length

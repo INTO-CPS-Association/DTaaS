@@ -78,7 +78,7 @@ services:
       - '${INFLUXDB_PORT}:8086'
     volumes:
       - './data/influxdb:/var/lib/influxdb2'
-      - './config/influxdb:/etc/influxdb2:ro'
+      - './config/influxdb:/etc/influxdb2'
       - './certs:/etc/ssl:ro'
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup

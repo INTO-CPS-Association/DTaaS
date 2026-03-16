@@ -4,7 +4,11 @@ from pathlib import Path
 from unittest.mock import Mock, MagicMock
 from dtaas_services.pkg.lib import Service
 from conftest import make_mock_container
-from .conftest import _make_service, _make_simple_service
+from .conftest import (
+    _make_service,
+    _make_simple_service,
+    _setup_service_with_compose_not_found,
+)
 # pylint: disable=W0621, W0212
 
 
@@ -53,12 +57,7 @@ def test_get_status_with_service_list(patch_service_deps, mocker):
 def test_get_status_compose_file_not_found(patch_service_deps, mocker):
     """Test get_status when compose file does not exist"""
 
-    service, _, _ = _make_simple_service(
-        patch_service_deps,
-        base_dir=Path("/nonexistent/base"),
-        use_magic_mock=True,
-    )
-    mocker.patch.object(Path, "exists", return_value=False)
+    service = _setup_service_with_compose_not_found(patch_service_deps, mocker)
     err, containers = service.get_status()
     assert err is not None
     assert isinstance(err, FileNotFoundError)

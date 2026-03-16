@@ -3,6 +3,7 @@
 import logging
 from typing import Optional
 from python_on_whales import DockerClient
+from ...utils import get_container_health_status, has_running_container
 
 logger = logging.getLogger(__name__)
 
@@ -26,23 +27,6 @@ def _get_gitlab_container(docker):
         return None
 
 
-def _check_container_health(container) -> str:
-    """Get the health status of the GitLab container.
-
-    Args:
-        container: Docker container object
-
-    Returns:
-        Health status string, or "unknown" if not available
-    """
-    try:
-        if hasattr(container.state, "health") and container.state.health:
-            return container.state.health.status
-    except (AttributeError, TypeError):
-        logger.warning("Could not get health status for gitlab.")
-    return "unknown state"
-
-
 def is_gitlab_healthy(docker) -> str:
     """Check the current health status of the GitLab container (non-blocking).
 
@@ -56,7 +40,7 @@ def is_gitlab_healthy(docker) -> str:
     container = _get_gitlab_container(docker)
     if container is None:
         return "not found"
-    return _check_container_health(container)
+    return get_container_health_status(container)
 
 
 def is_gitlab_running() -> bool:
@@ -71,9 +55,7 @@ def is_gitlab_running() -> bool:
     try:
         docker = DockerClient()
         containers = docker.container.list(filters={"name": GITLAB_CONTAINER_NAME})
-        return any(
-            hasattr(c, "state") and c.state.status == "running" for c in containers
-        )
+        return has_running_container(containers)
     except Exception:
         logger.exception("Error while checking if GitLab is running")
         return False

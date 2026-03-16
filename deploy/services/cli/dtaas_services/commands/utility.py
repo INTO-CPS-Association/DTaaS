@@ -37,6 +37,22 @@ def _print_operation_status(
         console.print(f"[{meta.color}]{meta.name} all services....[/{meta.color}]")
 
 
+def _handle_operation_result(console: Console, err, msg: str) -> None:
+    """Handle the result of a service operation.
+
+    Args:
+        console: Rich console for output
+        err: Error object from operation (None if success)
+        msg: Result message from operation
+
+    Raises:
+        click.ClickException: If operation failed
+    """
+    if err is not None:
+        raise click.ClickException(msg)
+    console.print(f"[green]✅ {msg}[/green]")
+
+
 def _handle_service_command(
     operation_func: Callable,
     service_list: Optional[list[str]],
@@ -52,10 +68,7 @@ def _handle_service_command(
         ):
             err, msg = operation_func(service_list)
 
-        if err is not None:
-            raise click.ClickException(msg)
-
-        console.print(f"[green]✅ {msg}[/green]")
+        _handle_operation_result(console, err, msg)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
 

@@ -19,6 +19,7 @@ from .conftest import _make_simple_service
 
 DATA_SUBDIRECTORIES = 7
 
+
 def test_check_compose_file_exists(patch_service_deps, mocker):
     """Test check_compose_file when file exists"""
     service, _, _ = _make_simple_service(patch_service_deps)
