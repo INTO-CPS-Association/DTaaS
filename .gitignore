@@ -222,7 +222,6 @@ deploy/services/cli/dtaas_services/log/
 deploy/services/cli/dtaas_services/compose.services.yml
 deploy/services/cli/dtaas_services/compose.thingsboard.yml
 deploy/services/cli/dtaas_services/compose.gitlab.yml
-deploy/services/cli/dtaas_services/templates
 
 #ignore developer files
 docker/.env

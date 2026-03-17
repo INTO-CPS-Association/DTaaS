@@ -33,10 +33,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 dtaas-services = "dtaas_services.cmd:services"
 
-[tool.poetry.build]
-script = "build.py"
-generate-setup-file = false
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
