@@ -34,11 +34,9 @@ def _has_multiple_at_signs(domain: str) -> bool:
 def _split_email_parts(email: str) -> tuple[str, str] | None:
     """Split an email into local-part and domain after validating the separator."""
     local_part, separator, domain = email.partition("@")
-    if separator != "@":
+    if separator != "@" or _has_multiple_at_signs(domain):
         return None
     if _has_invalid_email_parts(local_part, domain):
-        return None
-    if _has_multiple_at_signs(domain):
         return None
     return local_part, domain
 

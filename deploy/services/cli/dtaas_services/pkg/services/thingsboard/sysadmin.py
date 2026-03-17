@@ -119,16 +119,14 @@ def _perform_password_change(ctx: _PasswordChangeContext) -> Tuple[bool, str]:
 
 
 def _handle_successful_login(
-    base_url: str, session: httpx.Client, token: str, current_pw: str, new_pw: str
+    session: httpx.Client, token: str, ctx: _PasswordChangeContext
 ) -> Tuple[bool, str]:
     """Handle a successful login during password change."""
-    if current_pw == new_pw:
+    if ctx.default_pw == ctx.new_pw:
         logger.info("Sysadmin already uses the new password. No change needed.")
-        save_password(SYSADMIN_PW_KEY, new_pw)
+        save_password(SYSADMIN_PW_KEY, ctx.new_pw)
         return True, "Password already updated"
     _update_session_token(session, token)
-    pw_config = _PasswordConfig(current_pw, new_pw)
-    ctx = _PasswordChangeContext(base_url, session, pw_config)
     return _perform_password_change(ctx)
 
 
@@ -146,9 +144,9 @@ def change_sysadmin_password(
     for current_pw in candidates:
         token = login(base_url, sys_email, current_pw)
         if token:
-            return _handle_successful_login(
-                base_url, session, token, current_pw, new_pw
-            )
+            pw_config = _PasswordConfig(current_pw, new_pw)
+            ctx = _PasswordChangeContext(base_url, session, pw_config)
+            return _handle_successful_login(session, token, ctx)
 
     return False, (
         "Failed to get authentication token for sysadmin. "

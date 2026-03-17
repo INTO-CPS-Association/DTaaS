@@ -1,7 +1,6 @@
 """GitLab container health checking."""
 
 import logging
-from typing import Optional
 from python_on_whales import DockerClient
 from ...utils import get_container_health_status, has_running_container
 

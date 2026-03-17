@@ -165,6 +165,22 @@ def _install_gitlab(console: Console, service_obj: Service) -> None:
     raise click.ClickException(f"GitLab installation failed: {msg}")
 
 
+def _install_selected_services(
+    console: Console, service_obj: Service, service: str | None
+) -> None:
+    """Install one or both supported services based on selection."""
+    if service is None:
+        _install_thingsboard(console, service_obj)
+        _install_gitlab(console, service_obj)
+        return
+
+    if service.lower() == "gitlab":
+        _install_gitlab(console, service_obj)
+        return
+
+    _install_thingsboard(console, service_obj)
+
+
 @click.command()
 @click.option(
     "-s",
@@ -196,14 +212,7 @@ def install(service):
         _validate_service_name(service)
 
         service_obj = Service()
-
-        if service is None:
-            _install_thingsboard(console, service_obj)
-            _install_gitlab(console, service_obj)
-        elif service.lower() in ["gitlab"]:
-            _install_gitlab(console, service_obj)
-        else:
-            _install_thingsboard(console, service_obj)
+        _install_selected_services(console, service_obj, service)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except click.ClickException:

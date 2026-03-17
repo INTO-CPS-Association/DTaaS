@@ -361,7 +361,8 @@ Stops and removes Docker containers:
   (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.
 * **Per-user PATs**: After creating each user, the CLI creates a Personal Access
   Token for that user via the `python-gitlab` admin API with scopes `api`,
-  `read_repository`, `write_repository` and a 1-year expiry. Tokens for newly created users are written to
+  `read_repository`, `write_repository` and a 1-year expiry. Tokens for newly created
+  users are written to
   `config/gitlab_user_tokens.json`.
 * **Root user**: The `root` admin account (user ID `1`) is created automatically
   by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the

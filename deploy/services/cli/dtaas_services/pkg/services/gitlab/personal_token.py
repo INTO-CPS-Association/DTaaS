@@ -89,9 +89,7 @@ def _parse_token_from_output(output: str) -> str | None:
     token = lines[-1]
 
     if not TOKEN_VALUE_PATTERN.fullmatch(token):
-        logger.warning(
-            "Token parsing warning: extracted token has an invalid format."
-        )
+        logger.warning("Token parsing warning: extracted token has an invalid format.")
         return None
 
     return token

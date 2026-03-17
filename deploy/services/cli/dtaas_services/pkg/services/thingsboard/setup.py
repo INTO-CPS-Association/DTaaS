@@ -79,18 +79,30 @@ def _process_credentials_row(
     )
 
 
-def _read_and_process_credentials(
-    creds_file, ctx: CredentialProcessContext
+def _has_required_credentials_columns(credentials: csv.DictReader) -> bool:
+    """Return True when required credential columns are present."""
+    return bool(credentials.fieldnames and "email" in credentials.fieldnames)
+
+
+def _process_all_credentials_rows(
+    credentials: csv.DictReader, ctx: CredentialProcessContext
 ) -> Tuple[bool, str]:
-    """Validate columns and process credentials from an open CSV file."""
-    credentials = csv.DictReader(creds_file, delimiter=",")
-    if not credentials.fieldnames or "email" not in credentials.fieldnames:
-        return False, "Email column is required in credentials.csv"
+    """Process all credential rows and stop on first failure."""
     for credential in credentials:
         success, error_msg = _process_credentials_row(ctx, credential)
         if not success:
             return False, error_msg
     return True, "All users processed successfully"
+
+
+def _read_and_process_credentials(
+    creds_file, ctx: CredentialProcessContext
+) -> Tuple[bool, str]:
+    """Validate columns and process credentials from an open CSV file."""
+    credentials = csv.DictReader(creds_file, delimiter=",")
+    if not _has_required_credentials_columns(credentials):
+        return False, "Email column is required in credentials.csv"
+    return _process_all_credentials_rows(credentials, ctx)
 
 
 def _process_credentials_file(

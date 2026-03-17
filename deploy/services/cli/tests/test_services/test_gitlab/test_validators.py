@@ -15,7 +15,9 @@ def test_validate_username_accepts_valid():
 
 def test_validate_username_rejects_empty():
     """Test username validation rejects an empty string."""
-    assert validators._validate_username("") == "Invalid user input: username is required."
+    assert (
+        validators._validate_username("") == "Invalid user input: username is required."
+    )
 
 
 def test_validate_username_rejects_spaces():
@@ -30,7 +32,10 @@ def test_validate_email_accepts_basic_address():
 
 def test_validate_email_rejects_multiple_at_signs():
     """Test email validation rejects addresses with multiple at signs."""
-    assert validators._validate_email("test@@example.com") == validators.INVALID_EMAIL_ERROR
+    assert (
+        validators._validate_email("test@@example.com")
+        == validators.INVALID_EMAIL_ERROR
+    )
 
 
 def test_validate_email_rejects_missing_domain_dot():
@@ -40,7 +45,10 @@ def test_validate_email_rejects_missing_domain_dot():
 
 def test_validate_email_rejects_whitespace():
     """Test email validation rejects addresses containing whitespace."""
-    assert validators._validate_email("test @example.com") == validators.INVALID_EMAIL_ERROR
+    assert (
+        validators._validate_email("test @example.com")
+        == validators.INVALID_EMAIL_ERROR
+    )
 
 
 def test_validate_email_rejects_empty():
@@ -55,7 +63,9 @@ def test_validate_password_accepts_valid():
 
 def test_validate_password_rejects_empty():
     """Test password validation rejects an empty string."""
-    assert validators._validate_password("") == "Invalid user input: password is required."
+    assert (
+        validators._validate_password("") == "Invalid user input: password is required."
+    )
 
 
 def test_validate_password_rejects_control_characters():

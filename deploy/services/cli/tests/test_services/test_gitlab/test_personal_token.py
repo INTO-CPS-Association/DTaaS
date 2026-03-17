@@ -48,7 +48,9 @@ def test_execute_rails_command_invalid_pat_name(mocker):
     mock_exec = mocker.patch(
         "dtaas_services.pkg.services.gitlab.personal_token.execute_docker_command"
     )
-    mocker.patch("dtaas_services.pkg.services.gitlab.personal_token.PAT_NAME", "bad name")
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.personal_token.PAT_NAME", "bad name"
+    )
 
     success, output = pt._execute_rails_command()
 
