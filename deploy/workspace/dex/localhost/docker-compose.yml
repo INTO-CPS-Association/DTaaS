@@ -62,4 +62,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
       - "traefik.http.routers.user.rule=PathPrefix(`/${username:-user}`) "
-
