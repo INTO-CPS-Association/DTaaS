@@ -36,9 +36,7 @@ def _normalize_target_url(path: str) -> str:
     parsed = urlsplit(path)
     normalized_path = parsed.path or "/"
     normalized_query = parsed.query
-    upstream_path = urlunsplit(
-        ("", "", normalized_path, normalized_query, "")
-    )
+    upstream_path = urlunsplit(("", "", normalized_path, normalized_query, ""))
     return f"{UPSTREAM}{upstream_path}"
 
 
@@ -47,9 +45,7 @@ def _split_target_url(path: str) -> SplitResult:
 
 
 def _target_path(parsed_target: SplitResult) -> str:
-    return urlunsplit(
-        ("", "", parsed_target.path or "/", parsed_target.query, "")
-    )
+    return urlunsplit(("", "", parsed_target.path or "/", parsed_target.query, ""))
 
 
 def _target_port(parsed_target: SplitResult) -> int:
@@ -64,9 +60,7 @@ def _build_connection(
     parsed_target: SplitResult,
 ) -> HTTPConnection | HTTPSConnection:
     connection_type = (
-        HTTPSConnection
-        if parsed_target.scheme == "https"
-        else HTTPConnection
+        HTTPSConnection if parsed_target.scheme == "https" else HTTPConnection
     )
     return connection_type(
         parsed_target.hostname,
@@ -144,10 +138,7 @@ def _inject_profile_claim(
 
 def _should_forward_header(header_name: str) -> bool:
     normalized_name = header_name.lower()
-    return (
-        normalized_name != "host"
-        and normalized_name not in HOP_BY_HOP_HEADERS
-    )
+    return normalized_name != "host" and normalized_name not in HOP_BY_HOP_HEADERS
 
 
 class DexCompanionHandler(BaseHTTPRequestHandler):
@@ -158,11 +149,9 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
     def _proxy(self) -> None:
         request_body = self._read_request_body()
         request_headers = self._copy_request_headers()
-        status_code, response_headers, response_body = (
-            self._forward_request(
+        status_code, response_headers, response_body = self._forward_request(
             request_body,
             request_headers,
-            )
         )
         response_body = _inject_profile_claim(
             self.path,
@@ -172,9 +161,7 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
         self._write_response(status_code, response_headers, response_body)
 
     def _read_request_body(self) -> bytes | None:
-        content_length = _safe_content_length(
-            self.headers.get("Content-Length")
-        )
+        content_length = _safe_content_length(self.headers.get("Content-Length"))
         if content_length == 0:
             return None
         return self.rfile.read(content_length)
@@ -263,10 +250,7 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
 def main() -> None:
     """Start the companion HTTP server."""
     server = ThreadingHTTPServer((BIND, PORT), DexCompanionHandler)
-    print(
-        f"dex-companion listening on {BIND}:{PORT}, "
-        f"upstream={UPSTREAM}"
-    )
+    print(f"dex-companion listening on {BIND}:{PORT}, upstream={UPSTREAM}")
     server.serve_forever()
 
 

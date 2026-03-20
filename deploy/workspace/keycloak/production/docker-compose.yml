@@ -126,7 +126,7 @@ services:
     restart: unless-stopped
     volumes:
       - "./config/forward-auth-conf:/conf"
-      #- "config/resolv.conf:/etc/resolv.conf"
+      # - "config/resolv.conf:/etc/resolv.conf"
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=oidc
