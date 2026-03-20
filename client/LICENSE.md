@@ -1,4 +1,4 @@
-# License
+# ⚖️ License
 
 --- Start of Definition of INTO-CPS Association Public License ---
 
