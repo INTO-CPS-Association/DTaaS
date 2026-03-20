@@ -243,3 +243,14 @@ deploy/services/cli/test-output
 
 # local research papers
 .research-papers
+
+# keycloak production installation files
+deploy/workspace/keycloak/production/config/client.js
+deploy/workspace/keycloak/production/config/forward-auth-conf
+deploy/workspace/keycloak/production/config/*.pem
+deploy/workspace/keycloak/production/files/*/
+!deploy/workspace/keycloak/production/files/template/
+!deploy/workspace/keycloak/production/files/user1/
+!deploy/workspace/keycloak/production/files/user2/
+!deploy/workspace/keycloak/production/files/common/
+!deploy/workspace/keycloak/production/files/README.md

@@ -60,7 +60,7 @@ jobs:
 
       - name: Run flake8
         run: |
-          flake8 cli/ servers/ script/ deploy/services/cli/ \
+          flake8 cli/ servers/ script/ deploy/services/cli/ deploy/workspace/ \
             --count --select=E9,F63,F7,F82 --show-source \
             --statistics \
             --exclude=venv,.venv,__pycache__,.git || \
@@ -73,7 +73,7 @@ jobs:
 
       - name: Run pylint
         run: |
-          pylint cli/ servers/ script/ deploy/services/cli/ \
+          pylint cli/ servers/ script/ deploy/services/cli/ deploy/workspace/ \
             --rcfile='${{ github.workspace }}/.pylintrc' \
             --fail-under=9 --recursive=y || echo "No Python files to lint"
 

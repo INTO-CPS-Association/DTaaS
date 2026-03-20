@@ -1,0 +1,6 @@
+client/
+__pycache__/
+.pytest_cache/
+config/dex-config.yaml
+config/dex-config-gitlab.yaml
+.env
