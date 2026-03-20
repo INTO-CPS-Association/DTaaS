@@ -17,8 +17,8 @@ setup('authenticate', async ({ page }) => {
   await page.getByRole('button', { name: 'SignIn' }).click({ timeout: 30000 });
   await page.waitForSelector('label[for="user_login"]', { timeout: 30000 }); // wait up to 30 seconds
   await page.locator('label').filter({ hasText: 'Remember me' }).click();
-  await page.fill('#user_login', testUsername.toString()); // Insert valid testing username.
-  await page.fill('#user_password', testPassword.toString()); // Insert valid testing password.
+  await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.
+  await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.
   await page.getByRole('button', { name: 'Sign In' }).click();
   await page
     .getByRole('button', { name: 'Authorize' })
