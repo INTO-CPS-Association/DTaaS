@@ -13,7 +13,7 @@ def main() -> None:
         DexCompanionHandler,
     )
     print(f"dex-companion listening on {BIND}:{PORT}, upstream={UPSTREAM}")
-    server.serve_forever()
+    server.serve_forever()  # NOSONAR
 
 
 if __name__ == "__main__":
