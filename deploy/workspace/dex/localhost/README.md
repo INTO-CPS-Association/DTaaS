@@ -45,7 +45,7 @@ docker compose up -d
 The application will be accessible at <http://localhost> from web browser.
 Login using the default credentials.
 
-**👤 User email:** `user@foo.com`
+**👤 User email:** `user@intocps.org`
 **🔑 Password:** `user`
 
 ⏹️ Stop the demo:
@@ -62,23 +62,6 @@ docker compose down
    See [instructions](CUSTOM_USER.md) for help with changing
    the user credentials.
 
-## 🧩 Architecture
-
-The Dex companion proxy (`companion/src/`) sits between the
-DTaaS client and the Dex identity provider. It forwards all
-HTTP requests to Dex and injects a `profile` claim into
-`/dex/userinfo` responses when `preferred_username` is present.
-
-| Module | Purpose |
-|--------|---------|
-| `config.py` | Environment variables and constants |
-| `http_utils.py` | URL handling and HTTP connections |
-| `profile.py` | Profile claim construction and injection |
-| `handler.py` | HTTP request handler (proxy class) |
-| `__main__.py` | Server entry point |
-
-See [DEVELOPER.md](DEVELOPER.md) for development instructions.
-
 ## 📚 Documentation
 
 Please see
@@ -94,4 +77,3 @@ Traefik logo:
 
 Dex IdP:
 <https://dexidp.io/>
-

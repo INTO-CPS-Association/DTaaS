@@ -2,6 +2,21 @@
 
 Instructions for developing and testing the Dex companion proxy.
 
+## 🧩 Architecture
+
+The Dex companion proxy (`companion/src/`) sits between the
+DTaaS client and the Dex identity provider. It forwards all
+HTTP requests to Dex and injects a `profile` claim into
+`/dex/userinfo` responses when `preferred_username` is present.
+
+| Module          | Purpose                                  |
+| --------------- | ---------------------------------------- |
+| `config.py`     | Environment variables and constants      |
+| `http_utils.py` | URL handling and HTTP connections        |
+| `profile.py`    | Profile claim construction and injection |
+| `handler.py`    | HTTP request handler (proxy class)       |
+| `__main__.py`   | Server entry point                       |
+
 ## Project Structure
 
 ```text
@@ -32,7 +47,7 @@ companion/
 Install test dependencies:
 
 ```bash
-pip install pytest
+pip install pytest pytest-cov
 ```
 
 Install linting tools:
@@ -46,24 +61,23 @@ pip install flake8 pylint ruff
 From the `deploy/workspace/dex/localhost/` directory:
 
 ```bash
-python -m pytest companion/test/ -v
+pytest -v --cov=companion/src --cov-report=xml \
+  --cov-report=term-missing companion/test
 ```
 
 ## Linting
 
-Run all linters from the repository root:
+From the `deploy/workspace/dex/localhost/` directory:
 
 ```bash
 # flake8
-flake8 deploy/workspace/dex/localhost/companion/ \
-  --count --max-complexity=10 --max-line-length=100
+flake8 --count --max-complexity=10 companion
 
 # pylint
-pylint deploy/workspace/dex/localhost/companion/ \
-  --rcfile=.pylintrc --fail-under=9 --recursive=y
+pylint --fail-under=9 --recursive=y companion
 
 # ruff format check
-ruff format --check deploy/workspace/dex/localhost/companion/
+ruff format --check companion
 ```
 
 ## Docker
@@ -81,10 +95,3 @@ COMPANION_BIND=127.0.0.1 \
 COMPANION_PORT=5557 \
 python -m companion.src
 ```
-
-## Code Quality Standards
-
-- All files under 250 lines
-- All functions under 25 lines
-- Pylint score ≥ 9.0
-- flake8 and ruff clean
