@@ -90,11 +90,11 @@ as the value of `hash`.
 
 ## 👤 Username alignment with `.env`
 
-DTaaS routes and workspace paths use `.env` value `username`.
+DTaaS routes and workspace paths use `.env` value `USERNAME`.
 
 For local/passwordDB mode, keep these aligned:
 
-- `.env`: `username=<your-user>`
+- `.env`: `USERNAME=<your-user>`
 - `config/dex-config.yaml`: set static user `username`
   and `preferredUsername` to the same `<your-user>`
 

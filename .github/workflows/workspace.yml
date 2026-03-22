@@ -1,6 +1,6 @@
 name: Workspace Packages
 
-on:
+'on':
   push:
     paths:
       - 'deploy/workspace/**'

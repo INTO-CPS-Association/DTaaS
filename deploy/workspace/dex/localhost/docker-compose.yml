@@ -57,9 +57,9 @@ services:
       - ./files/common:/workspace/common
       - ./files/user:/workspace
     environment:
-      - MAIN_USER=${username:-user}
+      - MAIN_USER=${USERNAME:-user}
     shm_size: "512m"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
-      - "traefik.http.routers.user.rule=PathPrefix(`/${username:-user}`) "
+      - "traefik.http.routers.user.rule=PathPrefix(`/${USERNAME:-user}`) "

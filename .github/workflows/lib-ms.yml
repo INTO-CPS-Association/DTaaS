@@ -1,6 +1,6 @@
 name: Library microservice
 
-on:
+'on':
   push:
     paths:
       - 'servers/lib/**'
