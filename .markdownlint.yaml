@@ -1,9 +1,9 @@
 default: true
 MD033: false
-MD013: 
+MD013:
   code_blocks: false
   tables: false
-MD046: 
+MD046:
   style: "fenced"
 overrides:
   files:

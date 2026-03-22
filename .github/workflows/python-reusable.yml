@@ -117,8 +117,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
-          poetry run pylint ${{ inputs.src-directory }} ${{ inputs.tests-directory }} --rcfile=${GITHUB_WORKSPACE}/.pylintrc --fail-under=9.0
-            
+          poetry run pylint \
+            ${{ inputs.src-directory }} \
+            ${{ inputs.tests-directory }} \
+            --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
+            --fail-under=9.0
+
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |

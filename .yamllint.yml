@@ -11,3 +11,6 @@ rules:
   truthy:
     allowed-values: ['TRUE', 'True', 'true', 'FALSE', 'False', 'false']
     check-keys: true
+  line-length:
+    max: 120
+  indentation: disable

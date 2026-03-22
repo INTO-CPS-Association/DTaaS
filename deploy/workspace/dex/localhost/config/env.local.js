@@ -1,5 +1,5 @@
-if (typeof window !== 'undefined') {
-  window.env = {
+if (typeof globalThis.window !== 'undefined') {
+  globalThis.env = {
     REACT_APP_ENVIRONMENT: 'local',
     REACT_APP_URL: 'http://localhost/',
     REACT_APP_URL_BASENAME: '',

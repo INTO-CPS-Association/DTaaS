@@ -85,4 +85,3 @@ repos:
       - id: check-yaml
         files: '^(docs|deploy|script|ssl)/.*'
         stages: [pre-commit]
-  

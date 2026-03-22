@@ -65,12 +65,12 @@ services:
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
       - users
-  
+
   user2:
     image: intocps/workspace:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common 
+      - ${DTAAS_DIR}/files/common:/workspace/common
       - ${DTAAS_DIR}/files/${username2}:/workspace
     environment:
       - AUTHENTICATE_VIA_JUPYTER=

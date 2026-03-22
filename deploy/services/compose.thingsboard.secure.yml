@@ -16,8 +16,13 @@ services:
     entrypoint: |
       bash -c '
       chmod 600 /etc/ssl/postgres.key &&
-      chown postgres:postgres /etc/ssl/postgres.key /etc/ssl/postgres.crt &&
-      exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/etc/ssl/postgres.crt -c ssl_key_file=/etc/ssl/postgres.key
+      chown postgres:postgres \
+        /etc/ssl/postgres.key \
+        /etc/ssl/postgres.crt &&
+      exec docker-entrypoint.sh postgres \
+        -c ssl=on \
+        -c ssl_cert_file=/etc/ssl/postgres.crt \
+        -c ssl_key_file=/etc/ssl/postgres.key
       '
     networks:
       - platform-services

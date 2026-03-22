@@ -121,7 +121,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
       packages: write  # Push to github package registry
-    if: | 
+    if: |
       github.event_name == 'push' &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||

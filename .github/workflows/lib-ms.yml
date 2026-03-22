@@ -138,7 +138,7 @@ jobs:
         run: sudo apt-get install -y jq
       - name: get version
         id: get-version
-        run: | 
+        run: |
           version=$(jq -r '.version' ./servers/lib/package.json)
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
