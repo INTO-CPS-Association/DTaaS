@@ -40,7 +40,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   client:
-    image: intocps/dtaas-web:new-workspace
+    image: intocps/dtaas-web:1.0.1
     restart: unless-stopped
     volumes:
       - ./config/env.local.js:/dtaas/client/build/env.js
@@ -51,15 +51,15 @@ services:
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
 
   user:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     volumes:
       - ./files/common:/workspace/common
       - ./files/user:/workspace
     environment:
-      - MAIN_USER=${USERNAME:-user}
+      - MAIN_USER=${DEFAULT_USER:-user}
     shm_size: "512m"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
-      - "traefik.http.routers.user.rule=PathPrefix(`/${USERNAME:-user}`) "
+      - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user}`) "

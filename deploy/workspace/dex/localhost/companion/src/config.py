@@ -2,7 +2,10 @@
 
 import os
 
-UPSTREAM = os.environ.get("DEX_UPSTREAM", "http://dex:5556").rstrip("/")  # NOSONAR
+UPSTREAM = (
+    os.environ.get("DEX_UPSTREAM", "http://dex:5556")  # NOSONAR
+    .rstrip("/")
+)
 BIND = os.environ.get("COMPANION_BIND", "0.0.0.0")
 PORT = int(os.environ.get("COMPANION_PORT", "5556"))
 UPSTREAM_TIMEOUT_SECONDS = 30

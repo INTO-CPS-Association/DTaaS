@@ -2,7 +2,7 @@ services:
   traefik:
     image: traefik:v2.10
     restart: unless-stopped
-    command:
+    command: 
       - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -53,7 +53,7 @@ services:
       - frontend
 
   user1:
-    image: intocps/workspace:latest
+    image: mltooling/ml-workspace-minimal:0.13.2
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/files/common:/workspace/common"
@@ -72,9 +72,9 @@ services:
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
       - users
-
+  
   user2:
-    image: intocps/workspace:latest
+    image: mltooling/ml-workspace-minimal:0.13.2
     restart: unless-stopped
     volumes:
       - "${DTAAS_DIR}/files/common:/workspace/common"
