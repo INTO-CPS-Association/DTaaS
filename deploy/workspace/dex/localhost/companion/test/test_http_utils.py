@@ -15,14 +15,18 @@ class TestNormalizeTargetUrl:
 
     def test_simple_path(self):
         with patch.object(
-            http_utils, "UPSTREAM", "http://dex:5556"  # NOSONAR
+            http_utils,
+            "UPSTREAM",
+            "http://dex:5556",  # NOSONAR
         ):
             result = http_utils.normalize_target_url("/dex/auth")
         assert result == "http://dex:5556/dex/auth"  # NOSONAR
 
     def test_path_with_query(self):
         with patch.object(
-            http_utils, "UPSTREAM", "http://dex:5556"  # NOSONAR
+            http_utils,
+            "UPSTREAM",
+            "http://dex:5556",  # NOSONAR
         ):
             result = http_utils.normalize_target_url(
                 "/dex/auth?code=abc",
@@ -31,14 +35,18 @@ class TestNormalizeTargetUrl:
 
     def test_empty_path_defaults_to_slash(self):
         with patch.object(
-            http_utils, "UPSTREAM", "http://dex:5556"  # NOSONAR
+            http_utils,
+            "UPSTREAM",
+            "http://dex:5556",  # NOSONAR
         ):
             result = http_utils.normalize_target_url("")
         assert result == "http://dex:5556/"  # NOSONAR
 
     def test_full_url_extracts_path(self):
         with patch.object(
-            http_utils, "UPSTREAM", "http://dex:5556"  # NOSONAR
+            http_utils,
+            "UPSTREAM",
+            "http://dex:5556",  # NOSONAR
         ):
             result = http_utils.normalize_target_url(
                 "http://other:1234/some/path?q=1",  # NOSONAR
@@ -51,7 +59,9 @@ class TestSplitTargetUrl:
 
     def test_returns_split_result(self):
         with patch.object(
-            http_utils, "UPSTREAM", "http://dex:5556"  # NOSONAR
+            http_utils,
+            "UPSTREAM",
+            "http://dex:5556",  # NOSONAR
         ):
             result = http_utils.split_target_url("/foo")
         assert result.hostname == "dex"
