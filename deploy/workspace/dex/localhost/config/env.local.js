@@ -1,4 +1,4 @@
-if (globalThis.window !== undefined) {
+if (globalThis.window != undefined) {
   globalThis.env = {
     REACT_APP_ENVIRONMENT: 'local',
     REACT_APP_URL: 'http://localhost/',
