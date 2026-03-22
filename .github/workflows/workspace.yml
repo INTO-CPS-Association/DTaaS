@@ -40,7 +40,7 @@ jobs:
         run: pip install flake8 pylint ruff
 
       - name: Run flake8
-        run: flake8 --count --max-complexity=10 companion
+        run: flake8 --count --max-complexity=10 --max-line-length=88 companion
 
       - name: Run pylint (min score 9.0)
         shell: bash
