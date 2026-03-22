@@ -14,35 +14,35 @@ class TestNormalizeTargetUrl:
     """Tests for normalize_target_url."""
 
     def test_simple_path(self):
-        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):
+        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):  # NOSONAR
             result = http_utils.normalize_target_url("/dex/auth")
-        assert result == "http://dex:5556/dex/auth"
+        assert result == "http://dex:5556/dex/auth"  # NOSONAR
 
     def test_path_with_query(self):
-        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):
+        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):  # NOSONAR
             result = http_utils.normalize_target_url(
                 "/dex/auth?code=abc",
             )
-        assert result == "http://dex:5556/dex/auth?code=abc"
+        assert result == "http://dex:5556/dex/auth?code=abc"  # NOSONAR
 
     def test_empty_path_defaults_to_slash(self):
-        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):
+        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):  # NOSONAR
             result = http_utils.normalize_target_url("")
-        assert result == "http://dex:5556/"
+        assert result == "http://dex:5556/"  # NOSONAR
 
     def test_full_url_extracts_path(self):
-        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):
+        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):  # NOSONAR
             result = http_utils.normalize_target_url(
-                "http://other:1234/some/path?q=1",
+                "http://other:1234/some/path?q=1",  # NOSONAR
             )
-        assert result == "http://dex:5556/some/path?q=1"
+        assert result == "http://dex:5556/some/path?q=1"  # NOSONAR
 
 
 class TestSplitTargetUrl:
     """Tests for split_target_url."""
 
     def test_returns_split_result(self):
-        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):
+        with patch.object(http_utils, "UPSTREAM", "http://dex:5556"):  # NOSONAR
             result = http_utils.split_target_url("/foo")
         assert result.hostname == "dex"
         assert result.port == 5556
@@ -52,11 +52,11 @@ class TestTargetPath:
     """Tests for target_path."""
 
     def test_path_with_query(self):
-        parsed = urlsplit("http://host:80/path?q=1")
+        parsed = urlsplit("http://host:80/path?q=1")  # NOSONAR
         assert http_utils.target_path(parsed) == "/path?q=1"
 
     def test_empty_path_defaults_to_slash(self):
-        parsed = urlsplit("http://host:80")
+        parsed = urlsplit("http://host:80")  # NOSONAR
         assert http_utils.target_path(parsed) == "/"
 
 
@@ -64,7 +64,7 @@ class TestTargetPort:
     """Tests for target_port."""
 
     def test_explicit_port(self):
-        parsed = urlsplit("http://host:8080/path")
+        parsed = urlsplit("http://host:8080/path")  # NOSONAR
         assert http_utils.target_port(parsed) == 8080
 
     def test_https_default(self):
@@ -72,7 +72,7 @@ class TestTargetPort:
         assert http_utils.target_port(parsed) == 443
 
     def test_http_default(self):
-        parsed = urlsplit("http://host/path")
+        parsed = urlsplit("http://host/path")  # NOSONAR
         assert http_utils.target_port(parsed) == 80
 
 
@@ -80,7 +80,7 @@ class TestBuildConnection:
     """Tests for build_connection."""
 
     def test_http_connection(self):
-        parsed = urlsplit("http://dex:5556/path")
+        parsed = urlsplit("http://dex:5556/path")  # NOSONAR
         conn = http_utils.build_connection(parsed)
         assert isinstance(conn, HTTPConnection)
 

@@ -37,10 +37,10 @@ class TestBuildProfileClaim:
     def test_with_issuer_and_username(self):
         payload = {
             "preferred_username": "alice",
-            "iss": "http://dex:5556/dex",
+            "iss": "http://dex:5556/dex",  # NOSONAR
         }
         result = build_profile_claim(payload)
-        assert result == "http://dex:5556/dex/alice"
+        assert result == "http://dex:5556/dex/alice"  # NOSONAR
 
     def test_without_issuer(self):
         payload = {"preferred_username": "bob"}
@@ -48,7 +48,7 @@ class TestBuildProfileClaim:
         assert result == "/users/bob"
 
     def test_missing_username(self):
-        payload = {"iss": "http://dex:5556/dex"}
+        payload = {"iss": "http://dex:5556/dex"}  # NOSONAR
         assert build_profile_claim(payload) is None
 
     def test_empty_username(self):
@@ -65,10 +65,10 @@ class TestBuildProfileClaim:
     def test_issuer_trailing_slash_stripped(self):
         payload = {
             "preferred_username": "alice",
-            "iss": "http://dex:5556/dex/",
+            "iss": "http://dex:5556/dex/",  # NOSONAR
         }
         result = build_profile_claim(payload)
-        assert result == "http://dex:5556/dex/alice"
+        assert result == "http://dex:5556/dex/alice"  # NOSONAR
 
 
 class TestInjectProfileClaim:
@@ -78,7 +78,7 @@ class TestInjectProfileClaim:
         body = json.dumps(
             {
                 "preferred_username": "alice",
-                "iss": "http://dex:5556/dex",
+                "iss": "http://dex:5556/dex",  # NOSONAR
             }
         ).encode()
         headers = [("Content-Type", "application/json")]
@@ -88,7 +88,7 @@ class TestInjectProfileClaim:
             body,
         )
         parsed = json.loads(result)
-        assert parsed["profile"] == "http://dex:5556/dex/alice"
+        assert parsed["profile"] == "http://dex:5556/dex/alice"  # NOSONAR
 
     def test_does_not_inject_on_other_paths(self):
         body = json.dumps(
