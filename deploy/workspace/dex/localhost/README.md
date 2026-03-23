@@ -21,7 +21,7 @@ setup is shown here.
 ## Prerequisites
 
 - Docker Engine v27 or later
-- Port 80 available on your host
+- Ports 80 and 5556 available on your host
 - At least 2GB RAM available
 
 ## ⚡ Quick Demo

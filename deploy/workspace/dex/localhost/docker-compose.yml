@@ -28,12 +28,9 @@ services:
     image: traefik:v3.6.4
     restart: unless-stopped
     command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
+      - "--log.level=INFO"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
-      - "--entrypoints.web.forwardedHeaders.insecure=true"
-      - "--entrypoints.web.proxyProtocol.insecure=true"
     ports:
       - "80:80"
     volumes:
