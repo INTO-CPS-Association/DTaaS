@@ -4,11 +4,11 @@ name: Workspace Packages
   push:
     paths:
       - 'deploy/workspace/**'
-      - '.github/workflows/python-companion.yml'
+      - '.github/workflows/workspace.yml'
   pull_request:
     paths:
       - 'deploy/workspace/**'
-      - '.github/workflows/python-companion.yml'
+      - '.github/workflows/workspace.yml'
   workflow_dispatch:
 
 

@@ -1,6 +1,6 @@
 services:
   dex:
-    image: dexidp/dex:latest
+    image: dexidp/dex:v2.45.1
     restart: unless-stopped
     command: ["dex", "serve", "/etc/dex/config.yaml"]
     volumes:
@@ -62,4 +62,4 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
-      - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user}`) "
+      - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user}`)"
