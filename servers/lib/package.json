@@ -7,7 +7,7 @@
     "Prasad Talasila",
     "Mads Kelberg",
     "Linda Nguyen",
-    "Nichlaes H. S\u00f8rensen"
+    "Nichlaes H. Sørensen"
   ],
   "private": false,
   "license": "SEE LICENSE IN <LICENSE.md>",
@@ -87,5 +87,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
+  },
+  "resolutions": {
+    "dompurify": "^3.3.3"
   }
 }
