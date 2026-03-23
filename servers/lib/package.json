@@ -45,7 +45,7 @@
     "@nestjs/graphql": "^13.2.4",
     "@nestjs/platform-express": "^11.1.17",
     "axios": "^1.13.6",
-    "cloudcmd": "^19.8.6",
+    "cloudcmd": "^19.8.8",
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
     "globals": "^17.4.0",
@@ -61,6 +61,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
     "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.17",

@@ -4706,10 +4706,10 @@ clone@^1.0.2:
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
-cloudcmd@^19.8.6:
-  version "19.8.6"
-  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.8.6.tgz#c81ecb704eaadfea82ac4b005e010f6411f2c7a3"
-  integrity sha512-WxM0UkfLBOn9lx3VyKELulq4xn7sKBzbv72foaa0VCcRf9qm4E9ek/zu4ZnFc8/ShtJD0s8VOlqWYXF1gn89ow==
+cloudcmd@^19.8.8:
+  version "19.8.8"
+  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.8.8.tgz#7c24f33f75b9e9793877f75f43351981aea0b1de"
+  integrity sha512-fnOp+w7GQiJgVUQAbBAVwB27o4k4lzBpQ6RKbQG5k9IwyvZd9KsnKCA5ewz/7lCVK4wqKaG1kt/8j/LO2uyJoA==
   dependencies:
     "@cloudcmd/dropbox" "^5.0.1"
     "@cloudcmd/fileop" "^9.0.7"
