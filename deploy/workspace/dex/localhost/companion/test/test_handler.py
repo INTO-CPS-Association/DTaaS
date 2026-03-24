@@ -115,6 +115,22 @@ class TestHandlerForwardRequest:
         assert b"dex_upstream_unreachable" in body
         mock_conn.close.assert_called_once()
 
+    @patch.object(handler_mod, "split_target_url")
+    def test_invalid_upstream_url(
+        self,
+        mock_split,
+        make_handler,
+    ):
+        """Verify 502 response when parsed URL has no hostname."""
+        mock_parsed = MagicMock()
+        mock_parsed.hostname = None
+        mock_split.return_value = mock_parsed
+
+        handler = make_handler("GET", "/bad-path")
+        status, _, body = handler._forward_request(None, {})
+        assert status == 502
+        assert b"invalid_upstream_url" in body
+
 
 class TestHttpMethods:
     """Tests that all HTTP method handlers call _proxy."""

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from urllib.parse import urlsplit
 
 from companion.src.http_utils import is_json_response
 
@@ -40,17 +41,18 @@ def inject_profile_claim(
     response_body: bytes,
 ) -> bytes:
     """Add a profile claim to userinfo JSON when missing."""
-    is_userinfo = path.startswith("/dex/userinfo")
-    if not is_userinfo or not is_json_response(response_headers):
+    path_component = urlsplit(path).path.rstrip("/")
+    if path_component != "/dex/userinfo":
+        return response_body
+    if not is_json_response(response_headers):
         return response_body
 
     payload = decode_json_object(response_body)
     profile_claim = build_profile_claim(payload)
 
-    can_inject = isinstance(payload, dict)
-    can_inject = can_inject and not payload.get("profile")
-    can_inject = can_inject and profile_claim is not None
-    if not can_inject:
+    if not (isinstance(payload, dict)
+            and not payload.get("profile")
+            and profile_claim is not None):  # noqa: E129
         return response_body
 
     payload["profile"] = profile_claim

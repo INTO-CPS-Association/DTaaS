@@ -1,5 +1,7 @@
 """HTTP request handler that proxies to Dex upstream."""
 
+# pylint: disable=C0103
+
 from __future__ import annotations
 
 from http.server import BaseHTTPRequestHandler
@@ -60,6 +62,12 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
     ) -> tuple[int, list[tuple[str, str]], bytes]:
         """Send the request to upstream and return result."""
         parsed = split_target_url(self.path)
+        if not parsed.hostname:
+            return (
+                502,
+                [("Content-Type", "application/json")],
+                b'{"error":"invalid_upstream_url"}',
+            )
         connection = build_connection(parsed)
         try:
             connection.request(
@@ -99,27 +107,27 @@ class DexCompanionHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(response_body)
 
-    def do_GET(self) -> None:  # pylint: disable=C0103
+    def do_GET(self) -> None:
         """Proxy HTTP GET requests to Dex."""
         self._proxy()
 
-    def do_POST(self) -> None:  # pylint: disable=C0103
+    def do_POST(self) -> None:
         """Proxy HTTP POST requests to Dex."""
         self._proxy()
 
-    def do_PUT(self) -> None:  # pylint: disable=C0103
+    def do_PUT(self) -> None:
         """Proxy HTTP PUT requests to Dex."""
         self._proxy()
 
-    def do_PATCH(self) -> None:  # pylint: disable=C0103
+    def do_PATCH(self) -> None:
         """Proxy HTTP PATCH requests to Dex."""
         self._proxy()
 
-    def do_DELETE(self) -> None:  # pylint: disable=C0103
+    def do_DELETE(self) -> None:
         """Proxy HTTP DELETE requests to Dex."""
         self._proxy()
 
-    def do_OPTIONS(self) -> None:  # pylint: disable=C0103
+    def do_OPTIONS(self) -> None:
         """Proxy HTTP OPTIONS requests to Dex."""
         self._proxy()
 

@@ -1,10 +1,30 @@
 """Configuration constants for the Dex companion proxy."""
 
 import os
+import sys
 
-UPSTREAM = os.environ.get("DEX_UPSTREAM", "http://dex:5556").rstrip("/")  # NOSONAR
+
+def _parse_port(raw_value: str | None, default: int = 5556) -> int:
+    """Safely parse a port number, falling back to *default*."""
+    if raw_value is None or raw_value == "":
+        return default
+    try:
+        return int(raw_value)
+    except ValueError:
+        print(
+            f"Invalid COMPANION_PORT value {raw_value!r}, "
+            f"falling back to {default}",
+            file=sys.stderr,
+        )
+        return default
+
+
+UPSTREAM = os.environ.get(
+    "DEX_UPSTREAM",
+    "http://dex:5556",
+).rstrip("/")  # NOSONAR
 BIND = os.environ.get("COMPANION_BIND", "0.0.0.0")
-PORT = int(os.environ.get("COMPANION_PORT", "5556"))
+PORT = _parse_port(os.environ.get("COMPANION_PORT"))
 UPSTREAM_TIMEOUT_SECONDS = 30
 
 HOP_BY_HOP_HEADERS = {

@@ -102,6 +102,34 @@ class TestInjectProfileClaim:
         )
         assert result == body
 
+    def test_does_not_inject_on_prefix_match_path(self):
+        body = json.dumps(
+            {"preferred_username": "alice"},
+        ).encode()
+        headers = [("Content-Type", "application/json")]
+        result = inject_profile_claim(
+            "/dex/userinfo-foo",
+            headers,
+            body,
+        )
+        assert result == body
+
+    def test_injects_on_userinfo_with_query_string(self):
+        body = json.dumps(
+            {
+                "preferred_username": "alice",
+                "iss": "http://dex:5556/dex",  # NOSONAR
+            }
+        ).encode()
+        headers = [("Content-Type", "application/json")]
+        result = inject_profile_claim(
+            "/dex/userinfo?access_token=abc",
+            headers,
+            body,
+        )
+        parsed = json.loads(result)
+        assert parsed["profile"] == "http://dex:5556/dex/alice"  # NOSONAR
+
     def test_does_not_inject_if_non_json(self):
         body = json.dumps(
             {"preferred_username": "alice"},
