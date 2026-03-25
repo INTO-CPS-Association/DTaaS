@@ -26,9 +26,9 @@ def fixture_make_handler():
         header_lines = "".join(f"{k}: {v}\r\n" for k, v in headers.items())
         if body:
             header_lines += f"Content-Length: {len(body)}\r\n"
-        raw = (
-            f"{method} {path} HTTP/1.1\r\nHost: localhost\r\n{header_lines}\r\n"
-        ).encode() + body
+        request_line = f"{method} {path} HTTP/1.1\r\n"
+        header_block = f"Host: localhost\r\n{header_lines}\r\n"
+        raw = f"{request_line}{header_block}".encode() + body
 
         rfile = io.BytesIO(raw)
         wfile = io.BytesIO()

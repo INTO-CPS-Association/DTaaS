@@ -28,7 +28,8 @@ def split_target_url(path: str) -> SplitResult:
 
 def target_path(parsed_target: SplitResult) -> str:
     """Extract the path and query from a parsed URL."""
-    return urlunsplit(("", "", parsed_target.path or "/", parsed_target.query, ""))
+    path = parsed_target.path or "/"
+    return urlunsplit(("", "", path, parsed_target.query, ""))
 
 
 def target_port(parsed_target: SplitResult) -> int:

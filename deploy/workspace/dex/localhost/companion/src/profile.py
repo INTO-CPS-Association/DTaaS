@@ -50,9 +50,11 @@ def inject_profile_claim(
     payload = decode_json_object(response_body)
     profile_claim = build_profile_claim(payload)
 
-    if not (isinstance(payload, dict)
-            and not payload.get("profile")
-            and profile_claim is not None):  # noqa: E129
+    if not (
+        isinstance(payload, dict)
+        and not payload.get("profile")
+        and profile_claim is not None
+    ):  # noqa: E129
         return response_body
 
     payload["profile"] = profile_claim
