@@ -18,13 +18,16 @@ export function clearLogBuffer(): void {
 
 export function downloadLogs(): void {
   const jsonl = logBuffer.map((e) => JSON.stringify(e)).join('\n');
-  const blob = new Blob([jsonl], { type: 'application/jsonl' });
+  const blob = new Blob([jsonl], { type: 'application/x-ndjson' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `dtaas-workflow-log-${new Date().toISOString().slice(0, 10)}.jsonl`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dtaas-workflow-log-${new Date().toISOString().slice(0, 10)}.jsonl`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }

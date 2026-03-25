@@ -28,8 +28,14 @@ export function useLogger(): void {
 
   useEffect(() => {
     if (!username || initRef.current) return;
-    initRef.current = true;
-    initLogger(username).catch(() => {});
+    initLogger(username)
+      .then(() => {
+        initRef.current = true;
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn('Logger: init failed, will retry on next render', err);
+      });
   }, [username]);
 
   const handleClick = useCallback((event: MouseEvent) => {

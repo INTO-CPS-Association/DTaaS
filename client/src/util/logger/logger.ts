@@ -13,7 +13,7 @@ let initialized = false;
 export async function initLogger(username: string): Promise<void> {
   sessionId = getSessionId();
   userHash = await hashUsername(username);
-  loggerUrl = window.env?.REACT_APP_LOGGER_URL ?? '';
+  loggerUrl = window.env?.LOGGER_URL ?? '';
   initialized = true;
 }
 

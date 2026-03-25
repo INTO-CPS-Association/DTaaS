@@ -1,4 +1,3 @@
- 
 import { LogEvent } from 'util/logger/logEvent';
 import { DB_CONFIG } from 'database/types';
 
@@ -19,9 +18,19 @@ function openDB(): Promise<IDBDatabase> {
       reject(new Error('Failed to open IndexedDB for logs'));
     };
 
+    request.onblocked = () => {
+      dbPromise = null;
+      reject(new Error('IndexedDB open blocked by another tab'));
+    };
+
     request.onsuccess = (event) => {
       cachedDB = (event.target as IDBOpenDBRequest).result;
       cachedDB.onclose = () => {
+        cachedDB = null;
+        dbPromise = null;
+      };
+      cachedDB.onversionchange = () => {
+        cachedDB?.close();
         cachedDB = null;
         dbPromise = null;
       };

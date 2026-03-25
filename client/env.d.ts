@@ -16,7 +16,7 @@ declare global {
       REACT_APP_REDIRECT_URI: string;
       REACT_APP_LOGOUT_REDIRECT_URI: string;
       REACT_APP_GITLAB_SCOPES: string;
-      REACT_APP_LOGGER_URL?: string;
+      LOGGER_URL?: string;
     }
   }
 

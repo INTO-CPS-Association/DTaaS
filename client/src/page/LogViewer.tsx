@@ -27,7 +27,7 @@ function LogViewer() {
 
   const handleDownload = () => {
     const jsonl = logs.map((e) => JSON.stringify(e)).join('\n');
-    const blob = new Blob([jsonl], { type: 'application/jsonl' });
+    const blob = new Blob([jsonl], { type: 'application/x-ndjson' });
     let url = '';
     try {
       url = URL.createObjectURL(blob);

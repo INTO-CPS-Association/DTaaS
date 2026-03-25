@@ -82,7 +82,7 @@ describe('logger', () => {
     const origEnv = globalThis.env;
     globalThis.env = {
       ...globalThis.env,
-      REACT_APP_LOGGER_URL: 'https://example.com/logger',
+      LOGGER_URL: 'https://example.com/logger',
     };
 
     await initLogger('testuser');

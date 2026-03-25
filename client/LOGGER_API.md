@@ -9,7 +9,7 @@ process responses.
 
 ## Base URL
 
-Configured via the `REACT_APP_LOGGER_URL` environment variable
+Configured via the `LOGGER_URL` environment variable
 (e.g., `https://example.com/logger`).
 
 ## Endpoints
@@ -122,9 +122,9 @@ Set the logger backend URL in the DTaaS runtime configuration:
 ```javascript
 window.env = {
   // ... other config
-  REACT_APP_LOGGER_URL: 'https://your-server.com/logger',
+  LOGGER_URL: 'https://your-server.com/logger',
 };
 ```
 
-When `REACT_APP_LOGGER_URL` is empty or undefined, backend streaming
+When `LOGGER_URL` is empty or undefined, backend streaming
 is disabled and logs are only written to the browser console.
