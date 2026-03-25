@@ -16,7 +16,7 @@ services:
       - '${GITLAB_PORT}:443'
       - '2424:22'
     volumes:
-      - './data/gitlab/config:/etc/gitlab'
+      - './config/gitlab:/etc/gitlab'
       - './log/gitlab:/var/log/gitlab'
       - './data/gitlab/data:/var/opt/gitlab'
       - './certs:/certs:ro'

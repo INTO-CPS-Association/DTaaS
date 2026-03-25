@@ -5,7 +5,7 @@ import pytest
 import dtaas_services.pkg.services.gitlab._api as api
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-TEST_HOSTNAME = "services.foo.com"
+TEST_HOSTNAME = "services.intocps.org"
 TEST_PORT = "8090"
 
 

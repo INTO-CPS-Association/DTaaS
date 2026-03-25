@@ -141,6 +141,31 @@ def _step_reset_root_password(console: Console) -> Tuple[bool, str]:
     return success, msg
 
 
+def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]:
+    """Backup gitlab_tokens.json then remove the root_password entry from it.
+
+    Returns:
+        Tuple of (success, message)
+    """
+    console.print(
+        "[cyan]Backing up tokens and removing root password from tokens file...[/cyan]"
+    )
+    tokens_path = _get_tokens_output_path()
+    backup_path = tokens_path.parent / "backup_gitlab_tokens.json"
+    try:
+        with tokens_path.open("r", encoding="utf-8") as fh:
+            tokens_data = json.load(fh)
+        with backup_path.open("w", encoding="utf-8") as fh:
+            json.dump(tokens_data, fh, indent=2)
+        tokens_data.pop("root_password", None)
+        with tokens_path.open("w", encoding="utf-8") as fh:
+            json.dump(tokens_data, fh, indent=2)
+        console.print("[green]\u2705 Root password removed from tokens file.[/green]")
+        return True, "Root password removed from gitlab_tokens.json."
+    except OSError as exc:
+        return False, f"Failed to update tokens file: {exc}"
+
+
 def _step_create_oauth_apps(
     console: Console, pat: str
 ) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
@@ -201,6 +226,12 @@ def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
     if not pw_ok:
         console.print(
             f"[yellow]\u26a0\ufe0f  Root password reset failed: {pw_msg}[/yellow]"
+        )
+
+    bk_ok, bk_msg = _step_remove_root_password_from_tokens(console)
+    if not bk_ok:
+        console.print(
+            f"[yellow]\u26a0\ufe0f  Failed to remove root password from tokens: {bk_msg}[/yellow]"
         )
 
     return True, "GitLab setup completed successfully."

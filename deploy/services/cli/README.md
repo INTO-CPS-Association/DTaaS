@@ -181,6 +181,14 @@ The install command checks GitLab’s readiness and returns immediately:
   and re-run `dtaas-services install -s gitlab` once the status
   shows "healthy".
 
+> **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
+> up to `config/backup_gitlab_tokens.json` and the `root_password` entry is
+> removed from the live tokens file.
+> If the GitLab installation becomes corrupted before the root password is
+> changed, the initial password can be found in the backup file:
+> `config/backup_gitlab_tokens.json`.
+> If that file is also missing, re-install GitLab to generate a new
+> initial password.
 > **Warning:** `config/current.passwords.env` is managed automatically by
 > the CLI and tracks the current service passwords. Do **not** edit or delete
 > this file manually — doing so may cause password reset commands to fail.

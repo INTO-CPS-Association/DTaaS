@@ -7,7 +7,7 @@ from dtaas_services.pkg.services.gitlab import app_token
 # pylint: disable=W0212
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-TEST_SERVER_DNS = "foo.com"
+TEST_SERVER_DNS = "intocps.org"
 
 
 def test_get_server_dns_missing(monkeypatch):
