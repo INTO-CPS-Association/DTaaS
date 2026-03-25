@@ -3,6 +3,7 @@ import { hashUsername } from 'util/logger/hashUtils';
 import { getSessionId } from 'util/logger/sessionManager';
 import { logToConsole } from 'util/logger/consoleLogger';
 import { sendBeacon } from 'util/logger/beaconLogger';
+import { addLog } from 'util/logger/indexedDBLogger';
 
 let userHash = '';
 let sessionId = '';
@@ -28,8 +29,19 @@ export function log(
 ): LogEvent | null {
   if (!initialized) return null;
 
-  const event = createLogEvent(sessionId, userHash, page, element, label, context);
+  const event = createLogEvent(
+    sessionId,
+    userHash,
+    page,
+    element,
+    label,
+    context,
+  );
   logToConsole(event);
+  addLog(event).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.warn('Logger: failed to persist event to IndexedDB', err);
+  });
   if (loggerUrl) {
     sendBeacon(loggerUrl, event);
   }

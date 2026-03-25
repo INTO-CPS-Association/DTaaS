@@ -58,6 +58,17 @@ class IndexedDBService implements IExecutionHistory {
             store.createIndex(index.name, index.keyPath);
           }
         }
+
+        if (!db.objectStoreNames.contains('logs')) {
+          const logsStore = db.createObjectStore('logs', {
+            keyPath: DB_CONFIG.stores.logs.keyPath,
+            autoIncrement: DB_CONFIG.stores.logs.autoIncrement,
+          });
+
+          for (const index of DB_CONFIG.stores.logs.indexes) {
+            logsStore.createIndex(index.name, index.keyPath);
+          }
+        }
       };
     });
 

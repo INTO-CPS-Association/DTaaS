@@ -1,40 +1,151 @@
 # Process Workflow Logger - Implementation Plan
 
-## Problem Statement
+## Phase 1 (Complete): Initial Logger
 
-DTaaS needs to collect typical process workflows that users follow on the
-application. User clicks on specific React elements (pages, tabs, subtabs,
-buttons) must be recorded to assemble process flows. The logger must:
+A non-intrusive logging layer that records user clicks via `data-logger-*`
+HTML attributes and a global click listener. Logs go to browser console
+with in-memory buffer, and optionally to a backend via the Beacon API.
 
-1. Anonymize usernames using a hash algorithm (privacy)
-2. Include a session ID in every log event
-3. Output logs in JSON format (JSONL files)
-4. Stream logs to the browser console (downloadable by users)
-5. Stream logs to a backend `/logger` route using fire-and-forget semantics
-   (Beacon API)
-6. Design a REST API for the logger microservice and implement client code
+Delivered: LogEvent schema, SHA-256 username hashing, session management,
+console logger with JSONL download, beacon transport, `useLogger` React
+hook, data attributes on all key UI elements, 28 unit tests across
+7 test suites.
 
-## Approach
+## Phase 2: IndexedDB Persistent Logger + Backend POST Fix
 
-### Architecture
+### Problem Statement
 
-A **non-intrusive logging layer** that wraps existing React components with
-click tracking via `data-logger-*` attributes and a global click listener.
-This avoids modifying every individual component.
+The Phase 1 logger has two issues:
 
-**Key Design Decisions:**
+1. **Cross-tab log loss**: When a user clicks a workbench link, a new
+   browser tab opens. The in-memory log buffer and console.log output are
+   isolated per tab. Logs are scattered across multiple browser tabs with
+   no synchronization.
 
-- **Global click listener** on `document` that inspects `data-logger-*`
-  attributes on clicked elements and their ancestors. This is the least
-  invasive approach — existing components only need `data-logger-*` props
-  added, no logic changes.
-- **SHA-256 hash** via Web Crypto API (built-in) for username anonymization.
-- **`uuid` package** (already a dependency) for session ID generation.
-- **Navigator Beacon API** for fire-and-forget backend streaming.
-- **In-memory log buffer** with console output and download capability.
-- **No new npm dependencies** — use built-in browser APIs and existing deps.
+2. **Backend POST not sending**: The `beaconLogger.ts` uses
+   `navigator.sendBeacon()` which is fire-and-forget and works. However
+   the logger backend URL (`REACT_APP_LOGGER_URL`) must be configured in
+   config files — which currently lack the field. The config files need
+   updating to include `REACT_APP_LOGGER_URL`.
 
-### Log Event Schema (JSON)
+### Design Alternatives Comparison
+
+#### Design A: IndexedDB-Based Storage (Chosen)
+
+Store all log events in a shared IndexedDB database (`dtaas_logs` store).
+IndexedDB is shared across all tabs of the same origin, so logs from any
+tab are unified. A `/insights/log` route displays the raw log entries.
+
+**Pros:**
+- Single unified store across all tabs — no synchronization needed
+- Persistent storage survives page reloads and tab closures
+- Can store large volumes of logs (hundreds of MB)
+- No external dependencies — IndexedDB is a built-in browser API
+- Already used in this project (`database/executionHistoryDB.ts`) so the
+  pattern is established
+- `fake-indexeddb` is already a devDependency for testing
+- User can view logs in-app at `/insights/log`
+
+**Cons:**
+- Async API (all reads/writes are promise-based)
+- Cannot be accessed from Web Workers without additional setup
+- No real-time cross-tab notification (must query on page load)
+
+#### Design B: BroadcastChannel + SharedArrayBuffer
+
+Use the `BroadcastChannel` API to broadcast log events across tabs in
+real time. Each tab listens for broadcasts and maintains a local copy.
+One "leader" tab (elected via `navigator.locks`) writes to localStorage
+or IndexedDB as the single writer.
+
+**Pros:**
+- Real-time cross-tab synchronization
+- Low latency event propagation
+- Leader election prevents write conflicts
+
+**Cons:**
+- Complex leader election logic (what if leader tab closes?)
+- BroadcastChannel does not work cross-origin
+- SharedArrayBuffer requires `Cross-Origin-Isolation` headers (COOP/COEP)
+  which would break OIDC auth redirects and iframe-based workbench services
+- Still needs a persistent store (IndexedDB/localStorage) anyway
+- Significantly more complex with no real benefit over Design A since
+  real-time cross-tab display is not a requirement
+
+#### Design C: Service Worker + Central Log Collector
+
+Register a Service Worker that intercepts all log events. Tabs post
+messages to the Service Worker, which aggregates and persists them
+(to IndexedDB or a backend). The Service Worker acts as a background
+process shared across all tabs.
+
+**Pros:**
+- True background processing — survives all tab closures
+- Can batch and flush logs to the backend efficiently
+- Single write path eliminates concurrency issues
+- Can retry failed backend POSTs
+
+**Cons:**
+- Service Workers require HTTPS (not available in dev `localhost` by
+  default in some browsers)
+- Registration lifecycle is complex (install, activate, update)
+- Debugging is harder (separate DevTools context)
+- CRA (Create React App) Service Worker support is limited and requires
+  ejecting or custom webpack config
+- Overkill for the current use case — logs already POST via Beacon API
+- This project uses `react-scripts` which makes SW customization painful
+
+#### Decision: Design A (IndexedDB)
+
+IndexedDB is the simplest, most robust solution. It leverages existing
+project patterns, requires no external dependencies, and solves the
+cross-tab problem directly. The other designs add complexity without
+proportional benefit.
+
+### Approach
+
+1. **Add `indexedDBLogger.ts`** — An IndexedDB-backed log store that
+   writes every log event to a `logs` object store in the existing
+   `DTaaS` database. Provides `addLog()`, `getAllLogs()`, and
+   `clearLogs()` functions.
+
+2. **Update `logger.ts`** — After logging to console, also persist the
+   event to IndexedDB via `indexedDBLogger.addLog()`.
+
+3. **Add `LogViewer` page component** — A React page at `/insights/log`
+   that reads all logs from IndexedDB and displays them as raw JSONL.
+   Includes a download button and a clear button.
+
+4. **Add route** — Register `/insights/log` in `routes.tsx` as a
+   `PrivateRoute`.
+
+5. **Fix config files** — Add `REACT_APP_LOGGER_URL: ''` to all four
+   `config/*.js` files so the beacon transport can be activated.
+
+6. **Update `env.d.ts`** — Already has `REACT_APP_LOGGER_URL?` — no
+   change needed.
+
+7. **Update `database/types.ts`** — Add `logs` store configuration to
+   `DB_CONFIG` and increment the database version.
+
+### File Changes
+
+```
+src/util/logger/indexedDBLogger.ts    # NEW — IndexedDB log persistence
+src/util/logger/logger.ts             # MODIFY — add IndexedDB write
+src/page/LogViewer.tsx                # NEW — /insights/log page
+src/routes.tsx                        # MODIFY — add /insights/log route
+src/database/types.ts                 # MODIFY — add logs store config
+config/dev.js                         # MODIFY — add REACT_APP_LOGGER_URL
+config/test.js                        # MODIFY — add REACT_APP_LOGGER_URL
+config/prod.js                        # MODIFY — add REACT_APP_LOGGER_URL
+config/local.js                       # MODIFY — add REACT_APP_LOGGER_URL
+test/unit/util/logger/indexedDBLogger.test.ts  # NEW — unit tests
+test/unit/util/logger/logger.test.ts  # MODIFY — update for IndexedDB
+test/unit/page/LogViewer.test.tsx      # NEW — page component tests
+```
+
+### Log Event Schema (unchanged)
 
 ```json
 {
@@ -45,160 +156,72 @@ This avoids modifying every individual component.
   "page": "/library",
   "element": "tab",
   "label": "Functions",
-  "context": {
-    "tab": "functions",
-    "subtab": "private"
-  }
+  "context": { "tab": "functions", "subtab": "private" }
 }
-```
-
-### Backend Microservice Candidate
-
-**Seq** (by Datalust) is a widely used, open-source structured log server
-with a free single-user license, Docker image, and JSON ingestion API.
-However, to keep the implementation self-contained and simple, the REST API
-will be designed as a generic JSONL ingestion endpoint compatible with any
-backend (Seq, Loki, custom Node.js service, etc.).
-
-### Config Environment Variable
-
-A new `REACT_APP_LOGGER_URL` environment variable will specify the logger
-backend URL. When empty/undefined, backend streaming is disabled (console
-only).
-
-### File Structure
-
-```
-src/util/logger/
-├── logEvent.ts          # LogEvent interface & factory
-├── hashUtils.ts         # SHA-256 username hashing
-├── sessionManager.ts    # Session ID management
-├── consoleLogger.ts     # Console output & download
-├── beaconLogger.ts      # Beacon API transport to /logger
-├── logger.ts            # Main logger orchestrator
-└── useLogger.ts         # React hook + global click listener setup
 ```
 
 ## Todos
 
-### 1. core-logger-types
+### Phase 1 (Complete)
 
-Define the LogEvent interface, event factory function, and constants.
+- [x] core-logger-types
+- [x] hash-utils
+- [x] session-manager
+- [x] console-logger
+- [x] beacon-logger
+- [x] logger-orchestrator
+- [x] react-hook-integration
+- [x] add-data-attributes
+- [x] env-config (env.d.ts)
+- [x] logger-api-docs
+- [x] unit-tests (28 tests, 7 suites)
 
-- File: `src/util/logger/logEvent.ts`
+### Phase 2
 
-### 2. hash-utils
+1. **update-db-config** — Add `logs` store to `database/types.ts` with
+   `DB_CONFIG`. Bump version to 2. The store uses auto-increment key
+   with a `timestamp` index for ordering.
 
-Implement SHA-256 hashing for username anonymization using Web Crypto API.
+2. **indexeddb-logger** — Create `src/util/logger/indexedDBLogger.ts`
+   that opens the DTaaS database and writes LogEvent entries to the
+   `logs` object store. Expose `addLog()`, `getAllLogs()`, `clearLogs()`.
 
-- File: `src/util/logger/hashUtils.ts`
+3. **integrate-indexeddb** — Update `logger.ts` to call
+   `indexedDBLogger.addLog()` after `logToConsole()`.
 
-### 3. session-manager
+4. **log-viewer-page** — Create `src/page/LogViewer.tsx`, a simple React
+   page that reads all logs from IndexedDB and renders them as JSONL
+   in a `<pre>` block. Include "Download JSONL" and "Clear Logs" buttons.
 
-Session ID generation (uuid v4) and management. Session persists in
-sessionStorage so it survives page reloads within the same browser session.
+5. **add-route** — Add `{ path: 'insights/log', element: <PrivateRoute><LogViewer /></PrivateRoute> }`
+   to `routes.tsx`.
 
-- File: `src/util/logger/sessionManager.ts`
+6. **fix-config-files** — Add `REACT_APP_LOGGER_URL: ''` to all four
+   `config/*.js` files.
 
-### 4. console-logger
+7. **write-tests** — Unit tests for `indexedDBLogger.ts` and
+   `LogViewer.tsx`. Update `logger.test.ts` to verify IndexedDB
+   integration.
 
-Console log output with in-memory buffer and JSONL download capability.
-Must work around ESLint `no-console: error` rule (use eslint-disable for
-the logger module only).
+8. **validate-build** — Run: `yarn install`, `yarn format`,
+   `yarn syntax`, `yarn build:fast`, `yarn config:dev`, `yarn config:test`.
 
-- File: `src/util/logger/consoleLogger.ts`
+9. **documentation** — Create `client/CHANGELOG-phase2.md` describing
+   all changes.
 
-### 5. beacon-logger
-
-Fire-and-forget log transport using Navigator Beacon API to POST JSONL
-events to the configured `/logger` endpoint.
-
-- File: `src/util/logger/beaconLogger.ts`
-
-### 6. logger-orchestrator
-
-Main logger module that combines console + beacon transports, manages
-initialization (async hash computation), and exposes the `log()` function.
-
-- File: `src/util/logger/logger.ts`
-
-### 7. react-hook-integration
-
-React hook `useLogger` that sets up a global click listener on `document`
-to capture clicks on elements with `data-logger-*` attributes. The hook
-initializes the logger with the current username from Redux auth state.
-
-- File: `src/util/logger/useLogger.ts`
-
-### 8. add-data-attributes
-
-Add `data-logger-element`, `data-logger-label`, and `data-logger-context`
-attributes to the key interactive React elements:
-
-- **Library page**: Tab labels (Data, Functions, Models, Digital Twins,
-  Tools), subtab labels (Common, Private)
-- **Digital Twins page**: Tab labels (Create, Manage, Execute)
-- **Workbench page**: Service links (Desktop, VSCode, Jupyter Lab,
-  Jupyter Notebook), preview links (Library, Digital Twins)
-- **Preview Digital Twins**: Tabs (Create, Execute, Manage), editor
-  buttons (Save, Cancel), manage buttons (Reconfigure, Delete),
-  execute buttons (Start, History)
-- **Preview Library**: Tab labels (Data, Functions, Models, Tools,
-  Digital Twins), asset cards (Details, Add/Remove), cart buttons
-  (Clear, Proceed)
-- **Navigation**: Menu items, sign in/out, account
-
-### 9. env-config
-
-Add `REACT_APP_LOGGER_URL` to:
-- `env.d.ts` type declarations
-- `config/*.js` files (dev, test, local, prod) — with empty default
-
-### 10. logger-api-docs
-
-Document the REST API for the logger microservice in `LOGGER_API.md`.
-
-### 11. unit-tests
-
-Write unit tests for all logger modules:
-- `test/unit/util/logger/logEvent.test.ts`
-- `test/unit/util/logger/hashUtils.test.ts`
-- `test/unit/util/logger/sessionManager.test.ts`
-- `test/unit/util/logger/consoleLogger.test.ts`
-- `test/unit/util/logger/beaconLogger.test.ts`
-- `test/unit/util/logger/logger.test.ts`
-- `test/unit/util/logger/useLogger.test.tsx`
-
-### 12. validate-build
-
-Run validation commands:
-- `yarn install`
-- `yarn format`
-- `yarn syntax`
-- `yarn build:fast`
-- `yarn config:dev`
-- `yarn config:test`
-
-### 13. documentation
-
-Create changelog/documentation markdown file in `client/` describing
-all changes made.
-
-### 14. push-and-pr
-
-Push to origin, open PR, verify CI passes.
+10. **push-and-pr** — Push to origin, open PR, verify CI passes.
 
 ## Notes
 
-- ESLint has `no-console: error` — the console logger file needs a
-  targeted eslint-disable comment.
-- Config files (`config/*.js`) should not be committed per user
-  instructions. The env.d.ts type declaration is the only config-related
-  file to commit. Actually, re-reading: "do not make changes to these
-  files and do not commit changes made to these files." So I will NOT
-  modify config files.
-- The `uuid` package is already a dependency (v13.0.0).
-- Web Crypto API is available in all modern browsers and in Node.js
-  test environment (may need polyfill in jsdom for tests).
-- `window.env.REACT_APP_LOGGER_URL` will be read at runtime, same
-  pattern as other env vars.
+- The existing `DTaaS` IndexedDB (version 1) has an `executionHistory`
+  store. We bump to version 2 and add a `logs` store in
+  `onupgradeneeded`. The existing `IndexedDBService` class in
+  `executionHistoryDB.ts` will not be modified — the logger gets its
+  own lightweight module.
+- `fake-indexeddb` (v6.2.5) is already a devDependency — no new test
+  deps needed.
+- The LogViewer page is behind `PrivateRoute` so only authenticated
+  users can see logs.
+- Console logging is kept alongside IndexedDB for developer convenience.
+- The Beacon API transport continues to work independently when
+  `REACT_APP_LOGGER_URL` is set.

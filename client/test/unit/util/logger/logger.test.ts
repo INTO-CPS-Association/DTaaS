@@ -8,6 +8,7 @@ import {
 } from 'util/logger/logger';
 import * as consoleLogger from 'util/logger/consoleLogger';
 import * as beaconLogger from 'util/logger/beaconLogger';
+import * as indexedDBLogger from 'util/logger/indexedDBLogger';
 
 beforeAll(() => {
   Object.defineProperty(globalThis, 'crypto', {
@@ -27,12 +28,19 @@ jest.mock('util/logger/beaconLogger', () => ({
   sendBeacon: jest.fn(),
 }));
 
+jest.mock('util/logger/indexedDBLogger', () => ({
+  addLog: jest.fn().mockResolvedValue(undefined),
+  getAllLogs: jest.fn().mockResolvedValue([]),
+  clearLogs: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe('logger', () => {
   beforeEach(() => {
     resetLogger();
     sessionStorage.clear();
     jest.clearAllMocks();
     (uuidv4 as jest.Mock).mockReturnValue('test-uuid-1234');
+    (indexedDBLogger.addLog as jest.Mock).mockResolvedValue(undefined);
   });
 
   it('is not initialized by default', () => {
@@ -61,6 +69,13 @@ describe('logger', () => {
     expect(event!.userHash).toHaveLength(64);
     expect(event!.sessionId).toBeDefined();
     expect(consoleLogger.logToConsole).toHaveBeenCalledWith(event);
+  });
+
+  it('persists log event to IndexedDB', async () => {
+    await initLogger('testuser');
+    const event = log('/library', 'tab', 'Data');
+
+    expect(indexedDBLogger.addLog).toHaveBeenCalledWith(event);
   });
 
   it('sends beacon when logger URL is configured', async () => {

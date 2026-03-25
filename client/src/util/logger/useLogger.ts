@@ -32,21 +32,18 @@ export function useLogger(): void {
     initLogger(username).catch(() => {});
   }, [username]);
 
-  const handleClick = useCallback(
-    (event: MouseEvent) => {
-      if (!isLoggerInitialized()) return;
-      const el = findLoggerElement(event.target);
-      if (!el) return;
+  const handleClick = useCallback((event: MouseEvent) => {
+    if (!isLoggerInitialized()) return;
+    const el = findLoggerElement(event.target);
+    if (!el) return;
 
-      const element = el.dataset.loggerElement ?? '';
-      const label = el.dataset.loggerLabel ?? el.textContent?.trim() ?? '';
-      const context = parseContext(el.dataset.loggerContext);
-      const page = window.location.pathname;
+    const element = el.dataset.loggerElement ?? '';
+    const label = el.dataset.loggerLabel ?? el.textContent?.trim() ?? '';
+    const context = parseContext(el.dataset.loggerContext);
+    const page = window.location.pathname;
 
-      log(page, element, label, context);
-    },
-    [],
-  );
+    log(page, element, label, context);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('click', handleClick, true);

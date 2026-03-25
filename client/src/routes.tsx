@@ -8,6 +8,7 @@ import DigitalTwinsPreview from 'preview/route/digitaltwins/DigitalTwinsPreview'
 import SignIn from 'route/auth/Signin';
 import Account from 'route/account/Account';
 import Config from 'route/config/Config';
+import LogViewer from 'page/LogViewer';
 
 export const routes = [
   {
@@ -79,6 +80,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <LibraryPreview />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'insights/log',
+    element: (
+      <PrivateRoute>
+        <LogViewer />
       </PrivateRoute>
     ),
   },
