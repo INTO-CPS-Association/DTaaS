@@ -86,8 +86,8 @@ function Editor({
               onChange={handleTabChange}
               aria-label="editor preview tabs"
             >
-              <Tab label="Editor" />
-              <Tab label="Preview" />
+              <Tab label="Editor" data-logger-element="tab" data-logger-label="Editor" />
+              <Tab label="Preview" data-logger-element="tab" data-logger-label="Preview" />
             </Tabs>
           </Box>
 

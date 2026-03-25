@@ -84,6 +84,9 @@ function DetailsButton({
       size="small"
       color="primary"
       onClick={() => handleClick(asset, assetName, library, setShowDetails)}
+      data-logger-element="button"
+      data-logger-label="Details"
+      data-logger-context={JSON.stringify({ asset: assetName })}
     >
       Details
     </Button>

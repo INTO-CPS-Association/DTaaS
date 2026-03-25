@@ -60,7 +60,12 @@ function ActionButtons({
         zIndex: 10,
       }}
     >
-      <Button variant="outlined" onClick={onCancel}>
+      <Button
+        variant="outlined"
+        onClick={onCancel}
+        data-logger-element="button"
+        data-logger-label="Cancel"
+      >
         Cancel
       </Button>
 
@@ -76,6 +81,8 @@ function ActionButtons({
             color="primary"
             onClick={onSave}
             disabled={isSaveDisabled}
+            data-logger-element="button"
+            data-logger-label="Save"
           >
             Save
           </Button>

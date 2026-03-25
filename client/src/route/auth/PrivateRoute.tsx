@@ -4,6 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import CustomSnackbar from 'components/route/Snackbar';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
+import { useLogger } from 'util/logger/useLogger';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -12,6 +13,7 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
   const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
+  useLogger();
   let returnJSX;
 
   useEffect(() => {

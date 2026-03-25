@@ -195,10 +195,10 @@ const ReconfigureMainDialog = ({
       />
     </DialogContent>
     <DialogActions>
-      <Button color="primary" onClick={handleCancel}>
+      <Button color="primary" onClick={handleCancel} data-logger-element="button" data-logger-label="Cancel">
         Cancel
       </Button>
-      <Button color="primary" onClick={handleSave}>
+      <Button color="primary" onClick={handleSave} data-logger-element="button" data-logger-label="Save">
         Save
       </Button>
     </DialogActions>

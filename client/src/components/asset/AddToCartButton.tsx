@@ -41,6 +41,9 @@ function AddToCartButton({ assetPath, assetPrivacy }: AddToCartButtonProps) {
       size="small"
       color="primary"
       onClick={handleClick}
+      data-logger-element="button"
+      data-logger-label={isInCart ? 'Remove' : 'Add'}
+      data-logger-context={JSON.stringify({ asset: assetPath })}
     >
       {isInCart ? 'Remove' : 'Add'}
     </Button>

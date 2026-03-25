@@ -46,6 +46,8 @@ function MenuItems() {
                 ? { backgroundColor: 'lightgray' }
                 : undefined
             }
+            data-logger-element="nav-link"
+            data-logger-label={item.name}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             {item.name}
