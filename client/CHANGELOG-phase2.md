@@ -12,23 +12,23 @@ tabs, all tabs now write to the same IndexedDB database. A new
 
 ### New Files
 
-| File | Description |
-| ---- | ----------- |
-| `src/util/logger/indexedDBLogger.ts` | IndexedDB log persistence with `addLog()`, `getAllLogs()`, `clearLogs()` |
-| `src/page/LogViewer.tsx` | React page for `/insights/log` with download/clear/refresh |
-| `test/unit/util/logger/indexedDBLogger.test.ts` | Unit tests for IndexedDB logger (4 tests) |
-| `test/unit/page/LogViewer.test.tsx` | Unit tests for LogViewer page (6 tests) |
+| File                                            | Description                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------ |
+| `src/util/logger/indexedDBLogger.ts`            | IndexedDB log persistence with `addLog()`, `getAllLogs()`, `clearLogs()` |
+| `src/page/LogViewer.tsx`                        | React page for `/insights/log` with download/clear/refresh               |
+| `test/unit/util/logger/indexedDBLogger.test.ts` | Unit tests for IndexedDB logger (4 tests)                                |
+| `test/unit/page/LogViewer.test.tsx`             | Unit tests for LogViewer page (6 tests)                                  |
 
 ### Modified Files
 
-| File | Change |
-| ---- | ------ |
-| `src/util/logger/logger.ts` | Added `addLog()` call to persist every log event to IndexedDB |
-| `src/routes.tsx` | Added `insights/log` route wrapped in `PrivateRoute` |
-| `src/database/types.ts` | Added `logs` store config to `DB_CONFIG`, bumped version to 2 |
-| `src/database/executionHistoryDB.ts` | Added `logs` store creation in `onupgradeneeded` |
-| `test/unit/util/logger/logger.test.ts` | Added IndexedDB mock and persistence test |
-| `PLAN.md` | Updated with Phase 2 plan and design alternatives |
+| File                                   | Change                                                        |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `src/util/logger/logger.ts`            | Added `addLog()` call to persist every log event to IndexedDB |
+| `src/routes.tsx`                       | Added `insights/log` route wrapped in `PrivateRoute`          |
+| `src/database/types.ts`                | Added `logs` store config to `DB_CONFIG`, bumped version to 2 |
+| `src/database/executionHistoryDB.ts`   | Added `logs` store creation in `onupgradeneeded`              |
+| `test/unit/util/logger/logger.test.ts` | Added IndexedDB mock and persistence test                     |
+| `PLAN.md`                              | Updated with Phase 2 plan and design alternatives             |
 
 ## Phase 2.1 Changes (Review Fixes)
 
@@ -60,29 +60,29 @@ Addresses Copilot review comments, qlty issues, and config improvements.
 - **Config URL values** — Each config now derives `LOGGER_URL` by
   appending `/logger` to `REACT_APP_URL`:
 
-| Config | `LOGGER_URL` |
-| ------ | ------------ |
-| `dev.js` | `http://localhost:4000/logger` |
-| `test.js` | `http://localhost:4000/logger` |
-| `prod.js` | `https://foo.com/logger` |
-| `local.js` | `http://localhost/logger` |
+| Config     | `LOGGER_URL`                   |
+| ---------- | ------------------------------ |
+| `dev.js`   | `http://localhost:4000/logger` |
+| `test.js`  | `http://localhost:4000/logger` |
+| `prod.js`  | `https://foo.com/logger`       |
+| `local.js` | `http://localhost/logger`      |
 
-### Modified Files
+### Files Changed in Phase 2.1
 
-| File | Change |
-| ---- | ------ |
-| `src/util/logger/useLogger.ts` | Fix initRef timing; add console.warn; allow retries |
-| `src/util/logger/indexedDBLogger.ts` | Add `onblocked` and `onversionchange` handlers |
-| `src/page/LogViewer.tsx` | Change MIME type to `application/x-ndjson` |
-| `src/util/logger/consoleLogger.ts` | Change MIME type; add `try/finally` for blob URL |
-| `src/util/logger/logger.ts` | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL` |
-| `env.d.ts` | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL` |
-| `config/dev.js` | Rename and set `LOGGER_URL` from `REACT_APP_URL` |
-| `config/test.js` | Rename and set `LOGGER_URL` from `REACT_APP_URL` |
-| `config/prod.js` | Rename and set `LOGGER_URL` from `REACT_APP_URL` |
-| `config/local.js` | Rename and set `LOGGER_URL` from `REACT_APP_URL` |
-| `LOGGER_API.md` | Updated references to `LOGGER_URL` |
-| `PLAN.md` | Added Phase 2.1 section |
+| File                                 | Change                                              |
+| ------------------------------------ | --------------------------------------------------- |
+| `src/util/logger/useLogger.ts`       | Fix initRef timing; add console.warn; allow retries |
+| `src/util/logger/indexedDBLogger.ts` | Add `onblocked` and `onversionchange` handlers      |
+| `src/page/LogViewer.tsx`             | Change MIME type to `application/x-ndjson`          |
+| `src/util/logger/consoleLogger.ts`   | Change MIME type; add `try/finally` for blob URL    |
+| `src/util/logger/logger.ts`          | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL`       |
+| `env.d.ts`                           | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL`       |
+| `config/dev.js`                      | Rename and set `LOGGER_URL` from `REACT_APP_URL`    |
+| `config/test.js`                     | Rename and set `LOGGER_URL` from `REACT_APP_URL`    |
+| `config/prod.js`                     | Rename and set `LOGGER_URL` from `REACT_APP_URL`    |
+| `config/local.js`                    | Rename and set `LOGGER_URL` from `REACT_APP_URL`    |
+| `LOGGER_API.md`                      | Updated references to `LOGGER_URL`                  |
+| `PLAN.md`                            | Added Phase 2.1 section                             |
 
 ## Design Decision
 

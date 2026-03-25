@@ -102,7 +102,7 @@ proportional benefit.
 
 ## Phase 2.1: Review Fixes and Config Improvements
 
-### Problem Statement
+### Issues Identified
 
 Phase 2 PR review revealed several issues:
 
@@ -126,20 +126,20 @@ Phase 2 PR review revealed several issues:
 
 ### Changes Made
 
-| File | Change |
-| ---- | ------ |
-| `src/util/logger/useLogger.ts` | Set `initRef` only after successful init; log errors with `console.warn`; allow retries |
-| `src/util/logger/indexedDBLogger.ts` | Add `onblocked` and `onversionchange` handlers |
-| `src/page/LogViewer.tsx` | Change MIME type to `application/x-ndjson` |
-| `src/util/logger/consoleLogger.ts` | Change MIME type to `application/x-ndjson`; wrap download in `try/finally` |
-| `src/util/logger/logger.ts` | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL` |
-| `env.d.ts` | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL` |
-| `config/dev.js` | `LOGGER_URL: 'http://localhost:4000/logger'` |
-| `config/test.js` | `LOGGER_URL: 'http://localhost:4000/logger'` |
-| `config/prod.js` | `LOGGER_URL: 'https://foo.com/logger'` |
-| `config/local.js` | `LOGGER_URL: 'http://localhost/logger'` |
-| `LOGGER_API.md` | Updated all references to `LOGGER_URL` |
-| `CHANGELOG-phase2.md` | Updated with Phase 2.1 changes |
+| File                                 | Change                                                                                  |
+| ------------------------------------ | --------------------------------------------------------------------------------------- |
+| `src/util/logger/useLogger.ts`       | Set `initRef` only after successful init; log errors with `console.warn`; allow retries |
+| `src/util/logger/indexedDBLogger.ts` | Add `onblocked` and `onversionchange` handlers                                          |
+| `src/page/LogViewer.tsx`             | Change MIME type to `application/x-ndjson`                                              |
+| `src/util/logger/consoleLogger.ts`   | Change MIME type to `application/x-ndjson`; wrap download in `try/finally`              |
+| `src/util/logger/logger.ts`          | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL`                                           |
+| `env.d.ts`                           | Rename `REACT_APP_LOGGER_URL` to `LOGGER_URL`                                           |
+| `config/dev.js`                      | `LOGGER_URL: 'http://localhost:4000/logger'`                                            |
+| `config/test.js`                     | `LOGGER_URL: 'http://localhost:4000/logger'`                                            |
+| `config/prod.js`                     | `LOGGER_URL: 'https://foo.com/logger'`                                                  |
+| `config/local.js`                    | `LOGGER_URL: 'http://localhost/logger'`                                                 |
+| `LOGGER_API.md`                      | Updated all references to `LOGGER_URL`                                                  |
+| `CHANGELOG-phase2.md`                | Updated with Phase 2.1 changes                                                          |
 
 ## IndexedDB Visibility
 

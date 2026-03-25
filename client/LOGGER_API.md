@@ -18,7 +18,7 @@ Configured via the `LOGGER_URL` environment variable
 
 Ingest a single log event.
 
-**Request**
+#### Request
 
 - **Method**: `POST`
 - **Content-Type**: `application/json`
@@ -40,16 +40,16 @@ Ingest a single log event.
 }
 ```
 
-**Response**
+#### Response
 
-| Status | Description |
-| ------ | ----------- |
-| 200 OK | Event accepted |
-| 204 No Content | Event accepted (no body) |
-| 400 Bad Request | Malformed JSON or missing required fields |
-| 413 Payload Too Large | Body exceeds 64 KB |
-| 429 Too Many Requests | Rate limit exceeded |
-| 500 Internal Server Error | Server failure |
+| Status                    | Description                               |
+| ------------------------- | ----------------------------------------- |
+| 200 OK                    | Event accepted                            |
+| 204 No Content            | Event accepted (no body)                  |
+| 400 Bad Request           | Malformed JSON or missing required fields |
+| 413 Payload Too Large     | Body exceeds 64 KB                        |
+| 429 Too Many Requests     | Rate limit exceeded                       |
+| 500 Internal Server Error | Server failure                            |
 
 > **Note:** Because the client uses the Beacon API (fire-and-forget),
 > response status codes are not consumed by the client. The backend
@@ -57,16 +57,16 @@ Ingest a single log event.
 
 ## Log Event Schema
 
-| Field | Type | Required | Description |
-| ----- | ---- | -------- | ----------- |
-| `sessionId` | string (UUID v4) | Yes | Unique browser session identifier |
-| `userHash` | string (SHA-256 hex) | Yes | Anonymized username hash |
-| `timestamp` | string (ISO 8601) | Yes | UTC timestamp of the event |
-| `event` | string | Yes | Event type (currently always `"click"`) |
-| `page` | string | Yes | URL path of the current page |
-| `element` | string | Yes | Type of UI element (e.g., `"tab"`, `"button"`, `"link"`) |
-| `label` | string | Yes | Human-readable label of the element |
-| `context` | object | No | Additional key-value metadata |
+| Field       | Type                 | Required | Description                                              |
+| ----------- | -------------------- | -------- | -------------------------------------------------------- |
+| `sessionId` | string (UUID v4)     | Yes      | Unique browser session identifier                        |
+| `userHash`  | string (SHA-256 hex) | Yes      | Anonymized username hash                                 |
+| `timestamp` | string (ISO 8601)    | Yes      | UTC timestamp of the event                               |
+| `event`     | string               | Yes      | Event type (currently always `"click"`)                  |
+| `page`      | string               | Yes      | URL path of the current page                             |
+| `element`   | string               | Yes      | Type of UI element (e.g., `"tab"`, `"button"`, `"link"`) |
+| `label`     | string               | Yes      | Human-readable label of the element                      |
+| `context`   | object               | No       | Additional key-value metadata                            |
 
 ## Privacy
 
@@ -91,12 +91,12 @@ The client uses the
 Any HTTP server that accepts JSON POST requests can serve as the logger
 backend. Compatible open-source options include:
 
-| Service | License | Docker Image | Notes |
-| ------- | ------- | ------------ | ----- |
-| [Seq](https://datalust.co/seq) | Free single-user | `datalust/seq` | Structured log server with search & dashboards |
-| [Loki](https://grafana.com/oss/loki/) | AGPLv3 | `grafana/loki` | Log aggregation, pairs with Grafana |
-| [Vector](https://vector.dev/) | MPL-2.0 | `timberio/vector` | High-performance log pipeline |
-| Custom Node.js | Any | N/A | Simple Express/Fastify endpoint writing JSONL files |
+| Service                               | License          | Docker Image      | Notes                                               |
+| ------------------------------------- | ---------------- | ----------------- | --------------------------------------------------- |
+| [Seq](https://datalust.co/seq)        | Free single-user | `datalust/seq`    | Structured log server with search & dashboards      |
+| [Loki](https://grafana.com/oss/loki/) | AGPLv3           | `grafana/loki`    | Log aggregation, pairs with Grafana                 |
+| [Vector](https://vector.dev/)         | MPL-2.0          | `timberio/vector` | High-performance log pipeline                       |
+| Custom Node.js                        | Any              | N/A               | Simple Express/Fastify endpoint writing JSONL files |
 
 ### Example: Minimal Node.js Logger
 
