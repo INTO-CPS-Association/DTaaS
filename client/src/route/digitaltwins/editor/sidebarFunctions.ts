@@ -200,6 +200,8 @@ const fetchLibraryFile = async (
   setters: FileStateSetters,
   options: ReconfigureOptions,
 ) => {
+  if (!options.assetPath || !options.dispatch) return;
+
   fetchAndSetFileContent(
     {
       fileName: context.fileName,
@@ -216,10 +218,10 @@ const fetchLibraryFile = async (
   );
   const fileContent = await (
     context.asset as DigitalTwin
-  ).DTAssets.getLibraryFileContent(options.assetPath!, context.fileName);
-  options.dispatch!(
+  ).DTAssets.getLibraryFileContent(options.assetPath, context.fileName);
+  options.dispatch(
     addOrUpdateLibraryFile({
-      assetPath: options.assetPath!,
+      assetPath: options.assetPath,
       fileName: context.fileName,
       fileContent,
       isNew: false,
@@ -228,7 +230,7 @@ const fetchLibraryFile = async (
     }),
   );
   setters.setIsLibraryFile(true);
-  setters.setLibraryAssetPath(options.assetPath!);
+  setters.setLibraryAssetPath(options.assetPath);
 };
 
 const handleLibraryFileReconfigure = async (
@@ -241,8 +243,8 @@ const handleLibraryFileReconfigure = async (
       file.fileName === context.fileName &&
       file.assetPath === options.assetPath,
   );
-  if (modifiedLibraryFile?.isModified) {
-    applyModifiedLibraryFile(modifiedLibraryFile, setters, options.assetPath!);
+  if (modifiedLibraryFile?.isModified && options.assetPath) {
+    applyModifiedLibraryFile(modifiedLibraryFile, setters, options.assetPath);
   } else {
     await fetchLibraryFile(context, setters, options);
   }

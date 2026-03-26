@@ -79,22 +79,26 @@ interface LibraryFileParams {
 export const fetchAndSetFileLibraryContent = async (
   params: LibraryFileParams,
 ) => {
+  if (!params.libraryAsset || !params.dispatch) {
+    params.setFileContent(`Error fetching ${params.fileName} content`);
+    return;
+  }
+  const { libraryAsset } = params;
   try {
-    const fileContent =
-      await params.libraryAsset!.libraryManager.getFileContent(
-        params.libraryAsset!.isPrivate,
-        params.libraryAsset!.path,
-        params.fileName,
-      );
+    const fileContent = await libraryAsset.libraryManager.getFileContent(
+      libraryAsset.isPrivate,
+      libraryAsset.path,
+      params.fileName,
+    );
 
-    params.dispatch!(
+    params.dispatch(
       addOrUpdateLibraryFile({
-        assetPath: params.libraryAsset!.path,
+        assetPath: libraryAsset.path,
         fileName: params.fileName,
         fileContent,
         isNew: params.isNew,
         isModified: false,
-        isPrivate: params.libraryAsset!.isPrivate,
+        isPrivate: libraryAsset.isPrivate,
       }),
     );
     if (fileContent) {
@@ -108,7 +112,7 @@ export const fetchAndSetFileLibraryContent = async (
       });
     }
     params.setIsLibraryFile(true);
-    params.setLibraryAssetPath(params.libraryAsset!.path);
+    params.setLibraryAssetPath(libraryAsset.path);
   } catch {
     params.setFileContent(`Error fetching ${params.fileName} content`);
   }
