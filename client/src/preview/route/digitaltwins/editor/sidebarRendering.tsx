@@ -48,6 +48,8 @@ export const renderFileTreeItems = (
             key={`${baseLabel}-${item}-${index}`}
             itemId={`${baseLabel}-${item}`}
             label={itemLabel}
+            data-logger-element="treeitem"
+            data-logger-label={itemLabel}
             onClick={() =>
               handleFileClick(
                 item,
@@ -106,6 +108,8 @@ export const renderFileSection = (
           key={`${baseLabel}-${item}-${index}`}
           itemId={`${baseLabel}-${item}`}
           label={item}
+          data-logger-element="treeitem"
+          data-logger-label={item}
           onClick={() => {
             if (!asset) {
               // Handle the case where there's no asset

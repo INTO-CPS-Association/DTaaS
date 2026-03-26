@@ -84,6 +84,21 @@ describe('useLogger', () => {
     expect(logger.initLogger).not.toHaveBeenCalled();
   });
 
+  it('initializes from sessionStorage username when Redux username is missing', async () => {
+    const store = createTestStore(undefined);
+    sessionStorage.setItem('username', 'session-user');
+
+    render(
+      <Provider store={store}>
+        <TestComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(capturedInitCall).toBe('session-user');
+    });
+  });
+
   it('logs clicks on elements with data-logger attributes', async () => {
     const store = createTestStore('alice');
 

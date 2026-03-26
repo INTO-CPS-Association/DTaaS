@@ -49,4 +49,23 @@ describe('DeleteFileDialog', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('adds logger attributes to delete confirmation buttons', () => {
+    expect(screen.getByText('No')).toHaveAttribute(
+      'data-logger-element',
+      'button',
+    );
+    expect(screen.getByText('No')).toHaveAttribute(
+      'data-logger-label',
+      'Delete File No',
+    );
+    expect(screen.getByText('Yes')).toHaveAttribute(
+      'data-logger-element',
+      'button',
+    );
+    expect(screen.getByText('Yes')).toHaveAttribute(
+      'data-logger-label',
+      'Delete File Yes',
+    );
+  });
 });

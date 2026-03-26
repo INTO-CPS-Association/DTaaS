@@ -46,6 +46,10 @@ const SidebarDialog = ({
         variant="outlined"
         value={newFileName}
         onChange={(e) => setNewFileName(e.target.value)}
+        inputProps={{
+          'data-logger-element': 'input',
+          'data-logger-label': 'Sidebar File Name Input',
+        }}
       />
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </DialogContent>
@@ -59,7 +63,7 @@ const SidebarDialog = ({
           )
         }
         data-logger-element="button"
-        data-logger-label="Cancel"
+        data-logger-label="Sidebar Dialog Cancel"
       >
         Cancel
       </Button>
@@ -77,7 +81,7 @@ const SidebarDialog = ({
         variant="contained"
         color="primary"
         data-logger-element="button"
-        data-logger-label="Add File"
+        data-logger-label="Sidebar Dialog Add"
       >
         Add
       </Button>

@@ -85,14 +85,14 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
         <Button
           onClick={() => setOpenConfirmDeleteDialog(false)}
           data-logger-element="button"
-          data-logger-label="Cancel"
+          data-logger-label="Confirm Delete Cancel"
         >
           Cancel
         </Button>
         <Button
           onClick={handleConfirmCancel}
           data-logger-element="button"
-          data-logger-label="Confirm Delete"
+          data-logger-label="Confirm Delete Yes"
         >
           Yes
         </Button>

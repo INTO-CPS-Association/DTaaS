@@ -38,7 +38,7 @@ const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({
           onClick={() => setOpenDeleteFileDialog(false)}
           color="primary"
           data-logger-element="button"
-          data-logger-label="Cancel"
+          data-logger-label="Delete File No"
         >
           No
         </Button>
@@ -46,7 +46,7 @@ const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({
           onClick={handleDeleteFile}
           color="secondary"
           data-logger-element="button"
-          data-logger-label="Delete File Confirm"
+          data-logger-label="Delete File Yes"
         >
           Yes
         </Button>

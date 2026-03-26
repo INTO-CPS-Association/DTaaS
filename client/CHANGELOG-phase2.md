@@ -121,40 +121,47 @@ All commands pass:
 - `yarn config:dev`
 - `yarn config:test`
 
-## Phase 2.2 Changes (Logger Attribute Coverage)
+## Phase 2.2 Changes (Preview Logging Reliability)
 
-Adds `data-logger-*` attributes to all remaining interactive elements
-across the client and fixes `LOGGER_PROMPT.md` markdownlint issues.
+Addresses persistent preview logging gaps and PR #30 formatting blockers.
 
-### Logger Attributes Added
+### Bug Fixes
 
-| File                                               | Elements                                 |
-| -------------------------------------------------- | ---------------------------------------- |
-| `src/route/digitaltwins/manage/DeleteDialog.tsx`   | Cancel, Yes buttons                      |
-| `src/route/digitaltwins/manage/DetailsDialog.tsx`  | Close button                             |
-| `src/route/digitaltwins/create/ConfirmDeleteDialog`| Cancel, Yes buttons                      |
-| `src/route/digitaltwins/create/CreateDTDialog.tsx` | Cancel, Confirm buttons                  |
-| `src/route/digitaltwins/create/ChangeFileNameDialog`| Cancel, Change buttons                  |
-| `src/route/digitaltwins/create/DeleteFileDialog`   | No, Yes buttons                          |
-| `src/route/digitaltwins/create/FileActionButtons`  | Delete File, Rename File buttons         |
-| `src/components/logDialog/DeleteAllConfirmDialog`  | Cancel, Delete All buttons               |
-| `src/components/logDialog/UnifiedDialog.tsx`       | Clear All, Close buttons                 |
-| `src/preview/route/digitaltwins/SidebarDialog.tsx` | Cancel, Add buttons                      |
-| `src/components/execution/ExecutionHistoryList.tsx` | Cancel, Delete, Stop, Delete IconButtons |
-| `src/route/account/SettingsForm.tsx`               | Reset to Defaults, Save Settings buttons |
-| `src/page/LogViewer.tsx`                           | Download, Clear Logs, Refresh buttons    |
-| `src/components/asset/Filter.tsx`                  | Clear Search IconButton                  |
-| `src/page/DrawerHeaderComponent.tsx`               | Close Drawer IconButton                  |
-| `src/route/config/Config.tsx`                      | Inspect Configuration, Return to Login   |
-| `src/route/account/AccountTabData.tsx`             | SSO Profile, SSO Settings links          |
+- **Logger initialization fallback** — `useLogger` now initializes from
+  `sessionStorage.username` when Redux `auth.userName` is empty. This fixes
+  cases where preview pages are opened in a new tab and Redux user state has
+  not yet been populated.
 
-### Markdownlint Fixes
+- **Missing interaction coverage** — Added `data-logger-*` attributes for
+  interactive controls across preview create/manage/editor and related
+  digital twins/library flows (dialog actions, file actions, search inputs,
+  tree item clicks).
 
-`LOGGER_PROMPT.md` reformatted to fix 51 qlty blocking issues:
+### Improvements
 
-- Added top-level heading
-- Wrapped lines to 65 characters
-- Standardized horizontal rules to `---`
-- Converted bare URL to markdown link
-- Removed multiple blank lines
-- Added code fences around command blocks
+- Added unit/preview test assertions to protect newly added logger attribute
+  coverage and the `useLogger` sessionStorage fallback behavior.
+
+- Updated markdown formatting files to align with qlty/prettier requirements
+  and eliminate blocking style issues.
+
+### Files Changed in Phase 2.2
+
+| File                                                                 | Change                                                         |
+| -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `src/util/logger/useLogger.ts`                                       | Add sessionStorage username fallback for logger initialization |
+| `src/components/asset/Filter.tsx`                                    | Logger attrs for input/clear actions                           |
+| `src/components/cart/ShoppingCart.tsx`                               | Logger attrs for clear-cart dialog actions                     |
+| `src/route/digitaltwins/manage/DeleteDialog.tsx`                     | Logger attrs for cancel/confirm                                |
+| `src/route/digitaltwins/manage/DetailsDialog.tsx`                    | Logger attrs for close action                                  |
+| `src/route/digitaltwins/create/FileActionButtons.tsx`                | Logger attrs for delete/rename file buttons                    |
+| `src/route/digitaltwins/create/DeleteFileDialog.tsx`                 | Logger attrs for no/yes actions                                |
+| `src/route/digitaltwins/create/ChangeFileNameDialog.tsx`             | Logger attrs for input and action buttons                      |
+| `src/route/digitaltwins/create/ConfirmDeleteDialog.tsx`              | Logger attrs for cancel/yes                                    |
+| `src/route/digitaltwins/create/CreateDTDialog.tsx`                   | Logger attrs for cancel/confirm actions                        |
+| `src/preview/route/digitaltwins/editor/Sidebar.tsx`                  | Logger attrs for add-file action                               |
+| `src/preview/route/digitaltwins/editor/SidebarDialog.tsx`            | Logger attrs for input/cancel/add controls                     |
+| `src/preview/route/digitaltwins/editor/sidebarRendering.tsx`         | Logger attrs for file tree items                               |
+| `test/unit/util/logger/useLogger.test.tsx`                           | SessionStorage fallback initialization test                    |
+| `test/unit/route/digitaltwins/create/*.test.tsx`                     | Logger attribute assertions added                              |
+| `test/preview/unit/route/digitaltwins/editor/SidebarDialog.test.tsx` | Logger attribute assertions added                              |

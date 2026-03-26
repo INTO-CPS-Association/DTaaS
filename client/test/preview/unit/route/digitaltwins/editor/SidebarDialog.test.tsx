@@ -56,4 +56,21 @@ describe('SidebarDialog', () => {
     addButton.click();
     expect(handleFileSubmitSpy).toHaveBeenCalled();
   });
+
+  it('adds logger attributes to sidebar dialog controls', () => {
+    const textField = screen.getByRole('textbox');
+    expect(textField).toHaveAttribute('data-logger-element', 'input');
+    expect(textField).toHaveAttribute(
+      'data-logger-label',
+      'Sidebar File Name Input',
+    );
+    expect(screen.getByRole('button', { name: /Cancel/i })).toHaveAttribute(
+      'data-logger-label',
+      'Sidebar Dialog Cancel',
+    );
+    expect(screen.getByRole('button', { name: /Add/i })).toHaveAttribute(
+      'data-logger-label',
+      'Sidebar Dialog Add',
+    );
+  });
 });

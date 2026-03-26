@@ -23,7 +23,8 @@ function parseContext(raw: string | undefined): Record<string, string> {
 
 // eslint-disable-next-line import/prefer-default-export
 export function useLogger(): void {
-  const username = useSelector((state: RootState) => state.auth.userName);
+  const stateUsername = useSelector((state: RootState) => state.auth.userName);
+  const username = stateUsername ?? sessionStorage.getItem('username') ?? '';
   const initRef = useRef(false);
 
   useEffect(() => {

@@ -183,51 +183,48 @@ storage panel to see the `DTaaS` database with its `logs` store.
 - The Beacon API transport continues to work independently when
   `LOGGER_URL` is set.
 
-## Phase 2.2: Complete Logger Attribute Coverage
+## Phase 2.2: Preview Route Logging Coverage Fix
 
-### Problem Statement
+### Issues Identified
 
-User actions on several pages were not being logged because their
-interactive React elements lacked `data-logger-*` attributes. This
-affected dialog buttons, form controls, navigation links, and filter
-controls across 17 files.
+1. **Preview route initialization gap** — `useLogger` initialized only from
+   `state.auth.userName`. On preview routes opened from workbench links,
+   this Redux value can be missing while `sessionStorage.username` is already
+   available. Logger init then never runs and all clicks are skipped.
 
-Additionally, `LOGGER_PROMPT.md` introduced 51 markdownlint blocking
-issues in qlty (long lines, missing heading, inconsistent horizontal
-rules, bare URLs, multiple blank lines).
+2. **Interactive controls without logger attributes** — several buttons,
+   dialog actions, search inputs, and tree/file item clicks in preview create/
+   manage/editor flows and related digital twin/library components had no
+   `data-logger-*` attributes, so clicks were intentionally ignored.
+
+3. **PR bot blockers** — markdown formatting drift from `LOGGER_PROMPT.md`
+   caused qlty/prettier blocking issues to reappear on PR #30.
 
 ### Changes Made
 
-Added `data-logger-element` and `data-logger-label` attributes to all
-interactive elements that were missing them:
+| File                                                                 | Change                                                                      |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `src/util/logger/useLogger.ts`                                       | Fallback username source from `sessionStorage.username` when Redux is empty |
+| `src/components/asset/Filter.tsx`                                    | Add logger attributes to search input and clear button                      |
+| `src/components/cart/ShoppingCart.tsx`                               | Add logger attributes to clear-cart dialog action buttons                   |
+| `src/route/digitaltwins/manage/DeleteDialog.tsx`                     | Add logger attributes to cancel/confirm actions                             |
+| `src/route/digitaltwins/manage/DetailsDialog.tsx`                    | Add logger attributes to close action                                       |
+| `src/route/digitaltwins/create/FileActionButtons.tsx`                | Add logger attributes to delete/rename file actions                         |
+| `src/route/digitaltwins/create/DeleteFileDialog.tsx`                 | Add logger attributes to no/yes actions                                     |
+| `src/route/digitaltwins/create/ChangeFileNameDialog.tsx`             | Add logger attributes to input/cancel/confirm controls                      |
+| `src/route/digitaltwins/create/ConfirmDeleteDialog.tsx`              | Add logger attributes to cancel/yes actions                                 |
+| `src/route/digitaltwins/create/CreateDTDialog.tsx`                   | Add logger attributes to cancel/confirm actions                             |
+| `src/preview/route/digitaltwins/editor/Sidebar.tsx`                  | Add logger attributes to "Add new file" action                              |
+| `src/preview/route/digitaltwins/editor/SidebarDialog.tsx`            | Add logger attributes to input/cancel/add controls                          |
+| `src/preview/route/digitaltwins/editor/sidebarRendering.tsx`         | Add logger attributes to file tree items                                    |
+| `test/unit/util/logger/useLogger.test.tsx`                           | Add sessionStorage fallback initialization test                             |
+| `test/unit/route/digitaltwins/create/*.test.tsx`                     | Add assertions for new logger attributes on create/delete/rename flows      |
+| `test/preview/unit/route/digitaltwins/editor/SidebarDialog.test.tsx` | Add assertions for new logger attributes                                    |
 
-| File                                                 | Elements Added                           |
-| ---------------------------------------------------- | ---------------------------------------- |
-| `src/route/digitaltwins/manage/DeleteDialog.tsx`     | Cancel, Yes buttons                      |
-| `src/route/digitaltwins/manage/DetailsDialog.tsx`    | Close button                             |
-| `src/route/digitaltwins/create/ConfirmDeleteDialog`  | Cancel, Yes buttons                      |
-| `src/route/digitaltwins/create/CreateDTDialog.tsx`   | Cancel, Confirm buttons                  |
-| `src/route/digitaltwins/create/ChangeFileNameDialog` | Cancel, Change buttons                   |
-| `src/route/digitaltwins/create/DeleteFileDialog.tsx` | No, Yes buttons                          |
-| `src/route/digitaltwins/create/FileActionButtons`    | Delete File, Rename File buttons         |
-| `src/components/logDialog/DeleteAllConfirmDialog`    | Cancel, Delete All buttons               |
-| `src/components/logDialog/UnifiedDialog.tsx`         | Clear All, Close buttons                 |
-| `src/preview/route/digitaltwins/SidebarDialog.tsx`   | Cancel, Add buttons                      |
-| `src/components/execution/ExecutionHistoryList.tsx`   | Cancel, Delete, Stop, Delete IconButtons |
-| `src/route/account/SettingsForm.tsx`                 | Reset to Defaults, Save Settings buttons |
-| `src/page/LogViewer.tsx`                             | Download, Clear Logs, Refresh buttons    |
-| `src/components/asset/Filter.tsx`                    | Clear Search IconButton                  |
-| `src/page/DrawerHeaderComponent.tsx`                 | Close Drawer IconButton                  |
-| `src/route/config/Config.tsx`                        | Inspect Configuration, Return to Login   |
-| `src/route/account/AccountTabData.tsx`               | SSO Profile, SSO Settings links          |
+### Expected Outcome
 
-### Markdownlint Fixes
-
-Reformatted `LOGGER_PROMPT.md` to fix all 51 qlty blocking issues:
-
-- Added top-level heading (`# Logger Implementation Prompts`)
-- Wrapped all lines to 65 characters
-- Changed horizontal rules to standard `---`
-- Converted bare URL to markdown link
-- Removed multiple consecutive blank lines
-- Added code fences around command blocks
+- Preview page actions under `/preview/library` and `/preview/digitaltwins`
+  are captured even when Redux username has not yet been hydrated.
+- Clicks on tabs/buttons/dialog actions/search/tree items in the affected flows
+  now produce structured logger events.
+- qlty/prettier blocking issues are cleared after markdown formatting.

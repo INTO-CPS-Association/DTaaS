@@ -229,8 +229,19 @@ const ConfirmationDialog = ({
   <Dialog open={open} onClose={onClose}>
     <DialogContent>{content}</DialogContent>
     <DialogActions>
-      <Button onClick={onClose}>No</Button>
-      <Button color="primary" onClick={onConfirm}>
+      <Button
+        onClick={onClose}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm No"
+      >
+        No
+      </Button>
+      <Button
+        color="primary"
+        onClick={onConfirm}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm Yes"
+      >
         Yes
       </Button>
     </DialogActions>

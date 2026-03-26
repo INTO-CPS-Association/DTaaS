@@ -55,6 +55,10 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
           variant="outlined"
           value={modifiedFileName}
           onChange={(e) => setModifiedFileName(e.target.value)}
+          inputProps={{
+            'data-logger-element': 'input',
+            'data-logger-label': 'Rename File Input',
+          }}
         />
         <Typography style={{ color: 'red' }}>{errorChangeMessage}</Typography>
       </DialogContent>
@@ -63,7 +67,7 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
           onClick={() => handleCloseChangeFileNameDialog()}
           color="primary"
           data-logger-element="button"
-          data-logger-label="Cancel"
+          data-logger-label="Rename File Cancel"
         >
           Cancel
         </Button>
@@ -82,7 +86,7 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
           }
           color="secondary"
           data-logger-element="button"
-          data-logger-label="Change File Name"
+          data-logger-label="Rename File Confirm"
         >
           Change
         </Button>

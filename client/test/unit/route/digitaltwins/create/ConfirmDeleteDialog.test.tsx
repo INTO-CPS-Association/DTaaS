@@ -83,4 +83,15 @@ describe('ConfirmDeleteDialog', () => {
 
     expect(setShowDialog).toHaveBeenCalledWith(false);
   });
+
+  it('adds logger attributes to confirm delete buttons', () => {
+    expect(screen.getByRole('button', { name: /Cancel/i })).toHaveAttribute(
+      'data-logger-label',
+      'Confirm Delete Cancel',
+    );
+    expect(screen.getByRole('button', { name: /Yes/i })).toHaveAttribute(
+      'data-logger-label',
+      'Confirm Delete Yes',
+    );
+  });
 });

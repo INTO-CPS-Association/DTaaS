@@ -50,4 +50,18 @@ describe('ChangeFileNameDialog', () => {
     });
     expect(textField).toHaveValue('newFileName');
   });
+
+  it('adds logger attributes to rename controls', () => {
+    const textField = screen.getByRole('textbox');
+    expect(textField).toHaveAttribute('data-logger-element', 'input');
+    expect(textField).toHaveAttribute('data-logger-label', 'Rename File Input');
+    expect(screen.getByRole('button', { name: /Cancel/i })).toHaveAttribute(
+      'data-logger-label',
+      'Rename File Cancel',
+    );
+    expect(screen.getByRole('button', { name: /Change/i })).toHaveAttribute(
+      'data-logger-label',
+      'Rename File Confirm',
+    );
+  });
 });

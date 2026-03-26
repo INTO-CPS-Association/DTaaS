@@ -26,13 +26,17 @@ const Filter: React.FC<FilterProps> = ({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         sx={{ maxWidth: 300 }}
+        inputProps={{
+          'data-logger-element': 'input',
+          'data-logger-label': 'Asset filter',
+        }}
       />
       {value && (
         <IconButton
           onClick={handleClear}
           aria-label="Clear search"
           data-logger-element="button"
-          data-logger-label="Clear Search"
+          data-logger-label="Clear search"
         >
           <ClearIcon />
         </IconButton>
