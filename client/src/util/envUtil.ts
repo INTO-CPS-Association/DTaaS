@@ -60,33 +60,50 @@ function buildUserLink(
 /**
  * @returns an array of `KeyLinkPair` objects, where each object contains a `key` and a `link`.
  *
- * The `key` is the `key` of the environment variable, with the prefix *"REACT_APP_WORKBENCHLINK_"* removed.
- * For example, if the `key` of the environment variable is *"REACT_APP_WORKBENCHLINK_MYWORKBENCH"*, then the `key` will be *"MYWORKBENCH"*.
+ * Workspace tool links (Desktop, VS Code, Jupyter Lab, Jupyter Notebook) are derived from the
+ * services JSON fetched from `{appURL}/{username}/services` and stored in the Redux store.
  *
- * The `link` is constructed by appending the `username` to the end of the *REACT_APP_URL_WORKBENCH*, and then appending the value of the environment variable to the end of that.
- * For example, if the *REACT_APP_URL_WORKBENCH* is https://foo.com, the `username` is *"user1"*, and the value of the environment variable is "/my-workbench", then the link will be https://foo.com/user1/my-workbench.
+ * Preview links (LIBRARY_PREVIEW, DT_PREVIEW) continue to be read from environment variables.
  */
 export function useWorkbenchLinkValues(): KeyLinkPair[] {
   const username = useSelector((state: RootState) => state.auth).userName ?? '';
+  const services = useSelector((state: RootState) => state.workbench.services);
   const appURL = useAppURL();
-  const prefix = 'REACT_APP_WORKBENCHLINK_';
   const workbenchLinkValues: KeyLinkPair[] = [];
 
+  const serviceKeyMap: Record<string, string> = {
+    desktop: 'VNCDESKTOP',
+    vscode: 'VSCODE',
+    lab: 'JUPYTERLAB',
+    notebook: 'JUPYTERNOTEBOOK',
+  };
+
+  Object.entries(serviceKeyMap).forEach(([serviceKey, iconKey]) => {
+    const service = services[serviceKey];
+    if (service !== undefined) {
+      workbenchLinkValues.push({
+        key: iconKey,
+        link: buildUserLink(username, appURL, service.endpoint),
+      });
+    }
+  });
+
+  const prefix = 'REACT_APP_WORKBENCHLINK_';
   Object.keys(window.env)
     .filter((key) => key.startsWith(prefix))
     .forEach((key) => {
       const value = window.env[key];
       if (value !== undefined) {
         const keyWithoutPrefix = key.slice(prefix.length);
-        const linkValue =
+        if (
           keyWithoutPrefix === 'DT_PREVIEW' ||
           keyWithoutPrefix === 'LIBRARY_PREVIEW'
-            ? value
-            : buildUserLink(username, appURL, value);
-        workbenchLinkValues.push({
-          key: keyWithoutPrefix,
-          link: linkValue,
-        });
+        ) {
+          workbenchLinkValues.push({
+            key: keyWithoutPrefix,
+            link: value,
+          });
+        }
       }
     });
 

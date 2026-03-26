@@ -1,0 +1,66 @@
+name: Workspace Packages
+
+'on':
+  push:
+    paths:
+      - 'deploy/workspace/**'
+      - '.github/workflows/workspace.yml'
+  pull_request:
+    paths:
+      - 'deploy/workspace/**'
+      - '.github/workflows/workspace.yml'
+  workflow_dispatch:
+
+
+jobs:
+  test-dex-companion-for-localhost:
+    name: Test Dex Companion Proxy for localhost
+    permissions:
+      contents: read  # Required for checking out the code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deploy/workspace/dex/localhost
+
+    steps:
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Setup Python
+        # v6.1.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: pip install pytest pytest-cov
+
+      - name: Install lint dependencies
+        run: pip install flake8 pylint ruff
+
+      - name: Run flake8
+        run: flake8 --count --max-complexity=10 --max-line-length=88 companion
+
+      - name: Run pylint (min score 9.0)
+        shell: bash
+        run: |
+          pylint companion --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
+            --recursive=y --fail-under=9.0
+
+      - name: Run ruff format check
+        run: ruff format --check companion
+
+      - name: Run pytest with coverage
+        run: |
+          pytest --cov=companion/src --cov-report=xml \
+            --cov-report=term-missing companion/test
+
+      - name: Upload coverage to Codecov
+        # v5
+        uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
+        with:
+          files: deploy/workspace/dex/localhost/coverage.xml
+          flags: workspace-dex-companion
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

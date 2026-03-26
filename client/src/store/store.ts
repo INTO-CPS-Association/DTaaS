@@ -12,6 +12,7 @@ import cartSlice from 'model/store/cart.slice';
 import menuSlice from 'store/menu.slice';
 import authSlice from 'store/auth.slice';
 import settingsSlice from 'store/settings.slice';
+import workbenchSlice from 'store/workbench.slice';
 import indexedDBService from 'database/executionHistoryDB';
 
 setStorageService(indexedDBService);
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   libraryConfigFiles: libraryConfigFilesSlice,
   settings: settingsSlice,
   executionHistory: executionHistorySlice,
+  workbench: workbenchSlice,
 });
 
 const settingsPersistMiddleware: Middleware = (store) => (next) => (action) => {
@@ -68,5 +70,6 @@ const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 export default store;

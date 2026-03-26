@@ -1,0 +1,22 @@
+{
+  "desktop": {
+    "name": "Desktop",
+    "description": "Virtual Desktop Environment",
+    "endpoint": "tools/vnc?path=username%2Ftools%2Fvnc%2Fwebsockify"
+  },
+  "vscode": {
+    "name": "VS Code",
+    "description": "VS Code IDE",
+    "endpoint": "tools/vscode"
+  },
+  "notebook": {
+    "name": "Jupyter Notebook",
+    "description": "Jupyter Notebook",
+    "endpoint": ""
+  },
+  "lab": {
+    "name": "Jupyter Lab",
+    "description": "Jupyter Lab IDE",
+    "endpoint": "lab"
+  }
+}

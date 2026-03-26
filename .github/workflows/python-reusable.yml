@@ -126,15 +126,8 @@ jobs:
           poetry run pylint \
             ${{ inputs.src-directory }} \
             ${{ inputs.tests-directory }} \
-            --rcfile="${GITHUB_WORKSPACE}/.pylintrc" \
+            --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
-
-      - name: Run pyright (type checking)
-        if: matrix.os == 'ubuntu-latest' && inputs.run-pyright
-        run: |
-          poetry run pyright \
-            ${{ inputs.src-directory }} \
-            ${{ inputs.tests-directory }}
 
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'

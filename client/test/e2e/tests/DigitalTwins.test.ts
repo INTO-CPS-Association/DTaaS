@@ -8,9 +8,7 @@ test.describe('Digital Twin Log Cleaning', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the home page and authenticate
     await page.goto('./');
-    await page
-      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
-      .click();
+    await page.getByRole('button', { name: 'SignIn' }).click();
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),

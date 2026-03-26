@@ -1,0 +1,62 @@
+services:
+  dex:
+    image: dexidp/dex:v2.45.1
+    restart: unless-stopped
+    command: ["dex", "serve", "/etc/dex/config.yaml"]
+    volumes:
+      - ./config/dex-config.yaml:/etc/dex/config.yaml:ro
+    expose:
+      - "5556"
+
+  dex-companion:
+    image: python:3.12-alpine
+    restart: unless-stopped
+    depends_on:
+      - dex
+    environment:
+      DEX_UPSTREAM: http://dex:5556
+      COMPANION_BIND: 0.0.0.0
+      COMPANION_PORT: 5556
+    command: ["python", "-m", "companion.src"]
+    working_dir: /app
+    volumes:
+      - ./companion/src:/app/companion/src:ro
+    ports:
+      - "5556:5556"
+
+  traefik:
+    image: traefik:v3.6.4
+    restart: unless-stopped
+    command:
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  client:
+    image: intocps/dtaas-web:1.0.1
+    restart: unless-stopped
+    volumes:
+      - ./config/env.local.js:/dtaas/client/build/env.js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.entryPoints=web"
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+
+  user:
+    image: intocps/workspace:main-967bc10
+    restart: unless-stopped
+    volumes:
+      - ./files/common:/workspace/common
+      - ./files/user:/workspace
+    environment:
+      - MAIN_USER=${DEFAULT_USER:-user}
+    shm_size: "512m"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.entryPoints=web"
+      - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user}`)"

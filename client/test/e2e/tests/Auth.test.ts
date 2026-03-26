@@ -9,9 +9,7 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Homepage has correct title and signin link', async ({ page }) => {
-    await page
-      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
-      .click();
+    await page.getByRole('button', { name: 'SignIn' }).click();
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
@@ -20,9 +18,7 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Account Button Contents and Links', async ({ page, baseURL }) => {
-    await page
-      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
-      .click();
+    await page.getByRole('button', { name: 'SignIn' }).click();
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
@@ -46,7 +42,7 @@ test.describe('Tests on Authentication Flow', () => {
       await previousPromise;
       await page.goto(link.url.charAt(1).toUpperCase());
       await expect(page).toHaveURL(baseURL?.replace(/\/$/, '') ?? './');
-      await expect(page.locator('button:has-text("Sign In")')).toBeVisible({
+      await expect(page.locator('button:has-text("SignIn")')).toBeVisible({
         timeout: 10000,
       });
     }, Promise.resolve());

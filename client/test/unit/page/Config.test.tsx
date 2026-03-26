@@ -55,7 +55,7 @@ describe('Config', () => {
     });
     expect(screen.getByText(/REACT_APP_URL_BASENAME/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/REACT_APP_WORKBENCHLINK_JUPYTERLAB/i),
+      screen.getByText(/REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/REACT_APP_LOGOUT_REDIRECT_URI/i),

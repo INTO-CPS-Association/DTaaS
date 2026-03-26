@@ -6,7 +6,7 @@ from src.pkg import utils
 def test_import_yaml_users():
     """Test importing YAML user configuration template"""
     expected = {
-        "image": "mltooling/ml-workspace-minimal:0.13.2",
+        "image": "intocps/workspace:latest",
         "restart": "unless-stopped",
         "volumes": [
             "${DTAAS_DIR}/files/common:/workspace/common",
@@ -235,7 +235,7 @@ def get_test_compose_object():
         "version": "3",
         "services": {
             "testuser": {
-                "image": "mltooling/ml-workspace-minimal:0.13.2",
+                "image": "intocps/workspace:latest",
                 "volumes": [
                     "/home/testuser/DTaaS/files/common:/workspace/common",
                     "/home/testuser/DTaaS/files/testuser:/workspace",

@@ -22,9 +22,7 @@ describe('SignIn', () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByRole('button', { name: /Sign In With GitLab/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /SignIn/i })).toBeInTheDocument();
   });
 
   it('handles button click', () => {
@@ -35,7 +33,7 @@ describe('SignIn', () => {
     );
 
     const signInButton = screen.getByRole('button', {
-      name: /Sign In With GitLab/i,
+      name: /SignIn/i,
     });
     fireEvent.click(signInButton);
 

@@ -7,9 +7,7 @@ import links, { workbenchLinks } from './Links';
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('./');
-    await page
-      .getByRole('button', { name: 'GitLab logo Sign In with GitLab' })
-      .click();
+    await page.getByRole('button', { name: 'SignIn' }).click();
     await page.getByRole('button', { name: 'Authorize' }).click();
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
