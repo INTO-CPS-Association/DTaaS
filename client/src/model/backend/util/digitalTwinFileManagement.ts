@@ -6,7 +6,10 @@ import {
   LibraryConfigFile,
 } from 'model/backend/interfaces/sharedInterfaces';
 import { getUpdatedLibraryFile } from 'model/backend/util/digitalTwinUtils';
-import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import {
+  getBranchName,
+  getDTDirectory,
+} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 
 type FolderEntry = { assetPath: string; fileNames: string[] };
 
@@ -36,7 +39,7 @@ const processFolderEntries = async (
 export async function getAssetFilesFn(
   self: DigitalTwin,
 ): Promise<{ assetPath: string; fileNames: string[] }[]> {
-  const mainFolderPath = `digital_twins/${self.DTName}`;
+  const mainFolderPath = `${getDTDirectory()}/${self.DTName}`;
   const excludeFolder = FileType.LIFECYCLE;
   const result: { assetPath: string; fileNames: string[] }[] = [];
 
@@ -106,7 +109,7 @@ export async function createDT(
   cartAssets: LibraryAssetInterface[],
   libraryFiles: LibraryConfigFile[],
 ): Promise<string> {
-  const mainFolderPath = `digital_twins/${self.DTName}`;
+  const mainFolderPath = `${getDTDirectory()}/${self.DTName}`;
   const lifecycleFolderPath = `${mainFolderPath}/lifecycle`;
 
   try {

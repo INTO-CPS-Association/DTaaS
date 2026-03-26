@@ -195,4 +195,94 @@ describe('sidebarFetchers', () => {
     expect(getConfigFilesSpy).toHaveBeenCalledTimes(1);
     expect(getAssetFilesSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('should throw error when digital twin is null', async () => {
+    await expect(
+      SidebarFetchers.fetchAndSetFileContent(
+        { fileName: 'file.md', digitalTwin: null },
+        { setFileName, setFileContent, setFileType, setFilePrivacy },
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file.md content',
+    );
+  });
+
+  it('should throw error when library is true but assetPath is missing', async () => {
+    await expect(
+      SidebarFetchers.fetchAndSetFileContent(
+        {
+          fileName: 'file.md',
+          digitalTwin: mockDigitalTwin,
+          library: true,
+        },
+        { setFileName, setFileContent, setFileType, setFilePrivacy },
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file.md content',
+    );
+  });
+
+  it('should set error when libraryAsset is null in fetchAndSetFileLibraryContent', async () => {
+    await SidebarFetchers.fetchAndSetFileLibraryContent({
+      fileName: 'file.md',
+      libraryAsset: null,
+      setFileName,
+      setFileContent,
+      setFileType,
+      setFilePrivacy,
+      isNew: false,
+      setIsLibraryFile,
+      setLibraryAssetPath,
+      dispatch,
+    });
+
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file.md content',
+    );
+  });
+
+  it('should set error when dispatch is undefined in fetchAndSetFileLibraryContent', async () => {
+    await SidebarFetchers.fetchAndSetFileLibraryContent({
+      fileName: 'file.md',
+      libraryAsset: mockLibraryAsset,
+      setFileName,
+      setFileContent,
+      setFileType,
+      setFilePrivacy,
+      isNew: false,
+      setIsLibraryFile,
+      setLibraryAssetPath,
+    });
+
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching file.md content',
+    );
+  });
+
+  it('should catch error when libraryManager.getFileContent rejects with dispatch present', async () => {
+    jest
+      .spyOn(mockLibraryAsset.libraryManager, 'getFileContent')
+      .mockRejectedValue(new Error('network error'));
+
+    await SidebarFetchers.fetchAndSetFileLibraryContent({
+      fileName: 'lib-file.md',
+      libraryAsset: mockLibraryAsset,
+      setFileName,
+      setFileContent,
+      setFileType,
+      setFilePrivacy,
+      isNew: false,
+      setIsLibraryFile,
+      setLibraryAssetPath,
+      dispatch,
+    });
+
+    expect(setFileContent).toHaveBeenCalledWith(
+      'Error fetching lib-file.md content',
+    );
+  });
 });

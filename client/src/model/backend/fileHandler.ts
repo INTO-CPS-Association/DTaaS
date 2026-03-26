@@ -1,4 +1,7 @@
-import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import {
+  getBranchName,
+  getDTDirectory,
+} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 import {
   FileType,
   FileState,
@@ -95,9 +98,9 @@ class FileHandler implements FileHandlerInterface {
 
   async getFileNames(fileType: FileType): Promise<string[]> {
     const pathMap = {
-      [FileType.DESCRIPTION]: `digital_twins/${this.name}`,
-      [FileType.CONFIGURATION]: `digital_twins/${this.name}`,
-      [FileType.LIFECYCLE]: `digital_twins/${this.name}/lifecycle`,
+      [FileType.DESCRIPTION]: `${getDTDirectory()}/${this.name}`,
+      [FileType.CONFIGURATION]: `${getDTDirectory()}/${this.name}`,
+      [FileType.LIFECYCLE]: `${getDTDirectory()}/${this.name}/lifecycle`,
     };
 
     try {

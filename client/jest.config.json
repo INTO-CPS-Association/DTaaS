@@ -28,7 +28,7 @@
     "src/store/store.ts",
     "src/preview/util/gitlabDriver.ts"
   ],
-  "modulePathIgnorePatterns": ["test/e2e", "mocks", "config"],
+  "modulePathIgnorePatterns": ["test/e2e", "mocks", "/config/"],
   "coverageDirectory": "<rootDir>/coverage/",
   "globals": {
     "window.ENV.SERVER_HOSTNAME": "localhost",

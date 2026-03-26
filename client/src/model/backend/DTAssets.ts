@@ -9,6 +9,7 @@ import {
   FileType,
 } from 'model/backend/interfaces/sharedInterfaces';
 import FileHandler from 'model/backend/fileHandler';
+import { getDTDirectory } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 
 type CreateFileInput =
   | FileState
@@ -85,7 +86,7 @@ class DTAssets implements DTAssetsInterface {
   }
 
   private buildTriggerContent(): string {
-    return `\ntrigger_${this.DTName}:\n  stage: triggers\n  trigger:\n    include: digital_twins/${this.DTName}/.gitlab-ci.yml\n  rules:\n    - if: '$DTName == "${this.DTName}"'\n      when: always\n  variables:\n    RunnerTag: $RunnerTag\n`;
+    return `\ntrigger_${this.DTName}:\n  stage: triggers\n  trigger:\n    include: ${getDTDirectory()}/${this.DTName}/.gitlab-ci.yml\n  rules:\n    - if: '$DTName == "${this.DTName}"'\n      when: always\n  variables:\n    RunnerTag: $RunnerTag\n`;
   }
 
   async buildTriggerAction(): Promise<CommitAction | null> {
@@ -166,8 +167,8 @@ class DTAssets implements DTAssetsInterface {
     const hasExtension = fileName.includes('.');
 
     const filePath = hasExtension
-      ? `digital_twins/${this.DTName}/${fileName}`
-      : `digital_twins/${this.DTName}/lifecycle/${fileName}`;
+      ? `${getDTDirectory()}/${this.DTName}/${fileName}`
+      : `${getDTDirectory()}/${this.DTName}/lifecycle/${fileName}`;
 
     const commitMessage = `Update ${fileName} content`;
 
@@ -240,12 +241,15 @@ class DTAssets implements DTAssetsInterface {
 
   async delete(): Promise<void> {
     await this.removeTriggerFromPipeline();
-    await this.fileHandler.deleteDT(`digital_twins/${this.DTName}`);
+    await this.fileHandler.deleteDT(`${getDTDirectory()}/${this.DTName}`);
 
-    const libraryDTs =
-      await this.fileHandler.getFolders(`common/digital_twins`);
-    if (libraryDTs.includes(`common/digital_twins/${this.DTName}`)) {
-      await this.fileHandler.deleteDT(`common/digital_twins/${this.DTName}`);
+    const libraryDTs = await this.fileHandler.getFolders(
+      `common/${getDTDirectory()}`,
+    );
+    if (libraryDTs.includes(`common/${getDTDirectory()}/${this.DTName}`)) {
+      await this.fileHandler.deleteDT(
+        `common/${getDTDirectory()}/${this.DTName}`,
+      );
     }
   }
 
@@ -253,8 +257,8 @@ class DTAssets implements DTAssetsInterface {
     const isFileWithoutExtension = !fileName.includes('.');
 
     const filePath = isFileWithoutExtension
-      ? `digital_twins/${this.DTName}/lifecycle/${fileName}`
-      : `digital_twins/${this.DTName}/${fileName}`;
+      ? `${getDTDirectory()}/${this.DTName}/lifecycle/${fileName}`
+      : `${getDTDirectory()}/${this.DTName}/${fileName}`;
 
     const fileContent = await this.fileHandler.getFileContent(filePath);
 

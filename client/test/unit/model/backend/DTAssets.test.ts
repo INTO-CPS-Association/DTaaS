@@ -224,4 +224,18 @@ describe('DTAssets', () => {
       );
     });
   });
+
+  describe('appendTriggerToPipeline error path', () => {
+    it('should return error message when an exception occurs', async () => {
+      dtAssets.fileHandler.getFileContent = jest
+        .fn()
+        .mockRejectedValue(new Error('Network error'));
+
+      const result = await dtAssets.appendTriggerToPipeline();
+
+      expect(result).toBe(
+        'Error appending trigger to pipeline: Error: Network error',
+      );
+    });
+  });
 });

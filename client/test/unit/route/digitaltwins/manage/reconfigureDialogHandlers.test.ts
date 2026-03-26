@@ -112,6 +112,31 @@ describe('reconfigureDialogHandlers', () => {
         }),
       );
     });
+
+    it('dispatches error snackbar when library file update throws', async () => {
+      const file: LibraryConfigFile = {
+        assetPath: 'lib/path',
+        fileName: 'lib-fail.md',
+        fileContent: 'content',
+        isNew: false,
+        isModified: true,
+        isPrivate: true,
+      };
+      jest
+        .spyOn(mockDigitalTwin.DTAssets, 'updateLibraryFileContent')
+        .mockRejectedValue(new Error('lib error'));
+
+      await handleFileUpdate(file, mockDigitalTwin, dispatch);
+
+      expect(dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          payload: expect.objectContaining({
+            message: expect.stringContaining('lib-fail.md'),
+            severity: 'error',
+          }),
+        }),
+      );
+    });
   });
 
   describe('saveChanges', () => {

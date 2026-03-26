@@ -3,6 +3,7 @@ import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
+import LibraryAsset from 'model/backend/libraryAsset';
 import { FileState, FileType } from 'model/backend/interfaces/sharedInterfaces';
 
 describe('SidebarRendering', () => {
@@ -143,6 +144,42 @@ describe('SidebarRendering', () => {
       expect(screen.getByText('data.json')).toBeInTheDocument();
       expect(screen.queryByText('common/data.json')).not.toBeInTheDocument();
       fireEvent.click(screen.getByText('data.json'));
+      expect(handleFileClick).toHaveBeenCalled();
+    });
+
+    it('should not double common/ prefix for public LibraryAsset label', () => {
+      const publicAsset = Object.create(LibraryAsset.prototype);
+      Object.assign(publicAsset, {
+        name: 'SharedLib',
+        path: 'common/SharedLib',
+        isPrivate: false,
+        configFiles: [],
+      });
+
+      const handleFileClick = jest
+        .spyOn(SidebarFunctions, 'handleFileClick')
+        .mockImplementation(jest.fn());
+
+      render(
+        <SimpleTreeView>
+          {SidebarRendering.renderFileTreeItems(
+            {
+              label: 'common/SharedAsset',
+              filesToRender: ['shared.json'],
+              asset: publicAsset,
+              tab: 'create',
+              files,
+              dispatch,
+            },
+            setters,
+          )}
+        </SimpleTreeView>,
+      );
+
+      expect(screen.getByText('common/SharedAsset')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('common/SharedAsset'));
+      expect(screen.getByText('common/shared.json')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('common/shared.json'));
       expect(handleFileClick).toHaveBeenCalled();
     });
 

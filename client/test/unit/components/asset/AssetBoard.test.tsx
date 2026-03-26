@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import AssetBoard from 'components/asset/AssetBoard';
 import store from 'store/store';
+import { fetchDigitalTwins } from 'model/backend/util/init';
 
 jest.mock('components/asset/AssetCardManage', () => ({
   __esModule: true,
@@ -21,8 +22,12 @@ jest.mock('model/store/assets.slice', () => ({
 }));
 
 jest.mock('model/backend/util/init', () => ({
-  fetchAssets: jest.fn(),
+  fetchDigitalTwins: jest.fn(),
 }));
+
+const mockFetchDigitalTwins = fetchDigitalTwins as jest.MockedFunction<
+  typeof fetchDigitalTwins
+>;
 
 describe('AssetBoard', () => {
   const mockDispatch = jest.fn();
@@ -82,5 +87,97 @@ describe('AssetBoard', () => {
     const deleteButton = screen.getByText('Delete');
     deleteButton.click();
     expect(mockDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders loading spinner when shouldFetchDigitalTwins is true', async () => {
+    mockFetchDigitalTwins.mockImplementation(() => new Promise(() => {}));
+
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          assets: { items: [] },
+          digitalTwin: {
+            shouldFetchDigitalTwins: true,
+            digitalTwin: {},
+          },
+          executionHistory: {
+            entries: [],
+            selectedExecutionId: null,
+            loading: false,
+            error: null,
+          },
+        }),
+    );
+
+    renderAssetBoard('Manage');
+    expect(screen.getByTestId('circular-progress')).toBeInTheDocument();
+  });
+
+  it('renders content after fetch completes', async () => {
+    mockFetchDigitalTwins.mockResolvedValue(undefined);
+
+    const mockAssets = [
+      {
+        name: 'Fetched Asset',
+        description: 'Fetched',
+        path: 'path2',
+        type: 'Digital Twins',
+        isPrivate: true,
+      },
+    ];
+
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          assets: { items: mockAssets },
+          digitalTwin: {
+            shouldFetchDigitalTwins: true,
+            digitalTwin: {},
+          },
+          executionHistory: {
+            entries: [],
+            selectedExecutionId: null,
+            loading: false,
+            error: null,
+          },
+        }),
+    );
+
+    renderAssetBoard('Manage');
+
+    await waitFor(() => {
+      expect(screen.getByText('Asset Card Manage')).toBeInTheDocument();
+    });
+  });
+
+  it('renders error message when fetch fails', async () => {
+    mockFetchDigitalTwins.mockImplementation(async (_dispatch, setError) => {
+      if (setError) setError('Failed to load digital twins');
+    });
+
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector) =>
+        selector({
+          assets: { items: [] },
+          digitalTwin: {
+            shouldFetchDigitalTwins: true,
+            digitalTwin: {},
+          },
+          executionHistory: {
+            entries: [],
+            selectedExecutionId: null,
+            loading: false,
+            error: null,
+          },
+        }),
+    );
+
+    renderAssetBoard('Manage');
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Failed to load digital twins'),
+      ).toBeInTheDocument();
+    });
   });
 });

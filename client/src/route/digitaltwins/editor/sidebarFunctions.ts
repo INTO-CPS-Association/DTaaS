@@ -190,6 +190,7 @@ const applyModifiedLibraryFile = (
     setFileContent: setters.setFileContent,
     setFileType: setters.setFileType,
     setFilePrivacy: setters.setFilePrivacy,
+    isPrivate: modifiedFile.isPrivate,
   });
   setters.setIsLibraryFile(true);
   setters.setLibraryAssetPath(assetPath);
@@ -202,7 +203,7 @@ const fetchLibraryFile = async (
 ) => {
   if (!options.assetPath || !options.dispatch) return;
 
-  fetchAndSetFileContent(
+  await fetchAndSetFileContent(
     {
       fileName: context.fileName,
       digitalTwin: context.asset as DigitalTwin | null,
@@ -226,7 +227,7 @@ const fetchLibraryFile = async (
       fileContent,
       isNew: false,
       isModified: false,
-      isPrivate: true,
+      isPrivate: !options.assetPath.startsWith('common/'),
     }),
   );
   setters.setIsLibraryFile(true);
