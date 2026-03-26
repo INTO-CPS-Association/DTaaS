@@ -105,7 +105,9 @@ cli/
 │          │    ├── activation.py    # Shared user activation utilities
 │          │    ├── customer_user.py # Customer and customer user creation
 │          │    ├── setup.py         # ThingsBoard setup orchestration
-│          │    ├── sysadmin.py      # System admin operations
+│          │    ├── setup_credentials.py # Credential file processing for customer users
+│          │    ├── sysadmin.py      # Sysadmin authentication and password management
+│          │    ├── sysadmin_util.py  # Tenant management and sysadmin email operations
 │          │    ├── tenant_admin.py  # Tenant admin provisioning and password reset
 │          │    ├── checker.py       # Installation checking
 │          │    ├── permissions.py   # Certificate setup
@@ -159,8 +161,10 @@ cli/
     │   │   ├── __init__.py
     │   │   ├── test_permissions.py
     │   │   ├── test_setup.py
+    │   │   ├── test_setup_credentials.py
     │   │   ├── test_reset_password.py
     │   │   ├── test_sysadmin.py
+    │   │   ├── test_sysadmin_util.py
     │   │   ├── test_checker.py
     │   │   ├── test_tb_cert.py
     │   │   ├── test_tb_utility.py
@@ -239,8 +243,11 @@ The package uses a modular, three-layer architecture:
     activation API calls)
   * `customer_user.py`: Customer and CUSTOMER_USER creation from credentials.csv
   * `setup.py`: Setup orchestration (creates tenant and admin, authenticates
-    as tenant admin, processes credentials file)
-  * `sysadmin.py`: System admin operations
+    as tenant admin, password reset)
+  * `setup_credentials.py`: Credential file processing (CSV parsing, customer
+    user creation from credentials.csv)
+  * `sysadmin.py`: Sysadmin authentication and password management
+  * `sysadmin_util.py`: Tenant management and sysadmin email operations
   * `tenant_admin.py`: Tenant admin user provisioning and password reset
   * `checker.py`: Installation validation
   * `permissions.py`: Certificate setup

@@ -81,7 +81,7 @@ def test_reset_thingsboard_password_success(mocker):
         return_value="newpass",  # noqa: S105 # NOSONAR
     )
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        "dtaas_services.pkg.services.thingsboard.setup._reset_sysadmin_credentials",
         return_value=(True, ""),
     )
     mocker.patch(
@@ -94,7 +94,7 @@ def test_reset_thingsboard_password_success(mocker):
 
 
 def test_reset_thingsboard_password_change_fails(mocker):
-    """Test reset_thingsboard_password when password change fails"""
+    """Test reset_thingsboard_password when sysadmin credentials reset fails"""
     mocker.patch("dtaas_services.pkg.services.thingsboard.setup.Config")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
@@ -106,7 +106,7 @@ def test_reset_thingsboard_password_change_fails(mocker):
         return_value="newpass",  # noqa: S105 # NOSONAR
     )
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        "dtaas_services.pkg.services.thingsboard.setup._reset_sysadmin_credentials",
         return_value=(False, "Auth failed"),
     )
     mocker.patch(
@@ -131,7 +131,7 @@ def test_reset_thingsboard_password_tenant_admin_fails(mocker):
         return_value="newpass",  # noqa: S105 # NOSONAR
     )
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        "dtaas_services.pkg.services.thingsboard.setup._reset_sysadmin_credentials",
         return_value=(True, ""),
     )
     mocker.patch(
@@ -168,3 +168,57 @@ def test_reset_thingsboard_password_value_error(mocker):
     success, msg = th.reset_thingsboard_password()
     assert success is False
     assert "Error" in msg
+
+
+def test_reset_sysadmin_credentials_success(mocker):
+    """Test _reset_sysadmin_credentials returns True when both email and password succeed"""
+    session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_sysadmin_email_if_needed",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        return_value=(True, ""),
+    )
+    ok, msg = th._reset_sysadmin_credentials(
+        "https://localhost:8080", session, "newpass"
+    )
+    assert ok is True
+    assert msg == ""
+
+
+def test_reset_sysadmin_credentials_email_fails(mocker):
+    """Test _reset_sysadmin_credentials returns False when email change fails"""
+    session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_sysadmin_email_if_needed",
+        return_value=(False, "email error"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        return_value=(True, ""),
+    )
+    ok, msg = th._reset_sysadmin_credentials(
+        "https://localhost:8080", session, "newpass"
+    )
+    assert ok is False
+    assert "email error" in msg
+
+
+def test_reset_sysadmin_credentials_password_fails(mocker):
+    """Test _reset_sysadmin_credentials returns False when password change fails"""
+    session = Mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_sysadmin_email_if_needed",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._change_password_with_logging",
+        return_value=(False, "pw error"),
+    )
+    ok, msg = th._reset_sysadmin_credentials(
+        "https://localhost:8080", session, "newpass"
+    )
+    assert ok is False
+    assert "pw error" in msg

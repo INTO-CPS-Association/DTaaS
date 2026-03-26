@@ -1,11 +1,11 @@
-"""ThingsBoard admin operations, sysadmin password and tenant management."""
+"""ThingsBoard admin operations and sysadmin password management."""
 
 # pylint: disable=W1203, R0903
 import logging
 import os
 from typing import Tuple
 import httpx
-from .tb_utility import login, is_json_parse_error
+from .tb_utility import login
 from ...password_store import get_current_password, save_password
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ def _update_session_token(session: httpx.Client, token: str) -> None:
 def _build_sysadmin_password_candidates() -> list[str]:
     """Build ordered list of password candidates for sysadmin login."""
     stored = get_current_password(SYSADMIN_PW_KEY)
-    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD", "")
+    new_pw = os.getenv("TB_SYSADMIN_NEW_PASSWORD")
     candidates = [stored, new_pw, DEFAULT_SYSADMIN_PASSWORD]
     return [pw for pw in candidates if pw]
 
@@ -39,13 +39,14 @@ def authenticate_session(base_url: str, session: httpx.Client) -> Tuple[bool, st
     Returns:
         Tuple of (success, error_message)
     """
-    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
+    email = os.getenv("TB_SYSADMIN_EMAIL", "").strip()
+    if not email:
+        return False, "TB_SYSADMIN_EMAIL is not set in config/services.env."
     for pw in _build_sysadmin_password_candidates():
-        token = login(base_url, sys_email, pw)
+        token = login(base_url, email, pw)
         if token:
             _update_session_token(session, token)
             return True, ""
-
     return False, (
         "Failed to authenticate as ThingsBoard sysadmin. "
         "Verify ThingsBoard is running and TB_SYSADMIN_EMAIL / "
@@ -138,84 +139,16 @@ def change_sysadmin_password(
     """Change the sysadmin password.
     Tries stored password, then the platform default ("sysadmin").
     """
-    sys_email = os.getenv("TB_SYSADMIN_EMAIL", "")
-    candidates = _build_sysadmin_password_candidates()
-
-    for current_pw in candidates:
-        token = login(base_url, sys_email, current_pw)
+    email = os.getenv("TB_SYSADMIN_EMAIL", "").strip()
+    if not email:
+        return False, "TB_SYSADMIN_EMAIL is not set in config/services.env."
+    for current_pw in _build_sysadmin_password_candidates():
+        token = login(base_url, email, current_pw)
         if token:
             pw_config = _PasswordConfig(current_pw, new_pw)
             ctx = _PasswordChangeContext(base_url, session, pw_config)
             return _handle_successful_login(session, token, ctx)
-
     return False, (
         "Failed to get authentication token for sysadmin. "
         "Verify the configuration in config/services.env."
     )
-
-
-def _find_tenant_in_response(body: dict, tenant_name: str) -> dict | None:
-    """Find tenant by name in response body."""
-    for tenant in body.get("data", []):
-        if tenant.get("title") == tenant_name:
-            logger.info(f"  Tenant '{tenant_name}' already exists")
-            return tenant
-    return None
-
-
-def _check_existing_tenant(
-    params: dict, base_url: str, session: httpx.Client
-) -> Tuple[dict | None, str]:
-    """Check if tenant already exists."""
-    try:
-        resp = session.get(f"{base_url}/api/tenants", params=params, timeout=20)
-        if resp.status_code != 200:
-            return None, f"Failed to get tenants: {resp.status_code}"
-
-        body = resp.json()
-        tenant_name = params.get("textSearch", "")
-        return _find_tenant_in_response(body, tenant_name), ""
-    except Exception as e:
-        error_type = "Invalid JSON" if is_json_parse_error(e) else "Network error"
-        return None, f"{error_type} checking tenant: {e}"
-
-
-def _create_new_tenant(
-    base_url: str, session: httpx.Client, tenant_name: str
-) -> Tuple[dict | None, str]:
-    """Create a new tenant."""
-    logger.info(f"  Creating tenant '{tenant_name}'...")
-    create_payload = {"title": tenant_name}
-    try:
-        resp = session.post(f"{base_url}/api/tenant", json=create_payload, timeout=20)
-
-        if resp.status_code not in (200, 201):
-            return None, f"Failed to create tenant: {resp.status_code}"
-
-        tenant = resp.json()
-        logger.info(f"  Tenant '{tenant_name}' created")
-        return tenant, ""
-    except Exception as e:
-        error_type = "Invalid JSON" if is_json_parse_error(e) else "Network error"
-        return None, f"{error_type} creating tenant: {e}"
-
-
-def get_or_create_tenant(
-    base_url: str, session: httpx.Client, tenant_name: str
-) -> Tuple[dict | None, str]:
-    """Get existing tenant or create a new one."""
-    try:
-        params = {"pageSize": 100, "page": 0, "textSearch": tenant_name}
-        tenant, error_msg = _check_existing_tenant(params, base_url, session)
-
-        if error_msg:
-            return None, error_msg
-
-        # Return existing tenant or create new one
-        return (
-            (tenant, "")
-            if tenant
-            else _create_new_tenant(base_url, session, tenant_name)
-        )
-    except Exception as e:
-        return None, f"Exception getting/creating tenant: {e}"

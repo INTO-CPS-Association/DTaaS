@@ -15,6 +15,7 @@ from ..pkg.template import generate_project_structure
 from ..pkg.services.thingsboard.permissions import permissions_thingsboard
 from ..pkg.services.postgres.postgres import wait_for_postgres_ready
 from ..pkg.services.thingsboard.tb_utility import run_thingsboard_install
+from ..pkg.services.thingsboard.sysadmin_util import update_sysadmin_email_in_db
 from ..pkg.services.gitlab import setup_gitlab
 
 
@@ -136,6 +137,7 @@ def _install_thingsboard(console: Console, service_obj: Service) -> None:
     docker = _ensure_service_running(console, service_obj, "postgres")
     wait_for_postgres_ready(console, docker)
     run_thingsboard_install(console, docker)
+    update_sysadmin_email_in_db(console, docker)
     console.print("[green]✅ ThingsBoard installation completed![/green]")
 
 

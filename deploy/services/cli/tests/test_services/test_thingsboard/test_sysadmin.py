@@ -1,6 +1,6 @@
 # pylint: disable=redefined-outer-name
 # pylint: disable=W0212
-"""Tests for ThingsBoard users functions."""
+"""Tests for ThingsBoard sysadmin password and authentication operations."""
 
 from unittest.mock import Mock
 import pytest
@@ -136,111 +136,6 @@ def test_change_sysadmin_password_all_logins_fail(mocker):
     assert success is False
 
 
-def test_check_existing_tenant_scenarios():
-    """Test checking for existing tenant with multiple scenarios"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    params = {"textSearch": "test-tenant"}
-
-    # Tenant found
-    session.get.return_value = Mock(
-        status_code=200,
-        json=lambda: {"data": [{"title": "test-tenant", "id": {"id": "123"}}]},
-    )
-    tenant, error = th_users._check_existing_tenant(params, base_url, session)
-    assert tenant is not None
-    assert tenant["title"] == "test-tenant"
-
-    # Tenant not found
-    session.get.return_value = Mock(status_code=200, json=lambda: {"data": []})
-    tenant, error = th_users._check_existing_tenant(params, base_url, session)
-    assert tenant is None
-
-    # JSON error
-    session.get.return_value = Mock(
-        status_code=200,
-        json=Mock(side_effect=Exception("JSON decode error")),
-    )
-    tenant, error = th_users._check_existing_tenant(params, base_url, session)
-    assert tenant is None
-    assert "json" in error.lower()
-
-    # Request exception
-    session.get.side_effect = httpx.HTTPError("Error")
-    tenant, error = th_users._check_existing_tenant(params, base_url, session)
-    assert tenant is None
-
-
-def test_create_new_tenant_scenarios():
-    """Test tenant creation with multiple scenarios"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-
-    # Success
-    session.post.return_value = Mock(
-        status_code=200, json=lambda: {"id": {"id": "123"}, "title": "new"}
-    )
-    tenant, error = th_users._create_new_tenant(base_url, session, "new")
-    assert tenant is not None
-    assert error == ""
-
-    # Failure
-    session.post.return_value = Mock(status_code=400, text="Error")
-    tenant, error = th_users._create_new_tenant(base_url, session, "new")
-    assert tenant is None
-    assert error != ""
-
-    # JSON error
-    session.post.return_value = Mock(
-        status_code=200,
-        json=Mock(side_effect=Exception("JSON decode error")),
-    )
-    tenant, error = th_users._create_new_tenant(base_url, session, "new")
-    assert tenant is None
-
-    # Request exception
-    session.post.side_effect = httpx.HTTPError("Error")
-    tenant, error = th_users._create_new_tenant(base_url, session, "new")
-    assert tenant is None
-
-
-def test_get_or_create_tenant_existing(mocker):
-    """Test get_or_create_tenant when tenant already exists"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
-        return_value=({"name": "test"}, ""),
-    )
-    tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
-    assert tenant is not None
-
-
-def test_get_or_create_tenant_exception(mocker):
-    """Test get_or_create_tenant when an exception is raised"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
-        side_effect=Exception("Error"),
-    )
-    tenant, _ = th_users.get_or_create_tenant(base_url, session, "test")
-    assert tenant is None
-
-
-def test_get_or_create_tenant_check_returns_error(mocker):
-    """Test get_or_create_tenant propagates error from _check_existing_tenant"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.sysadmin._check_existing_tenant",
-        return_value=(None, "Network error checking tenant"),
-    )
-    tenant, error = th_users.get_or_create_tenant(base_url, session, "test")
-    assert tenant is None
-    assert "error" in error.lower()
-
-
 def test_authenticate_session_default_pw_succeeds(mocker, monkeypatch):
     """Test authenticate_session succeeds with the default sysadmin password"""
     monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
@@ -270,14 +165,3 @@ def test_authenticate_session_fallback_pw_succeeds(mocker, monkeypatch):
     ok, _ = th_users.authenticate_session("https://localhost:8080", session)
     assert ok is True
     assert session.headers["X-Authorization"] == "Bearer token"
-
-
-def test_check_existing_tenant_non_200_status():
-    """Test _check_existing_tenant returns error on non-200 response"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    params = {"textSearch": "test-tenant"}
-    session.get.return_value = Mock(status_code=403, text="Forbidden")
-    tenant, error = th_users._check_existing_tenant(params, base_url, session)
-    assert tenant is None
-    assert "403" in error

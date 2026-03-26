@@ -7,7 +7,8 @@ from typing import Optional, Tuple
 import httpx
 from .tb_utility import login, verify_admin_login, is_json_parse_error
 from .activation import get_activation_token, activate_user
-from .sysadmin import get_or_create_tenant, parse_tb_password_error
+from .sysadmin import parse_tb_password_error
+from .sysadmin_util import get_or_create_tenant
 from ...password_store import get_current_password, save_password
 
 logger = logging.getLogger(__name__)

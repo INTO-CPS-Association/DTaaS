@@ -1,15 +1,9 @@
-"""Tests for ThingsBoard user provisioning and credentials processing."""
+"""Tests for ThingsBoard setup orchestration and authentication."""
 
-from pathlib import Path
-from unittest.mock import Mock, mock_open
+from unittest.mock import Mock
 from dtaas_services.pkg.services.thingsboard import setup as th
 from .conftest import _setup_thingsboard_error_test
 # pylint: disable=W0212, W0621
-
-TEST_USERNAME = "testuser"
-TEST_PASSWORD = "testpass123"  # noqa: S105 # NOSONAR
-TEST_EMAIL = "test@example.com"
-TEST_INVALID_EMAIL = ""
 
 
 def test_authenticate_as_tenant_admin_default_pw(mocker, monkeypatch):
@@ -40,71 +34,6 @@ def test_authenticate_as_tenant_admin_both_fail(mocker, monkeypatch):
     assert "Failed" in err
 
 
-def test_process_credentials_row_success(mocker):
-    """Test credentials row processing success scenario"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    ctx = th.CredentialProcessContext(base_url, session)
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.create_customer_and_user",
-        return_value=(True, ""),
-    )
-    cred = {
-        "username": TEST_USERNAME,
-        "password": TEST_PASSWORD,
-        "email": TEST_EMAIL,
-    }
-    success, _ = th._process_credentials_row(ctx, cred)
-    assert success is True
-
-
-def test_process_credentials_row_missing_email():
-    """Test credentials row processing missing email"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    ctx = th.CredentialProcessContext(base_url, session)
-    cred = {
-        "username": TEST_USERNAME,
-        "password": TEST_PASSWORD,
-        "email": TEST_INVALID_EMAIL,
-    }
-    success, error = th._process_credentials_row(ctx, cred)
-    assert success is False
-    assert "Email field is required" in error
-
-
-def test_process_credentials_file_success(mocker):
-    """Test credentials file processing success scenario"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    csv_data = "username,password,email\nuser1,pass1,user1@ex.com\n"
-    mocker.patch("pathlib.Path.open", mock_open(read_data=csv_data))
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_row",
-        return_value=(True, ""),
-    )
-    success, _ = th._process_credentials_file(
-        base_url, session, Path("/test/creds.csv")
-    )
-    assert success is True
-
-
-def test_process_credentials_file_row_fails(mocker):
-    """Test credentials file processing row fails"""
-    base_url = "https://localhost:8080"
-    session = Mock()
-    csv_data = "username,password,email\nuser1,pass1,user1@ex.com\n"
-    mocker.patch("pathlib.Path.open", mock_open(read_data=csv_data))
-    mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup._process_credentials_row",
-        return_value=(False, "error"),
-    )
-    success, _ = th._process_credentials_file(
-        base_url, session, Path("/test/creds.csv")
-    )
-    assert success is False
-
-
 def test_setup_thingsboard_users_file_not_found(mocker):
     """Test ThingsBoard users setup file not found"""
     mocker.patch("pathlib.Path.exists", return_value=False)
@@ -133,18 +62,6 @@ def test_setup_thingsboard_users_password_fails(mocker):
     assert success is False
 
 
-def test_process_credentials_file_no_email_column(mocker):
-    """Test _process_credentials_file with missing email column"""
-    session = Mock()
-    csv_data = "username,password\nuser1,pass1\n"
-    mocker.patch("pathlib.Path.open", mock_open(read_data=csv_data))
-    success, msg = th._process_credentials_file(
-        "https://localhost:8080", session, Path("/test/creds.csv")
-    )
-    assert success is False
-    assert "Email column is required" in msg
-
-
 def test_setup_thingsboard_users_os_error(mocker):
     """Test setup_thingsboard_users handles OSError"""
     _setup_thingsboard_error_test(mocker, OSError, "disk error")
@@ -171,11 +88,9 @@ def test_setup_thingsboard_users_tenant_setup_fails(mocker):
 
 def test_authenticate_as_sysadmin_configured_pw(mocker, monkeypatch):
     """Test sysadmin auth succeeds with configured password"""
-    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sys@tb.org")
-    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "newpw")
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.login",
-        return_value="tok",
+        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
+        return_value=(True, ""),
     )
     session = Mock()
     session.headers = {}
@@ -184,12 +99,10 @@ def test_authenticate_as_sysadmin_configured_pw(mocker, monkeypatch):
 
 
 def test_authenticate_as_sysadmin_both_fail(mocker, monkeypatch):
-    """Test sysadmin auth fails with both passwords"""
-    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sys@tb.org")
-    monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "newpw")
+    """Test sysadmin auth fails when authenticate_session fails"""
     mocker.patch(
-        "dtaas_services.pkg.services.thingsboard.setup.login",
-        return_value=None,
+        "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
+        return_value=(False, "Failed to authenticate"),
     )
     session = Mock()
     ok, err = th._authenticate_as_sysadmin("url", session)
