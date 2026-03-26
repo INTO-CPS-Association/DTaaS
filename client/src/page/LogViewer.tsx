@@ -55,6 +55,8 @@ function LogViewer() {
           onClick={handleDownload}
           disabled={logs.length === 0}
           data-testid="download-logs"
+          data-logger-element="button"
+          data-logger-label="Download Logs"
         >
           Download JSONL
         </Button>
@@ -63,6 +65,8 @@ function LogViewer() {
           onClick={handleClear}
           disabled={logs.length === 0}
           data-testid="clear-logs"
+          data-logger-element="button"
+          data-logger-label="Clear Logs"
         >
           Clear Logs
         </Button>
@@ -70,6 +74,8 @@ function LogViewer() {
           variant="outlined"
           onClick={loadLogs}
           data-testid="refresh-logs"
+          data-logger-element="button"
+          data-logger-label="Refresh Logs"
         >
           Refresh
         </Button>

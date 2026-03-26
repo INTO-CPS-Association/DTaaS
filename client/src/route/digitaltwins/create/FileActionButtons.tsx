@@ -47,6 +47,8 @@ function FileActionButtons({
             variant="contained"
             onClick={() => setOpenDeleteFileDialog(true)}
             disabled={deleteFileDisabled}
+            data-logger-element="button"
+            data-logger-label="Delete File"
           >
             Delete File
           </Button>
@@ -64,6 +66,8 @@ function FileActionButtons({
             variant="contained"
             onClick={() => setOpenChangeFileNameDialog(true)}
             disabled={changeFileNameDisabled}
+            data-logger-element="button"
+            data-logger-label="Rename File"
           >
             Rename File
           </Button>

@@ -117,10 +117,20 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       </Typography>
     </DialogContent>
     <DialogActions>
-      <Button onClick={onClose} color="primary">
+      <Button
+        onClick={onClose}
+        color="primary"
+        data-logger-element="button"
+        data-logger-label="Cancel"
+      >
         Cancel
       </Button>
-      <Button onClick={onConfirm} color="error">
+      <Button
+        onClick={onConfirm}
+        color="error"
+        data-logger-element="button"
+        data-logger-label="Delete Execution"
+      >
         Delete
       </Button>
     </DialogActions>
@@ -290,6 +300,8 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                         aria-label="stop"
                         onClick={(e) => handleStopExecution(execution.id, e)}
                         size="small"
+                        data-logger-element="button"
+                        data-logger-label="Stop Execution"
                       >
                         <StopIcon />
                       </IconButton>
@@ -302,6 +314,8 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                       aria-label="delete"
                       onClick={(e) => handleDeleteClick(execution.id, e)}
                       size="small"
+                      data-logger-element="button"
+                      data-logger-label="Delete Execution"
                     >
                       <DeleteIcon />
                     </IconButton>

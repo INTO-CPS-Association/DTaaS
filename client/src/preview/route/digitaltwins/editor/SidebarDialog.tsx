@@ -58,6 +58,8 @@ const SidebarDialog = ({
             setErrorMessage,
           )
         }
+        data-logger-element="button"
+        data-logger-label="Cancel"
       >
         Cancel
       </Button>
@@ -74,6 +76,8 @@ const SidebarDialog = ({
         }
         variant="contained"
         color="primary"
+        data-logger-element="button"
+        data-logger-label="Add File"
       >
         Add
       </Button>

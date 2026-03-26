@@ -28,7 +28,12 @@ const Filter: React.FC<FilterProps> = ({
         sx={{ maxWidth: 300 }}
       />
       {value && (
-        <IconButton onClick={handleClear} aria-label="Clear search">
+        <IconButton
+          onClick={handleClear}
+          aria-label="Clear search"
+          data-logger-element="button"
+          data-logger-label="Clear Search"
+        >
           <ClearIcon />
         </IconButton>
       )}

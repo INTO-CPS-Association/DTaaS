@@ -182,3 +182,52 @@ storage panel to see the `DTaaS` database with its `logs` store.
 - Console logging is kept alongside IndexedDB for developer convenience.
 - The Beacon API transport continues to work independently when
   `LOGGER_URL` is set.
+
+## Phase 2.2: Complete Logger Attribute Coverage
+
+### Problem Statement
+
+User actions on several pages were not being logged because their
+interactive React elements lacked `data-logger-*` attributes. This
+affected dialog buttons, form controls, navigation links, and filter
+controls across 17 files.
+
+Additionally, `LOGGER_PROMPT.md` introduced 51 markdownlint blocking
+issues in qlty (long lines, missing heading, inconsistent horizontal
+rules, bare URLs, multiple blank lines).
+
+### Changes Made
+
+Added `data-logger-element` and `data-logger-label` attributes to all
+interactive elements that were missing them:
+
+| File                                                 | Elements Added                           |
+| ---------------------------------------------------- | ---------------------------------------- |
+| `src/route/digitaltwins/manage/DeleteDialog.tsx`     | Cancel, Yes buttons                      |
+| `src/route/digitaltwins/manage/DetailsDialog.tsx`    | Close button                             |
+| `src/route/digitaltwins/create/ConfirmDeleteDialog`  | Cancel, Yes buttons                      |
+| `src/route/digitaltwins/create/CreateDTDialog.tsx`   | Cancel, Confirm buttons                  |
+| `src/route/digitaltwins/create/ChangeFileNameDialog` | Cancel, Change buttons                   |
+| `src/route/digitaltwins/create/DeleteFileDialog.tsx` | No, Yes buttons                          |
+| `src/route/digitaltwins/create/FileActionButtons`    | Delete File, Rename File buttons         |
+| `src/components/logDialog/DeleteAllConfirmDialog`    | Cancel, Delete All buttons               |
+| `src/components/logDialog/UnifiedDialog.tsx`         | Clear All, Close buttons                 |
+| `src/preview/route/digitaltwins/SidebarDialog.tsx`   | Cancel, Add buttons                      |
+| `src/components/execution/ExecutionHistoryList.tsx`   | Cancel, Delete, Stop, Delete IconButtons |
+| `src/route/account/SettingsForm.tsx`                 | Reset to Defaults, Save Settings buttons |
+| `src/page/LogViewer.tsx`                             | Download, Clear Logs, Refresh buttons    |
+| `src/components/asset/Filter.tsx`                    | Clear Search IconButton                  |
+| `src/page/DrawerHeaderComponent.tsx`                 | Close Drawer IconButton                  |
+| `src/route/config/Config.tsx`                        | Inspect Configuration, Return to Login   |
+| `src/route/account/AccountTabData.tsx`               | SSO Profile, SSO Settings links          |
+
+### Markdownlint Fixes
+
+Reformatted `LOGGER_PROMPT.md` to fix all 51 qlty blocking issues:
+
+- Added top-level heading (`# Logger Implementation Prompts`)
+- Wrapped all lines to 65 characters
+- Changed horizontal rules to standard `---`
+- Converted bare URL to markdown link
+- Removed multiple consecutive blank lines
+- Added code fences around command blocks

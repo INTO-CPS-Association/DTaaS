@@ -62,6 +62,8 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
         <Button
           onClick={() => handleCloseChangeFileNameDialog()}
           color="primary"
+          data-logger-element="button"
+          data-logger-label="Cancel"
         >
           Cancel
         </Button>
@@ -79,6 +81,8 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
             })
           }
           color="secondary"
+          data-logger-element="button"
+          data-logger-label="Change File Name"
         >
           Change
         </Button>

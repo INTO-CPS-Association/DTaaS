@@ -120,3 +120,41 @@ All commands pass:
 - `yarn build:fast`
 - `yarn config:dev`
 - `yarn config:test`
+
+## Phase 2.2 Changes (Logger Attribute Coverage)
+
+Adds `data-logger-*` attributes to all remaining interactive elements
+across the client and fixes `LOGGER_PROMPT.md` markdownlint issues.
+
+### Logger Attributes Added
+
+| File                                               | Elements                                 |
+| -------------------------------------------------- | ---------------------------------------- |
+| `src/route/digitaltwins/manage/DeleteDialog.tsx`   | Cancel, Yes buttons                      |
+| `src/route/digitaltwins/manage/DetailsDialog.tsx`  | Close button                             |
+| `src/route/digitaltwins/create/ConfirmDeleteDialog`| Cancel, Yes buttons                      |
+| `src/route/digitaltwins/create/CreateDTDialog.tsx` | Cancel, Confirm buttons                  |
+| `src/route/digitaltwins/create/ChangeFileNameDialog`| Cancel, Change buttons                  |
+| `src/route/digitaltwins/create/DeleteFileDialog`   | No, Yes buttons                          |
+| `src/route/digitaltwins/create/FileActionButtons`  | Delete File, Rename File buttons         |
+| `src/components/logDialog/DeleteAllConfirmDialog`  | Cancel, Delete All buttons               |
+| `src/components/logDialog/UnifiedDialog.tsx`       | Clear All, Close buttons                 |
+| `src/preview/route/digitaltwins/SidebarDialog.tsx` | Cancel, Add buttons                      |
+| `src/components/execution/ExecutionHistoryList.tsx` | Cancel, Delete, Stop, Delete IconButtons |
+| `src/route/account/SettingsForm.tsx`               | Reset to Defaults, Save Settings buttons |
+| `src/page/LogViewer.tsx`                           | Download, Clear Logs, Refresh buttons    |
+| `src/components/asset/Filter.tsx`                  | Clear Search IconButton                  |
+| `src/page/DrawerHeaderComponent.tsx`               | Close Drawer IconButton                  |
+| `src/route/config/Config.tsx`                      | Inspect Configuration, Return to Login   |
+| `src/route/account/AccountTabData.tsx`             | SSO Profile, SSO Settings links          |
+
+### Markdownlint Fixes
+
+`LOGGER_PROMPT.md` reformatted to fix 51 qlty blocking issues:
+
+- Added top-level heading
+- Wrapped lines to 65 characters
+- Standardized horizontal rules to `---`
+- Converted bare URL to markdown link
+- Removed multiple blank lines
+- Added code fences around command blocks
