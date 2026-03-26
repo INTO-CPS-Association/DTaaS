@@ -198,7 +198,6 @@ def _setup_tokens_phase(
     if server_result is None or client_result is None:
         return False, "Unexpected error: OAuth app results are missing"
 
-    # Combiner the returns
     results = {
         "pat": pat,
         "server_result": server_result,

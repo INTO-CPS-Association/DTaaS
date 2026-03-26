@@ -1,4 +1,4 @@
-"""Createsa tenant and the admin account."""
+"""Creates a tenant and the admin account."""
 
 # pylint: disable=W1203, R0903
 import logging
@@ -99,7 +99,7 @@ def _extract_user_id_from_response(resp: httpx.Response) -> Tuple[str | None, st
         return None, f"{error_type} response creating tenant admin: {e}"
 
 
-def _handle_respone(resp: httpx.Response) -> Tuple[str | None, str]:
+def _handle_response(resp: httpx.Response) -> Tuple[str | None, str]:
     """Handle API response for tenant admin creation."""
     if resp.status_code == 400:
         return _handle_admin_already_exists(resp)
@@ -121,7 +121,7 @@ def _create_tenant_admin_user(
     resp, error_msg = _create_tenant_api_call(ctx, user_payload)
     if not resp:
         return None, error_msg
-    return _handle_respone(resp)
+    return _handle_response(resp)
 
 
 def _activate_admin(ctx: _AdminContext, user_id: str) -> Tuple[bool, str]:

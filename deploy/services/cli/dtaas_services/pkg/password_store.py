@@ -1,4 +1,4 @@
-"""Manages current.passwords.env file"""
+"""Manages password.env.current file"""
 
 import logging
 from pathlib import Path

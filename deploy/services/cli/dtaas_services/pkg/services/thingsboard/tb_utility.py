@@ -67,7 +67,7 @@ def run_thingsboard_install(console: Console, docker) -> None:
         "[bold cyan]Installing ThingsBoard schema...[/bold cyan]",
         spinner="dots",
     ):
-        timeout = 400
+        timeout = int(os.getenv("THINGSBOARD_INSTALL_TIMEOUT", "300"))
 
         try:
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:

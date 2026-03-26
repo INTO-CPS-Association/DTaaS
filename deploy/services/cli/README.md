@@ -127,6 +127,14 @@ Make sure you run the clean command
 
 ### ThingsBoard Installation
 
+> **Warning:** Running `dtaas-services install -s thingsboard` more than once
+> will re-run the ThingsBoard schema migration against an already-populated
+> PostgreSQL database, which can corrupt it. If you need to reinstall from
+> scratch, run `dtaas-services clean -s "postgres,thingsboard"` first to wipe
+> all data before re-running the install command.
+> **Note:** It's recommended to specify the service explicitly with `-s <service>`
+> when installing.
+
 To install ThingsBoard, run this command:
 
 ```bash
@@ -158,11 +166,11 @@ dtaas-services user add -s thingsboard
 * Set `REACT_APP_AUTH_AUTHORITY` in the client config file
   (`deploy/config/client/env.js` for server deployments, or
   `deploy/config/client/env.local.js` for localhost) to
-  `https://<hostname>/gitlab`.
+  `https://<hostname>:<GITLAB_PORT>/gitlab`.
 
 > **Note:** The DTaaS client uses `react-oidc-context`, which forces
-> redirects to use HTTPS. GitLab must therefore be served over HTTPS —
-> either at `https://<hostname>/gitlab` or `https://localhost/gitlab`.
+> redirects to use HTTPS. GitLab must therefore be served over HTTPS
+> at `https://<hostname>:<GITLAB_PORT>/gitlab`
 
 To install and configure the local GitLab instance:
 

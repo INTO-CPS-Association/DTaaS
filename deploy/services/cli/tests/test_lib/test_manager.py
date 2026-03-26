@@ -58,7 +58,7 @@ def test_prepare_services_to_start(patch_service_deps, mocker):
     container_restarting = Mock()
     container_restarting.name = "influxdb"
     container_restarting.state.status = "restarting"
-    mock_docker.compose.ps.return_value = [container_running, container_restarting]
+    mock_docker.container.list.return_value = [container_running, container_restarting]
 
     mocker.patch.object(Path, "exists", return_value=True)
     _, skipped, restarting = service.prepare_services_to_start(
