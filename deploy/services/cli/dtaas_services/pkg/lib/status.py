@@ -208,7 +208,7 @@ class Status(DockerExecutor):
             Tuple of (Exception or None, dict mapping container name to container object)
         """
         try:
-            all_containers = self.docker.container.list(all=True)
+            all_containers = self.docker.compose.ps(all=True)
             err, all_services = self.get_all_service_names()
             if err is not None:
                 return err, {}

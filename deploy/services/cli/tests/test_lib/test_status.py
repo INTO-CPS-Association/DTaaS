@@ -22,7 +22,7 @@ def test_get_status_success(patch_service_deps, mocker):
     mock_container2 = Mock()
     mock_container2.name = "influxdb"
     mock_docker = MagicMock()
-    mock_docker.container.list.return_value = [mock_container1, mock_container2]
+    mock_docker.compose.ps.return_value = [mock_container1, mock_container2]
     mock_config_obj = MagicMock()
     mock_config_obj.services = {"grafana": {}, "influxdb": {}}
     mock_docker.compose.config.return_value = mock_config_obj
@@ -42,7 +42,7 @@ def test_get_status_with_service_list(patch_service_deps, mocker):
     mock_container = Mock()
     mock_container.name = "grafana"
     mock_docker = MagicMock()
-    mock_docker.container.list.return_value = [mock_container]
+    mock_docker.compose.ps.return_value = [mock_container]
     mock_config_obj = MagicMock()
     mock_config_obj.services = {"grafana": {}, "mongodb": {}}
     mock_docker.compose.config.return_value = mock_config_obj
@@ -69,7 +69,7 @@ def test_get_status_docker_error(patch_service_deps, mocker):
     mock_docker_client, mock_config = patch_service_deps
     mock_config.get_base_dir.return_value = Path("/path/to/base")
     mock_docker = MagicMock()
-    mock_docker.container.list.side_effect = OSError("Status error")
+    mock_docker.compose.ps.side_effect = OSError("Status error")
     mock_config_obj = MagicMock()
     mock_config_obj.services = {"grafana": {}, "influxdb": {}}
     mock_docker.compose.config.return_value = mock_config_obj
@@ -122,7 +122,7 @@ def test_get_running_services_returns_running(patch_service_deps, mocker):
     service, mock_docker, _ = _make_service(patch_service_deps)
     container1 = make_mock_container("grafana", "running")
     container2 = make_mock_container("influxdb", "exited")
-    mock_docker.container.list.return_value = [container1, container2]
+    mock_docker.compose.ps.return_value = [container1, container2]
     mocker.patch.object(Path, "exists", return_value=True)
     result = service.get_running_services()
     assert "grafana" in result
@@ -133,7 +133,7 @@ def test_get_running_services_docker_error(patch_service_deps):
     """Test get_running_services returns empty set on docker error"""
 
     service, mock_docker, _ = _make_service(patch_service_deps)
-    mock_docker.container.list.side_effect = OSError("Docker error")
+    mock_docker.compose.ps.side_effect = OSError("Docker error")
     result = service.get_running_services()
     assert result == set()
 
@@ -144,7 +144,7 @@ def test_get_running_or_restarting_services(patch_service_deps, mocker):
     service, mock_docker, _ = _make_service(patch_service_deps)
     container1 = make_mock_container("grafana", "running")
     container2 = make_mock_container("influxdb", "restarting")
-    mock_docker.container.list.return_value = [container1, container2]
+    mock_docker.compose.ps.return_value = [container1, container2]
     mocker.patch.object(Path, "exists", return_value=True)
     running, restarting = service.get_running_or_restarting_services()
     assert "grafana" in running
@@ -155,7 +155,7 @@ def test_get_running_or_restarting_services_error(patch_service_deps):
     """Test get_running_or_restarting_services returns empty on error"""
 
     service, mock_docker, _ = _make_service(patch_service_deps)
-    mock_docker.container.list.side_effect = OSError("Docker error")
+    mock_docker.compose.ps.side_effect = OSError("Docker error")
     running, restarting = service.get_running_or_restarting_services()
     assert running == set()
     assert restarting == set()
