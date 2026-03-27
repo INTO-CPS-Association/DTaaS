@@ -8,7 +8,6 @@ import os
 import pytest
 from rich.console import Console
 from rich.panel import Panel
-from dtaas_services.pkg.lib import Service
 
 console = Console()
 pytestmark = pytest.mark.system
@@ -147,37 +146,26 @@ def run_command(cmd_list, check=True):
 
 def get_service_status(service_names=None):
     """
-    Get the status of services using the Service class directly
+    Get the status of services by inspecting containers directly.
     Args:
         service_names: Optional list of specific services to check
 
     Returns:
-        dict mapping service names to their status)
+        dict mapping service names to their status
     """
-    service = Service()
-    err, containers = service.get_status(service_names)
-
-    if err is not None:
-        error_panel = Panel(
-            "[yellow]Failed to retrieve service status from Service class[/yellow]\n\n"
-            f"[yellow]Error:[/yellow] {err}",
-            title="[bold red]❌ Service Status Retrieval Failed[/bold red]",
-            border_style="red",
-        )
-        console.print(error_panel)
-        return {}
-
+    services_to_check = service_names or AVAILABLE_SERVICES
     status_dict = {}
-    for container in containers:
-        # Extract service name from container name (e.g., "rabbitmq" from "rabbitmq")
-        for service_name in AVAILABLE_SERVICES:
-            if service_name in container.name.lower():
-                # Get the container state
-                state = container.state.status
-                # Keep the actual state
-                status_dict[service_name] = state
-                break
-
+    for service_name in services_to_check:
+        result = subprocess.run(
+            ["docker", "inspect", "--format", "{{.State.Status}}", service_name],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            status_dict[service_name] = result.stdout.strip()
+        else:
+            status_dict[service_name] = "removed"
     return status_dict
 
 
