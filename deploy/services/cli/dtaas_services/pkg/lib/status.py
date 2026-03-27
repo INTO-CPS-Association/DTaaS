@@ -1,6 +1,5 @@
 """Service status & inspection"""
 
-import os
 from typing import Tuple, Optional, Set
 from python_on_whales import Container
 from .utils import check_compose_file, DOCKER_OPERATION_EXCEPTIONS
@@ -209,11 +208,7 @@ class Status(DockerExecutor):
             Tuple of (Exception or None, dict mapping container name to container object)
         """
         try:
-            project = os.environ.get("COMPOSE_PROJECT_NAME", "")
-            all_containers = self.docker.container.list(
-                all=True,
-                filters={"label": f"com.docker.compose.project={project}"},
-            )
+            all_containers = self.docker.container.list(all=True)
             err, all_services = self.get_all_service_names()
             if err is not None:
                 return err, {}
