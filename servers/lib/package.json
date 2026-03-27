@@ -36,7 +36,7 @@
   "bin": "./dist/src/main.js",
   "dependencies": {
     "@apollo/client": "^4.1.6",
-    "@apollo/server": "^5.4.0",
+    "@apollo/server": "^5.5.0",
     "@as-integrations/express5": "1.1.2",
     "@nestjs/apollo": "^13.2.4",
     "@nestjs/common": "^11.1.17",
@@ -44,12 +44,12 @@
     "@nestjs/core": "^11.1.17",
     "@nestjs/graphql": "^13.2.4",
     "@nestjs/platform-express": "^11.1.17",
-    "axios": "^1.13.6",
-    "cloudcmd": "^19.8.8",
+    "axios": "^1.14.0",
+    "cloudcmd": "^19.9.7",
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
     "globals": "^17.4.0",
-    "graphql": "^16.13.1",
+    "graphql": "^16.13.2",
     "isomorphic-git": "^1.37.4",
     "js-yaml": "^4.1.1",
     "mock-fs": "^5.5.0",
@@ -70,13 +70,13 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.5.0",
     "@types/supertest": "^7.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
-    "@typescript-eslint/parser": "^8.57.1",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "cross-fetch": "^4.1.0",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jest": "^29.15.0",
+    "eslint-plugin-jest": "^29.15.1",
     "eslint-plugin-prettier": "^5.5.5",
     "graphql-scalars": "^1.25.0",
     "jest": "^30.3.0",
@@ -86,9 +86,11 @@
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "resolutions": {
-    "dompurify": "^3.3.3"
+    "dompurify": "^3.3.3",
+    "handlebars": "^4.7.9",
+    "yaml": "^2.8.3"
   }
 }

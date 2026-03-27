@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "declaration": true, //generate declaration '.d.ts' files
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
@@ -21,7 +22,7 @@
     "removeComments": true, //remove comments from build
     "skipLibCheck": true,
     "sourceMap": true, //generate .map files
-    // "strict": true, //enable all strict type-checking options
+    "strict": false, //keep non-strict behavior across TS major upgrades
     "strictBindCallApply": false,
     "target": "ES2022",
     "types": ["node", "jest"], //use node and jest types
