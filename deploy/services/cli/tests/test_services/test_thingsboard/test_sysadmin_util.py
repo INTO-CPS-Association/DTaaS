@@ -152,8 +152,11 @@ def test_update_sysadmin_email_runs_sql(monkeypatch):
     th_util.update_sysadmin_email_in_db(mock_console, mock_docker)
     mock_docker.execute.assert_called_once()
     call_args = mock_docker.execute.call_args
+    cmd = call_args[0][1]
     assert call_args[0][0] == "postgres"
-    sql_cmd = call_args[0][1][2]
+    assert cmd[0] == "psql"
+    assert "-c" in cmd
+    sql_cmd = cmd[cmd.index("-c") + 1]
     assert "admin@example.org" in sql_cmd
     assert "SYS_ADMIN" in sql_cmd
 

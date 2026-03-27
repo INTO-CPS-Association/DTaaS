@@ -151,14 +151,12 @@ def update_sysadmin_email_in_db(console: Console, docker) -> None:
         return
 
     sql = _build_update_email_sql(new_email)
+    pg_user = os.getenv("POSTGRES_USER", "postgres")
+    pg_db = os.getenv("POSTGRES_DB", "thingsboard")
     try:
         docker.execute(
             "postgres",
-            [
-                "sh",
-                "-c",
-                f'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "{sql}"',
-            ],
+            ["psql", "-U", pg_user, "-d", pg_db, "-c", sql],
         )
         console.print(f"[green]Updated sysadmin email to {new_email}[/green]")
     except Exception as e:

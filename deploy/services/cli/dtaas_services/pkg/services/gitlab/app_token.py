@@ -7,6 +7,7 @@ from typing import Any
 
 import gitlab
 import gitlab.exceptions
+import requests.exceptions
 
 from ._api import get_gitlab_client
 
@@ -106,6 +107,8 @@ def create_application(
         return True, _to_result(app), ""
     except gitlab.exceptions.GitlabError as exc:
         return False, None, f"Failed to create '{config.name}': {exc}"
+    except requests.exceptions.RequestException as exc:
+        return False, None, f"Network error creating '{config.name}': {exc}"
 
 
 def create_server_application(
@@ -142,6 +145,8 @@ def list_all_applications(
         return True, [app.attributes for app in apps], ""
     except gitlab.exceptions.GitlabError as exc:
         return False, [], f"Failed to list applications: {exc}"
+    except requests.exceptions.RequestException as exc:
+        return False, [], f"Network error listing applications: {exc}"
 
 
 def delete_application(private_token: str, application_id: int) -> tuple[bool, str]:
@@ -156,3 +161,5 @@ def delete_application(private_token: str, application_id: int) -> tuple[bool, s
         return True, "Application successfully deleted."
     except gitlab.exceptions.GitlabError as exc:
         return False, f"Failed to delete application {application_id}: {exc}"
+    except requests.exceptions.RequestException as exc:
+        return False, f"Network error deleting application {application_id}: {exc}"

@@ -7,7 +7,7 @@ services:
     hostname: ${HOSTNAME}
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://${HOSTNAME}/gitlab'
+        external_url 'https://${HOSTNAME}:${GITLAB_PORT}/gitlab'
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
         nginx['ssl_certificate'] = "/certs/fullchain.pem"
         nginx['ssl_certificate_key'] = "/certs/privkey.pem"

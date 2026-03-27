@@ -80,6 +80,7 @@ def test_change_sysadmin_password_already_changed(mocker, monkeypatch):
     """Test sysadmin password already changed (default login fails, new succeeds)"""
     base_url = "https://localhost:8080"
     session = Mock()
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
     monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "new")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.get_current_password",
@@ -101,6 +102,7 @@ def test_change_sysadmin_password_change_needed(mocker, monkeypatch):
     """Test sysadmin password change when default login succeeds"""
     base_url = "https://localhost:8080"
     session = Mock()
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "sysadmin@thingsboard.org")
     monkeypatch.setenv("TB_SYSADMIN_NEW_PASSWORD", "new")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.sysadmin.get_current_password",

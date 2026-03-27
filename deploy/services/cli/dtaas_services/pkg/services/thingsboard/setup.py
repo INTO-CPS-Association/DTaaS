@@ -141,6 +141,12 @@ def _change_sysadmin_email_if_needed(
     if not auth_ok:
         return False, auth_err
     configured_email = os.getenv("TB_SYSADMIN_EMAIL", "").strip()
+    if configured_email == "":
+        logger.info(
+            "TB_SYSADMIN_EMAIL is not set in config/services.env. "
+            "Using default sysadmin email."
+        )
+        return True, ""
     return change_sysadmin_email(base_url, session, configured_email)
 
 

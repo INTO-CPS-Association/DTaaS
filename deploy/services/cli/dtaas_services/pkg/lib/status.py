@@ -1,5 +1,6 @@
 """Service status & inspection"""
 
+import os
 from typing import Tuple, Optional, Set
 from python_on_whales import Container
 from .utils import check_compose_file, DOCKER_OPERATION_EXCEPTIONS
@@ -9,6 +10,17 @@ from .docker_executor import DockerExecutor, handle_docker_not_running
 
 class Status(DockerExecutor):
     """Service status operations."""
+
+    def _get_project_name_for_hostname(self) -> str:
+        """Compute the docker compose project name for the current hostname.
+
+        Returns the project name derived from HOSTNAME, or empty string if not set.
+        This matches the logic in ServiceInitializer._setup_project_name.
+        """
+        hostname = os.environ.get("HOSTNAME", "")
+        if not hostname:
+            return ""
+        return hostname.lower().replace(".", "-").replace("_", "-")
 
     def _add_service_to_state_set(
         self, service_name: str, status: str, state_sets: dict
@@ -208,7 +220,16 @@ class Status(DockerExecutor):
             Tuple of (Exception or None, dict mapping container name to container object)
         """
         try:
-            all_containers = self.docker.container.list(all=True)
+            project_name = self._get_project_name_for_hostname()
+            if project_name:
+                # Filter containers to only this project
+                all_containers = self.docker.container.list(
+                    all=True,
+                    filters={"label": f"com.docker.compose.project={project_name}"},
+                )
+            else:
+                # No hostname set, list all containers
+                all_containers = self.docker.container.list(all=True)
             err, all_services = self.get_all_service_names()
             if err is not None:
                 return err, {}

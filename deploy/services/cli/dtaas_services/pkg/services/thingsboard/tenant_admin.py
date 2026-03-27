@@ -211,7 +211,9 @@ def _login_as_tenant_admin(
     return (
         None,
         "",
-        ("Failed to authenticate as tenant admin. "),
+        "Failed to authenticate as tenant admin. "
+        "Verify TB_TENANT_ADMIN_EMAIL and TB_TENANT_ADMIN_PASSWORD are set correctly, "
+        "and that ThingsBoard is reachable at the configured base_url.",
     )
 
 
