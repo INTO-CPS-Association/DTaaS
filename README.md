@@ -56,7 +56,8 @@ This is a monorepo containing code for
 both the web client and the microservices codebase.
 The source code for [web client](client),
 [library](servers/lib) and
-[runner](servers/execution/runner)
+[runner](servers/execution/runner) and
+[logger](servers/logger)
 microservices is available in this monorepo.
 The downloadable packages are available on
 [github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).

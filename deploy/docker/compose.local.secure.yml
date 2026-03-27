@@ -37,6 +37,19 @@ services:
     networks:
       - frontend
 
+  logger-ms:
+    image: intocps/logger-ms:latest
+    restart: unless-stopped
+    volumes:
+      - "${DTAAS_DIR}/files:/dtaas/logger/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.logger-ms.rule=PathPrefix(`/logger`)"
+      - "traefik.http.routers.logger-ms.tls=true"
+      - "traefik.http.services.logger-ms.loadbalancer.server.port=4003"
+    networks:
+      - frontend
+
   user1:
     image: intocps/workspace:latest
     restart: unless-stopped
