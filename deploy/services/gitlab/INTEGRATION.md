@@ -22,7 +22,7 @@ Traefik Forward Auth backend authorization.
 
 ### 1. Set up the DTaaS server over HTTPS
 
-Follow the [existing guide](../../docker/README.md)
+Follow the package guides in `deploy/dtaas/docker/`
 to set up the DTaaS web application over HTTPS connection on either
 localhost (<https://localhost>) or a custom domain (<https://foo.com>).
 
@@ -63,15 +63,15 @@ If the DTaaS application is hosted at <https://localhost>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in
-   _deploy/config/client/env.local.js_.
-1. _deploy/docker/.env.local_ Add localpath and username.
+   _deploy/dtaas/docker/secure-localhost/config/client/env.local.js_.
+1. _deploy/dtaas/docker/secure-localhost/.env.example_ Add localpath and username.
 
 If the DTaaS application is hosted at <https://foo.com/>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in
-   _deploy/config/client/env.js_.
-1. _deploy/docker/.env.server_ - Add  localpath and username,
+   _deploy/dtaas/docker/server/config/client/env.server.js_.
+1. _deploy/dtaas/docker/secure-server/.env.example_ - Add  localpath and username,
    OAuth client ID and client secret from the
    **DTaaS Server Authorization** token
 
@@ -83,8 +83,8 @@ The updated OAuth application configuration needs to be loaded into
 the **client website** service.
 
 ```sh
-cd deploy/docker
-docker compose -f compose.local.yml --env-file .env.local up -d --force-recreate client
+cd deploy/dtaas/docker/secure-localhost
+docker compose -f docker-compose.yml --env-file .env up -d --force-recreate client
 ```
 
 ### Production Server Installation
@@ -97,18 +97,18 @@ or **https** option.
 If it is installed with **http** option, run the following commands.
 
 ```sh
-cd deploy/docker
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+cd deploy/dtaas/docker/server
+docker compose -f docker-compose.yml --env-file .env up -d --force-recreate client
+docker compose -f docker-compose.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
 If the production server is installed with **https** option,
 run the following commands.
 
 ```sh
-cd deploy/docker
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+cd deploy/dtaas/docker/secure-server
+docker compose -f docker-compose.yml --env-file .env up -d --force-recreate client
+docker compose -f docker-compose.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
 ## Post Setup Usage

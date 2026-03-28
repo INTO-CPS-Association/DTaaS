@@ -1,0 +1,63 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    restart: unless-stopped
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./dynamic/tls.yml:/etc/traefik/dynamic/tls.yml"
+      - "./certs:/etc/traefik-certs"
+    networks:
+      - frontend
+      - users
+
+  client:
+    image: intocps/dtaas-web:1.0.1
+    restart: unless-stopped
+    volumes:
+      - ./config/client/env.local.js:/dtaas/client/build/env.js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.tls=true"
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+    networks:
+      - frontend
+
+  user1:
+    image: intocps/workspace:main-967bc10
+    restart: unless-stopped
+    volumes:
+      - ./files/common:/workspace/common
+      - ./files/${username1}:/workspace
+    environment:
+      - MAIN_USER=${username1}
+    shm_size: "512m"
+    cpus: 4
+    mem_limit: "4G"
+    pids_limit: 4960
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user1.rule=PathPrefix(`/${username1}`)"
+      - "traefik.http.routers.user1.tls=true"
+    networks:
+      - users
+
+networks:
+  frontend:
+    name: dtaas-frontend
+  users:
+    name: dtaas-users

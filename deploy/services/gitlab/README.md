@@ -14,16 +14,16 @@ needed to set up the docker container containing the local GitLab instance.
 ## Configure and Install
 
 If the DTaaS application and gitlab are to be hosted at <https://foo.com>, then
-the client config file (`deploy/config/client/env.js`)
+the client config file (`deploy/dtaas/docker/server/config/client/env.server.js`)
 needs to use the <https://foo.com/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 In addition, this hosting at <https://foo.com> also requires changes to
-config file (`.env.server`).
+config file (`deploy/dtaas/docker/server/.env.example`).
 
 If the DTaaS application and gitlab are to be hosted at <https://localhost>, then
-the client config file (`deploy/config/client/env.local.js`)
+the client config file (`deploy/dtaas/docker/secure-localhost/config/client/env.local.js`)
 needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 If the application and the integrated gitlab are to be hosted at
-`https://localhost/gitlab`, then `.env.server` need not be modified.
+`https://localhost/gitlab`, then `deploy/dtaas/docker/secure-localhost/.env.example` and `deploy/dtaas/docker/secure-localhost/config/client/env.local.js` are the relevant files.
 
 Edit the `.env` file available in this directory to contain the following variables:
 
@@ -44,7 +44,7 @@ should be available at <https://foo.com/gitlab>.
 
 **NOTE**: The GitLab instance operates with the `dtaas-frontend` network, which
 requires the DTaaS server to be running before you start it. You may refer to
-[deployment README](../../docker/README.md) file for the same.
+[deployment package README](../../dtaas/docker/README.md) file for the same.
 
 The commands to start and stop the instance are:
 

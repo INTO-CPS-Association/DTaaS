@@ -68,8 +68,8 @@ Be sure to save the generated runner authentication token.
 Depending on your installation scenario, the runner setup reads certain
 configurations settings:
 
-1. __Localhost Installation__ - uses `deploy/docker/.env.local`
-1. __Server Installation__ - uses `deploy/docker/.env.server`
+1. __Localhost Installation__ - uses `deploy/dtaas/docker/secure-localhost/.env.example`
+1. __Server Installation__ - uses `deploy/dtaas/docker/secure-server/.env.example`
 
 These files are integral to running the DTaaS application, so it will be
 assumed that you have already configured these.
@@ -110,15 +110,15 @@ container respectively, depending on your installation scenario:
 1. Localhost Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local up -d
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local down
+    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/dtaas/docker/secure-localhost/.env.example up -d
+    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/dtaas/docker/secure-localhost/.env.example down
     ```
 
 1. Server Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server up -d
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server down
+    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/dtaas/docker/secure-server/.env.example up -d
+    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/dtaas/docker/secure-server/.env.example down
     ```
 
 Once the container starts, the runner within it will run automatically. You can
