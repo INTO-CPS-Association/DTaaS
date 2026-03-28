@@ -9,6 +9,7 @@ import resolveFile from './util.js';
 type ConfigValues = {
   hostname: string;
   port: number;
+  'cors-allow-origin': string;
   jwt: string;
   certs: string;
   tls: boolean;
@@ -22,6 +23,10 @@ const DEFAULT_JWT = '';
 const DEFAULT_CERTS_DIR = 'certs';
 const DEFAULT_LOG_FILE = 'logs/workflow-logs.jsonl';
 const DEFAULT_MAX_PAYLOAD_BYTES = 64 * 1024;
+
+function defaultCorsAllowOrigin(port: number): string {
+  return `${DEFAULT_HOSTNAME}:${port}`;
+}
 
 const booleanSchema = z.preprocess((value) => {
   if (typeof value === 'boolean') {
@@ -54,6 +59,7 @@ const loggerConfigSchema = z
   .object({
     hostname: z.string().trim().min(1).optional(),
     port: z.coerce.number().int().positive().optional(),
+    'cors-allow-origin': z.string().trim().min(1).optional(),
     jwt: z.string().optional(),
     certs: z.string().trim().min(1).optional(),
     tls: booleanSchema.optional(),
@@ -66,6 +72,7 @@ function defaultConfigValues(): ConfigValues {
   return {
     hostname: DEFAULT_HOSTNAME,
     port: DEFAULT_PORT,
+    'cors-allow-origin': defaultCorsAllowOrigin(DEFAULT_PORT),
     jwt: DEFAULT_JWT,
     certs: path.resolve(process.cwd(), DEFAULT_CERTS_DIR),
     tls: false,
@@ -136,6 +143,10 @@ export default class Config implements IConfig {
     return this.configValues.port;
   }
 
+  getCorsAllowOrigin(): string {
+    return this.configValues['cors-allow-origin'];
+  }
+
   getJwt(): string {
     return this.configValues.jwt;
   }
@@ -168,7 +179,19 @@ export default class Config implements IConfig {
       this.configValues.hostname = yamlValues.hostname;
     }
     if (yamlValues.port !== undefined) {
+      const previousPort = this.configValues.port;
       this.configValues.port = yamlValues.port;
+      if (
+        this.configValues['cors-allow-origin'] ===
+        defaultCorsAllowOrigin(previousPort)
+      ) {
+        this.configValues['cors-allow-origin'] = defaultCorsAllowOrigin(
+          yamlValues.port,
+        );
+      }
+    }
+    if (yamlValues['cors-allow-origin'] !== undefined) {
+      this.configValues['cors-allow-origin'] = yamlValues['cors-allow-origin'];
     }
     if (yamlValues.jwt !== undefined) {
       this.configValues.jwt = yamlValues.jwt;
@@ -201,7 +224,19 @@ export default class Config implements IConfig {
       'LOGGER_PORT',
     );
     if (port !== undefined) {
+      const previousPort = this.configValues.port;
       this.configValues.port = port;
+      if (
+        this.configValues['cors-allow-origin'] ===
+        defaultCorsAllowOrigin(previousPort)
+      ) {
+        this.configValues['cors-allow-origin'] = defaultCorsAllowOrigin(port);
+      }
+    }
+
+    const corsAllowOrigin = process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    if (corsAllowOrigin !== undefined && corsAllowOrigin.trim() !== '') {
+      this.configValues['cors-allow-origin'] = corsAllowOrigin.trim();
     }
 
     const jwt = process.env.LOGGER_JWT;

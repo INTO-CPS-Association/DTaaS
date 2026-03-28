@@ -15,6 +15,7 @@ describe('Config service', () => {
     delete process.env.LOGGER_CONFIG_PATH;
     delete process.env.LOGGER_HOSTNAME;
     delete process.env.LOGGER_PORT;
+    delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
     delete process.env.LOGGER_JWT;
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
@@ -32,6 +33,7 @@ describe('Config service', () => {
 
     expect(config.getHostname()).toBe('0.0.0.0');
     expect(config.getPort()).toBe(4003);
+    expect(config.getCorsAllowOrigin()).toBe('0.0.0.0:4003');
     expect(config.getJwt()).toBe('');
     expect(config.getTls()).toBe(false);
     expect(config.getCertsDirectory()).toBe(
@@ -50,6 +52,7 @@ describe('Config service', () => {
       [
         'hostname: 127.0.0.1',
         'port: 4500',
+        'cors-allow-origin: https://client.example',
         'jwt: test-token',
         'tls: true',
         'certs: ./secure-certs',
@@ -64,6 +67,7 @@ describe('Config service', () => {
 
     expect(config.getHostname()).toBe('127.0.0.1');
     expect(config.getPort()).toBe(4500);
+    expect(config.getCorsAllowOrigin()).toBe('https://client.example');
     expect(config.getJwt()).toBe('test-token');
     expect(config.getTls()).toBe(true);
     expect(config.getCertsDirectory()).toBe(
@@ -92,6 +96,7 @@ describe('Config service', () => {
     process.env.LOGGER_CONFIG_PATH = configPath;
     process.env.LOGGER_HOSTNAME = '0.0.0.0';
     process.env.LOGGER_PORT = '4900';
+    process.env.LOGGER_CORS_ALLOW_ORIGIN = 'http://frontend.local:3000';
     process.env.LOGGER_JWT = 'token-from-env';
     process.env.LOGGER_TLS = 'true';
     process.env.LOGGER_CERTS_DIR = './runtime-certs';
@@ -102,6 +107,7 @@ describe('Config service', () => {
 
     expect(config.getHostname()).toBe('0.0.0.0');
     expect(config.getPort()).toBe(4900);
+    expect(config.getCorsAllowOrigin()).toBe('http://frontend.local:3000');
     expect(config.getJwt()).toBe('token-from-env');
     expect(config.getTls()).toBe(true);
     expect(config.getCertsDirectory()).toBe(

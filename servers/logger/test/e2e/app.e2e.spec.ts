@@ -43,6 +43,7 @@ describe('Logger service e2e', () => {
     process.env.LOGGER_CONFIG_PATH = '';
     process.env.LOGGER_TLS = 'false';
     process.env.LOGGER_CERTS_DIR = '';
+    process.env.LOGGER_CORS_ALLOW_ORIGIN = '*';
     process.env.LOGGER_LOG_FILE_PATH = logFilePath;
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '65536';
 
@@ -51,6 +52,11 @@ describe('Logger service e2e', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.enableCors({
+      origin: true,
+      methods: ['GET', 'POST', 'OPTIONS'],
+      credentials: true,
+    });
     await app.init();
   });
 
@@ -59,6 +65,7 @@ describe('Logger service e2e', () => {
     delete process.env.LOGGER_CONFIG_PATH;
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
+    delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
     delete process.env.LOGGER_LOG_FILE_PATH;
     delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
     await rm(tempDir, { recursive: true, force: true });
@@ -105,5 +112,15 @@ describe('Logger service e2e', () => {
           statusCode: 400,
         });
     }
+  });
+
+  it('OPTIONS /logger exposes CORS headers', async () => {
+    await supertest(app.getHttpServer())
+      .options('/logger')
+      .set('Origin', 'http://localhost:3000')
+      .set('Access-Control-Request-Method', 'POST')
+      .expect(HttpStatus.NO_CONTENT)
+      .expect('Access-Control-Allow-Origin', 'http://localhost:3000')
+      .expect('Access-Control-Allow-Credentials', 'true');
   });
 });

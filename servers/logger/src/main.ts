@@ -7,6 +7,7 @@ import AppModule from './app.module.js';
 import Config from './config/config.service.js';
 import resolveConfigPath from './config/cli.js';
 import { ensureCertificates } from './config/certificates.js';
+import { buildCorsOptions } from './config/cors.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -41,6 +42,9 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { httpsOptions });
   const config = app.get<Config>(Config);
+  app.enableCors(
+    buildCorsOptions(config.getCorsAllowOrigin(), config.getPort()),
+  );
   app.use(json({ limit: `${config.getMaxPayloadBytes()}b` }));
   await app.listen(config.getPort(), config.getHostname());
 }

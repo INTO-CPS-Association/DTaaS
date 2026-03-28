@@ -24,6 +24,7 @@ Environment variables always override YAML values.
 
 - `hostname` (default: `0.0.0.0`)
 - `port` (default: `4003`)
+- `cors-allow-origin` (default: `0.0.0.0:<port>`, e.g. `0.0.0.0:4003`)
 - `jwt` (default: empty string)
 - `tls` (default: `false`)
 - `certs` (default: `./certs`)
@@ -37,11 +38,15 @@ Use `logger.yaml.sample` as a template.
 - `LOGGER_CONFIG_PATH`
 - `LOGGER_HOSTNAME`
 - `LOGGER_PORT` (default: `4003`)
+- `LOGGER_CORS_ALLOW_ORIGIN` (default: `0.0.0.0:<port>`)
 - `LOGGER_JWT`
 - `LOGGER_TLS`
 - `LOGGER_CERTS_DIR`
 - `LOGGER_LOG_FILE_PATH` (default: `logs/workflow-logs.jsonl`)
 - `LOGGER_MAX_PAYLOAD_BYTES` (default: `65536`)
+
+The service always sets `Access-Control-Allow-Credentials: true` for CORS
+responses.
 
 ## TLS support
 

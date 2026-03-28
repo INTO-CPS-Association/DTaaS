@@ -1,11 +1,9 @@
-/* eslint-disable no-console */
 import { LogEvent } from 'util/logger/logEvent';
 
 const logBuffer: LogEvent[] = [];
 
 export function logToConsole(event: LogEvent): void {
   logBuffer.push(event);
-  console.log(JSON.stringify(event));
 }
 
 export function getLogBuffer(): readonly LogEvent[] {

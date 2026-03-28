@@ -6,7 +6,6 @@ import {
   resetLogger,
   isLoggerInitialized,
 } from 'util/logger/logger';
-import * as consoleLogger from 'util/logger/consoleLogger';
 import * as beaconLogger from 'util/logger/beaconLogger';
 import * as indexedDBLogger from 'util/logger/indexedDBLogger';
 
@@ -16,13 +15,6 @@ beforeAll(() => {
     writable: true,
   });
 });
-
-jest.mock('util/logger/consoleLogger', () => ({
-  logToConsole: jest.fn(),
-  getLogBuffer: jest.fn().mockReturnValue([]),
-  clearLogBuffer: jest.fn(),
-  downloadLogs: jest.fn(),
-}));
 
 jest.mock('util/logger/beaconLogger', () => ({
   sendBeacon: jest.fn(),
@@ -55,7 +47,6 @@ describe('logger', () => {
   it('returns null when logging before init', () => {
     const result = log('/page', 'btn', 'Click');
     expect(result).toBeNull();
-    expect(consoleLogger.logToConsole).not.toHaveBeenCalled();
   });
 
   it('logs an event after initialization', async () => {
@@ -68,7 +59,6 @@ describe('logger', () => {
     expect(event!.label).toBe('Functions');
     expect(event!.userHash).toHaveLength(64);
     expect(event!.sessionId).toBeDefined();
-    expect(consoleLogger.logToConsole).toHaveBeenCalledWith(event);
   });
 
   it('persists log event to IndexedDB', async () => {

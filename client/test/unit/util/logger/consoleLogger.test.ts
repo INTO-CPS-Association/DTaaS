@@ -21,7 +21,6 @@ const mockEvent: LogEvent = {
 describe('consoleLogger', () => {
   beforeEach(() => {
     clearLogBuffer();
-    jest.spyOn(console, 'log').mockImplementation();
     globalThis.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
     globalThis.URL.revokeObjectURL = jest.fn();
   });
@@ -30,9 +29,9 @@ describe('consoleLogger', () => {
     jest.restoreAllMocks();
   });
 
-  it('logs to console as JSON', () => {
+  it('adds event to in-memory buffer', () => {
     logToConsole(mockEvent);
-    expect(console.log).toHaveBeenCalledWith(JSON.stringify(mockEvent));
+    expect(getLogBuffer()).toEqual([mockEvent]);
   });
 
   it('adds events to the buffer', () => {

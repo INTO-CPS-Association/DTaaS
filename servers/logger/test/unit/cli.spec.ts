@@ -35,8 +35,14 @@ describe('logger config CLI resolution', () => {
   });
 
   it('returns undefined when default config is absent', () => {
-    const resolved = resolveConfigPath(['node', 'dist/src/main.js']);
-    expect(resolved).toBeUndefined();
+    const previousCwd = process.cwd();
+    process.chdir(tempDir);
+    try {
+      const resolved = resolveConfigPath(['node', 'dist/src/main.js']);
+      expect(resolved).toBeUndefined();
+    } finally {
+      process.chdir(previousCwd);
+    }
   });
 
   it('prefers explicit --config file', async () => {

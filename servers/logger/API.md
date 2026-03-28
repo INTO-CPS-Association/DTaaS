@@ -43,6 +43,10 @@ Ingest a single log event.
 | 400 Bad Request           | Malformed JSON or missing required fields |
 | 413 Payload Too Large     | Body exceeds configured max payload bytes |
 
+The service enables CORS with `Access-Control-Allow-Origin` controlled by
+`cors-allow-origin` (`LOGGER_CORS_ALLOW_ORIGIN` in env).
+It also always sends `Access-Control-Allow-Credentials: true`.
+
 ### GET /logger/health
 
 Returns service health.
@@ -76,4 +80,3 @@ Returns service health.
   transmission. The backend never receives plaintext usernames.
 - **Session IDs** are random UUID v4 values with no link to user identity.
 - No cookies or IP-based tracking is performed by the client.
-
