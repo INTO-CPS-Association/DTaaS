@@ -2,8 +2,11 @@
 
 import { NestFactory } from '@nestjs/core';
 import { json } from 'express';
+import { readFile } from 'node:fs/promises';
 import AppModule from './app.module.js';
 import Config from './config/config.service.js';
+import resolveConfigPath from './config/cli.js';
+import { ensureCertificates } from './config/certificates.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -12,10 +15,34 @@ See: https://stackoverflow.com/questions/62619058/appending-js-extension-on-rela
 */
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const configPath = resolveConfigPath(process.argv);
+  if (configPath !== undefined) {
+    process.env.LOGGER_CONFIG_PATH = configPath;
+  }
+
+  const configContext = await NestFactory.createApplicationContext(AppModule, {
+    logger: false,
+  });
+  const startupConfig = configContext.get<Config>(Config);
+  startupConfig.loadConfig(configPath);
+
+  const httpsOptions = startupConfig.getTls()
+    ? await (async () => {
+        const certPaths = await ensureCertificates(
+          startupConfig.getCertsDirectory(),
+        );
+        return {
+          cert: await readFile(certPaths.certFile),
+          key: await readFile(certPaths.keyFile),
+        };
+      })()
+    : undefined;
+  await configContext.close();
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   const config = app.get<Config>(Config);
   app.use(json({ limit: `${config.getMaxPayloadBytes()}b` }));
-  await app.listen(config.getPort());
+  await app.listen(config.getPort(), config.getHostname());
 }
 
 bootstrap();

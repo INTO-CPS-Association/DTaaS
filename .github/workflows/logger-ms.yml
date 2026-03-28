@@ -25,6 +25,7 @@ env:
   NODE_VERSION: 24
   LOGGER_PORT: 4003
   LOGGER_LOG_FILE_PATH: logs/workflow-logs.jsonl
+  LOGGER_TLS: false
 
 permissions:
   contents: read

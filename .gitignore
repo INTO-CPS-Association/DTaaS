@@ -243,3 +243,11 @@ deploy/services/cli/test-output
 
 # local research papers
 .research-papers
+
+# llm prompt files for local use
+prompt.current
+
+# logger microservice
+!servers/logger/src/logs
+servers/logger/logger.yaml
+servers/logger/certs

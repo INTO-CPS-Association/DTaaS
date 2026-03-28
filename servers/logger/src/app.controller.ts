@@ -8,8 +8,8 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import LogsService from './logs/logs.service.js';
-import { LogEventDto, logEventSchema } from './dto/log-event.dto.js';
-import ZodValidationPipe from './validation.pipe.js';
+import { LogEventDto } from './dto/log-event.dto.js';
+import LogEventValidationPipe from './log-event-validation.pipe.js';
 
 type HealthResponse = {
   status: 'ok';
@@ -28,7 +28,7 @@ export default class AppController {
 
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UsePipes(new ZodValidationPipe(logEventSchema))
+  @UsePipes(LogEventValidationPipe)
   async ingestEvent(@Body() logEventDto: LogEventDto): Promise<void> {
     await this.logsService.appendEvent(logEventDto);
   }

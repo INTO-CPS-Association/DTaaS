@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import AppController from './app.controller.js';
-import LogsService from './logs/logs.service.js';
-import Config from './config/config.service.js';
+import LogEventValidationPipe from './log-event-validation.pipe.js';
+import LogsModule from './logs/logs.module.js';
 
 @Module({
-  imports: [],
+  imports: [LogsModule],
   controllers: [AppController],
-  providers: [LogsService, Config],
+  providers: [LogEventValidationPipe],
 })
 export default class AppModule {}

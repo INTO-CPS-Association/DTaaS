@@ -1,0 +1,10 @@
+{
+  "sessionId": "77777777-7777-4777-8777-777777777777",
+  "userHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "timestamp": "not-a-timestamp",
+  "event": "click",
+  "page": "/library",
+  "element": "tab",
+  "label": "Functions",
+  "context": {}
+}

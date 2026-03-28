@@ -1,0 +1,12 @@
+{
+  "sessionId": "44444444-4444-4444-8444-444444444444",
+  "userHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "timestamp": "2026-03-24T20:03:00.000Z",
+  "event": "filter",
+  "page": "/library",
+  "element": "input",
+  "label": "Visibility",
+  "context": {
+    "query": "private"
+  }
+}
