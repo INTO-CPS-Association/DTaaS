@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
+import { initializeLibraryFile } from 'model/store/libraryConfigFiles.slice';
 import { selectDigitalTwinByName } from 'route/digitaltwins/execution';
 import DigitalTwin from 'model/backend/digitalTwin';
 import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
@@ -32,7 +32,7 @@ const dispatchLibraryFiles = (
 ) => {
   asset.configFiles.forEach((configFile) => {
     dispatch(
-      addOrUpdateLibraryFile({
+      initializeLibraryFile({
         assetPath: asset.path,
         fileName: configFile,
         fileContent: '',

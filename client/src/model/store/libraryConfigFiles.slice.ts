@@ -84,6 +84,23 @@ const libraryFilesSlice = createSlice({
         }
       });
     },
+
+    initializeLibraryFile: (
+      state,
+      action: PayloadAction<LibraryConfigFile>,
+    ) => {
+      const { fileName, assetPath, isNew, isPrivate } = action.payload;
+      if (!fileName || !assetPath) return;
+      const index = findLibraryFileIndex(state, {
+        fileName,
+        assetPath,
+        isNew,
+        isPrivate,
+      });
+      if (index < 0) {
+        state.push({ ...action.payload, isModified: false });
+      }
+    },
   },
 });
 
@@ -94,6 +111,7 @@ export const selectModifiedLibraryFiles = createSelector(
 
 export const {
   addOrUpdateLibraryFile,
+  initializeLibraryFile,
   removeAllFiles,
   removeAllModifiedLibraryFiles,
 } = libraryFilesSlice.actions;

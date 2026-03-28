@@ -140,8 +140,8 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
       },
     ];
 
-    const fetchSpy = jest
-      .spyOn(SidebarFetchers, 'fetchAndSetFileContent')
+    const updateSpy = jest
+      .spyOn(FileUtils, 'updateFileState')
       .mockImplementation(jest.fn());
 
     (mockDTAssets.getLibraryFileContent as jest.Mock).mockResolvedValue(
@@ -159,7 +159,12 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
       },
     );
 
-    expect(fetchSpy).toHaveBeenCalled();
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fileName: 'lib.md',
+        fileContent: 'fetched content',
+      }),
+    );
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         payload: expect.objectContaining({
@@ -172,8 +177,8 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
   });
 
   it('should derive isPrivate false for common library path', async () => {
-    const fetchSpy = jest
-      .spyOn(SidebarFetchers, 'fetchAndSetFileContent')
+    const updateSpy = jest
+      .spyOn(FileUtils, 'updateFileState')
       .mockImplementation(jest.fn());
 
     (mockDTAssets.getLibraryFileContent as jest.Mock).mockResolvedValue(
@@ -191,7 +196,7 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
       },
     );
 
-    expect(fetchSpy).toHaveBeenCalled();
+    expect(updateSpy).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         payload: expect.objectContaining({ isPrivate: false }),
@@ -200,30 +205,22 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
   });
 
   it('should return early from fetchLibraryFile when missing assetPath', async () => {
-    const fetchSpy = jest
-      .spyOn(SidebarFetchers, 'fetchAndSetFileContent')
-      .mockImplementation(jest.fn());
-
     await SidebarFunctions.handleReconfigureFileClick(
       { fileName: 'lib.md', asset: createMockDT(), files: [] },
       setters,
       { dispatch, library: true, libraryFiles: [] },
     );
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockDTAssets.getLibraryFileContent).not.toHaveBeenCalled();
   });
 
   it('should return early from fetchLibraryFile when missing dispatch', async () => {
-    const fetchSpy = jest
-      .spyOn(SidebarFetchers, 'fetchAndSetFileContent')
-      .mockImplementation(jest.fn());
-
     await SidebarFunctions.handleReconfigureFileClick(
       { fileName: 'lib.md', asset: createMockDT(), files: [] },
       setters,
       { library: true, libraryFiles: [], assetPath: 'test/path' },
     );
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockDTAssets.getLibraryFileContent).not.toHaveBeenCalled();
   });
 });

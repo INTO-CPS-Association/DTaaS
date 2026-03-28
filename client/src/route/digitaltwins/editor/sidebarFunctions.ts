@@ -203,35 +203,37 @@ const fetchLibraryFile = async (
 ) => {
   if (!options.assetPath || !options.dispatch) return;
 
-  await fetchAndSetFileContent(
-    {
-      fileName: context.fileName,
-      digitalTwin: context.asset as DigitalTwin | null,
-      library: options.library,
-      assetPath: options.assetPath,
-    },
-    {
-      setFileName: setters.setFileName,
-      setFileContent: setters.setFileContent,
-      setFileType: setters.setFileType,
-      setFilePrivacy: setters.setFilePrivacy,
-    },
-  );
-  const fileContent = await (
-    context.asset as DigitalTwin
-  ).DTAssets.getLibraryFileContent(options.assetPath, context.fileName);
-  options.dispatch(
-    addOrUpdateLibraryFile({
-      assetPath: options.assetPath,
-      fileName: context.fileName,
-      fileContent,
-      isNew: false,
-      isModified: false,
-      isPrivate: !options.assetPath.startsWith('common/'),
-    }),
-  );
-  setters.setIsLibraryFile(true);
-  setters.setLibraryAssetPath(options.assetPath);
+  try {
+    const fileContent = await (
+      context.asset as DigitalTwin
+    ).DTAssets.getLibraryFileContent(options.assetPath, context.fileName);
+
+    if (fileContent) {
+      updateFileState({
+        fileName: context.fileName,
+        fileContent,
+        setFileName: setters.setFileName,
+        setFileContent: setters.setFileContent,
+        setFileType: setters.setFileType,
+        setFilePrivacy: setters.setFilePrivacy,
+      });
+    }
+
+    options.dispatch(
+      addOrUpdateLibraryFile({
+        assetPath: options.assetPath,
+        fileName: context.fileName,
+        fileContent,
+        isNew: false,
+        isModified: false,
+        isPrivate: !options.assetPath.startsWith('common/'),
+      }),
+    );
+    setters.setIsLibraryFile(true);
+    setters.setLibraryAssetPath(options.assetPath);
+  } catch {
+    setters.setFileContent(`Error fetching ${context.fileName} content`);
+  }
 };
 
 const handleLibraryFileReconfigure = async (
