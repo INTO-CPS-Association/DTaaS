@@ -154,6 +154,7 @@ def test_secure_server_has_tls_and_forward_auth(tmp_path):
     assert "--providers.file.directory=/etc/traefik/config" in compose_text
     assert "traefik-forward-auth" in compose_text
     assert "./config/forward-auth/resolv.conf:/etc/resolv.conf" in compose_text
+    assert "./files/common:/dtaas/libms/files" in compose_text
 
 
 def test_localhost_has_no_forward_auth(tmp_path):
@@ -210,3 +211,5 @@ def test_build_copies_env_and_license_from_source(tmp_path):
     assert not (localhost / "config" / "libms.yaml").exists()
     assert (secure_localhost / "config" / "traefik" / "tls.yml").exists()
     assert (secure_server / "config" / "traefik" / "tls.yml").exists()
+    assert (secure_localhost / "certs" / "localhost" / ".gitkeep").exists()
+    assert (secure_server / "certs" / "foo.com" / ".gitkeep").exists()

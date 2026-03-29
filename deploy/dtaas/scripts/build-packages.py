@@ -191,7 +191,7 @@ def traefik_lines(secure: bool) -> list[str]:
                 "  ports:",
                 '    - "80:80"',
                 SERVICE_VOLUMES,
-                "    - /var/run/docker.sock:/var/run/docker.sock",
+                "    - /var/run/docker.sock:/var/run/docker.sock:ro",
             ]
         )
     lines.extend([SERVICE_NETWORKS, NETWORK_FRONTEND, NETWORK_USERS])
@@ -312,7 +312,7 @@ def libms_lines(secure: bool) -> list[str]:
         f"  image: {LIBMS_IMAGE}",
         RESTART_UNLESS_STOPPED,
         SERVICE_VOLUMES,
-        "    - ./files:/dtaas/libms/files",
+        "    - ./files/common:/dtaas/libms/files",
         SERVICE_LABELS,
         *quoted_items(labels),
         SERVICE_NETWORKS,
@@ -666,9 +666,10 @@ def copy_common(src: Path, dst: Path, scenario: Scenario) -> None:
         copy_file(
             src / "config" / "traefik" / tls_src, dst / "config" / "traefik" / "tls.yml"
         )
-        ensure_dir(dst / "certs" / "localhost")
+        cert_subdir = "foo.com" if scenario.server else "localhost"
+        ensure_dir(dst / "certs" / cert_subdir)
         write_text(dst / "certs" / ".gitkeep", "")
-        write_text(dst / "certs" / "localhost" / ".gitkeep", "")
+        write_text(dst / "certs" / cert_subdir / ".gitkeep", "")
 
     for asset in (
         "localhost.png",
