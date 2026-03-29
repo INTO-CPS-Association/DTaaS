@@ -14,7 +14,7 @@ def _localhost_env_table() -> str:
         """
         | Variable | Example value | Description |
         | :--- | :--- | :--- |
-        | `username1` | `user1` | Username for the single workspace and URL prefix (`/user1`). |
+        | `USERNAME1` | `user1` | Username for the single workspace and URL prefix (`/user1`). |
         """
     ).strip()
 
@@ -29,8 +29,8 @@ def _server_env_table() -> str:
         | `OAUTH_CLIENT_ID` | `xx` | Client ID for Traefik forward-auth OAuth app. |
         | `OAUTH_CLIENT_SECRET` | `xx` | Client secret for Traefik forward-auth OAuth app. |
         | `OAUTH_SECRET` | `random-secret-string` | Private random session signing string. |
-        | `username1` | `user1` | First DTaaS user workspace name and URL prefix. |
-        | `username2` | `user2` | Second DTaaS user workspace name and URL prefix. |
+        | `USERNAME1` | `user1` | First DTaaS user workspace name and URL prefix. |
+        | `USERNAME2` | `user2` | Second DTaaS user workspace name and URL prefix. |
         """
     ).strip()
 
@@ -83,7 +83,7 @@ def _localhost_environment_section() -> list[str]:
         "",
         *_localhost_env_table().splitlines(),
         "",
-        "If you change `username1`, create the matching workspace folder:",
+        "If you change `USERNAME1`, create the matching workspace folder:",
         "",
         BASH_BLOCK,
         "cp -R files/user1 files/<your-username>",

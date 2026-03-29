@@ -23,13 +23,17 @@ If the DTaaS application and gitlab are to be hosted at <https://localhost>, the
 the client config file (`deploy/dtaas/docker/secure-localhost/config/client/env.local.js`)
 needs to use the <https://localhost/gitlab> as `REACT_APP_AUTH_AUTHORITY`.
 If the application and the integrated gitlab are to be hosted at
-`https://localhost/gitlab`, then `deploy/dtaas/docker/secure-localhost/.env.example` and `deploy/dtaas/docker/secure-localhost/config/client/env.local.js` are the relevant files.
+`https://localhost/gitlab`, then:
+
+- `deploy/dtaas/docker/secure-localhost/.env.example`
+- `deploy/dtaas/docker/secure-localhost/config/client/env.local.js`
+
+are the relevant files.
 
 Edit the `.env` file available in this directory to contain the following variables:
 
 | Variable    | Example Value                                | Explanation                                                                                                                  |
 | :---------- | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash.                                    |
 | SERVER_DNS  | either `foo.com` or `localhost`                               | The server DNS, if you are deploying with a dedicated server. Remember not use _http(s)_ at the beginning of the DNS string. |
 
 **NOTE**: The DTaaS client uses the `react-oidc-context` node package, which

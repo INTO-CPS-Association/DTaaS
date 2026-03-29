@@ -137,11 +137,11 @@ def _user_labels(
 
 
 def user_lines(
-    service_name: str,
-    username_var: str,
+    user: tuple[str, str],
     scenario: Scenario,
     images: Images,
 ) -> list[str]:
+    service_name, username_var = user
     return [
         f"{service_name}:",
         f"  image: {images.workspace}",

@@ -19,13 +19,13 @@ def _scenario_service_blocks(scenario: Scenario, images: Images) -> list[list[st
     blocks.extend(
         [
             client_lines(scenario.secure, scenario.server, images),
-            user_lines("user1", "username1", scenario, images),
+            user_lines(("user1", "USERNAME1"), scenario, images),
         ]
     )
     if scenario.server:
         blocks.extend(
             [
-                user_lines("user2", "username2", scenario, images),
+                user_lines(("user2", "USERNAME2"), scenario, images),
                 forward_auth_lines(scenario.secure, images),
             ]
         )

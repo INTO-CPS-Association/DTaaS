@@ -93,7 +93,7 @@ def seed_source_tree(tmp_path: Path) -> None:
     ):
         (src / "assets" / image).write_bytes(b"png")
     (src / "LICENSE.md").write_text("license", encoding="utf-8")
-    (src / ".env.local.example").write_text("username1=user1", encoding="utf-8")
+    (src / ".env.local.example").write_text("USERNAME1=user1", encoding="utf-8")
     (src / ".env.server.example").write_text(
         "\n".join(
             [
@@ -102,8 +102,8 @@ def seed_source_tree(tmp_path: Path) -> None:
                 "OAUTH_CLIENT_ID=xx",
                 "OAUTH_CLIENT_SECRET=xx",
                 "OAUTH_SECRET=random-secret-string",
-                "username1=user1",
-                "username2=user2",
+                "USERNAME1=user1",
+                "USERNAME2=user2",
             ]
         ),
         encoding="utf-8",
