@@ -109,7 +109,9 @@ def _run_stop_section() -> list[str]:
 
 def _localhost_readme(secure: bool) -> str:
     lines = _localhost_intro(secure)
-    lines.extend(["", *_localhost_included_files(), "", *_localhost_configuration(secure)])
+    lines.extend(
+        ["", *_localhost_included_files(), "", *_localhost_configuration(secure)]
+    )
     lines.extend(["", *_localhost_environment_section(), "", *_run_stop_section()])
     return "\n".join(lines)
 
@@ -151,7 +153,9 @@ def _server_configuration(secure: bool) -> list[str]:
         "4. Update `config/forward-auth/conf.server` with allowed user e-mails.",
     ]
     if secure:
-        lines.append("5. Place certificates at `certs/fullchain.pem` and `certs/privkey.pem`.")
+        lines.append(
+            "5. Place certificates at `certs/fullchain.pem` and `certs/privkey.pem`."
+        )
     return lines
 
 

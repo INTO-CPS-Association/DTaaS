@@ -29,7 +29,9 @@ def parse_args() -> argparse.Namespace:
         help="Repository root directory",
     )
     parser.add_argument("--build", action="store_true", help="Build package folders")
-    parser.add_argument("--clean", action="store_true", help="Remove generated packages")
+    parser.add_argument(
+        "--clean", action="store_true", help="Remove generated packages"
+    )
     args = parser.parse_args()
     if not args.build and not args.clean:
         args.build = True

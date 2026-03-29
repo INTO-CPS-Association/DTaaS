@@ -70,8 +70,12 @@ def seed_source_tree(tmp_path: Path) -> None:
     (src / "files" / "template" / ".gitkeep").write_text("", encoding="utf-8")
     (src / "config" / "client" / "env.local.js").write_text("local", encoding="utf-8")
     (src / "config" / "client" / "env.server.js").write_text("server", encoding="utf-8")
-    (src / "config" / "forward-auth" / "conf.server").write_text("rule", encoding="utf-8")
-    (src / "config" / "forward-auth" / "resolv.conf").write_text("dns", encoding="utf-8")
+    (src / "config" / "forward-auth" / "conf.server").write_text(
+        "rule", encoding="utf-8"
+    )
+    (src / "config" / "forward-auth" / "resolv.conf").write_text(
+        "dns", encoding="utf-8"
+    )
     (src / "config" / "traefik" / "tls.local.yml").write_text(
         "tls:\n  certificates:\n    - certFile: /etc/traefik-certs/fullchain.pem\n",
         encoding="utf-8",
@@ -81,7 +85,12 @@ def seed_source_tree(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     (src / "config" / "libms.yaml").write_text("port: '4001'", encoding="utf-8")
-    for image in ("localhost.png", "localhost-https.png", "server.png", "traefik-forward-auth.png"):
+    for image in (
+        "localhost.png",
+        "localhost-https.png",
+        "server.png",
+        "traefik-forward-auth.png",
+    ):
         (src / "assets" / image).write_bytes(b"png")
     (src / "LICENSE.md").write_text("license", encoding="utf-8")
     (src / ".env.local.example").write_text("username1=user1", encoding="utf-8")
@@ -109,11 +118,11 @@ def seed_config_tree(tmp_path: Path) -> None:
         "\n".join(
             [
                 "[images]",
-                "traefik = \"traefik:v3.6.4\"",
-                "forward_auth = \"thomseddon/traefik-forward-auth:2.2.0\"",
-                "client = \"intocps/dtaas-web:1.0.2\"",
-                "libms = \"intocps/libms:0.5.9\"",
-                "workspace = \"intocps/workspace:main-967bc10\"",
+                'traefik = "traefik:v3.6.4"',
+                'forward_auth = "thomseddon/traefik-forward-auth:2.2.0"',
+                'client = "intocps/dtaas-web:1.0.2"',
+                'libms = "intocps/libms:0.5.9"',
+                'workspace = "intocps/workspace:main-967bc10"',
             ]
         ),
         encoding="utf-8",
@@ -167,12 +176,7 @@ def test_build_creates_expected_structure(tmp_path):
         source_root=tmp_path / "deploy" / "dtaas" / "src" / "common",
         output_root=tmp_path / "deploy" / "dtaas" / "docker",
         images=module.load_images(
-            tmp_path
-            / "deploy"
-            / "dtaas"
-            / "scripts"
-            / "build-packages"
-            / "dtaas.toml"
+            tmp_path / "deploy" / "dtaas" / "scripts" / "build-packages" / "dtaas.toml"
         ),
     )
 
@@ -244,10 +248,14 @@ def test_main_build_works_from_new_path(monkeypatch, tmp_path):
     module = load_module()
     seed_source_tree(tmp_path)
     seed_config_tree(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["build-packages.py", "--build", "--root", str(tmp_path)])
+    monkeypatch.setattr(
+        sys, "argv", ["build-packages.py", "--build", "--root", str(tmp_path)]
+    )
     module.main()
     assert (tmp_path / "deploy" / "dtaas" / "docker" / "localhost").exists()
-    monkeypatch.setattr(sys, "argv", ["build-packages.py", "--clean", "--root", str(tmp_path)])
+    monkeypatch.setattr(
+        sys, "argv", ["build-packages.py", "--clean", "--root", str(tmp_path)]
+    )
     module.main()
     assert not (tmp_path / "deploy" / "dtaas" / "docker" / "localhost").exists()
 
