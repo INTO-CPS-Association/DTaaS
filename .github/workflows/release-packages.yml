@@ -1,0 +1,53 @@
+name: Release Packages
+
+'on':
+  push:
+    paths:
+      - 'deploy/dtaas/**'
+      - 'deploy/workspace/**'
+  pull_request:
+    paths:
+      - 'deploy/dtaas/**'
+      - 'deploy/workspace/**'
+  workflow_dispatch:
+
+
+jobs:
+  release-packages:
+    name: Build and Upload Release Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout code
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Set up Python
+        # v6.1.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: "3.12"
+
+      - name: Build DTaaS docker packages
+        working-directory: deploy/dtaas
+        run: python scripts/build-packages.py --clean --build
+
+      - name: Create release archives
+        run: |
+          set -euxo pipefail
+          mkdir -p release-artifacts
+          tar -czf release-artifacts/dtaas-docker-packages.tar.gz \
+            -C deploy/dtaas docker
+          tar -czf release-artifacts/workspace-dex-localhost.tar.gz \
+            -C deploy/workspace/dex localhost
+
+      - name: Upload release artifacts
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: release-packages
+          path: release-artifacts/*.tar.gz
+          if-no-files-found: error
+          retention-days: 1
