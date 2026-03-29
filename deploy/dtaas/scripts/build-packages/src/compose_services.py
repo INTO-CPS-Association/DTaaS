@@ -12,7 +12,7 @@ from .compose_constants import (
     TRAEFIK_ENABLE_LABEL,
 )
 from .compose_helpers import plain_items, quoted_items, router_entrypoint
-from .models import Images
+from .models import Images, Scenario
 
 
 def _traefik_commands(secure: bool) -> list[str]:
@@ -120,16 +120,16 @@ def _user_route(username_var: str, server: bool) -> str:
 def _user_labels(
     service_name: str,
     username_var: str,
-    secure: bool,
-    server: bool,
+    scenario: Scenario,
 ) -> list[str]:
-    labels = [TRAEFIK_ENABLE_LABEL, router_entrypoint(service_name, secure)]
+    labels = [TRAEFIK_ENABLE_LABEL, router_entrypoint(service_name, scenario.secure)]
     labels.append(
-        f"traefik.http.routers.{service_name}.rule={_user_route(username_var, server)}"
+        f"traefik.http.routers.{service_name}.rule="
+        f"{_user_route(username_var, scenario.server)}"
     )
-    if secure:
+    if scenario.secure:
         labels.append(f"traefik.http.routers.{service_name}.tls=true")
-    if server:
+    if scenario.server:
         labels.append(
             f"traefik.http.routers.{service_name}.middlewares=traefik-forward-auth"
         )
@@ -139,8 +139,7 @@ def _user_labels(
 def user_lines(
     service_name: str,
     username_var: str,
-    secure: bool,
-    server: bool,
+    scenario: Scenario,
     images: Images,
 ) -> list[str]:
     return [
@@ -157,7 +156,7 @@ def user_lines(
         '  mem_limit: "4G"',
         "  pids_limit: 4960",
         SERVICE_LABELS,
-        *quoted_items(_user_labels(service_name, username_var, secure, server)),
+        *quoted_items(_user_labels(service_name, username_var, scenario)),
         SERVICE_NETWORKS,
         NETWORK_USERS,
     ]
