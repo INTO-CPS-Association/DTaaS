@@ -32,12 +32,17 @@ jobs:
 
       - name: Build DTaaS docker packages
         working-directory: deploy/dtaas
-        run: python scripts/build-packages.py --clean --build
+        run: python scripts/build-packages/build-packages.py --clean --build
 
       - name: Create release archives
         run: |
           set -euxo pipefail
           mkdir -p release-artifacts
+          rm -rf deploy/workspace/dex/localhost/.ruff_cache
+          rm -f \
+            deploy/workspace/dex/localhost/DEVELOPER.md \
+            deploy/workspace/dex/localhost/pyproject.toml \
+            deploy/workspace/dex/localhost/.gitignore
           tar -czf release-artifacts/dtaas-docker-packages.tar.gz \
             -C deploy/dtaas docker
           tar -czf release-artifacts/workspace-dex-localhost.tar.gz \

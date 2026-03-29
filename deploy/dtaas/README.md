@@ -6,7 +6,8 @@ packages for four DTaaS deployment scenarios.
 ## Layout
 
 - `src/common/` is the source of truth copied into generated packages.
-- `scripts/build-packages.py` generates package directories.
+- `scripts/build-packages/build-packages.py` generates package directories.
+- `scripts/build-packages/dtaas.toml` pins docker image names and versions.
 - `docker/` contains generated self-contained installation packages:
   - `localhost` (single-user, HTTP)
   - `secure-localhost` (single-user, HTTPS)
@@ -17,19 +18,19 @@ packages for four DTaaS deployment scenarios.
 
 ```bash
 cd deploy/dtaas
-python scripts/build-packages.py --build
+python scripts/build-packages/build-packages.py --build
 ```
 
 Clean generated package folders only:
 
 ```bash
-python scripts/build-packages.py --clean
+python scripts/build-packages/build-packages.py --clean
 ```
 
 Clean and rebuild:
 
 ```bash
-python scripts/build-packages.py --clean --build
+python scripts/build-packages/build-packages.py --clean --build
 ```
 
 Running without flags defaults to `--build`.

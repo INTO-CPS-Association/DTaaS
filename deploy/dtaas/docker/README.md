@@ -18,11 +18,11 @@ Regenerate packages:
 
 ```bash
 cd deploy/dtaas
-python scripts/build-packages.py --build
+python scripts/build-packages/build-packages.py --build
 ```
 
 Remove generated package folders:
 
 ```bash
-python scripts/build-packages.py --clean
+python scripts/build-packages/build-packages.py --clean
 ```

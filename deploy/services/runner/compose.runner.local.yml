@@ -9,7 +9,7 @@ services:
       - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       # Maps the self-signed certificate for localhost to the container
-      - "${DTAAS_DIR}/deploy/dtaas/docker/secure-localhost/certs/localhost/fullchain.pem:
+      - "./../../dtaas/docker/secure-localhost/certs/fullchain.pem:
         /etc/gitlab-runner/certs/localhost.crt:ro"
 
     # To make https://localhost accessible from the container
