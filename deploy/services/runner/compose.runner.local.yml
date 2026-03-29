@@ -1,4 +1,4 @@
-# Environment variables taken from deploy/dtaas/docker/secure-localhost/.env.example
+# Environment variables from deploy/dtaas/docker/secure-localhost/.env.example
 
 services:
   gitlab-runner:
@@ -9,7 +9,8 @@ services:
       - "./runner-config.toml:/etc/gitlab-runner/config.toml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       # Maps the self-signed certificate for localhost to the container
-      - "${DTAAS_DIR}/deploy/dtaas/docker/secure-localhost/certs/localhost/fullchain.pem:/etc/gitlab-runner/certs/localhost.crt:ro"
+      - "${DTAAS_DIR}/deploy/dtaas/docker/secure-localhost/certs/localhost/fullchain.pem:
+        /etc/gitlab-runner/certs/localhost.crt:ro"
 
     # To make https://localhost accessible from the container
     network_mode: host
