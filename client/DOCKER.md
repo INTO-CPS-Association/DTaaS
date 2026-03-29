@@ -6,7 +6,8 @@ It delivers a React single-page web application for DTaaS.
 ## Authorization
 
 The React client website uses OAuth authorization.
-The [authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
+The
+[authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
 provides details on setting up OAuth authorization for the client application.
 
 ## Use in Docker Environment
@@ -29,7 +30,8 @@ services:
 ### Create Configuration
 
 The client application requires configuration.
-See the [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+See the
+[config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
 for an explanation of client configuration.
 
 The Docker-based client application uses configuration saved in a `config.js` file.
@@ -88,3 +90,4 @@ The error is expected.
 
 To run the complete DTaaS application, see the localhost installation documentation:
 [docs](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).
+

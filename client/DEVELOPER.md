@@ -62,9 +62,13 @@ yarn test:all   #run all tests including preview tests
 ## Authorization
 
 The React client website uses OAuth authorization.
-The [authorization page](../docs/admin/client/auth.md) provides details for configuring OAuth authorization for the client application.
+The
+[authorization page](../docs/admin/client/auth.md) provides details for configuring
+OAuth authorization for the client application.
 
-A [user-owned OAuth application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application) is sufficient and can be created in a GitLab account.
+A
+[user-owned OAuth application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
+is sufficient and can be created in a GitLab account.
 Ensure that the OAuth application's redirect (callback) URL is registered correctly.
 
 A test OAuth application is registered on <https://gitlab.com>.
@@ -81,7 +85,8 @@ See the [config page](../docs/admin/client/config.md) for an explanation of clie
 
 ### Multiple configurations
 
-To switch between multiple environments, use the `yarn config` sub-command to copy a configuration file from `client/config/` to the `build` directory.
+To switch between multiple environments, use the `yarn config` sub-command to copy
+a configuration file from `client/config/` to the `build` directory.
 
 1. Save the file as `client/config/<config-name>.js`.
 1. Run the config command to copy the file to the `public` directory
@@ -223,3 +228,4 @@ yarn test:preview:int
 yarn test:preview:unit
 yarn test:coverage:int-unit
 ```
+

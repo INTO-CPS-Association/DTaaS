@@ -62,9 +62,8 @@ function ReconfigureDialog({
 
   const handleConfirmSave = async () => {
     if (digitalTwinData) {
-      const { saveChanges } = await import(
-        'route/digitaltwins/manage/reconfigureDialogHandlers'
-      );
+      const { saveChanges } =
+        await import('route/digitaltwins/manage/reconfigureDialogHandlers');
       const digitalTwinInstance = await createDigitalTwinFromData(
         digitalTwinData,
         name,
