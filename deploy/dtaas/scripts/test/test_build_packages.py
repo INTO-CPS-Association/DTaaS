@@ -56,15 +56,21 @@ def seed_source_tree(tmp_path: Path) -> Path:
     )
 
     (src / "config" / "forward-auth").mkdir(parents=True, exist_ok=True)
-    (src / "config" / "forward-auth" / "conf.server").write_text("rule", encoding="utf-8")
+    (src / "config" / "forward-auth" / "conf.server").write_text(
+        "rule", encoding="utf-8"
+    )
     (src / "config" / "forward-auth" / "resolv.conf").write_text(
         "nameserver 8.8.8.8",
         encoding="utf-8",
     )
 
     (src / "config" / "traefik").mkdir(parents=True, exist_ok=True)
-    (src / "config" / "traefik" / "tls.local.yml").write_text("tls-local", encoding="utf-8")
-    (src / "config" / "traefik" / "tls.server.yml").write_text("tls-server", encoding="utf-8")
+    (src / "config" / "traefik" / "tls.local.yml").write_text(
+        "tls-local", encoding="utf-8"
+    )
+    (src / "config" / "traefik" / "tls.server.yml").write_text(
+        "tls-server", encoding="utf-8"
+    )
     (src / "config" / "libms.yaml").write_text("port: '4001'", encoding="utf-8")
 
     (src / "assets").mkdir(parents=True, exist_ok=True)
@@ -120,12 +126,7 @@ def test_generated_localhost_compose_uses_workspace_image(tmp_path):
     module.build_packages(root=tmp_path)
 
     compose_text = (
-        tmp_path
-        / "deploy"
-        / "dtaas"
-        / "docker"
-        / "localhost"
-        / "docker-compose.yml"
+        tmp_path / "deploy" / "dtaas" / "docker" / "localhost" / "docker-compose.yml"
     ).read_text(encoding="utf-8")
 
     assert "image: intocps/workspace:main-967bc10" in compose_text
@@ -166,7 +167,12 @@ def test_localhost_has_no_forward_auth(tmp_path):
         tmp_path / "deploy" / "dtaas" / "docker" / "localhost" / "docker-compose.yml"
     ).read_text(encoding="utf-8")
     secure_localhost_compose = (
-        tmp_path / "deploy" / "dtaas" / "docker" / "secure-localhost" / "docker-compose.yml"
+        tmp_path
+        / "deploy"
+        / "dtaas"
+        / "docker"
+        / "secure-localhost"
+        / "docker-compose.yml"
     ).read_text(encoding="utf-8")
 
     assert "traefik-forward-auth:" not in localhost_compose
@@ -186,8 +192,12 @@ def test_build_copies_env_and_license_from_source(tmp_path):
     secure_localhost = tmp_path / "deploy" / "dtaas" / "docker" / "secure-localhost"
     secure_server = tmp_path / "deploy" / "dtaas" / "docker" / "secure-server"
 
-    assert (localhost / ".env.example").read_text(encoding="utf-8").strip() == "LOCAL_ENV=true"
-    assert (server / ".env.example").read_text(encoding="utf-8").strip() == "SERVER_ENV=true"
+    assert (localhost / ".env.example").read_text(
+        encoding="utf-8"
+    ).strip() == "LOCAL_ENV=true"
+    assert (server / ".env.example").read_text(
+        encoding="utf-8"
+    ).strip() == "SERVER_ENV=true"
     assert (localhost / "LICENSE.md").read_text(encoding="utf-8").strip() == "license"
     assert (server / "LICENSE.md").read_text(encoding="utf-8").strip() == "license"
     assert (localhost / "config" / "client" / "env.local.js").exists()

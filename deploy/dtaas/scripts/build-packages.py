@@ -11,10 +11,20 @@ from textwrap import dedent
 from typing import Iterable
 
 TRAEFIK_IMAGE = "traefik:v2.10"
-FORWARD_AUTH_IMAGE = "thomseddon/traefik-forward-auth:latest"
+FORWARD_AUTH_IMAGE = "thomseddon/traefik-forward-auth:2.2.0"
 CLIENT_IMAGE = "intocps/dtaas-web:1.0.1"
 LIBMS_IMAGE = "intocps/libms:0.5.9"
 WORKSPACE_IMAGE = "intocps/workspace:main-967bc10"
+
+RESTART_UNLESS_STOPPED = "  restart: unless-stopped"
+SERVICE_VOLUMES = "  volumes:"
+SERVICE_LABELS = "  labels:"
+SERVICE_NETWORKS = "  networks:"
+NETWORK_FRONTEND = "    - frontend"
+NETWORK_USERS = "    - users"
+TRAEFIK_ENABLE_LABEL = "traefik.enable=true"
+CLIENT_ENTRYPOINT_WEB_LABEL = "traefik.http.routers.client.entryPoints=web"
+BASH_BLOCK = "```bash"
 
 
 @dataclass(frozen=True)
@@ -62,7 +72,9 @@ SCENARIOS: tuple[Scenario, ...] = (
 
 def parse_args() -> argparse.Namespace:
     """Parse CLI arguments."""
-    parser = argparse.ArgumentParser(description="Generate deploy/dtaas/docker packages")
+    parser = argparse.ArgumentParser(
+        description="Generate deploy/dtaas/docker packages"
+    )
     parser.add_argument(
         "--root",
         type=Path,
@@ -141,10 +153,9 @@ def traefik_lines(secure: bool) -> list[str]:
     lines = [
         "traefik:",
         f"  image: {TRAEFIK_IMAGE}",
-        "  restart: unless-stopped",
+        RESTART_UNLESS_STOPPED,
         "  command:",
-        '    - "--log.level=DEBUG"',
-        '    - "--api.insecure=true"',
+        '    - "--log.level=INFO"',
         '    - "--providers.docker=true"',
         '    - "--entryPoints.web.address=:80"',
     ]
@@ -156,10 +167,7 @@ def traefik_lines(secure: bool) -> list[str]:
                     '    - "--entrypoints.web.http.redirections.entryPoint.'
                     'to=web-secure"'
                 ),
-                (
-                    '    - "--entrypoints.web.http.redirections.entryPoint.'
-                    'scheme=https"'
-                ),
+                ('    - "--entrypoints.web.http.redirections.entryPoint.scheme=https"'),
                 (
                     '    - "--entrypoints.web.http.redirections.entrypoint.'
                     'permanent=true"'
@@ -169,7 +177,7 @@ def traefik_lines(secure: bool) -> list[str]:
                 "  ports:",
                 '    - "80:80"',
                 '    - "443:443"',
-                "  volumes:",
+                SERVICE_VOLUMES,
                 '    - "/var/run/docker.sock:/var/run/docker.sock:ro"',
                 '    - "./config/traefik/tls.yml:/etc/traefik/config/tls.yml"',
                 '    - "./certs:/etc/traefik-certs"',
@@ -182,31 +190,31 @@ def traefik_lines(secure: bool) -> list[str]:
                 '    - "--entrypoints.web.proxyProtocol.insecure=true"',
                 "  ports:",
                 '    - "80:80"',
-                "  volumes:",
+                SERVICE_VOLUMES,
                 "    - /var/run/docker.sock:/var/run/docker.sock",
             ]
         )
-    lines.extend(["  networks:", "    - frontend", "    - users"])
+    lines.extend([SERVICE_NETWORKS, NETWORK_FRONTEND, NETWORK_USERS])
     return lines
 
 
 def client_lines(secure: bool, server: bool) -> list[str]:
     """Client service lines."""
-    labels = ["traefik.enable=true"]
+    labels = [TRAEFIK_ENABLE_LABEL]
     if server:
         labels.extend(
             [
-                "traefik.http.routers.client.entryPoints=web",
+                CLIENT_ENTRYPOINT_WEB_LABEL,
                 "traefik.http.routers.client.middlewares=traefik-forward-auth",
             ]
         )
         rule = "Host(`${SERVER_DNS}`)&&PathPrefix(`/`)"
     else:
-        labels.append("traefik.http.routers.client.entryPoints=web")
+        labels.append(CLIENT_ENTRYPOINT_WEB_LABEL)
         rule = "PathPrefix(`/`)"
 
     if secure:
-        labels = [x for x in labels if x != "traefik.http.routers.client.entryPoints=web"]
+        labels = [x for x in labels if x != CLIENT_ENTRYPOINT_WEB_LABEL]
         labels.append("traefik.http.routers.client.tls=true")
 
     labels.extend(
@@ -220,13 +228,13 @@ def client_lines(secure: bool, server: bool) -> list[str]:
     return [
         "client:",
         f"  image: {CLIENT_IMAGE}",
-        "  restart: unless-stopped",
-        "  volumes:",
+        RESTART_UNLESS_STOPPED,
+        SERVICE_VOLUMES,
         f"    - ./config/client/{env_file}:/dtaas/client/build/env.js",
-        "  labels:",
+        SERVICE_LABELS,
         *quoted_items(labels),
-        "  networks:",
-        "    - frontend",
+        SERVICE_NETWORKS,
+        NETWORK_FRONTEND,
     ]
 
 
@@ -238,7 +246,7 @@ def user_lines(
     server: bool,
 ) -> list[str]:
     """Workspace service lines."""
-    labels = ["traefik.enable=true"]
+    labels = [TRAEFIK_ENABLE_LABEL]
     if server:
         labels.extend(
             [
@@ -260,15 +268,17 @@ def user_lines(
 
     if secure:
         labels = [
-            x for x in labels if x != f"traefik.http.routers.{service_name}.entryPoints=web"
+            x
+            for x in labels
+            if x != f"traefik.http.routers.{service_name}.entryPoints=web"
         ]
         labels.append(f"traefik.http.routers.{service_name}.tls=true")
 
     return [
         f"{service_name}:",
         f"  image: {WORKSPACE_IMAGE}",
-        "  restart: unless-stopped",
-        "  volumes:",
+        RESTART_UNLESS_STOPPED,
+        SERVICE_VOLUMES,
         "    - ./files/common:/workspace/common",
         f"    - ./files/${{{username_var}}}:/workspace",
         "  environment:",
@@ -277,17 +287,17 @@ def user_lines(
         "  cpus: 4",
         '  mem_limit: "4G"',
         "  pids_limit: 4960",
-        "  labels:",
+        SERVICE_LABELS,
         *quoted_items(labels),
-        "  networks:",
-        "    - users",
+        SERVICE_NETWORKS,
+        NETWORK_USERS,
     ]
 
 
 def libms_lines(secure: bool) -> list[str]:
     """Libms service lines."""
     labels = [
-        "traefik.enable=true",
+        TRAEFIK_ENABLE_LABEL,
         "traefik.http.services.libms.loadbalancer.server.port=4001",
         "traefik.http.routers.libms.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/lib`)",
     ]
@@ -300,13 +310,13 @@ def libms_lines(secure: bool) -> list[str]:
     return [
         "libms:",
         f"  image: {LIBMS_IMAGE}",
-        "  restart: unless-stopped",
-        "  volumes:",
+        RESTART_UNLESS_STOPPED,
+        SERVICE_VOLUMES,
         "    - ./files:/dtaas/libms/files",
-        "  labels:",
+        SERVICE_LABELS,
         *quoted_items(labels),
-        "  networks:",
-        "    - frontend",
+        SERVICE_NETWORKS,
+        NETWORK_FRONTEND,
     ]
 
 
@@ -315,7 +325,7 @@ def forward_auth_lines(secure: bool) -> list[str]:
     entry = "web-secure" if secure else "web"
     volumes = ["./config/forward-auth/conf.server:/conf"]
     env = [
-        "LOG_LEVEL=trace",
+        "LOG_LEVEL=info",
         "DEFAULT_PROVIDER=generic-oauth",
         "PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize",
         "PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_URL}/oauth/token",
@@ -334,13 +344,13 @@ def forward_auth_lines(secure: bool) -> list[str]:
     return [
         "traefik-forward-auth:",
         f"  image: {FORWARD_AUTH_IMAGE}",
-        "  restart: unless-stopped",
-        "  volumes:",
+        RESTART_UNLESS_STOPPED,
+        SERVICE_VOLUMES,
         *plain_items(volumes),
         "  environment:",
         *plain_items(env),
-        "  labels:",
-        '    - "traefik.enable=true"',
+        SERVICE_LABELS,
+        f'    - "{TRAEFIK_ENABLE_LABEL}"',
         f'    - "traefik.http.routers.redirect.entryPoints={entry}"',
         (
             '    - "traefik.http.routers.redirect.rule='
@@ -359,9 +369,9 @@ def forward_auth_lines(secure: bool) -> list[str]:
             '    - "traefik.http.services.traefik-forward-auth.loadbalancer.'
             'server.port=4181"'
         ),
-        "  networks:",
-        "    - frontend",
-        "    - users",
+        SERVICE_NETWORKS,
+        NETWORK_FRONTEND,
+        NETWORK_USERS,
     ]
 
 
@@ -487,25 +497,25 @@ def localhost_readme(secure: bool) -> str:
             "",
             "If you change `username1`, copy the workspace template:",
             "",
-            "```bash",
+            BASH_BLOCK,
             "cp -R files/user1 files/<your-username>",
             "```",
             "",
             "## Run",
             "",
-            "```bash",
+            BASH_BLOCK,
             "docker compose up -d",
             "```",
             "",
             "## Stop",
             "",
-            "```bash",
+            BASH_BLOCK,
             "docker compose down",
             "```",
             "",
             "## Use",
             "",
-            f"Open `{'https://localhost' if secure else 'http://localhost'}` in your browser.",
+            f"Open `localhost` in your browser over {'HTTPS' if secure else 'HTTP'}.",
             "",
             "## Notes",
             "",
@@ -543,7 +553,16 @@ def server_readme(secure: bool) -> str:
     if secure:
         lines.append("- TLS certificates for your DNS name")
 
-    lines.extend(["", "## Configuration", "", "1. Copy `.env.example` to `.env`.", "2. Update `.env` values:", ""])
+    lines.extend(
+        [
+            "",
+            "## Configuration",
+            "",
+            "1. Copy `.env.example` to `.env`.",
+            "2. Update `.env` values:",
+            "",
+        ]
+    )
     lines.extend(env_table(server=True).splitlines())
     lines.extend(
         [
@@ -583,25 +602,28 @@ def server_readme(secure: bool) -> str:
             "",
             "Add one folder per configured username:",
             "",
-            "```bash",
+            BASH_BLOCK,
             "cp -R files/user1 files/<username>",
             "```",
             "",
             "## Run",
             "",
-            "```bash",
+            BASH_BLOCK,
             "docker compose up -d",
             "```",
             "",
             "## Stop",
             "",
-            "```bash",
+            BASH_BLOCK,
             "docker compose down",
             "```",
             "",
             "## Use",
             "",
-            f"Open `{'https://<server-dns>' if secure else 'http://<server-dns>'}` in your browser.",
+            (
+                "Open `<server-dns>` in your browser over "
+                f"{'HTTPS' if secure else 'HTTP'}."
+            ),
         ]
     )
     return "\n".join(lines)
@@ -623,7 +645,9 @@ def copy_common(src: Path, dst: Path, scenario: Scenario) -> None:
     ensure_dir(dst / "config" / "client")
     ensure_dir(dst / "config" / "forward-auth")
     client_file = "env.server.js" if scenario.server else "env.local.js"
-    copy_file(src / "config" / "client" / client_file, dst / "config" / "client" / client_file)
+    copy_file(
+        src / "config" / "client" / client_file, dst / "config" / "client" / client_file
+    )
 
     if scenario.server:
         copy_file(
@@ -639,12 +663,19 @@ def copy_common(src: Path, dst: Path, scenario: Scenario) -> None:
 
     if scenario.secure:
         tls_src = "tls.server.yml" if scenario.server else "tls.local.yml"
-        copy_file(src / "config" / "traefik" / tls_src, dst / "config" / "traefik" / "tls.yml")
+        copy_file(
+            src / "config" / "traefik" / tls_src, dst / "config" / "traefik" / "tls.yml"
+        )
         ensure_dir(dst / "certs" / "localhost")
         write_text(dst / "certs" / ".gitkeep", "")
         write_text(dst / "certs" / "localhost" / ".gitkeep", "")
 
-    for asset in ("localhost.png", "localhost-https.png", "server.png", "traefik-forward-auth.png"):
+    for asset in (
+        "localhost.png",
+        "localhost-https.png",
+        "server.png",
+        "traefik-forward-auth.png",
+    ):
         source = src / "assets" / asset
         if source.exists():
             copy_file(source, dst / asset)
