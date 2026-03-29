@@ -1,6 +1,6 @@
 [images]
 traefik = "traefik:v3.6.4"
-forward_auth = "thomseddon/traefik-forward-auth:2.2.0"
+forward_auth = "thomseddon/traefik-forward-auth:latest"
 client = "intocps/dtaas-web:1.0.2"
 libms = "intocps/libms:0.5.9"
 workspace = "intocps/workspace:main-967bc10"
