@@ -2,38 +2,38 @@
 
 --- Start of Definition of INTO-CPS Association Public License ---
 
-/*
+/\*
 
-* This file is part of the INTO-CPS Association.
+- This file is part of the INTO-CPS Association.
 
-* Copyright (c) 2017-CurrentYear, INTO-CPS Association (ICA),
-* c/o Peter Gorm Larsen, Aarhus University, Department of Engineering,
-* Finlandsgade 22, 8200 Aarhus N, Denmark.
+- Copyright (c) 2017-CurrentYear, INTO-CPS Association (ICA),
+- c/o Peter Gorm Larsen, Aarhus University, Department of Engineering,
+- Finlandsgade 22, 8200 Aarhus N, Denmark.
 
-* All rights reserved.
+- All rights reserved.
 
-* THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
-* THIS INTO-CPS ASSOCIATION PUBLIC LICENSE (ICAPL) VERSION 1.0.
-* ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
-* RECIPIENT'S ACCEPTANCE OF THE INTO-CPS ASSOCIATION PUBLIC LICENSE OR
-* THE GPL VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+- THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+- THIS INTO-CPS ASSOCIATION PUBLIC LICENSE (ICAPL) VERSION 1.0.
+- ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+- RECIPIENT'S ACCEPTANCE OF THE INTO-CPS ASSOCIATION PUBLIC LICENSE OR
+- THE GPL VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
 
-* The INTO-CPS tool suite software and the INTO-CPS Association
-* Public License (ICAPL) are obtained from the INTO-CPS Association, either
-* from the above address, from the URLs: <http://www.into-cps.org> or
-* in the INTO-CPS tool suite distribution.
-* GNU version 3 is obtained from:
-* <http://www.gnu.org/copyleft/gpl.html>.
+- The INTO-CPS tool suite software and the INTO-CPS Association
+- Public License (ICAPL) are obtained from the INTO-CPS Association, either
+- from the above address, from the URLs: <http://www.into-cps.org> or
+- in the INTO-CPS tool suite distribution.
+- GNU version 3 is obtained from:
+- <http://www.gnu.org/copyleft/gpl.html>.
 
-* This program is distributed WITHOUT ANY WARRANTY; without
-* even the implied warranty of  MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
-* IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
-* THE INTO-CPS ASSOCIATION PUBLIC LICENSE.
+- This program is distributed WITHOUT ANY WARRANTY; without
+- even the implied warranty of MERCHANTABILITY or FITNESS
+- FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
+- IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+- THE INTO-CPS ASSOCIATION PUBLIC LICENSE.
 
-* See the full ICAPL conditions for more details.
+- See the full ICAPL conditions for more details.
 
- */
+  \*/
 
 --- End of INTO-CPS Association Public License Header ---
 
@@ -42,20 +42,20 @@ suite with three modes/alternatives
 (GPL, ICA-Internal-EPL, ICA-External-EPL) for use and redistribution,
 in source and/or binary/object-code form:
 
-* GPL. Any party (member or non-member of the INTO-CPS Association) may use and
+- GPL. Any party (member or non-member of the INTO-CPS Association) may use and
   redistribute INTO-CPS tool suite under GPL version 3.
 
-* Silver Level members of the INTO-CPS Association may also use and redistribute
+- Silver Level members of the INTO-CPS Association may also use and redistribute
   the INTO-CPS tool suite under ICA-Internal-EPL conditions.
 
-* Gold Level members of the INTO-CPS Association may also use and redistribute
+- Gold Level members of the INTO-CPS Association may also use and redistribute
   The INTO-CPS tool suite under ICA-Internal-EPL or ICA-External-EPL conditions.
 
 Definitions of the INTO-CPS Association Public license modes:
 
-* GPL = GPL version 3.
+- GPL = GPL version 3.
 
-* ICA-Internal-EPL = These INTO-CPS Association Public
+- ICA-Internal-EPL = These INTO-CPS Association Public
   license conditions together with
   Internally restricted EPL, i.e., EPL version 1.0 with the Additional Condition
   that use and redistribution by a member of the INTO-CPS Association is only allowed
@@ -66,7 +66,7 @@ Definitions of the INTO-CPS Association Public license modes:
   the size of the organization including all its affiliates, use and redistribution
   is allowed within/between its affiliates.
 
-* ICA-External-EPL = These INTO-CPS Association Public
+- ICA-External-EPL = These INTO-CPS Association Public
   license conditions together with
   Externally restricted EPL, i.e., EPL version 1.0 with the Additional Condition
   that use and redistribution by a member of the INTO-CPS Association, or by a Licensed
@@ -86,26 +86,26 @@ In all cases of usage and redistribution by recipients, the following
 conditions also apply:
 
 a) Redistributions of source code must retain the above copyright notice,
- all definitions, and conditions. It is sufficient if the ICAPL Header is
- present in each source file, if the full ICAPL is available in a prominent
- and easily located place in the redistribution.
+all definitions, and conditions. It is sufficient if the ICAPL Header is
+present in each source file, if the full ICAPL is available in a prominent
+and easily located place in the redistribution.
 
 b) Redistributions in binary/object-code form must reproduce the above
- copyright notice, all definitions, and conditions. It is sufficient if the
- ICAPL Header and the location in the redistribution of the full ICAPL
- are present in the documentation and/or other materials provided with the
- redistribution, if the full ICAPL is available in a prominent and easily
- located place in the redistribution.
+copyright notice, all definitions, and conditions. It is sufficient if the
+ICAPL Header and the location in the redistribution of the full ICAPL
+are present in the documentation and/or other materials provided with the
+redistribution, if the full ICAPL is available in a prominent and easily
+located place in the redistribution.
 
 c) A recipient must clearly indicate its chosen usage mode of ICAPL,
- in accompanying documentation and in a text file ICA-USAGE-MODE.txt,
- provided with the distribution.
+in accompanying documentation and in a text file ICA-USAGE-MODE.txt,
+provided with the distribution.
 
 d) Contributor(s) making a Contribution to the
- INTO-CPS Association thereby also makes a
- Transfer of Contribution Copyright. In return, upon the effective date of
- the transfer, ICA grants the Contributor(s) a Contribution License of the
- Contribution. ICA has the right to accept or refuse Contributions.
+INTO-CPS Association thereby also makes a
+Transfer of Contribution Copyright. In return, upon the effective date of
+the transfer, ICA grants the Contributor(s) a Contribution License of the
+Contribution. ICA has the right to accept or refuse Contributions.
 
 Definitions:
 
@@ -133,12 +133,12 @@ of INTO-CPS Association Public License ---" and
 "Contribution" means:
 
 a) in the case of the initial Contributor,
- the initial code and documentation
- distributed under ICAPL, and
+the initial code and documentation
+distributed under ICAPL, and
 
 b) in the case of each subsequent Contributor:
-   i) changes to the INTO-CPS tool suite, and
-  ii) additions to the INTO-CPS tool suite;
+i) changes to the INTO-CPS tool suite, and
+ii) additions to the INTO-CPS tool suite;
 
 where such changes and/or additions
 to the INTO-CPS tool suite originate from and are
@@ -257,28 +257,28 @@ conditions and the proprietary code is distributed under proprietary license
 conditions; and
 
 b) its license agreement:
-   i) effectively disclaims on behalf of all Contributors all warranties and
+i) effectively disclaims on behalf of all Contributors all warranties and
 conditions, express and implied, including warranties or conditions of title
 and non-infringement, and implied warranties or conditions of merchantability
 and fitness for a particular purpose;
-  ii) effectively excludes on behalf of all Contributors all liability for
+ii) effectively excludes on behalf of all Contributors all liability for
 damages, including direct, indirect, special, incidental and consequential
 damages, such as lost profits;
- iii) states that any provisions which differ
- from ICAPL are offered by that
+iii) states that any provisions which differ
+from ICAPL are offered by that
 Contributor alone and not by any other party; and
-  iv) states from where the source code
-  for the INTO-CPS tool suite is available, and
+iv) states from where the source code
+for the INTO-CPS tool suite is available, and
 informs licensees how to obtain it in a reasonable manner on or through a
 medium customarily used for software exchange.
 
 When the INTO-CPS tool suite is made available in source code form:
 
- a) it must be made available under ICAPL; and
+a) it must be made available under ICAPL; and
 
- b) a copy of ICAPL must be included with each copy of the INTO-CPS tool suite.
+b) a copy of ICAPL must be included with each copy of the INTO-CPS tool suite.
 
- c) a copy of the subsidiary license associated with the selected mode of
+c) a copy of the subsidiary license associated with the selected mode of
 ICAPL must be included with each copy of the INTO-CPS tool suite.
 
 Contributors may not remove or alter any copyright notices contained within

@@ -10,11 +10,6 @@ This page describes the various configuration options for the React website.
       REACT_APP_URL_BASENAME: "Base URL for the client website"(optional, can be null),
       REACT_APP_URL_DTLINK: "Endpoint for the Digital Twin",
       REACT_APP_URL_LIBLINK: "Endpoint for the Library Assets",
-      REACT_APP_WORKBENCHLINK_VNCDESKTOP: "Endpoint for the VNC Desktop link",
-      REACT_APP_WORKBENCHLINK_VSCODE: "Endpoint for the VS Code link",
-      REACT_APP_WORKBENCHLINK_JUPYTERLAB: "Endpoint for the Jupyter Lab link",
-      REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK:
-        "Endpoint for the Jupyter Notebook link",
       REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: 'Endpoint for the Library page preview',
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: "Endpoint for the Digital Twins page preview",
       REACT_APP_CLIENT_ID: 'AppID genereated by the gitlab OAuth 2.0 provider',
@@ -33,10 +28,6 @@ This page describes the various configuration options for the React website.
       REACT_APP_URL_BASENAME: '',
       REACT_APP_URL_DTLINK: '/lab',
       REACT_APP_URL_LIBLINK: '',
-      REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-      REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-      REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-      REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
       REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
@@ -58,10 +49,6 @@ This page describes the various configuration options for the React website.
       REACT_APP_URL_BASENAME: 'bar',
       REACT_APP_URL_DTLINK: '/lab',
       REACT_APP_URL_LIBLINK: '',
-      REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-      REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-      REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-      REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
       REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
       REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 

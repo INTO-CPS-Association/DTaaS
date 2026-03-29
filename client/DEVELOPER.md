@@ -1,11 +1,10 @@
 # Introduction
 
-This is the developer documentation for React single page web application.
+This document provides developer guidance for the React single-page web application.
 
 ## Setup the Environment and Build
 
-The following steps are required to setup the environment and develop
-the application.
+The following steps are required to configure the environment and build the application.
 
 ### Prerequisites
 
@@ -44,8 +43,7 @@ yarn clean       #clean the directory of temporary files but keep node_modules
 yarn clean:all   #clean the directory of temporary files
 ```
 
-It is also possible to run different types of tests using the yarn
-test commands:
+Different test suites can be executed with the following `yarn` commands:
 
 ```bash
 #Tests require installation of devDependencies
@@ -63,37 +61,27 @@ yarn test:all   #run all tests including preview tests
 
 ## Authorization
 
-The react client website uses OAuth authorization.
-The [authorization page](../docs/admin/client/auth.md)
-provides details on setting up oauth authorization for
-the client application.
+The React client website uses OAuth authorization.
+The [authorization page](../docs/admin/client/auth.md) provides details for configuring OAuth authorization for the client application.
 
-It is sufficient to have
-[user-owned oauth](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
-application. You can create this application in your gitlab account.
-Do remember that the oauth application on gitlab needs to have the redirect
-(callback) URL is correctly registered.
+A [user-owned OAuth application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application) is sufficient and can be created in a GitLab account.
+Ensure that the OAuth application's redirect (callback) URL is registered correctly.
 
-A test OAuth application has been registered on <https://gitlab.com>.
-The application is available with client ID:
+A test OAuth application is registered on <https://gitlab.com>.
+The application uses client ID:
 `1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c`.
 It can be used for development purposes.
-Please note that you need an account on <https://gitlab.com> in
-order to use this OAuth application.
+A <https://gitlab.com> account is required to use this OAuth application.
 
 ## Custom configuration
 
-It is required to have a `env.js` in the root directory of
-`build` during runtime. This file is used to configure the
-endpoints of the application.
-See the [config page](../docs/admin/client/config.md)
-for an explanation of client configuration.
+An `env.js` file is required in the root directory of `build` during runtime.
+This file configures the application endpoints.
+See the [config page](../docs/admin/client/config.md) for an explanation of client configuration.
 
 ### Multiple configurations
 
-If you want to switch between multiple environments,
-you can use the `yarn config` sub-command to copy a configuration
-file from `client/config/` to the `build` directory.
+To switch between multiple environments, use the `yarn config` sub-command to copy a configuration file from `client/config/` to the `build` directory.
 
 1. Save the file as `client/config/<config-name>.js`.
 1. Run the config command to copy the file to the `public` directory
@@ -103,10 +91,10 @@ file from `client/config/` to the `build` directory.
 yarn config:<config-name>
 ```
 
-> Which ever env.js file is present in the `public` directory during
-> `yarn build`, will be used in the build.
+> Whichever `env.js` file is present in the `public` directory during
+> `yarn build` is used in the build.
 
-It is therefore reccommend to keep the configurations in the
+It is therefore recommended to keep configurations in the
 `client/config/` directory and use one of the `yarn config`
 sub-commands to switch between them.
 
@@ -122,11 +110,9 @@ The purpose of different configuration files are given in the table below.
 
 ## Example configuration for developers
 
-The first step is to collect the URL of gitlab acting as oauth provider.
-Also collect the client application id. With that information,
-a configuration file can be made.
+Collect the GitLab OAuth provider URL and client application ID to create a configuration file.
 
-A suitable configuration file for developers is in `config/test.js`.:
+An example configuration for developers is available in `config/test.js`:
 
 ```js
 if (typeof window !== 'undefined') {
@@ -136,28 +122,25 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
-    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
     REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
     REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
-    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_CLIENT_ID:
+      '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
     REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
   };
-};
+}
 ```
 
-Here the gitlab URL is `https://gitlab.com/` and the client ID is
+In this example, the GitLab URL is `https://gitlab.com/` and the client ID is
 `1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c`.
 
-If a basename is needed for the client application, then the configuration
-file needs to be updated with the basename. For example, with a basename of
-`au`, the `build/env.js` file is given below.
+If a basename is required for the client application, the configuration file
+must be updated accordingly. For example, with a basename of `au`, the
+`build/env.js` file is shown below.
 
 ```js
 if (typeof window !== 'undefined') {
@@ -167,61 +150,57 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_BASENAME: 'au',
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
-    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
     REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
     REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
-    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_CLIENT_ID:
+      '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
     REACT_APP_REDIRECT_URI: 'http://localhost:4000/au/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/au',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
   };
-};
+}
 ```
 
 ### Missing Workspace
 
-The development environment does not have user workspaces and
-traefik gateway running in the background. As a consequence, the iframe
-links pointing to user workspace will not work correctly. Instead, you
-will see the following error.
+The development environment does not include user workspaces or a Traefik
+gateway running in the background. As a result, iframe links pointing to
+user workspaces do not resolve correctly and the following error is displayed.
 
 ```txt
 Unexpected Application Error!
 404 Not Found
 ```
 
-This error can be seen on the **Library** and **Digital Twins** pages.
+This error appears on the **Library** and **Digital Twins** pages.
 This error is expected.
 
 ## Quality Check
 
 A docker compose-based [development environment](../docker/README.md)
-is available to test the DTaaS application on your local machine.
+is available to test the DTaaS application on a local machine.
 
-Please note that it is currently not easy to test for different
-port and basename options in the docker-based development environment.
+Testing different port and basename options is currently difficult in the
+Docker-based development environment.
 
 ## Publish Docker Images
 
-Each new release of client web application is published as a docker
-container image. Please see [publishing](../docker/README.md) page
-for more information publishing docker images.
+Each new release of the client web application is published as a Docker
+container image. See the [publishing](../docker/README.md) page for
+information about publishing Docker images.
 
 ## Gitlab Integration
 
-The client codebase has been using Gitlab for OAuth2 only. There is
-an ongoing effort to integrate Gitlab CI/CD capabilities to automate
-the execution of Digital Twins. This code is in alpha stage and is
+The client codebase currently uses GitLab for OAuth2 only. An ongoing effort
+is integrating GitLab CI/CD capabilities to automate Digital Twin execution.
+This code is in an alpha stage and is
 available in `src/util/gitlab*.ts`.
 
-The gitlab code requires
+The GitLab code requires a
 [GitLab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
-for a gitlab account. Remember to select all scopes for access token.
+for a GitLab account. All scopes should be selected for the access token.
 Specifically, select the following scopes.
 
 ```txt
@@ -230,13 +209,13 @@ api, read_api, read_user, create_runner, k8s_proxy, read_repository, write_repos
 
 The token information needs to be updated in `config/gitlab.json`.
 
-In addition to the personal access token, you also need to create a
-[pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html).
-This token is required to trigger pipelines by using the API.
-You can create this token in your GitLab project's CI/CD settings under
-the _Pipeline trigger tokens_ section.
+In addition to the personal access token, a
+[pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html)
+is required to trigger pipelines using the API.
+This token can be created in a GitLab project's CI/CD settings under the
+_Pipeline trigger tokens_ section.
 
-Once the token configuration is in place, the gitlab integration can be developed
+Once token configuration is in place, the GitLab integration can be developed
 and tested using the following yarn commands.
 
 ```bash

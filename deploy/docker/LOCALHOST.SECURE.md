@@ -120,7 +120,8 @@ Gitlab on localhost and the Gitlab service will be available at <https://localho
 
 ### Register OAuth2 Application
 
-The frontend website requires OAuth2 application registration on the integrated Gitlab.
+The frontend website requires OAuth2 application registration on the
+integrated Gitlab.
 The details of Oauth2 app for the frontend website are in
 [client docs](../../docs/admin/client/auth.md).
 
@@ -145,10 +146,6 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
-    REACT_APP_WORKBENCHLINK_VNCDESKTOP: '/tools/vnc/?password=vncpassword',
-    REACT_APP_WORKBENCHLINK_VSCODE: '/tools/vscode/',
-    REACT_APP_WORKBENCHLINK_JUPYTERLAB: '/lab',
-    REACT_APP_WORKBENCHLINK_JUPYTERNOTEBOOK: '',
     REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
     REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 

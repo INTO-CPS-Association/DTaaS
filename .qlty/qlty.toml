@@ -74,9 +74,6 @@ threshold = 4
 [smells.function_complexity]
 threshold = 5
 
-[smells.duplication]
-threshold = 22
-
 [[source]]
 name = "default"
 default = true

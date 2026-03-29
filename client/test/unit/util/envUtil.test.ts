@@ -67,7 +67,7 @@ describe('envUtil', () => {
     );
   });
 
-  test('GetURL should return the correct enviroment variables', () => {
+  test('GetURL should return the correct environment variables', () => {
     expect(useURLforDT()).toBe(
       `${testAppURL}/${testBasename}/${testUsername}/${testDT}`,
     );
