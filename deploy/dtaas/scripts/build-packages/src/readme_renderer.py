@@ -24,11 +24,11 @@ def _server_env_table() -> str:
         """
         | Variable | Example value | Description |
         | :--- | :--- | :--- |
-        | `SERVER_DNS` | `foo.com` | Public DNS or IP used by Traefik routes. Do not include protocol. |
-        | `OAUTH_URL` | `https://gitlab.foo.com` | OAuth provider base URL (for example a GitLab instance). |
+        | `SERVER_DNS` | `foo.com` | Public DNS or IP used by Traefik routes. |
+        | `OAUTH_URL` | `https://gitlab.foo.com` | OAuth provider base URL. |
         | `OAUTH_CLIENT_ID` | `xx` | Client ID for Traefik forward-auth OAuth app. |
         | `OAUTH_CLIENT_SECRET` | `xx` | Client secret for Traefik forward-auth OAuth app. |
-        | `OAUTH_SECRET` | `random-secret-string` | Private random string used by forward-auth session signing. |
+        | `OAUTH_SECRET` | `random-secret-string` | Private random session signing string. |
         | `username1` | `user1` | First DTaaS user workspace name and URL prefix. |
         | `username2` | `user2` | Second DTaaS user workspace name and URL prefix. |
         """
