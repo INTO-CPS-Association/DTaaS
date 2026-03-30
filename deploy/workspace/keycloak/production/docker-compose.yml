@@ -3,8 +3,7 @@ services:
     image: traefik:v3.6.4
     restart: unless-stopped
     command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
+      - "--log.level=INFO"
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web-secure.address=:443"
@@ -36,14 +35,12 @@ services:
       - "--http-relative-path=/auth"
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD?KEYCLOAK_ADMIN_PASSWORD_not_set}
       - KC_HOSTNAME=${SERVER_DNS:-localhost}
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY_HEADERS=xforwarded
+        # HTTP connection from Traefik (HTTPS is terminated at Traefik)
       - KC_HTTP_ENABLED=true
-      - KC_HTTP_RELATIVE_PATH=/auth
-      - KC_HOSTNAME_URL=https://${SERVER_DNS:-localhost}:8080/auth
-      - KC_HOSTNAME_ADMIN_URL=https://${SERVER_DNS:-localhost}:8080/auth
     volumes:
       - keycloak-data:/opt/keycloak/data
     healthcheck:
@@ -63,7 +60,7 @@ services:
       - users
 
   client:
-    image: intocps/dtaas-web:new-workspace
+    image: intocps/dtaas-web:1.0.2
     restart: unless-stopped
     volumes:
       - "./config/client.js:/dtaas/client/build/env.js"
@@ -78,7 +75,7 @@ services:
       - frontend
 
   user1:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME1:-user1}
@@ -96,7 +93,7 @@ services:
 
 
   user2:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME2:-user2}
@@ -152,3 +149,4 @@ networks:
 volumes:
   keycloak-data:
     driver: local
+

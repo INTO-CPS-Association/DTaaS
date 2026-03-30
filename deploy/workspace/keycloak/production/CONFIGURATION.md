@@ -82,7 +82,7 @@ Change the default values (`user1` and `user2`) to your desired usernames:
 ```bash
 # Username Configuration
 # These usernames will be used as path prefixes for user workspaces
-# Example: https://foo.com/user1, https://foo.com/user2
+# Example: https://intocps.org/user1, https://intocps.org/user2
 USERNAME1=user1
 USERNAME2=user2
 ```

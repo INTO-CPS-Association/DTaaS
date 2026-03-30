@@ -74,10 +74,10 @@ Once all services are running, access the workspaces through Traefik with HTTPS:
 
 ### User Workspace (workspace)
 
-- **VNC Desktop**: `https://foo.com/user1/tools/vnc?path=user1%2Ftools%2Fvnc%2Fwebsockify`
-- **VS Code**: `https://foo.com/user1/tools/vscode`
-- **Jupyter Notebook**: `https://foo.com/user1`
-- **Jupyter Lab**: `https://foo.com/user1/lab`
+- **VNC Desktop**: `https://intocps.org/user1/tools/vnc?path=user1%2Ftools%2Fvnc%2Fwebsockify`
+- **VS Code**: `https://intocps.org/user1/tools/vscode`
+- **Jupyter Notebook**: `https://intocps.org/user1`
+- **Jupyter Lab**: `https://intocps.org/user1/lab`
 
 #### Service Discovery
 
@@ -88,7 +88,7 @@ applications.
 **Example**: Get service list for user1
 
 ```bash
-curl https://foo.com/user1/services
+curl https://intocps.org/user1/services
 ```
 
 **Response**:
@@ -247,7 +247,7 @@ environment:
 
 **Solutions**:
 
-- Verify OAuth2 callback URL matches `https://foo.com/_oauth`
+- Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
 - Ensure `COOKIE_DOMAIN` matches your domain
 - Verify OAuth2 application is approved and active

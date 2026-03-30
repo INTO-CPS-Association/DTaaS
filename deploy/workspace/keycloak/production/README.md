@@ -8,9 +8,13 @@ secure multi-user deployments.
 ## ❓ Prerequisites
 
 ✅ Docker Engine v27 or later
+
 ✅ Sufficient system resources (at least 2GB RAM per workspace instance)
-✅ Port 80 available on your host
+
+✅ Port 80 and 443 are available on your host
+
 ✅ Valid TLS certificates
+
 ✅ Domain name pointing to your server
 
 ## 🗒️ Design
@@ -52,12 +56,12 @@ The following issues in application startup are expected behavior.
 This problem will be resolved during post-installation.
 
 👉 `dtaas-production-traefik-forward-auth-1` will be restarting at this stage.
-👉 Visiting `https://foo.com` shows `HTTP ERROR 500`.
+👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
 [`CONFIGURATION.md`](CONFIGURATION.md).
 
-The application will be accessible at <https://foo.com> from web browser.
+The application will be accessible at <https://intocps.org> from web browser.
 Login using the user credentials set in **keycloak**.
 
 ⏹️ Stop the demo:
@@ -90,7 +94,7 @@ Add a new service in `docker-compose.yml`:
 
 ```yaml
   user3:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME3:-user3}
@@ -145,7 +149,7 @@ rule.user3_access.whitelist = user3@localhost
 
 **Solutions**:
 
-- Verify OAuth2 callback URL matches `https://foo.com/_oauth`
+- Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
 - Ensure `COOKIE_DOMAIN` matches your domain
 - Verify OAuth2 application is approved and active

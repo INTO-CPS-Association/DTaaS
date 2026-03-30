@@ -43,7 +43,7 @@ Keyclak-specific environment variables are:
 | `KEYCLOAK_REALM` | Realm name | `dtaas` |
 | `KEYCLOAK_CLIENT_ID` | OIDC client ID | `dtaas-workspace` |
 | `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
-| `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://foo.com/auth/realms/dtaas` |
+| `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://intocps.org/auth/realms/dtaas` |
 
 Edit Keycloak-configuration in `config/.env`:
 
@@ -66,7 +66,7 @@ The following instructions are part of post-install step.
 
 #### Access Keycloak Admin Console
 
-1. Navigate to `https://foo.com/auth`
+1. Navigate to `https://intocps.org/auth`
 2. Click **Administration Console**
 3. Login with credentials from your `.env` file (default: `admin` / `admin`)
 
@@ -91,7 +91,7 @@ The following instructions are part of post-install step.
    - **Email**: user's email
    - **First name** / **Last name**: required
    - **Email verified**: OFF
-   - **Profile**: `https://foo.com/auth/realms/dtaas/<USERNAME>`
+   - **Profile**: `https://intocps.org/auth/realms/dtaas/<USERNAME>`
      The profile URL is created by adding `/<USERNAME>` to
      the `<REACT_APP_AUTH_AUTHORITY>` URL used in the `client.js`
 4. Click **Create**
@@ -117,12 +117,12 @@ The following instructions are part of post-install step.
    - Authentication flow: enable **Standard flow**
    - Click **Next**
 5. Login settings:
-   - **Root URL**: `https://foo.com`
+   - **Root URL**: `https://intocps.org`
    - **Valid redirect URIs**:
-    - `https://foo.com/_oauth/*`
-    - `https://foo.com/*`
-   - **Valid post logout redirect URIs**: `https://foo.com/*`
-   - **Web origins**: `https://foo.com`
+    - `https://intocps.org/_oauth/*`
+    - `https://intocps.org/*`
+   - **Valid post logout redirect URIs**: `https://intocps.org/*`
+   - **Web origins**: `https://intocps.org`
    - Click **Save**
 6. Get the client secret:
    - Go to the **Credentials** tab
@@ -147,10 +147,10 @@ This requires a **public** client (no client secret) with PKCE enforced.
    - **Authentication flow**: enable **Standard flow** only
    - Click **Next**
 5. Login settings:
-   - **Root URL**: `https://foo.com`
-   - **Valid redirect URIs**: `https://foo.com/*`
-   - **Valid post logout redirect URIs**: `https://foo.com/*`
-   - **Web origins**: `https://foo.com`
+   - **Root URL**: `https://intocps.org`
+   - **Valid redirect URIs**: `https://intocps.org/*`
+   - **Valid post logout redirect URIs**: `https://intocps.org/*`
+   - **Web origins**: `https://intocps.org`
    - Click **Save**
 6. Enforce PKCE:
    - Go to the **Advanced** tab of the client
@@ -174,7 +174,7 @@ docker compose up -d
 
 ### 4. Test Authentication
 
-1. Navigate to `https://foo.com/`
+1. Navigate to `https://intocps.org/`
 2. You should be redirected to Keycloak login
 3. Login with one of the users you created
 4. You should be redirected back to the DTaaS landing page
@@ -185,7 +185,7 @@ To use an external Keycloak instance (recommended for production):
 
 1. Update `KEYCLOAK_ISSUER_URL` in `.env`:
    ```bash
-   KEYCLOAK_ISSUER_URL=https://keycloak.foo.com/auth/realms/dtaas
+   KEYCLOAK_ISSUER_URL=https://keycloak.intocps.org/auth/realms/dtaas
    ```
 
 Update client redirect URIs in Keycloak to use your production domain
