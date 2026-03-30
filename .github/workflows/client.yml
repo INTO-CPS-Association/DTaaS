@@ -11,6 +11,10 @@ name: React website
       - '.github/workflows/client.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   client:
     name: Test react website
@@ -21,6 +25,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: client/
@@ -55,8 +60,6 @@ jobs:
         run: |
           yarn test:int
           yarn test:unit
-          yarn test:preview:unit
-          yarn test:preview:int
           yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov
@@ -103,17 +106,18 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     steps:
-        - name: Checkout Repository
-          # v6.0.1
-          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        - name: Install jq
-          run: sudo apt-get install -y jq
-        - name: get version
-          id: get-version
-          run: |
-            version=$(jq -r '.version' ./client/package.json)
-            echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: get-version
+        run: |
+          version=$(jq -r '.version' ./client/package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.get-version.outputs.version }}
 

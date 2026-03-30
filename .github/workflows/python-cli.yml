@@ -1,6 +1,6 @@
 name: CLI for DTaaS
 
-on:
+'on':
   push:
     paths:
       - 'cli/**'
@@ -10,6 +10,10 @@ on:
       - 'cli/**'
       - '.github/workflows/python-cli.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 
 jobs:

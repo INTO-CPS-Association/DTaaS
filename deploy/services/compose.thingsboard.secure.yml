@@ -17,7 +17,10 @@ services:
       bash -c '
       chmod 600 /etc/ssl/postgres.key &&
       chown postgres:postgres /etc/ssl/postgres.key /etc/ssl/postgres.crt &&
-      exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/etc/ssl/postgres.crt -c ssl_key_file=/etc/ssl/postgres.key
+      exec docker-entrypoint.sh postgres \
+        -c ssl=on \
+        -c ssl_cert_file=/etc/ssl/postgres.crt \
+        -c ssl_key_file=/etc/ssl/postgres.key
       '
     networks:
       - platform-services
@@ -39,7 +42,8 @@ services:
       - './certs/${HOSTNAME}:/certs'
     environment:
       TB_SERVICE_ID: tb-ce-node
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?sslmode=require
+      SPRING_DATASOURCE_URL: >-
+        jdbc:postgresql://postgres:5432/${POSTGRES_DB}?sslmode=require
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SSL_ENABLED: "true"

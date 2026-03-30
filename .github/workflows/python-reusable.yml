@@ -28,6 +28,10 @@ name: Python Reusable Workflow
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   python-tests:
     name: Test Python Package
@@ -37,6 +41,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -47,7 +52,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup Python
-      # v6.1.0
+        # v6.1.0
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
         with:
           python-version: "3.12"
@@ -96,9 +101,15 @@ jobs:
           # Install Docker Desktop
           choco install docker-desktop -y
           # Refresh PATH
-            $env:Path = [System.Environment]::GetEnvironmentVariable(`
-            "Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable(`
-            "Path","User")
+          $machinePath = [System.Environment]::GetEnvironmentVariable(`
+            "Path",
+            "Machine"
+          )
+          $userPath = [System.Environment]::GetEnvironmentVariable(`
+            "Path",
+            "User"
+          )
+          $env:Path = $machinePath + ";" + $userPath
           # Start Docker service
           Start-Service docker
 
@@ -146,6 +157,7 @@ jobs:
       contents: read  # Required for checking out the code
       actions: write  # Required for uploading artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -156,7 +168,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Setup Python
-      # v6.1.0
+        # v6.1.0
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
         with:
           python-version: "3.12"

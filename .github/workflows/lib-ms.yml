@@ -11,6 +11,10 @@ name: Library microservice
       - '.github/workflows/lib-ms.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 24
   HTTP_PORT: 4002
@@ -25,6 +29,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: servers/lib
@@ -130,6 +135,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     steps:
       - name: Checkout Repository
         # v6.0.1

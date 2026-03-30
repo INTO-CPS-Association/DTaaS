@@ -5,7 +5,7 @@
 
 name: Build and Push Docker Image (GHCR)
 
-on:
+'on':
   workflow_call:
     inputs:
       image-name:
@@ -19,6 +19,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   registry: ghcr.io
   password: ${{ secrets.GITHUB_TOKEN }}
@@ -30,6 +34,7 @@ permissions:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       packages: write  # Push to github package registry
@@ -56,13 +61,22 @@ jobs:
           yarn install --network-timeout 1000000
           yarn build
 
-      # Sets a new environment variable that can be accessed in later
-      # steps via ${{ env.ghcr-scope }}
-      - name: Get repository owner in lower-case
+      - name: Resolve image variables
+        id: image_vars
         run: |
-          echo "ghcr-scope=${REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+          ghcr_scope="${REPOSITORY_OWNER,,}"
+          image_repository="${REGISTRY}/${ghcr_scope}"
+          image_base="${image_repository}/${IMAGE_NAME}"
+          image_tag="${image_base}:${VERSION}"
+          echo "ghcr_scope=$ghcr_scope" >> "$GITHUB_OUTPUT"
+          echo "image_repository=$image_repository" >> "$GITHUB_OUTPUT"
+          echo "image_base=$image_base" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REGISTRY: ${{ env.registry }}
+          IMAGE_NAME: ${{ inputs.image-name }}
+          VERSION: ${{ inputs.version }}
 
       - name: Log in to the Container registry
         # v3.6.0
@@ -74,19 +88,17 @@ jobs:
 
       - name: Check if version exists
         id: check_version
-        env:
-          IMAGE_TAG: ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
         run: |
-          if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
+          if docker manifest inspect "${{ steps.image_vars.outputs.image_tag }}" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
-            echo "exists=true" >> $GITHUB_ENV
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "Version ${{ inputs.version }} does not exist."
-            echo "exists=false" >> $GITHUB_ENV
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build and push Docker image
-        if: env.exists == 'false'
+        if: steps.check_version.outputs.exists == 'false'
         # v6.18.0
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
@@ -94,5 +106,5 @@ jobs:
           file: ./docker/${{ inputs.dockerfile }}
           push: true
           tags: |
-            ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:${{ inputs.version }}
-            ${{ env.registry }}/${{ env.ghcr-scope }}/${{ inputs.image-name }}:latest
+            ${{ steps.image_vars.outputs.image_base }}:${{ inputs.version }}
+            ${{ steps.image_vars.outputs.image_base }}:latest

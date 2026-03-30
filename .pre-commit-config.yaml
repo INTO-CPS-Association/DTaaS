@@ -49,7 +49,8 @@ repos:
     hooks:
       - id: prettier
         args: ["--ignore-path", "../.gitignore", "--write"]
-        files: '^(client|servers/execution/runner|servers/lib)/.*\.(ts|tsx|css|scss)$'
+        files: >-
+          ^((client)|(servers/(execution/runner|lib)))/.*\.(ts|tsx|css|scss)$
         stages: [pre-commit]
 
   - repo: https://github.com/pre-commit/mirrors-eslint

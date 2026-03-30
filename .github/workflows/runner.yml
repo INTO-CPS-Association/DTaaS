@@ -1,6 +1,6 @@
 name: Digital twin runner
 
-on:
+'on':
   push:
     paths:
       - 'servers/execution/**'
@@ -10,6 +10,10 @@ on:
       - 'servers/execution/**'
       - '.github/workflows/runner.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: 24
@@ -24,6 +28,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Test digital twin runner
     runs-on: ubuntu-latest
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: servers/execution/runner/
@@ -72,6 +77,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     steps:
       - name: Checkout Repository
         # v6.0.1

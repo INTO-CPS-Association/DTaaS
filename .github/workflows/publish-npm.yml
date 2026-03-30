@@ -1,6 +1,6 @@
 name: Test and Publish
 
-on:
+'on':
   workflow_call:
     inputs:
       registry-url:
@@ -19,9 +19,14 @@ on:
       NPM_TOKEN:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish-package:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       packages: write  # Push to github package registry
       contents: read   # Required for checking out the code

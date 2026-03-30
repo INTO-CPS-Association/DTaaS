@@ -20,8 +20,8 @@ nav:
       - Motivation: user/motivation.md
       - Features: user/features.md
       - Website:
-        - Overview: user/website/index.md
-        - Settings: user/website/settings.md
+          - Overview: user/website/index.md
+          - Settings: user/website/settings.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
@@ -64,58 +64,58 @@ nav:
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - Admin:
       - Install:
-        - Installation Scenarios: admin/overview.md
-        - Installation Steps: admin/steps.md
-        - Requirements: admin/requirements.md
-        - Authorization:
-          - Client: admin/client/auth.md
-          - Servers: admin/servers/auth.md
-        - Configuration:
-          - Client: admin/client/config.md
-          - Library: admin/servers/lib/config.md
-        - Docker:
-          - Localhost: admin/localhost.md
-          - Secure Localhost: admin/localhost-secure.md
-          - Production: admin/server.md
-        - Vagrant:
-          - Base Box: admin/vagrant/base-box.md
-          - Single Machine: admin/vagrant/single-machine.md
-          - Two Machines: admin/vagrant/two-machines.md
-        - Platform Services:
-          - CLI: admin/services/cli.md
-          - Manual Install: admin/services/terminal-install.md
+          - Installation Scenarios: admin/overview.md
+          - Installation Steps: admin/steps.md
+          - Requirements: admin/requirements.md
+          - Authorization:
+              - Client: admin/client/auth.md
+              - Servers: admin/servers/auth.md
+          - Configuration:
+              - Client: admin/client/config.md
+              - Library: admin/servers/lib/config.md
+          - Docker:
+              - Localhost: admin/localhost.md
+              - Secure Localhost: admin/localhost-secure.md
+              - Production: admin/server.md
+          - Vagrant:
+              - Base Box: admin/vagrant/base-box.md
+              - Single Machine: admin/vagrant/single-machine.md
+              - Two Machines: admin/vagrant/two-machines.md
+          - Platform Services:
+              - CLI: admin/services/cli.md
+              - Manual Install: admin/services/terminal-install.md
       - Integrated Gitlab:
-        - Installation: admin/gitlab/index.md
-        - Integration: admin/gitlab/integration.md
-        - Gitlab Runner:
-          - Linux: admin/gitlab/runner.md
-          - Windows: admin/gitlab/runner-windows.md
+          - Installation: admin/gitlab/index.md
+          - Integration: admin/gitlab/integration.md
+          - Gitlab Runner:
+              - Linux: admin/gitlab/runner.md
+              - Windows: admin/gitlab/runner-windows.md
       - CLI: admin/cli.md
       - Independent Packages:
-        - Listing: admin/packages.md
-        - Library Microservice:
-          - NPM: admin/servers/lib/npm.md
-          - Docker: admin/servers/lib/docker.md
+          - Listing: admin/packages.md
+          - Library Microservice:
+              - NPM: admin/servers/lib/npm.md
+              - Docker: admin/servers/lib/docker.md
       - Guides:
-        - GUI Installation: admin/guides/localhost_portainer.md
-        - Check Config: admin/guides/check_config.md
-        - Add user: admin/guides/add_user.md
-        - Remove user: admin/guides/remove_user.md
-        - Link services: admin/guides/link_service.md
-        - Common Assets: admin/guides/common_workspace_readonly.md
-        - Renew Certificates: admin/guides/renew_certs.md
+          - GUI Installation: admin/guides/localhost_portainer.md
+          - Check Config: admin/guides/check_config.md
+          - Add user: admin/guides/add_user.md
+          - Remove user: admin/guides/remove_user.md
+          - Link services: admin/guides/link_service.md
+          - Common Assets: admin/guides/common_workspace_readonly.md
+          - Renew Certificates: admin/guides/renew_certs.md
   - FAQ: FAQ.md
   - Developer:
       - Developer Guide: developer/index.md
       - Code of Conduct: developer/conduct.md
       - GitHub Actions: developer/github-actions.md
       - System:
-        - Architecture: developer/system/architecture.md
-        - Current Status: developer/system/current-status.md
+          - Architecture: developer/system/architecture.md
+          - Current Status: developer/system/current-status.md
       - OAuth2 Authorization:
-        - Concepts: developer/oauth/oauth2.0.md
-        - System Design: developer/oauth/design.md
-        - Microservice: developer/oauth/authms.md
+          - Concepts: developer/oauth/oauth2.0.md
+          - System Design: developer/oauth/design.md
+          - Microservice: developer/oauth/authms.md
       - Testing: developer/testing/intro.md
       - Docker: developer/docker/docker.md
       - NPM Packages: developer/npm-packages.md
@@ -124,10 +124,10 @@ nav:
       - Library Microservice: developer/servers/lib/lib-ms.md
       - Runner Microservice: developer/servers/execution/runner/runner.md
       - DevOps Framework:
-        - Overview: developer/devops/overview.md
-        - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
-        - Triggering Pipelines via API: developer/devops/api.md
-        - Implemented Classes: developer/devops/implementation.md
+          - Overview: developer/devops/overview.md
+          - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
+          - Triggering Pipelines via API: developer/devops/api.md
+          - Implemented Classes: developer/devops/implementation.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:
