@@ -7,10 +7,15 @@ deployments.
 ## ❓ Prerequisites
 
 ✅ Docker Engine v27 or later  
+
 ✅ Docker Compose v2.x  
+
 ✅ Sufficient system resources (at least 1GB RAM per workspace instance)  
+
 ✅ Valid TLS certificates (production) or self-signed certs (testing)
+
 ✅ OAuth2 provider (GitLab, GitHub, Google, etc.)  
+
 ✅ Domain name pointing to your server (production) or localhost (testing)
 
 ## 🗒️ Design
@@ -28,8 +33,10 @@ The `docker-compose.yml` file provides a production-ready setup with:
 - **OAuth2 authentication** via traefik-forward-auth
 - **Multiple workspace instances** (user1, user2) behind authentication
 - **Secure communication** with TLS certificates
-- **user1** workspace using the workspace image
-- **user2** workspace using the mltooling/ml-workspace-minimal image
+- **Workspace containers** (for each user) using the
+  [workspace image](https://hub.docker.com/r/intocps/workspace)
+- **Docker networks** defined in `docker-compose.yml` to isolate frontend,
+  auth, and user workspaces
 - **Two Docker networks**: `dtaas-frontend` and `dtaas-users`
 
 ## ⚙️ Initial Configuration
@@ -42,7 +49,7 @@ for creating suitable configuration.
 All the deployment options require user directories for
 storing workspace files. These need to
 be created for `USERNAME1` and `USERNAME2` set in
-`workspaces/test/dtaas/config/.env` file.
+`.env` file.
 
 ```bash
 # create required files

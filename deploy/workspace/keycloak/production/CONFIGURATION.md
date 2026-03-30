@@ -37,7 +37,7 @@ Decide on whether you are testing locally or remotely.
 
 From now on whenever you see `<DOMAIN_NAME>` in this guide, replace it with
 your remote machines domain name. (Ensure that you remote machine has
-a domain name, and that it is accesible from the internet.)
+a domain name, and that it is accessible from the internet.)
 
 Go to the [Environment file](.env) and replace the current value of
 the `SERVER_DNS` variable with your domain name:
@@ -50,7 +50,7 @@ SERVER_DNS=<DOMAIN_NAME>
 
 ## 🔒 TLS Certificates
 
-Make sure that you have valid TLS certifcates on the machine and
+Make sure that you have valid TLS certificates on the machine and
 that they are properly located. The `fullchain.pem` and `privkey.pem`
 secrets should be located in the [`certs/`](certs/) directory.
 
@@ -125,7 +125,7 @@ for authentication via OIDC (OpenID Connect). Keycloak provides a robust,
 enterprise-grade identity and access management solution.
 The `traefik-forward-auth` and the DTaaS `client` docker services use
 **Keycloak** for authentication and authorization. You'll need to configure
-an OAuth2 apllication for each, with your integrated **Keycloack** service.
+an OAuth2 application for each, with your integrated **Keycloak** service.
 
 **For detailed Keycloak setup instructions,
 see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
@@ -151,7 +151,9 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
    # Secret key for encrypting OAuth session data
    # Generate a random string (at least 16 characters)
-   OAUTH_SECRET=$(openssl rand -base64 32)
+   # for example, using the following command
+   # openssl rand -base64 32
+   OAUTH_SECRET=your-oauth-secret
    ```
 
 ## 🖥️ DTaaS Web Client Config

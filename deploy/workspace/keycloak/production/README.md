@@ -33,8 +33,8 @@ be created for `USERNAME1` and `USERNAME2` set in `.env` file.
 
 ```bash
 # create required files
-cp -R files/user1 files/<USERNAME1>
-cp -R files/user1 files/<USERNAME2>
+cp -R files/template files/<USERNAME1>
+cp -R files/template files/<USERNAME2>
 # set file permissions for use inside the container
 sudo chown -R 1000:100 files
 ```
@@ -140,7 +140,7 @@ rule.user3_access.whitelist = user3@localhost
 
 - Verify certificate files exist in `./certs/` directory
 - Check certificate file permissions
-- Ensure `dynamic/tls.yml` correctly references certificate paths
+- Ensure `config/tls.yml` correctly references certificate paths
 - For self-signed certs, add security exception in browser
 
 ### OAuth2 Issues
