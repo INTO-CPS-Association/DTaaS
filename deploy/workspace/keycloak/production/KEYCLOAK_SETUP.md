@@ -75,7 +75,7 @@ The following instructions are part of post-install step.
 1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
 2. **Realm name**: `dtaas` (or match your `KEYCLOAK_REALM` in `.env`)  
 3. Click **Create**
-4. Click on **User Profile**
+4. Click on **Realm Settings** -> **User Profile**
 5. Click on **Create attribute** with
    - name: profile
    - display name: profile
