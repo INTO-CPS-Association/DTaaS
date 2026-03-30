@@ -92,19 +92,17 @@ used in the forward auth.
 
 ## 🚪 Traefik Forward Auth Configuration
 
-The [`config/conf.example`](./config/conf.example) contains
+The [`config/forward-auth-conf.example`](./config/forward-auth-conf.example) contains
 example configuration for the forward-auth service.
 
 Create a copy of this example file without the example suffix:
 
 ```bash
-cp config/conf.example config/conf
+cp config/forward-auth-conf.example config/forward-auth-conf
 ```
 
-Then update the configuration file with the usernames and emails of
-the GitLab users that correspond to user 1 and 2 respectively.
-(You must either have two seperate GitLab users, or skip the configuration of
-one of the two users).
+Then update the traefik forward auth configuration file with the usernames and emails of
+the Keycloak users that correspond to user1 and user2 respectively.
 
 ```txt
 rule.user1_access.action=auth
@@ -149,7 +147,7 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
    KEYCLOAK_CLIENT_SECRET=your_client_secret_here
 
    # Keycloak Issuer URL
-   KEYCLOAK_ISSUER_URL=http://keycloak:8080/auth/realms/dtaas
+   KEYCLOAK_ISSUER_URL=http://intocps.org/auth/realms/dtaas
 
    # Secret key for encrypting OAuth session data
    # Generate a random string (at least 16 characters)

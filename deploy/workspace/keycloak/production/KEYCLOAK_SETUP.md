@@ -31,10 +31,10 @@ User Request → Traefik → Forward Auth → Keycloak (OIDC)
 Copy the example environment file and update it:
 
 ```bash
-cp config/.env.example config/.env
+cp .env.example .env
 ```
 
-Keyclak-specific environment variables are:
+Keycloak-specific environment variables are:
 
 | Variable | Purpose | Example |
 |----------|---------|---------|
