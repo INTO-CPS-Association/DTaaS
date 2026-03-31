@@ -38,7 +38,7 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD?KEYCLOAK_ADMIN_PASSWORD_not_set}
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY_HEADERS=xforwarded
-        # HTTP connection from Traefik (HTTPS is terminated at Traefik)
+      # HTTP connection from Traefik (HTTPS is terminated at Traefik)
       - KC_HTTP_ENABLED=true
     volumes:
       - keycloak-data:/opt/keycloak/data
@@ -51,7 +51,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloak.entryPoints=web-secure"
-      - "traefik.http.routers.keycloak.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/auth`)"
+      - >-
+        traefik.http.routers.keycloak.rule=Host(`${SERVER_DNS:-localhost}`) &&
+        PathPrefix(`/auth`)
       - "traefik.http.routers.keycloak.tls=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
     networks:
@@ -66,7 +68,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web-secure"
-      - "traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/`)"
+      - >-
+        traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`) &&
+        PathPrefix(`/`)
       - "traefik.http.routers.client.tls=true"
       - "traefik.http.routers.client.middlewares=traefik-forward-auth"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
@@ -84,7 +88,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u1.entryPoints=web-secure"
-      - "traefik.http.routers.u1.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME1:-user1}`)"
+      - >-
+        traefik.http.routers.u1.rule=Host(`${SERVER_DNS:-localhost}`) &&
+        PathPrefix(`/${USERNAME1:-user1}`)
       - "traefik.http.routers.u1.tls=true"
       - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
     networks:
@@ -102,7 +108,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u2.entryPoints=web-secure"
-      - "traefik.http.routers.u2.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME2:-user2}`)"
+      - >-
+        traefik.http.routers.u2.rule=Host(`${SERVER_DNS:-localhost}`) &&
+        PathPrefix(`/${USERNAME2:-user2}`)
       - "traefik.http.routers.u2.tls=true"
       - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
     networks:
@@ -113,7 +121,6 @@ services:
     restart: unless-stopped
     volumes:
       - "./config/forward-auth-conf:/conf"
-      #- "config/resolv.conf:/etc/resolv.conf"
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=oidc
@@ -129,7 +136,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.redirect.entryPoints=web-secure"
-      - "traefik.http.routers.redirect.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/_oauth`)"
+      - >-
+        traefik.http.routers.redirect.rule=Host(`${SERVER_DNS:-localhost}`) &&
+        PathPrefix(`/_oauth`)
       - "traefik.http.routers.redirect.tls=true"
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
@@ -148,4 +157,3 @@ networks:
 volumes:
   keycloak-data:
     driver: local
-
