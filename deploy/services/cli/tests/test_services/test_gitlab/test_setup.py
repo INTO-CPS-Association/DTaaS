@@ -53,3 +53,47 @@ def test_setup_gitlab_success(
     success, msg = setup.setup_gitlab(mock_console, mock_docker)
     assert success is True
     assert "completed successfully" in msg
+
+
+def test_setup_gitlab_fails_on_password_reset_failure(
+    mock_console, mock_docker, mocker
+):
+    """Test setup_gitlab fails when root password reset fails."""
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._run_prereq_steps",
+        return_value=(True, TEST_PASSWORD, TEST_TOKEN, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._setup_tokens_phase",
+        return_value=(True, "saved"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._step_reset_root_password",
+        return_value=(False, "API error"),
+    )
+    success, msg = setup.setup_gitlab(mock_console, mock_docker)
+    assert success is False
+    assert "Root password reset failed" in msg
+
+
+def test_setup_gitlab_fails_on_token_cleanup_failure(mock_console, mock_docker, mocker):
+    """Test setup_gitlab fails when root password removal from tokens fails."""
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._run_prereq_steps",
+        return_value=(True, TEST_PASSWORD, TEST_TOKEN, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._setup_tokens_phase",
+        return_value=(True, "saved"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._step_reset_root_password",
+        return_value=(True, "Root password updated"),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.setup._step_remove_root_password_from_tokens",
+        return_value=(False, "file error"),
+    )
+    success, msg = setup.setup_gitlab(mock_console, mock_docker)
+    assert success is False
+    assert "remove root password from tokens" in msg

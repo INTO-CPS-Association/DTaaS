@@ -9,6 +9,7 @@ from dataclasses import dataclass, asdict
 from rich.console import Console
 
 from ...config import Config
+from ...utils import write_secret_file
 from .health import is_gitlab_healthy
 from .password import get_initial_root_password, reset_gitlab_password
 from .personal_token import create_personal_access_token
@@ -36,9 +37,7 @@ class GitLabTokens:
 def _save_tokens(tokens: GitLabTokens, output_path: Path) -> Tuple[bool, str]:
     """Save tokens to a JSON file."""
     try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with output_path.open("w", encoding="utf-8") as fh:
-            json.dump(asdict(tokens), fh, indent=2)
+        write_secret_file(output_path, json.dumps(asdict(tokens), indent=2))
         return True, f"Tokens saved to {output_path}"
     except OSError as exc:
         return False, f"Failed to save tokens: {exc}"
@@ -155,11 +154,9 @@ def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]
     try:
         with tokens_path.open("r", encoding="utf-8") as fh:
             tokens_data = json.load(fh)
-        with backup_path.open("w", encoding="utf-8") as fh:
-            json.dump(tokens_data, fh, indent=2)
+        write_secret_file(backup_path, json.dumps(tokens_data, indent=2))
         tokens_data.pop("root_password", None)
-        with tokens_path.open("w", encoding="utf-8") as fh:
-            json.dump(tokens_data, fh, indent=2)
+        write_secret_file(tokens_path, json.dumps(tokens_data, indent=2))
         console.print("[green]\u2705 Root password removed from tokens file.[/green]")
         return True, "Root password removed from gitlab_tokens.json."
     except OSError as exc:
@@ -223,14 +220,10 @@ def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
 
     pw_ok, pw_msg = _step_reset_root_password(console)
     if not pw_ok:
-        console.print(
-            f"[yellow]\u26a0\ufe0f  Root password reset failed: {pw_msg}[/yellow]"
-        )
+        return False, f"Root password reset failed: {pw_msg}"
 
     bk_ok, bk_msg = _step_remove_root_password_from_tokens(console)
     if not bk_ok:
-        console.print(
-            f"[yellow]\u26a0\ufe0f  Failed to remove root password from tokens: {bk_msg}[/yellow]"
-        )
+        return False, f"Failed to remove root password from tokens: {bk_msg}"
 
     return True, "GitLab setup completed successfully."

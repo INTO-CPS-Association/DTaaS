@@ -126,14 +126,6 @@ def change_sysadmin_email(
     return _save_user(base_url, session, user)
 
 
-def _build_update_email_sql(new_email: str) -> str:
-    """Build SQL command to update sysadmin email, escaping single quotes."""
-    safe_email = new_email.replace("'", "''")
-    return (
-        f"UPDATE tb_user SET email = '{safe_email}' " "WHERE authority = 'SYS_ADMIN';"
-    )
-
-
 def update_sysadmin_email_in_db(console: Console, docker) -> None:
     """Update sysadmin email in PostgreSQL directly after DB install.
 
@@ -150,7 +142,8 @@ def update_sysadmin_email_in_db(console: Console, docker) -> None:
     if new_email == _DEFAULT_SYSADMIN_EMAIL:
         return
 
-    sql = _build_update_email_sql(new_email)
+    escaped = new_email.replace("'", "''")
+    sql = f"UPDATE tb_user SET email = '{escaped}' WHERE authority = 'SYS_ADMIN';"
     pg_user = os.getenv("POSTGRES_USER", "postgres")
     pg_db = os.getenv("POSTGRES_DB", "thingsboard")
     try:

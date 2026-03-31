@@ -193,11 +193,11 @@ class Cleanup(DockerExecutor):
         services (including .gitkeep files) and removes .gitkeep files from config
         subdirectories.
 
-        Certificates under certs/<HOSTNAME> are NOT deleted unless include_certs=True.
+        Certificates under certs/ are NOT deleted unless include_certs=True.
 
         Args:
             service_list: Optional list of specific services to clean
-            include_certs: Whether to also remove copied TLS cert files under certs/<HOSTNAME>
+            include_certs: Whether to also remove copied TLS cert files under certs/
 
         Returns:
             Tuple of (Exception or None, message)

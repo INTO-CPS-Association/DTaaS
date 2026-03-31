@@ -129,6 +129,10 @@ jobs:
             --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
 
+      - name: Run pyright type checking
+        if: inputs.run-pyright && matrix.os == 'ubuntu-latest'
+        run: poetry run pyright
+
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |

@@ -38,9 +38,11 @@ Follow the guide to set up a GitLab instance -
 [README](./README.md).
 
 After this step, and once you run `gitlab-ctl reconfigure`, you will have a
-functioning GitLab instance (at either <https://localhost/gitlab>
-or <https://foo.com/gitlab>).
-Login credentials of the root user.
+functioning GitLab instance accessible over HTTPS on the configured port,
+at `https://localhost:${GITLAB_PORT}/gitlab` (localhost) or
+`https://foo.com:${GITLAB_PORT}/gitlab` (custom domain, default port 8090).
+GitLab is served directly from its own container — it is **not** proxied
+through Traefik. Login credentials of the root user.
 
 ### 3. Create OAuth Tokens in GitLab
 
@@ -115,12 +117,16 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d --force
 
 If you have set up everything correctly:
 
-1. You will have a functioning path-prefixed GitLab instance available at
-   `https://foo.com/gitlab` that you may use in a similar manner to
-   [https://gitlab.com](https://gitlab.com).
+1. You will have a functioning GitLab instance available at
+   `https://foo.com:${GITLAB_PORT}/gitlab` (default port `8090`) that you
+   may use in a similar manner to [https://gitlab.com](https://gitlab.com).
+   GitLab is served directly via its own HTTPS port — it is not routed
+   through Traefik.
 1. Data, configuration settings and logs pertaining to the GitLab installation
-   will be available on the DTaaS server within the directory:
-   _deploy/services/gitlab_.
-1. Traefik Forward Auth will use the path-prefixed GitLab instance for
-   authorization on the multi-user installation scenario i.e.
-   `foo.com` (but not on `localhost`).
+   will be available on the DTaaS server within the directories:
+   _deploy/services/cli/data/gitlab_, _deploy/services/cli/config/gitlab_,
+   and _deploy/services/cli/log/gitlab_.
+1. Traefik Forward Auth can be configured to use this GitLab instance
+   for authorization on the multi-user installation scenario (`foo.com`)
+   by pointing it at `https://foo.com:${GITLAB_PORT}/gitlab`
+   (not applicable for `localhost`).

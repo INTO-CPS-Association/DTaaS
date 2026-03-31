@@ -145,21 +145,47 @@ def test_create_users_from_rows_success(mocker):
     assert tokens == {"user1": TEST_TOKEN, "user2": TEST_TOKEN}
 
 
-def test_create_users_from_rows_failure_stops(mocker):
-    """Test that row processing stops on first failure."""
+def test_create_users_from_rows_failure_continues(mocker):
+    """Test that row processing continues after a failure and collects errors."""
     gl = _make_gl_mock()
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._create_user_and_pat",
-        side_effect=[(True, "", TEST_TOKEN), (False, "user2 failed", "")],
+        side_effect=[
+            (True, "", TEST_TOKEN),
+            (False, "user2 failed", ""),
+            (True, "", TEST_TOKEN),
+        ],
     )
     rows = [
         {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105 # NOSONAR
         {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
         {"username": "user3", "email": "u3@x.com", "password": "pass3"},  # noqa: S105 # NOSONAR
     ]
-    success, error, _ = users._create_users_from_rows(gl, iter(rows))
+    success, error, tokens = users._create_users_from_rows(gl, iter(rows))
     assert success is False
     assert "user2 failed" in error
+    # user1 and user3 succeeded — their tokens must be present
+    assert "user1" in tokens
+    assert "user3" in tokens
+    assert "user2" not in tokens
+
+
+def test_create_users_from_rows_multiple_failures_reported(mocker):
+    """Test that all row failures are collected into a single error summary."""
+    gl = _make_gl_mock()
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.users._create_user_and_pat",
+        side_effect=[(False, "u1 bad", ""), (False, "u2 bad", "")],
+    )
+    rows = [
+        {"username": "user1", "email": "u1@x.com", "password": "pass1"},  # noqa: S105 # NOSONAR
+        {"username": "user2", "email": "u2@x.com", "password": "pass2"},  # noqa: S105 # NOSONAR
+    ]
+    success, error, tokens = users._create_users_from_rows(gl, iter(rows))
+    assert success is False
+    assert "u1 bad" in error
+    assert "u2 bad" in error
+    assert not tokens
 
 
 def test_process_credentials_success(mocker, tmp_path):
@@ -259,7 +285,7 @@ def test_setup_gitlab_users_prereq_fails(mocker):
 
 
 def test_setup_gitlab_users_process_fails(mocker):
-    """Test user setup when credential processing fails."""
+    """Test user setup persists partial tokens and reports errors when some rows fail."""
     mocker.patch("dtaas_services.pkg.services.gitlab.users.Config")
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._load_gitlab_prerequisites",
@@ -270,8 +296,19 @@ def test_setup_gitlab_users_process_fails(mocker):
     )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.users._process_credentials",
-        return_value=(False, "API error for user2", {}),
+        return_value=(False, "user2: API error", {"user1": TEST_TOKEN}),
+    )
+    tokens_file = mocker.MagicMock()
+    tokens_file.exists.return_value = False
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.users._get_user_tokens_path",
+        return_value=tokens_file,
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.users._save_user_tokens",
+        return_value=(True, str(tokens_file)),
     )
     success, msg = users.setup_gitlab_users()
     assert success is False
-    assert "API error" in msg
+    assert "user2" in msg
+    assert "Tokens saved" in msg

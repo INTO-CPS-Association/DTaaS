@@ -145,7 +145,7 @@ def test_update_sysadmin_email_skips_default(monkeypatch):
 
 
 def test_update_sysadmin_email_runs_sql(monkeypatch):
-    """Test update_sysadmin_email_in_db runs SQL when email differs from default"""
+    """Test update_sysadmin_email_in_db embeds the email directly in the SQL."""
     mock_console = Mock()
     mock_docker = Mock()
     monkeypatch.setenv("TB_SYSADMIN_EMAIL", "admin@example.org")
@@ -155,7 +155,8 @@ def test_update_sysadmin_email_runs_sql(monkeypatch):
     cmd = call_args[0][1]
     assert call_args[0][0] == "postgres"
     assert cmd[0] == "psql"
-    assert "-c" in cmd
+    # No -v flag; email is embedded directly in the SQL
+    assert "-v" not in cmd
     sql_cmd = cmd[cmd.index("-c") + 1]
     assert "admin@example.org" in sql_cmd
     assert "SYS_ADMIN" in sql_cmd
@@ -173,8 +174,15 @@ def test_update_sysadmin_email_handles_docker_error(monkeypatch):
     assert "Warning" in warning_call
 
 
-def test_build_update_email_sql_escapes_quotes():
-    """Test SQL builder escapes single quotes"""
-    sql = th_util._build_update_email_sql("o'brien@test.com")
-    assert "o''brien@test.com" in sql
-    assert "SYS_ADMIN" in sql
+def test_update_sysadmin_email_uses_parameterized_sql(monkeypatch):
+    """Test that single quotes in email are doubled (SQL-escaped) in the query."""
+    mock_console = Mock()
+    mock_docker = Mock()
+    monkeypatch.setenv("TB_SYSADMIN_EMAIL", "o'brien@test.com")
+    th_util.update_sysadmin_email_in_db(mock_console, mock_docker)
+    call_args = mock_docker.execute.call_args
+    cmd = call_args[0][1]
+    sql_cmd = cmd[cmd.index("-c") + 1]
+    # Single quote must be doubled for safe SQL embedding
+    assert "o''brien@test.com" in sql_cmd
+    assert "SYS_ADMIN" in sql_cmd

@@ -289,9 +289,10 @@ Docker Compose variables are properly configured without additional setup.
 
 #### Key Environment Variables
 
-* **`HOSTNAME`**: Used for certificate paths (`certs/<HOSTNAME>/`),
-  ThingsBoard API URL, and GitLab `external_url` configuration.
-  Must match certificate domain name for SSL to work.
+* **`HOSTNAME`**: Used for ThingsBoard API URL and GitLab `external_url`
+  configuration. Must match the certificate domain name for SSL to work.
+  TLS certificates are stored in the flat `certs/` directory (not
+  `certs/<HOSTNAME>/`).
 * **`SSL_VERIFY`**: Enable/disable SSL certificate verification for API calls
 (`True` or `False`).
   Set to `False` for development with self-signed certificates.

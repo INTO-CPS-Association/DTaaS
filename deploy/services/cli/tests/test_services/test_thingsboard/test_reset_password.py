@@ -119,7 +119,7 @@ def test_reset_thingsboard_password_change_fails(mocker):
 
 
 def test_reset_thingsboard_password_tenant_admin_fails(mocker):
-    """Test reset_thingsboard_password when tenant admin reset fails"""
+    """Test that sysadmin success + tenant admin failure returns True with a warning."""
     mocker.patch("dtaas_services.pkg.services.thingsboard.setup.Config")
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
@@ -139,8 +139,31 @@ def test_reset_thingsboard_password_tenant_admin_fails(mocker):
         return_value=(False, "tenant admin error"),
     )
     success, msg = th.reset_thingsboard_password()
-    assert success is False
+    assert success is True
+    assert "Sysadmin password reset successfully" in msg
     assert "tenant admin error" in msg
+    assert "Re-run" in msg
+
+
+def test_reset_thingsboard_password_both_fail(mocker):
+    """Test that sysadmin failure is always a hard error regardless of tenant admin."""
+    mocker.patch("dtaas_services.pkg.services.thingsboard.setup.Config")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
+    )
+    mocker.patch("dtaas_services.pkg.services.thingsboard.setup._create_session")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.check_password_configured",
+        return_value="newpass",  # noqa: S105 # NOSONAR
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._reset_sysadmin_credentials",
+        return_value=(False, "sysadmin auth failed"),
+    )
+    success, msg = th.reset_thingsboard_password()
+    assert success is False
+    assert "sysadmin auth failed" in msg
 
 
 def test_reset_thingsboard_password_http_error(mocker):

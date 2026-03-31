@@ -2,6 +2,7 @@
 
 from unittest.mock import Mock
 import pytest
+from python_on_whales.exceptions import DockerException
 from dtaas_services.pkg.services.gitlab import health
 # pylint: disable=W0212, W0621
 
@@ -25,8 +26,16 @@ def test_get_gitlab_container_found(mock_docker):
 
 
 def test_get_gitlab_container_exception(mock_docker):
-    """Test exception during container listing."""
-    mock_docker.compose.ps.side_effect = Exception("Docker error")
+    """Test DockerException during container listing returns None."""
+    mock_docker.compose.ps.side_effect = DockerException(
+        ["docker", "compose", "ps"], 1, b"", b"connection refused"
+    )
+    assert health._get_gitlab_container(mock_docker) is None
+
+
+def test_get_gitlab_container_os_error(mock_docker):
+    """Test OSError during container listing returns None."""
+    mock_docker.compose.ps.side_effect = OSError("Docker socket not found")
     assert health._get_gitlab_container(mock_docker) is None
 
 
@@ -45,10 +54,23 @@ def test_is_gitlab_running_true(mocker):
 
 
 def test_is_gitlab_running_exception(mocker):
-    """Test is_gitlab_running returns False on Docker exception."""
+    """Test is_gitlab_running returns False on DockerException."""
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.health.DockerClient",
-        side_effect=Exception("Docker not available"),
+        side_effect=OSError("Docker socket not found"),
+    )
+    assert health.is_gitlab_running() is False
+
+
+def test_is_gitlab_running_docker_exception(mocker):
+    """Test is_gitlab_running returns False on DockerException from container.list."""
+    mock_docker = Mock()
+    mock_docker.container.list.side_effect = DockerException(
+        ["docker", "ps"], 1, b"", b"error"
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.health.DockerClient",
+        return_value=mock_docker,
     )
     assert health.is_gitlab_running() is False
 

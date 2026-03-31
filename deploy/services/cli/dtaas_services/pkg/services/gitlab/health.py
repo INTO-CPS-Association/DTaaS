@@ -2,6 +2,7 @@
 
 import logging
 from python_on_whales import DockerClient
+from python_on_whales.exceptions import DockerException
 from ...utils import get_container_health_status, has_running_container
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ def _get_gitlab_container(docker):
     try:
         containers = docker.compose.ps()
         return next((c for c in containers if c.name == GITLAB_CONTAINER_NAME), None)
-    except Exception:
+    except (DockerException, OSError):
         logger.exception("Error while listing Docker containers")
         return None
 
@@ -55,6 +56,6 @@ def is_gitlab_running() -> bool:
         docker = DockerClient()
         containers = docker.container.list(filters={"name": GITLAB_CONTAINER_NAME})
         return has_running_container(containers)
-    except Exception:
+    except (DockerException, OSError):
         logger.exception("Error while checking if GitLab is running")
         return False

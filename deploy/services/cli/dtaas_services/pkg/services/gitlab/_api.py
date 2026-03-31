@@ -17,6 +17,29 @@ def get_ssl_verify() -> bool:
     return raw not in ("false", "0", "no", "off")
 
 
+def _validate_gitlab_port(gitlab_port: str) -> None:
+    """Validate GITLAB_PORT is a numeric string in the valid TCP port range.
+
+    Raises:
+        RuntimeError: If value is non-numeric or outside 1-65535.
+    """
+    if not gitlab_port.strip().isdigit():
+        raise RuntimeError(f"GITLAB_PORT must be a numeric value, got: {gitlab_port!r}")
+    port = int(gitlab_port)
+    if not 1 <= port <= 65535:
+        raise RuntimeError(f"GITLAB_PORT must be between 1 and 65535, got: {port}")
+
+
+def _validate_hostname(server: str) -> None:
+    """Validate HOSTNAME contains no whitespace characters.
+
+    Raises:
+        RuntimeError: If value contains whitespace.
+    """
+    if any(c.isspace() for c in server):
+        raise RuntimeError(f"HOSTNAME must not contain whitespace, got: {server!r}")
+
+
 def build_base_url() -> str:
     """Build the GitLab instance URL for direct container access.
 
@@ -36,6 +59,8 @@ def build_base_url() -> str:
         raise RuntimeError("GITLAB_PORT is not set in config/services.env. ")
     if not server:
         raise RuntimeError("HOSTNAME is not set in config/services.env. ")
+    _validate_gitlab_port(gitlab_port)
+    _validate_hostname(server)
     return f"https://{server}:{gitlab_port}/gitlab"
 
 

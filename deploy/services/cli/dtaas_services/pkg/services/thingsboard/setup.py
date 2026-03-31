@@ -173,18 +173,18 @@ def _do_password_reset(
     base_url: str, session: httpx.Client, new_pw: str
 ) -> Tuple[bool, str]:
     """Change sysadmin and tenant admin credentials."""
-    messages = []
-
     sysadmin_ok, sysadmin_msg = _reset_sysadmin_credentials(base_url, session, new_pw)
     if not sysadmin_ok:
-        messages.append(sysadmin_msg)
+        return False, sysadmin_msg
 
     ta_ok, ta_msg = change_tenant_admin_password(base_url, session)
     if not ta_ok:
-        messages.append(f"Tenant admin: {ta_msg}")
+        return True, (
+            "Sysadmin password reset successfully. "
+            f"Tenant admin password was not reset: {ta_msg} "
+            "(Re-run this command once the tenant admin account has been created.)"
+        )
 
-    if messages:
-        return False, "; ".join(messages)
     return True, "ThingsBoard credentials updated successfully"
 
 

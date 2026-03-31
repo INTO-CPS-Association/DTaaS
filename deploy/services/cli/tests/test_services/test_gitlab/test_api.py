@@ -33,6 +33,38 @@ def test_build_base_url_success(monkeypatch):
     assert url == f"https://{TEST_HOSTNAME}:{TEST_PORT}/gitlab"
 
 
+def test_build_base_url_invalid_port_non_numeric(monkeypatch):
+    """Test RuntimeError on non-numeric GITLAB_PORT."""
+    monkeypatch.setenv("GITLAB_PORT", "abc")
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
+    with pytest.raises(RuntimeError, match="numeric"):
+        api.build_base_url()
+
+
+def test_build_base_url_invalid_port_out_of_range(monkeypatch):
+    """Test RuntimeError when GITLAB_PORT is outside 1-65535."""
+    monkeypatch.setenv("GITLAB_PORT", "99999")
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
+    with pytest.raises(RuntimeError, match="65535"):
+        api.build_base_url()
+
+
+def test_build_base_url_invalid_port_zero(monkeypatch):
+    """Test RuntimeError when GITLAB_PORT is 0 (reserved/invalid)."""
+    monkeypatch.setenv("GITLAB_PORT", "0")
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
+    with pytest.raises(RuntimeError, match="65535"):
+        api.build_base_url()
+
+
+def test_build_base_url_invalid_hostname_with_whitespace(monkeypatch):
+    """Test RuntimeError when HOSTNAME contains whitespace."""
+    monkeypatch.setenv("GITLAB_PORT", TEST_PORT)
+    monkeypatch.setenv("HOSTNAME", "foo bar.com")
+    with pytest.raises(RuntimeError, match="whitespace"):
+        api.build_base_url()
+
+
 def test_get_gitlab_client_returns_client(monkeypatch):
     """Test that get_gitlab_client returns a configured gitlab.Gitlab instance."""
     monkeypatch.setenv("GITLAB_PORT", TEST_PORT)

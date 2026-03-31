@@ -238,6 +238,14 @@ deploy/services/cli/log/thingsboard
 
 deploy/services/config/credentials.csv
 deploy/services/cli/config/credentials.csv
+# Generated secret files (defense-in-depth; also covered by the directory rule below)
+deploy/services/cli/config/gitlab_tokens.json
+deploy/services/cli/config/backup_gitlab_tokens.json
+deploy/services/cli/config/gitlab_user_tokens.json
+deploy/services/cli/config/password.env.current
+# GitLab runtime directories (Docker compose bind mounts)
+deploy/services/cli/config/gitlab/
+deploy/services/cli/log/gitlab/
 deploy/services/cli/config
 deploy/services/cli/compose.services.yml
 deploy/services/cli/compose.thingsboard.yml

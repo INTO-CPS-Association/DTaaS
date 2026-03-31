@@ -46,3 +46,16 @@ def test_remove_service_passwords_thingsboard():
     assert ps.get_current_password("TB_SYSADMIN_CURRENT_PASSWORD") == ""
     assert ps.get_current_password("TB_TENANT_ADMIN_CURRENT_PASSWORD") == ""
     assert ps.get_current_password("GITLAB_ROOT_CURRENT_PASSWORD") == "gitpass"
+
+
+def test_remove_service_passwords_thingsboard_ce_alias():
+    """'thingsboard-ce' alias cleans up the same TB keys."""
+    ps.save_password("TB_SYSADMIN_CURRENT_PASSWORD", "syspass")
+    ps.save_password("TB_TENANT_ADMIN_CURRENT_PASSWORD", "tenantpass")
+    ps.save_password("GITLAB_ROOT_CURRENT_PASSWORD", "gitpass")
+
+    ps.remove_service_passwords("thingsboard-ce")
+
+    assert ps.get_current_password("TB_SYSADMIN_CURRENT_PASSWORD") == ""
+    assert ps.get_current_password("TB_TENANT_ADMIN_CURRENT_PASSWORD") == ""
+    assert ps.get_current_password("GITLAB_ROOT_CURRENT_PASSWORD") == "gitpass"

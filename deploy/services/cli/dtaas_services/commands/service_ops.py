@@ -89,7 +89,7 @@ def _print_remove_status(console: Console, service_list: Optional[list[str]]):
 
 def _clean_passwords(service_list: Optional[list[str]]) -> None:
     """Remove password-store entries for removed services."""
-    targets = service_list or ["thingsboard", "gitlab"]
+    targets = service_list or ["thingsboard", "thingsboard-ce", "gitlab"]
     for svc in targets:
         remove_service_passwords(svc)
 

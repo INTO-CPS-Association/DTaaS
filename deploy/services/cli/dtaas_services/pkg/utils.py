@@ -224,3 +224,29 @@ def create_users_from_credentials(
         if not success:
             return False, error_msg
     return True, ""
+
+
+def write_secret_file(path: Path, content: str, encoding: str = "utf-8") -> None:
+    """Write *content* to *path* with mode 0o600 (owner read/write only).
+
+    Creates parent directories as needed. Uses a temporary file and an
+    atomic rename so the destination is never visible with world-readable
+    permissions.
+
+    Args:
+        path: Destination file path.
+        content: Text content to write.
+        encoding: Text encoding (default UTF-8).
+
+    Raises:
+        OSError: If the write or rename fails.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    try:
+        tmp.write_text(content, encoding=encoding)
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, path)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise

@@ -133,7 +133,7 @@ def build_clean_confirmation_prompt(certs: bool) -> str:
     """Build confirmation prompt for clean command."""
     prompt = "This will delete ALL data and log files for the selected services."
     if certs:
-        prompt += " It will ALSO delete copied TLS cert files under certs/<HOSTNAME>."
+        prompt += " It will ALSO delete copied TLS cert files under certs/."
     prompt += " Continue?"
     return prompt
 

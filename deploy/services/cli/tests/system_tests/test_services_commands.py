@@ -232,9 +232,7 @@ def test_setup_start_status_all_services(ensure_services_stopped):
         )
 
     # Step 2: Start all services
-    result = run_command(
-        ["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV]
-    )
+    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Step 3: Check status of all services
@@ -257,9 +255,7 @@ def test_stop_influxdb_service(ensure_services_stopped):
         )
 
     # Step 2: Start all services
-    result = run_command(
-        ["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV]
-    )
+    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Step 3: Stop influxdb specifically
@@ -337,9 +333,7 @@ def test_start_stop_start_cycle(ensure_services_stopped):
         )
 
     # First start
-    result = run_command(
-        ["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV]
-    )
+    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Verify running
@@ -352,9 +346,7 @@ def test_start_stop_start_cycle(ensure_services_stopped):
     result = run_command(["dtaas-services", "stop"])
     assert_command_success(result, "Stop all services")
     # Start again
-    result = run_command(
-        ["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV]
-    )
+    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services (second time)")
     # Verify running again
     status = get_service_status()

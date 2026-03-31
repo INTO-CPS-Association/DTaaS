@@ -239,8 +239,10 @@ This command:
 
 **Prerequisites:**
 
-* The DTaaS server must be running before starting GitLab, as the GitLab
-  container uses the `dtaas-frontend` Docker network.
+* The GitLab container joins the `dtaas-services` Docker network
+  (`platform-services`), which is created automatically when the other
+  platform services are running. Start them first with
+  `dtaas-services start` before installing GitLab.
 * Set `REACT_APP_AUTH_AUTHORITY` in the client config file
   (`deploy/config/client/env.js` for server deployments, or
   `deploy/config/client/env.local.js` for localhost) to
@@ -280,7 +282,7 @@ The install command checks GitLab’s readiness and returns immediately:
 > this file manually — doing so may cause password reset commands to fail.
 
 To complete the OAuth2 integration with DTaaS and set up GitLab Runner,
-follow the [integration guide](../gitlab/INTEGRATION.md) and
+follow the [integration guide](GITLAB_INTEGRATION.md) and
 [runner setup guide](../runner/GITLAB-RUNNER.md).
 
 Reset the GitLab root admin password using the value configured in

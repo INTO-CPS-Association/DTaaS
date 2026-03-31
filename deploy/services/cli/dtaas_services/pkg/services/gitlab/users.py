@@ -10,7 +10,7 @@ import gitlab
 import gitlab.exceptions
 
 from ...config import Config
-from ...utils import get_credentials_path
+from ...utils import get_credentials_path, write_secret_file
 from ._api import get_gitlab_client
 from .validators import validate_user_row
 from .personal_token import _load_pat_from_tokens, create_user_pat
@@ -119,18 +119,26 @@ def _create_users_from_rows(
 ) -> Tuple[bool, str, dict[str, str]]:
     """Create GitLab users and PATs for each row yielded by a CSV DictReader.
 
+    Processes every row regardless of individual failures so that successful
+    tokens are never lost.  Per-row errors are collected and returned as a
+    newline-joined summary.
+
     Args:
         gl: Authenticated gitlab.Gitlab client
         reader: csv.DictReader iterator with username/email/password columns
 
     Returns:
-        Tuple of (success, error_message, tokens_dict)
+        Tuple of (all_succeeded, error_summary_or_empty, tokens_dict)
     """
     tokens: dict[str, str] = {}
+    errors: list[str] = []
     for row in reader:
         success, error_msg = _process_user_row(gl, row, tokens)
         if not success:
-            return False, error_msg, {}
+            username = (row.get("username") or "").strip() or "<unknown>"
+            errors.append(f"{username}: {error_msg}")
+    if errors:
+        return False, "\n".join(errors), tokens
     return True, "", tokens
 
 
@@ -147,27 +155,37 @@ def _save_user_tokens(tokens: dict[str, str], tokens_path: Path) -> Tuple[bool, 
         Tuple of (success, path_or_error_message)
     """
     try:
-        tokens_path.parent.mkdir(parents=True, exist_ok=True)
-        with tokens_path.open("w", encoding="utf-8") as fh:
-            json.dump(tokens, fh, indent=2)
+        write_secret_file(tokens_path, json.dumps(tokens, indent=2))
         return True, str(tokens_path)
     except OSError as exc:
         return False, f"Failed to save user tokens: {exc}"
 
 
-def _finalize_user_tokens(tokens: dict[str, str]) -> Tuple[bool, str]:
-    """Save user tokens if any were created and return the final message.
+def _finalize_user_tokens(
+    tokens: dict[str, str], error_summary: str = ""
+) -> Tuple[bool, str]:
+    """Save user tokens (if any) and build the final status message.
+
+    Tokens are persisted even when some rows failed so that already-created
+    PATs are not lost.
 
     Returns:
         Tuple of (success, message)
     """
-    if not tokens:
-        return True, "GitLab users created successfully"
-    tokens_path = _get_user_tokens_path()
-    ok, save_msg = _save_user_tokens(tokens, tokens_path)
-    if not ok:
-        return False, save_msg
-    return True, f"GitLab users created successfully. Tokens saved to {save_msg}"
+    save_ok = True
+    save_msg = ""
+    if tokens:
+        tokens_path = _get_user_tokens_path()
+        save_ok, save_msg = _save_user_tokens(tokens, tokens_path)
+        if not save_ok:
+            return False, save_msg
+        save_msg = f" Tokens saved to {save_msg}"
+
+    if error_summary:
+        base = f"GitLab users partially created.{save_msg}"
+        return False, f"{base}\nErrors:\n{error_summary}"
+
+    return True, f"GitLab users created successfully.{save_msg}".rstrip(".")
 
 
 def _process_credentials(
@@ -219,7 +237,4 @@ def setup_gitlab_users() -> Tuple[bool, str]:
 
     gl = get_gitlab_client(pat_or_error)
     success, error_msg, tokens = _process_credentials(gl, creds_path)
-    if not success:
-        return False, error_msg
-
-    return _finalize_user_tokens(tokens)
+    return _finalize_user_tokens(tokens, error_msg)
