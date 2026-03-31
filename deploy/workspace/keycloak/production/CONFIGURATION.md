@@ -36,8 +36,8 @@ cp .env.example .env
 Decide on whether you are testing locally or remotely.
 
 From now on whenever you see `<DOMAIN_NAME>` in this guide, replace it with
-your remote machines domain name. (Ensure that you remote machine has
-a domain name, and that it is accessible from the internet.)
+the domain name of your remote machine. Ensure that your remote machine has
+a domain name and that it is accessible from the internet.
 
 Go to the [Environment file](.env) and replace the current value of
 the `SERVER_DNS` variable with your domain name:

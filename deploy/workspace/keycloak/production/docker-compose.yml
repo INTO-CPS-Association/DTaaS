@@ -36,7 +36,6 @@ services:
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD?KEYCLOAK_ADMIN_PASSWORD_not_set}
-      - KC_HOSTNAME=${SERVER_DNS:-localhost}
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY_HEADERS=xforwarded
         # HTTP connection from Traefik (HTTPS is terminated at Traefik)
@@ -118,7 +117,7 @@ services:
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=oidc
-      - PROVIDERS_OIDC_ISSUER_URL=${KEYCLOAK_ISSUER_URL:-http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-dtaas}}
+      - PROVIDERS_OIDC_ISSUER_URL=${KEYCLOAK_ISSUER_URL}
       - PROVIDERS_OIDC_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
       - PROVIDERS_OIDC_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - SECRET=${OAUTH_SECRET}

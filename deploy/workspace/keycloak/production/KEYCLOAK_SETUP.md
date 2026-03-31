@@ -5,7 +5,9 @@ This guide explains how to configure Keycloak for authentication in the DTaaS wo
 ## Key Benefits
 
 ✅ **Standards-Based**: Uses OIDC/OAuth2 standards
+
 ✅ **Enterprise-Ready**: Supports SSO, MFA, user federation
+
 ✅ **Minimal Changes**: Environment-variable based configuration
 
 ## Overview
@@ -45,7 +47,7 @@ Keycloak-specific environment variables are:
 | `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
 | `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://intocps.org/auth/realms/dtaas` |
 
-Edit Keycloak-configuration in `config/.env`:
+Edit Keycloak-configuration in `.env`:
 
 ```bash
 # Keycloak Admin Credentials (for initial setup)
@@ -68,7 +70,7 @@ The following instructions are part of post-install step.
 
 1. Navigate to `https://intocps.org/auth`
 2. Click **Administration Console**
-3. Login with credentials from your `.env` file (default: `admin` / `admin`)
+3. Login with credentials from your `.env` file (default: `admin` / `changeme`)
 
 #### Create a Realm
 

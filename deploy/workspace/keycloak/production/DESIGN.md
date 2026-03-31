@@ -157,20 +157,17 @@ docker compose down -v
 
 ### Adding More Users
 
-To add additional workspace instances, add a new service in `compose.traefik.secure.tls.yml`:
+To add additional workspace instances, add a new service in `docker-compose.yml`:
 
 ```yaml
   user3:
-    image: workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
-    build:
-      context: ../..
-      dockerfile: Dockerfile.ubuntu.noble.gnome
     environment:
       - MAIN_USER=${USERNAME3:-user3}
     volumes:
       - "./files/common:/workspace/common"
-      - "./files/user3:/workspace"
+      - "./files/${USERNAME3:-user3}:/workspace"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME3:-user3}`)"
@@ -180,7 +177,7 @@ To add additional workspace instances, add a new service in `compose.traefik.sec
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](./config/.env):
+Add the desired `USERNAME3` variable in [`.env`](.env):
 
 ```bash
 # Username Configuration
@@ -200,13 +197,19 @@ rule.user3_access.rule=PathPrefix(`/user3`)
 rule.user3_access.whitelist = user3@localhost 
 ```
 
-Ensure that the username and email correspond to the workspaces GitLab user.
+Ensure that the username and email correspond to the workspaces user.
 
 Don't forget to create the user's directory:
 
 ```bash
-cp -r ./workspaces/test/dtaas/files/user1 ./workspaces/test/dtaas/files/user3
-sudo chown -R 1000:100 workspaces/test/dtaas/files
+cp -r files/template files/<USERNAME3>
+sudo chown -R 1000:100 files/<USERNAME3>
+```
+
+Bring up the user workspace.
+
+```bash
+docker compose up -d --force-recreate user3
 ```
 
 ### Using Different OAuth2 Providers

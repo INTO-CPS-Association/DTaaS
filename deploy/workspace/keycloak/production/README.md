@@ -59,15 +59,18 @@ This problem will be resolved during post-installation.
 👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
-[`CONFIGURATION.md`](CONFIGURATION.md).
-
-The application will be accessible at <https://intocps.org> from web browser.
-Login using the user credentials set in **keycloak**.
-
-⏹️ Stop the demo:
+[`CONFIGURATION.md`](CONFIGURATION.md). Restart `traefik-forward-auth`
 
 ```bash
 docker compose up -d --force-recreate traefik-forward-auth
+```
+
+The application will be accessible at <https://intocps.org> from web browser.
+Login using the user credentials set in **Keycloak**.
+
+Stop the demo:
+
+```bash
 docker compose down
 ```
 
@@ -86,8 +89,8 @@ Create user account for USERNAME3 in **Keycloak**.
 Create the user's workspace directory:
 
 ```bash
-cp -r files/user1 /files/<USERNAME3>
-sudo chown -R 1000:100 /files/<USERNAME3>
+cp -r files/template files/<USERNAME3>
+sudo chown -R 1000:100 files/<USERNAME3>
 ```
 
 Add a new service in `docker-compose.yml`:
@@ -140,7 +143,6 @@ rule.user3_access.whitelist = user3@localhost
 
 - Verify certificate files exist in `./certs/` directory
 - Check certificate file permissions
-- Ensure `config/tls.yml` correctly references certificate paths
 - For self-signed certs, add security exception in browser
 
 ### OAuth2 Issues
