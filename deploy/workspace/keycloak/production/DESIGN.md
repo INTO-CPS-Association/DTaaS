@@ -186,7 +186,7 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`conf`](./config/conf):
+Add Forward Auth config for user3 in [`forward-auth-conf`](./config/forward-auth-conf):
 
 ```txt
 

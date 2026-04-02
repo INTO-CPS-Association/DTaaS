@@ -55,7 +55,7 @@ docker compose up -d
 The following issues in application startup are expected behavior.
 This problem will be resolved during post-installation.
 
-👉 `dtaas-production-traefik-forward-auth-1` will be restarting at this stage.
+👉 `traefik-forward-auth` service will be restarting at this stage.
 👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
@@ -124,13 +124,13 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`conf`](config/forward-auth-conf):
+Add Forward Auth config for user3 in [`forward-auth-conf`](config/forward-auth-conf):
 
 ```txt
 
 rule.user3_access.action=auth
 rule.user3_access.rule=PathPrefix(`/user3`)
-rule.user3_access.whitelist = user3@localhost 
+rule.user3_access.whitelist = user3@localhost
 ```
 
 ## 🐛 Troubleshooting

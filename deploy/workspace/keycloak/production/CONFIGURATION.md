@@ -77,7 +77,7 @@ chmod 600 ./certs/privkey.pem
 ## 👥 Usernames
 
 The usernames of the main users for the workspaces can be changed in
-the [environment variable file](#-environment) `config/.env`.
+the [environment variable file](#-environment) `.env`.
 Change the default values (`user1` and `user2`) to your desired usernames:
 
 ```bash
@@ -148,7 +148,7 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
    KEYCLOAK_CLIENT_SECRET=your_client_secret_here
 
    # Keycloak Issuer URL
-   KEYCLOAK_ISSUER_URL=http://intocps.org/auth/realms/dtaas
+   KEYCLOAK_ISSUER_URL=https://<DOMAIN_NAME>/auth/realms/<REALM>
 
    # Secret key for encrypting OAuth session data
    # Generate a random string (at least 16 characters)
