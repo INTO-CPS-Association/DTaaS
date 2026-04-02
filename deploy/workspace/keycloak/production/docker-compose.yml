@@ -1,3 +1,8 @@
+# Production-ready deployment of DTaaS Workspaces
+# This configuration is intended for production use with TLS/HTTPS.
+
+name: dtaas-workspace
+
 services:
   traefik:
     image: traefik:v3.6.4

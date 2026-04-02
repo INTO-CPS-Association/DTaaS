@@ -14,8 +14,6 @@ deployments.
 
 ✅ Valid TLS certificates (production) or self-signed certs (testing)
 
-✅ OAuth2 provider (GitLab, GitHub, Google, etc.)  
-
 ✅ Domain name pointing to your server (production) or localhost (testing)
 
 ## 🗒️ Design
@@ -53,8 +51,8 @@ be created for `USERNAME1` and `USERNAME2` set in
 
 ```bash
 # create required files
-cp -R files/user1 files/<USERNAME1>
-cp -R files/user1 files/<USERNAME2>
+cp -R files/template files/<USERNAME1>
+cp -R files/template files/<USERNAME2>
 # set file permissions for use inside the container
 sudo chown -R 1000:100 files
 ```
@@ -212,32 +210,6 @@ Bring up the user workspace.
 docker compose up -d --force-recreate user3
 ```
 
-### Using Different OAuth2 Providers
-
-The configuration can be adapted for different OAuth2 providers by changing
-the environment variables in the `traefik-forward-auth` service:
-
-#### Google OAuth2
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=google
-  - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-  - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
-```
-
-#### Generic OIDC Provider
-
-```yaml
-environment:
-  - DEFAULT_PROVIDER=oidc
-  - PROVIDERS_OIDC_ISSUER_URL=https://your-oidc-provider.com
-  - PROVIDERS_OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
-  - PROVIDERS_OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
-  - SECRET=${OAUTH_SECRET}
-```
-
 ## 🐛 Troubleshooting
 
 ### Certificate Issues
@@ -261,20 +233,6 @@ environment:
 - Check `SERVER_DNS` environment variable is set correctly
 - Ensure `COOKIE_DOMAIN` matches your domain
 - Verify OAuth2 application is approved and active
-
-### Service Access Issues
-
-**Problem**: Cannot access workspace after authentication
-
-**Solutions**:
-
-- Check service health:
-  `docker compose -f compose.traefik.secure.tls.yml ps`
-- View logs: `docker compose -f compose.traefik.secure.tls.yml logs`
-- Verify Traefik routes:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik`
-- Test OAuth2 service:
-  `docker compose -f compose.traefik.secure.tls.yml logs traefik-forward-auth`
 
 ### Port Conflicts
 

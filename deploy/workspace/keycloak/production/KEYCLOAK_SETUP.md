@@ -28,13 +28,10 @@ User Request → Traefik → Forward Auth → Keycloak (OIDC)
 
 ## Quick Start
 
+In this guide, either `<DOMAIN_NAME>` OR `intocps.org` are used as
+placeholders for server hostname of the installation.
+
 ### 1. Configure Environment Variables
-
-Copy the example environment file and update it:
-
-```bash
-cp .env.example .env
-```
 
 Keycloak-specific environment variables are:
 
@@ -161,9 +158,7 @@ This requires a **public** client (no client secret) with PKCE enforced.
    - Click **Save**
 7. Verify scopes:
    - Go to the **Client Scopes** tab of the client
-   - Confirm that `openid` and `profile` are listed as assigned scopes
-8. Note the **Client ID** (`dtaas-client`) —
-   it is needed in `config/client.js` as `REACT_APP_CLIENT_ID`
+   - Confirm that `profile` is listed as an assigned scope
 
 ### 3. Restart Services
 
@@ -176,7 +171,7 @@ docker compose up -d
 
 ### 4. Test Authentication
 
-1. Navigate to `https://intocps.org/`
+1. Navigate to `https://intocps.org`
 2. You should be redirected to Keycloak login
 3. Login with one of the users you created
 4. You should be redirected back to the DTaaS landing page
