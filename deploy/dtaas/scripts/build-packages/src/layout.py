@@ -22,6 +22,11 @@ def env_example_name(scenario: Scenario) -> str:
     return ".env.server.example" if scenario.server else ".env.local.example"
 
 
+def readme_template_name(scenario: Scenario) -> str:
+    """Source README template name for scenario."""
+    return f"README.{scenario.name}.md"
+
+
 def build_packages_root(repo_root: Path) -> Path:
     """Directory containing build-packages scripts and config."""
     return repo_root / "deploy" / "dtaas" / "scripts" / "build-packages"

@@ -92,6 +92,10 @@ def seed_source_tree(tmp_path: Path) -> None:
         "traefik-forward-auth.png",
     ):
         (src / "assets" / image).write_bytes(b"png")
+    for scenario in ("localhost", "secure-localhost", "server", "secure-server"):
+        (src / f"README.{scenario}.md").write_text(
+            f"# {scenario}\n", encoding="utf-8"
+        )
     (src / "LICENSE.md").write_text("license", encoding="utf-8")
     (src / ".env.local.example").write_text("USERNAME1=user1", encoding="utf-8")
     (src / ".env.server.example").write_text(
@@ -186,9 +190,13 @@ def test_build_creates_expected_structure(tmp_path):
     secure_server = tmp_path / "deploy" / "dtaas" / "docker" / "secure-server"
 
     assert (localhost / "docker-compose.yml").exists()
+    assert (localhost / "README.md").exists()
     assert (secure_localhost / "docker-compose.yml").exists()
+    assert (secure_localhost / "README.md").exists()
     assert (server / "docker-compose.yml").exists()
+    assert (server / "README.md").exists()
     assert (secure_server / "docker-compose.yml").exists()
+    assert (secure_server / "README.md").exists()
 
     assert (localhost / "files" / "common").exists()
     assert (localhost / "files" / "user1").exists()
@@ -214,6 +222,17 @@ def test_build_creates_expected_structure(tmp_path):
     assert (secure_server / "certs" / "fullchain.pem").exists()
     assert (secure_server / "certs" / "privkey.pem").exists()
     assert not (secure_server / "certs" / "foo.com").exists()
+
+    assert (localhost / "README.md").read_text(encoding="utf-8").strip() == "# localhost"
+    assert (
+        (secure_localhost / "README.md").read_text(encoding="utf-8").strip()
+        == "# secure-localhost"
+    )
+    assert (server / "README.md").read_text(encoding="utf-8").strip() == "# server"
+    assert (
+        (secure_server / "README.md").read_text(encoding="utf-8").strip()
+        == "# secure-server"
+    )
 
     localhost_compose = (localhost / "docker-compose.yml").read_text(encoding="utf-8")
     secure_localhost_compose = (secure_localhost / "docker-compose.yml").read_text(

@@ -208,8 +208,10 @@ def _forward_auth_labels(secure: bool) -> list[str]:
     return [
         TRAEFIK_ENABLE_LABEL,
         f"traefik.http.routers.redirect.entryPoints={entrypoint}",
-        "traefik.http.routers.redirect.rule="
-        "Host(`${SERVER_DNS}`)&&PathPrefix(`/_oauth`)",
+        (
+            "traefik.http.routers.redirect.rule="
+            + "Host(`${SERVER_DNS}`)&&PathPrefix(`/_oauth`)"
+        ),
         "traefik.http.routers.redirect.middlewares=traefik-forward-auth",
         "traefik.http.middlewares.traefik-forward-auth.forwardauth."
         "address=http://traefik-forward-auth:4181",

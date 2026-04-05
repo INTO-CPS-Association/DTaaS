@@ -40,6 +40,10 @@ Running without flags defaults to `--build`.
 - `src/common/LICENSE.md` -> `<scenario>/LICENSE.md`
 - `src/common/.env.local.example` -> `<localhost*/.env.example>`
 - `src/common/.env.server.example` -> `<server*/.env.example>`
+- `src/common/README.localhost.md` -> `localhost/README.md`
+- `src/common/README.secure-localhost.md` -> `secure-localhost/README.md`
+- `src/common/README.server.md` -> `server/README.md`
+- `src/common/README.secure-server.md` -> `secure-server/README.md`
 - `src/common/config/**` -> `<scenario>/config/**` (scenario-specific subset)
 - `src/common/files/**` -> `<scenario>/files/**`
 - `src/common/assets/**` -> scenario-appropriate diagram images

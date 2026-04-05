@@ -6,10 +6,9 @@ import shutil
 from pathlib import Path
 
 from .filesystem import copy_file, ensure_dir, replace_tree, write_text
-from .layout import env_example_name
+from .layout import env_example_name, readme_template_name
 from .models import Images, SCENARIOS, Scenario
 from .compose_renderer import compose_content
-from .readme_renderer import package_readme
 
 
 def _copy_localhost_files(src: Path, dst: Path) -> None:
@@ -91,6 +90,7 @@ def _copy_scenario_asset(src: Path, dst: Path, scenario: Scenario) -> None:
 def _copy_common_files(src: Path, dst: Path, scenario: Scenario) -> None:
     copy_file(src / "LICENSE.md", dst / "LICENSE.md")
     copy_file(src / env_example_name(scenario), dst / ".env.example")
+    copy_file(src / readme_template_name(scenario), dst / "README.md")
 
 
 def copy_common_content(src: Path, dst: Path, scenario: Scenario) -> None:
@@ -116,7 +116,6 @@ def write_package(
     ensure_dir(target)
     copy_common_content(source_root, target, scenario)
     write_text(target / "docker-compose.yml", compose_content(scenario, images))
-    write_text(target / "README.md", package_readme(scenario))
 
 
 def clean_packages(output_root: Path) -> None:

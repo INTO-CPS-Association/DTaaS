@@ -1,4 +1,4 @@
-if (typeof globalThis.window !== 'undefined') {
+if (globalThis.window !== undefined) {
   globalThis.window.env = {
     REACT_APP_ENVIRONMENT: 'prod',
     REACT_APP_URL: 'https://foo.com/',

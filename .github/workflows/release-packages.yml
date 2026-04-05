@@ -30,6 +30,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Run package generator tests
+        working-directory: deploy/dtaas/scripts/build-packages
+        run: |
+          python -m pip install pytest
+          python -m pytest
+
       - name: Build DTaaS docker packages
         working-directory: deploy/dtaas
         run: python scripts/build-packages/build-packages.py --clean --build
