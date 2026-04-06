@@ -1,0 +1,8 @@
+{
+    "disksize": "200GB",
+    "hostname": "intocps.org",
+    "name": "dtaas",
+    "memory": 16384,
+    "cpus": 8,
+    "mac": "02163ee0bf12"
+}
