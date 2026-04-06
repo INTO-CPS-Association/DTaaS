@@ -17,7 +17,8 @@ apt-get install -y \
     apache2-utils \
     net-tools \
     python3-dev \
-    python3-pip
+    python3-pip \
+    python3-venv
 
 # Make zsh the default shell for vagrant user
 chsh -s /usr/bin/zsh vagrant
@@ -37,7 +38,9 @@ Signed-By: /etc/apt/keyrings/docker.asc
 EOF
 
 apt-get update
-apt-get install -y docker-ce=5:28.5.2-1~ubuntu.24.04~noble
+apt-get install -y \
+    docker-ce=5:28.5.2-1~ubuntu.24.04~noble \
+    docker-compose-plugin
 
 groupadd docker || true
 usermod -aG docker vagrant || true

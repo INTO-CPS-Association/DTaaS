@@ -11,6 +11,10 @@ The goals are:
   host the DTaaS software.
 * A ready-to-use development environment for code contributors.
 
+Requirements:
+[vagrant](https://developer.hashicorp.com/vagrant) along with
+[vagrant-disksize](https://github.com/sprotheroe/vagrant-disksize) plugin.
+
 Two provisioning scripts are provided:
 
 | Script name | Purpose | Default |
@@ -24,7 +28,7 @@ Developer installation can be skipped unless additional tooling is required.
 To enable developer provisioning, modify the `Vagrantfile`.
 The relevant lines are:
 
-```sh
+```ruby
     config.vm.provision "shell", path: "user.sh"
     #config.vm.provision "shell", path: "developer.sh"
 ```
