@@ -17,7 +17,7 @@ apt-get install -y ca-certificates curl gnupg
 sudo -u vagrant bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash'
 
 # Source nvm and install node + global packages in a single shell
-sudo -u vagrant bash << 'NODEEOF'
+sudo -u vagrant bash <<'NODEEOF'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm install 24
@@ -33,9 +33,9 @@ NVM_LINES='export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"'
 
-grep -q 'NVM_DIR' /home/vagrant/.bashrc || echo "$NVM_LINES" >> /home/vagrant/.bashrc
+grep -q 'NVM_DIR' /home/vagrant/.bashrc || echo "$NVM_LINES" >>/home/vagrant/.bashrc
 touch /home/vagrant/.zshrc
-grep -q 'NVM_DIR' /home/vagrant/.zshrc || echo "$NVM_LINES" >> /home/vagrant/.zshrc
+grep -q 'NVM_DIR' /home/vagrant/.zshrc || echo "$NVM_LINES" >>/home/vagrant/.zshrc
 chown vagrant:vagrant /home/vagrant/.bashrc /home/vagrant/.zshrc
 
 #-------------

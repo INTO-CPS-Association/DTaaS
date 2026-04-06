@@ -9,16 +9,16 @@ apt-get upgrade -y
 
 # https://docs.docker.com/engine/install/ubuntu/
 apt-get install -y \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
-    zsh \
-    apache2-utils \
-    net-tools \
-    python3-dev \
-    python3-pip \
-    python3-venv
+	ca-certificates \
+	curl \
+	gnupg \
+	lsb-release \
+	zsh \
+	apache2-utils \
+	net-tools \
+	python3-dev \
+	python3-pip \
+	python3-venv
 
 # Make zsh the default shell for vagrant user
 chsh -s /usr/bin/zsh vagrant
@@ -39,8 +39,8 @@ EOF
 
 apt-get update
 apt-get install -y \
-    docker-ce=5:28.5.2-1~ubuntu.24.04~noble \
-    docker-compose-plugin
+	docker-ce=5:28.5.2-1~ubuntu.24.04~noble \
+	docker-compose-plugin
 
 groupadd docker || true
 usermod -aG docker vagrant || true
