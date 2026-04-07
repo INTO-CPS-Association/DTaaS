@@ -15,6 +15,11 @@ import { Store } from 'redux';
 import userEvent from '@testing-library/user-event';
 import routes from 'routes';
 import { mockUserType } from 'test/__mocks__/global_mocks';
+import {
+  resolveOAuthDisplayName,
+  resolveOAuthProfileUrl,
+  resolveOAuthUsername,
+} from 'util/auth/oauthUserProfile';
 
 type RouterOptions = {
   route?: string;
@@ -225,17 +230,23 @@ export function testStaticAccountProfile(mockUser: mockUserType) {
   expect(profilePicture).toBeInTheDocument();
   expect(profilePicture).toHaveAttribute('src', mockUser.profile.picture);
 
-  const username = screen.getAllByText(
-    `${mockUser.profile.preferred_username}`,
+  const resolvedUsername = resolveOAuthUsername(mockUser.profile);
+  const displayName = resolveOAuthDisplayName(
+    mockUser.profile,
+    resolvedUsername,
   );
-  expect(username).not.toBeNull();
-  expect(username).toHaveLength(2);
+  const usernames = screen.getAllByText(`${displayName}`);
+  expect(usernames).not.toBeNull();
+  expect(usernames).toHaveLength(2);
 
   const profileLink = screen.getByRole('link', {
     name: /SSO OAuth Provider/i,
   });
   expect(profileLink).toBeInTheDocument();
-  expect(profileLink).toHaveAttribute('href', mockUser.profile.profile);
+  expect(profileLink).toHaveAttribute(
+    'href',
+    resolveOAuthProfileUrl(mockUser.profile),
+  );
 }
 
 export async function testAccountSettings(mockUser: mockUserType) {
@@ -248,7 +259,7 @@ export async function testAccountSettings(mockUser: mockUserType) {
     const settingsParagraph = screen.getByText(/Edit the profile on/);
     expect(settingsParagraph).toHaveProperty(
       'innerHTML',
-      `Edit the profile on <b><a href="${mockUser.profile.profile}">SSO OAuth Provider.</a></b>`,
+      `Edit the profile on <b><a href="${resolveOAuthProfileUrl(mockUser.profile)}">SSO OAuth Provider.</a></b>`,
     );
   });
 

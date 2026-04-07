@@ -2,6 +2,11 @@ import { createElement, Children, ReactNode } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import SettingsForm from 'route/account/SettingsForm';
+import {
+  resolveOAuthDisplayName,
+  resolveOAuthProfileUrl,
+  resolveOAuthUsername,
+} from 'util/auth/oauthUserProfile';
 
 function ListGroups(groups: string[]): ReactNode[] {
   const boldGroups = groups.map((group) =>
@@ -46,27 +51,36 @@ function GroupParagraph(groups: string[], name: ReactNode) {
 
 function ProfileTab() {
   const { user } = useAuth();
-  const name = user?.profile.preferred_username ?? '';
+  const username = resolveOAuthUsername(user?.profile);
+  const name = resolveOAuthDisplayName(user?.profile, username);
   const pfp = user?.profile.picture;
-  const profileUrl = user?.profile.profile;
+  const profileUrl = resolveOAuthProfileUrl(user?.profile);
 
   const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
   const isGroupsAString = typeof groups === 'string';
   const groupsArray = isGroupsAString ? [groups] : groups;
   const groupParagraph = GroupParagraph(groupsArray, name);
+  const profileSettingsText = (
+    <>
+      You can edit your profile details and change password on{' '}
+      <b>
+        <a href={profileUrl} target="_blank" rel="noreferrer">
+          SSO OAuth Provider.
+        </a>
+      </b>
+    </>
+  );
+  const profileNotAvailableText = (
+    <>Your OAuth provider did not expose a profile URL.</>
+  );
 
   return (
     <div>
       <h2>Profile</h2>
       <img src={pfp} alt="Avatar" data-testid="profile-picture" />
       <p>
-        The username is <b>{name}</b>. You can edit your profile details and
-        change password on{' '}
-        <b>
-          <a href={profileUrl} target="_blank" rel="noreferrer">
-            SSO OAuth Provider.
-          </a>
-        </b>
+        The username is <b>{name}</b>.{' '}
+        {profileUrl ? profileSettingsText : profileNotAvailableText}
       </p>
       {groupParagraph}
     </div>
@@ -74,16 +88,19 @@ function ProfileTab() {
 }
 
 function SettingsTab() {
-  const profileUrl = useAuth().user?.profile.profile;
+  const profileUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
+  const profileSettingsText = profileUrl ? (
+    <b>
+      <a href={profileUrl}>SSO OAuth Provider.</a>
+    </b>
+  ) : (
+    'your SSO OAuth Provider account page.'
+  );
+
   return (
     <div>
       <h2>Settings</h2>
-      <p>
-        Edit the profile on{' '}
-        <b>
-          <a href={profileUrl}>SSO OAuth Provider.</a>
-        </b>
-      </p>
+      <p>Edit the profile on {profileSettingsText}</p>
 
       <SettingsForm />
     </div>

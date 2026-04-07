@@ -67,3 +67,22 @@ User accounts must be created in GitLab for all usernames chosen during
 installation. The _trial_ installation script includes two default
 usernames - _user1_ and _user2_. For all other installation scenarios,
 accounts with specific usernames must be created on GitLab.
+
+## Username claim resolution for OIDC providers
+
+DTaaS resolves the logged-in username from common OIDC claims so that
+multiple providers are supported (e.g., GitLab, Keycloak, Dex).
+
+The client checks claims in this order:
+
+1. `preferred_username`
+2. `username`
+3. `nickname`
+4. `login`
+5. local part of `email` (before `@`)
+6. local part of `upn` (before `@`)
+7. last path segment of `profile` URL (GitLab-compatible fallback)
+8. `sub`
+
+This order preserves existing GitLab behavior while allowing providers
+that do not expose `profile` URLs to authenticate correctly.

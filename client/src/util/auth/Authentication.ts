@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
 import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
+import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 export interface CustomAuthContext {
   signoutRedirect: () => Promise<void>;
@@ -18,9 +19,8 @@ export function useGetAndSetUsername() {
     if (!auth.user) {
       return;
     }
-    const profileUrl = auth.user.profile.profile ?? '';
-    const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
-    sessionStorage.setItem('username', username ?? '');
+    const username = resolveOAuthUsername(auth.user.profile);
+    sessionStorage.setItem('username', username);
     dispatch(setUserName(username));
   };
   return getAndSetUsername;
