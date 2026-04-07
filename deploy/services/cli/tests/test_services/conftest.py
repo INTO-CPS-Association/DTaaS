@@ -16,6 +16,8 @@ def _create_mock_config_instance(extra_keys=None):
         "HOSTNAME": "test.example.com",
         "POSTGRES_UID": "999",
         "POSTGRES_GID": "999",
+        "POSTGRES_USER": "dtaas_user",
+        "POSTGRES_PASSWORD": "dtaas_secret",  # noqa: S105 # NOSONAR
     }
     if extra_keys:
         config_dict.update(extra_keys)

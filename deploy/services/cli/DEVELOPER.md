@@ -79,7 +79,8 @@ cli/
 │       ├── formatter.py    # Output formatting utilities
 │       ├── password_store.py # Tracks current service passwords in current.passwords.env
 │       ├── template.py     # Project structure and template file management
-│       ├── utils.py        # Shared utilities (Docker, file operations)
+│       ├── docker_utils.py # Docker command execution with retry logic
+│       ├── utils.py        # Shared utilities (credentials, container state)
 │       ├── lib/            # Core service management
 │       │   ├── __init__.py
 │       │   ├── manager.py  # Docker Compose service management
@@ -99,7 +100,8 @@ cli/
 │           ├── postgres/   # PostgreSQL service module
 │           │   ├── __init__.py
 │           │   ├── postgres.py     # Certificate setup and readiness waiting
-│           │   └── status.py       # Container health and state checking
+│           │   ├── status.py       # Container health and state checking
+│           │   └── user_management.py  # User and database creation
 │           └── thingsboard/
 │          │    ├── __init__.py
 │          │    ├── activation.py    # Shared user activation utilities
@@ -128,6 +130,7 @@ cli/
     ├── test_config.py
     ├── test_formatter.py
     ├── test_template.py
+    ├── test_docker_utils.py
     ├── test_utils.py
     ├── test_commands/
     │   ├── __init__.py
@@ -156,7 +159,8 @@ cli/
     │   ├── test_postgres/
     │   │   ├── __init__.py
     │   │   ├── test_postgres.py
-    │   │   └── test_status.py
+    │   │   ├── test_status.py
+    │   │   └── test_user_management.py
     │   ├── test_thingsboard/
     │   │   ├── __init__.py
     │   │   ├── test_permissions.py
@@ -213,7 +217,10 @@ The package uses a modular, three-layer architecture:
   tracks the last-known password for each service account so that
   `reset-password` can be run repeatedly
 * **`template.py`**: Project structure and template file management
-* **`utils.py`**: Shared utilities (Docker operations, credentials handling)
+* **`docker_utils.py`**: Docker command execution helpers — error formatting,
+  `execute_docker_command`, and `execute_docker_command_with_retry`
+* **`utils.py`**: Shared utilities (credentials file handling, container state
+  helpers, root-check, CI detection)
 * **`lib/`**: Core service management modules
   * `manager.py`: Docker Compose service management
   * `docker_executor.py`: Docker command execution

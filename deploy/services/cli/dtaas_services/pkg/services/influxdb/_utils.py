@@ -2,7 +2,7 @@
 
 import json
 from typing import Any
-from ...utils import execute_docker_command
+from ...docker_utils import execute_docker_command
 
 
 def parse_json_response(json_str: str) -> tuple[bool, Any, str]:

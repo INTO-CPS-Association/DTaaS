@@ -9,7 +9,7 @@ import gitlab.exceptions
 
 from .personal_token import _load_pat_from_tokens
 from ...config import Config
-from ...utils import execute_docker_command
+from ...docker_utils import execute_docker_command
 from ...password_store import save_password
 from ._api import get_gitlab_client
 

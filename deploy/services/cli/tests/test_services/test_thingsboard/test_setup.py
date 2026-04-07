@@ -86,7 +86,7 @@ def test_setup_thingsboard_users_tenant_setup_fails(mocker):
     assert success is False
 
 
-def test_authenticate_as_sysadmin_configured_pw(mocker, monkeypatch):
+def test_authenticate_as_sysadmin_configured_pw(mocker):
     """Test sysadmin auth succeeds with configured password"""
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",
@@ -98,7 +98,7 @@ def test_authenticate_as_sysadmin_configured_pw(mocker, monkeypatch):
     assert ok is True
 
 
-def test_authenticate_as_sysadmin_both_fail(mocker, monkeypatch):
+def test_authenticate_as_sysadmin_both_fail(mocker):
     """Test sysadmin auth fails when authenticate_session fails"""
     mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.authenticate_session",

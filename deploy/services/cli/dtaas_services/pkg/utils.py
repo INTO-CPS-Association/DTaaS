@@ -6,8 +6,6 @@ import os
 import csv
 import platform
 from typing import Callable, Tuple
-from python_on_whales import DockerClient
-from python_on_whales.exceptions import DockerException
 from .config import Config
 
 
@@ -40,90 +38,6 @@ def get_container_health_status(container) -> str:
     except (AttributeError, TypeError):
         return "unknown state"
     return "unknown state"
-
-
-def _get_stderr_content(error_str: str) -> str:
-    """Extract stderr content from Docker error string.
-
-    Args:
-        error_str: Full error string from DockerException
-
-    Returns:
-        Stderr content or empty string if not found
-    """
-    if "stderr is '" not in error_str:
-        return ""
-    parts = error_str.split("stderr is '", 1)
-    if len(parts) <= 1:
-        return ""
-    return parts[1].split("'")[0]
-
-
-def _process_stderr_lines(stderr_content: str) -> str:
-    """Process stderr content to extract meaningful error message.
-
-    Args:
-        stderr_content: Raw stderr content
-
-    Returns:
-        Processed error message
-    """
-    lines = [
-        line.strip() for line in stderr_content.strip().split("\n") if line.strip()
-    ]
-    if not lines:
-        return "Unknown error"
-    if len(lines) > 1 and lines[0] == "Error:":
-        return ": ".join(lines[:2])
-    return lines[0]
-
-
-def _extract_stderr_line(error_str: str) -> str:
-    """Extract just the stderr line from Docker error for cleaner display.
-    Args:
-        error_str: Full error string from DockerException
-    Returns:
-        Clean error message (stderr line or first line if not found)
-    """
-    stderr_content = _get_stderr_content(error_str)
-    if stderr_content:
-        return _process_stderr_lines(stderr_content)
-    return error_str.split("\n")[0]
-
-
-def _format_docker_error(container: str, error_str: str) -> str:
-    if "No such container" in error_str:
-        return (
-            f"Container '{container}' is not running. "
-            f"Please start services first with: dtaas-services start"
-        )
-    clean_error = _extract_stderr_line(error_str)
-    return f"Docker error: {clean_error}"
-
-
-def execute_docker_command(
-    container_name: str, exec_cmd: list[str], verbose: bool = True
-) -> tuple[bool, str]:
-    """
-    Execute a command in a Docker container.
-
-    Args:
-        container_name: Name of the Docker container
-        exec_cmd: Command to execute as a list of arguments
-        verbose: Whether to print output
-    Returns:
-        Tuple of (success, output/error message)
-    """
-    docker = DockerClient()
-    try:
-        result = docker.execute(container_name, exec_cmd)
-    except DockerException as e:
-        error_str = str(e)
-        error_msg = _format_docker_error(container_name, error_str)
-        if verbose:
-            print(error_msg)
-        return False, error_msg
-    return True, str(result) if result is not None else ""
 
 
 def _is_running_unix_system() -> bool:

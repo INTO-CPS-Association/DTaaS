@@ -6,6 +6,8 @@ import click
 from rich.console import Console
 from ..pkg.services.influxdb import influxdb
 from ..pkg.services import rabbitmq
+from ..pkg.services.mongodb import setup_mongodb_users
+from ..pkg.services.postgres import setup_postgres_users
 from ..pkg.services.thingsboard import (
     setup_thingsboard_users,
     reset_thingsboard_password,
@@ -63,6 +65,8 @@ def _setup_all_service_users(console: Console) -> list[bool]:
     return [
         _setup_service_users(console, "InfluxDB", influxdb.setup_influxdb_users),
         _setup_service_users(console, "RabbitMQ", rabbitmq.setup_rabbitmq_users),
+        _setup_service_users(console, "MongoDB", setup_mongodb_users),
+        _setup_service_users(console, "PostgreSQL", setup_postgres_users),
         _setup_service_users(console, "ThingsBoard", setup_thingsboard_users),
         _setup_service_users(console, "GitLab", setup_gitlab_users),
     ]
@@ -77,6 +81,8 @@ def _setup_specific_service(console: Console, service_name: str) -> bool | None:
     service_map = {
         "influxdb": ("InfluxDB", influxdb.setup_influxdb_users),
         "rabbitmq": ("RabbitMQ", rabbitmq.setup_rabbitmq_users),
+        "mongodb": ("MongoDB", setup_mongodb_users),
+        "postgres": ("PostgreSQL", setup_postgres_users),
         "thingsboard": ("ThingsBoard", setup_thingsboard_users),
         "gitlab": ("GitLab", setup_gitlab_users),
     }
@@ -112,7 +118,7 @@ def _print_user_add_summary(results: Sequence[bool | None]) -> None:
 )
 def add(service_names):
     """
-    Add user accounts to InfluxDB, RabbitMQ, and ThingsBoard.
+    Add user accounts to InfluxDB, RabbitMQ, MongoDB, and ThingsBoard.
     Reads config/credentials.csv and creates accounts in all services.
     Example:
         dtaas-services user add

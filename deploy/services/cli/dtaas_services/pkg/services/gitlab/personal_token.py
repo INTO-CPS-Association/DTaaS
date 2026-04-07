@@ -11,7 +11,7 @@ import gitlab
 import gitlab.exceptions
 
 from ...config import Config
-from ...utils import execute_docker_command
+from ...docker_utils import execute_docker_command
 
 logger = logging.getLogger(__name__)
 

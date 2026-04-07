@@ -23,6 +23,12 @@ def mock_user_pkg(mocker):
     """Mock user management modules - setup and reset functions"""
     mock_influx = mocker.patch("dtaas_services.commands.user_ops.influxdb")
     mock_rabbit = mocker.patch("dtaas_services.commands.user_ops.rabbitmq")
+    mock_mongodb = mocker.patch("dtaas_services.commands.user_ops.setup_mongodb_users")
+    mock_mongodb.return_value = (True, "Added")
+    mock_postgres = mocker.patch(
+        "dtaas_services.commands.user_ops.setup_postgres_users"
+    )
+    mock_postgres.return_value = (True, "Added")
     mock_thingsboard = mocker.patch(
         "dtaas_services.commands.user_ops.setup_thingsboard_users"
     )
@@ -44,6 +50,8 @@ def mock_user_pkg(mocker):
     return {
         "influxdb": mock_influx,
         "rabbitmq": mock_rabbit,
+        "mongodb": mock_mongodb,
+        "postgres": mock_postgres,
         "thingsboard": mock_thingsboard,
         "gitlab": mock_gitlab,
         "reset_thingsboard": mock_reset_thingsboard,
@@ -63,6 +71,7 @@ def test_add_users_influxdb_fails(runner, mock_user_pkg):
         True,
         "Added to RabbitMQ",
     )
+    mock_user_pkg["mongodb"].return_value = (True, "Added to MongoDB")
     mock_user_pkg["thingsboard"].return_value = (
         True,
         "Added to ThingsBoard",
@@ -87,6 +96,7 @@ def test_add_users_both_fail(runner, mock_user_pkg):
         False,
         "RabbitMQ failed",
     )
+    mock_user_pkg["mongodb"].return_value = (False, "MongoDB failed")
     mock_user_pkg["thingsboard"].return_value = (
         False,
         "ThingsBoard failed",
@@ -108,6 +118,7 @@ def test_add_users_mixed_results(runner, mock_user_pkg):
         False,
         "Connection refused",
     )
+    mock_user_pkg["mongodb"].return_value = (True, "Added")
     mock_user_pkg["thingsboard"].return_value = (True, "Added")
     mock_user_pkg["gitlab"].return_value = (True, "Added")
     result = runner.invoke(services, ["user", "add"])
@@ -182,6 +193,7 @@ def test_add_users_all_services_success(runner, mock_user_pkg):
     """Test user add with all services succeeding"""
     mock_user_pkg["influxdb"].setup_influxdb_users.return_value = (True, "Added")
     mock_user_pkg["rabbitmq"].setup_rabbitmq_users.return_value = (True, "Added")
+    mock_user_pkg["mongodb"].return_value = (True, "Added")
     mock_user_pkg["thingsboard"].return_value = (True, "Added")
     mock_user_pkg["gitlab"].return_value = (True, "Added")
     result = runner.invoke(services, ["user", "add"])

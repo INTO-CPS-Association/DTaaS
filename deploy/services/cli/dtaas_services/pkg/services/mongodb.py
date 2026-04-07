@@ -1,5 +1,6 @@
 """MongoDB installation, service and user management."""
 
+import time
 from typing import Tuple
 from ..config import Config
 from ..cert import (
@@ -7,6 +8,85 @@ from ..cert import (
     set_service_cert_permissions,
     CertPermissionContext,
 )
+from ..utils import (
+    process_credentials_file,
+    create_users_from_credentials,
+)
+from ..docker_utils import execute_docker_command
+
+ALREADY_EXISTS_CODE = 51003
+
+
+def _build_create_user_script(username: str, password: str) -> str:
+    """Build a mongosh JavaScript script to create a user.
+
+    Args:
+        username: MongoDB username (also used as database name)
+        password: MongoDB user password
+
+    Returns:
+        JavaScript eval string for mongosh
+    """
+    safe_user = username.replace("\\", "\\\\").replace("'", "\\'")
+    safe_pass = password.replace("\\", "\\\\").replace("'", "\\'")
+    return (
+        f"try {{ db.getSiblingDB('{safe_user}').createUser("
+        f"{{user: '{safe_user}', pwd: '{safe_pass}', "
+        f"roles: [{{role: 'readWrite', db: '{safe_user}'}}]}}) }} "
+        f"catch(e) {{ if (e.code === {ALREADY_EXISTS_CODE})"
+        f" {{ print('already exists'); }} else {{ throw e; }} }}"
+    )
+
+
+def _add_mongodb_user(username: str, password: str) -> tuple[bool, str]:
+    """Add a MongoDB user with their own database.
+
+    Args:
+        username: MongoDB username (also used as database name)
+        password: MongoDB user password
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    config = Config()
+    admin_user = config.get_value("MONGODB_ADMIN_USERNAME")
+    admin_pass = config.get_value("MONGODB_ADMIN_PASSWORD")
+
+    cmd = [
+        "mongosh",
+        "--tls",
+        "--tlsAllowInvalidCertificates",
+        "-u",
+        admin_user,
+        "-p",
+        admin_pass,
+        "--authenticationDatabase",
+        "admin",
+        "--eval",
+        _build_create_user_script(username, password),
+    ]
+    max_attempts = 3
+    output = ""
+    for attempt in range(max_attempts):
+        success, output = execute_docker_command("mongodb", cmd, verbose=False)
+        if success or "already exists" in output:
+            return True, ""
+        if attempt < max_attempts - 1:
+            time.sleep(4)
+    return False, f"Failed to add MongoDB user {username}: {output}"
+
+
+def setup_mongodb_users() -> tuple[bool, str]:
+    """Add users to MongoDB service.
+
+    Returns:
+        Tuple of (success, message)
+    """
+    return process_credentials_file(
+        lambda creds_file: create_users_from_credentials(creds_file, _add_mongodb_user),
+        "MongoDB",
+        "MongoDB users created successfully",
+    )
 
 
 def permissions_mongodb() -> Tuple[bool, str]:

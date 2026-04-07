@@ -6,8 +6,8 @@ from typing import Tuple
 from ..utils import (
     process_credentials_file,
     create_users_from_credentials,
-    execute_docker_command,
 )
+from ..docker_utils import execute_docker_command
 from ..config import Config
 from ..cert import set_service_cert_permissions, CertPermissionContext
 
