@@ -107,6 +107,9 @@ def test_run_psql_docker_exception(mocker):
 
 def test_add_postgres_user_success(mocker):
     """Both psql calls succeed — returns (True, '')."""
+    mocker.patch(
+        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
+    )
     mock_run = mocker.patch(f"{USER_MODULE}._run_psql", return_value=(True, ""))
     ok, err = _add_postgres_user("alice", "pass")
     assert ok is True
@@ -116,6 +119,9 @@ def test_add_postgres_user_success(mocker):
 
 def test_add_postgres_user_create_user_fails(mocker):
     """User creation fails — stops before database creation."""
+    mocker.patch(
+        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
+    )
     mocker.patch(
         f"{USER_MODULE}._run_psql",
         return_value=(False, "connection refused"),
@@ -127,6 +133,9 @@ def test_add_postgres_user_create_user_fails(mocker):
 
 def test_add_postgres_user_create_db_fails(mocker):
     """Database creation fails — returns failure."""
+    mocker.patch(
+        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
+    )
     responses = [(True, ""), (False, "disk full")]
     mocker.patch(f"{USER_MODULE}._run_psql", side_effect=responses)
     ok, err = _add_postgres_user("alice", "pass")
@@ -136,6 +145,9 @@ def test_add_postgres_user_create_db_fails(mocker):
 
 def test_add_postgres_user_already_exists(mocker):
     """'already exists' for both calls is treated as success."""
+    mocker.patch(
+        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
+    )
     mocker.patch(
         f"{USER_MODULE}._run_psql",
         return_value=(False, "ERROR: role already exists"),

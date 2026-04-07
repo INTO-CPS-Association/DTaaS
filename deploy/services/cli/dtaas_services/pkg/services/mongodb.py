@@ -1,6 +1,5 @@
 """MongoDB installation, service and user management."""
 
-import time
 from typing import Tuple
 from ..config import Config
 from ..cert import (
@@ -12,7 +11,7 @@ from ..utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
-from ..docker_utils import execute_docker_command
+from ..docker_utils import execute_docker_command_with_retry
 
 ALREADY_EXISTS_CODE = 51003
 
@@ -65,14 +64,9 @@ def _add_mongodb_user(username: str, password: str) -> tuple[bool, str]:
         "--eval",
         _build_create_user_script(username, password),
     ]
-    max_attempts = 3
-    output = ""
-    for attempt in range(max_attempts):
-        success, output = execute_docker_command("mongodb", cmd, verbose=False)
-        if success or "already exists" in output:
-            return True, ""
-        if attempt < max_attempts - 1:
-            time.sleep(4)
+    success, output = execute_docker_command_with_retry("mongodb", cmd)
+    if success or "already exists" in output:
+        return True, ""
     return False, f"Failed to add MongoDB user {username}: {output}"
 
 

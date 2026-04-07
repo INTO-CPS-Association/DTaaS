@@ -16,7 +16,7 @@ def mock_config(mocker):
     yield mock
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def mock_user_config(mocker):
     """Mock Config class for user_management module"""
     mock = mocker.patch(f"{USER_MODULE}.Config")

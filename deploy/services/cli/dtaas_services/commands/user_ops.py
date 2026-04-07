@@ -118,7 +118,7 @@ def _print_user_add_summary(results: Sequence[bool | None]) -> None:
 )
 def add(service_names):
     """
-    Add user accounts to InfluxDB, RabbitMQ, MongoDB, and ThingsBoard.
+    Add user accounts to InfluxDB, RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab.
     Reads config/credentials.csv and creates accounts in all services.
     Example:
         dtaas-services user add

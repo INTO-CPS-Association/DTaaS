@@ -2,7 +2,6 @@
 
 from pathlib import Path
 from unittest.mock import Mock, mock_open
-import pytest
 from dtaas_services.pkg.services.mongodb import (
     _add_mongodb_user,
     _build_create_user_script,
@@ -11,23 +10,6 @@ from dtaas_services.pkg.services.mongodb import (
 )
 from dtaas_services.pkg.utils import create_users_from_credentials
 # pylint: disable=W0621
-
-
-@pytest.fixture
-def mock_config(mocker):
-    """Mock Config class"""
-    mock = mocker.patch("dtaas_services.pkg.services.mongodb.Config")
-    mock_instance = Mock()
-    mock_instance.get_value.side_effect = lambda key: {
-        "HOSTNAME": "test.example.com",
-        "MONGO_UID": "999",
-        "MONGO_GID": "999",
-        "MONGODB_ADMIN_USERNAME": "adminuser",
-        "MONGODB_ADMIN_PASSWORD": "adminpass",
-    }.get(key, "default")
-    mock.return_value = mock_instance
-    mock.get_base_dir.return_value = Path("/test/base")
-    return mock
 
 
 def test_build_create_user_script_basic():
@@ -49,7 +31,7 @@ def test_build_create_user_script_escapes_special_chars():
 def test_add_mongodb_user_success(mocker):
     """Test successful MongoDB user addition"""
     mock_exec = mocker.patch(
-        "dtaas_services.pkg.services.mongodb.execute_docker_command"
+        "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
     )
     mock_exec.return_value = (True, "success")
     success, error = _add_mongodb_user("testuser", "testpass")
@@ -61,7 +43,7 @@ def test_add_mongodb_user_success(mocker):
 def test_add_mongodb_user_already_exists(mocker):
     """Test MongoDB user addition when user already exists"""
     mock_exec = mocker.patch(
-        "dtaas_services.pkg.services.mongodb.execute_docker_command"
+        "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
     )
     mock_exec.return_value = (False, "already exists")
     success, error = _add_mongodb_user("testuser", "testpass")
@@ -72,7 +54,7 @@ def test_add_mongodb_user_already_exists(mocker):
 def test_add_mongodb_user_fails(mocker):
     """Test MongoDB user addition failure"""
     mock_exec = mocker.patch(
-        "dtaas_services.pkg.services.mongodb.execute_docker_command"
+        "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
     )
     mock_exec.return_value = (False, "connection refused")
     success, error = _add_mongodb_user("testuser", "testpass")
