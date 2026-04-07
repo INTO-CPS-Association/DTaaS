@@ -58,7 +58,9 @@ describe('oauthUserProfile', () => {
     });
 
     it('uses fallback username when no display claims are available', () => {
-      expect(resolveOAuthDisplayName({}, 'fallback-user')).toBe('fallback-user');
+      expect(resolveOAuthDisplayName({}, 'fallback-user')).toBe(
+        'fallback-user',
+      );
     });
   });
 
@@ -82,6 +84,14 @@ describe('oauthUserProfile', () => {
 
     it('returns undefined when no profile URL is exposed', () => {
       expect(resolveOAuthProfileUrl({})).toBeUndefined();
+    });
+
+    it('returns undefined for unsafe URL schemes', () => {
+      expect(
+        resolveOAuthProfileUrl({
+          profile: 'data:text/plain;base64,Zm9v',
+        }),
+      ).toBeUndefined();
     });
   });
 });

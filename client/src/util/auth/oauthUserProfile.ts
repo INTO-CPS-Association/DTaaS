@@ -8,6 +8,7 @@ const USERNAME_CLAIM_PRIORITY = [
 ] as const;
 
 const PROFILE_URL_CLAIM_PRIORITY = ['profile', 'html_url'] as const;
+const ALLOWED_PROFILE_URL_PROTOCOLS = new Set(['http:', 'https:']);
 
 function getClaim(profile: OAuthProfile, claim: string): string | undefined {
   if (!profile) {
@@ -29,7 +30,9 @@ function getEmailLocalPart(identifier: string | undefined): string | undefined {
   return localPart && localPart.length > 0 ? localPart : undefined;
 }
 
-function getUsernameFromProfileUrl(profileUrl: string | undefined): string | undefined {
+function getUsernameFromProfileUrl(
+  profileUrl: string | undefined,
+): string | undefined {
   if (!profileUrl) {
     return undefined;
   }
@@ -39,8 +42,19 @@ function getUsernameFromProfileUrl(profileUrl: string | undefined): string | und
   return username && username.length > 0 ? username : undefined;
 }
 
-function firstDefinedValue(values: Array<string | undefined>): string | undefined {
+function firstDefinedValue(
+  values: Array<string | undefined>,
+): string | undefined {
   return values.find((value) => value !== undefined);
+}
+
+function isSafeExternalUrl(urlValue: string): boolean {
+  try {
+    const parsedUrl = new URL(urlValue);
+    return ALLOWED_PROFILE_URL_PROTOCOLS.has(parsedUrl.protocol);
+  } catch {
+    return false;
+  }
 }
 
 export function resolveOAuthUsername(profile: OAuthProfile): string {
@@ -79,5 +93,9 @@ export function resolveOAuthProfileUrl(
   const profileClaimValues = PROFILE_URL_CLAIM_PRIORITY.map((claim) =>
     getClaim(profile, claim),
   );
-  return firstDefinedValue(profileClaimValues);
+  const profileUrl = firstDefinedValue(profileClaimValues);
+  if (!profileUrl) {
+    return undefined;
+  }
+  return isSafeExternalUrl(profileUrl) ? profileUrl : undefined;
 }

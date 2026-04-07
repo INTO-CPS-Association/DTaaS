@@ -3,7 +3,6 @@ import { useAuth } from 'react-oidc-context';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import SettingsForm from 'route/account/SettingsForm';
 import {
-  resolveOAuthDisplayName,
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
@@ -52,14 +51,13 @@ function GroupParagraph(groups: string[], name: ReactNode) {
 function ProfileTab() {
   const { user } = useAuth();
   const username = resolveOAuthUsername(user?.profile);
-  const name = resolveOAuthDisplayName(user?.profile, username);
   const pfp = user?.profile.picture;
   const profileUrl = resolveOAuthProfileUrl(user?.profile);
 
   const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
   const isGroupsAString = typeof groups === 'string';
   const groupsArray = isGroupsAString ? [groups] : groups;
-  const groupParagraph = GroupParagraph(groupsArray, name);
+  const groupParagraph = GroupParagraph(groupsArray, username);
   const profileSettingsText = (
     <>
       You can edit your profile details and change password on{' '}
@@ -79,7 +77,7 @@ function ProfileTab() {
       <h2>Profile</h2>
       <img src={pfp} alt="Avatar" data-testid="profile-picture" />
       <p>
-        The username is <b>{name}</b>.{' '}
+        The username is <b>{username}</b>.{' '}
         {profileUrl ? profileSettingsText : profileNotAvailableText}
       </p>
       {groupParagraph}
