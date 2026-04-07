@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Creates the base environment for running the DTaaS application
+
+require 'json'
+conf = JSON.parse(File.read('config.json'))
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'cloud-image/ubuntu-24.04'
+  config.disksize.size = conf['disksize']
+  config.vm.hostname = conf['hostname']
+  config.vm.network 'public_network', mac: conf['mac']
+  config.vm.synced_folder '.', '/vagrant'
+
+  config.vm.provider 'virtualbox' do |vb|
+    vb.name = conf['name']
+    vb.memory = conf['memory']
+    vb.cpus = conf['cpus']
+    vb.customize ['modifyvm', :id, '--pae', 'on']
+    vb.customize ['modifyvm', :id, '--ioapic', 'on']
+  end
+
+  config.vm.provision 'shell', path: 'user.sh'
+  # config.vm.provision 'shell', path: 'developer.sh'
+end
