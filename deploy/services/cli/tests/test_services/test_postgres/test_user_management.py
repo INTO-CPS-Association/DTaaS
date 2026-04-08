@@ -1,16 +1,11 @@
 """Tests for PostgreSQL user management."""
 
-from unittest.mock import Mock, mock_open
 from dtaas_services.pkg.services.postgres.user_management import (
     _add_postgres_user,
-    _create_database_sql,
-    _create_user_sql,
     _get_admin_credentials,
-    _handle_psql_result,
     _run_psql,
     setup_postgres_users,
 )
-from dtaas_services.pkg.utils import create_users_from_credentials
 
 USER_MODULE = "dtaas_services.pkg.services.postgres.user_management"
 # pylint: disable=W0621
@@ -61,7 +56,6 @@ def test_add_postgres_user_create_user_fails(mocker):
     assert "Failed to create user alice" in err
 
 
-
 def test_setup_postgres_users_success(mocker):
     """Credentials processed successfully returns (True, success message)."""
     mocker.patch(
@@ -71,4 +65,3 @@ def test_setup_postgres_users_success(mocker):
     ok, msg = setup_postgres_users()
     assert ok is True
     assert "successfully" in msg
-

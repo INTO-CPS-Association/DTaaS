@@ -6,7 +6,6 @@ from dtaas_services.pkg.docker_utils import (
     _attempt_docker_exec,
     execute_docker_command,
     execute_docker_command_with_retry,
-    _get_stderr_content,
     _process_stderr_lines,
     _extract_stderr_line,
     _format_docker_error,
@@ -109,5 +108,3 @@ def test_execute_docker_command_with_retry_all_attempts_fail(mocker):
     success, output = execute_docker_command_with_retry("c", ["cmd"], max_attempts=3)
     assert success is False
     assert output == "still failing"
-
-

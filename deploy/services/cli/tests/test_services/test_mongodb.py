@@ -1,15 +1,14 @@
 """Tests for MongoDB user management"""
 
 from pathlib import Path
-from unittest.mock import Mock, mock_open
+from unittest.mock import Mock
 from dtaas_services.pkg.services.mongodb import (
     _add_mongodb_user,
-    _build_create_user_script,
     permissions_mongodb,
     setup_mongodb_users,
 )
-from dtaas_services.pkg.utils import create_users_from_credentials
 # pylint: disable=W0621
+
 
 def test_add_mongodb_user_success(mocker):
     """Test successful MongoDB user addition"""
