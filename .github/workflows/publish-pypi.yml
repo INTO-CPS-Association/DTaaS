@@ -1,0 +1,47 @@
+﻿name: Publish Python Package to PyPI
+
+'on':
+  workflow_call:
+    inputs:
+      working-directory:
+        description: 'Directory containing the Python package'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Name of the build artifact to download'
+        required: true
+        type: string
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
+
+jobs:
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Download dist artefacts
+        # v4.1.8
+        uses: actions/download-artifact@fa0a91b85d4f404e444306234a0672c20cc434ce
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.working-directory }}/dist
+
+      - name: Publish to PyPI
+        # v1.10.0
+        # yamllint disable-line rule:line-length
+        uses: pypa/gh-action-pypi-publish@76f52fcd0d1af15e46fe0b1a4d9d0c24ecbcbf2e
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: >-
+            ${{ inputs.working-directory }}/dist

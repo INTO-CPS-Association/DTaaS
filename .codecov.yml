@@ -1,5 +1,5 @@
 comment:
-  layout: "header, diff, files, components"  # show component info in the PR comment
+  layout: "header, diff, files, components"
 
 coverage:
   status:

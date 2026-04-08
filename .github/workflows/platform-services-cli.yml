@@ -4,6 +4,8 @@ name: Platform Services CLI
   push:
     paths:
       - 'deploy/services/cli/**'
+    tags:
+      - 'dtaas-services-v*'
   pull_request:
     paths:
       - 'deploy/services/cli/**'
@@ -27,3 +29,16 @@ jobs:
         deploy/services/cli/dist/*.whl
         deploy/services/cli/dist/*.tar.gz
       run-pyright: true
+
+  publish-services-cli:
+    name: Publish Platform Services CLI to PyPI
+    needs: [test-services-cli]
+    if: startsWith(github.ref, 'refs/tags/dtaas-services-v')
+    permissions:
+      contents: read
+    uses: ./.github/workflows/publish-pypi.yml
+    with:
+      working-directory: deploy/services/cli
+      artifact-name: dtaas-cli
+    secrets:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
