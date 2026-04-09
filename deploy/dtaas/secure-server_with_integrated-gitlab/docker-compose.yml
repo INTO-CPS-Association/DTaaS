@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.6.4
+    image: traefik:v3.6.13
     restart: unless-stopped
     command:
       - "--log.level=DEBUG"
@@ -18,17 +18,17 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./tls.yml:/etc/traefik/tls.yml"
+      - "./config/tls.yml:/etc/traefik/tls.yml"
       - "./certs:/etc/traefik-certs"
     networks:
       - frontend
       - users
 
   client:
-    image: intocps/dtaas-web:new-workspace
+    image: intocps/dtaas-web:1.0.2
     restart: unless-stopped
     volumes:
-      - "./env.js:/dtaas/client/build/env.js"
+      - "./config/env.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/`)"
@@ -39,7 +39,7 @@ services:
       - frontend
 
   user1:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME1:-user1}
@@ -55,7 +55,7 @@ services:
       - users
 
   user2:
-    image: intocps/workspace:latest
+    image: intocps/workspace:main-967bc10
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME2:-user2}
@@ -71,7 +71,7 @@ services:
       - users
 
   libms:
-    image: intocps/libms:latest
+    image: intocps/libms:0.5.9
     restart: unless-stopped
     volumes:
       - ./files/common:/dtaas/libms/files
@@ -85,16 +85,16 @@ services:
       - frontend
 
   traefik-forward-auth:
-    image: thomseddon/traefik-forward-auth:2.2.0
+    image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
-      - "./conf.server:/conf"
+      - "./config/conf.server:/conf"
     environment:
       - LOG_LEVEL=trace
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
-      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=${OAUTH_INTERNAL_URL}/oauth/token
-      - PROVIDERS_GENERIC_OAUTH_USER_URL=${OAUTH_INTERNAL_URL}/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=http://gitlab/gitlab/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=http://gitlab/gitlab/api/v4/user
       - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
       - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
       - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
@@ -111,6 +111,36 @@ services:
     networks:
       - frontend
       - users
+
+  gitlab:
+    image: 'gitlab/gitlab-ce:18.10.1-ce.0'
+    container_name: gitlab
+    restart: always
+    hostname: ${SERVER_DNS}
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://${SERVER_DNS}/gitlab'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+        nginx['listen_port'] = 80
+        nginx['enable'] = true
+        nginx['listen_https'] = false
+        nginx['redirect_http_to_https'] = false
+        letsencrypt['enable'] = false
+    volumes:
+      - './config/gitlab:/etc/gitlab'
+      - './logs:/var/log/gitlab'
+      - './data:/var/opt/gitlab'
+    shm_size: '256m'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitlab.entryPoints=web-secure"
+      - "traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/gitlab`)"
+      - "traefik.http.routers.gitlab.service=gitlab"
+      - "traefik.http.services.gitlab.loadbalancer.server.port=80"
+      - "traefik.http.routers.gitlab.tls=true"
+    networks:
+      - frontend
+
 
 networks:
   frontend:
