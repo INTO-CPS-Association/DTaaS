@@ -15,6 +15,9 @@ DTs on DTaaS.
 with other users. It is also possible to share the services
 offered by one DT with other users.
 
+<img src="docs/user/dtaas-demo-v0.7.gif"
+alt="DTaaS demonstration video showing the platform interface" />
+
 ## :rocket: Install and Use
 
 Please use the latest release available on
