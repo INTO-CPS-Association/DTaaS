@@ -46,7 +46,7 @@ The `docker-compose.yml` starts the following services:
 ```bash
 cp config/.env.example       config/.env
 cp config/conf.server.example config/conf.server
-cp config/env.js.example     config/env.js
+cp config/client.js.example     config/client.js
 ```
 
 Edit `config/.env` — set `SERVER_DNS`, `USERNAME1`, `USERNAME2`.
@@ -58,8 +58,8 @@ See [CONFIG.md](CONFIG.md) for a complete reference of every variable.
 ### 2. Create User Workspace Directories
 
 ```bash
-cp -R files/user1 files/<USERNAME1>
-cp -R files/user1 files/<USERNAME2>
+cp -R files/template files/<USERNAME1>
+cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files/*
 ```
 
@@ -90,8 +90,7 @@ watch docker ps
 Once the GitLab container shows as `healthy`:
 
 1. Log in to `https://intocps.org/gitlab` as `root`.
-   The initial password is inside the container at
-   `/etc/gitlab/initial_root_password`.
+   The initial password is inside `config/gitlab/initial_root_password`.
 
    > [!WARNING]
    > This file is **deleted 24 hours** after the first start.
@@ -111,7 +110,7 @@ Once the GitLab container shows as `healthy`:
 
 1. Update configuration files with the generated OAuth 2.0 tokens:
    - Set `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
-     `config/env.js`.
+     `config/client.js`.
    - Set `OAUTH_URL`, `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` in
      `config/.env`.
 
@@ -144,7 +143,7 @@ docker compose --env-file config/.env down
 ├── config/
 │   ├── .env               # Docker compose environment variables
 │   ├── conf.server        # Traefik forward-auth authorization rules
-│   ├── env.js             # DTaaS React client configuration
+│   ├── client.js             # DTaaS React client configuration
 │   ├── gitlab/            # GitLab config (mounted as /etc/gitlab)
 │   └── tls.yml            # Traefik TLS provider configuration
 ├── data/                  # GitLab persistent data (/var/opt/gitlab)
@@ -167,7 +166,7 @@ The sections relevant for administrators are summarized below.
 | Topic | Description |
 | :--- | :--- |
 | [Installation overview](https://into-cps-association.github.io/DTaaS/development/admin/overview.html) | Comparison of all installation setups (localhost, server, vagrant, packages) |
-| [Client configuration](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html) | All React client `env.js` variables explained |
+| [Client configuration](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html) | All React client `client.js` variables explained |
 | [Client OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html) | Creating the OAuth 2.0 application for the React frontend |
 | [Server OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html) | Creating the OAuth 2.0 application for Traefik forward-auth |
 | [GitLab installation](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/index.html) | Setting up a local GitLab instance |

@@ -14,31 +14,31 @@ in this package. For the quick-start installation guide, see
 ## :page_facing_up: Table of Contents
 
 - [:gear: Configuration Reference](#gear-configuration-reference)
-  - [:page_facing_up: Table of Contents](#page_facing_up-table-of-contents)
+  - [:page\_facing\_up: Table of Contents](#page_facing_up-table-of-contents)
   - [:wrench: config/.env — Docker Compose Environment](#wrench-configenv--docker-compose-environment)
-    - [:desktop_computer: Server Settings](#desktop_computer-server-settings)
+    - [:desktop\_computer: Server Settings](#desktop_computer-server-settings)
     - [:key: OAuth 2.0 Settings](#key-oauth-20-settings)
     - [:link: How Variables Map to Services](#link-how-variables-map-to-services)
-  - [:globe_with_meridians: config/env.js — DTaaS Web Client](#globe_with_meridians-configenvjs--dtaas-web-client)
-    - [:bookmark_tabs: Variable Reference](#bookmark_tabs-variable-reference)
+  - [:globe\_with\_meridians: config/client.js — DTaaS Web Client](#globe_with_meridians-configclientjs--dtaas-web-client)
+    - [:bookmark\_tabs: Variable Reference](#bookmark_tabs-variable-reference)
     - [:bulb: Example](#bulb-example)
   - [:shield: config/conf.server — Traefik Forward-Auth Rules](#shield-configconfserver--traefik-forward-auth-rules)
     - [:pencil: Format](#pencil-format)
-    - [:page_with_curl: Default Rules](#page_with_curl-default-rules)
+    - [:page\_with\_curl: Default Rules](#page_with_curl-default-rules)
     - [:warning: Important Rules](#warning-important-rules)
   - [:lock: certs/ — TLS Certificates](#lock-certs--tls-certificates)
-  - [:file_folder: files/ — User Workspace Directories](#file_folder-files--user-workspace-directories)
-  - [:closed_lock_with_key: OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)
+  - [:file\_folder: files/ — User Workspace Directories](#file_folder-files--user-workspace-directories)
+  - [:closed\_lock\_with\_key: OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)
     - [:computer: DTaaS Client Authorization (React Frontend)](#computer-dtaas-client-authorization-react-frontend)
     - [:satellite: DTaaS Server Authorization (Traefik Forward-Auth)](#satellite-dtaas-server-authorization-traefik-forward-auth)
-    - [:arrows_counterclockwise: Reload After Configuration](#arrows_counterclockwise-reload-after-configuration)
-  - [:busts_in_silhouette: Adding More Users](#busts_in_silhouette-adding-more-users)
+    - [:arrows\_counterclockwise: Reload After Configuration](#arrows_counterclockwise-reload-after-configuration)
+  - [:busts\_in\_silhouette: Adding More Users](#busts_in_silhouette-adding-more-users)
   - [:mag: Troubleshooting](#mag-troubleshooting)
-    - [:hourglass_flowing_sand: GitLab Takes Too Long to Start](#hourglass_flowing_sand-gitlab-takes-too-long-to-start)
+    - [:hourglass\_flowing\_sand: GitLab Takes Too Long to Start](#hourglass_flowing_sand-gitlab-takes-too-long-to-start)
     - [:repeat: Authentication Redirect Loop](#repeat-authentication-redirect-loop)
-    - [:no_entry_sign: 404 on User Workspace](#no_entry_sign-404-on-user-workspace)
+    - [:no\_entry\_sign: 404 on User Workspace](#no_entry_sign-404-on-user-workspace)
     - [:construction: GitLab "502 Bad Gateway"](#construction-gitlab-502-bad-gateway)
-    - [:closed_lock_with_key: Self-Signed Certificate Warning in Browser](#closed_lock_with_key-self-signed-certificate-warning-in-browser)
+    - [:closed\_lock\_with\_key: Self-Signed Certificate Warning in Browser](#closed_lock_with_key-self-signed-certificate-warning-in-browser)
 
 ---
 
@@ -85,15 +85,15 @@ OAuth 2.0 applications have been created (see [OAuth 2.0 Application Setup](#oau
 
 ---
 
-## :globe_with_meridians: config/env.js — DTaaS Web Client
+## :globe_with_meridians: config/client.js — DTaaS Web Client
 
-Source: `config/env.js.example`
+Source: `config/client.js.example`
 
 This JavaScript file is mounted into the React client container and
 configures the DTaaS web application at runtime.
 
 ```bash
-cp config/env.js.example config/env.js
+cp config/client.js.example config/client.js
 ```
 
 ### :bookmark_tabs: Variable Reference
@@ -258,8 +258,8 @@ GitLab.
    - **Confidential**: unticked (public SPA client)
    - **Scopes**: `openid`, `profile`, `read_user`, `read_repository`, `api`
 1. Save the **Application ID**.
-1. Set `REACT_APP_CLIENT_ID` in `config/env.js` to this Application ID.
-1. Set `REACT_APP_AUTH_AUTHORITY` in `config/env.js` to
+1. Set `REACT_APP_CLIENT_ID` in `config/client.js` to this Application ID.
+1. Set `REACT_APP_AUTH_AUTHORITY` in `config/client.js` to
    `https://intocps.org/gitlab`.
 
 For full details, see the
@@ -360,7 +360,7 @@ Ensure the host has at least 4 GB RAM available for GitLab.
 
 1. Verify `OAUTH_URL` in `config/.env` matches the URL accessible from
    the user's browser (e.g. `https://intocps.org/gitlab`).
-1. Verify `REACT_APP_AUTH_AUTHORITY` in `config/env.js` matches the same URL.
+1. Verify `REACT_APP_AUTH_AUTHORITY` in `config/client.js` matches the same URL.
 1. Clear browser cookies for the domain.
 1. Check traefik-forward-auth logs:
    `docker compose --env-file config/.env logs traefik-forward-auth`

@@ -28,7 +28,7 @@ services:
     image: intocps/dtaas-web:1.0.2
     restart: unless-stopped
     volumes:
-      - "./config/env.js:/dtaas/client/build/env.js"
+      - "./config/client.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/`)"
