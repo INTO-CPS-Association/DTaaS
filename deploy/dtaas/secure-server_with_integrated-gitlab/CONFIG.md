@@ -1,4 +1,4 @@
-# Configuration Reference
+# :gear: Configuration Reference
 
 This document provides a detailed reference for every configuration file
 in this package. For the quick-start installation guide, see
@@ -11,38 +11,38 @@ in this package. For the quick-start installation guide, see
 
 ---
 
-## Table of Contents
+## :page_facing_up: Table of Contents
 
-- [Configuration Reference](#configuration-reference)
-  - [Table of Contents](#table-of-contents)
-  - [config/.env — Docker Compose Environment](#configenv--docker-compose-environment)
-    - [Server Settings](#server-settings)
-    - [OAuth 2.0 Settings](#oauth-20-settings)
-    - [How Variables Map to Services](#how-variables-map-to-services)
-  - [config/env.js — DTaaS Web Client](#configenvjs--dtaas-web-client)
-    - [Variable Reference](#variable-reference)
-    - [Example](#example)
-  - [config/conf.server — Traefik Forward-Auth Rules](#configconfserver--traefik-forward-auth-rules)
-    - [Format](#format)
-    - [Default Rules](#default-rules)
-    - [Important Rules](#important-rules)
-  - [certs/ — TLS Certificates](#certs--tls-certificates)
-  - [files/ — User Workspace Directories](#files--user-workspace-directories)
-  - [OAuth 2.0 Application Setup](#oauth-20-application-setup)
-    - [DTaaS Client Authorization (React Frontend)](#dtaas-client-authorization-react-frontend)
-    - [DTaaS Server Authorization (Traefik Forward-Auth)](#dtaas-server-authorization-traefik-forward-auth)
-    - [Reload After Configuration](#reload-after-configuration)
-  - [Adding More Users](#adding-more-users)
-  - [Troubleshooting](#troubleshooting)
-    - [GitLab Takes Too Long to Start](#gitlab-takes-too-long-to-start)
-    - [Authentication Redirect Loop](#authentication-redirect-loop)
-    - [404 on User Workspace](#404-on-user-workspace)
-    - [GitLab "502 Bad Gateway"](#gitlab-502-bad-gateway)
-    - [Self-Signed Certificate Warning in Browser](#self-signed-certificate-warning-in-browser)
+- [:gear: Configuration Reference](#gear-configuration-reference)
+  - [:page_facing_up: Table of Contents](#page_facing_up-table-of-contents)
+  - [:wrench: config/.env — Docker Compose Environment](#wrench-configenv--docker-compose-environment)
+    - [:desktop_computer: Server Settings](#desktop_computer-server-settings)
+    - [:key: OAuth 2.0 Settings](#key-oauth-20-settings)
+    - [:link: How Variables Map to Services](#link-how-variables-map-to-services)
+  - [:globe_with_meridians: config/env.js — DTaaS Web Client](#globe_with_meridians-configenvjs--dtaas-web-client)
+    - [:bookmark_tabs: Variable Reference](#bookmark_tabs-variable-reference)
+    - [:bulb: Example](#bulb-example)
+  - [:shield: config/conf.server — Traefik Forward-Auth Rules](#shield-configconfserver--traefik-forward-auth-rules)
+    - [:pencil: Format](#pencil-format)
+    - [:page_with_curl: Default Rules](#page_with_curl-default-rules)
+    - [:warning: Important Rules](#warning-important-rules)
+  - [:lock: certs/ — TLS Certificates](#lock-certs--tls-certificates)
+  - [:file_folder: files/ — User Workspace Directories](#file_folder-files--user-workspace-directories)
+  - [:closed_lock_with_key: OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)
+    - [:computer: DTaaS Client Authorization (React Frontend)](#computer-dtaas-client-authorization-react-frontend)
+    - [:satellite: DTaaS Server Authorization (Traefik Forward-Auth)](#satellite-dtaas-server-authorization-traefik-forward-auth)
+    - [:arrows_counterclockwise: Reload After Configuration](#arrows_counterclockwise-reload-after-configuration)
+  - [:busts_in_silhouette: Adding More Users](#busts_in_silhouette-adding-more-users)
+  - [:mag: Troubleshooting](#mag-troubleshooting)
+    - [:hourglass_flowing_sand: GitLab Takes Too Long to Start](#hourglass_flowing_sand-gitlab-takes-too-long-to-start)
+    - [:repeat: Authentication Redirect Loop](#repeat-authentication-redirect-loop)
+    - [:no_entry_sign: 404 on User Workspace](#no_entry_sign-404-on-user-workspace)
+    - [:construction: GitLab "502 Bad Gateway"](#construction-gitlab-502-bad-gateway)
+    - [:closed_lock_with_key: Self-Signed Certificate Warning in Browser](#closed_lock_with_key-self-signed-certificate-warning-in-browser)
 
 ---
 
-## config/.env — Docker Compose Environment
+## :wrench: config/.env — Docker Compose Environment
 
 Source: `config/.env.example`
 
@@ -52,7 +52,7 @@ This file provides environment variables consumed by `docker-compose.yml`.
 cp config/.env.example config/.env
 ```
 
-### Server Settings
+### :desktop_computer: Server Settings
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
@@ -61,7 +61,7 @@ cp config/.env.example config/.env
 | `USERNAME2` | `user2` | Path prefix and workspace name for the second user |
 | `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name (rarely needs changing) |
 
-### OAuth 2.0 Settings
+### :key: OAuth 2.0 Settings
 
 These are populated after the GitLab instance is running and
 OAuth 2.0 applications have been created (see [OAuth 2.0 Application Setup](#oauth-20-application-setup)).
@@ -73,7 +73,7 @@ OAuth 2.0 applications have been created (see [OAuth 2.0 Application Setup](#oau
 | `OAUTH_CLIENT_SECRET` | _(from GitLab)_ | Secret from the **DTaaS Server Authorization** OAuth 2.0 application |
 | `OAUTH_SECRET` | _(random string)_ | Encryption key for OAuth session cookies. Generate with: `openssl rand -base64 32` |
 
-### How Variables Map to Services
+### :link: How Variables Map to Services
 
 | Variable | Used by |
 | :--- | :--- |
@@ -85,7 +85,7 @@ OAuth 2.0 applications have been created (see [OAuth 2.0 Application Setup](#oau
 
 ---
 
-## config/env.js — DTaaS Web Client
+## :globe_with_meridians: config/env.js — DTaaS Web Client
 
 Source: `config/env.js.example`
 
@@ -96,7 +96,7 @@ configures the DTaaS web application at runtime.
 cp config/env.js.example config/env.js
 ```
 
-### Variable Reference
+### :bookmark_tabs: Variable Reference
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
@@ -113,7 +113,7 @@ cp config/env.js.example config/env.js
 | `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Where users land after sign-out |
 | `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | OAuth 2.0 scopes requested during sign-in |
 
-### Example
+### :bulb: Example
 
 ```js
 if (typeof window !== 'undefined') {
@@ -136,7 +136,7 @@ if (typeof window !== 'undefined') {
 
 ---
 
-## config/conf.server — Traefik Forward-Auth Rules
+## :shield: config/conf.server — Traefik Forward-Auth Rules
 
 Source: `config/conf.server.example`
 
@@ -148,7 +148,7 @@ Each rule restricts a URL path to specific GitLab email addresses.
 cp config/conf.server.example config/conf.server
 ```
 
-### Format
+### :pencil: Format
 
 ```text
 rule.<NAME>.action=auth
@@ -156,7 +156,7 @@ rule.<NAME>.rule=PathPrefix(`/<path>`)
 rule.<NAME>.whitelist=<email>
 ```
 
-### Default Rules
+### :page_with_curl: Default Rules
 
 ```text
 rule.libms.action=auth
@@ -174,7 +174,7 @@ rule.onlyu2.whitelist=user2@emailservice.com
 Replace `user1`, `user2`, and the email addresses to match the actual
 GitLab accounts.
 
-### Important Rules
+### :warning: Important Rules
 
 > [!WARNING]
 > **Usernames must be consistent.** The usernames in `config/.env`
@@ -190,7 +190,7 @@ GitLab accounts.
 
 ---
 
-## certs/ — TLS Certificates
+## :lock: certs/ — TLS Certificates
 
 Place the TLS certificate files here:
 
@@ -217,7 +217,7 @@ self-signed certificates. Browsers will show a security warning.
 
 ---
 
-## files/ — User Workspace Directories
+## :file_folder: files/ — User Workspace Directories
 
 Each user workspace container mounts a directory from `files/` as
 its `/workspace` volume. The `files/common/` directory is shared
@@ -242,13 +242,13 @@ workspace container.
 
 ---
 
-## OAuth 2.0 Application Setup
+## :closed_lock_with_key: OAuth 2.0 Application Setup
 
 After the GitLab instance is running, two OAuth 2.0 applications must be
 registered to connect DTaaS and Traefik forward-auth to the integrated
 GitLab.
 
-### DTaaS Client Authorization (React Frontend)
+### :computer: DTaaS Client Authorization (React Frontend)
 
 1. In GitLab, go to **Admin Area → Applications** (or the user's
    **Edit Profile → Applications**).
@@ -265,7 +265,7 @@ GitLab.
 For full details, see the
 [client auth documentation](https://into-cps-association.github.io/DTaaS/version0.8/admin/client/auth.html).
 
-### DTaaS Server Authorization (Traefik Forward-Auth)
+### :satellite: DTaaS Server Authorization (Traefik Forward-Auth)
 
 1. In GitLab, go to **Admin Area → Applications**.
 1. Create a new application:
@@ -282,7 +282,7 @@ For full details, see the
 For full details, see the
 [server auth documentation](https://into-cps-association.github.io/DTaaS/version0.8/admin/servers/auth.html).
 
-### Reload After Configuration
+### :arrows_counterclockwise: Reload After Configuration
 
 After updating the OAuth 2.0 tokens in the configuration files, reload
 the affected services:
@@ -293,7 +293,7 @@ docker compose --env-file config/.env up -d --force-recreate client traefik-forw
 
 ---
 
-## Adding More Users
+## :busts_in_silhouette: Adding More Users
 
 To add a third user:
 
@@ -348,15 +348,15 @@ To add a third user:
 
 ---
 
-## Troubleshooting
+## :mag: Troubleshooting
 
-### GitLab Takes Too Long to Start
+### :hourglass_flowing_sand: GitLab Takes Too Long to Start
 
 GitLab CE requires significant resources. The first startup may take
 5–10 minutes. Monitor with `docker compose --env-file config/.env logs -f gitlab`.
 Ensure the host has at least 4 GB RAM available for GitLab.
 
-### Authentication Redirect Loop
+### :repeat: Authentication Redirect Loop
 
 1. Verify `OAUTH_URL` in `config/.env` matches the URL accessible from
    the user's browser (e.g. `https://intocps.org/gitlab`).
@@ -365,18 +365,18 @@ Ensure the host has at least 4 GB RAM available for GitLab.
 1. Check traefik-forward-auth logs:
    `docker compose --env-file config/.env logs traefik-forward-auth`
 
-### 404 on User Workspace
+### :no_entry_sign: 404 on User Workspace
 
 - Ensure `USERNAME1`/`USERNAME2` in `config/.env` matches the
   `PathPrefix` in `config/conf.server`.
 - Ensure a corresponding service exists in `docker-compose.yml`.
 
-### GitLab "502 Bad Gateway"
+### :construction: GitLab "502 Bad Gateway"
 
 GitLab is still initializing. Wait until `docker ps` shows the
 container as `healthy`.
 
-### Self-Signed Certificate Warning in Browser
+### :closed_lock_with_key: Self-Signed Certificate Warning in Browser
 
 TLS certificate files are missing or invalid in `certs/`. Replace them
 with valid certificates for your domain.

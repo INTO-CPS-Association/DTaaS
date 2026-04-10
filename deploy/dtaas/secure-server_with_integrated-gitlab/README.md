@@ -12,7 +12,7 @@ configuration reference, see [CONFIG.md](CONFIG.md).
 > this guide. Replace it with the actual server hostname of your
 > installation.
 
-## Overview
+## :globe_with_meridians: Overview
 
 This package installs the DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
@@ -31,7 +31,7 @@ The `docker-compose.yml` starts the following services:
 | **traefik-forward-auth** | OAuth 2.0 authorization middleware |
 | **gitlab** | Integrated GitLab CE (OAuth 2.0 provider) |
 
-## Prerequisites
+## :clipboard: Prerequisites
 
 | Requirement | Details |
 | :--- | :--- |
@@ -39,7 +39,7 @@ The `docker-compose.yml` starts the following services:
 | **Domain name** | A domain name (e.g. `intocps.org`) or IP address |
 | **TLS certificate** | `fullchain.pem` and `privkey.pem` for the domain. Obtain via [certbot](https://certbot.eff.org/) or a certificate provider |
 
-## Quick Start
+## :rocket: Quick Start
 
 ### 1. Create Configuration Files
 
@@ -85,7 +85,7 @@ Wait a few minutes for GitLab to become healthy:
 watch docker ps
 ```
 
-### 5. Configure GitLab
+### 5. Configure GitLab :fox_face:
 
 Once the GitLab container shows as `healthy`:
 
@@ -121,7 +121,7 @@ Once the GitLab container shows as `healthy`:
    docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
    ```
 
-### 6. Verify
+### 6. Verify :white_check_mark:
 
 | URL | Expected result |
 | :--- | :--- |
@@ -130,13 +130,13 @@ Once the GitLab container shows as `healthy`:
 | `https://intocps.org/user1` | User 1 workspace (after sign-in) |
 | `https://intocps.org/user2` | User 2 workspace (after sign-in) |
 
-## Stop
+## :stop_sign: Stop
 
 ```bash
 docker compose --env-file config/.env down
 ```
 
-## Directory Layout
+## :file_folder: Directory Layout
 
 ```text
 .
@@ -158,7 +158,7 @@ docker compose --env-file config/.env down
 └── README.md              # This file — quick-start guide
 ```
 
-## Administration Summary
+## :book: Administration Summary
 
 The full DTaaS documentation is available at
 <https://into-cps-association.github.io/DTaaS/>.
@@ -180,13 +180,13 @@ OAuth2 integration between the integrated GitLab instance and DTaaS requires
 additional configuration after the initial installation. Follow the
 [integration guide](INTEGRATION.md) to complete the OAuth2 setup.
 
-## Documentation
+## :link: Documentation
 
 Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## References
+## :framed_picture: References
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
