@@ -108,11 +108,14 @@ Once the GitLab container shows as `healthy`:
    - **DTaaS Server Authorization** — for Traefik forward-auth backend.
      See [server auth docs](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html).
 
-1. Update configuration files with the generated OAuth 2.0 tokens:
+1. Update configuration files (`config/.env` and `config/client.js`) with
+   the generated OAuth 2.0 tokens:
    - Set `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
      `config/client.js`.
    - Set `OAUTH_URL`, `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` in
      `config/.env`.
+
+1. Update user permissions in `config/conf.server`.
 
 1. Reload the services:
 
