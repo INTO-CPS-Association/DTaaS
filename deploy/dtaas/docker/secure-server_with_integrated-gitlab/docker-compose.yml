@@ -3,9 +3,10 @@ services:
     image: traefik:v3.6.13
     restart: unless-stopped
     command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
+      - "--log.level=INFO"
+      - "--api.insecure=false"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web-secure.address=:443"
       - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
@@ -94,7 +95,7 @@ services:
     volumes:
       - "./config/conf.server:/conf"
     environment:
-      - LOG_LEVEL=trace
+      - LOG_LEVEL=info
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
       - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=http://gitlab/gitlab/oauth/token

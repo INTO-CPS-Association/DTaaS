@@ -222,19 +222,19 @@ self-signed certificates. Browsers will show a security warning.
 
 Each user workspace container mounts a directory from `files/` as
 its `/workspace` volume. The `files/common/` directory is shared
-read-only across all workspaces.
+across all workspaces and mounted to `/workspace/common` in each
+container.
 
 ```text
 files/
 ├── common/    # Shared files (mounted to /workspace/common in each container)
-├── user1/     # User 1 workspace files
-└── user2/     # User 2 workspace files
+└── template/  # template workspace files
 ```
 
 Create directories for each user:
 
 ```bash
-cp -R files/user1 files/<USERNAME>
+cp -R files/template files/<USERNAME>
 sudo chown -R 1000:100 files/*
 ```
 

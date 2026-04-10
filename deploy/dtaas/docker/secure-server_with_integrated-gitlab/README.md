@@ -178,10 +178,6 @@ The sections relevant for administrators are summarized below.
 | [CLI tool](https://into-cps-association.github.io/DTaaS/development/admin/cli.html) | Command-line interface for managing a DTaaS installation |
 | [Renew TLS certificates](https://into-cps-association.github.io/DTaaS/development/admin/guides/renew_certs.html) | Updating expired TLS certificates |
 
-OAuth2 integration between the integrated GitLab instance and DTaaS requires
-additional configuration after the initial installation. Follow the
-[integration guide](INTEGRATION.md) to complete the OAuth2 setup.
-
 ## :link: Documentation
 
 Please see
