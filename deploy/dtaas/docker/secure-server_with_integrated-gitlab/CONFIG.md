@@ -64,7 +64,8 @@ cp config/.env.example config/.env
 ### :key: OAuth 2.0 Settings
 
 These are populated after the GitLab instance is running and
-OAuth 2.0 applications have been created (see [OAuth 2.0 Application Setup](#oauth-20-application-setup)).
+OAuth 2.0 applications have been created (see
+[OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)).
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |

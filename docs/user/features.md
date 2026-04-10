@@ -70,5 +70,5 @@ need not be registered users of the DTaaS installation.
 
 ## References
 
-[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
-     as a Service platform." Simulation 101.3 (2025): 287-311.
+Talasila, Prasad, et al. "Composable digital twins on Digital Twin
+as a Service platform." Simulation 101.3 (2025): 287-311.
