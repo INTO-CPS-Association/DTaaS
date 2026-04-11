@@ -10,7 +10,7 @@
     a production web server.
 <!-- markdownlint-enable MD046 -->
 
-Two optional requirements exist for installing the DTaaS.
+Two optional requirements exist for installing the DTaaS and Workspace.
 
 ## OAuth 2.0 Provider
 

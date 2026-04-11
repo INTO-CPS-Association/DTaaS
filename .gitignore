@@ -226,10 +226,20 @@ deploy/services/cli/dtaas_services/log
 deploy/workspace/keycloak/production/config/client.js
 deploy/workspace/keycloak/production/config/forward-auth-conf
 
+# dtaas secure server
+deploy/dtaas/docker/secure-server/config/.env
+deploy/dtaas/docker/secure-server/config/client.js
+deploy/dtaas/docker/secure-server/config/conf.server
+deploy/dtaas/docker/secure-server/certs/fullchain.pem
+deploy/dtaas/docker/secure-server/certs/privkey.pem
+
 # dtaas secure server with integrated gitlab
-deploy/dtaas/secure-server_with_integrated-gitlab/config/client.js
-deploy/dtaas/secure-server_with_integrated-gitlab/config/conf.server
-deploy/dtaas/secure-server_with_integrated-gitlab/config/gitlab/*
-!deploy/dtaas/secure-server_with_integrated-gitlab/config/gitlab/.gitkeep
-deploy/dtaas/secure-server_with_integrated-gitlab/data
-!deploy/dtaas/secure-server_with_integrated-gitlab/data/.gitkeep
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/client.js
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/conf.server
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/gitlab/*
+!deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/gitlab/.gitkeep
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/fullchain.pem
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/privkey.pem
+deploy/dtaas/docker/secure-server_with_integrated-gitlab/data
+!deploy/dtaas/docker/secure-server_with_integrated-gitlab/data/.gitkeep
