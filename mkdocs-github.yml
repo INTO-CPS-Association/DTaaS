@@ -66,24 +66,50 @@ nav:
   - Admin:
       - Installation Scenarios:
           - Overview: admin/overview.md
-          - Requirements: admin/requirements.md
           - Steps: admin/steps.md
-          - Vagrant: admin/vagrant.md
       - DTaaS:
-          - Localhost: admin/dtaas/localhost.md
-          - Localhost on Portainer: admin/guides/localhost_portainer.md
-          - Secure Localhost: admin/dtaas/secure-localhost.md
-          - Server: admin/dtaas/server.md
-          - Secure Server: admin/dtaas/secure-server.md
-          - Secure Server and GitLab: admin/dtaas/secure-server-gitlab.md
+          - Localhost:
+              - Install: admin/dtaas/localhost/install.md
+              - Config: admin/dtaas/localhost/config.md
+              - Files: admin/dtaas/localhost/files.md
+          - Localhost on Portainer: admin/dtaas/localhost-on-portainer/install.md
+          - Secure Localhost:
+              - Install: admin/dtaas/secure-localhost/install.md
+              - Config: admin/dtaas/secure-localhost/config.md
+              - Files: admin/dtaas/secure-localhost/files.md
+          - Server:
+              - Install: admin/dtaas/server/install.md
+              - Config: admin/dtaas/server/config.md
+              - Files: admin/dtaas/server/files.md
+          - Secure Server:
+              - Install: admin/dtaas/secure-server/install.md
+              - Config: admin/dtaas/secure-server/config.md
+              - Files: admin/dtaas/secure-server/files.md
+          - Secure Server and GitLab:
+              - Install: admin/dtaas/secure-server-gitlab/install.md
+              - Config: admin/dtaas/secure-server-gitlab/config.md
+              - Files: admin/dtaas/secure-server-gitlab/files.md
           - CLI: admin/cli.md
       - Workspace:
-          - Localhost: admin/workspace/dex-localhost.md
-          - Secure Server: admin/workspace/keycloak-server-secure.md
+          - Localhost:
+              - Install: admin/workspace/localhost/install.md
+              - Dex: admin/workspace/localhost/dex.md
+              - Custom User: admin/workspace/localhost/custom-user.md
+              - Developer: admin/workspace/localhost/developer.md
+              - Files: admin/workspace/localhost/files.md
+          - Secure Server:
+              - Install: admin/workspace/secure-server/install.md
+              - Configuration: admin/workspace/secure-server/configuration.md
+              - Keycloak Setup: admin/workspace/secure-server/keycloak-setup.md
+              - Design: admin/workspace/secure-server/design.md
+              - Files: admin/workspace/secure-server/files.md
       - Platform Services: admin/services/cli.md
       - GitLab:
           - Server: admin/gitlab/index.md
-          - Runner: admin/gitlab/runner.md
+          - Integration: admin/gitlab/integration.md
+          - Runner:
+              - Linux: admin/gitlab/runner-linux.md
+              - Windows: admin/gitlab/runner-windows.md
       - Independent Packages:
           - Listing: admin/packages.md
           - Workspace Packages: admin/workspace/index.md
@@ -98,28 +124,33 @@ nav:
           - Renew Certificates: admin/guides/renew_certs.md
   - FAQ: FAQ.md
   - Developer:
-      - Developer Guide: developer/index.md
-      - Code of Conduct: developer/conduct.md
-      - GitHub Actions: developer/github-actions.md
+      - Guide:
+          - Contributors: developer/index.md
       - System:
           - Architecture: developer/system/architecture.md
           - Current Status: developer/system/current-status.md
-      - OAuth2 Authorization:
-          - Concepts: developer/oauth/oauth2.0.md
-          - System Design: developer/oauth/design.md
-          - Microservice: developer/oauth/authms.md
-      - Testing: developer/testing/intro.md
-      - Docker: developer/docker/docker.md
-      - NPM Packages: developer/npm-packages.md
-      - DTaaS CLI: developer/cli.md
-      - Client: developer/client/client.md
-      - Library Microservice: developer/servers/lib/lib-ms.md
-      - Runner Microservice: developer/servers/execution/runner/runner.md
-      - DevOps Framework:
-          - Overview: developer/devops/overview.md
-          - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
-          - Triggering Pipelines via API: developer/devops/api.md
-          - Implemented Classes: developer/devops/implementation.md
+          - Research Overview: developer/system/research-overview.md
+      - Technical Concepts:
+          - OAuth 2.0 and Keycloak: developer/technical-concepts/oauth-keycloak.md
+          - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
+          - Auth System Design: developer/technical-concepts/oauth/design.md
+          - Auth Microservice: developer/technical-concepts/oauth/authms.md
+          - Testing: developer/technical-concepts/testing.md
+      - Codebase:
+          - Client: developer/codebase/client.md
+          - DevOps Framework: developer/codebase/devops.md
+          - Client DevOps Integration: developer/codebase/client-devops.md
+          - Library Microservice: developer/codebase/lib-ms.md
+          - Runner Microservice: developer/codebase/runner.md
+          - DTaaS CLI: developer/codebase/cli.md
+          - Publish Packages: developer/codebase/publish-packages.md
+      - Contributions:
+          - Code of Conduct: developer/contributions/conduct.md
+          - Local Testing: developer/contributions/local-testing.md
+          - Docker Check: developer/contributions/docker.md
+          - GitHub Actions: developer/contributions/github-actions.md
+          - Copilot Instructions: developer/contributions/copilot-instructions.md
+          - Vagrant: developer/vagrant.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:

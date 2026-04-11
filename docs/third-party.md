@@ -45,6 +45,7 @@ declared in:
 - `client/package.json`
 - `servers/**/package.json`
 - `cli/pyproject.toml`
+- `deploy/services/cli/pyproject.toml`
 - `script/docs/mkdocs-requirements.txt`
 
 Upstream dependency licences should be consulted in those manifests when

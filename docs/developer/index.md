@@ -2,8 +2,8 @@
 
 This guide provides an overview of the contribution workflow for the
 Digital Twin as a Service (DTaaS) project. Contributors are encouraged
-to review the [Code of Conduct](conduct.md) to ensure a respectful and
-collaborative community environment.
+to review the [Code of Conduct](contributions/conduct.md) to ensure
+a respectful and collaborative community environment.
 
 The following sections outline the contribution process, from opening
 an issue to creating a pull request (PR), conducting reviews, and merging
@@ -110,7 +110,7 @@ usage scenarios include:
 👍 Draft pull requests for prototyping ideas
 
 This project is structured as a monorepo and includes
-[copilot instructions](copilot-instructions.md) that inform
+[copilot instructions](contributions/copilot-instructions.md) that inform
 GitHub Copilot about the project structure and software
 development conventions.
 
@@ -166,7 +166,7 @@ employed sparingly.
 
 Codecov maintains test coverage metrics for the entire project.
 For detailed information about testing practices and workflows,
-refer to the [testing documentation](testing/intro.md).
+refer to the [testing documentation](technical-concepts/testing.md).
 
 ### GitHub Actions
 

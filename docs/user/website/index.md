@@ -227,12 +227,6 @@ in new browsers are shown:
 
 The hyperlinks open in new browser tabs.
 
-!!! tip "Terminal"
-    The Terminal hyperlink does not exist on the workbench page.
-    For terminal access, the tools dropdown
-    in Jupyter Notebook should be used.
-    ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
-
 The **workbench** also has two links to DevOps-based implementation of
 composable digital twins.
 

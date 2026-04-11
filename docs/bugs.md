@@ -20,6 +20,9 @@ the login page is not displayed.
 Instead the user is directly taken to the **Library** page.
 Therefore, the browser window should be closed after use.
 Another way to overcome this limitation is to open the
-GitLab instance (`https://gitlab.intocps.org`) and sign out from there.
+linked GitLab instance (ex: `https://intocps.org/gitlab`) and
+sign out from there.
 Thus the user needs to sign out of two places, namely the DTaaS platform and GitLab,
 in order to completely exit the the DTaaS platform.
+
+The same observation holds true for the Workspace installation as well.

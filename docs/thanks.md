@@ -4,6 +4,8 @@
 
 This project has been funded by the following projects.
 
+* Sustainable Water-based Cooling in Megacities (SWiM) - a project
+  sponsored by the Grundfos Foundation
 * Security for the Digital Twin as a Service Platform - a project sponsored by
   Thomas B. Thriges Foundation
 * CP-SENS (Cyber-Physical Sensing for Machinery and Structures) -

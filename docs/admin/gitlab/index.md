@@ -42,3 +42,11 @@ services project.
 - DTaaS client auth authority must match the actual GitLab endpoint.
 - For integrated package deployments, use the package-local `config/` files.
 - For services-cli deployments, use the generated services project files.
+
+## Related
+
+- [Integration guide](integration.md)
+- [Runner setup (Linux)](runner-linux.md)
+- [Runner setup (Windows)](runner-windows.md)
+- [DTaaS configuration guide](guides/dtaas-config.md)
+- [Workspace configuration guide](guides/workspace-config.md)

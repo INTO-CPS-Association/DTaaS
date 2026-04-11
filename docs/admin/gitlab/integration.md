@@ -60,3 +60,8 @@ Typical flow:
 - `https://<host>/gitlab` is reachable (integrated package)
 - DTaaS login redirects to expected OAuth provider
 - Workspace routes (`/user1`, `/user2`) are protected
+
+## Related Guides
+
+- [DTaaS configuration by scenario](guides/dtaas-config.md)
+- [Workspace configuration by scenario](guides/workspace-config.md)

@@ -64,7 +64,7 @@ For full configuration validation (including optional PDF plugin wiring), run:
 
 ```bash
 # Works only on Linux
-set MKDOCS_ENABLE_PDF_EXPORT=0
+export MKDOCS_ENABLE_PDF_EXPORT=0
 mkdocs build -f mkdocs.yml
 ```
 
@@ -113,14 +113,14 @@ PDF generation is controlled by the `MKDOCS_ENABLE_PDF_EXPORT` environment
 variable:
 
 ```bash
-set MKDOCS_ENABLE_PDF_EXPORT=0
-set MKDOCS_ENABLE_PDF_EXPORT=1
+export MKDOCS_ENABLE_PDF_EXPORT=0
+export MKDOCS_ENABLE_PDF_EXPORT=1
 ```
 
 To publish documentation content to the `webpage-docs` branch:
 
 ```bash
-set MKDOCS_ENABLE_PDF_EXPORT=1
+export MKDOCS_ENABLE_PDF_EXPORT=1
 script\docs.sh [version]
 git push webpage-docs
 ```
