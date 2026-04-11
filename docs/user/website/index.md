@@ -69,7 +69,7 @@ the **github icon** redirects to the GitHub code repository.
 ## Check Website Access
 
 For troubleshooting login issues, the website configuration can be verified
-by navigating to <https://foo.com/config/user>. The following display
+by navigating to <https://intocps.org/config/user>. The following display
 indicates a correctly configured application.
 
 ![Configuration Check](images/config.png)

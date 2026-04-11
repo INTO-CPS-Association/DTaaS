@@ -1,44 +1,44 @@
 # Overview
 
-## Install
+## Installation Scenarios
 
-The objective is to install and administer the DTaaS platform for users.
+The DTaaS repository provides installation assets in the following locations:
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! warning
-    The DTaaS platform has been developed and tested on
-    [docker CE v28](https://docs.docker.com/engine/release-notes/28/).
-    The software does not work on
-    [docker CE v29](https://docs.docker.com/engine/release-notes/29/) yet.
-<!-- markdownlint-enable MD046 -->
+- `deploy/dtaas/docker/` for DTaaS application deployments
+- `deploy/workspace/` for workspace-centred deployments
+- `deploy/services/` for optional platform services
+- `deploy/vagrant/` for virtual-machine-based deployment
 
-The DTaaS platform can be installed in different ways.
-Each version serves a different purpose.
+Use the scenario pages listed below to select the most appropriate setup.
 
-<!-- markdownlint-disable MD046 -->
-<!-- prettier-ignore -->
-!!! tip "Easy Setup on Localhost"
+### DTaaS
 
-    The [localhost](localhost.md) installation is easy for
-    first time users. Please give it a try.
-<!-- markdownlint-enable MD046 -->
+| Scenario | Purpose | Source Directory |
+| :--- | :--- | :--- |
+| [localhost](dtaas/localhost.md) | Single-user DTaaS package over HTTP | `deploy/dtaas/docker/localhost` |
+| [localhost on portainer](guides/localhost_portainer.md) | GUI-based localhost deployment with Portainer | `deploy/workspace/dex/localhost` |
+| [secure localhost](dtaas/secure-localhost.md) | Single-user DTaaS package over HTTPS | `deploy/dtaas/docker/secure-localhost` |
+| [server](dtaas/server.md) | Multi-user DTaaS package with external GitLab | `deploy/dtaas/docker/server` |
+| [secure server](dtaas/secure-server.md) | Compatibility package for secure server installs | `deploy/dtaas/docker/secure-server` |
+| [secure server and GitLab](dtaas/secure-server-gitlab.md) | Multi-user DTaaS package with integrated GitLab | `deploy/dtaas/docker/secure-server_with_integrated-gitlab` |
 
-Otherwise, the installation setup that fits specific needs should be selected.
+### Workspace
 
-| Installation Setup                               | Purpose                                                                                                                                                                                                        |
-| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [localhost](localhost.md)                        | Installation of the DTaaS on a local computer for a single user; does not require a web server. _This setup does not require a domain name._                                                                   |
-| [secure localhost](./localhost-secure.md)        | Installation of the DTaaS on a local computer for a single user over HTTPS with integrated [GitLab installation](gitlab/index.md); does not require a web server. _This setup does not require a domain name._ |
-| [Server](server.md)                              | Installation of the DTaaS on a server for multiple users. The [requirements](requirements.md) should be reviewed. Hosting over HTTPS with integrated [GitLab installation](gitlab/index.md) is also available. |
-| [One vagrant machine](vagrant/single-machine.md) | Installation of the DTaaS on a virtual machine; can be used for single or multiple users.                                                                                                                      |
-| [Two vagrant machines](vagrant/two-machines.md)  | Installation of the DTaaS on two virtual machines; can be used for single or multiple users.                                                                                                                   |
-|                                                  | The core DTaaS platform is installed on the first virtual machine, and all services (RabbitMQ, MQTT, InfluxDB, Grafana and MongoDB) are installed on the second virtual machine.                               |
-| [Independent Packages](packages.md)              | Can be used independently; does not require full installation of the DTaaS.                                                                                                                                    |
+| Scenario | Purpose | Source Directory |
+| :--- | :--- | :--- |
+| [localhost](workspace/dex-localhost.md) | Single-user workspace deployment with Dex | `deploy/workspace/dex/localhost` |
+| [secure server](workspace/keycloak-server-secure.md) | Multi-user workspace deployment with Keycloak | `deploy/workspace/keycloak/production` |
 
-The [installation steps](steps.md) is a recommended starting point for
-the installation process.
+### Other
 
-## Administer
+- [Platform services](services/cli.md)
+- [Vagrant](vagrant.md)
+- [Independent packages](packages.md)
 
-A [CLI](cli.md) is available for adding and deleting users of a running application.
+The [installation steps](steps.md) page remains the recommended sequence guide.
+
+## Administration
+
+- [DTaaS CLI](cli.md)
+- [GitLab server guidance](gitlab/index.md)
+- [GitLab runner guidance](gitlab/runner.md)

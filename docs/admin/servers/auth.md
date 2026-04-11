@@ -43,17 +43,17 @@ two URLs are required: a _callback URL_ and a _logout URL_.
   page where
   signed-in users should be redirected. It represents the landing
   homepage of the DTaaS platform.
-  (either <http://foo.com/_oauth/> or <http://localhost/_oauth/>)
+  (either <http://intocps.org/_oauth/> or <http://localhost/_oauth/>)
 - The logout URL is the URL for signout of gitlab and clear authorization
   within traefik-forward auth.
-  (either <http://foo.com/_oauth/logout> or <http://localhost/_oauth/logout>).
+  (either <http://intocps.org/_oauth/logout> or <http://localhost/_oauth/logout>).
   The logout URL is to help users logout of traefik forward-auth. The logout
   URL should not be entered into GitLab OAuth 2.0 application setup.
 
 **4. Create OAuth 2.0 Application:**
 
 OAuth 2.0 application setup on GitLab can be located at Edit **Profile** ->
-**Application** <https://gitlab.foo.com/-/profile/applications>.
+**Application** <https://gitlab.intocps.org/-/profile/applications>.
 
 During the creation of the OAuth 2.0 application on GitLab, the
 scope must be specified. The **_read_user_** scope should be selected.
@@ -76,15 +76,17 @@ The following information is required from
 the OAuth 2.0 application registered on GitLab:
 
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD060 -->
 | GitLab Variable Name | Variable Name in .env of docker compose file               | Default Value                                                                               |
 | :------------------- | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
-| OAuth 2.0 Provider   | OAUTH_URL                                                  | [https://gitlab.foo.com/](https://gitlab.foo.com/)                                          |
+| OAuth 2.0 Provider   | OAUTH_URL                                                  | [https://gitlab.intocps.org/](https://gitlab.intocps.org/)                                          |
 | Application ID       | OAUTH_CLIENT_ID                                            | _xx_                                                                                        |
 | Application Secret   | OAUTH_CLIENT_SECRET                                        | _xx_                                                                                        |
 | Callback URL         | (to be directly entered in GitLab OAuth  2.0 registration) |                                                                                             |
 | Forward-auth secret  | OAUTH_SECRET                                               | _random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
 | Scopes               | read_user                                                  |                                                                                             |
 <!-- markdownlint-enable MD013 -->
+<!-- markdownlint-enable MD060 -->
 
 ## Development Environment
 
@@ -165,23 +167,19 @@ the **traefik-forward-auth** restarts.
 
 Use a simple command on the terminal.
 
-- For a local instance:
+- For the secure server package with external GitLab:
 
 ```bash
-docker compose -f compose.local.yml --env-file .env up \
-  -d --force-recreate traefik-forward-auth
+docker compose -f deploy/dtaas/docker/server/docker-compose.yml \
+  --env-file deploy/dtaas/docker/server/config/.env \
+  up -d --force-recreate traefik-forward-auth
 ```
 
-- For a server instance running in HTTP mode:
+- For the secure server package with integrated GitLab:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env.server up -d \
-  --force-recreate traefik-forward-auth
-```
-
-- For a server instance running in HTTPS mode:
-
-```bash
-docker compose -f compose.server.secure.yml --env-file .env.server up -d \
-  --force-recreate traefik-forward-auth
+docker compose \
+  -f deploy/dtaas/docker/secure-server_with_integrated-gitlab/docker-compose.yml \
+  --env-file deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env \
+  up -d --force-recreate traefik-forward-auth
 ```

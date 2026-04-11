@@ -15,20 +15,20 @@ of user workspaces.
 
 To make the common assets read-only for a user,
 the following changes need to be made to
-the `compose.server.yml` file.
+the secure-server `docker-compose.yml` file.
 
 ```docker
   ...
   user1:
     ....
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common:ro
+      - ./files/common:/workspace/common:ro
     ....
 
   user2:
     ....
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common:ro
+      - ./files/common:/workspace/common:ro
     ....
 
 ```
@@ -37,4 +37,5 @@ Please note the `:ro` at the end of the line. This suffix makes
 the common assets read only.
 
 If you want to have the same kind of read only restriction for
-new users as well, please make a similar change in `cli/users.server.yml`.
+new users as well, make a similar change to any additional `userX`
+service blocks you add in `deploy/dtaas/docker/secure-server/docker-compose.yml`.

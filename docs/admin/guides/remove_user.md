@@ -10,24 +10,24 @@ The following steps should be performed:
 
 **2. Remove backend authorization for the user:**
 
-- Navigate to the _docker_ directory
+- Navigate to the secure server package directory
 
   ```bash
-  cd <DTaaS>/docker
+  cd <DTaaS>/deploy/dtaas/docker/server
   ```
 
-- Remove these three lines from the `conf.server` file
+- Remove these three lines from `config/conf.server`
 
   ```txt
   rule.onlyu3.action=auth
   rule.onlyu3.rule=PathPrefix(`/alice`)
-  rule.onlyu3.whitelist = alice@foo.com
+  rule.onlyu3.whitelist = alice@intocps.org
   ```
 
 - Run the command for these changes to take effect:
 
   ```bash
-  docker compose -f compose.server.yml --env-file .env up \
+  docker compose --env-file config/.env up \
     -d --force-recreate traefik-forward-auth
   ```
 

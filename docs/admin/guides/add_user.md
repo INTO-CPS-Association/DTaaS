@@ -18,24 +18,24 @@ This brings up the containers without backend authorization.
 
 **3. Add backend authorization for the user:**
 
-- Navigate to the _docker_ directory
+- Navigate to the secure server package directory
 
   ```bash
-  cd <DTaaS>/docker
+  cd <DTaaS>/deploy/dtaas/docker/server
   ```
 
-- Add three lines to the `conf.server` file
+- Add three lines to `config/conf.server`
 
   ```txt
   rule.onlyu3.action=auth
   rule.onlyu3.rule=PathPrefix(`/alice`)
-  rule.onlyu3.whitelist = alice@foo.com
+  rule.onlyu3.whitelist = alice@intocps.org
   ```
 
 **4. Restart the docker container responsible for backend authorization:**
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up \
+docker compose --env-file config/.env up \
   -d --force-recreate traefik-forward-auth
 ```
 

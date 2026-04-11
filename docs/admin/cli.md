@@ -51,7 +51,7 @@ owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 [common]
-# Server hostname either localhost or a valid hostname, ex: foo.com
+# Server hostname either localhost or a valid hostname, ex: intocps.org
 server-dns = "localhost"
 # absolute path to the DTaaS application directory
 # Specify the directory of DTaaS installation
@@ -150,16 +150,16 @@ This process brings up the containers, without the AuthMS authentication.
   _dtaas.toml_ are not in use, and are not necessary
   to complete. These emails must be configured manually
   for each user in the
-  deploy/docker/conf.server files and the _traefik-forward-auth_
+  `deploy/dtaas/docker/server/config/conf.server` file and the _traefik-forward-auth_
   container must be restarted. This is accomplished as follows:
 
-- Navigate to the _docker_ directory
+- Navigate to the secure server package directory
 
 ```bash
-cd <DTaaS>/deploy/docker
+cd <DTaaS>/deploy/dtaas/docker/server
 ```
 
-- Add three lines to the `conf.server` file
+- Add three lines to `config/conf.server`
 
 ```txt
 rule.onlyu3.action=auth
@@ -170,7 +170,7 @@ rule.onlyu3.whitelist = user3@emailservice.com
 - Run the command for these changes to take effect:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up \
+docker compose --env-file config/.env up \
   -d --force-recreate traefik-forward-auth
 ```
 

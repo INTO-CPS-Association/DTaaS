@@ -137,7 +137,7 @@ in _location_ directory.
 
     ``` http-request
     POST / HTTP/1.1
-    Host: foo.com
+    Host: intocps.org
     Content-Type: application/json
     Content-Length: 388
 
@@ -184,7 +184,7 @@ Shows the status of the command last executed.
 
     ``` http-request
     GET / HTTP/1.1
-    Host: foo.com
+    Host: intocps.org
     Content-Type: application/json
     Content-Length: 388
 

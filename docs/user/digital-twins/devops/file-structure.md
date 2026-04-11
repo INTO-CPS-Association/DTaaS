@@ -12,9 +12,9 @@ installation, then the following repositories must exist on the linked
 GitLab installation.
 
 ```txt
-https://foo.com/gitlab/dtaas/common.git
-https://foo.com/gitlab/dtaas/user1.git
-https://foo.com/gitlab/dtaas/user2.git
+https://intocps.org/gitlab/dtaas/common.git
+https://intocps.org/gitlab/dtaas/user1.git
+https://intocps.org/gitlab/dtaas/user2.git
 ```
 
 <!-- markdownlint-disable MD046 -->

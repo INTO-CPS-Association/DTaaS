@@ -1,12 +1,14 @@
 # GitLab Runner Integration
 
+For Windows-specific setup guidance, see `runner-windows.md`.
+
 This document outlines the steps needed to create a `gitlab-runner`
 that will be responsible for the execution of Digital Twins. Many such
-runners can be installaed and linked with the integrated GitLab.
+runners can be installed and linked with the integrated GitLab.
 
 An illustration of the intended installation setup is shown below.
 
-![GitLab Runner Integration](gitlab-integrated-runner.png))
+![GitLab Runner Integration](gitlab-integrated-runner.png)
 
 There are two installation scenarios:
 
@@ -72,13 +74,19 @@ Be sure to save the generated runner authentication token.
 ## Configuring the Runner
 
 Depending on your installation scenario, the runner setup reads certain
-configurations settings:
+configuration settings:
 
-1. __Localhost Installation__ - uses `deploy/docker/.env.local`
-1. __Server Installation__ - uses `deploy/docker/.env.server`
+1. __Localhost Installation (legacy compose files)__ uses
+  `deploy/docker/.env.local`.
+1. __Server Installation (legacy compose files)__ uses
+  `deploy/docker/.env.server`.
+1. __Integrated package installation__ uses
+  `deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env`.
 
-These files are integral to running the DTaaS platform, so it will be
-assumed that you have already configured these.
+The runner compose templates under `deploy/services/runner` were originally
+written for `deploy/docker/*` layouts. For package-based installs, update
+certificate mount paths in `compose.runner.local.yml` and
+`compose.runner.server.yml` to match your active package directory.
 
 We need to register the runner with the GitLab instance so that they may
 communicate with each other. `deploy/services/runner/runner-config.toml`
@@ -87,7 +95,7 @@ has the following template:
 ```toml
 [[runners]]
   name = "dtaas-runner-1"
-  url = "https://foo.com/gitlab/" # Edit this
+  url = "https://intocps.org/gitlab/" # Edit this
   token = "xxx" # Edit this
   executor = "docker"
   [runners.docker]
@@ -133,6 +141,11 @@ container respectively, depending on your installation scenario:
     docker compose -f deploy/services/runner/compose.runner.server.yml \
       --env-file deploy/docker/.env.server down
     ```
+
+For package-based integrated installations, use the same compose files but set
+`--env-file` to
+`deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env` and
+adjust the certificate volume mounts in the compose file accordingly.
 
 Once the container starts, the runner within it will run automatically. You can
 tell if the runner is up and running by navigating to the page where

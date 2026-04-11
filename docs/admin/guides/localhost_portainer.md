@@ -18,7 +18,7 @@ setup is shown here.
 The installation requirements to run this docker version of the DTaaS are:
 
 - docker desktop / docker CLI with compose plugin
-- User account on _gitlab.com_
+- no external GitLab account is required for default localhost auth
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
@@ -38,7 +38,7 @@ To clone:
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd DTaaS/deploy/services/gitlab
+cd DTaaS
 ```
 
 In this guide we will assume the contents of the zip file have been extracted
@@ -104,29 +104,35 @@ cp -R files/user1 files/username
 
 ![Portainer Stacks](./portainer_stacks.png)
 
-Portainer Stacks are equivalent to using `docker compose` commands to manage containers.
+Portainer Stacks are equivalent to using `docker compose` commands to manage
+containers.
 
-1. Navigate to the _Stacks_ tab on the side panel, and click on the _Add Stack_ button.
+1. Navigate to the _Stacks_ tab on the side panel, and click on the
+    _Add Stack_ button.
 1. Name the Stack anything descriptive, for example: `dtaas-localhost`.
 1. Select the _Upload_ build method.
-1. Upload the compose file located at `deploy/docker/compose.local.yml`.
-1. Select the option to load variables from a .env file, and upload the file `deploy/docker/.env.local`.
+1. Upload the compose file located at
+    `deploy/workspace/dex/localhost/docker-compose.yml`.
+1. Select the option to load variables from a .env file, and upload the file
+    `deploy/workspace/dex/localhost/.env`.
 
 !!! tip
-    Sometimes the `.env.local` file does not show up in the file explorer. You
+    Sometimes the `.env` file does not show up in the file explorer. You
     may fix this by selecting the option to show _All Files_ rather than those
     with the extension _.env_.
 
 ![Portainer ENV Editor](./portainer_env.PNG)
 
-The `.env.local` file contains environment variables that are used by the
+The `.env` file contains environment variables that are used by the
 compose file. Portainer allows you to modify them as shown in the screenshot
 above, here is a summary:
 
-| URL Path      | Example Value           | Explanation                                                                        |
-| :------------ | :---------------------- | :--------------------------------------------------------------------------------- |
-| DTAAS_DIR     | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
-| username1     | 'user1'                 | Your gitlab username                                                               |
+<!-- markdownlint-disable MD060 -->
+| Variable             | Example | Explanation                                   |
+| :------------------- | :------ | :-------------------------------------------- |
+| COMPOSE_PROJECT_NAME | dtaas   | Docker project name used by compose.          |
+| DEFAULT_USER         | user    | Default user login profile for local Dex auth. |
+<!-- markdownlint-enable MD060 -->
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
@@ -135,8 +141,8 @@ above, here is a summary:
 
     1. The path examples given here are for Linux OS.
        These paths can be Windows OS compatible paths as well.
-    1. The client configuration file is located at `deploy/config/client/env.local.js`.
-       If you are following the guide to use HTTPS on localhost, edit the URLs in this file by replacing `http` with `https`.
+    1. You can customize local login users in
+       `deploy/workspace/dex/localhost/config/dex-config.yaml`.
 <!-- markdownlint-enable MD046 -->
 
 Once you have configured the environment variables, click on the button
@@ -146,7 +152,8 @@ _Deploy the stack_.
 
 The application will be accessible at:
 <http://localhost> from web browser.
-Sign in using your <https://gitlab.com> account.
+Sign in using the local Dex credentials configured in
+`deploy/workspace/dex/localhost/config/dex-config.yaml`.
 
 All the functionality of DTaaS should be available to you
 through the single page client now.
@@ -160,6 +167,5 @@ included in the localhost installation scenario.
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
-[ml-workspace](https://github.com/ml-tooling/ml-workspace),
 [reactjs](https://krify.co/about-reactjs/),
 [gitlab](https://gitlab.com)

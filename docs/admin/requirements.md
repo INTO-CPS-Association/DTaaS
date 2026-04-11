@@ -5,7 +5,7 @@
 !!! tip localhost
 
     These optional requirements are not needed for
-    [**localhost**](./localhost.md) installation.
+    [**localhost**](./dtaas/localhost.md) installation.
     They are only required for installation of the DTaaS on
     a production web server.
 <!-- markdownlint-enable MD046 -->

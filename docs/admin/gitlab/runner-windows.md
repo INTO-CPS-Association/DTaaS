@@ -49,7 +49,7 @@ the specific GitLab instance URL and token:
 
 ```powershell
 # Register the runner for DTaaS
-.\gitlab-runner.exe register --url "https://foo.com/gitlab" --token ""
+.\gitlab-runner.exe register --url "https://intocps.org/gitlab" --token ""
 
 # When prompted, enter:
 # - Name: [Your machine name or any preferred name]

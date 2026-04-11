@@ -26,9 +26,8 @@ and workspaces running in the backend.
 
 ## :technologist: User Workspaces
 
-All users have dedicated dockerized-workspaces. These docker-images are based on
-container images published by
-[mltooling group](https://github.com/ml-tooling/ml-workspace).
+All users have dedicated dockerized workspaces based on workspace container
+images published for the DTaaS deployment packages.
 
 Thus DT experts can develop DTs from existing DT components and
 share them with other users. A file server has been setup to act as
