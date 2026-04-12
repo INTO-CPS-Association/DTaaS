@@ -22,7 +22,7 @@ documents.
 | Scenario | Purpose | Source Directory |
 | :--- | :--- | :--- |
 | [localhost](dtaas/localhost/install.md) | Single-user DTaaS package over HTTP | `deploy/dtaas/docker/localhost` |
-| [localhost on portainer](dtaas/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer | `deploy/workspace/dex/localhost` |
+| [localhost on portainer](dtaas/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users | `deploy/dtaas/docker/localhost` and `deploy/workspace/dex/localhost` |
 | [secure localhost](dtaas/secure-localhost/install.md) | Single-user DTaaS package over HTTPS | `deploy/dtaas/docker/secure-localhost` |
 | [server](dtaas/server/install.md) | Multi-user DTaaS package with external GitLab | `deploy/dtaas/docker/server` |
 | [secure server](dtaas/secure-server/install.md) | Compatibility package for secure server installs | `deploy/dtaas/docker/secure-server` |

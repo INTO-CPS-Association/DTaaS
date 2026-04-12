@@ -71,7 +71,8 @@ nav:
           - Localhost:
               - Install: admin/dtaas/localhost/install.md
               - Config: admin/dtaas/localhost/config.md
-          - Localhost on Portainer: admin/dtaas/localhost-on-portainer/install.md
+          - Localhost on Portainer:
+              admin/dtaas/localhost-on-portainer/install.md
           - Secure Localhost:
               - Install: admin/dtaas/secure-localhost/install.md
               - Config: admin/dtaas/secure-localhost/config.md
@@ -124,8 +125,10 @@ nav:
           - Current Status: developer/system/current-status.md
           - Research Overview: developer/system/research-overview.md
       - Technical Concepts:
-          - OAuth 2.0 and Keycloak: developer/technical-concepts/oauth-keycloak.md
-          - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
+          - OAuth 2.0 and Keycloak:
+              developer/technical-concepts/oauth-keycloak.md
+          - OAuth 2.0 Concepts:
+              developer/technical-concepts/oauth/oauth2.0.md
           - Auth System Design: developer/technical-concepts/oauth/design.md
           - Auth Microservice: developer/technical-concepts/oauth/authms.md
           - DevOps: developer/technical-concepts/gitlab.md
@@ -141,7 +144,8 @@ nav:
           - Publish Packages: developer/codebase/publish-packages.md
       - Contributions:
           - Code of Conduct: developer/contributions/conduct.md
-          - Copilot Instructions: developer/contributions/copilot-instructions.md
+          - Copilot Instructions:
+              developer/contributions/copilot-instructions.md
           - Local Testing: developer/contributions/local-testing.md
           - Docker Check: developer/contributions/docker.md
           - GitHub Actions: developer/contributions/github-actions.md
@@ -159,6 +163,7 @@ extra_css:
   - assets/css/extra.css
 
 extra_javascript:
+  # yamllint disable-line rule:line-length
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

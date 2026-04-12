@@ -1,11 +1,11 @@
-# DTaaS Research Overview
+# :books: DTaaS Research Overview
 
 This document summarizes the research behind the DTaaS platform.
 It is written for code contributors who need to understand the
 design rationale, architectural decisions, and intended evolution
 of the system.
 
-## 1. Introduction
+## 1. :bulb: Introduction
 
 A digital twin is a software representation of a physical asset that
 stays connected to its real-world counterpart through data exchange,
@@ -27,7 +27,7 @@ monitoring, and evolving twins in long-running environments. This
 focus distinguishes DTaaS from simulation-only tools or pure modeling
 frameworks.
 
-## 2. Requirements
+## 2. :dart: Requirements
 
 Eight core requirements drive the platform design:
 
@@ -51,7 +51,7 @@ include food fermentation process control and indoor climate
 management for firefighter training, as well as structural health
 monitoring of civil infrastructure.
 
-## 3. System Architecture
+## 3. :building_construction: System Architecture
 
 ![System Architecture](research-overview/system-architecture.png)
 
@@ -76,7 +76,7 @@ management, and the execution service orchestrates pipeline triggers.
 
 ![Implementation Status](research-overview/implementation-status.png)
 
-## 4. User View
+## 4. :bust_in_silhouette: User View
 
 ![DTaaS user view](research-overview/dtaas-userview.png)
 
@@ -90,7 +90,7 @@ assets).
 
 ![DT class and instance](research-overview/dtaas-class-instance.png)
 
-## 5. Lifecycle-Driven Engineering
+## 5. :arrows_counterclockwise: Lifecycle-Driven Engineering
 
 ![Lifecycle Phases on DTaaS](research-overview/lifecycle-phases.png)
 
@@ -105,7 +105,7 @@ are updated as physical assets change, new data sources are
 integrated, and execution configurations are refined based on
 operational experience.
 
-## 6. DevOps and Federation
+## 6. :gear: DevOps and Federation
 
 ![DevOps with GitLab](research-overview/devops.png)
 
@@ -126,7 +126,7 @@ groups), or hierarchies (parent-child relationships).
 
 ![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS.png)
 
-## 7. Application: Structural Health Monitoring
+## 7. :bridge_at_night: Application: Structural Health Monitoring
 
 ![SHM DT Workflow](research-overview/shm-dt-workflow.png)
 
@@ -146,7 +146,7 @@ This demonstrates that DTaaS enables domain specialists to compose
 complex workflows from reusable building blocks without replacing
 their existing tools.
 
-## Guidance for Contributors
+## :compass: Guidance for Contributors
 
 When implementing or reviewing DTaaS changes:
 
@@ -168,7 +168,7 @@ Common anti-patterns to avoid:
 - Treating DevOps and federation behavior as optional integration
   noise.
 
-## References
+## :page_facing_up: References
 
 The research behind DTaaS is documented in the following papers,
 located in the `.research-papers/latex/` directory of this repository:

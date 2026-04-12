@@ -1,10 +1,11 @@
+concurrent = 20
+
 [[runners]]
   name = "dtaas-runner-1"
   description = "dtaas-runner-1"
   url = "https://foo.com/gitlab/" # Edit this
   token = "xxx" # Edit this
   executor = "docker"
-  concurrent = 20
   request_concurrency = 10
   [runners.docker]
     tls_verify = false

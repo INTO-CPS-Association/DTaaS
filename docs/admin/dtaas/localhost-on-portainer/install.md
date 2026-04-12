@@ -1,4 +1,4 @@
-# Install DTaaS on Localhost (GUI)
+# :computer: Install DTaaS on Localhost (GUI)
 
 The installation instructions provided in this document are
 ideal for running DTaaS on localhost via a Graphical User
@@ -10,15 +10,15 @@ Two installation scenarios are available:
 
 | Scenario | Auth Provider | External Account Required |
 | :------- | :------------ | :------------------------ |
-| [DTaaS Localhost](#dtaas-localhost) | GitLab OAuth | Yes (gitlab.com) |
-| [Workspace Localhost](#workspace-localhost) | Dex (local) | No |
+| [DTaaS Localhost](#1-globe_with_meridians-dtaas-localhost) | GitLab OAuth | Yes (gitlab.com) |
+| [Workspace Localhost](#2-shield-workspace-localhost) | Dex (local) | No |
 
-## Requirements
+## :clipboard: Requirements
 
 - Docker Desktop or Docker Engine with Compose plugin
 - [Portainer Community Edition](https://portainer.io) (setup below)
 
-## Clone Codebase
+## :file_folder: Clone Codebase
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
@@ -29,7 +29,7 @@ cd DTaaS
     The guide uses Linux-style paths such as `/Users/username/DTaaS`.
     On Windows use an equivalent path, for example `C:\DTaaS`.
 
-## Starting Portainer
+## :whale: Starting Portainer
 
 [Portainer Community Edition](https://portainer.io) provides a graphical
 interface for managing Docker containers at `https://localhost:9443`.
@@ -56,7 +56,7 @@ to create an administrator account.
 
 ---
 
-## 1. DTaaS Localhost
+## 1. :globe_with_meridians: DTaaS Localhost
 
 This scenario uses **GitLab OAuth** for authentication.
 A GitLab account on <https://gitlab.com> is required.
@@ -139,7 +139,7 @@ backend forward-auth are not included in this scenario.
 
 ---
 
-## 2. Workspace Localhost
+## 2. :shield: Workspace Localhost
 
 This scenario uses **Dex** as a local identity provider.
 No external account is required; default credentials are provided.

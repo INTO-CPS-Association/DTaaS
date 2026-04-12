@@ -1,8 +1,9 @@
-# Keycloak Setup Guide for DTaaS
+# :key: Keycloak Setup Guide for DTaaS
 
-This guide explains how to configure Keycloak for authentication in the DTaaS workspace deployment.
+This guide explains how to configure Keycloak for
+authentication in the DTaaS workspace deployment.
 
-## Key Benefits
+## :star2: Key Benefits
 
 ✅ **Standards-Based**: Uses OIDC/OAuth2 standards
 
@@ -10,7 +11,7 @@ This guide explains how to configure Keycloak for authentication in the DTaaS wo
 
 ✅ **Minimal Changes**: Environment-variable based configuration
 
-## Overview
+## :mag: Overview
 
 The configuration uses:
 
@@ -18,7 +19,7 @@ The configuration uses:
 - **Traefik Forward Auth** to protect routes using OIDC
 - **Traefik** as the reverse proxy
 
-## Architecture
+## :triangular_ruler: Architecture
 
 ```text
 User Request → Traefik → Forward Auth → Keycloak (OIDC)
@@ -26,7 +27,7 @@ User Request → Traefik → Forward Auth → Keycloak (OIDC)
          Protected Service
 ```
 
-## Quick Start
+## :rocket: Quick Start
 
 In this guide, either `<DOMAIN_NAME>` OR `intocps.org` are used as
 placeholders for server hostname of the installation.
@@ -36,7 +37,7 @@ placeholders for server hostname of the installation.
 Keycloak-specific environment variables are:
 
 | Variable | Purpose | Example |
-|----------|---------|---------|
+| :--- | :--- | :--- |
 | `KEYCLOAK_ADMIN` | Admin username | `admin` |
 | `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `changeme` |
 | `KEYCLOAK_REALM` | Realm name | `dtaas` |
@@ -71,7 +72,8 @@ The following instructions are part of post-install step.
 
 #### Create a Realm
 
-1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
+1. In the top-left dropdown (currently showing "Master"),
+   click **Create Realm**  
 2. **Realm name**: `dtaas` (or match your `KEYCLOAK_REALM` in `.env`)  
 3. Click **Create**
 4. Click on **Realm Settings** -> **User Profile**
@@ -118,8 +120,8 @@ The following instructions are part of post-install step.
 5. Login settings:
    - **Root URL**: `https://intocps.org`
    - **Valid redirect URIs**:
-    - `https://intocps.org/_oauth/*`
-    - `https://intocps.org/*`
+      - `https://intocps.org/_oauth/*`
+      - `https://intocps.org/*`
    - **Valid post logout redirect URIs**: `https://intocps.org/*`
    - **Web origins**: `https://intocps.org`
    - Click **Save**
@@ -176,7 +178,7 @@ docker compose up -d
 3. Login with one of the users you created
 4. You should be redirected back to the DTaaS landing page
 
-## Production Considerations
+## :factory: Production Considerations
 
 To use an external Keycloak instance (recommended for production):
 
@@ -208,7 +210,7 @@ keycloak:
    - KC_DB_PASSWORD=secure_password
 ```
 
-## Troubleshooting
+## :wrench: Troubleshooting
 
 ### Cannot Access Keycloak Admin Console
 
@@ -235,7 +237,7 @@ keycloak:
 - Verify environment variables are set correctly
 - Ensure Keycloak is reachable from the traefik-forward-auth container
 
-## Advanced Configuration
+## :gear: Advanced Configuration
 
 ### Custom Claims and Scopes
 
@@ -247,13 +249,15 @@ To access custom user attributes:
 
 ### Role-Based Access Control (RBAC)
 
-RBAC is supported in Keycloak but not implemented in the traefik-forward-auth service by default.
+RBAC is supported in Keycloak but not implemented in
+the traefik-forward-auth service by default.
 
 ### Single Sign-On (SSO)
 
-Keycloak supports SSO across multiple applications. Configure additional clients for other services as needed.
+Keycloak supports SSO across multiple applications.
+Configure additional clients for other services as needed.
 
-## References
+## :link: References
 
 - [Keycloak Documentation](https://www.keycloak.org/documentation)
 - [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)
