@@ -60,7 +60,7 @@ def test_format_docker_error_no_such_container():
 
 
 def test_process_stderr_lines_error_prefix():
-    """Two-line stderr starting with 'Error:' is joined with ': '."""
+    """Two-line stderr starting with 'Error:' is normalized to one message."""
     result = _process_stderr_lines("Error:\nAuthentication failed")
     assert result == "Error:: Authentication failed"
 

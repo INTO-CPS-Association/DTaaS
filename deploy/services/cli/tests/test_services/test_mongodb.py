@@ -12,6 +12,11 @@ from dtaas_services.pkg.services.mongodb import (
 
 def test_add_mongodb_user_success(mocker):
     """Test successful MongoDB user addition"""
+    mock_cfg = mocker.patch("dtaas_services.pkg.services.mongodb.Config")
+    mock_cfg.return_value.get_value.side_effect = lambda key: {
+        "MONGODB_ADMIN_USERNAME": "admin",
+        "MONGODB_ADMIN_PASSWORD": "adminpass", # noqa: S105 # NOSONAR
+    }[key]
     mock_exec = mocker.patch(
         "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
     )
@@ -24,6 +29,11 @@ def test_add_mongodb_user_success(mocker):
 
 def test_add_mongodb_user_fails(mocker):
     """Test MongoDB user addition failure"""
+    mock_cfg = mocker.patch("dtaas_services.pkg.services.mongodb.Config")
+    mock_cfg.return_value.get_value.side_effect = lambda key: {
+        "MONGODB_ADMIN_USERNAME": "admin",
+        "MONGODB_ADMIN_PASSWORD": "adminpass", # noqa: S105 # NOSONAR
+    }[key]
     mock_exec = mocker.patch(
         "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
     )

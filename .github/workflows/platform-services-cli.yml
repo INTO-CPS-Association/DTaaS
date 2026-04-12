@@ -2,8 +2,6 @@ name: Platform Services CLI
 
 'on':
   push:
-    paths:
-      - 'deploy/services/cli/**'
     tags:
       - 'dtaas-services-v*'
   pull_request:
