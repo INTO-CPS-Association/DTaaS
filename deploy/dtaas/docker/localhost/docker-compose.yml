@@ -47,4 +47,3 @@ networks:
     name: dtaas-frontend
   users:
     name: dtaas-users
-

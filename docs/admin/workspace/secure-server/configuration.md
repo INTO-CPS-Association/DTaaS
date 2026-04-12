@@ -102,8 +102,9 @@ Create a copy of this example file without the example suffix:
 cp config/forward-auth-conf.example config/forward-auth-conf
 ```
 
-Then update the traefik forward auth configuration file with the usernames and emails of
-the Keycloak users that correspond to user1 and user2 respectively.
+Then update the traefik forward auth configuration file with the usernames
+and emails of the Keycloak users that correspond to `user1` and `user2`
+respectively.
 
 ```txt
 rule.user1_access.action=auth
@@ -121,8 +122,8 @@ in the Traefik Forward Auth configuration file.
 
 ## 🎯 Keycloak Integration
 
-The default configuration for `docker-compose.yml` now uses **Keycloak** 
-for authentication via OIDC (OpenID Connect). Keycloak provides a robust, 
+The default configuration for `docker-compose.yml` now uses **Keycloak**
+for authentication via OIDC (OpenID Connect). Keycloak provides a robust,
 enterprise-grade identity and access management solution.
 The `traefik-forward-auth` and the DTaaS `client` docker services use
 **Keycloak** for authentication and authorization. You'll need to configure
@@ -131,7 +132,7 @@ an OAuth2 application for each, with your integrated **Keycloak** service.
 **For detailed Keycloak setup instructions,
 see [keycloak-setup.md](keycloak-setup.md)**
 
-#### Configure Environment Variables
+### Configure Environment Variables
 
 1. **For Keycloak (default)**, edit `.env` and fill in your Keycloak credentials:
 

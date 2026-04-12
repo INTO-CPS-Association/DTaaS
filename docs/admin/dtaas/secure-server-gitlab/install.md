@@ -1,6 +1,6 @@
-![DTaaS logo](dtaas.png)
-
 # DTaaS — Secure Server with Integrated GitLab
+
+![DTaaS logo](dtaas.png)
 
 Thank you for downloading **Digital Twin as a Service**.
 

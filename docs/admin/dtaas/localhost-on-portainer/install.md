@@ -56,18 +56,16 @@ to create an administrator account.
 
 ---
 
-## DTaaS Localhost
+## 1. DTaaS Localhost
 
 This scenario uses **GitLab OAuth** for authentication.
 A GitLab account on <https://gitlab.com> is required.
 
-### Design
-
 ![DTaaS Localhost](localhost.png)
 
-### Configuration
+### 1.1 Configuration
 
-#### Create Configuration Files
+#### 1.2 Create Configuration Files
 
 Navigate to `deploy/dtaas/docker/localhost` and copy the example files:
 
@@ -76,7 +74,7 @@ cp config/.env.example config/.env
 cp config/client.js.example config/client.js
 ```
 
-#### Environment Variables
+#### 1.3 Environment Variables
 
 Edit `config/.env`:
 
@@ -85,7 +83,7 @@ Edit `config/.env`:
 | `USERNAME` | `user1` | Workspace path prefix and folder name |
 | `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
 
-#### Client Configuration
+#### 1.4 Client Configuration
 
 Edit `config/client.js` and set the OAuth application credentials
 from your GitLab account:
@@ -101,7 +99,7 @@ from your GitLab account:
     for details on creating a GitLab OAuth application.
 <!-- markdownlint-enable MD046 -->
 
-#### Create User Workspace
+#### 1.5 Create User Workspace
 
 Create a workspace directory for the user set in `USERNAME`:
 
@@ -110,7 +108,7 @@ cp -R files/template files/<USERNAME>
 sudo chown -R 1000:100 files/*
 ```
 
-### Create the Portainer Stack
+### 1.6 Create the Portainer Stack
 
 ![Portainer Stacks](./portainer_stacks.png)
 
@@ -129,28 +127,26 @@ sudo chown -R 1000:100 files/*
 
 Click **Deploy the stack**.
 
-### Use
+### 1.7 Use
 
 Open <http://localhost> in a web browser and sign in with
 your GitLab credentials.
 
-### Limitations
+### 1.8 Limitations
 
 The [library microservice](../../servers/lib/docker.md) and
 backend forward-auth are not included in this scenario.
 
 ---
 
-## Workspace Localhost
+## 2. Workspace Localhost
 
 This scenario uses **Dex** as a local identity provider.
 No external account is required; default credentials are provided.
 
-### Design
-
 ![Workspace Localhost](localhost.png)
 
-### Configuration
+### 2.1 Configuration
 
 Navigate to `deploy/workspace/dex/localhost` and copy the
 example files:
@@ -160,7 +156,7 @@ cp .env.example .env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
-#### Environment Variables
+#### 2.2 Environment Variables
 
 Edit `.env`:
 
@@ -175,7 +171,7 @@ Edit `.env`:
     `deploy/workspace/dex/localhost/config/dex-config.yaml`.
 <!-- markdownlint-enable MD046 -->
 
-### Create the Portainer Stack
+### 2.3 Create the Portainer Stack
 
 1. Navigate to **Stacks** and click **Add Stack**.
 1. Name the stack, for example `workspace-localhost`.
@@ -186,7 +182,7 @@ Edit `.env`:
 
 Click **Deploy the stack**.
 
-### Use
+### 2.4 Use
 
 Open <http://localhost> in a web browser.
 Sign in using the default Dex credentials:
@@ -194,7 +190,7 @@ Sign in using the default Dex credentials:
 - **Email:** `user@intocps.org`
 - **Password:** `user`
 
-### Limitations
+### 2.5 Limitations
 
 - The [library microservice](../../servers/lib/docker.md) is not
   included in this scenario.
