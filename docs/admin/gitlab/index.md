@@ -48,5 +48,5 @@ services project.
 - [Integration guide](integration.md)
 - [Runner setup (Linux)](runner-linux.md)
 - [Runner setup (Windows)](runner-windows.md)
-- [DTaaS configuration guide](guides/dtaas-config.md)
-- [Workspace configuration guide](guides/workspace-config.md)
+- [DTaaS integrated package config](../dtaas/secure-server-gitlab/config.md)
+- [Workspace secure server config](../workspace/secure-server/configuration.md)

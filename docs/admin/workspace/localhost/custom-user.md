@@ -14,7 +14,7 @@ Update these fields in `config/dex-config.yaml`:
 - `hash` (bcrypt hash of your chosen password)
 - `username`, `name`, `preferredUsername`
 
-Dex configuration details are documented in [`config/DEX.md`](config/DEX.md).
+Dex configuration details are documented in [`dex.md`](dex.md).
 
 Edit `.env`.
 

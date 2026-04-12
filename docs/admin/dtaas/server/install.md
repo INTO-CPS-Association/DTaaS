@@ -8,7 +8,7 @@ This README provides a quick-start installation guide for a secure,
 multi-user DTaaS deployment that uses an **external GitLab instance**
 for OAuth 2.0 authorization.
 
-For a full configuration reference, see [CONFIG.md](CONFIG.md).
+For a full configuration reference, see [config.md](config.md).
 
 ## Overview
 
@@ -63,7 +63,7 @@ Edit `config/client.js`:
 - `REACT_APP_REDIRECT_URI`
 - `REACT_APP_LOGOUT_REDIRECT_URI`
 
-See [CONFIG.md](CONFIG.md) for full details.
+See [config.md](config.md) for full details.
 
 ### 2. Create User Workspace Directories
 

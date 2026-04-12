@@ -141,7 +141,7 @@ The `lifecycle` directory here contains four files - `clean`, `create`,
 [BASH scripts](https://www.gnu.org/software/bash/). These correspond to stages
 in a digital twin's lifecycle.
 
-![Digital Twin Lifecycle](./images/dt-lifecycle.png)
+![Digital Twin Lifecycle](../system/research-overview/lifecycle-phases.png)
 
 ## Child Pipelines
 

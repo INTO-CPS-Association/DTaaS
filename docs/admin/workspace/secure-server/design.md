@@ -39,7 +39,7 @@ The `docker-compose.yml` file provides a production-ready setup with:
 
 ## ⚙️ Initial Configuration
 
-Please follow the steps in [`CONFIGURATION.md`](CONFIGURATION.md)
+Please follow the steps in [`configuration.md`](configuration.md)
 for creating suitable configuration.
 
 ## Create Workspace Files
@@ -175,7 +175,7 @@ To add additional workspace instances, add a new service in `docker-compose.yml`
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](.env):
+Add the desired `USERNAME3` variable in `.env`:
 
 ```bash
 # Username Configuration
@@ -186,7 +186,7 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`forward-auth-conf`](./config/forward-auth-conf):
+Add Forward Auth config for user3 in `forward-auth-conf`:
 
 ```txt
 

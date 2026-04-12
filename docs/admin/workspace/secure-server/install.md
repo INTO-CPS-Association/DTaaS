@@ -42,7 +42,7 @@ sudo chown -R 1000:100 files
 ## ⚙️ Configuration
 
 Please follow the pre-installation steps in
-[`CONFIGURATION.md`](CONFIGURATION.md) for creating valid configuration.
+[`configuration.md`](configuration.md) for creating valid configuration.
 
 ▶️ Start the application:
 
@@ -59,7 +59,7 @@ This problem will be resolved during post-installation.
 👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
-[`CONFIGURATION.md`](CONFIGURATION.md). Restart `traefik-forward-auth`
+[`configuration.md`](configuration.md). Restart `traefik-forward-auth`
 
 ```bash
 docker compose up -d --force-recreate traefik-forward-auth
@@ -113,7 +113,7 @@ Add a new service in `docker-compose.yml`:
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](.env):
+Add the desired `USERNAME3` variable in `.env`:
 
 ```bash
 # Username Configuration
@@ -124,7 +124,7 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`forward-auth-conf`](config/forward-auth-conf):
+Add Forward Auth config for user3 in `forward-auth-conf`:
 
 ```txt
 

@@ -63,11 +63,11 @@ The following configuration files require updating:
 
 1. **docker/.env** :
   Refer to the [Docker installation
-  documentation](../../admin/dtaas/server.md) for
+  documentation](../../admin/dtaas/server/install.md) for
    guidance on updating this configuration file.
 1. **docker/conf.dev** :
   Refer to the [Docker installation
-  documentation](../../admin/dtaas/server.md) for
+  documentation](../../admin/dtaas/server/install.md) for
    guidance on updating this configuration file.
 1. **client/config/local.js** :
    Refer to the [client configuration documentation](../../admin/client/config.md)

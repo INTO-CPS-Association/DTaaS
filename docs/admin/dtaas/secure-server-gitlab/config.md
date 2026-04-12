@@ -2,7 +2,7 @@
 
 This document provides a detailed reference for every configuration file
 in this package. For the quick-start installation guide, see
-[README.md](README.md).
+[install.md](install.md).
 
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout

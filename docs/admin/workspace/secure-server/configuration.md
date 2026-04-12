@@ -23,7 +23,7 @@ completed after bringing up the docker compose services.
 
 The compose commands used in the setup guides sets the environment
 with an environment file. An example of this file can be found at
-[`.env.example`](.env.example).
+`.env.example`.
 
 Create a copy of this example file without the example suffix:
 
@@ -40,7 +40,7 @@ in this guide, replace it with the domain name of your remote machine.
 Ensure that your remote machine has a domain name and that it is
 accessible from the internet.
 
-Go to the [Environment file](.env) and replace the current value of
+Open `.env` and replace the current value of
 the `SERVER_DNS` variable with your domain name:
 
 ```bash
@@ -53,7 +53,7 @@ SERVER_DNS=<DOMAIN_NAME>
 
 Make sure that you have valid TLS certificates on the machine and
 that they are properly located. The `fullchain.pem` and `privkey.pem`
-secrets should be located in the [`certs/`](certs/) directory.
+secrets should be located in the `certs/` directory.
 
 There are multiple ways to setup of TLS certificates. If you are hosting on
 a webserver, then you can use Certbot from Let's Encrypt:
@@ -93,7 +93,7 @@ used in the forward auth.
 
 ## 🚪 Traefik Forward Auth Configuration
 
-The [`config/forward-auth-conf.example`](./config/forward-auth-conf.example) contains
+The `config/forward-auth-conf.example` file contains
 example configuration for the forward-auth service.
 
 Create a copy of this example file without the example suffix:
@@ -129,7 +129,7 @@ The `traefik-forward-auth` and the DTaaS `client` docker services use
 an OAuth2 application for each, with your integrated **Keycloak** service.
 
 **For detailed Keycloak setup instructions,
-see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
+see [keycloak-setup.md](keycloak-setup.md)**
 
 #### Configure Environment Variables
 
@@ -161,7 +161,7 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
 The DTaaS Web Client can be configured with a small javascript file,
 an example of which can be found at
-[`config/client.js.example`](config/client.js.example).
+`config/client.js.example`.
 
 Create a copy of this example file without the example suffix:
 
@@ -175,8 +175,9 @@ Then, edit the new DTaaS Web Client config file, updating the following values:
 
 The DTaaS web client is a React SPA that authenticates via Keycloak using
 the **Authorization Code flow with PKCE**. Follow the
-[Create OAuth2 Client for DTaaS Client Service](KEYCLOAK_SETUP.md#create-oauth2-client-for-dtaas-client-service)
-instructions in `KEYCLOAK_SETUP.md` to create the public PKCE client in
+[Create OAuth2 Client for DTaaS Client Service](keycloak-setup.md#create-oauth2-client-for-dtaas-client-service)
+instructions in [keycloak-setup.md](keycloak-setup.md#create-oauth2-client-for-dtaas-client-service)
+to create the public PKCE client in
 Keycloak, then update `config/client.js`:
 
 ```js

@@ -5,7 +5,7 @@
 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide. For detailed
-configuration reference, see [CONFIG.md](CONFIG.md).
+configuration reference, see [config.md](config.md).
 
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout
@@ -53,7 +53,7 @@ Edit `config/.env` — set `SERVER_DNS`, `USERNAME1`, `USERNAME2`.
 Leave the `OAUTH_*` variables as placeholders for now; they will be
 filled after the GitLab instance is running (see step 5).
 
-See [CONFIG.md](CONFIG.md) for a complete reference of every variable.
+See [config.md](config.md) for a complete reference of every variable.
 
 ### 2. Create User Workspace Directories
 

@@ -3,7 +3,7 @@
 This document provides a detailed reference for each configuration file
 in this package.
 
-For the quick-start installation guide, see [README.md](README.md).
+For the quick-start installation guide, see [install.md](install.md).
 
 ## config/.env
 

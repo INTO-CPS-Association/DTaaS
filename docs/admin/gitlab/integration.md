@@ -63,5 +63,5 @@ Typical flow:
 
 ## Related Guides
 
-- [DTaaS configuration by scenario](guides/dtaas-config.md)
-- [Workspace configuration by scenario](guides/workspace-config.md)
+- [DTaaS integrated package config](../dtaas/secure-server-gitlab/config.md)
+- [Workspace secure server config](../workspace/secure-server/configuration.md)

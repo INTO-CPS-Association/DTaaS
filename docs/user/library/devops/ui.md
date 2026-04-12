@@ -11,7 +11,7 @@ This feature requires specific installation setup.
 1. A valid GitLab repository for the logged in user. Please see
    an [example repository](https://gitlab.com/dtaas/user1). You can clone
    this repository and customize to your needs.
-1. [A linked GitLab Runner](../../../admin/gitlab/runner.md)
+1. [A linked GitLab Runner](../../../admin/gitlab/runner-linux.md)
    to the user GitLab repository.
 
 Once these requirements are satisfied, the **Library** page shows all

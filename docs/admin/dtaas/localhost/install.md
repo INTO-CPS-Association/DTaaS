@@ -10,7 +10,7 @@ localhost over **HTTP** with a single user workspace.
 For secure HTTPS localhost deployment, use
 `deploy/dtaas/docker/secure-localhost`.
 
-For detailed configuration reference, see [CONFIG.md](CONFIG.md).
+For detailed configuration reference, see [config.md](config.md).
 
 ## Design
 

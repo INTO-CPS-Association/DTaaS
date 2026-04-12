@@ -5,7 +5,7 @@
 This guide is intended for users of the DTaaS platform.
 Access to a live installation of the DTaaS platform is required.
 The simplest option is the
-[workspace localhost](../admin/workspace/dex-localhost.md)
+[workspace localhost](../admin/workspace/localhost/install.md)
 installation scenario.
 
 The following user-specific

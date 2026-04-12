@@ -1,126 +1,200 @@
-# DTaaS Research Overview :books:
+# DTaaS Research Overview
 
-DTaaS is not only a software platform; it is also the implementation backbone
-of a research program on composable digital twins, reusable assets, and
-operations-oriented lifecycle management. The publications and workshop papers
-in the repository show a coherent progression from conceptual framing to
-platform architecture, and then toward domain demonstrations and advanced
-methods such as runtime verification and federated collaboration.
+This document summarizes the research behind the DTaaS platform.
+It is written for code contributors who need to understand the
+design rationale, architectural decisions, and intended evolution
+of the system.
 
-A key starting point appears in the broader “realising digital twins” line of
-work. This stream distinguishes frameworks from platforms and argues that
-practical adoption requires moving from low-level reusable code assets to
-service-level APIs that domain engineers can use. In this framing, digital
-twins are composed from reusable assets including data, models, tools, and
-services, each configured to create a concrete instance linked to a physical
-twin. The emphasis is not only on modeling fidelity, but on operability: how
-to instantiate, execute, monitor, and retire twins in real environments. This
-perspective heavily influences DTaaS architecture decisions, especially the use
-of microservices, gateway mediation, and configurable execution targets.
+## 1. Introduction
 
-The composable DTaaS paper trajectory then strengthens this concept with a
-clearer lifecycle and reusable-asset ontology. A recurring contribution is the
-explicit treatment of lifecycle phases beyond “run once” execution. The
-platform is described as supporting authoring, consolidation/discovery,
-configuration, execution, exploration, save/re-spawn, scenario analysis, and
-collaboration. This matters because many industrial DT deployments are
-long-lived and evolve continuously. A platform that only supports deployment
-and execution misses the operational workflows that consume most engineering
-effort over time.
+A digital twin is a software representation of a physical asset that
+stays connected to its real-world counterpart through data exchange,
+enabling monitoring, analysis, and prediction throughout the asset
+lifecycle. Digital twin platforms provide shared infrastructure for
+creating, managing, and executing digital twins at scale.
 
-Another important theme is heterogeneity. The research repeatedly emphasizes
-that useful DTs involve mixed modeling styles (physics-based, data-driven,
-co-simulation), multiple data channels, and varied execution environments.
-DTaaS therefore avoids forcing a single modeling formalism. Instead, it
-focuses on integration contracts and orchestration patterns that let multiple
-assets coexist. This choice aligns with the practical observation that
-organizations already have fragmented toolchains and cannot afford complete
-rewrites.
+DTaaS (Digital Twin as a Service) is an open-source platform that
+treats digital twins as compositions of reusable assets rather than
+monolithic applications. The platform organizes assets into four
+categories: data, models, functions (methods and scripts), and
+services. Users compose these assets into digital twin configurations
+that can be executed, monitored, and evolved independently.
 
-The architecture-oriented papers map requirements to a service decomposition.
-Gateway and authentication components provide controlled access, while
-specialized services support reusable asset management, data and visualization
-paths, and execution management. Dedicated user workspaces are highlighted as
-an engineering enabler: users can build and adapt twins with familiar tools
-while still operating inside a shared platform model. This workspace-centered
-approach reduces onboarding cost and supports collaborative reuse of assets.
+![DT asset relationship](research-overview/dt-assets-relationship.png)
 
-A second major research axis in DTaaS is DevOps-enabled operation. The ASQAP
-and related materials describe extending DTaaS with GitLab-based workflows so
-that DT lifecycle actions can be automated and parameterized. In this setup,
-repositories become structured carriers of DT definitions and pipeline logic.
-The UI can trigger and monitor operations without exposing raw CI internals to
-users. This gives two benefits: operational repeatability and lower barrier
-for non-DevOps specialists. It also creates a path to scale, because execution
-infrastructure can be controlled through standard CI/CD patterns and
-infrastructure-as-code techniques.
+The platform targets operability: creating, configuring, executing,
+monitoring, and evolving twins in long-running environments. This
+focus distinguishes DTaaS from simulation-only tools or pure modeling
+frameworks.
 
-The DevOps extension also introduces a federation perspective. Multiple DTaaS
-instances can be linked to one or more GitLab backends, allowing controlled
-collaboration across installations. In research terms, this shifts DTaaS from
-a single-platform deployment model toward a networked platform model. The
-interesting outcome is that collaboration becomes configurable at
-infrastructure and repository boundaries, not only at application UI level.
-This design supports organizational separation while preserving asset sharing
-and coordinated execution.
+## 2. Requirements
 
-Domain demonstration work in EVACES and its extension shows how DTaaS ideas
-translate into structural health monitoring workflows. Here, the central claim
-is not that DTaaS replaces specialized engineering tools, but that it
-orchestrates them into reusable blocks. Functional blocks for acquisition,
-modal analysis, model update, and fault handling can be assembled and
-distributed. The studies stress realistic constraints: geographically separated
-systems, variable latency tolerance, and differing computational needs across
-workflow blocks. DTaaS is used as the integration substrate that allows these
-blocks to be routed, configured, and executed consistently.
+Eight core requirements drive the platform design:
 
-Runtime verification work adds a deeper software-engineering contribution. The
-RV tutorial material analyzes multiple monitor-integration patterns: monitors
-generated as internal assets, managed as per-twin internal services, or
-exposed as external platform services. This classification is useful beyond RV
-itself because it offers a general method for deciding where lifecycle
-responsibility should live. Tighter integration is often easier to adopt
-initially, while looser service-style integration improves long-term
-flexibility and reuse. DTaaS benefits from this analysis by providing a place
-where these choices can be made per use case rather than globally.
+1. **Author** — create and edit digital twin assets in isolated
+   workspaces
+1. **Consolidate** — combine assets from different sources into
+   coherent twin configurations
+1. **Configure** — set parameters for execution without modifying
+   asset source code
+1. **Execute** — run digital twin configurations on demand or
+   continuously
+1. **Explore** — browse available assets, twins, and execution results
+1. **Save** — persist configurations, results, and intermediate state
+1. **What-if Analysis** — evaluate alternative scenarios by varying
+   parameters
+1. **Collaborate** — share assets and twins across users and
+   organizations
 
-Across papers, one repeated strength is explicit treatment of trade-offs. High
-flexibility can increase integration complexity; strict platform control can
-reduce user freedom; centralized operation can simplify governance but
-constrain experimentation. The DTaaS research program generally chooses
-composability over monolithic standardization. That choice appears to be
-validated by the diversity of case studies (incubator, firefighting, SHM,
-monitor-enhanced twins) that can share a common platform backbone while
-retaining domain-specific behavior.
+These requirements apply across domains. Validated case studies
+include food fermentation process control and indoor climate
+management for firefighter training, as well as structural health
+monitoring of civil infrastructure.
 
-There is also a clear commercialization and sustainability thread.
-Requirements around accounting, policy enforcement, reusable services, and
-role-based access control indicate a platform intended for real organizational
-use, not only lab prototypes. Even where components are marked as evolving,
-the architecture anticipates concerns such as multi-user tenancy, secure
-route-level access, and service interoperability.
+## 3. System Architecture
 
-From a developer perspective, the research corpus offers practical guidance:
+![System Architecture](research-overview/system-architecture.png)
 
-- Treat DTs as compositions of reusable assets rather than single projects.
-- Design lifecycle-aware tooling from the start.
-- Keep execution and collaboration programmable through standard DevOps interfaces.
-- Isolate identity, gateway, and policy concerns as first-class platform services.
-- Use workspace patterns to bridge domain experts and software platform operations.
+The architecture decomposes the platform into four concern areas:
 
-The overall contribution of DTaaS research can be summarized as a transition
-framework: it helps teams move from isolated DT prototypes to reusable,
-operable, and collaborative digital twin systems. Instead of prescribing one
-modeling technology, it prescribes integration and lifecycle discipline. This
-makes the platform relevant across sectors where digital twins must evolve
-continuously, interact with heterogeneous tools, and be maintained by
-multi-disciplinary teams.
+- **Gateway and authentication** — Traefik reverse proxy with
+  OAuth 2.0 / OpenID Connect for route protection and user
+  identity management
+- **Execution management** — backend services that trigger, monitor,
+  and stop digital twin runs via GitLab CI/CD pipelines
+- **Reusable-asset handling** — library microservice backed by
+  GitLab repositories, exposing asset discovery and retrieval APIs
+- **Workspace isolation** — per-user JupyterLab containers with
+  private file systems for authoring and running assets
 
-## Sources in Repository
+![System Architecture C4 Diagram](research-overview/system-architecture-c4.png)
 
-- `.research-papers/latex/Realising2024`
-- `.research-papers/latex/ComposableDTsonDTaaS`
-- `.research-papers/latex/ASQAP25-workshop`
-- `.research-papers/latex/EVACES2025`
-- `.research-papers/latex/EVACES2025-extension`
-- `.research-papers/latex/RVTutorial2024`
+This decomposition maps directly to the service split in the current
+codebase: the React client handles user interaction, Traefik manages
+routing and TLS, the library microservice wraps GitLab APIs for asset
+management, and the execution service orchestrates pipeline triggers.
+
+![Implementation Status](research-overview/implementation-status.png)
+
+## 4. User View
+
+![DTaaS user view](research-overview/dtaas-userview.png)
+
+From a user perspective, DTaaS presents a single web interface that
+aggregates workspace operations, asset browsing, digital twin
+execution, and result exploration. Users interact with their own
+isolated workspace while sharing assets through the common library.
+The platform supports both class-level twin definitions (reusable
+templates) and instance-level twins (bound to specific physical
+assets).
+
+![DT class and instance](research-overview/dtaas-class-instance.png)
+
+## 5. Lifecycle-Driven Engineering
+
+![Lifecycle Phases on DTaaS](research-overview/lifecycle-phases.png)
+
+Lifecycle coverage is a first-class requirement, not an add-on. The
+platform explicitly supports create, manage, execute, and stop phases
+with iterative reconfiguration flows. This is why client and backend
+contracts include both file management and execution tracking
+concerns.
+
+The lifecycle model acknowledges that digital twins evolve: models
+are updated as physical assets change, new data sources are
+integrated, and execution configurations are refined based on
+operational experience.
+
+## 6. DevOps and Federation
+
+![DevOps with GitLab](research-overview/devops.png)
+
+DTaaS integrates GitLab-backed DevOps automation as a core platform
+capability. Repository structure, pipeline triggers, and OAuth
+configuration are part of the platform contract, not just deployment
+details. The platform supports two execution modes: continuous
+(long-running services) and one-off (batch analysis jobs), both
+managed through GitLab CI/CD pipelines.
+
+![Federated DTaaS](research-overview/federated-dtaas.png)
+
+The federation extension enables multiple DTaaS instances to
+collaborate by discovering and reusing assets across organizational
+boundaries. Federated digital twins can be organized as composites
+(assembled from assets on different instances), fleets (coordinated
+groups), or hierarchies (parent-child relationships).
+
+![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS.png)
+
+## 7. Application: Structural Health Monitoring
+
+![SHM DT Workflow](research-overview/shm-dt-workflow.png)
+
+Structural health monitoring (SHM) of civil infrastructure
+demonstrates DTaaS as an integration substrate for specialized
+engineering workflows. In this application domain, digital twin
+assets include sensor data acquisition modules (accelerometers,
+distributed optical sensors), operational modal analysis functions,
+finite element model updating procedures, and fatigue-based remaining
+useful life estimation methods.
+
+The SHM workflow composes these assets into a pipeline: sensor data
+flows through modal analysis to extract structural properties, which
+feed into model updating to calibrate a finite element model, which
+in turn drives damage prognosis and remaining useful life estimation.
+This demonstrates that DTaaS enables domain specialists to compose
+complex workflows from reusable building blocks without replacing
+their existing tools.
+
+## Guidance for Contributors
+
+When implementing or reviewing DTaaS changes:
+
+1. Map the change to one of the concern areas above (architecture,
+   lifecycle, DevOps/federation, domain application, monitoring).
+1. Verify the change preserves intended lifecycle and composability
+   behavior.
+1. Check whether the change shifts architecture boundaries
+   (gateway/auth, execution manager, reusable-asset layer,
+   workspace isolation).
+1. Document any intentional departure from design assumptions.
+
+Common anti-patterns to avoid:
+
+- Hard-coding one modeling or tooling workflow where the design
+  expects heterogeneity.
+- Collapsing layered responsibilities into UI code for short-term
+  convenience.
+- Treating DevOps and federation behavior as optional integration
+  noise.
+
+## References
+
+The research behind DTaaS is documented in the following papers,
+located in the `.research-papers/latex/` directory of this repository:
+
+1. **Composable Digital Twins on Digital Twin as a Service Platform**
+  — Defines the core platform architecture,
+  asset model, lifecycle phases, and system requirements.
+  (`Talasila, Prasad, et al., Composable digital twins on Digital Twin
+  as a Service platform." Simulation 101.3 (2025): 287-311.`)
+1. **Realising Digital Twins** — Positions DTaaS
+   within the broader digital twin landscape with a comparative
+   survey of existing frameworks, cloud deployment strategies, and
+   fleet management concepts.
+   (`Talasila, Prasad, et al. "Realising digital twins." The engineering of
+   digital twins. Cham: Springer International Publishing, 2024. 225-256.`)
+1. **Towards Federated Digital Twin Platforms**
+   — Extends DTaaS for multi-instance
+   federation, DevOps integration, and cross-organizational
+   asset reuse.
+   (`Frasheri, Mirgita, Prasad Talasila, and Vanessa Scherma. "Towards federated
+   digital twin platforms." arXiv preprint arXiv:2505.04324 (2025).`)
+1. **Structural Health Monitoring of Engineering Structures Using
+   Digital Twins** — Demonstrates DTaaS for
+   vibration-based SHM with modal analysis and model updating
+   workflows.
+   (`Talasila, P., et al. "Structural health monitoring of engineering
+   structures using digital twins: A digital twin platform approach.
+   "International Conference on Experimental Vibration Analysis for Civil
+   Engineering Structures. Cham: Springer Nature Switzerland, 2025.`)

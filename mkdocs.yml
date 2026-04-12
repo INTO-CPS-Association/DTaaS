@@ -71,24 +71,19 @@ nav:
           - Localhost:
               - Install: admin/dtaas/localhost/install.md
               - Config: admin/dtaas/localhost/config.md
-              - Files: admin/dtaas/localhost/files.md
           - Localhost on Portainer: admin/dtaas/localhost-on-portainer/install.md
           - Secure Localhost:
               - Install: admin/dtaas/secure-localhost/install.md
               - Config: admin/dtaas/secure-localhost/config.md
-              - Files: admin/dtaas/secure-localhost/files.md
           - Server:
               - Install: admin/dtaas/server/install.md
               - Config: admin/dtaas/server/config.md
-              - Files: admin/dtaas/server/files.md
           - Secure Server:
               - Install: admin/dtaas/secure-server/install.md
               - Config: admin/dtaas/secure-server/config.md
-              - Files: admin/dtaas/secure-server/files.md
           - Secure Server and GitLab:
               - Install: admin/dtaas/secure-server-gitlab/install.md
               - Config: admin/dtaas/secure-server-gitlab/config.md
-              - Files: admin/dtaas/secure-server-gitlab/files.md
           - CLI: admin/cli.md
       - Workspace:
           - Localhost:
@@ -96,13 +91,11 @@ nav:
               - Dex: admin/workspace/localhost/dex.md
               - Custom User: admin/workspace/localhost/custom-user.md
               - Developer: admin/workspace/localhost/developer.md
-              - Files: admin/workspace/localhost/files.md
           - Secure Server:
               - Install: admin/workspace/secure-server/install.md
               - Configuration: admin/workspace/secure-server/configuration.md
               - Keycloak Setup: admin/workspace/secure-server/keycloak-setup.md
               - Design: admin/workspace/secure-server/design.md
-              - Files: admin/workspace/secure-server/files.md
       - Platform Services: admin/services/cli.md
       - GitLab:
           - Server: admin/gitlab/index.md
@@ -135,6 +128,7 @@ nav:
           - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
           - Auth System Design: developer/technical-concepts/oauth/design.md
           - Auth Microservice: developer/technical-concepts/oauth/authms.md
+          - DevOps: developer/technical-concepts/gitlab.md
           - Testing: developer/technical-concepts/testing.md
       - Codebase:
           - Client: developer/codebase/client.md
@@ -143,13 +137,15 @@ nav:
           - Library Microservice: developer/codebase/lib-ms.md
           - Runner Microservice: developer/codebase/runner.md
           - DTaaS CLI: developer/codebase/cli.md
+          - DTaaS Services: developer/codebase/dtaas-services.md
           - Publish Packages: developer/codebase/publish-packages.md
       - Contributions:
           - Code of Conduct: developer/contributions/conduct.md
+          - Copilot Instructions: developer/contributions/copilot-instructions.md
           - Local Testing: developer/contributions/local-testing.md
           - Docker Check: developer/contributions/docker.md
           - GitHub Actions: developer/contributions/github-actions.md
-          - Copilot Instructions: developer/contributions/copilot-instructions.md
+          - Publish NPM Packages: developer/contributions/npm-packages.md
           - Vagrant: developer/vagrant.md
   - Bugs: bugs.md
   - Thanks: thanks.md

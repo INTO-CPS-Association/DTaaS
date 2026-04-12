@@ -59,7 +59,7 @@ docker compose down
 1. All the functionality of DTaaS except DevOps features should be
    available to you through the single page client now.
 1. The installation has default user credentials.
-   See [instructions](CUSTOM_USER.md) for help with changing
+   See [instructions](custom-user.md) for help with changing
    the user credentials.
 
 ## 📚 Documentation

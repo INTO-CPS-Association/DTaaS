@@ -79,10 +79,10 @@ $git push origin
 
 ## Next Steps
 
-A [GitLab runner](../../admin/gitlab/runner.md) should be integrated
+A [GitLab runner](../../admin/gitlab/runner-linux.md) should be integrated
 with the project repository. Runners may already be installed
 with the DTaaS platform. These can be verified on the runners page.
-Additionally, [custom runners](../../admin/gitlab/runner.md) can be installed
+Additionally, [custom runners](../../admin/gitlab/runner-linux.md) can be installed
 and integrated with the repository.
 
 The [Digital Twins Preview](../digital-twins/devops/ui.md) can then be used
