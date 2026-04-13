@@ -25,6 +25,3 @@ jobs:
       tests-directory: tests
       coverage-file: cli/coverage.xml
       artifact-name: dtaas-cli
-      artifact-path: |
-        cli/dist/*.whl
-        cli/dist/*.tar.gz

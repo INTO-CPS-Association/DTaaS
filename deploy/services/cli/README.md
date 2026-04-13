@@ -57,8 +57,7 @@ RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab
 Install the standalone wheel package using pip:
 
 ```bash
-pip install dtaas_services-0.4.0-py3-none-any.whl
-```
+pip install dtaas-services```
 
 This installs the `dtaas-services` command.
 

@@ -23,12 +23,13 @@ name: Python Reusable Workflow
         description: 'Name for uploaded artifact'
         required: true
         type: string
-      artifact-path:
-        description: 'Path for artifact upload'
-        required: true
-        type: string
       run-pyright:
         description: 'Whether to run pyright type checking'
+        required: false
+        type: boolean
+        default: false
+      publish:
+        description: 'Whether to publish the package to PyPI'
         required: false
         type: boolean
         default: false
@@ -194,5 +195,30 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ inputs.artifact-name }}
-          path: ${{ inputs.artifact-path }}
+          path: ${{ inputs.working-directory }}/dist
           retention-days: 1
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: [build-python-package]
+    if: inputs.publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC trusted publisher
+
+    steps:
+      - name: Download dist artefacts
+        # v4.1.8
+        uses: actions/download-artifact@fa0a91b85d4f404e444306234a0672c20cc434ce
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.working-directory }}/dist
+
+      - name: Publish to PyPI
+        # v1.10.0
+        # yamllint disable-line rule:line-length
+        uses: pypa/gh-action-pypi-publish@76f52fcd0d1af15e46fe0b1a4d9d0c24ecbcbf2e
+        with:
+          packages-dir: >-
+            ${{ inputs.working-directory }}/dist
