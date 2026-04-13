@@ -8,13 +8,12 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
+      - "--entrypoints.web.forwardedHeaders.insecure=true"
+      - "--entrypoints.web.proxyProtocol.insecure=true"
     ports:
       - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    networks:
-      - frontend
-      - users
 
   client:
     image: intocps/dtaas-web:1.0.2
@@ -23,27 +22,20 @@ services:
       - "./config/client.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.client.entryPoints=web"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
-    networks:
-      - frontend
 
   user:
     image: intocps/workspace:main-967bc10
     restart: unless-stopped
     volumes:
       - "./files/common:/workspace/common"
-      - "./files/${USERNAME:-user1}:/workspace"
+      - "./files/${DEFAULT_USER:-user1}:/workspace"
     environment:
-      - MAIN_USER=${USERNAME:-user1}
+      - MAIN_USER=${DEFAULT_USER:-user}
+    shm_size: "512m"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=PathPrefix(`/${USERNAME:-user1}`)"
-    networks:
-      - users
-
-networks:
-  frontend:
-    name: dtaas-frontend
-  users:
-    name: dtaas-users
+      - "traefik.http.routers.user.entryPoints=web"
+      - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user1}`)"

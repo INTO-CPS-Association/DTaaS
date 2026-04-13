@@ -36,10 +36,10 @@ cp config/client.js.example config/client.js
 
 ### 2. Create User Workspace Directory
 
-Edit `config/.env` and set `USERNAME`, then create a matching workspace:
+Edit `config/.env` and set `DEFAULT_USER`, then create a matching workspace:
 
 ```bash
-cp -R files/template files/<USERNAME>
+cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 
