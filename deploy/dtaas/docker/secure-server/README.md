@@ -83,24 +83,34 @@ cp /path/to/privkey.pem certs/privkey.pem
 If certificates are missing or invalid, Traefik runs with self-signed
 certificates.
 
-### 4. Start Services
+### 4. Configure OAuth 2.0 Applications in GitLab :fox_face:
 
-```bash
-docker compose --env-file config/.env up -d
-```
+1. Create user accounts (see
+   [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)).
+   The usernames **must** match `USERNAME1`/`USERNAME2` in `config/.env`.
 
-### 5. Configure OAuth 2.0 Applications in GitLab
+1. Register two OAuth 2.0 applications in GitLab
+   (Admin Area → Applications):
 
-Create two applications in your external GitLab instance:
+   - **DTaaS Client Authorization** — for the React SPA frontend.
+     See [client auth docs](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html).
+   - **DTaaS Server Authorization** — for Traefik forward-auth backend.
+     See [server auth docs](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html).
 
-1. **DTaaS Client Authorization** (React SPA)
-2. **DTaaS Server Authorization** (Traefik forward-auth)
+1. Update configuration files (`config/.env` and `config/client.js`) with
+   the generated OAuth 2.0 tokens:
+   - Set `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
+     `config/client.js`.
+   - Set `OAUTH_URL`, `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` in
+     `config/.env`.
 
 Update `config/client.js` and `config/.env` with generated credentials,
 then reload affected services:
 
+### 5. Start Services
+
 ```bash
-docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
+docker compose --env-file config/.env up -d
 ```
 
 ### 6. Verify

@@ -80,7 +80,7 @@ Update `docs.ini` in the `docs.substitute` section, for example:
 VERSION=DTaaS-vX.Y.Z
 URL=https://github.com/INTO-CPS-Association/DTaaS/releases/download/vX.Y.Z/DTaaS-vX.Y.Z.zip
 FILES=docs/admin/dtaas/localhost/install.md,
-    docs/admin/dtaas/secure-localhost/install.md,
+    docs/admin/dtaas/secure-localhost-github/install.md,
     docs/admin/dtaas/server/install.md,
     docs/admin/services/cli.md,
     docs/admin/gitlab/index.md,

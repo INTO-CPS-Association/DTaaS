@@ -1,14 +1,12 @@
 # DTaaS - Localhost (HTTP)
 
-![DTaaS logo](dtaas.png)
-
 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 
-For secure HTTPS localhost deployment, use
-`deploy/dtaas/docker/secure-localhost`.
+For HTTP localhost deployment, use
+`deploy/dtaas/docker/localhost`.
 
 For detailed configuration reference, see [config.md](config.md).
 
@@ -36,10 +34,10 @@ cp config/client.js.example config/client.js
 
 ### 2. Create User Workspace Directory
 
-Edit `config/.env` and set `USERNAME`, then create a matching workspace:
+Edit `config/.env` and set `DEFAULT_USER`, then create a matching workspace:
 
 ```bash
-cp -R files/template files/<USERNAME>
+cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 
@@ -68,8 +66,8 @@ docker compose --env-file config/.env down
 ## Notes
 
 - This package does not include `libms` or backend forward-auth.
-- For secure localhost setup with TLS, see
-  `deploy/dtaas/docker/secure-localhost`.
+- For secure production deployments, see
+  `deploy/dtaas/docker/secure-localhost_with_integrated-github`.
 
 ## Documentation
 

@@ -7,8 +7,8 @@ Start by selecting one of these package roots:
 
 - `deploy/dtaas/docker/localhost`
   (DTaaS localhost package over HTTP)
-- `deploy/dtaas/docker/secure-localhost`
-  (DTaaS localhost package over HTTPS)
+- `deploy/dtaas/docker/secure-localhost_with_integrated-github`
+  (DTaaS localhost package over HTTPS with integrated GitHub workflow)
 - `deploy/dtaas/docker/server`
   (DTaaS server package with external GitLab)
 - `deploy/dtaas/docker/secure-server`
@@ -56,8 +56,8 @@ Run compose commands from the selected package directory.
 
 - DTaaS localhost package (HTTP):
   `deploy/dtaas/docker/localhost`
-- DTaaS secure-localhost package (HTTPS):
-  `deploy/dtaas/docker/secure-localhost`
+- DTaaS secure-localhost package with integrated GitHub (HTTPS):
+  `deploy/dtaas/docker/secure-localhost_with_integrated-github`
 - DTaaS localhost package with integrated GitLab:
   `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
 - DTaaS server package:

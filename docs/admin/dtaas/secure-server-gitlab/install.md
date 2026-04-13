@@ -1,7 +1,5 @@
 # DTaaS — Secure Server with Integrated GitLab
 
-![DTaaS logo](dtaas.png)
-
 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide. For detailed
@@ -159,30 +157,6 @@ docker compose --env-file config/.env down
 ├── CONFIG.md              # Detailed configuration reference
 └── README.md              # This file — quick-start guide
 ```
-
-## :book: Administration Summary
-
-The full DTaaS documentation is available at
-<https://into-cps-association.github.io/DTaaS/>.
-The sections relevant for administrators are summarized below.
-
-| Topic | Description |
-| :--- | :--- |
-| [Installation overview](https://into-cps-association.github.io/DTaaS/development/admin/overview.html) | Comparison of all installation setups (localhost, server, vagrant, packages) |
-| [Client configuration](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html) | All React client `client.js` variables explained |
-| [Client OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html) | Creating the OAuth 2.0 application for the React frontend |
-| [Server OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html) | Creating the OAuth 2.0 application for Traefik forward-auth |
-| [GitLab installation](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/index.html) | Setting up a local GitLab instance |
-| [GitLab integration](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/integration.html) | Connecting the GitLab instance to DTaaS as OAuth 2.0 provider |
-| [Add / remove users](https://into-cps-association.github.io/DTaaS/development/admin/guides/add_user.html) | Step-by-step guide for managing user accounts on a running installation |
-| [CLI tool](https://into-cps-association.github.io/DTaaS/development/admin/cli.html) | Command-line interface for managing a DTaaS installation |
-| [Renew TLS certificates](https://into-cps-association.github.io/DTaaS/development/admin/guides/renew_certs.html) | Updating expired TLS certificates |
-
-## :link: Documentation
-
-Please see
-<https://into-cps-association.github.io/DTaaS/development/index.html>
-for complete documentation.
 
 ## :framed_picture: References
 

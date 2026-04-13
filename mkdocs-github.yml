@@ -73,9 +73,9 @@ nav:
               - Config: admin/dtaas/localhost/config.md
           - Localhost on Portainer:
               admin/dtaas/localhost-on-portainer/install.md
-          - Secure Localhost:
-              - Install: admin/dtaas/secure-localhost/install.md
-              - Config: admin/dtaas/secure-localhost/config.md
+          - Secure Localhost with Integrated GitHub:
+              - Install: admin/dtaas/secure-localhost-github/install.md
+              - Config: admin/dtaas/secure-localhost-github/config.md
           - Server:
               - Install: admin/dtaas/server/install.md
               - Config: admin/dtaas/server/config.md

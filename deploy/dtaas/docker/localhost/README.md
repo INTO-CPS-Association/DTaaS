@@ -7,8 +7,8 @@ Thank you for downloading **Digital Twin as a Service**.
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 
-For secure HTTPS localhost deployment, use
-`deploy/dtaas/docker/secure-localhost`.
+For HTTP localhost deployment, use
+`deploy/dtaas/docker/localhost`.
 
 For detailed configuration reference, see [CONFIG.md](CONFIG.md).
 
@@ -68,7 +68,7 @@ docker compose --env-file config/.env down
 ## Notes
 
 - This package does not include `libms` or backend forward-auth.
-- For secure localhost setup with TLS, see
+- For secure production deployments, see
   `deploy/dtaas/docker/secure-localhost`.
 
 ## Documentation
