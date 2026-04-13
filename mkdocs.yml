@@ -71,11 +71,6 @@ nav:
           - Localhost:
               - Install: admin/dtaas/localhost/install.md
               - Config: admin/dtaas/localhost/config.md
-          - Localhost on Portainer:
-              admin/dtaas/localhost-on-portainer/install.md
-          - Secure Localhost:
-              - Install: admin/dtaas/secure-localhost/install.md
-              - Config: admin/dtaas/secure-localhost/config.md
           - Server:
               - Install: admin/dtaas/server/install.md
               - Config: admin/dtaas/server/config.md
@@ -111,6 +106,8 @@ nav:
               - NPM: admin/servers/lib/npm.md
               - Docker: admin/servers/lib/docker.md
       - Guides:
+          - Localhost on Portainer:
+              admin/guides/localhost-on-portainer/install.md
           - Check Config: admin/guides/check_config.md
           - Add user: admin/guides/add_user.md
           - Remove user: admin/guides/remove_user.md

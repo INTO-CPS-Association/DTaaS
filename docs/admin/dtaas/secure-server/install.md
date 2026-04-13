@@ -133,8 +133,7 @@ docker compose --env-file config/.env down
 |  \- tls.yml            # Traefik TLS provider configuration
 |- files/
 |  |- common/             # Shared files across all workspaces
-|  |- user1/              # User 1 workspace files
-|  \- user2/             # User 2 workspace files
+|  \- template/           # sample user workspace files
 |- docker-compose.yml     # Service definitions
 |- CONFIG.md              # Detailed configuration reference
 \- README.md              # This file
