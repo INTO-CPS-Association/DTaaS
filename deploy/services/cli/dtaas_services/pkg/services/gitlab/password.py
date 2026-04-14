@@ -9,7 +9,7 @@ import gitlab.exceptions
 
 from .personal_token import _load_pat_from_tokens
 from ...config import Config
-from ...docker_utils import execute_docker_command
+from ...docker_utils import execute_docker_command, DockerRunOptions
 from ...password_store import save_password
 from ._api import get_gitlab_client
 
@@ -42,7 +42,9 @@ def get_password_file() -> tuple[bool, str]:
 
     cmd = ["cat", PASSWORD_FILE_PATH]
 
-    success, output = execute_docker_command(GITLAB_CONTAINER_NAME, cmd, verbose=False)
+    success, output = execute_docker_command(
+        GITLAB_CONTAINER_NAME, cmd, DockerRunOptions(verbose=False)
+    )
 
     if not success:
         if "No such file" in output:

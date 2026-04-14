@@ -7,7 +7,7 @@ from ..utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
-from ..docker_utils import execute_docker_command
+from ..docker_utils import execute_docker_command, DockerRunOptions
 from ..config import Config
 from ..cert import set_service_cert_permissions, CertPermissionContext
 
@@ -69,7 +69,9 @@ def _execute_with_retry(
     output = ""
 
     for attempt in range(max_attempts):
-        success, output = execute_docker_command(container, cmd, verbose=False)
+        success, output = execute_docker_command(
+            container, cmd, DockerRunOptions(verbose=False)
+        )
 
         if _is_successful_result(success, output):
             return True, ""
@@ -108,7 +110,7 @@ def _set_rabbitmq_permissions(username: str, vhost: str) -> tuple[bool, str]:
     success, output = execute_docker_command(
         "rabbitmq",
         ["rabbitmqctl", "set_permissions", "-p", vhost, username, ".*", ".*", ".*"],
-        verbose=False,
+        DockerRunOptions(verbose=False),
     )
     if not success:
         return False, f"Failed to set permissions on vhost {vhost}: {output}"

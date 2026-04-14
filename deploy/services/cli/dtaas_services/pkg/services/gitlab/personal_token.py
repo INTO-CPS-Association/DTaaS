@@ -11,7 +11,8 @@ import gitlab
 import gitlab.exceptions
 
 from ...config import Config
-from ...docker_utils import execute_docker_command
+from ...docker_utils import execute_docker_command, DockerRunOptions
+from ...sanitize import escape_js_string
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ TOKEN_VALUE_PATTERN = re.compile(r"^[A-Za-z0-9_-]{10,255}$")
 
 def _escape_ruby_single_quoted(value: str) -> str:
     """Escape a string for safe embedding in a Ruby single-quoted literal."""
-    return value.replace("\\", "\\\\").replace("'", "\\'")
+    return escape_js_string(value)
 
 
 def _validate_token_name(token_name: str) -> tuple[bool, str]:
@@ -110,7 +111,9 @@ def _execute_rails_command() -> tuple[bool, str]:
 
     logger.info("Creating Personal Access Token via gitlab-rails runner...")
 
-    return execute_docker_command(GITLAB_CONTAINER_NAME, cmd, verbose=False)
+    return execute_docker_command(
+        GITLAB_CONTAINER_NAME, cmd, DockerRunOptions(verbose=False)
+    )
 
 
 def _extract_and_validate_token(output: str) -> tuple[bool, str]:

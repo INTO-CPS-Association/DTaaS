@@ -2,7 +2,7 @@
 
 import json
 from typing import Any
-from ...docker_utils import execute_docker_command
+from ...docker_utils import execute_docker_command, DockerRunOptions
 
 
 def parse_json_response(json_str: str) -> tuple[bool, Any, str]:
@@ -30,7 +30,9 @@ def execute_influxdb_command(command: list, error_context: str) -> tuple[bool, s
     Returns:
         Tuple of (success, output or error message)
     """
-    success, output = execute_docker_command("influxdb", command, False)
+    success, output = execute_docker_command(
+        "influxdb", command, DockerRunOptions(verbose=False)
+    )
     if not success:
         return False, f"{error_context}: {output}"
     return True, output

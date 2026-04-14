@@ -1,8 +1,26 @@
 """Docker command execution utilities."""
 
 import time
+from dataclasses import dataclass, field
+from typing import NamedTuple
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
+
+
+@dataclass
+class DockerRunOptions:
+    """Options controlling retry, environment, and verbosity."""
+
+    envs: dict[str, str] = field(default_factory=dict)
+    max_attempts: int = 1
+    delay: int = 4
+    verbose: bool = True
+
+
+class _ExecParams(NamedTuple):
+    container: str
+    cmd: list[str]
+    envs: dict[str, str]
 
 
 def _get_stderr_content(error_str: str) -> str:
@@ -75,82 +93,64 @@ def _format_docker_error(container: str, error_str: str) -> str:
     return f"Docker error: {clean_error}"
 
 
-def execute_docker_command(
-    container_name: str, exec_cmd: list[str], verbose: bool = True
-) -> tuple[bool, str]:
-    """Execute a command in a Docker container.
-
-    Args:
-        container_name: Name of the Docker container
-        exec_cmd: Command to execute as a list of arguments
-        verbose: Whether to print output
-
-    Returns:
-        Tuple of (success, output/error message)
-    """
-    docker = DockerClient()
-    try:
-        result = docker.execute(container_name, exec_cmd)
-    except DockerException as e:
-        error_msg = _format_docker_error(container_name, str(e))
-        if verbose:
-            print(error_msg)
-        return False, error_msg
-    return True, str(result) if result is not None else ""
-
-
-def _attempt_docker_exec(
-    docker: DockerClient,
-    container_name: str,
-    exec_cmd: list[str],
-    envs: dict[str, str],
-) -> tuple[bool, str]:
+def _attempt_docker_exec(docker: DockerClient, params: _ExecParams) -> tuple[bool, str]:
     """Execute one attempt of a docker command.
 
     Args:
         docker: DockerClient instance
-        container_name: Name of the Docker container
-        exec_cmd: Command to execute as a list of arguments
-        envs: Environment variables for the command
+        params: Execution parameters (container, command, env vars)
 
     Returns:
         Tuple of (success, output or error message)
     """
     try:
-        result = docker.execute(container_name, exec_cmd, envs=envs)
+        result = docker.execute(params.container, params.cmd, envs=params.envs)
         return True, str(result) if result is not None else ""
     except DockerException as e:
-        return False, _format_docker_error(container_name, str(e))
+        return False, _format_docker_error(params.container, str(e))
 
 
-def execute_docker_command_with_retry(
-    container_name: str,
-    exec_cmd: list[str],
-    envs: dict[str, str] | None = None,
-    max_attempts: int = 3,
-    delay: int = 4,
+def _run_with_retry(
+    docker: DockerClient, params: _ExecParams, opts: DockerRunOptions
 ) -> tuple[bool, str]:
-    """Execute a command in a Docker container with retries.
+    """Retry a docker exec according to the given options.
 
     Args:
-        container_name: Name of the Docker container
-        exec_cmd: Command to execute as a list of arguments
-        envs: Optional environment variables for the command
-        max_attempts: Maximum number of attempts
-        delay: Seconds to wait between retries
+        docker: DockerClient instance
+        params: Execution parameters
+        opts: Retry and verbosity options
 
     Returns:
         Tuple of (success, output or error message)
     """
-    docker = DockerClient()
-    resolved_envs = envs or {}
     output = ""
-    for attempt in range(max_attempts):
-        success, output = _attempt_docker_exec(
-            docker, container_name, exec_cmd, resolved_envs
-        )
+    for attempt in range(opts.max_attempts):
+        success, output = _attempt_docker_exec(docker, params)
         if success:
             return True, output
-        if attempt < max_attempts - 1:
-            time.sleep(delay)
+        if attempt < opts.max_attempts - 1:
+            time.sleep(opts.delay)
     return False, output
+
+
+def execute_docker_command(
+    container_name: str,
+    exec_cmd: list[str],
+    options: DockerRunOptions | None = None,
+) -> tuple[bool, str]:
+    """Execute a command in a Docker container, with optional retries.
+
+    Args:
+        container_name: Name of the Docker container
+        exec_cmd: Command to execute as a list of arguments
+        options: Retry, environment, and verbosity options
+
+    Returns:
+        Tuple of (success, output/error message)
+    """
+    opts = options or DockerRunOptions()
+    params = _ExecParams(container_name, exec_cmd, opts.envs)
+    success, output = _run_with_retry(DockerClient(), params, opts)
+    if not success and opts.verbose:
+        print(output)
+    return success, output

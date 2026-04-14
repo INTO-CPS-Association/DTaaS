@@ -19,9 +19,9 @@ def test_get_admin_credentials():
 
 
 def test_run_psql_success(mocker):
-    """Successful execute_docker_command_with_retry returns (True, output)."""
+    """Successful execute_docker_command returns (True, output)."""
     mocker.patch(
-        f"{USER_MODULE}.execute_docker_command_with_retry",
+        f"{USER_MODULE}.execute_docker_command",
         return_value=(True, "CREATE ROLE"),
     )
 

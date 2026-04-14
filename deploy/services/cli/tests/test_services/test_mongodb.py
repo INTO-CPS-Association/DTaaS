@@ -15,10 +15,10 @@ def test_add_mongodb_user_success(mocker):
     mock_cfg = mocker.patch("dtaas_services.pkg.services.mongodb.Config")
     mock_cfg.return_value.get_value.side_effect = lambda key: {
         "MONGODB_ADMIN_USERNAME": "admin",
-        "MONGODB_ADMIN_PASSWORD": "adminpass", # noqa: S105 # NOSONAR
+        "MONGODB_ADMIN_PASSWORD": "adminpass",  # noqa: S105 # NOSONAR
     }[key]
     mock_exec = mocker.patch(
-        "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
+        "dtaas_services.pkg.services.mongodb.execute_docker_command"
     )
     mock_exec.return_value = (True, "success")
     success, error = _add_mongodb_user("testuser", "testpass")
@@ -32,10 +32,10 @@ def test_add_mongodb_user_fails(mocker):
     mock_cfg = mocker.patch("dtaas_services.pkg.services.mongodb.Config")
     mock_cfg.return_value.get_value.side_effect = lambda key: {
         "MONGODB_ADMIN_USERNAME": "admin",
-        "MONGODB_ADMIN_PASSWORD": "adminpass", # noqa: S105 # NOSONAR
+        "MONGODB_ADMIN_PASSWORD": "adminpass",  # noqa: S105 # NOSONAR
     }[key]
     mock_exec = mocker.patch(
-        "dtaas_services.pkg.services.mongodb.execute_docker_command_with_retry"
+        "dtaas_services.pkg.services.mongodb.execute_docker_command"
     )
     mock_exec.return_value = (False, "connection refused")
     success, error = _add_mongodb_user("testuser", "testpass")

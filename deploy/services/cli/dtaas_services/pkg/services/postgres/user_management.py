@@ -5,7 +5,8 @@ from ...utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
-from ...docker_utils import execute_docker_command_with_retry
+from ...docker_utils import execute_docker_command, DockerRunOptions
+from ...sanitize import escape_sql_identifier, escape_sql_literal
 
 CONTAINER = "postgres"
 ALREADY_EXISTS = "already exists"
@@ -33,8 +34,10 @@ def _run_psql(admin_user: str, admin_pass: str, sql: str) -> tuple[bool, str]:
         Tuple of (success, output or error message)
     """
     cmd = ["psql", "-U", admin_user, "-d", "postgres", "-c", sql]
-    return execute_docker_command_with_retry(
-        CONTAINER, cmd, envs={"PGPASSWORD": admin_pass}
+    return execute_docker_command(
+        CONTAINER,
+        cmd,
+        DockerRunOptions(envs={"PGPASSWORD": admin_pass}, max_attempts=3),
     )
 
 
@@ -48,8 +51,8 @@ def _create_user_sql(username: str, password: str) -> str:
     Returns:
         SQL statement string
     """
-    safe_user = username.replace('"', '""')
-    safe_pass = password.replace("'", "''")
+    safe_user = escape_sql_identifier(username)
+    safe_pass = escape_sql_literal(password)
     return f"CREATE USER \"{safe_user}\" WITH PASSWORD '{safe_pass}';"
 
 
@@ -62,7 +65,7 @@ def _create_database_sql(username: str) -> str:
     Returns:
         SQL statement string
     """
-    safe_user = username.replace('"', '""')
+    safe_user = escape_sql_identifier(username)
     return f'CREATE DATABASE "{safe_user}" OWNER "{safe_user}";'
 
 

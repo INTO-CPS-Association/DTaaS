@@ -11,7 +11,8 @@ from ..utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
-from ..docker_utils import execute_docker_command_with_retry
+from ..docker_utils import execute_docker_command, DockerRunOptions
+from ..sanitize import escape_js_string
 
 ALREADY_EXISTS_CODE = 51003
 
@@ -26,8 +27,8 @@ def _build_create_user_script(username: str, password: str) -> str:
     Returns:
         JavaScript eval string for mongosh
     """
-    safe_user = username.replace("\\", "\\\\").replace("'", "\\'")
-    safe_pass = password.replace("\\", "\\\\").replace("'", "\\'")
+    safe_user = escape_js_string(username)
+    safe_pass = escape_js_string(password)
     return (
         f"try {{ db.getSiblingDB('{safe_user}').createUser("
         f"{{user: '{safe_user}', pwd: '{safe_pass}', "
@@ -64,7 +65,9 @@ def _add_mongodb_user(username: str, password: str) -> tuple[bool, str]:
         "--eval",
         _build_create_user_script(username, password),
     ]
-    success, output = execute_docker_command_with_retry("mongodb", cmd)
+    success, output = execute_docker_command(
+        "mongodb", cmd, DockerRunOptions(max_attempts=3)
+    )
     if success or "already exists" in output:
         return True, ""
     return False, f"Failed to add MongoDB user {username}: {output}"
