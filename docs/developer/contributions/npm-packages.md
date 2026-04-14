@@ -25,13 +25,13 @@ The publication steps for
 [runner](../../user/servers/execution/runner/readme.md)
 are automated via github actions.
 
-## Github  npm registry
+## GitHub  npm registry
 
-The Github actions of the project publish
+The GitHub actions of the project publish
 [packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 The only limitation is that the users need an
 [access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-from Github.
+from GitHub.
 
 ## Private Registry
 

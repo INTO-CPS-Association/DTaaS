@@ -1,6 +1,6 @@
-# Secrets for Github Action
+# Secrets for GitHub Action
 
-The Github actions require the following secrets to be obtained
+The GitHub actions require the following secrets to be obtained
 from [docker hub](https://hub.docker.com):
 
 | Secret Name          | Explanation                                                                              |
@@ -10,7 +10,7 @@ from [docker hub](https://hub.docker.com):
 | `DOCKERHUB_TOKEN`    | API token to publish images to docker hub, with `Read`, `Write` and `Delete` permissions |
 | `PACKAGE_NAME`       | The name with which libms npm package must be published                                  |
 
-Similarly, Github actions require the following secrets to be obtained
+Similarly, GitHub actions require the following secrets to be obtained
 from [npmjs](https://npmjs.com):
 
 | Secret Name               | Explanation                                                                     |
@@ -20,5 +20,5 @@ from [npmjs](https://npmjs.com):
 | `NPM_RUNNER_PACKAGE_NAME` | The name with which runner npm package must be published                        |
 
 Remember to add these secrets to
-[Github Secrets Setting](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)
+[GitHub Secrets Setting](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)
 of the fork.

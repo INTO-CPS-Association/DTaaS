@@ -72,7 +72,7 @@ The manage tab allows for different operations on a digital twin:
 
 A digital twin placed in the DTaaS has a certain recommended
 structure. See the
-[assets pag](../../servers/lib/assets.md) for an explanation
+[assets page](../../servers/lib/assets.md) for an explanation
 and
 [this example](https://github.com/INTO-CPS-Association/DTaaS-examples/tree/main/digital_twins/mass-spring-damper).
 

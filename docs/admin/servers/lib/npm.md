@@ -32,11 +32,11 @@ This can be copied to create a file system for users.
 
 ## :arrow_down: Install
 
-The npm package is available in Github
+The npm package is available in GitHub
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
 and on
 [npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
-**Prefer the package on npmjs over Github**.
+**Prefer the package on npmjs over GitHub**.
 
 Set the registry and install the package with the one of
 the two following commands
@@ -47,7 +47,7 @@ the two following commands
 sudo npm install -g @into-cps-association/libms  # requires no login
 ```
 
-### Github
+### GitHub
 
 ``` bash
 # requires login
@@ -55,7 +55,7 @@ sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
 ```
 
 The _github package registry_ asks for username and password. The username is
-the Github username and the password is the Github
+the GitHub username and the password is the GitHub
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 In order for the npm to download the package, the personal access token
 needs to have _read:packages_ scope.

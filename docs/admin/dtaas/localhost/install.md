@@ -68,7 +68,7 @@ docker compose --env-file config/.env down
 
 - This package does not include `libms` or backend forward-auth.
 - For secure production deployments, see
-  `deploy/dtaas/docker/secure-server_with_integrated-github`.
+  `deploy/dtaas/docker/secure-server_with_integrated-gitlab`.
 
 ## Documentation
 

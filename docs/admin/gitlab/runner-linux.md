@@ -42,8 +42,8 @@ A GitLab Runner can be configured for three different scopes:
 | Group Runner      | Available to all projects and subgroups in a group.        |
 | Project Runner    | Associated with one specific project.                      |
 
-Creating __instance runners__ is recommended as they are the most straightforward, but
-any type will work. More about these three types can be found on
+Creating __instance runners__ is recommended as they are the most straightforward,
+but any type will work. More about these three types can be found on
 [the official GitLab documentation page](https://docs.gitlab.com/ee/ci/runners/runners_scope.html).
 
 ## Obtaining A Registration Token
