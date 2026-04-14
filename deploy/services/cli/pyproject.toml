@@ -20,7 +20,7 @@ httpx = "^0.28.1"
 python-gitlab = "^8.1.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
+pytest = ">=8.3.3,<10.0.0"
 pytest-cov = "^6.0.0"
 pytest-mock = "^3.14.0"
 pylint = "^3.3.1"
