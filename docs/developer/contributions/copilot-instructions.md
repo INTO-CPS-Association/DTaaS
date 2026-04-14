@@ -16,5 +16,6 @@ Use that file as the source of truth for:
 When contributing with coding agents:
 
 1. Read `.github/copilot-instructions.md` before implementation.
-2. Follow component-local conventions (`cli/`, `client/`, `servers/`, `deploy/`, `docs/`).
+2. Follow component-local conventions
+   (`cli/`, `client/`, `servers/`, `deploy/`, `docs/`).
 3. Validate impacted modules and documentation paths before opening a pull request.

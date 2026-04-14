@@ -46,8 +46,9 @@ Click the stop symbol in the log to stop an execution:
 
 ## 🔧 Changing Runners
 
-The runners that pick up jobs can be changed in the settings. Further information on
-[these and other settings](../../website/settings.md) is available.
+The runners that pick up jobs can be changed in the settings.
+Further information on [these and other settings](../../website/settings.md)
+is available.
 
 ## 💭 Summary
 

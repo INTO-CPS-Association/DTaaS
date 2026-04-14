@@ -88,7 +88,8 @@ The lifecycle phases for this example include:
 | execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
 | clean           | Removes created *data* directory and incubator log files.                                                                                                                                                      |
 
-If required, change the execute permissions of lifecycle scripts that need to be executed.
+If required, change the execute permissions of lifecycle scripts
+that need to be executed.
 This can be done using the following command
 
 ```bash

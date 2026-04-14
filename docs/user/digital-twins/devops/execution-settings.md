@@ -49,7 +49,8 @@ common library repositories. For example: "main" or "master":
 
 - <u>Not allowed values</u>
 
-This field should not be left empty or set to a value not matching a branch in both repositories.
+This field should not be left empty or set to a value not matching a branch
+in both repositories.
 While technically allowed, this may cause errors or unexpected behaviours.
 
 Expected error:
@@ -103,8 +104,8 @@ Expected error:
 
 - <u>Not allowed values</u>
 
-This field should not be left blank or set to a value not matching a repository. It is
-inadvisable for it to match a user repository.
+This field should not be left blank or set to a value not matching a
+repository. It is inadvisable for it to match a user repository.
 
 - <u>Visual examples</u>
 

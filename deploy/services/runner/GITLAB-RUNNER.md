@@ -34,8 +34,9 @@ A GitLab Runner can be configured for three different scopes:
 | Group Runner    | Available to all projects and subgroups in a group. |
 | Project Runner  | Associated with one specific project. |
 
-It is recommended to create __instance runners__ as they are the most straightforward, but
-any type will work. More about these three types can be found on
+It is recommended to create __instance runners__ as they are the most
+straightforward, but any type will work. More about these three types can be
+found on
 [the official GitLab documentation page](https://docs.gitlab.com/ee/ci/runners/runners_scope.html).
 
 ## Obtaining A Registration Token
@@ -135,8 +136,9 @@ The term `runner` could refer to one of two things:
 
 1. The `gitlab-runner` Container
    This is the Docker container that is created when the commands
-   given above are executed. It is based on the `gitlab/gitlab-runner:alpine` image, and is
-   used to spawn one or more _executors_ that actually execute the CI/CD jobs.
+   given above are executed. It is based on the `gitlab/gitlab-runner:alpine`
+   image, and is used to spawn one or more _executors_ that actually execute
+   the CI/CD jobs.
 
    These executors are spawned using a packaged version of Docker within the
    `gitlab-runner` image.
