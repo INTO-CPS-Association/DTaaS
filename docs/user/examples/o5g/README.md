@@ -14,7 +14,7 @@ their mission.
 > the burning building. This image was created with the assistance of
 > DALL·E.
 
-We assume the following scenario:
+The following scenario is assumed:
 
 * a set of firefighters work to extinguish a burning building
 * they each use an SCBA with pressurised oxygen to breath
@@ -98,16 +98,16 @@ export O5g_MQTT_TOPIC_ALERT='vgiot/dt/alerts'
 ```
 
 This example uses InfuxDB as a data storage, which will need to be
-configured to use your Access data. The following configuration
+configured to use the relevant access data. The following configuration
 steps are needed:
 
 * Log into the InfluxDB Web UI
-* Obtain **org** name (is below your _username_ in the sidebar)
-* Create a data bucket if you don't have one already in
+* Obtain **org** name (below the _username_ in the sidebar)
+* Create a data bucket if one does not already exist in
   `Load Data -> Buckets`
 * Create an API access token in `Load Data -> API Tokens`,
-  Copy and save this token somewhere immediately, you can not access it
-  later!
+  Copy and save this token immediately; it cannot be accessed
+  subsequently.
 
 ```ini
 export O5G_INFLUX_SERVER=
@@ -185,9 +185,9 @@ The _tmux_ session contains 4 components of the digital twin:
 
 #### Examine the Results
 
-For additional mission awareness, we recommend utilising the Influx data
-visualisation. We provide a dashboard configuration in the file
-_influx-dashoard.json_. Log in to your Influx Server to import
+For additional mission awareness, it is recommended to utilise the Influx data
+visualisation. A dashboard configuration is provided in the file
+_influx-dashoard.json_. Log in to the Influx Server to import
 (usually port 8086). A screenshot of the dashboard is given here.
 
 ![Firefighter remaining mission time](img/influx-dashboard.png)
@@ -195,7 +195,7 @@ _influx-dashoard.json_. Log in to your Influx Server to import
 The data gets stored in
 `o5g->prediction->air-remaining->37ae3e4fb3ea->true->vgiot/dt/prediction`
 variable of the InfluxDB. In addition to importing dashboard configuration
-given above, it is possible to create your custom dashboards using
+given above, it is possible to create custom dashboards using
 the stored data.
 
 #### Terminate

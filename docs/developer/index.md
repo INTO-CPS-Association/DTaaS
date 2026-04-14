@@ -36,9 +36,9 @@ TODO insert when githooks works
 
 ### git hooks
 
-The git-hooks will ensure that your commits are formatted
-correctly and that the tests pass before you
-push the commits to remote repositories.
+The git-hooks ensure that commits are formatted
+correctly and that tests pass before they are
+pushed to remote repositories.
 
 The project uses pre-commit for managing git hooks. Install git hooks using
 
@@ -50,9 +50,9 @@ The git hooks run during pre-commit (`git commit`) and
 pre-push (`git push`) stages. No special flags and options are
 needed to run these git hooks.
 
-You can also run the git-hooks manually before committing or pushing
-by using the run commands below. The autoupdate command will set the
-revisions of the git repos used in the .pre-commit-config.yaml up to date.
+The git-hooks can also be run manually before committing or pushing
+by using the run commands below. The autoupdate command sets the
+revisions of the git repositories used in .pre-commit-config.yaml up to date.
 
 ```bash
 pre-commit run --hook-stage pre-commit # runs format and syntax checks
@@ -61,9 +61,9 @@ pre-commit autoupdate                  # update hooks to latests versions
 ```
 
 Be aware that the some tests may take a long time to run.
-If you want to skip the tests or formatting,
-you can use the `--no-verify` flag
-on `git commit` or `git push`. Please use this
+To skip the tests or formatting,
+use the `--no-verify` flag
+on `git commit` or `git push`. Use this
 option with care.
 
 -->

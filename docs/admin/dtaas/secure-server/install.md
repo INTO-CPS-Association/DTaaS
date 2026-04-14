@@ -1,10 +1,11 @@
-# DTaaS - Secure Server (External GitLab)
+<!-- markdownlint-disable MD041 -->
+![DTaaS logo](dtaas.png)
 
-Thank you for downloading **Digital Twin as a Service**.
+🎉 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide for a secure,
 multi-user DTaaS deployment that uses an **external GitLab instance**
-for OAuth 2.0 authorization.
+for OAuth 2.0 authorisation.
 
 For a full configuration reference, see [config.md](config.md).
 
@@ -23,7 +24,7 @@ The `docker-compose.yml` starts the following services:
 | **client** | DTaaS React frontend |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
-| **traefik-forward-auth** | OAuth 2.0 authorization middleware |
+| **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 
 ## Prerequisites
 

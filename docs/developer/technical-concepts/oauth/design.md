@@ -8,7 +8,7 @@ is responsible for the same.
 
 ## Requirements
 
-For our purpose, we require the Auth MS to be able to handle only
+For this purpose, the Auth MS is required to handle only
 requests of the general form ”Is User X allowed to access /BackendMS/example?”.
 
 If the user’s identity is correctly verified though the GitLab OAuth 2.0
@@ -56,8 +56,8 @@ server for ForwardAuth middlewares. These
 middlewares can be added on
 whichever routes/requests require authentication.
 For our specific purpose,
-this will be added to all routes since we impose
-atleast identity verification
+this will be added to all routes since the platform imposes
+at least identity verification
 of users for any request through the gateway
 
 ## Auth MS Design

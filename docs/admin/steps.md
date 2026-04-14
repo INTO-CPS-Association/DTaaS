@@ -52,17 +52,13 @@ Run compose commands from the selected package directory.
 
 - DTaaS localhost package (HTTP):
   `deploy/dtaas/docker/localhost`
-- DTaaS secure-localhost package with integrated GitHub (HTTPS):
-  `deploy/dtaas/docker/secure-localhost_with_integrated-github`
-- DTaaS localhost package with integrated GitLab:
-  `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
-- DTaaS server package:
-  `deploy/dtaas/docker/server`
-- DTaaS secure-server compatibility package:
+- DTaaS secure server package:
   `deploy/dtaas/docker/secure-server`
+- DTaaS secure server with integrated GitLab package:
+  `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
 - Workspace secure server:
   `deploy/workspace/keycloak/production`
-- Workspace localhost:
+- Workspace localhost (HTTP):
   `deploy/workspace/dex/localhost`
 
 ### 5. Validate and Iterate

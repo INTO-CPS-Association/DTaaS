@@ -86,7 +86,7 @@ Edit `config/.env`:
 #### 1.4 Client Configuration
 
 Edit `config/client.js` and set the OAuth application credentials
-from your GitLab account:
+from the GitLab account:
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
@@ -130,7 +130,7 @@ Click **Deploy the stack**.
 ### 1.7 Use
 
 Open <http://localhost> in a web browser and sign in with
-your GitLab credentials.
+the configured GitLab credentials.
 
 ### 1.8 Limitations
 
@@ -167,7 +167,7 @@ Edit `.env`:
 
 <!-- markdownlint-disable MD046 -->
 !!! tip
-    You can customize local login users in
+    Local login users may be customised in
     `deploy/workspace/dex/localhost/config/dex-config.yaml`.
 <!-- markdownlint-enable MD046 -->
 

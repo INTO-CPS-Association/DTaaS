@@ -1,20 +1,21 @@
-# DTaaS — Secure Server with Integrated GitLab
+<!-- markdownlint-disable MD041 -->
+![DTaaS logo](dtaas.png)
 
-Thank you for downloading **Digital Twin as a Service**.
+🎉 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide. For detailed
 configuration reference, see [config.md](config.md).
 
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout
-> this guide. Replace it with the actual server hostname of your
+> this guide. Replace it with the actual server hostname of the
 > installation.
 
 ## :globe_with_meridians: Overview
 
 This package installs the DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
-authorization provider and the DevOps backend for digital twin projects.
+authorisation provider and the DevOps backend for digital twin projects.
 
 <img src="server.png" alt="DTaaS on Server" width="600px" />
 
@@ -26,7 +27,7 @@ The `docker-compose.yml` starts the following services:
 | **client** | DTaaS React frontend |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
-| **traefik-forward-auth** | OAuth 2.0 authorization middleware |
+| **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 | **gitlab** | Integrated GitLab CE (OAuth 2.0 provider) |
 
 ## :clipboard: Prerequisites

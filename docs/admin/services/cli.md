@@ -60,7 +60,7 @@ dtaas-services --help
 
 ## Manual Compose Operations
 
-After generating a services project, you can operate services manually with
+After generating a services project, services may be operated manually with
 compose files:
 
 - `compose.services.yml`

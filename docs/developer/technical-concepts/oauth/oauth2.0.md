@@ -11,14 +11,14 @@ OAuth 2.0, as used for user identity verification,
 has 3 main entities:
 
 - **The User:** This is the entity whose identity
-  we are trying to verify/know. In our case,
+  the platform is attempting to verify. In the DTaaS context,
   this is the same as the user of the DTaaS software.
 - **The Client:** This is the entity that wishes to know/verify the identity
-  of a user. In our case, this is the Auth MS (initialised with a GitLab
-  application). This shouldn’t be confused with the frontend website of
+  of a user. In the DTaaS context, this is the Auth MS (initialised with a GitLab
+  application). This should not be confused with the frontend website of
   DTaaS (referred to as Client in the previous section).
 - **The OAuth 2.0 Identity Provider:** This is the entity that allows the client
-  to know the identity of the user. In our case, this is GitLab. Most
+  to know the identity of the user. In the DTaaS context, this is GitLab. Most
   commonly, users have an existing, protected account with this entity.
   The account is registered using a unique key,
   like an email ID or username and is usually

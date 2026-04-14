@@ -6,7 +6,7 @@ a DTaaS installation.
 ## Prerequisite
 
 The DTaaS platform with base users and essential
-containers must be operational before the CLI can be utilized.
+containers must be operational before the CLI can be utilised.
 
 ## Installation
 
@@ -175,7 +175,7 @@ docker compose --env-file config/.env up \
 ```
 
 The new users are now added to the DTaaS
-instance, with authorization enabled.
+instance, with authorisation enabled.
 
 ### Delete Users
 
@@ -208,7 +208,7 @@ dtaas admin user delete
   user if that container was somehow stopped.
   It shows a _Running_ status for existing user
   containers that are already up and running,
-  it doesn't restart them.
+  it does not restart them.
 
 - _user add_ and _user delete_ CLIs return an
   error if the _add_ and _delete_ lists in

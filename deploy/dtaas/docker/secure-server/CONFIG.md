@@ -49,7 +49,7 @@ cp config/.env.example config/.env
 
 ### OAuth 2.0 Settings
 
-These are set from your external GitLab OAuth 2.0 applications.
+These are set from the external GitLab OAuth 2.0 applications.
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
@@ -73,7 +73,7 @@ These are set from your external GitLab OAuth 2.0 applications.
 Source: `config/client.js.example`
 
 This JavaScript file is mounted into the React client container and
-configures DTaaS web behavior at runtime.
+configures DTaaS web behaviour at runtime.
 
 ```bash
 cp config/client.js.example config/client.js
@@ -100,7 +100,7 @@ cp config/client.js.example config/client.js
 
 Source: `config/conf.server.example`
 
-This file defines per-path authorization rules for traefik-forward-auth.
+This file defines per-path authorisation rules for traefik-forward-auth.
 Each rule restricts a URL path to specific email addresses.
 
 ```bash
@@ -130,14 +130,14 @@ rule.onlyu2.rule=PathPrefix(`/user2`)
 rule.onlyu2.whitelist=user2@emailservice.com
 ```
 
-Replace usernames and email addresses to match your actual users.
+Replace usernames and email addresses to match the actual users.
 
 ### Important Rules
 
 - Usernames in `config/.env` (`USERNAME1`, `USERNAME2`) must match
   `PathPrefix` values in `config/conf.server`.
 - If a route exists in `docker-compose.yml` but has no rule in
-  `config/conf.server`, the default behavior allows any signed-in user.
+  `config/conf.server`, the default behaviour allows any signed-in user.
 - If a rule exists in `config/conf.server` but no router serves that path,
   the URL returns 404.
 
@@ -174,7 +174,7 @@ sudo chown -R 1000:100 files/*
 
 ## OAuth 2.0 Application Setup
 
-Two OAuth 2.0 applications are needed in your external GitLab instance.
+Two OAuth 2.0 applications are needed in the external GitLab instance.
 
 ### DTaaS Client Authorization (React Frontend)
 
@@ -185,7 +185,7 @@ Two OAuth 2.0 applications are needed in your external GitLab instance.
    - **Confidential**: unticked (public SPA client)
    - **Scopes**: `openid`, `profile`, `read_user`, `read_repository`, `api`
 3. Save the **Application ID** and set `REACT_APP_CLIENT_ID` in `config/client.js`.
-4. Set `REACT_APP_AUTH_AUTHORITY` in `config/client.js` to your GitLab URL.
+4. Set `REACT_APP_AUTH_AUTHORITY` in `config/client.js` to the GitLab URL.
 
 ### DTaaS Server Authorization (Traefik Forward-Auth)
 
@@ -211,7 +211,7 @@ To add a third user:
 1. Add service `user3` in `docker-compose.yml` based on `user1` / `user2`.
 2. Add `USERNAME3=<name>` in `config/.env`.
 3. Create `files/<name>` directory.
-4. Add matching authorization rule in `config/conf.server`.
+4. Add matching authorisation rule in `config/conf.server`.
 5. Restart:
 
 ```bash
@@ -224,7 +224,7 @@ docker compose --env-file config/.env up -d
 
 - Verify `OAUTH_URL` in `config/.env`.
 - Verify `REACT_APP_AUTH_AUTHORITY` in `config/client.js`.
-- Clear browser cookies for your domain.
+- Clear browser cookies for the domain.
 - Check logs:
 
 ```bash

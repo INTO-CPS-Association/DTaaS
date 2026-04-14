@@ -55,12 +55,12 @@ yarn login --registry "http://localhost:4873" #login with the credentials for ya
 npm login #login with the credentials for npm utility
 ```
 
-You can open `http://localhost:4873` in your browser, login with
+You can open `http://localhost:4873` in the browser, login with
 the user credentials to see the packages published.
 
 #### Publish to private npm registry
 
-To publish a package to your local registry, do:
+To publish a package to the local registry, do:
 
 ```bash
 yarn install
@@ -70,7 +70,7 @@ yarn publish #increments version in package.json, publishes to registry and adds
 ```
 
 The package version in package.json gets updated as well. You can
-open `http://localhost:4873` in your browser, login with the user credentials
+open `http://localhost:4873` in the browser, login with the user credentials
 to see the packages published. Please see
 [verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
 for more information.

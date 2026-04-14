@@ -5,7 +5,7 @@ DTaaS monorepo.
 
 ## Recommended Order
 
-1. Run syntax and lint checks for the component you changed.
+1. Run syntax and lint checks for the changed component.
 2. Run fast local tests (unit or focused integration).
 3. Run broader test suites before opening a pull request.
 4. Build docs if markdown or navigation changed.
@@ -77,7 +77,7 @@ Run from repository root:
 mkdocs build -f mkdocs-github.yml
 ```
 
-If you are on Linux and need full docs validation with optional PDF wiring:
+If on Linux and full docs validation with optional PDF wiring is needed:
 
 ```bash
 MKDOCS_ENABLE_PDF_EXPORT=1 mkdocs build -f mkdocs.yml

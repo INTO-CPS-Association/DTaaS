@@ -1,22 +1,25 @@
-# DTaaS — Secure Server with Integrated GitLab
-
+<!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
 Thank you for downloading **Digital Twin as a Service**.
+
+This README provides a quick-start installation guide for a secure,
+multi-user DTaaS deployment that uses an **integrated GitLab instance**
+for OAuth 2.0 authorisation.
 
 This README provides a quick-start installation guide. For detailed
 configuration reference, see [CONFIG.md](CONFIG.md).
 
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout
-> this guide. Replace it with the actual server hostname of your
+> this guide. Replace it with the actual server hostname of the
 > installation.
 
 ## :globe_with_meridians: Overview
 
 This package installs the DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
-authorization provider and the DevOps backend for digital twin projects.
+authorisation provider and the DevOps backend for digital twin projects.
 
 <img src="server.png" alt="DTaaS on Server" width="600px" />
 
@@ -28,7 +31,7 @@ The `docker-compose.yml` starts the following services:
 | **client** | DTaaS React frontend |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
-| **traefik-forward-auth** | OAuth 2.0 authorization middleware |
+| **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 | **gitlab** | Integrated GitLab CE (OAuth 2.0 provider) |
 
 ## :clipboard: Prerequisites
@@ -145,7 +148,7 @@ docker compose --env-file config/.env down
 ├── certs/                 # TLS certificates (fullchain.pem, privkey.pem)
 ├── config/
 │   ├── .env               # Docker compose environment variables
-│   ├── conf.server        # Traefik forward-auth authorization rules
+│   ├── conf.server        # Traefik forward-auth authorisation rules
 │   ├── client.js             # DTaaS React client configuration
 │   ├── gitlab/            # GitLab config (mounted as /etc/gitlab)
 │   └── tls.yml            # Traefik TLS provider configuration
@@ -163,7 +166,7 @@ docker compose --env-file config/.env down
 
 The full DTaaS documentation is available at
 <https://into-cps-association.github.io/DTaaS/>.
-The sections relevant for administrators are summarized below.
+The sections relevant for administrators are summarised below.
 
 | Topic | Description |
 | :--- | :--- |

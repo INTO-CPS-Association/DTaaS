@@ -8,7 +8,7 @@ The following services can be installed:
 
 * **Influx** time-series database and dashboard service
 * **Grafana** visualization and dashboard service
-* **RabbitMQ** AMQP broker and its' management interface
+* **RabbitMQ** AMQP broker and its management interface
   The **MQTT plugin** of this broker has been enabled.
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
@@ -25,7 +25,7 @@ The following services can be installed:
 
 ## Installation Methods
 
-You can install and manage the services using:
+The services can be installed and managed using:
 
 **CLI Package :** Automated CLI tool for easy service management.
 
@@ -36,7 +36,7 @@ InfluxDB, RabbitMQ, Grafana, ThingsBoard, and GitLab.
 
 ## Features
 
-* **Project Initialization:** Generate project structure with config and data directories
+* **Project Initialisation:** Generate project structure with config and data directories
 * **Automated Setup:** One command setup of TLS certificates and permissions
 * **Service Management:** Start, stop, and check status of all services
 * **User Management:** Easy creation of user accounts in InfluxDB,
@@ -70,8 +70,8 @@ dtaas-services --help
 
 ## Quick Start
 
-1. Navigate to where you want to set up the services and generate the project
-structure and run:
+1. Navigate to the desired setup location and generate the project
+structure:
 
    ```bash
    dtaas-services generate-project
@@ -83,7 +83,7 @@ structure and run:
    * `compose.services.yml` for main services
    * `compose.thingsboard.yml` for ThingsBoard and PostgreSQL
 
-2. Update `config/services.env` with your environment values:
+2. Update `config/services.env` with the environment values:
    * `HOSTNAME`: Public hostname of the DTaaS server (used for certificate paths)
    * `GITLAB_PORT`: Port for the local GitLab instance (default: `8090`)
    * `GITLAB_ROOT_NEW_PASSWORD`: Strong password to set for the GitLab root admin
@@ -109,7 +109,7 @@ dtaas-services generate-project --path /path/to/project
 
 ### Service Setup
 
-After generating the project and configuring your settings:
+After generating the project and configuring the settings:
 
 ```bash
 dtaas-services setup
@@ -123,7 +123,7 @@ This command will:
 * Set up RabbitMQ certificates and permissions
 * Set up PostgreSQL and ThingsBoard certificates and permissions
 
-Make sure you run the clean command right after
+Ensure the clean command is run right after
 
 ```bash
 dtaas-services clean
@@ -131,7 +131,7 @@ dtaas-services clean
 
 ### Managing Services
 
-Now you can manage services by simple commands (Start, Stop, Remove and Restart)
+Now services can be managed by simple commands (Start, Stop, Remove and Restart)
 
 Example:
 
@@ -139,7 +139,7 @@ Example:
 dtaas-services start
 ```
 
-you can specify a services to manage
+A specific service can be specified:
 
 ```bash
 dtaas-services stop -s influxdb
@@ -199,12 +199,12 @@ The steps given above install two services:
 
 > **Warning:** Running `dtaas-services install -s thingsboard` more than once
 > will re-run the ThingsBoard schema migration against an already-populated
-> PostgreSQL database, which can corrupt it. If you need to reinstall from
+> PostgreSQL database, which can corrupt it. To reinstall from
 > scratch, run `dtaas-services clean -s "postgres,thingsboard"` first to wipe
 > all data before re-running the install command.
-> **Note:** It's recommended to specify the service explicitly with `-s <service>`
+> **Note:** It is recommended to specify the service explicitly with `-s <service>`
 > when installing.
-> Make sure that you have runned the clean command before the installation
+> Ensure that the clean command has been run before the installation
 
 ```bash
 #  (It starts PostgreSQL if it's not running, and it checks its health)
@@ -312,8 +312,8 @@ automatically:
 
 ### Permission Issues (Linux/macOS)
 
-If you encounter permission errors when setting up services,
-ensure you run the setup command with appropriate privileges:
+If permission errors are encountered when setting up services,
+run the setup command with appropriate privileges:
 
 ```bash
 sudo -E env PATH="$PATH" dtaas-services setup
@@ -321,5 +321,5 @@ sudo -E env PATH="$PATH" dtaas-services setup
 
 ### Thingsboard connection error
 
-After starting thingsboard and before adding users or changing passwords,
-it needs some time to initialize then you can add users.
+After starting ThingsBoard and before adding users or changing passwords,
+allow some time for initialisation before adding users.

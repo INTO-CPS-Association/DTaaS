@@ -6,7 +6,7 @@ Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide for
 a multi-user DTaaS deployment that uses an **external GitLab instance**
-for OAuth 2.0 authorization. **This is an insecure deployment.**
+for OAuth 2.0 authorisation. **This is an insecure deployment.**
 A secure version is recommended for production use.
 
 For a full configuration reference, see [CONFIG.md](CONFIG.md).
@@ -26,7 +26,7 @@ The `docker-compose.yml` starts the following services:
 | **client** | DTaaS React frontend |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
-| **traefik-forward-auth** | OAuth 2.0 authorization middleware |
+| **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 
 ## Prerequisites
 
@@ -81,7 +81,7 @@ docker compose --env-file config/.env up -d
 
 ### 4. Configure OAuth 2.0 Applications in GitLab
 
-Create two applications in your external GitLab instance:
+Create two applications in the external GitLab instance:
 
 1. **DTaaS Client Authorization** (React SPA)
 2. **DTaaS Server Authorization** (Traefik forward-auth)
@@ -115,7 +115,7 @@ docker compose --env-file config/.env down
 |- certs/                 # TLS certificates (fullchain.pem, privkey.pem)
 |- config/
 |  |- .env                # Docker Compose environment variables
-|  |- conf.server         # Traefik forward-auth authorization rules
+|  |- conf.server         # Traefik forward-auth authorisation rules
 |  |- client.js           # DTaaS React client configuration
 |  |- .env.example
 |  |- conf.server.example

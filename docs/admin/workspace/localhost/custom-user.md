@@ -2,7 +2,7 @@
 ![DTaaS logo](dtaas.png)
 
 ℹ️ The instructions in this document help update the username and
-password for your localhost version of the **DTaaS** installation.
+password for the localhost version of the **DTaaS** installation.
 
 ## ⚙️ Update Configuration
 
@@ -11,7 +11,7 @@ Duplicate `config/dex-config.yaml.example` to
 Update these fields in `config/dex-config.yaml`:
 
 - `email`
-- `hash` (bcrypt hash of your chosen password)
+- `hash` (bcrypt hash of the chosen password)
 - `username`, `name`, `preferredUsername`
 
 Dex configuration details are documented in [`dex.md`](dex.md).
@@ -50,12 +50,12 @@ The application will be accessible at:
 <http://localhost> from web browser.
 Sign in using the new user credentials in Dex configuration file (`config/dex-config.yaml`).
 
-All the functionality of DTaaS should be available to you
+All the functionality of DTaaS should be available
 through the single page client now.
 
 ## 📚 Documentation
 
-Please see
+See
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 

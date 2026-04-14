@@ -64,8 +64,8 @@ The default values should be replaced with appropriate values for the deployment
 
 The **libms** looks for
 `libms.yaml` file in the working directory from which it is run.
-If you want to run **libms** without explicitly specifying the configuration
-file, run with `-c <path-to-file>`.
+To run **libms** without explicitly specifying the configuration
+file, use `-c <path-to-file>`.
 
 Further documentation on the use of library microservice is available
 on [this page](npm.md).

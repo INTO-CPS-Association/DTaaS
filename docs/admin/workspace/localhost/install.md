@@ -20,7 +20,7 @@ An illustration of the installation setup is shown here.
 ## Prerequisites
 
 - Docker Engine v27 or later
-- Ports 80 and 5556 available on your host
+- Ports 80 and 5556 available on the host
 - At least 2GB RAM available
 
 ## ⚡ Quick Demo
@@ -56,14 +56,14 @@ docker compose down
 ## 🌵Limitations
 
 1. All the functionality of DTaaS except DevOps features should be
-   available to you through the single page client now.
+   available through the single page client now.
 1. The installation has default user credentials.
    See [instructions](custom-user.md) for help with changing
    the user credentials.
 
 ## 📚 Documentation
 
-Please see
+See
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 

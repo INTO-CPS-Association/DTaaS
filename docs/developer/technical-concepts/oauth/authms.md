@@ -10,7 +10,7 @@ understand the content here better.
 
 ### User Identity using OAuth 2.0
 
-We define some constants that will help with the following discussion:
+The following constants are defined for the purposes of this discussion:
 
 - CLIENT ID: The OAuth 2.0 Client ID of the Auth MS
 - CLIENT SECRET: The OAuth 2.0 Client Secret of Auth MS
@@ -22,7 +22,7 @@ We define some constants that will help with the following discussion:
   OAuth 2.0 provider (GitLab instance) in response to "GET authcode"
   after user approval.
 
-Additionally, let's say DTaaS uses a dedicated
+Additionally, suppose DTaaS uses a dedicated
 gitlab instance hosted at the URL
 <https://gitlab.intocps.org> (instead of <https://intocps.org>)
 
@@ -54,7 +54,7 @@ authorisation code requests.
 The query parameters in the request include
 the expected response
 type, which is fixed as ”code”,
-meaning that we expect an Authorization code.
+meaning that an Authorization code is expected.
 Other query parameters are the client id, the redirect uri,
 the scope which is set to read user
 for our purpose, and the state (the
@@ -110,8 +110,8 @@ The <http:><https://gitlab.intocps.org/oauth/token></http:> API endpoint handles
 the token exchange requests. The parameters sent with the
 POST request are the client ID, the client secret, the AUTHCODE and the
 redirect uri. The grant type parameter is always set to the string
-”authorization code”, which conveys that we will be exchanging an
-authentication code for an access token.
+”authorisation code”, which conveys that an
+authentication code is being exchanged for an access token.
 
 - The GitLab instance exchanges a valid AUTHCODE for an Access Token.
   This is sent as a response to the Auth MS. An example response
@@ -134,9 +134,9 @@ authentication code for an access token.
 
   created at field is the Epoch timestamp at which the token was created.
   The refresh token field has a string that can be used to refresh the
-  access token, increasing it’s lifetime. However we do not make use of
-  the refresh token field. If an access token expires, the Auth MS simply
-  asks for a new one.
+  access token, increasing its lifetime. However, the refresh token
+  field is not used. If an access token expires, the Auth MS simply
+  requests a new one.
   TOKEN is the access token string returned in
   the response.
 
@@ -207,14 +207,14 @@ is added here, and TOKEN is the access token that the Auth MS holds.
 
 An important feature of the Auth MS is to
 implement access policies for
-DTaaS resources. We may have requirements
+DTaaS resources. There may be requirements
 that certain resources and/or
 microservices in DTaaS should only be accessible
 to certain users.
-For example, we may want that /BackendMS/user1
+For example, it may be required that /BackendMS/user1
 should only be accessible to the user who
 has username user1. Another example may be
-that we may want /BackendMS/group3 to only
+that /BackendMS/group3 should only
 be available to users who have an
 email ID in the domain @gmail.com.
 The Auth MS should be able to impose these
@@ -242,7 +242,7 @@ which users should be allowed access to the service,
 or a database of user
 identities that are allowed to access the service.
 This database and/or set of
-rules should use the user identities, in our case
+rules should use the user identities, in this case
 the email ID or username, to
 decide whether the user should be allowed or not.
 This means that the rules
@@ -251,9 +251,9 @@ ID the user has, say
 maybe using some RegEx. In the case of a database,
 the database should
 have the user identity as a key. For any service,
-we can simply look up if the
-key exists in the database or not and allow/deny
-the user access based on that.
+a simple lookup can determine whether the
+key exists in the database or not, and the user can be allowed or denied
+access based on that.
 
 In the sequence diagram, the Auth MS has a self-request
 marked as ”Checks user permissions” after receiving
@@ -288,8 +288,8 @@ returns the error code to the user.
 The implementation approach is
 setting up and configuring the open source
 [thomseddon/traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth)
-for our specific use case.
-This would work as our Auth microservice.
+for the specific DTaaS use case.
+This would serve as the Auth microservice.
 
 The traefik-forward-auth software is available
 as a docker.io image. This
@@ -297,7 +297,7 @@ works as a docker container. Thus there are
 no dependency management
 issues. Additionally, it can be added as a
 middleware server to traefik routers.
-Thus, it needs atleast Traefik to work along
+Thus, it needs at least Traefik to work along
 with it properly. It also needs
 active services that it will be controlling access to.
 Traefik, the traefikforward-auth service and any
@@ -309,9 +309,9 @@ There are three main steps of configuring the Auth MS properly.
 
 - The traefik-forward-auth service needs to be configured carefully.
   Firstly,
-  we set the environment variables for our specific case.
-  Since, we are using GitLab, we use the
-  generic-oauth provider configuration.
+  the environment variables are set for the specific case.
+  Since GitLab is used, the
+  generic-oauth provider configuration is employed.
   Some important variables that are required are
   the OAuth 2.0 Client ID, Client Secret, Scope.
   The API endpoints
@@ -326,15 +326,15 @@ There are three main steps of configuring the Auth MS properly.
   taken to REDIRECT URI, this can be handled by
   the gateway and passed
   to the Auth service for token exchange.
-  We add the ForwardAuth middleware here,
+  The ForwardAuth middleware is added here,
   which is a necessary part of
-  our design as discussed before. We also
-  add a load balancer for the service.
-  We also need to add a conf file as a volume, for
+  the design as discussed previously. A load
+  balancer is also added for the service.
+  A conf file must also be added as a volume, for
   selective authorization rules (discussed later).
   This is according to the suggested configuration.
-  Thus, we add the following
-  to our docker services:
+  Thus, the following is added
+  to the docker services:
 
 ```yaml
 traefik−forward−auth:
@@ -380,7 +380,7 @@ labels:
   and adds the auth middleware to
   the required route.
 
-- Finally, we need to set user permissions on
+- Finally, user permissions must be set on
   user identities by creating rules in the conf file.
   Each rule has a name (an identifier for the rule),
   and an associated
@@ -395,13 +395,12 @@ labels:
   OAuth 2.0 and the system will follow the sequence diagram.
   For rules with action=”auth”, the user information
   is retrieved. The
-  identity we use for a user is the user’s email ID.
-  For ”auth” rules, we can
-  configure two types of User
-  restrictions/permissions on this identity:
+  identity used for a user is the user's email ID.
+  For "auth" rules, two types of User
+  restrictions/permissions can be configured on this identity:
 
 - Whitelist - This would be a list of user
-  identities (email IDs in our case)
+  identities (email IDs in the DTaaS context)
   that are allowed to access the
   corresponding route.
 - Domain - This would be a domain
@@ -411,9 +410,9 @@ labels:
   would be allowed access to the corresponding route.
 
 Configuring any of these two properties of
-an ”auth” rule allows us to
-selectively permit access to certain users
-for certain resources.
+an "auth" rule enables
+selective access control for certain users
+to certain resources.
 Not configuring any of these properties for an ”auth” rule means
 that the OAuth 2.0 process is carried out
 and the user identity is retrieved, but all

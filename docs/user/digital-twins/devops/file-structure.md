@@ -1,6 +1,6 @@
 # Digital Twin File Structure in GitLab
 
-We use GitLab as a file store for performing DevOps on Digital Twins.
+GitLab is used as a file store for performing DevOps on Digital Twins.
 The [user interface page](ui.md) is a front-end for this gitlab-backed
 file storage.
 

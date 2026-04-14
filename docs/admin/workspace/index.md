@@ -12,7 +12,7 @@ identity providers.
 
 ## Notes
 
-- Use workspace scenarios when your primary focus is workspace auth and
+- Use workspace scenarios when the primary focus is workspace auth and
   per-user route access.
 - For DTaaS package deployments that include the full DTaaS web platform,
   use `../dtaas/localhost/install.md`, `../dtaas/server/install.md`, or

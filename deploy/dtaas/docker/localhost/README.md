@@ -1,5 +1,4 @@
-# DTaaS - Localhost (HTTP)
-
+<!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
 Thank you for downloading **Digital Twin as a Service**.
@@ -53,7 +52,7 @@ docker compose --env-file config/.env up -d
 
 - <http://localhost>
 
-Sign in using your configured OAuth provider in `config/client.js`
+Sign in using the configured OAuth provider in `config/client.js`
 (default authority is `https://gitlab.com/`).
 
 ## Run

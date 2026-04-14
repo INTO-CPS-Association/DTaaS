@@ -58,7 +58,7 @@ They can be configured to operate on a variety of platforms, including virtual
 machines, containers, and physical servers. They can also be managed locally
 or in a cloud environment.
 
-We use this GitLab parent-child pipeline setup to trigger execution of digital
+This GitLab parent-child pipeline setup is used to trigger execution of digital
 twins stored in a user's GitLab repository.
 
 !!! note
@@ -120,7 +120,7 @@ The `digital_twins` folder contains DTs that have been pre-built by one or
 more users. The intention is that they should be sufficiently flexible to be
 reconfigured as required for specific use cases.
 
-Let us look at an example of such a configuration. The
+The following is an example of such a configuration. The
 [dtaas/user1 repository on gitlab.com](https://gitlab.com/dtaas/user1) contains
 the `digital_twins` directory with a `hello_world` example. Its file structure
 looks like this:

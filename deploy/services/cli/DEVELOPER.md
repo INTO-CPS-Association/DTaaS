@@ -339,11 +339,11 @@ Stops and removes Docker containers:
 
 #### InfluxDB Users
 
-* **Organization Management**: Always check for existing organizations before creating
+* **Organisation Management**: Always check for existing organisations before creating
   new ones to avoid conflicts. Use `_get_existing_orgs()` before creating.
 * **User Ownership**: Users are added as **owners** (not members) of their
-  organizations using the `--owner` flag, giving them full administrative rights.
-* **User-specific Resources**: Each user gets their own organization and bucket
+  organisations using the `--owner` flag, giving them full administrative rights.
+* **User-specific Resources**: Each user gets their own organisation and bucket
   with the same name as their username.
 
 #### RabbitMQ Users
@@ -353,7 +353,7 @@ Stops and removes Docker containers:
   only administrators should use it.
 * **Automatic Retry**: User creation includes retry logic with 4-second delays
   and up to 2 retry attempts to handle timing issues when RabbitMQ is still
-  initializing after startup.
+  initialising after startup.
 * **Error Handling**: "Already exists" errors are handled gracefully and do not
   cause the operation to fail.
 
@@ -389,7 +389,7 @@ Stops and removes Docker containers:
 
 #### ThingsBoard Users
 
-* **Install**: Running `dtaas-services install` only initializes the ThingsBoard
+* **Install**: Running `dtaas-services install` only initialises the ThingsBoard
   database schema. It does NOT create the tenant or tenant admin. After install,
   start ThingsBoard manually.
 * **User Add**: Running `dtaas-services user add -s thingsboard` first
@@ -453,16 +453,16 @@ Always mock Docker, file system, and configuration operations.
 The project uses GitHub Actions to automatically run tests
 on every commit and pull request.
 Understanding how tests behave in CI is important for
-ensuring your changes pass checks.
+ensuring the changes pass checks.
 
 #### Environment Differences
 
 Tests automatically detect CI environments using `is_ci()` in `pkg/utils.py`
-and adjust behavior:
+and adjust behaviour:
 
 * **Certificate handling**:
   * CI auto-generates dummy self-signed certificates (no real certs required)
-  * Local uses real TLS certificates from your system (or dummy)
+  * Local uses real TLS certificates from the system (or dummy)
 
 * **File permissions**:
   * Skipped in CI to avoid permission errors in read-only environments
@@ -564,7 +564,7 @@ Run all tests with coverage reports:
 poetry run pytest tests --cov=dtaas_services --cov-report=html --cov-report=term-missing
 ```
 
-You can ignore the system tests for quick testing
+The system tests can be ignored for quick testing
 
 ```bash
 poetry run pytest tests --ignore=tests\system_tests  --cov=dtaas_services --cov-report=html --cov-report=term-missing

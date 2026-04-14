@@ -4,21 +4,21 @@ The traefik gateway is used to serve the DTaaS. All the services
 provided as part of the application are secured at the traefik gateway.
 The security is based on [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
 
-An illustration of the docker containers used and the authorization
+An illustration of the docker containers used and the authorisation
 setup is shown here.
 
 ![traefik OAuth 2.0](./traefik-oauth.png)
 
 The **traefik forward-auth** can use any OAuth 2.0 provider, but within the DTaaS
-GitLab is used as authorization provider.
+GitLab is used as authorisation provider.
 The OAuth 2.0 web / server application
-authorization flow is utilized.
+authorisation flow is utilised.
 
 The following steps outline the configuration process:
 
 **1. Choose GitLab Server:**
 
-- OAuth 2.0 authorization must be set up on a GitLab server.
+- OAuth 2.0 authorisation must be set up on a GitLab server.
   An on-premise GitLab installation is preferrable to commercial
   <https://gitlab.com>.
 - The
@@ -36,7 +36,7 @@ other parts of the DTaaS platform.
 
 **3. Determine Callback and Logout URLs:**
 
-For the web / server authorization flow to function correctly,
+For the web / server authorisation flow to function correctly,
 two URLs are required: a _callback URL_ and a _logout URL_.
 
 - The callback URL informs the OAuth 2.0 provider of the
@@ -44,7 +44,7 @@ two URLs are required: a _callback URL_ and a _logout URL_.
   signed-in users should be redirected. It represents the landing
   homepage of the DTaaS platform.
   (either <http://intocps.org/_oauth/> or <http://localhost/_oauth/>)
-- The logout URL is the URL for signout of gitlab and clear authorization
+- The logout URL is the URL for signout of gitlab and clear authorisation
   within traefik-forward auth.
   (either <http://intocps.org/_oauth/logout> or <http://localhost/_oauth/logout>).
   The logout URL is to help users logout of traefik forward-auth. The logout
@@ -83,7 +83,7 @@ the OAuth 2.0 application registered on GitLab:
 | Application ID       | OAUTH_CLIENT_ID                                            | _xx_                                                                                        |
 | Application Secret   | OAUTH_CLIENT_SECRET                                        | _xx_                                                                                        |
 | Callback URL         | (to be directly entered in GitLab OAuth  2.0 registration) |                                                                                             |
-| Forward-auth secret  | OAUTH_SECRET                                               | _random-secret-string_ (password for forward-auth, can be changed to your preferred string) |
+| Forward-auth secret  | OAUTH_SECRET                                               | _random-secret-string_ (password for forward-auth, can be changed to a preferred string) |
 | Scopes               | read_user                                                  |                                                                                             |
 <!-- markdownlint-enable MD013 -->
 <!-- markdownlint-enable MD060 -->
@@ -96,7 +96,7 @@ requires traefik forward-auth.
 ## Configure Authorization Rules for Traefik Forward-Auth
 
 The Traefik forward-auth microservices requires configuration rules to manage
-authorization for different URL paths.
+authorisation for different URL paths.
 The _conf.server_ file can be used to configure the specific rules.
 There are broadly three kinds of URLs:
 
@@ -150,7 +150,7 @@ allowing only users mentioned in the whitelist.
 ## User management
 
 DTaaS provides an easy way to add
-and remove additional users from your
+and remove additional users from the
 DTaaS instance.
 
 All such user management can be

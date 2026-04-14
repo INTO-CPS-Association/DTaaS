@@ -26,11 +26,11 @@ nav:
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
-          - DevOps Preview: user/library/devops/ui.md
+          - DevOps: user/library/devops/ui.md
       - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-          - DevOps Preview:
+          - DevOps:
               - Digital Twin Structure:
                   user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md

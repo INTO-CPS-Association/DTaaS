@@ -54,8 +54,8 @@ docker compose --env-file config/.env up -d --force-recreate traefik
 
 ## Step 4: Deploy to services project (if used)
 
-If you run platform services from a generated `dtaas-services` project,
-copy renewed certificates to that project's `certs/` directory.
+If platform services are run from a generated `dtaas-services` project,
+copy the renewed certificates to that project's `certs/` directory.
 
 ```bash
 sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem \

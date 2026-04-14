@@ -33,7 +33,7 @@ services:
       - "./files/common:/workspace/common"
       - "./files/${DEFAULT_USER:-user1}:/workspace"
     environment:
-      - MAIN_USER=${DEFAULT_USER:-user}
+      - MAIN_USER=${DEFAULT_USER:-user1}
     shm_size: "512m"
     labels:
       - "traefik.enable=true"

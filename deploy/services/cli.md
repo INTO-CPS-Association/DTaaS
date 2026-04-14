@@ -73,7 +73,7 @@ dtaas-services user reset-password -s gitlab
 
 ## Manual Compose Operations
 
-Use this mode if you need explicit compose-level control after project
+Use this mode for explicit compose-level control after project
 generation.
 
 ### Generated files

@@ -12,11 +12,11 @@ secure multi-user deployments.
 
 ✅ Sufficient system resources (at least 2GB RAM per workspace instance)
 
-✅ Port 80 and 443 are available on your host
+✅ Port 80 and 443 are available on the host
 
 ✅ Valid TLS certificates
 
-✅ Domain name pointing to your server
+✅ Domain name pointing to the server
 
 ## 🗒️ Design
 
@@ -41,7 +41,7 @@ sudo chown -R 1000:100 files
 
 ## ⚙️ Configuration
 
-Please follow the pre-installation steps in
+Follow the pre-installation steps in
 [`configuration.md`](configuration.md) for creating valid configuration.
 
 ▶️ Start the application:
@@ -52,7 +52,7 @@ docker compose up -d
 
 ### 🌵 Temporary Issues
 
-The following issues in application startup are expected behavior.
+The following issues in application startup are expected behaviour.
 This problem will be resolved during post-installation.
 
 👉 `traefik-forward-auth` service will be restarting at this stage.
@@ -153,7 +153,7 @@ rule.user3_access.whitelist = user3@localhost
 
 - Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
-- Ensure `COOKIE_DOMAIN` matches your domain
+- Ensure `COOKIE_DOMAIN` matches the domain
 - Verify OAuth2 application is approved and active
 
 ### Service Access Issues

@@ -1,19 +1,19 @@
 # GitLab Instance Integration Guide
 
-This guide helps with integration of a local GitLab instance with
-a DTaaS server installation, and integrating the OAuth Authorization feature
+This guide covers integration of a local GitLab instance with
+a DTaaS server installation, and integrating the OAuth authorisation feature
 with the DTaaS installation.
 
 After following this guide, the GitLab instance will be integrated
-as OAuth provider for both DTaaS client application and
-Traefik Forward Auth backend authorization.
+as OAuth provider for both the DTaaS client application and
+Traefik Forward Auth backend authorisation.
 
 > [!IMPORTANT]
 > The DTaaS client uses the `react-oidc-context` node package,
-> which incorrectly causes authorization redirects to use the `HTTPS` URL
+> which incorrectly causes authorisation redirects to use the `HTTPS` URL
 > scheme. This is a
 > [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
-> and forces us to use `HTTPS` for the DTaaS server. This means your server
+> and forces us to use `HTTPS` for the DTaaS server. This means the server
 > should be set up to use either <https://localhost> or <https://foo.com>. This
 > guide will henceforth use `foo.com` to represent either localhost or a custom
 > domain.
@@ -27,18 +27,18 @@ to set up the DTaaS web application over HTTPS connection on either
 localhost (<https://localhost>) or a custom domain (<https://foo.com>).
 
 > [!NOTE]
-> You may ignore steps related to configuring OAuth application tokens
-> at <https://gitlab.com>. We will be using the initial installation to host
-> the local GitLab instance, on which we will later create the OAuth
-> application tokens.
+> Steps related to configuring OAuth application tokens
+> at <https://gitlab.com> may be ignored. The initial installation will host
+> the local GitLab instance, on which the OAuth
+> application tokens will later be created.
 
 ### 2. Set up the GitLab Instance
 
 Follow the guide to set up a GitLab instance -
 [README](./README.md).
 
-After this step, and once you run `gitlab-ctl reconfigure`, you will have a
-functioning GitLab instance accessible over HTTPS on the configured port,
+After this step, and once `gitlab-ctl reconfigure` has been run, a
+functioning GitLab instance will be accessible over HTTPS on the configured port,
 at `https://localhost:${GITLAB_PORT}/gitlab` (localhost) or
 `https://foo.com:${GITLAB_PORT}/gitlab` (custom domain, default port 8090).
 GitLab is served directly from its own container — it is **not** proxied
@@ -52,14 +52,14 @@ Follow these guides to create OAuth Application Tokens for -
 [backend](../../../docs/admin/servers/auth.md) is not required
 for <https://localhost> installation.
 
-After this step you will have credentials for the application tokens titled
-"DTaaS Server Authorization" and "DTaaS Client Authorization", which we will use
-in the next step.
+After this step the credentials for the application tokens titled
+"DTaaS Server Authorization" and "DTaaS Client Authorization" will be available,
+for use in the next step.
 
 ### 4. Use Valid Oauth Application Tokens
 
-We can now use the OAuth tokens generated on the GitLab instance to enable
-authorization.
+The OAuth tokens generated on the GitLab instance can now be used to enable
+authorisation.
 
 If the DTaaS application is hosted at <https://localhost>, then configure
 the following files:
@@ -115,18 +115,18 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d --force
 
 ## Post Setup Usage
 
-If you have set up everything correctly:
+If everything has been set up correctly:
 
-1. You will have a functioning GitLab instance available at
+1. A functioning GitLab instance will be available at
    `https://foo.com:${GITLAB_PORT}/gitlab` (default port `8090`) that you
    may use in a similar manner to [https://gitlab.com](https://gitlab.com).
    GitLab is served directly via its own HTTPS port — it is not routed
    through Traefik.
 1. Data, configuration settings and logs pertaining to the GitLab installation
-   will be available on the DTaaS server within the directories:
+   are available on the DTaaS server within the directories:
    _deploy/services/cli/data/gitlab_, _deploy/services/cli/config/gitlab_,
    and _deploy/services/cli/log/gitlab_.
 1. Traefik Forward Auth can be configured to use this GitLab instance
-   for authorization on the multi-user installation scenario (`foo.com`)
+   for authorisation on the multi-user installation scenario (`foo.com`)
    by pointing it at `https://foo.com:${GITLAB_PORT}/gitlab`
    (not applicable for `localhost`).

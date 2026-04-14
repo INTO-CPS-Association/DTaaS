@@ -10,7 +10,7 @@ stored in the platform's library structure.
 
 !!! warning
     This microservice is still under heavy development. It is still not
-    a good replacement for file server we are using now.
+    a satisfactory replacement for the file server currently in use.
 
 ## Architecture and Design
 

@@ -33,7 +33,7 @@ The user must have ownership permissions over the project.
 
 ## Git commands
 
-Standard git commands and workflows should be utilized. There are two methods for
+Standard git commands and workflows should be utilised. There are two methods for
 using a GitLab project as a remote git server:
 
 1. Over SSH using a personal SSH key
@@ -58,7 +58,7 @@ GitLab project should have the following structure.
 
 ![Project structure](./user-repo.png)
 
-Please pay special attention to `.gitlab-ci.yml`. It must be a valid
+Pay special attention to `.gitlab-ci.yml`. It must be a valid
 GitLab DevOps configuration. The
 [example repo](https://gitlab.com/dtaas/user1) provides a sample structure.
 

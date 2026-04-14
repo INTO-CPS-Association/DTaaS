@@ -32,7 +32,7 @@ This example uses two models and one tool. The specific assets used are:
 
 The `co-sim.json` and `time.json`
 are two DT configuration files used for executing the digital twin.
-These two files can be modified to customize the DT for specific requirements.
+These two files can be modified to customise the DT for specific requirements.
 
 ## Lifecycle Phases
 
@@ -44,14 +44,14 @@ These two files can be modified to customize the DT for specific requirements.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/mass-spring-damper
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create

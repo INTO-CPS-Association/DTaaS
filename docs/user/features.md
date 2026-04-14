@@ -7,7 +7,7 @@ The DTaaS software platform provides the following advantages:
 - Support for heterogeneous Digital Twin implementations
   - CFD, Simulink, co-simulation, FEM, ROM, ML, and other paradigms
 - Integration with existing Digital Twin frameworks
-- Provision of Digital Twin as a Service capabilities[^1]
+- Provision of Digital Twin as a Service capabilities
 - Facilitation of collaboration and asset reuse
 - Private workspaces for verification
   of reusable assets and trial executions of DTs
@@ -23,7 +23,7 @@ the features illustrated in the following diagram.
 All users are provided with dedicated workspaces.
 These workspaces are containerized implementations of Linux Desktops.
 The user desktops are isolated, ensuring that installations and
-customizations performed in one workspace do not affect
+customisations performed in one workspace do not affect
 other user workspaces.
 Graphical digital twins can be executed within these private workspaces.
 
@@ -65,7 +65,7 @@ The currently available services are:
 
 Users can publish and reuse digital twin assets
 available on the platform. Additionally, digital twins can be executed
-and made available as services to external clients[1]. These clients
+and made available as services to external clients. These clients
 need not be registered users of the DTaaS installation.
 
 ## References

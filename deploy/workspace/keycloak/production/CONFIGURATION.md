@@ -33,30 +33,30 @@ cp .env.example .env
 
 ## 🌐 Domain
 
-Decide on whether you are testing locally or remotely.
+Decide on whether the deployment is local or remote.
 
-From now on whenever you see either `<DOMAIN_NAME>` or `intocps.org`
-in this guide, replace it with the domain name of your remote machine.
-Ensure that your remote machine has a domain name and that it is
+From now on, wherever `<DOMAIN_NAME>` or `intocps.org` appears
+in this guide, replace it with the domain name of the remote machine.
+Ensure that the remote machine has a domain name and that it is
 accessible from the internet.
 
 Go to the [Environment file](.env) and replace the current value of
-the `SERVER_DNS` variable with your domain name:
+the `SERVER_DNS` variable with the appropriate domain name:
 
 ```bash
 # Server Configuration
-# Replace with your domain name
+# Replace with the appropriate domain name
 SERVER_DNS=<DOMAIN_NAME>
 ```
 
 ## 🔒 TLS Certificates
 
-Make sure that you have valid TLS certificates on the machine and
+Ensure that valid TLS certificates are available on the machine and
 that they are properly located. The `fullchain.pem` and `privkey.pem`
 secrets should be located in the [`certs/`](certs/) directory.
 
-There are multiple ways to setup of TLS certificates. If you are hosting on
-a webserver, then you can use Certbot from Let's Encrypt:
+There are multiple ways to set up TLS certificates. If hosting on
+a web server, Certbot from Let's Encrypt can be used:
 
 ```bash
 # Install certbot
@@ -78,7 +78,7 @@ chmod 600 ./certs/privkey.pem
 
 The usernames of the main users for the workspaces can be changed in
 the [environment variable file](#-environment) `.env`.
-Change the default values (`user1` and `user2`) to your desired usernames:
+Change the default values (`user1` and `user2`) to the desired usernames:
 
 ```bash
 # Username Configuration
@@ -125,15 +125,15 @@ The default configuration for `docker-compose.yml` now uses **Keycloak**
 for authentication via OIDC (OpenID Connect). Keycloak provides a robust, 
 enterprise-grade identity and access management solution.
 The `traefik-forward-auth` and the DTaaS `client` docker services use
-**Keycloak** for authentication and authorization. You'll need to configure
-an OAuth2 application for each, with your integrated **Keycloak** service.
+**Keycloak** for authentication and authorisation. It is necessary to configure
+an OAuth2 application for each, with the integrated **Keycloak** service.
 
 **For detailed Keycloak setup instructions,
 see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
 #### Configure Environment Variables
 
-1. **For Keycloak (default)**, edit `.env` and fill in your Keycloak credentials:
+1. **For Keycloak (default)**, edit `.env` and fill in the Keycloak credentials:
 
    ```bash
    # Keycloak Admin Credentials
@@ -197,8 +197,8 @@ The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
 it now carries the Keycloak OIDC scopes.
 
 Replace `<DOMAIN_NAME>` with the value set in the
-[Domain](#-domain) section and `dtaas` with your Keycloak realm name
-if you chose a different one.
+[Domain](#-domain) section and `dtaas` with the Keycloak realm name
+if a different one was chosen.
 
 ## 📚 Additional Resources
 

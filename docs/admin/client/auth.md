@@ -1,12 +1,12 @@
 # OAuth 2.0 for React Client
 
-To enable user authorization on the DTaaS React client website,
-the OAuth 2.0 authorization protocol is used, specifically the PKCE
-authorization flow. The following steps describe the setup process:
+To enable user authorisation on the DTaaS React client website,
+the OAuth 2.0 authorisation protocol is used, specifically the PKCE
+authorisation flow. The following steps describe the setup process:
 
 **1. Choose a GitLab Server:**
 
-- OAuth 2.0 authorization must be set up on a GitLab server.
+- OAuth 2.0 authorisation must be set up on a GitLab server.
   An on-premise GitLab installation is preferrable to commercial
   <https://gitlab.com>.
 - The
@@ -23,7 +23,7 @@ authorization flow. The following steps describe the setup process:
 
 **3. Define Callback and Logout URLs:**
 
-- For the PKCE authorization flow to function correctly, two URLs are required:
+- For the PKCE authorisation flow to function correctly, two URLs are required:
   a callback URL and a logout URL.
 - The callback URL informs the OAuth 2.0 provider of the page where
   signed-in users should be redirected. It differs from the landing

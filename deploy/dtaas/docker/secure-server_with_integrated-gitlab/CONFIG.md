@@ -6,7 +6,7 @@ in this package. For the quick-start installation guide, see
 
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout
-> this guide. Replace it with the actual server hostname of your
+> this guide. Replace it with the actual server hostname of the
 > installation.
 
 ---
@@ -69,7 +69,7 @@ OAuth 2.0 applications have been created (see
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
-| `OAUTH_URL` | `https://intocps.org/gitlab` | GitLab instance URL used for browser-side authorization redirects. No trailing slash. |
+| `OAUTH_URL` | `https://intocps.org/gitlab` | GitLab instance URL used for browser-side authorisation redirects. No trailing slash. |
 | `OAUTH_CLIENT_ID` | _(from GitLab)_ | Application ID from the **DTaaS Server Authorization** OAuth 2.0 application |
 | `OAUTH_CLIENT_SECRET` | _(from GitLab)_ | Secret from the **DTaaS Server Authorization** OAuth 2.0 application |
 | `OAUTH_SECRET` | _(random string)_ | Encryption key for OAuth session cookies. Generate with: `openssl rand -base64 32` |
@@ -141,7 +141,7 @@ if (typeof window !== 'undefined') {
 
 Source: `config/conf.server.example`
 
-This file defines per-path authorization rules for
+This file defines per-path authorisation rules for
 [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth).
 Each rule restricts a URL path to specific GitLab email addresses.
 
@@ -180,12 +180,12 @@ GitLab accounts.
 > [!WARNING]
 > **Usernames must be consistent.** The usernames in `config/.env`
 > (`USERNAME1`, `USERNAME2`) must match the `PathPrefix` values in
-> `config/conf.server`. Mismatches cause routing or authorization
+> `config/conf.server`. Mismatches cause routing or authorisation
 > failures.
 
-| Scenario | Behavior |
+| Scenario | Behaviour |
 | :--- | :--- |
-| Route in `config/.env` but **missing** from `config/conf.server` | Any signed-in user can access the route (default forward-auth behavior) |
+| Route in `config/.env` but **missing** from `config/conf.server` | Any signed-in user can access the route (default forward-auth behaviour) |
 | Route in `config/conf.server` but **missing** from `config/.env` | Traefik returns **404** (route not served) |
 | The `/lib` rule has **no whitelist** | Any signed-in user can access the library service |
 
@@ -331,7 +331,7 @@ To add a third user:
    sudo chown -R 1000:100 files/alice
    ```
 
-1. **Add authorization rule to `config/conf.server`:**
+1. **Add authorisation rule to `config/conf.server`:**
 
    ```text
    rule.onlyu3.action=auth
@@ -374,10 +374,10 @@ Ensure the host has at least 4 GB RAM available for GitLab.
 
 ### :construction: GitLab "502 Bad Gateway"
 
-GitLab is still initializing. Wait until `docker ps` shows the
+GitLab is still initialising. Wait until `docker ps` shows the
 container as `healthy`.
 
 ### :closed_lock_with_key: Self-Signed Certificate Warning in Browser
 
 TLS certificate files are missing or invalid in `certs/`. Replace them
-with valid certificates for your domain.
+with valid certificates for the domain.

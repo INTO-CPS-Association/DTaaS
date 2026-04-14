@@ -1,6 +1,6 @@
 # :books: DTaaS Research Overview
 
-This document summarizes the research behind the DTaaS platform.
+This document summarises the research behind the DTaaS platform.
 It is written for code contributors who need to understand the
 design rationale, architectural decisions, and intended evolution
 of the system.
@@ -15,7 +15,7 @@ creating, managing, and executing digital twins at scale.
 
 DTaaS (Digital Twin as a Service) is an open-source platform that
 treats digital twins as compositions of reusable assets rather than
-monolithic applications. The platform organizes assets into four
+monolithic applications. The platform organises assets into four
 categories: data, models, functions (methods and scripts), and
 services. Users compose these assets into digital twin configurations
 that can be executed, monitored, and evolved independently.
@@ -24,7 +24,7 @@ that can be executed, monitored, and evolved independently.
 
 The platform targets operability: creating, configuring, executing,
 monitoring, and evolving twins in long-running environments. This
-focus distinguishes DTaaS from simulation-only tools or pure modeling
+focus distinguishes DTaaS from simulation-only tools or pure modelling
 frameworks.
 
 ## 2. :dart: Requirements
@@ -44,7 +44,7 @@ Eight core requirements drive the platform design:
 1. **What-if Analysis** — evaluate alternative scenarios by varying
    parameters
 1. **Collaborate** — share assets and twins across users and
-   organizations
+   organisations
 
 These requirements apply across domains. Validated case studies
 include food fermentation process control and indoor climate
@@ -119,8 +119,8 @@ managed through GitLab CI/CD pipelines.
 ![Federated DTaaS](research-overview/federated-dtaas.png)
 
 The federation extension enables multiple DTaaS instances to
-collaborate by discovering and reusing assets across organizational
-boundaries. Federated digital twins can be organized as composites
+collaborate by discovering and reusing assets across organisational
+boundaries. Federated digital twins can be organised as composites
 (assembled from assets on different instances), fleets (coordinated
 groups), or hierarchies (parent-child relationships).
 

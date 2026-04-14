@@ -42,7 +42,7 @@ A single client is configured:
 
 ### ⏳ `expiry.idTokens: "2h"`
 
-Matches the expected local-dev behavior with 2-hour ID tokens.
+Matches the expected local-dev behaviour with 2-hour ID tokens.
 
 ### ✅ `oauth2.skipApprovalScreen: true`
 

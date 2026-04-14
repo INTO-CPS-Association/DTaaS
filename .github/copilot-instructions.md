@@ -105,7 +105,8 @@ DTaaS/
 
 - **Library Service** (`servers/lib/`): Handle library asset management
 - **Execution Service** (`servers/execution/`): Manage digital twin execution
-- **Framework**: Follow NestJS conventions and keep DTO/config modules explicit
+- **Framework**: Follow NestJS conventions and keep DTO/config modules
+  explicit
 
 ### Documentation (`docs/`)
 

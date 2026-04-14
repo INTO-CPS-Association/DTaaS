@@ -15,13 +15,13 @@ cp config/.env.example config/.env
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
-| `USERNAME` | `user1` | Workspace path prefix and workspace folder name |
+| `DEFAULT_USER` | `user1` | Workspace path prefix and workspace folder name |
 | `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
 
-The `USERNAME` value is used in:
+The `DEFAULT_USER` value is used in:
 
-- Router path prefix (`/${USERNAME}`)
-- Workspace volume mount (`./files/${USERNAME}`)
+- Router path prefix (`/${DEFAULT_USER}`)
+- Workspace volume mount (`./files/${DEFAULT_USER}`)
 - Workspace container `MAIN_USER` environment variable
 
 ## config/client.js
@@ -47,7 +47,7 @@ cp config/client.js.example config/client.js
 Create a per-user workspace from `files/template`:
 
 ```bash
-cp -R files/template files/<USERNAME>
+cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 

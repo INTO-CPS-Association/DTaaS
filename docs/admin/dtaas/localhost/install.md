@@ -1,6 +1,7 @@
-# DTaaS - Localhost (HTTP)
+<!-- markdownlint-disable MD041 -->
+![DTaaS logo](dtaas.png)
 
-Thank you for downloading **Digital Twin as a Service**.
+🎉 Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
@@ -51,7 +52,7 @@ docker compose --env-file config/.env up -d
 
 - <http://localhost>
 
-Sign in using your configured OAuth provider in `config/client.js`
+Sign in using the configured OAuth provider in `config/client.js`
 (default authority is `https://gitlab.com/`).
 
 ## Run
@@ -67,11 +68,11 @@ docker compose --env-file config/.env down
 
 - This package does not include `libms` or backend forward-auth.
 - For secure production deployments, see
-  `deploy/dtaas/docker/secure-localhost_with_integrated-github`.
+  `deploy/dtaas/docker/secure-server_with_integrated-github`.
 
 ## Documentation
 
-Please see
+See
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 

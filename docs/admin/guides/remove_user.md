@@ -8,7 +8,7 @@ The following steps should be performed:
 
 **1. Remove an existing user with the [DTaaS CLI](../cli.md).**
 
-**2. Remove backend authorization for the user:**
+**2. Remove backend authorisation for the user:**
 
 - Navigate to the secure server package directory
 
@@ -31,7 +31,7 @@ The following steps should be performed:
     -d --force-recreate traefik-forward-auth
   ```
 
-The extra users now have no backend authorization.
+The extra users now have no backend authorisation.
 
 **3. Remove users from GitLab instance (optional):**
 
