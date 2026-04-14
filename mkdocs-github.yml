@@ -71,9 +71,6 @@ nav:
           - Localhost:
               - Install: admin/dtaas/localhost/install.md
               - Config: admin/dtaas/localhost/config.md
-          - Server:
-              - Install: admin/dtaas/server/install.md
-              - Config: admin/dtaas/server/config.md
           - Secure Server:
               - Install: admin/dtaas/secure-server/install.md
               - Config: admin/dtaas/secure-server/config.md

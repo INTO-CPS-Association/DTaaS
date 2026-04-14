@@ -13,8 +13,7 @@ DTaaS on their own computers.
 
 ## 🏗️ Design
 
-An illustration of the docker containers used and the authorization
-setup is shown here.
+An illustration of the installation setup is shown here.
 
 <img src="localhost.png" alt="DTaaS Localhost" width="600px" />
 

@@ -20,11 +20,10 @@ secure multi-user deployments.
 
 ## 🗒️ Design
 
-```text
-User Request → Traefik → Forward Auth → Keycloak (OIDC)
-                 ↓
-         User Workspace
-```
+An illustration of the installation setup is shown here.
+
+<img src="secure-server.png"
+  alt="Workspace production installation using Keycloak" width="800px" />
 
 ## 📁 User Directories
 
