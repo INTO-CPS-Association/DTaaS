@@ -22,8 +22,7 @@ documents.
 | Scenario | Purpose | Source Directory |
 | :--- | :--- | :--- |
 | [localhost](dtaas/localhost/install.md) | Single-user DTaaS package over HTTP | `deploy/dtaas/docker/localhost` |
-| [localhost on portainer](dtaas/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users | `deploy/dtaas/docker/localhost` and `deploy/workspace/dex/localhost` |
-| [secure localhost and GitHub](dtaas/secure-localhost-github/install.md) | Single-user DTaaS package over HTTPS with integrated GitHub workflow | `deploy/dtaas/docker/secure-localhost_with_integrated-github` |
+| [localhost on portainer](guides/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users | `deploy/dtaas/docker/localhost` and `deploy/workspace/dex/localhost` |
 | [server](dtaas/server/install.md) | Multi-user DTaaS package with external GitLab | `deploy/dtaas/docker/server` |
 | [secure server](dtaas/secure-server/install.md) | Compatibility package for secure server installs | `deploy/dtaas/docker/secure-server` |
 | [secure server and GitLab](dtaas/secure-server-gitlab/install.md) | Multi-user DTaaS package with integrated GitLab | `deploy/dtaas/docker/secure-server_with_integrated-gitlab` |

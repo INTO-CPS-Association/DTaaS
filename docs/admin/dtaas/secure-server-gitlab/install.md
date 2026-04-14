@@ -150,8 +150,7 @@ docker compose --env-file config/.env down
 ├── data/                  # GitLab persistent data (/var/opt/gitlab)
 ├── files/
 │   ├── common/            # Shared files across all workspaces
-│   ├── user1/             # User 1 workspace files
-│   └── user2/             # User 2 workspace files
+|  \- template/           # sample user workspace files
 ├── logs/                  # GitLab logs (/var/log/gitlab)
 ├── docker-compose.yml     # Service definitions
 ├── CONFIG.md              # Detailed configuration reference

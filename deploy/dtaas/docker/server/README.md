@@ -4,9 +4,10 @@
 
 Thank you for downloading **Digital Twin as a Service**.
 
-This README provides a quick-start installation guide for a secure,
-multi-user DTaaS deployment that uses an **external GitLab instance**
-for OAuth 2.0 authorization.
+This README provides a quick-start installation guide for
+a multi-user DTaaS deployment that uses an **external GitLab instance**
+for OAuth 2.0 authorization. **This is an insecure deployment.**
+A secure version is recommended for production use.
 
 For a full configuration reference, see [CONFIG.md](CONFIG.md).
 
@@ -33,7 +34,6 @@ The `docker-compose.yml` starts the following services:
 | :--- | :--- |
 | Docker Engine | v28 or later with Compose plugin |
 | Domain name | Public DNS name or server IP |
-| TLS certificates | `fullchain.pem` and `privkey.pem` for your domain |
 | OAuth provider | External GitLab (`gitlab.com` or self-hosted GitLab) |
 
 ## Quick Start
@@ -73,23 +73,13 @@ cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files/*
 ```
 
-### 3. Add TLS Certificates
-
-```bash
-cp /path/to/fullchain.pem certs/fullchain.pem
-cp /path/to/privkey.pem certs/privkey.pem
-```
-
-If certificates are missing or invalid, Traefik runs with self-signed
-certificates.
-
-### 4. Start Services
+### 3. Start Services
 
 ```bash
 docker compose --env-file config/.env up -d
 ```
 
-### 5. Configure OAuth 2.0 Applications in GitLab
+### 4. Configure OAuth 2.0 Applications in GitLab
 
 Create two applications in your external GitLab instance:
 
@@ -103,7 +93,7 @@ then reload affected services:
 docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
 ```
 
-### 6. Verify
+### 5. Verify
 
 | URL | Expected result |
 | :--- | :--- |
@@ -133,8 +123,7 @@ docker compose --env-file config/.env down
 |  \- tls.yml            # Traefik TLS provider configuration
 |- files/
 |  |- common/             # Shared files across all workspaces
-|  |- user1/              # User 1 workspace files
-|  \- user2/             # User 2 workspace files
+|  \- template/           # sample user workspace files
 |- docker-compose.yml     # Service definitions
 |- CONFIG.md              # Detailed configuration reference
 \- README.md              # This file
