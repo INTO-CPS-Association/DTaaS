@@ -12,19 +12,19 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-click = "^8.1.7"
-python-dotenv = "^1.0.1"
-python-on-whales = "^0.75.0"
-rich = "^14.2.0"
+click = "^8.3.2"
+python-dotenv = "^1.2.2"
+python-on-whales = "^0.81.0"
+rich = "^15.0.0"
 httpx = "^0.28.1"
-python-gitlab = "^8.1.0"
+python-gitlab = "^8.2.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
-pytest-cov = "^6.0.0"
-pytest-mock = "^3.14.0"
-pylint = "^3.3.1"
-pyright = "^1.1.0"
+pytest = "^9.0.3"
+pytest-cov = "^7.1.0"
+pytest-mock = "^3.15.1"
+pylint = "^4.0.5"
+pyright = "^1.1.408"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
