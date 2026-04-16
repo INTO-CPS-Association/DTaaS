@@ -190,7 +190,6 @@ jobs:
           poetry build --format sdist
 
       - name: Upload dist artefacts
-        if: matrix.os == 'ubuntu-latest'
         # v6.0.0
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:

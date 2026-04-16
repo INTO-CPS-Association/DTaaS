@@ -217,8 +217,7 @@ The package uses a modular, three-layer architecture:
   tracks the last-known password for each service account so that
   `reset-password` can be run repeatedly
 * **`template.py`**: Project structure and template file management
-* **`docker_utils.py`**: Docker command execution helpers — error formatting,
-  `execute_docker_command`, and `execute_docker_command_with_retry`
+* **`docker_utils.py`**: Docker command execution helpers `execute_docker_command`
 * **`utils.py`**: Shared utilities (credentials file handling, container state
   helpers, root-check, CI detection)
 * **`lib/`**: Core service management modules

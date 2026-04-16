@@ -110,6 +110,17 @@ def _attempt_docker_exec(docker: DockerClient, params: _ExecParams) -> tuple[boo
         return False, _format_docker_error(params.container, str(e))
 
 
+def _sleep_before_retry(attempt: int, opts: DockerRunOptions) -> None:
+    """Sleep before next retry if not the last attempt.
+
+    Args:
+        attempt: Current attempt number (0-indexed)
+        opts: Options containing max_attempts and delay
+    """
+    if attempt < opts.max_attempts - 1:
+        time.sleep(opts.delay)
+
+
 def _run_with_retry(
     docker: DockerClient, params: _ExecParams, opts: DockerRunOptions
 ) -> tuple[bool, str]:
@@ -123,13 +134,11 @@ def _run_with_retry(
     Returns:
         Tuple of (success, output or error message)
     """
-    output = ""
     for attempt in range(opts.max_attempts):
         success, output = _attempt_docker_exec(docker, params)
         if success:
             return True, output
-        if attempt < opts.max_attempts - 1:
-            time.sleep(opts.delay)
+        _sleep_before_retry(attempt, opts)
     return False, output
 
 
