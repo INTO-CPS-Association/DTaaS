@@ -24,6 +24,7 @@ def mock_user_config(mocker):
         extra_keys={
             "POSTGRES_USER": "dtaas_user",
             "POSTGRES_PASSWORD": "dtaas_secret",  # noqa: S105 # NOSONAR
+            "POSTGRES_PORT": "5432",
         }
     )
     mock.return_value = mock_instance

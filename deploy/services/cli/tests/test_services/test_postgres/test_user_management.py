@@ -1,9 +1,12 @@
 """Tests for PostgreSQL user management."""
 
+from unittest.mock import MagicMock
+from psycopg import errors as pg_errors
+
 from dtaas_services.pkg.services.postgres.user_management import (
     _add_postgres_user,
-    _get_admin_credentials,
-    _run_psql,
+    _execute_ddl,
+    _get_engine,
     setup_postgres_users,
 )
 
@@ -11,49 +14,94 @@ USER_MODULE = "dtaas_services.pkg.services.postgres.user_management"
 # pylint: disable=W0621
 
 
-def test_get_admin_credentials():
-    """Admin credentials are read from Config."""
-    user, password = _get_admin_credentials()
-    assert user == "dtaas_user"
-    assert password == "dtaas_secret"
+def _make_engine(side_effect=None):
+    """Build a mock SQLAlchemy engine with optional cursor.execute side effect."""
+    cur = MagicMock()
+    if side_effect is not None:
+        cur.execute.side_effect = side_effect
+    raw = MagicMock()
+    raw.cursor.return_value = cur
+    engine = MagicMock()
+    engine.raw_connection.return_value = raw
+    return engine, raw, cur
 
 
-def test_run_psql_success(mocker):
-    """Successful execute_docker_command returns (True, output)."""
-    mocker.patch(
-        f"{USER_MODULE}.execute_docker_command",
-        return_value=(True, "CREATE ROLE"),
-    )
+def test_get_engine_builds_url(mocker):
+    """Engine URL contains the psycopg3 scheme and config values."""
+    mock_create = mocker.patch(f"{USER_MODULE}.create_engine")
+    _get_engine()
+    url = mock_create.call_args[0][0]
+    assert "postgresql+psycopg://" in url
+    assert "dtaas_user" in url
+    assert "test.example.com" in url
+    assert "5432" in url
 
-    ok, output = _run_psql("admin", "pass", "CREATE USER test;")
+
+def test_execute_ddl_success():
+    """Successful DDL execution commits and returns (True, '')."""
+    engine, raw, _ = _make_engine()
+    ok, err = _execute_ddl(engine, MagicMock())
     assert ok is True
-    assert "CREATE ROLE" in output
+    assert err == ""
+    raw.commit.assert_called_once()
+
+
+def test_execute_ddl_duplicate_role_is_ok():
+    """DuplicateObject (role already exists) is treated as success."""
+    engine, raw, _ = _make_engine(side_effect=pg_errors.DuplicateObject("exists"))
+    ok, _ = _execute_ddl(engine, MagicMock())
+    assert ok is True
+    raw.rollback.assert_called_once()
+
+
+def test_execute_ddl_duplicate_db_is_ok():
+    """DuplicateDatabase (database already exists) is treated as success."""
+    engine, raw, _ = _make_engine(side_effect=pg_errors.DuplicateDatabase("exists"))
+    ok, _ = _execute_ddl(engine, MagicMock())
+    assert ok is True
+    raw.rollback.assert_called_once()
+
+
+def test_execute_ddl_connection_error():
+    """Unexpected exception rolls back and returns (False, message)."""
+    engine, raw, _ = _make_engine(side_effect=Exception("connection refused"))
+    ok, err = _execute_ddl(engine, MagicMock())
+    assert ok is False
+    assert "connection refused" in err
+    raw.rollback.assert_called_once()
 
 
 def test_add_postgres_user_success(mocker):
-    """Both psql calls succeed — returns (True, '')."""
-    mocker.patch(
-        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
-    )
-    mock_run = mocker.patch(f"{USER_MODULE}._run_psql", return_value=(True, ""))
+    """Both DDL calls succeed — returns (True, '')."""
+    mocker.patch(f"{USER_MODULE}._get_engine", return_value=MagicMock())
+    mocker.patch(f"{USER_MODULE}._execute_ddl", return_value=(True, ""))
     ok, err = _add_postgres_user("alice", "pass")
     assert ok is True
     assert err == ""
-    assert mock_run.call_count == 2
 
 
 def test_add_postgres_user_create_user_fails(mocker):
     """User creation fails — stops before database creation."""
+    mocker.patch(f"{USER_MODULE}._get_engine", return_value=MagicMock())
     mocker.patch(
-        f"{USER_MODULE}._get_admin_credentials", return_value=("admin", "pass")
-    )
-    mocker.patch(
-        f"{USER_MODULE}._run_psql",
+        f"{USER_MODULE}._execute_ddl",
         return_value=(False, "connection refused"),
     )
     ok, err = _add_postgres_user("alice", "pass")
     assert ok is False
     assert "Failed to create user alice" in err
+
+
+def test_add_postgres_user_db_creation_fails(mocker):
+    """User created but database creation fails."""
+    mocker.patch(f"{USER_MODULE}._get_engine", return_value=MagicMock())
+    mocker.patch(
+        f"{USER_MODULE}._execute_ddl",
+        side_effect=[(True, ""), (False, "permission denied")],
+    )
+    ok, err = _add_postgres_user("alice", "pass")
+    assert ok is False
+    assert "Failed to create database alice" in err
 
 
 def test_setup_postgres_users_success(mocker):

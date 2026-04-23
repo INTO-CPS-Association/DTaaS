@@ -243,6 +243,9 @@ The package uses a modular, three-layer architecture:
 * **`postgres/`**: PostgreSQL service module
   * `postgres.py`: Certificate setup and readiness waiting
   * `status.py`: Container health and state checking
+  * `user_management.py`: User and database creation via a direct SQLAlchemy/psycopg3
+    connection; uses `psycopg.sql.Identifier` and `psycopg.sql.Literal` for
+    driver-level escaping of all user input, preventing SQL injection
 
 * **`thingsboard/`**: ThingsBoard modules
   * `activation.py`: Shared user activation utilities (token extraction,
@@ -351,6 +354,21 @@ Stops and removes Docker containers:
   organizations using the `--owner` flag, giving them full administrative rights.
 * **User-specific Resources**: Each user gets their own organization and bucket
   with the same name as their username.
+
+#### PostgreSQL Users
+
+* **Direct Connection**: User and database creation connects directly to PostgreSQL
+  over TCP via SQLAlchemy (`postgresql+psycopg://`) — no `docker exec` or shell
+  subprocess is involved, eliminating shell injection as an attack surface.
+* **Driver-level Escaping**: All usernames are wrapped in `psycopg.sql.Identifier`
+  and passwords in `psycopg.sql.Literal`. The psycopg3 driver escapes these at the
+  binary protocol level before any SQL reaches the database. Malicious input such
+  as`alice"; DROP TABLE users; --` or `$(curl ...)` is treated as a literal identifier
+  name and cannot break out of its context.
+* **Idempotent**: `DuplicateObject` (role already exists) and `DuplicateDatabase`
+  errors are caught and treated as success, so the command is safe to re-run.
+* **Config Keys Required**: `HOSTNAME`, `POSTGRES_PORT`, `POSTGRES_USER`,
+  `POSTGRES_PASSWORD` must be set in `config/services.env`.
 
 #### RabbitMQ Users
 
