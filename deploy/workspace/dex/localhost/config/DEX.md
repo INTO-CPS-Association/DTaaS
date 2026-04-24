@@ -42,7 +42,7 @@ A single client is configured:
 
 ### ⏳ `expiry.idTokens: "2h"`
 
-Matches the expected local-dev behavior with 2-hour ID tokens.
+Matches the expected local-dev behaviour with 2-hour ID tokens.
 
 ### ✅ `oauth2.skipApprovalScreen: true`
 
@@ -94,8 +94,8 @@ DTaaS routes and workspace paths use `.env` value `DEFAULT_USER`.
 
 For local/passwordDB mode, keep these aligned:
 
-- `.env`: `DEFAULT_USER=<your-user>`
+- `.env`: `DEFAULT_USER=<desired-user>`
 - `config/dex-config.yaml`: set static user `username`
-  and `preferredUsername` to the same `<your-user>`
+  and `preferredUsername` to the same `<desired-user>`
 
 ✅ This prevents path mismatches in user-scoped URLs.

@@ -42,7 +42,7 @@ This example uses two models and one tool. The specific assets used are:
 
 The `co-sim.json` and `time.json`
 are two DT configuration files used for executing the digital twin.
-These two files can be modified to customize the DT for specific requirements.
+These two files can be modified to customise the DT for specific requirements.
 
 ## Lifecycle Phases
 
@@ -54,14 +54,14 @@ These two files can be modified to customize the DT for specific requirements.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/mass-spring-damper-monitor
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -101,7 +101,7 @@ A sample plot is given here.
 
 ![sample plot](mass-spring-damper-monitor_plot.png)
 
-In the plot, three color-coded indicators are used to represent different
+In the plot, three colour-coded indicators are used to represent different
 values. The blue line shows the distance between the two masses, while the
 green indicates the monitor's verdict. A red dashed
 line serves as a reference point, marking the distance checked by the
@@ -113,7 +113,7 @@ output of the monitor is fixed to `unknown` (`0`).
 The results can be found in the
 _/workspace/examples/data/mass-spring-damper-monitor/output directory_.
 
-You can also view run logs in the
+Run logs can also be viewed in the
 _/workspace/examples/digital_twins/mass-spring-damper-monitor_.
 
 ### Terminate phase

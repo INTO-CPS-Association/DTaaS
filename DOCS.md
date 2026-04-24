@@ -1,139 +1,129 @@
-# Project Documentation
+# Documentation Workflow
 
-This file contains instructions for creation, compilation and publication of
-project documentation.
+This file defines the process for building, validating, and publishing project
+documentation.
 
-The documentation system is based on
-[Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/).
-The documentation is generated based on the configuration files:
+The documentation stack is based on
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+Two MkDocs configuration files are maintained:
 
-* **mkdocs.yml**: used for generating online
-  documentation which is hosted on the web
-* **mkdocs-github.yml**: used for generating documentation in github actions
+- **mkdocs.yml**: primary project configuration.
+- **mkdocs-github.yml**: CI-oriented configuration used by GitHub Actions.
 
-🗒️Execute the following commands from `DTaaS/docs` directory.
+All commands below are intended to be executed from the repository root.
 
-Install Mkdocs using the following command.
+## Install Documentation Dependencies
+
+Install documentation dependencies in the project virtual environment:
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r script/docs/mkdocs-requirements.txt
+# On Windows pdf converter is not available, use
+pip install -r script/docs/mkdocs-requirements-github.txt
 ```
 
-## Fix Linting Errors
+## Run Markdown Linting
 
-This project uses **markdownlint** linter tool for identifying the formatting
-issues in markdown files. Run
+The repository uses markdown linting to enforce formatting consistency.
 
-```sh
-mdl docs
+```bash
+npx markdownlint-cli docs/**/*.md
 ```
 
-from top-directory of the project and fix any identified issues. This needs
-to be done before committing changes to the documentation.
+Any lint findings should be resolved prior to committing documentation changes.
 
-## Format Tables
+## Format Markdown Tables
 
-The column widths in markdown tables are supposed to be equal. If they are not,
-`qlty` throws up errors. To format the tables correctly, run from top-directory
-of the project
+Uneven table formatting can cause quality gate failures. The table formatter can
+be run as follows:
 
-```sh
+```bash
 python script/docs/format_tables.py
 ```
 
-## Create documentation
+## Build and Preview Documentation
 
-The `mkdocs` utility is used for converting the markdown documentation
-placed in `docs/` directory into static html documentation.
-
-You can add, and edit the markdown files in `docs/` directory to update
-the documentation. The _mkdocs_ pip utility can be used to
-(i) check the status of your documentation (ii) perform live preview of
-ongoing documentation edits using hot reloading.
-
-The command to run the utility on Windows OS is
+### Local Preview
 
 ```bash
-mkdocs serve --config-file mkdocs-github.yml
+#On Linux
+mkdocs serve -f mkdocs.yml
+# On Windows
+mkdocs serve -f mkdocs-github.yml
 ```
 
-The command to run the utility on Ubuntu OS is
+### Static Build Validation
 
 ```bash
-mkdocs serve --config-file mkdocs.yml
+mkdocs build -f mkdocs-github.yml
 ```
 
-Create and edit the documentation on your local machine and check the results
-in the web browser.
+For full configuration validation (including optional PDF plugin wiring), run:
 
-## Prepare Documentation for Release
+```bash
+# Works only on Linux
+export MKDOCS_ENABLE_PDF_EXPORT=0
+mkdocs build -f mkdocs.yml
+```
 
-When preparing documentation for a release, you need to replace cloning
-instructions with versioned download links. This ensures users of a specific
-release version get the correct installation files.
+## Prepare Documentation for a Release
 
-First, update the configuration in `docs.ini`:
+When a release is prepared, clone instructions should be replaced with
+versioned download links for release artefacts.
+
+Update `docs.ini` in the `docs.substitute` section, for example:
 
 ```ini
 [docs.substitute]
 VERSION=DTaaS-vX.Y.Z
 URL=https://github.com/INTO-CPS-Association/DTaaS/releases/download/vX.Y.Z/DTaaS-vX.Y.Z.zip
-FILES=docs/admin/localhost.md,
-    docs/admin/localhost-secure.md,
-    docs/admin/server.md,
-    docs/admin/services.md,
+FILES=docs/admin/dtaas/localhost/install.md,
+    docs/admin/dtaas/secure-localhost-github/install.md,
+    docs/admin/dtaas/server/install.md,
+    docs/admin/services/cli.md,
     docs/admin/gitlab/index.md,
     docs/admin/guides/localhost_portainer.md
 ```
 
-Then run the content replacement script:
+Run the substitution pipeline:
 
 ```bash
 pip install -r script/docs/requirements.txt
 python script/docs/main.py
 ```
 
-This script:
+The substitution script performs the following actions:
 
-* Reads the markdown template from `docs/publish/clone.md` (cloning instructions)
-* Reads the release template from `docs/publish/release.md` (download instructions)
-* Substitutes `VERSION` and `URL` placeholders in the release template
-* Replaces matching content in all files listed in `FILES`
-* Uses markdown-aware parsing to avoid modifying code blocks
+- Reads `docs/publish/clone.md` as the cloning-content template.
+- Reads `docs/publish/release.md` as the release-content template.
+- Replaces `VERSION` and `URL` placeholders.
+- Applies replacements to files listed in `FILES`.
+- Preserves fenced code blocks via markdown-aware parsing.
 
-After running this script, review the changes and commit them before publishing
-the documentation.
+All resulting changes should be reviewed before publication.
 
-## Publish documentation
+## Publish Documentation
 
-The mkdocs utility can generate both **html** and **pdf**
-versions of documentation.
+MkDocs can produce HTML and, where enabled, PDF output. The PDF output
+generation is supported only on Linux.
 
-The generation of **pdf** version of documentation is controlled via
-a shell variable.
+PDF generation is controlled by the `MKDOCS_ENABLE_PDF_EXPORT` environment
+variable:
 
 ```bash
-export MKDOCS_ENABLE_PDF_EXPORT=0 #disables generation of pdf document
-export MKDOCS_ENABLE_PDF_EXPORT=1 #enables generation of pdf document
+export MKDOCS_ENABLE_PDF_EXPORT=0
+export MKDOCS_ENABLE_PDF_EXPORT=1
 ```
 
-You can compile and place the html version of documentation on
-the `webpage-docs` branch of the codebase.
+To publish documentation content to the `webpage-docs` branch:
 
 ```bash
-export MKDOCS_ENABLE_PDF_EXPORT=1 #enable generation of pdf document
-source script/docs.sh [version]
-```
-
-The command takes an optional version parameter. This version parameter is needed
-for making a release. Otherwise, the documentation gets published with
-the latest version tag. This command makes a new commit on `webpage-docs` branch.
-You need to push the branch to upstream.
-
-```bash
+export MKDOCS_ENABLE_PDF_EXPORT=1
+script\docs.sh [version]
 git push webpage-docs
 ```
 
-The github pages system serves the
-[project documentation](https://into-cps-association.github.io/DTaaS/) from
-this branch.
+The published site is served via GitHub Pages at
+[https://into-cps-association.github.io/DTaaS/](https://into-cps-association.github.io/DTaaS/).

@@ -37,7 +37,7 @@ capabilities of the robot.
 ### Tools
 
 The software tool assets are software used to create, evaluate and
-analyze models. These tools are executed on top of a computing
+analyse models. These tools are executed on top of a computing
 platforms, i.e., an operating system, or virtual machines like
 Java virtual machine, or inside docker containers.
 The tools tend to be platform specific, making them less reusable than models.

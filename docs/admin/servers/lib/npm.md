@@ -32,11 +32,11 @@ This can be copied to create a file system for users.
 
 ## :arrow_down: Install
 
-The npm package is available in Github
+The npm package is available in GitHub
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
 and on
 [npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
-**Prefer the package on npmjs over Github**.
+**Prefer the package on npmjs over GitHub**.
 
 Set the registry and install the package with the one of
 the two following commands
@@ -47,7 +47,7 @@ the two following commands
 sudo npm install -g @into-cps-association/libms  # requires no login
 ```
 
-### Github
+### GitHub
 
 ``` bash
 # requires login
@@ -55,9 +55,9 @@ sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
 ```
 
 The _github package registry_ asks for username and password. The username is
-your Github username and the password is your Github
+the GitHub username and the password is the GitHub
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, your personal access token
+In order for the npm to download the package, the personal access token
 needs to have _read:packages_ scope.
 
 ## :rocket: Use
@@ -79,12 +79,12 @@ Options:
 
 Both the options are not mandatory.
 
-Please see [configuration](config.md) for explanation of
+See [configuration](config.md) for explanation of
 configuration conventions.
 The config is saved `libms.yaml` file by convention. If `-c` is not specified
 The **libms** looks for
 `libms.yaml` file in the working directory from which it is run.
-If you want to run **libms** without explicitly specifying the configuration
+To run **libms** without explicitly specifying the configuration
 file, run
 
 ```bash
@@ -99,14 +99,14 @@ $libms --config FILE-PATH
 ```
 
 If the environment file is named something other than `libms.yaml`,
-for example as `libms-config.yaml`, you can run
+for example as `libms-config.yaml`, run
 
 ```sh
 $libms -c "config/libms-config.yaml"
 ```
 
-You can press `Ctl+C` to halt the application.
-If you wish to run the microservice in the background, use
+Press `Ctl+C` to halt the application.
+To run the microservice in the background, use
 
 ```bash
 $nohup libms [-c FILE-PATH] & disown

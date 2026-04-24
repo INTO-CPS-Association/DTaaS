@@ -1,62 +1,66 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with
-project-specific instructions as needed.
+Behavioural guidelines to reduce common LLM coding errors. These guidelines
+should be combined with project-specific instructions where applicable.
 
-**Tradeoff:** These guidelines bias toward caution over speed.
+**Trade-off:** These guidelines prioritise caution over speed.
 For trivial tasks, use judgment.
 
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+**Assumptions should be explicit. Ambiguity should be surfaced. Trade-offs
+should be stated.**
 
 Before implementing:
 
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them — don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+- State assumptions explicitly.
+- Where multiple interpretations exist, present alternatives rather than making
+  silent choices.
+- Prefer simpler approaches when appropriate.
+- Pause and request clarification when requirements are unclear.
 
 ## 2. Simplicity First
 
-**Minimum code that solves the problem. Nothing speculative.**
+**Write only the minimum code that solves the stated problem. Avoid
+speculative design.**
 
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+- Do not add features beyond scope.
+- Avoid abstractions for one-off code.
+- Do not introduce unrequested configurability.
+- Avoid defensive handling for impossible scenarios.
+- If a shorter implementation can provide equivalent clarity and correctness,
+  prefer the shorter version.
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?"
+Ask: "Would a senior engineer regard this as over-engineered?"
 If yes, simplify.
 
 ## 3. Surgical Changes
 
-**Touch only what you must. Clean up only your own mess.**
+**Change only what is required. Clean up only what is introduced by the
+change.**
 
 When editing existing code:
 
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it — don't delete it.
+- Do not refactor unrelated code.
+- Match the existing local style.
+- If unrelated dead code is observed, report it without removing it.
 
 When your changes create orphans:
 
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
+- Remove imports, variables, and functions made unused by the current change.
+- Do not remove pre-existing dead code unless explicitly requested.
 
-The test: Every changed line should trace directly to the user's request.
+Validation rule: each changed line should trace directly to the requested task.
 
 ## 4. Goal-Driven Execution
 
-**Define success criteria. Loop until verified.**
+**Define success criteria and iterate until verified.**
 
 Transform tasks into verifiable goals:
 
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
+- "Add validation" -> "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" -> "Write a test that reproduces it, then make it pass"
+- "Refactor X" -> "Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
 
@@ -71,6 +75,8 @@ Weak criteria ("make it work") require constant clarification.
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs,
-fewer rewrites due to overcomplication, and clarifying questions
-come before implementation rather than after mistakes.
+**These guidelines are effective when:**
+
+- diffs contain fewer unnecessary changes;
+- rewrites due to over-complexity are reduced;
+- clarification occurs before implementation rather than after defects appear.

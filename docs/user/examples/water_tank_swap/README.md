@@ -48,13 +48,13 @@ The following table shows the configuration files and their purpose.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/water_tank_swap
 ```
 
-If required, change the permission of files you need to execute, for example:
+If required, change the permission of files that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -110,7 +110,7 @@ lifecycle/analyze
 The results can be found in the
 _workspace/examples/data/water_tank_swap/output directory_.
 
-You can also view run logs in the
+Run logs can also be viewed in the
 _workspace/examples/digital_twins/water_tank_swap_.
 
 ### Terminate phase

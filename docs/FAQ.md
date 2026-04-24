@@ -51,10 +51,10 @@
     Commercial DT platforms like _Ansys Twin Builder_ provide tight integration
     between models, simulation and sensors. This leads to fewer choices in
     DT design and implementation. In addition, there is a limitation of vendor lockin.
-    On the other hand, DTaas lets users separate DT into reusable assets
+    On the other hand, DTaaS enables users to separate DT into reusable assets
     and combine these assets in a flexible way.
 
-??? Question "Do you provide licensed software like Matlab?"
+??? Question "Is licensed software such as Matlab provided?"
 
     Proprietary and commercially licensed software is not
     available by default on the software platform.
@@ -94,35 +94,34 @@
     inside DTaaS and executed using tools that run on Linux.
     Windows-only tools cannot run in DTaaS.
 
-??? Question "How can the DTaaS platform help to design geometric model? Does it support 3D modeling and simulation?"
+??? Question "How can the DTaaS platform help to design geometric model? Does it support 3D modelling and simulation?"
 
-    Well, DTaaS by itself does not produce any models. DTaaS only provides
+    DTaaS by itself does not produce any models. DTaaS only provides
     a platform and an ecosystem of services to facilitate digital twins to
     be run as services. Since each user has a Linux OS at their disposal,
-    they can also run digital twins that have graphical interface.
-    In summary, the DTaaS platform is neither a modeling nor simulation tool. If you need
-    these kinds of tools, you need to bring them onto the platform.
-    For example, if you need Matlab for your work, you need to bring
-    he licensed Matlab software.
+    they can also run digital twins that have a graphical interface.
+    In summary, the DTaaS platform is neither a modelling nor
+    simulation tool. If such tools are required, they must be brought onto
+    the platform. For example, if Matlab is needed, the user must bring
+    the licensed Matlab software.
 
-??? Question "Can the DTaaS platform support only the information models (or behavioral models) or some other kind of models?"
+??? Question "Can the DTaaS platform support only the information models (or behavioural models) or some other kind of models?"
 
-    The DTaaS platform as such is agnostic to the kind of models you use. DTaaS can
-    run all kinds of models. This includes behavioral and data models.
-    As long as you have models and the matching solvers that can run in
-    Linux OS, you are good to go in DTaaS.
+    The DTaaS platform as such is agnostic to the kind of models used. DTaaS can
+    run all kinds of models. This includes behavioural and data models.
+    As long as the models and matching solvers can run in
+    Linux OS, they can be used in DTaaS.
     In some cases, models and solvers (tools) are bundled together
-    to form monolithic DTs. The DTaaS platform does not limit you from running
-    such DTs as well.
-    DTaaS does not provide dedicated solvers. But if you can install
-    a solver in your workspace, then you don't need the platform
-    to provide one.
+    to form monolithic DTs. The DTaaS platform does not restrict running
+    such DTs either.
+    DTaaS does not provide dedicated solvers. However, if a solver can be
+    installed in the workspace, the platform need not provide one.
 
 ??? Question "Does it support XML-based representation and ontology representation?"
 
-    Currently No. **We are looking for users needing this capability.**
-    **If you have concrete requirements and an example, we can discuss a way**
-    **of realizing it in DTaaS**.
+    Currently No. **The team is seeking users who require this capability.**
+    **If concrete requirements and an example are available, a way**
+    **of realising it in DTaaS can be discussed**.
 
 ## Communication Between Physical Twin and Digital Twin
 
@@ -131,12 +130,12 @@
     At a very abstract level, there is a communication from physical entity
     to digital entity and back to physical entity. How this communication
     should happen is decided by the person designing the digital entity.
-    The DTaaS can provide communication services that can help you do this
+    The DTaaS can provide communication services that facilitate this
     communication with relative ease.
-    You can use InfluxDB, RabbitMQ and Mosquitto services hosted on DTaaS for
+    InfluxDB, RabbitMQ and Mosquitto services hosted on DTaaS may be used for
     two communication between digital and physical entities.
 
-??? Question "How would you measure a physical entity like shape, size, weight, structure, chemical attributes etc. using DTaaS? Any specific technology used in this case?"
+??? Question "How is a physical entity such as shape, size, weight, structure, or chemical attributes measured using DTaaS? Is any specific technology used in this case?"
 
     The real measurements are done at physical twin which are then
     communicated to the digital twin. Any digital twin platform like
@@ -144,12 +143,12 @@
     from physical twin. The DTaaS provides InfluxDB, RabbitMQ and Mosquitto
     services for this purpose. These three are probably most widely used
     services for digital twin communication.
-    Having said that, DTaaS allows you to utilize other communication
+    Nevertheless, DTaaS permits the use of other communication
     technologies and services hosted elsewhere on the Internet.
 
 ??? Question "How can real-time data differ from static data and what is the procedure to identify dynamic data? Is there any UI or specific tool used here?"
 
-    The DTaaS platform can not understand the static or dynamic nature of data.
+    The DTaaS platform cannot understand the static or dynamic nature of data.
     It can facilitate storing names, units and any other text description
     of interesting quantities (weight of batter, voltage output etc).
     It can also store the data being sent by the physical twin.
@@ -157,14 +156,14 @@
     the user.
     Only metadata of the data can reveal such more information about
     the nature of data. A tool can probably help in very specific cases,
-    but you need metadata. If there is a human being making this distinction,
+    but metadata is required. If there is a human being making this distinction,
     then the need for metadata goes down but does not completely go away.
     In some of the DT platforms supported by manufacturers, there is a tight
-    integration between data and model. In this case, the tool itself is
-    taking care of the metadata. The DTaaS is a generic platform which can
+    integration between data and model. In such cases, the tool itself
+    manages the metadata. The DTaaS is a generic platform which can
     support execution of digital twins. If a tool can be executed on
     a Linux desktop / commandline, the tool can be supported within DTaaS.
-    The tool (ex. Matlab) itself can take care of the metadata requirements.
+    The tool (e.g., Matlab) itself can manage the metadata requirements.
 
 ## Digital Twin DevOps Automation
 
@@ -182,9 +181,9 @@
     GitLab. GitLab itself does not impose limits on the maximum
     number of runners.
 
-??? Question "I have many GitLab runners attached with my GitLab repository? Which one is used?"
+??? Question "If many GitLab runners are attached to a GitLab repository, which one is used?"
 
-    This is indeterminate. You can't rely on the order and location
+    This is indeterminate. One cannot rely on the order and location
     of execution for a DT.
 
 ## Data Management
@@ -195,9 +194,9 @@
 
 ??? Question "Does DTaaS support data collection from different sources like hardware, software and network? Is there any user interface or any tracking instruments used for data collection?"
 
-    The DTaaS platform provids InfluxDB, PostgreSQL, RabbitMQ, MQTT, MongoDB and ThingsBoard services.
-    Both the physical twin
-    and digital twin can utilize these protocols for communication.
+    The DTaaS platform provides InfluxDB, PostgreSQL, RabbitMQ, MQTT, MongoDB
+    and ThingsBoard services. Both the physical twin
+    and digital twin can utilise these protocols for communication.
     The IoT (time-series) data can be collected using InfluxDB and MQTT
     broker services. There is a user interface for InfluxDB which can be
     used to analyze the data collected.
@@ -214,22 +213,22 @@
 
 ??? Question "Does the DTaaS platform support multisource information and combined multi sensor input data? Can it provide analysis and decision-supporting inferences?"
 
-    You can store information from multiple sources. The existing InfluxDB
+    Information from multiple sources can be stored. The existing InfluxDB
     services hosted on DTaaS already has a dedicated Influx / Flux query
     language for doing sensor fusion, analysis and inferences.
 
-??? Question "Which kinds of visualization technologies the DTaaS platform can support (e.g. graphical, geometry, image, VR/AR representation)?"
+??? Question "Which kinds of visualisation technologies can the DTaaS platform support (e.g. graphical, geometry, image, VR/AR representation)?"
 
-    Graphical, geometric and images. If you need specific licensed software
-    for the visualization, you will have to bring the license for it.
+    Graphical, geometric and images. If specific licensed software
+    is needed for the visualisation, the license for it must be provided.
     DTaaS does not support AR/VR.
 
 ## Platform Native Services on the DTaaS Platform
 
 ??? Question "Is the DTaaS platform able to detect the anomalies about-to-fail components and prescribe solutions?"
 
-    This is the job of a digital twin. If you have a ready to use digital twin
-    that does the job, DTaaS allows others to use your solution.
+    This is the job of a digital twin. If a ready-to-use digital twin
+    exists for this purpose, DTaaS enables others to use that solution.
     It is possible to perform anomaly detection using the platform services
     such as Grafana, ThingsBoard and InfluxDB.
 
@@ -242,7 +241,7 @@
     Legend: high performance (**H**), mid performance (**M**)
     and low performance (**L**)
 
-| DT Platforms               | License                | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualization | Modeling and Simulation |
+| DT Platforms               | License                | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualisation | Modelling and Simulation |
 | :------------------------- | :--------------------- | :--------------------- | :----------- | :------- | :-------------------------------------------- | :----------- | :------------ | :---------------------- |
 | Microsoft Azure DT         | Commercial Cloud       | H                      | H            | H        | M                                             | H            | H             | H                       |
 | AWS IOT Greengrass         | Open source commercial | H                      | H            | H        | M                                             | H            | H             | H                       |
@@ -262,17 +261,18 @@
 ??? Question "All the comparisons between DT platforms seems so confusing. Why?"
 
     The fundamental confusion comes from the fact that different DT platforms
-    (Azure DT, GE Predix) provide different kind of DT capabilities. You can
-    run all kinds of models natively in GE Predix. In fact you can run models
-    even next to (on) PTs using GE Predix. But you cannot natively do that in
-    Azure DT service. You have to do the leg work of integrating with other
-    Azure services or third-party services to get the kind of capabilities
+    (Azure DT, GE Predix) provide different kind of DT capabilities. One can
+    run all kinds of models natively in GE Predix. In fact, models can be run
+    even next to (on) PTs using GE Predix. However, this cannot natively be done in
+    Azure DT service. The user must perform the work of integrating with other
+    Azure services or third-party services to obtain the kind of capabilities
     that GE Predix natively provides in one interface.
-    The takeaway is that we pick horses for the courses.
+    The conclusion is that an appropriate platform should be selected based
+    on specific requirements.
 
 ## GDPR Concerns
 
-??? Question "Does your platform adhere to GDPR compliance standards? If so, how?"
+??? Question "Does the platform adhere to GDPR compliance standards? If so, how?"
 
     The DTaaS platform does not store any personal information
     of users. It only stores username to identify users and these
@@ -288,23 +288,23 @@
     the option of installing their own certificates obtained from
     certification agencies such as LetsEncrypt.
 
-??? Question "What security measures does your cloud provider offer?"
+??? Question "What security measures does the cloud provider offer?"
 
-    The the DTaaS platform can be installed inside corporate server hosted
+    The DTaaS platform can be installed inside a corporate server hosted
     behind network firewalls
     so that only permitted user groups have access to the network and
     physical access to the server.
 
 ??? Question "How is user access controlled and authenticated?"
 
-    There is a two-level authorization mechanism in place in each default
-    installation of the DTaaS. The first-level is HTTP basic authorization
+    There is a two-level authorisation mechanism in place in each default
+    installation of the DTaaS. The first-level is HTTP basic authorisation
     over secure HTTPS connection. The second-level is the OAuth 2.0 PKCE
-    authorization flow for each user. The OAuth 2.0 authorization is provider
+    authorisation flow for each user. The OAuth 2.0 authorisation is provided
     by a GitLab instance. The DTaaS does not store the account and
-    authorization information of users.
+    authorisation information of users.
 
-??? Question "Does you platform manage personal data? How is data classified and tagged based on the sensitivity? Who has access to the critical data?"
+??? Question "Does the platform manage personal data? How is data classified and tagged based on the sensitivity? Who has access to the critical data?"
 
     The platform does not store personal data of users.
 

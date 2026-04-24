@@ -1,12 +1,12 @@
 # OAuth 2.0 for React Client
 
-To enable user authorization on the DTaaS React client website,
-the OAuth 2.0 authorization protocol is used, specifically the PKCE
-authorization flow. The following steps describe the setup process:
+To enable user authorisation on the DTaaS React client website,
+the OAuth 2.0 authorisation protocol is used, specifically the PKCE
+authorisation flow. The following steps describe the setup process:
 
 **1. Choose a GitLab Server:**
 
-- OAuth 2.0 authorization must be set up on a GitLab server.
+- OAuth 2.0 authorisation must be set up on a GitLab server.
   An on-premise GitLab installation is preferrable to commercial
   <https://gitlab.com>.
 - The
@@ -23,7 +23,7 @@ authorization flow. The following steps describe the setup process:
 
 **3. Define Callback and Logout URLs:**
 
-- For the PKCE authorization flow to function correctly, two URLs are required:
+- For the PKCE authorisation flow to function correctly, two URLs are required:
   a callback URL and a logout URL.
 - The callback URL informs the OAuth 2.0 provider of the page where
   signed-in users should be redirected. It differs from the landing
@@ -54,9 +54,9 @@ authorization flow. The following steps describe the setup process:
 
 | GitLab Variable Name | Variable Name in Client env.js | Default Value                                      |
 | -------------------- | ------------------------------ | -------------------------------------------------- |
-| OAuth 2.0 Provider   | REACT_APP_AUTH_AUTHORITY       | [https://gitlab.foo.com/](https://gitlab.foo.com/) |
+| OAuth 2.0 Provider   | REACT_APP_AUTH_AUTHORITY       | [https://gitlab.intocps.org/](https://gitlab.intocps.org/) |
 | Application ID       | REACT_APP_CLIENT_ID            |                                                    |
-| Callback URL         | REACT_APP_REDIRECT_URI         | [https://foo.com/Library](https://foo.com/Library) |
+| Callback URL         | REACT_APP_REDIRECT_URI         | [https://intocps.org/Library](https://intocps.org/Library) |
 | Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api   |
 
   ![Summary for Client OAuth 2.0 Application](client-oauth-id.png)

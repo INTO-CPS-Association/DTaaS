@@ -1,7 +1,7 @@
 # What is the DTaaS Platform?
 
 The Digital Twin as a Service (DTaaS) software platform is designed
-to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs)[^1].
+to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
 
 :mechanical_arm: <font color="orange">**Build**</font>: DTs are constructed on
 DTaaS using reusable DT assets available on the platform.
@@ -27,8 +27,3 @@ and is available under [the INTO-CPS License](LICENSE.md).
 The DTaaS platform uses [third-party](./third-party.md)
 open-source software.
 These software components have their own licenses.
-
-## References
-
-[1]: Talasila, Prasad, et al. "Composable digital twins on Digital Twin
-     as a Service platform." Simulation 101.3 (2025): 287-311.

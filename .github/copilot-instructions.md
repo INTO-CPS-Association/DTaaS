@@ -1,14 +1,14 @@
-# GitHub Copilot Instructions for DTaaS
+# GitHub Copilot Instructions for DTaaS :robot_face:
 
-## Project Overview
+## Project Overview :compass:
 
 DTaaS (Digital Twin as a Service) is a comprehensive platform for
 creating, managing, and executing digital twins. The project consists
 of multiple components including a React TypeScript client,
-NestJS / Python backend services, documentation, and
-infrastructure configurations.
+NestJS and Python services, documentation, and
+deployment/infrastructure configurations.
 
-## Project Structure
+## Project Structure :open_file_folder:
 
 ```bash
 DTaaS/
@@ -17,12 +17,16 @@ DTaaS/
 ├── servers/           # Backend services
 │   ├── lib/           # Library management service
 │   ├── execution/     # Digital twin execution service
+├── deploy/            # Scenario-based deployment packages
+│   ├── dtaas/         # DTaaS package scenarios
+│   ├── workspace/     # Workspace package scenarios
+│   └── services/      # Platform services CLI and templates
+├── docker/            # Development Dockerfiles and compose templates
 ├── docs/              # Documentation (MkDocs)
-├── deploy/            # Deployment and installation configurations
-└── scripts/           # Utility scripts for setting up the developer workspace
+└── script/            # Utility scripts for docs and environment setup
 ```
 
-## Code Style and Conventions
+## Code Style and Conventions :triangular_ruler:
 
 ### TypeScript/JavaScript (Client & Node.js Services)
 
@@ -34,6 +38,7 @@ DTaaS/
 - Follow camelCase for variables and functions, PascalCase for components
   and interfaces
 - Use interfaces over types for object definitions
+- Keep API contracts typed and aligned with backend interface modules
 
 ### React Components (Client)
 
@@ -42,6 +47,7 @@ DTaaS/
 - Use React Testing Library for component testing
 - Follow the existing folder structure: `client/src/components/`,
   `client/src/page/`, `client/src/route/`
+- Keep GitLab-specific API behavior in `client/src/model/backend/`
 
 ### Python (Admin CLI Package)
 
@@ -58,8 +64,9 @@ DTaaS/
 - Use proper error handling with try-catch blocks
 - Follow RESTful API design principles
 - Use environment variables for configuration
+- Keep runnable scripts in `package.json` deterministic for CI usage
 
-## Directory-Specific Guidelines
+## Directory-Specific Guidelines :bookmark_tabs:
 
 ### CLI (`cli/`)
 
@@ -91,15 +98,20 @@ DTaaS/
 - **Styling**: Follow existing CSS/styling patterns
 - **API Integration**: Use the GitLab API integration patterns in
   `client/src/model/backend/`
+- **Execution History**: Keep pipeline status/log handling consistent
+  with existing utility modules
 
 ### Servers (`servers/`)
 
 - **Library Service** (`servers/lib/`): Handle library asset management
 - **Execution Service** (`servers/execution/`): Manage digital twin execution
+- **Framework**: Follow NestJS conventions and keep DTO/config modules
+  explicit
 
 ### Documentation (`docs/`)
 
 - Use MkDocs with Material theme
+- Keep both `mkdocs.yml` and `mkdocs-github.yml` synchronized
 - Use proper Markdown formatting
 - Write clear, concise documentation
 - Include code examples and diagrams
@@ -111,8 +123,10 @@ DTaaS/
 - **Docker**: Use multi-stage builds, optimize image sizes
 - **Traefik**: Configure proper routing and TLS
 - **Compose**: Use environment-specific configurations
+- **Scenarios**: Treat deployment packages as scenario-driven documentation
+  and operations units
 
-### Scripts (`scripts/`)
+### Scripts (`script/`)
 
 - **Bash Scripts**: Follow best practices, include error handling
 - **Powershell Scripts**: Follow best practices, include error handling
@@ -131,7 +145,7 @@ docs/
 └── assets/             # Images, diagrams
 ```
 
-## Testing Guidelines
+## Testing Guidelines :test_tube:
 
 ### CLI Testing
 
@@ -161,8 +175,9 @@ docs/
 
 - Validate all links work correctly
 - Ensure examples are up-to-date with current API
+- Build docs locally after nav or structural changes
 
-## Docker and Infrastructure
+## Docker and Infrastructure :whale:
 
 ### Docker Best Practices
 
@@ -179,7 +194,7 @@ docs/
 - Use middleware for authentication
 - Set up proper load balancing
 
-## Security Considerations
+## Security Considerations :shield:
 
 ### General Security
 
@@ -189,7 +204,7 @@ docs/
 - Use HTTPS everywhere
 - Follow OWASP security guidelines
 
-## Documentation Standards
+## Documentation Standards :memo:
 
 ### Code Documentation
 
@@ -205,7 +220,7 @@ docs/
 - Provide troubleshooting sections
 - Keep documentation up-to-date
 
-## Git and Version Control
+## Git and Version Control :twisted_rightwards_arrows:
 
 ### Commit Standards
 
@@ -221,7 +236,7 @@ docs/
 - Use semantic versioning for releases
 - Tag releases appropriately
 
-## When Generating Code
+## When Generating Code :construction_worker:
 
 ### Always Include
 

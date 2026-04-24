@@ -17,9 +17,9 @@ available in the user workspace.
 The lib microservice application provides services at
 two end points:
 
-**GraphQL API Endpoint:** `http://foo.com/lib`
+**GraphQL API Endpoint:** `http://intocps.org/lib`
 
-**HTTP Endpoint:** `http://foo.com/lib/files`
+**HTTP Endpoint:** `http://intocps.org/lib/files`
 
 ### HTTP protocol
 
@@ -38,7 +38,7 @@ Here are sample screenshots.
 
 Endpoint: `localhost:PORT/lib`
 
-The `http://foo.com/lib` URL opens a GraphQL playground.
+The `http://intocps.org/lib` URL opens a GraphQL playground.
 
 The query schema can be examined and sample queries can be tested there.
 GraphQL queries must be sent as HTTP POST requests to receive responses.
@@ -57,7 +57,7 @@ To retrieve a list of files in a directory, use the following GraphQL query.
 
 Replace `path` with the desired directory path.
 
-send requests to: <https://foo.com/lib>
+send requests to: <https://intocps.org/lib>
 
 #### GraphQL query for list of contents
 
@@ -150,7 +150,7 @@ query {
 
 ``` http
 POST /lib HTTP/1.1
-Host: foo.com
+Host: intocps.org
 Content-Type: application/json
 Content-Length: 388
 
@@ -223,7 +223,7 @@ query {
 
 ``` http
 POST /lib HTTP/1.1
-Host: foo.com
+Host: intocps.org
 Content-Type: application/json
 Content-Length: 217
 {

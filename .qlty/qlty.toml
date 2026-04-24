@@ -152,13 +152,6 @@ name = "shellcheck"
 name = "shfmt"
 
 [[plugin]]
-name = "trivy"
-drivers = [
-  "config",
-  "fs-vuln",
-]
-
-[[plugin]]
 name = "trufflehog"
 
 [[plugin]]

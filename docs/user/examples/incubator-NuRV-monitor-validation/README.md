@@ -56,8 +56,8 @@ The lifecycle phases for this example include:
 | Execute         | Produces and stores output in data/incubator-NuRV-monitor-validation/output directory    |
 | Clean           | Clears run logs and outputs                                                              |
 
-If required, change the execute permissions of lifecycle scripts you need to execute.
-This can be done using the following command
+If required, change the execute permissions of lifecycle scripts that need
+to be executed. This can be done using the following command
 
 ```bash
 chmod +x lifecycle/{script}
@@ -67,14 +67,14 @@ where {script} is the name of the script, e.g. _create_, _execute_ etc.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/incubator-NuRV-monitor-validation
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -114,7 +114,7 @@ A sample plot is given here.
 
 ![output plot](incubator-NuRV-monitor-validation_plot.png)
 
-In the plot, four color-coded indicators provide a visual representation of
+In the plot, four colour-coded indicators provide a visual representation of
 distinct values. The blue line depicts the simulated temperature, while orange
 one represents the temperature estimate. A red dashed line indicates the
 target temperature set by the energy saver component. The green line shows

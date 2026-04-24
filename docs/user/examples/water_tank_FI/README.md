@@ -37,7 +37,7 @@ The specific assets used are:
 
 The `multimodelFI.json` and `simulation-config.json`
 are two DT configuration files used for executing the digital twin.
-These two files can be modified to customize the DT for specific requirements.
+These two files can be modified to customise the DT for specific requirements.
 
 :fontawesome-solid-circle-info: The faults are defined in __wt_fault.xml__.
 
@@ -51,14 +51,14 @@ These two files can be modified to customize the DT for specific requirements.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/water_tank_FI
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -98,7 +98,7 @@ lifecycle/analyze
 The results can be found in the
 _/workspace/examples/data/water_tank_FI/output directory_.
 
-You can also view run logs in the
+Run logs can also be viewed in the
 _/workspace/examples/digital_twins/water_tank_FI_.
 
 ### Terminate phase

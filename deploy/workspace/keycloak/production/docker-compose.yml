@@ -5,11 +5,12 @@ name: dtaas-workspace
 
 services:
   traefik:
-    image: traefik:v3.6.4
+    image: traefik:v3.6.13
     restart: unless-stopped
     command:
       - "--log.level=INFO"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web-secure.address=:443"
       - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
@@ -127,7 +128,7 @@ services:
     volumes:
       - "./config/forward-auth-conf:/conf"
     environment:
-      - LOG_LEVEL=trace
+      - LOG_LEVEL=info
       - DEFAULT_PROVIDER=oidc
       - PROVIDERS_OIDC_ISSUER_URL=${KEYCLOAK_ISSUER_URL}
       - PROVIDERS_OIDC_CLIENT_ID=${KEYCLOAK_CLIENT_ID}

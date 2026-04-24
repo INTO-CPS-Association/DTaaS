@@ -35,86 +35,55 @@ In addition, there are docker compose and configuration files.
 - **compose.dev.yml:** Docker Compose configuration for
   development environment.
 - **.env**: environment variables for docker compose file
-- **conf.dev** OAuth2 configuration required by
+- **conf.dev** OAuth 2.0 configuration required by
   the Traefik forward-auth service
 
-## Requirements
+## Build and Publish Docker Images
 
-The installation requirements to run this development version of
-the DTaaS are:
+The github workflows publish docker images of client website and libms to
+[github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
+and
+[docker hub](https://hub.docker.com/u/intocps).
 
-- docker with compose plugin
-- User account on a gitlab instance (could be _gitlab.com_)
-- OAuth2 application registrations
+### Developer Usage
 
-### OAuth2 Application Registration
-
-The development docker setup requires dedicated authorization
-setup for both frontend website and backend services.
-Both these authorization requirements are satisfied
-using OAuth2 protocol.
-
-- The frontend website is a React single page application (SPA).
-- The details of Oauth2 app for the frontend website are in
-  [client docs](../docs/admin/client/auth.md).
-- The Oauth2 authorization for backend services is managed
-  by [Traefik forward-auth](https://github.com/thomseddon/traefik-forward-auth).
-  The details of this authorization setup are in
-  [server docs](../docs/admin/servers/auth.md).
-
-It is necessary to register these two OAuth2 applications and
-link them to your DTaaS development instance.
-
-Please see
-[gitlab oauth provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-documentation for further help with creating these two OAuth applications.
-
-## Configuration
-
-Copy configuration templates into config files.
-
-```bash
-cp .env.template .env
-cp conf.dev.template conf.dev
-```
-
-Update the configuration files. The files to be updated are:
-
-1. docker/.env
-   please see [docker README](../deploy/docker/DOCKER-ENV.md) for help
-   with updating this config file)
-1. docker/conf.dev
-   please see [server docs](../docs/admin/servers/auth.md) for help
-   with updating this config file)
-1. client/config/local.js
-   please see [client config](../docs/admin/client/config.md) for help
-   with updating this config file)
-
-**note**: The username(s) in `.env` and `conf.dev` must match.
-
-## Development Environment
-
-:warning: There is a problem compiling client (`yarn build`) inside
-docker container. Hence, it is required to copy the built
-files into the docker container. The docker compose build
-command fails if `client/build` directory does not exist.
-
-The development environment requires docker images to be built
-become the docker compose application can be brought up.
-
-The images can be built using
+Docker images are useful for development purposes. Developers are advised
+to build the required images locally on their computers for use during
+development. The images can be built using
 
 ```sh
 docker compose -f compose.dev.yml build
 ```
 
-The first build requires download of base docker images and building
-requires docker image layers.
-It does take time but the subsequent builds will happen quickly.
+## Running Docker Containers
 
-### Running Docker Containers
+The following steps describe how to use the application with Docker.
 
-The docker commands need to be executed from this directory(`docker`).
+The DTaaS platform requires multiple configuration files. The list of
+configuration files to be modified is provided for each scenario.
+
+### Development Environment
+
+This scenario is intended for software developers.
+
+The following configuration files require updating:
+
+1. **docker/.env** :
+  Refer to the [Docker installation
+  documentation](../../admin/dtaas/server/install.md) for
+   guidance on updating this configuration file.
+1. **docker/conf.dev** :
+  Refer to the [Docker installation
+  documentation](../../admin/dtaas/server/install.md) for
+   guidance on updating this configuration file.
+1. **client/config/local.js** :
+   Refer to the [client configuration documentation](../../admin/client/config.md)
+   for guidance on updating this configuration file.
+1. **servers/lib/config/libms.dev.yaml** :
+   Refer to the [library microservice configuration documentation](../../admin/servers/lib/docker.md)
+   for guidance on updating this configuration file.
+
+The docker commands need to be executed from this directory (`docker`).
 The relevant docker commands are:
 
 ```bash
@@ -157,13 +126,12 @@ The regular users are encouraged to use the packages from npm and docker.
 
 A brief explanation of the packages is given below.
 
-| Package Name | Description | Documentation for | Availability |
-| :---- | :---- | :---- | :---- |
-| dtaas-web | React web application | [container image](../docs/admin/client/docker.md) | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
-| libms |Library microservice | [npm package](../docs/admin/servers/lib/npm.md) | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
-| | | [container image](../docs/admin/servers/lib/docker.md) | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |
-| runner | REST API wrapper for multiple scripts/programs | [npm package](../docs/user/servers/execution/runner/README.md) | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |
-| ml-workspace-minimal (fork of [ml-workspace](https://github.com/ml-tooling/ml-workspace)) | User workspace | not available | [docker hub](https://hub.docker.com/r/intocps/ml-workspace-minimal/tags). Please note that this package is **highly experimental** and only v0.15.0-b2 is usable now. |
+| Package Name | Description | Availability |
+| :---- | :---- | :---- |
+| dtaas-web | React web application | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
+| libms |Library microservice | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
+| | | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |
+| runner | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |
 
 ### React Website
 

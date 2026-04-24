@@ -89,18 +89,20 @@ the [C4 architectural diagram](C4-L2_diagram.png).
 A mapping of the architectural components to related pages in
 the documentation is available in the table.
 
+<!-- markdownlint-disable MD060 -->
 | System Component          | Doc Page(s)                                                                                                                              |
 | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------- |
 | Service Router            | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Web Application           | [React Webapplication](../client/client.md)                                                                                              |
-| Reusable Assets           | [Library Microservice](../servers/lib/lib-ms.md)                                                                                         |
+| Web Application           | [React Webapplication](../codebase/client.md)                                                                                              |
+| Reusable Assets           | [Library Microservice](../codebase/lib-ms.md)                                                                                         |
 | Digital Twins and DevOps  | [Integrated GitLab](../../admin/gitlab/index.md)                                                                                         |
-| Platform Services         | [Third-party Services](./../../admin/services/terminal-install.md) (MQTT, InfluxDB, RabbitMQ, Grafana, PostgreSQL, and ThingsBoard                        |
+| Platform Services         | [Third-party Services](./../../admin/services/cli.md) (MQTT, InfluxDB, RabbitMQ, Grafana, MongoDB, PostgreSQL, and ThingsBoard) |
 | DT Lifecycle Manager      | Not available yet                                                                                                                        |
 | Security                  | GitLab [client OAuth 2.0](../../admin/client/auth.md) and [server OAuth 2.0](../../admin/servers/auth.md)                                |
 | Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/readme.md)                                                                               |
 | Accounting                | Not available yet                                                                                                                        |
 | Execution Manager         | Not available yet                                                                                                                        |
+<!-- markdownlint-enable MD060 -->
 
 ## References
 

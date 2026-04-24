@@ -57,7 +57,7 @@ mock physical twin. The specific assets used are:
 This DT has many configuration files.
 The `coe.json` and `multimodel.json`
 are two DT configuration files used for executing the digital twin.
-These two files can be modified to customize the DT for specific requirements.
+These two files can be modified to customise the DT for specific requirements.
 
 The RabbitMQ access credentials need to be provided in `multimodel.json`.
 The `rabbitMQ-credentials.json` provides RabbitMQ access credentials
@@ -74,14 +74,14 @@ both these files.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/drobotti_rmqfmu
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create

@@ -1,7 +1,7 @@
 # Runner
 
 A utility service to manage safe execution of remote scripts / commands.
-User launches this from commandline and let the utility
+The user launches this from the command line and lets the utility
 manage the commands to be executed.
 
 The runner utility runs as a service and provides
@@ -29,9 +29,9 @@ Install the package with the following command:
 sudo npm install -g @into-cps-association/runner
 ```
 
-### Github Registry
+### GitHub Registry
 
-The package is available in Github
+The package is available in GitHub
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
 Set the registry and install the package with the following commands
@@ -43,9 +43,9 @@ sudo npm install -g @into-cps-association/runner
 ```
 
 The _npm install_ command asks for username and password. The username is
-your Github username and the password is your Github
+the GitHub username and the password is the GitHub
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, your personal access token
+In order for the npm to download the package, the personal access token
 needs to have _read:packages_ scope.
 
 ## :gear: Configure
@@ -74,7 +74,7 @@ absolute path. However, the `location` path is always relative path
 with respect to the path of _runner.yaml_ file.
 
 :fontawesome-solid-circle-info:
-The commands must be executable. Please make sure that the commands
+The commands must be executable. Ensure that the commands
 have execute permission on Linux platforms.
 
 ## :pen: Create Commands
@@ -113,9 +113,9 @@ runner --config FILE-PATH #absolute or relative path to config file
 ```
 
 If launched on one computer,
-you can access the same at `http://localhost:<port>`.
+the service is accessible at `http://localhost:<port>`.
 
-Access to the service on network is available at `http://<ip or hostname>:<port>/`.
+Access to the service on the network is available at `http://<ip or hostname>:<port>/`.
 
 ### Application Programming Interface (API)
 
@@ -137,7 +137,7 @@ in _location_ directory.
 
     ``` http-request
     POST / HTTP/1.1
-    Host: foo.com
+    Host: intocps.org
     Content-Type: application/json
     Content-Length: 388
 
@@ -184,7 +184,7 @@ Shows the status of the command last executed.
 
     ``` http-request
     GET / HTTP/1.1
-    Host: foo.com
+    Host: intocps.org
     Content-Type: application/json
     Content-Length: 388
 

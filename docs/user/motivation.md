@@ -5,7 +5,8 @@
 This guide is intended for users of the DTaaS platform.
 Access to a live installation of the DTaaS platform is required.
 The simplest option is the
-[localhost](../admin/localhost.md) installation scenario.
+[workspace localhost](../admin/workspace/localhost/install.md)
+installation scenario.
 
 The following user-specific
 [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)

@@ -1,15 +1,15 @@
 # Setting Allowed Values
 
-Some Setting values will cause problems if used. In this document we will have an
-in-depth look at the values that are allowed and values that are not. We will also
-see some of the expected errors and finally go over some troubleshooting steps
-for this page.
+Some Setting values will cause problems if used. This document provides an
+in-depth examination of the values that are allowed and values that are not.
+Expected errors and troubleshooting steps
+for this page are also covered.
 
-If you want to understand what each parameter does, please read the [settings](../../website/settings.md)
+To understand what each parameter does, refer to the [settings](../../website/settings.md)
 document.
 
-Note: You must have the appropriate access rights to all the resources that you
-connect to the application.
+Note: The user must have the appropriate access rights to all the resources
+connected to the application.
 
 ## Runner Tag
 
@@ -25,14 +25,14 @@ one tag.
 
 - <u>Not allowed values</u>
 
-If the **Runner Tag** field *doesn't* match a Runner, no jobs will be picked up
-and the job will hence timeout. If your twins unexpectedly timeout,  check
-that you have spelled the tag correctly.
+If the **Runner Tag** field *does not* match a Runner, no jobs will be picked up
+and the job will hence time out. If the twins unexpectedly time out, verify
+that the tag has been spelt correctly.
 
 No tag (i.e. a blank field) is permitted by some services like GitLab,
 meaning that *any* Runner that is configured to pick up tag-less jobs can pick
-these jobs up. A limitation of DTaaS is that we require *some* tag. No tags, like
-other unallowed tags will be ignored.
+these jobs up. A limitation of DTaaS is that *some* tag is required. No tags, like
+other unallowed tags, will be ignored.
 
 - <u>Visual examples</u>
 
@@ -49,7 +49,8 @@ common library repositories. For example: "main" or "master":
 
 - <u>Not allowed values</u>
 
-You should not leave this field empty or not matching some branch in both repositories.
+This field should not be left empty or set to a value not matching a branch
+in both repositories.
 While technically allowed, this may cause errors or unexpected behaviours.
 
 Expected error:
@@ -71,13 +72,13 @@ Example:
 
 ![GitLab groups. One group named "dtaas"](images/groups.png)
 
-Group names are case insensitive on GitLab, but we recommend matching the case
-exactly for consistency and to remove it as a source of error.
+Group names are case insensitive on GitLab, but matching the case
+exactly is recommended for consistency and to remove it as a source of error.
 
 - <u>Not allowed values</u>
 
-If the group doesn't exist or the field is left blank, you will experience errors
-upon accessing Digital Twins, etc. Make sure that you write something here.
+If the group does not exist or the field is left blank, errors will occur
+upon accessing Digital Twins, etc. Ensure that a value is entered.
 
 Expected error:
 > An error occurred while fetching assets: GitbeakerRequestError: 404 Group Not
@@ -103,8 +104,8 @@ Expected error:
 
 - <u>Not allowed values</u>
 
-You should not leave this field blank or have it not match some repository. It is
-inadvisable to have it match a user repository.
+This field should not be left blank or set to a value not matching a
+repository. It is inadvisable for it to match a user repository.
 
 - <u>Visual examples</u>
 
@@ -140,8 +141,9 @@ active and matches its tag.
 
 ## 💭 Summary
 
-We have specified the possible values to correctly connect DTaaS
-with your storage and service instances and pitfalls. The key insight is not to
-leave any of the fields blank, having them be of the text string format and
-properly corresponding to your services and runners. Some troubleshooting steps
+The possible values for correctly connecting DTaaS
+to the relevant storage and service instances have been specified, along with
+potential pitfalls. The key point is not to
+leave any of the fields blank; they should be of the text string format and
+properly correspond to the relevant services and runners. Some troubleshooting steps
 have further been provided to overcome common hurdles.
