@@ -14,7 +14,7 @@ USER_MODULE = "dtaas_services.pkg.services.postgres.user_management"
 # pylint: disable=W0621
 
 TEST_CONNINFO = (
-    "host=test.example.com port=5432 user=dtaas_user password=dtaas_secret dbname=postgres"
+    "host=test.example.com port=5432 user=dtaas_user password=dtaas_secret dbname=postgres" # noqa: S105 # NOSONAR
 )
 
 
