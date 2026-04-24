@@ -30,18 +30,17 @@ def _execute_ddl(engine: Engine, composed: Composable) -> tuple[bool, str]:
     """Execute a single DDL statement via the raw psycopg3 connection.
 
     Uses psycopg3 so identifiers and literals are always driver-escaped, preventing injection.
+    Autocommit is enabled because CREATE DATABASE cannot run inside a transaction block.
     """
     raw = engine.raw_connection()
+    raw.autocommit = True
     cur = raw.cursor()
     try:
         cur.execute(composed)
-        raw.commit()
         return True, ""
     except _ALREADY_EXISTS:
-        raw.rollback()
         return True, ""
     except Exception as exc:
-        raw.rollback()
         return False, str(exc)
     finally:
         cur.close()

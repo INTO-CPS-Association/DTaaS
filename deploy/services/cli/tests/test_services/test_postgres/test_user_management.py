@@ -38,12 +38,13 @@ def test_get_engine_builds_url(mocker):
 
 
 def test_execute_ddl_success():
-    """Successful DDL execution commits and returns (True, '')."""
+    """Successful DDL execution sets autocommit and returns (True, '')."""
     engine, raw, _ = _make_engine()
     ok, err = _execute_ddl(engine, MagicMock())
     assert ok is True
     assert err == ""
-    raw.commit.assert_called_once()
+    assert raw.autocommit is True
+    raw.commit.assert_not_called()
 
 
 def test_execute_ddl_duplicate_role_is_ok():
@@ -51,7 +52,7 @@ def test_execute_ddl_duplicate_role_is_ok():
     engine, raw, _ = _make_engine(side_effect=pg_errors.DuplicateObject("exists"))
     ok, _ = _execute_ddl(engine, MagicMock())
     assert ok is True
-    raw.rollback.assert_called_once()
+    raw.rollback.assert_not_called()
 
 
 def test_execute_ddl_duplicate_db_is_ok():
@@ -59,16 +60,16 @@ def test_execute_ddl_duplicate_db_is_ok():
     engine, raw, _ = _make_engine(side_effect=pg_errors.DuplicateDatabase("exists"))
     ok, _ = _execute_ddl(engine, MagicMock())
     assert ok is True
-    raw.rollback.assert_called_once()
+    raw.rollback.assert_not_called()
 
 
 def test_execute_ddl_connection_error():
-    """Unexpected exception rolls back and returns (False, message)."""
+    """Unexpected exception returns (False, message) with no rollback."""
     engine, raw, _ = _make_engine(side_effect=Exception("connection refused"))
     ok, err = _execute_ddl(engine, MagicMock())
     assert ok is False
     assert "connection refused" in err
-    raw.rollback.assert_called_once()
+    raw.rollback.assert_not_called()
 
 
 def test_add_postgres_user_success(mocker):
