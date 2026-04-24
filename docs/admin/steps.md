@@ -2,55 +2,76 @@
 
 ## Complete the DTaaS Platform
 
-The DTaaS platform is available in two flavors. One is
-**localhost**, which is suitable for single-user, local usage.
-The other is **production server**, which is suitable for multi-user
-setup.
+Current DTaaS deployments are package-driven.
+Start by selecting one of these package roots:
 
-In both cases, the installation is a three-step process.
+- `deploy/dtaas/docker/localhost`
+  (DTaaS localhost package over HTTP)
+- `deploy/dtaas/docker/secure-server`
+  (DTaaS secure server compatibility package)
+- `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
+  (DTaaS secure server package with integrated GitLab)
+- `deploy/workspace/dex/localhost`
+  (workspace localhost deployment using Dex)
+- `deploy/workspace/keycloak/production`
+  (workspace secure server deployment using Keycloak)
 
-### Setup Authorization
+## Recommended Sequence
 
-DTaaS provides security using OAuth 2.0 authorization for both
-the [react client frontend](client/auth.md) and
-[backend services](servers/auth.md).
+### 1. Select Installation Scenario
 
-A default frontend authorization application is configured
-for all [localhost](localhost.md) installations, and backend authorization
-is not required for localhost installation.
+Use [installation scenarios](overview.md) to select the right package and guide.
 
-The [production server](server.md) installation requires both
-[react client frontend](client/auth.md) and
-[backend services](servers/auth.md) application configurations.
+### 2. Configure OAuth and Client Settings
 
-### Configure Components
+- DTaaS packages:
+  - Frontend OAuth setup: [client auth](client/auth.md)
+  - Backend OAuth setup (forward-auth): [servers auth](servers/auth.md)
+  - Client runtime settings: [client config](client/config.md)
+- Workspace Dex localhost:
+  - Configure `.env` and `config/dex-config.yaml`
+- Workspace Keycloak secure server:
+  - Follow package guides in
+    `deploy/workspace/keycloak/production/CONFIGURATION.md` and
+    `deploy/workspace/keycloak/production/KEYCLOAK_SETUP.md`
 
-DTaaS is available as a docker compose application. Four
-docker compose files are provided:
+### 3. Configure Filesystem and Certificates
 
-1. `compose.local.yml` for [localhost](localhost.md) installation
-   served over HTTP connection.
-1. `compose.local.secure.yml` for
-   [secure localhost](localhost-secure.md) installation
-   served over HTTPS connection.
-1. `compose.server.yml` for [production server](server.md) installation
-   served over HTTP connection.
-1. `compose.server.secure.yml` for [production server](server.md) installation
-   served over HTTPS connection.
+For DTaaS or workspace server deployments:
 
-These four compose files require environment configuration files.
-The explanation of this configuration file is available directly
-on the installation pages.
+- Create user workspaces under `files/`
+- Provide TLS certs under `certs/`
 
-In addition, the react client frontend requires configuration, which is
-explained on [this page](client/config.md).
+For workspace Dex localhost deployment:
 
-### Install
+- Create `.env` and Dex config from examples
 
-The installation instructions on either the [localhost](localhost.md)
-or [production server](server.md) pages should be followed.
+### 4. Start Services
+
+Run compose commands from the selected package directory.
+
+- DTaaS localhost package (HTTP):
+  `deploy/dtaas/docker/localhost`
+- DTaaS secure server package:
+  `deploy/dtaas/docker/secure-server`
+- DTaaS secure server with integrated GitLab package:
+  `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
+- Workspace secure server:
+  `deploy/workspace/keycloak/production`
+- Workspace localhost (HTTP):
+  `deploy/workspace/dex/localhost`
+
+### 5. Validate and Iterate
+
+- Confirm login flow in browser
+- Validate workspace routes (`/user1`, `/user2`)
+- Check service logs and health
+
+## Platform Services (Optional)
+
+To install additional data/infrastructure services, use the
+[Platform Services CLI](services/cli.md) rooted in `deploy/services/cli`.
 
 ## Independent Packages
 
-Each release of the DTaaS also includes four reusable
-packages. These packages have [dedicated documentation](packages.md).
+Reusable package details are listed on [packages](packages.md).

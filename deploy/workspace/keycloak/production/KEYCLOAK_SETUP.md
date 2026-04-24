@@ -67,12 +67,12 @@ The following instructions are part of post-install step.
 
 1. Navigate to `https://intocps.org/auth`
 2. Click **Administration Console**
-3. Login with credentials from your `.env` file (default: `admin` / `changeme`)
+3. Login with credentials from the `.env` file (default: `admin` / `changeme`)
 
 #### Create a Realm
 
 1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
-2. **Realm name**: `dtaas` (or match your `KEYCLOAK_REALM` in `.env`)  
+2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in `.env`)  
 3. Click **Create**
 4. Click on **Realm Settings** -> **User Profile**
 5. Click on **Create attribute** with
@@ -98,7 +98,7 @@ The following instructions are part of post-install step.
    - Go to the **Credentials** tab
    - Click **Set password**
    - Enter a password
-   - **Temporary**: OFF (so users don't have to change it on first login)  
+   - **Temporary**: OFF (so users do not have to change it on first login)  
    - Click **Save**
 6. Repeat for additional users (e.g., `user2`)
 
@@ -126,7 +126,7 @@ The following instructions are part of post-install step.
 6. Get the client secret:
    - Go to the **Credentials** tab
    - Copy the **Client secret** value
-   - Update `KEYCLOAK_CLIENT_SECRET` in your `.env` file
+   - Update `KEYCLOAK_CLIENT_SECRET` in the `.env` file
 
 #### Create OAuth2 Client for DTaaS Client Service
 
@@ -172,9 +172,9 @@ docker compose up -d
 ### 4. Test Authentication
 
 1. Navigate to `https://intocps.org`
-2. You should be redirected to Keycloak login
-3. Login with one of the users you created
-4. You should be redirected back to the DTaaS landing page
+2. The user should be redirected to Keycloak login
+3. Login with one of the users created
+4. The user should be redirected back to the DTaaS landing page
 
 ## Production Considerations
 
@@ -185,7 +185,7 @@ To use an external Keycloak instance (recommended for production):
    KEYCLOAK_ISSUER_URL=https://keycloak.intocps.org/auth/realms/dtaas
    ```
 
-Update client redirect URIs in Keycloak to use your production domain
+Update client redirect URIs in Keycloak to use the production domain
 
 ### 1. Secure Credentials
 
@@ -219,7 +219,7 @@ keycloak:
 
 - Verify `KEYCLOAK_ISSUER_URL` matches the realm name
 - Ensure redirect URIs in the Keycloak client include `/_oauth/*`
-- Confirm `COOKIE_DOMAIN` matches your domain
+- Confirm `COOKIE_DOMAIN` matches the domain
 - Clear browser cookies and retry
 
 ### "Invalid Client" Error

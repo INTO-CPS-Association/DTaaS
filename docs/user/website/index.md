@@ -69,7 +69,7 @@ the **github icon** redirects to the GitHub code repository.
 ## Check Website Access
 
 For troubleshooting login issues, the website configuration can be verified
-by navigating to <https://foo.com/config/user>. The following display
+by navigating to <https://intocps.org/config/user>. The following display
 indicates a correctly configured application.
 
 ![Configuration Check](images/config.png)
@@ -134,7 +134,7 @@ Each tab provides help text to guide users on the asset type.
 
 ??? tip "Tools"
     The software tool assets are software used to create, evaluate and
-    analyze models. These tools are executed on top of a computing
+    analyse models. These tools are executed on top of a computing
     platforms, i.e., an operating system, or virtual machines like
     Java virtual machine, or inside docker containers. The tools tend
     to be platform specific, making them less reusable than models.
@@ -226,12 +226,6 @@ in new browsers are shown:
 ![Workbench Tools](images/workbench_tools.png)
 
 The hyperlinks open in new browser tabs.
-
-!!! tip "Terminal"
-    The Terminal hyperlink does not exist on the workbench page.
-    For terminal access, the tools dropdown
-    in Jupyter Notebook should be used.
-    ![Open terminal in user workspace](../../admin/guides/open_terminal_in_workspace.gif)
 
 The **workbench** also has two links to DevOps-based implementation of
 composable digital twins.

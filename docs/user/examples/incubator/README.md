@@ -74,14 +74,14 @@ The lifecycles that are covered include:
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/incubator
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -141,8 +141,8 @@ the following visualization can be seen:
 [Incubator repository](https://github.com/INTO-CPS-Association/example_digital-twin_incubator/)
 with commit ID: 989ccf5909a684ad26a9c3ec16be2390667643aa
 
-To understand what a digital twin is, we recommend you read/watch one
-or more of the following resources:
+To understand what a digital twin is, one or more of the following
+resources are recommended:
 
 1. Feng, Hao, Cláudio Gomes, Casper Thule, Kenneth Lausdahl,
    Alexandros Iosifidis, and Peter Gorm Larsen. “Introduction to

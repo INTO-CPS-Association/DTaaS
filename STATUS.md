@@ -1,4 +1,7 @@
-# Project Quality Checks
+# Project Quality Status
+
+This page summarises current quality and CI indicators for the DTaaS
+repository.
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=INTO-CPS-Association_DTaaS&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=INTO-CPS-Association_DTaaS)
 [![codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS/branch/feature/distributed-demo/graph/badge.svg?token=18F1J5IIO5)](https://codecov.io/gh/INTO-CPS-Association/DTaaS)

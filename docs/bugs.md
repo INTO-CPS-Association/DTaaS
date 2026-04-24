@@ -11,15 +11,18 @@ Known issues are listed below.
 
 ## GitLab
 
-The GitLab OAuth 2.0 authorization service does not
+The GitLab OAuth 2.0 authorisation service does not
 have a way to sign out of a third-party application.
 Even if a user signs out of the DTaaS platform, GitLab still shows the user
 as signed in.
-The next time the sign in button is clicked on the the DTaaS platform page,
+The next time the sign in button is clicked on the DTaaS platform page,
 the login page is not displayed.
 Instead the user is directly taken to the **Library** page.
 Therefore, the browser window should be closed after use.
 Another way to overcome this limitation is to open the
-GitLab instance (`https://gitlab.foo.com`) and sign out from there.
+linked GitLab instance (ex: `https://intocps.org/gitlab`) and
+sign out from there.
 Thus the user needs to sign out of two places, namely the DTaaS platform and GitLab,
-in order to completely exit the the DTaaS platform.
+in order to completely exit the DTaaS platform.
+
+The same observation holds true for the Workspace installation as well.

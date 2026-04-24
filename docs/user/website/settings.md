@@ -68,7 +68,7 @@ This is a limitation of the DTaaS.
 
 **Default**: linux
 
-## 💾 Saving and Resetting your changes
+## 💾 Saving and Resetting Changes
 
 When satisfied with the changes, **SAVE SETTINGS** must be pressed for them to
 persist after leaving the Settings page.

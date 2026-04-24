@@ -5,19 +5,19 @@
 This example demonstrates how an FMU can be used as a runtime monitoring
 service (in this example NuRV[1]) and connected with the
 [Incubator digital twin](../incubator/README.md) to verify
-runtime behavior of the Incubator.
+runtime behaviour of the Incubator.
 
 ## Simulated scenario
 
 This example simulates a scenario where the lid of the Incubator is
 removed and later put back on. The Incubator is equipped with
-anomaly detection capabilities, which can detect anomalous behavior
+anomaly detection capabilities, which can detect anomalous behaviour
 (i.e. the removal of the lid). When an anomaly is detected,
 the Incubator triggers an energy saving mode where the heater is turned off.
 
-From a monitoring perspective, we wish to verify that within 3 messages of
+From a monitoring perspective, the aim is to verify that within 3 messages of
 an anomaly detection, the energy saving mode is turned on.
-To verify this behavior, we construct the property:
+To verify this behaviour, the following property is constructed:
 
 $G(anomaly \rightarrow (F_{[0,3]}\space energy\_saving))$.
 
@@ -86,8 +86,8 @@ The lifecycle phases for this example include:
 | create          | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies                                                                                                         |
 | execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
 
-If required, change the execute permissions of lifecycle scripts you
-need to execute. This can be done using the following command.
+If required, change the execute permissions of lifecycle scripts that
+need to be executed. This can be done using the following command.
 
 ```bash
 chmod +x lifecycle/{script}

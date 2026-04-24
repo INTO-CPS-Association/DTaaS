@@ -9,6 +9,6 @@ Each version serves a different purpose.
 
 | Installation Setup | Purpose |
 | :----- | :----- |
-| [localhost](docker/LOCALHOST.md) | Install DTaaS on your computer for a single user; does not need a web server. _This setup does not require domain name._ |
+| [localhost](docker/LOCALHOST.md) | Install DTaaS on a local computer for a single user; does not need a web server. _This setup does not require domain name._ |
 | [Server](docker/SERVER.md) | Install DTaaS on server for multiple users. |
 | [Vagrant machine](vagrant/README.md) | Install DTaaS on a virtual machine; can be used for single or multiple users. |

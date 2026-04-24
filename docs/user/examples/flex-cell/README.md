@@ -127,23 +127,23 @@ The lifecycles that are covered include:
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/flex-cell
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
 ```
 
 This example requires Java 11. The **create** script installs Java 11;
-however if you have already installed other Java versions, your default *java*
-might be pointing to another version. You can check and modify the default
-version using the following commands.
+however if other Java versions have already been installed, the default *java*
+may be pointing to another version. The default version can be checked and
+modified using the following commands.
 
 ```bash
 java -version

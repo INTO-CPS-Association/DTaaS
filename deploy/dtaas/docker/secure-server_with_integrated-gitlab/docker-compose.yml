@@ -1,0 +1,165 @@
+services:
+  traefik:
+    image: traefik:v3.6.13
+    restart: unless-stopped
+    command:
+      - "--log.level=INFO"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--providers.file.directory=/etc/traefik"
+      - "--providers.file.watch=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./config/tls.yml:/etc/traefik/tls.yml"
+      - "./certs:/etc/traefik-certs"
+    networks:
+      - frontend
+      - users
+
+  client:
+    image: intocps/dtaas-web:1.0.2
+    restart: unless-stopped
+    volumes:
+      - "./config/client.js:/dtaas/client/build/env.js"
+    labels:
+      - "traefik.enable=true"
+      - >-
+        traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/`)
+      - "traefik.http.routers.client.tls=true"
+      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
+      - "traefik.http.services.client.loadbalancer.server.port=4000"
+    networks:
+      - frontend
+
+  user1:
+    image: intocps/workspace:main-967bc10
+    restart: unless-stopped
+    environment:
+      - MAIN_USER=${USERNAME1:-user1}
+    volumes:
+      - "./files/common:/workspace/common"
+      - "./files/${USERNAME1:-user1}:/workspace"
+    labels:
+      - "traefik.enable=true"
+      - >-
+        traefik.http.routers.u1.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/${USERNAME1:-user1}`)
+      - "traefik.http.routers.u1.tls=true"
+      - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
+    networks:
+      - users
+
+  user2:
+    image: intocps/workspace:main-967bc10
+    restart: unless-stopped
+    environment:
+      - MAIN_USER=${USERNAME2:-user2}
+    volumes:
+      - "./files/common:/workspace/common"
+      - "./files/${USERNAME2:-user2}:/workspace"
+    labels:
+      - "traefik.enable=true"
+      - >-
+        traefik.http.routers.u2.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/${USERNAME2:-user2}`)
+      - "traefik.http.routers.u2.tls=true"
+      - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
+    networks:
+      - users
+
+  libms:
+    image: intocps/libms:0.5.9
+    restart: unless-stopped
+    volumes:
+      - ./files/common:/dtaas/libms/files
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.libms.loadbalancer.server.port=4001"
+      - >-
+        traefik.http.routers.libms.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/lib`)
+      - "traefik.http.routers.libms.tls=true"
+      - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
+    networks:
+      - frontend
+
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:latest
+    restart: unless-stopped
+    volumes:
+      - "./config/conf.server:/conf"
+    environment:
+      - LOG_LEVEL=info
+      - DEFAULT_PROVIDER=generic-oauth
+      - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
+      - PROVIDERS_GENERIC_OAUTH_TOKEN_URL=http://gitlab/gitlab/oauth/token
+      - PROVIDERS_GENERIC_OAUTH_USER_URL=http://gitlab/gitlab/api/v4/user
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - PROVIDERS_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - PROVIDERS_GENERIC_OAUTH_SCOPE=read_user
+      - SECRET=${OAUTH_SECRET}
+      - CONFIG=/conf
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redirect.entryPoints=web-secure"
+      - >-
+        traefik.http.routers.redirect.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/_oauth`)
+      - "traefik.http.routers.redirect.middlewares=traefik-forward-auth"
+      - >-
+        traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181
+      - >-
+        traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User
+      - >-
+        traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181
+    networks:
+      - frontend
+      - users
+
+  gitlab:
+    image: 'gitlab/gitlab-ce:18.10.1-ce.0'
+    container_name: gitlab
+    restart: always
+    hostname: ${SERVER_DNS}
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://${SERVER_DNS}/gitlab'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+        nginx['listen_port'] = 80
+        nginx['enable'] = true
+        nginx['listen_https'] = false
+        nginx['redirect_http_to_https'] = false
+        letsencrypt['enable'] = false
+    volumes:
+      - './config/gitlab:/etc/gitlab'
+      - './logs:/var/log/gitlab'
+      - './data:/var/opt/gitlab'
+    shm_size: '256m'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitlab.entryPoints=web-secure"
+      - >-
+        traefik.http.routers.gitlab.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/gitlab`)
+      - "traefik.http.routers.gitlab.service=gitlab"
+      - "traefik.http.services.gitlab.loadbalancer.server.port=80"
+      - "traefik.http.routers.gitlab.tls=true"
+    networks:
+      - frontend
+
+
+networks:
+  frontend:
+    name: dtaas-frontend
+  users:
+    name: dtaas-users

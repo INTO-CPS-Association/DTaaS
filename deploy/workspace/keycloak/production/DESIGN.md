@@ -14,7 +14,7 @@ deployments.
 
 ✅ Valid TLS certificates (production) or self-signed certs (testing)
 
-✅ Domain name pointing to your server (production) or localhost (testing)
+✅ Domain name pointing to the server (production) or localhost (testing)
 
 ## 🗒️ Design
 
@@ -133,7 +133,7 @@ The endpoint values are dynamically populated with the user's username from the
 2. Traefik forwards the request to traefik-forward-auth
 3. If not authenticated, user is redirected to OAuth2 provider
 4. User logs in with OAuth2 provider
-5. Provider redirects back with authorization code
+5. Provider redirects back with authorisation code
 6. traefik-forward-auth exchanges code for token and creates session
 7. User is redirected to original URL and gains access
 
@@ -151,7 +151,7 @@ To stop and remove volumes:
 docker compose down -v
 ```
 
-## 🔧 Customization
+## 🔧 Customisation
 
 ### Adding More Users
 
@@ -197,7 +197,7 @@ rule.user3_access.whitelist = user3@localhost
 
 Ensure that the username and email correspond to the workspaces user.
 
-Don't forget to create the user's directory:
+Do not forget to create the user's directory:
 
 ```bash
 cp -r files/template files/<USERNAME3>
@@ -231,7 +231,7 @@ docker compose up -d --force-recreate user3
 
 - Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
-- Ensure `COOKIE_DOMAIN` matches your domain
+- Ensure `COOKIE_DOMAIN` matches the domain
 - Verify OAuth2 application is approved and active
 
 ### Port Conflicts

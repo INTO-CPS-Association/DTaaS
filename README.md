@@ -1,42 +1,44 @@
-# :factory: :left_right_arrow: :busts_in_silhouette: Digital Twin as a Service
+# Digital Twin as a Service (DTaaS)
 
-## :grinning: Motivation
+## Overview
 
-The Digital Twin as a Service (DTaaS) software platform is useful
-to <font color="orange"> **Build, Use and Share** </font> digital twins (DTs).
+Digital Twin as a Service (DTaaS) is a software platform for the creation,
+execution, and sharing of digital twins (DTs).
 
-:mechanical_arm: <font color="orange">**Build**</font>: DTs are built on DTaaS using
-reusable DT assets available on the platform.
+- **Build**: DTs are assembled using reusable DT assets.
+- **Operate**: DTs are executed through the DTaaS platform.
+- **Share**: DTs and DT-provided services can be made available to other users.
 
-:office_worker: :factory_worker: <font color="orange">**Use**</font>: Run your
-DTs on DTaaS.
+<img src="docs/user/dtaas-demo-v0.7.gif"
+alt="DTaaS demonstration video showing the platform interface" />
 
-:handshake: <font color="orange">**Share**</font>: Share ready-to-use DTs
-with other users. It is also possible to share the services
-offered by one DT with other users.
+## Installation and Use
 
-## :rocket: Install and Use
+The recommended installation source is the latest release published on the
+[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
+Operational guidance is available in the
+[project documentation](https://into-cps-association.github.io/DTaaS/).
 
-Please use the latest release available on
-the [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases)
-and its [documentation](https://into-cps-association.github.io/DTaaS/)
-to install and use the DTaaS software platform.
+## Independent Packages
 
-### Independent Packages
+Reusable DTaaS packages are published for independent use and can be
+combined to form a complete DTaaS installation.
 
-The DTaaS development team publishes reusable packages which are then
-put together to form the complete DTaaS application.
+- [npm packages](https://www.npmjs.com/org/into-cps-association)
+- [Docker images](https://hub.docker.com/u/intocps)
+- [dtaas-services (PyPI)](https://pypi.org/project/dtaas-services/)
 
-These packages are published on
-[npmjs](https://www.npmjs.com/org/into-cps-association), and
-[docker hub](https://hub.docker.com/u/intocps) repositories.
+The
+[dtaas-services](deploy/services/cli/README.md)
+is a service manager useful in standalone or integrated
+deployments.
 
-You are welcome to open an [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose)
-if there is a suggestion to improve the software.
+Improvement proposals and defect reports may be submitted via
+[GitHub issues](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
 
-## :scientist: Research
+## Research Citation
 
-If you find this repo useful for your research, please consider citing our paper:
+When DTaaS is cited in academic work, the following reference may be used:
 
 ```bibtex
 @article{talasila2024composable,
@@ -50,26 +52,26 @@ publisher = {SAGE Publications Sage UK: London, England}
 }
 ```
 
-## :hammer_and_wrench: Development Setup
+## Development
 
-This is a monorepo containing code for
-both the web client and the microservices codebase.
-The source code for [web client](client),
-[library](servers/lib) and
-[runner](servers/execution/runner)
-microservices is available in this monorepo.
-The downloadable packages are available on
-[github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
+This repository is a monorepo containing implementation and support material
+for:
 
-Please see the
-[developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html)
-for more details.
+- [web client](client)
+- [library microservice](servers/lib)
+- [runner microservice](servers/execution/runner)
+- [dtaas-services CLI](deploy/services/cli)
 
-## :balance_scale: License
+Published packages are also available via the
+[GitHub Packages registry](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
 
-This software is owned by
-[The INTO-CPS Association](https://into-cps.org/)
-and is available under [the INTO-CPS License](./LICENSE.md).
+Detailed development guidance is available in the
+[developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html).
 
-Please see [third-party](docs/third-party.md) for details of
-the third-party software included in the DTaaS.
+## Licence
+
+DTaaS is owned by [The INTO-CPS Association](https://into-cps.org/) and is
+distributed under the terms documented in [LICENSE.md](LICENSE.md).
+
+Third-party software notices are listed in
+[docs/third-party.md](docs/third-party.md).

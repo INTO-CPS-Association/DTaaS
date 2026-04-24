@@ -44,7 +44,7 @@ The specific assets used are:
 
 The `multimodelFI.json` and `simulation-config.json`
 are two DT configuration files used for executing the digital twin.
-These two files can be modified to customize the DT for specific requirements.
+These two files can be modified to customise the DT for specific requirements.
 
 :fontawesome-solid-circle-info: The faults are defined in __wt_fault.xml__.
 
@@ -58,14 +58,14 @@ These two files can be modified to customize the DT for specific requirements.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/water_tank_FI_monitor
 ```
 
 If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+that need to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -105,7 +105,7 @@ A sample plot is given here.
 
 ![sample plot](water_tank_FI_monitor_plot.png)
 
-In the plot, four color-coded indicators are used to represent different
+In the plot, four colour-coded indicators are used to represent different
 values. The blue line shows the water tank level, while orange represents
 the control output and green indicates the monitor's verdict. A red dashed
 line serves as a reference point, marking the level checked by the
@@ -117,7 +117,7 @@ changes from `unknown` (`0`) to `false` (`2`).
 The results can be found in the
 _/workspace/examples/data/water_tank_FI_monitor/output directory_.
 
-You can also view run logs in the
+Run logs can also be viewed in the
 _/workspace/examples/digital_twins/water_tank_FI_monitor_.
 
 ### Terminate phase

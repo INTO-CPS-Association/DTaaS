@@ -5,7 +5,7 @@
 Waste water treatment (WWT) plants must comply with substance and species
 concentration limits established by regulation in order to ensure the good
 quality of the water. This is usually done taking periodic samples that
-are analyzed in the laboratory. This means that plant operators do not have
+are analysed in the laboratory. This means that plant operators do not have
 continuous information for making decisions and, therefore, operation
 setpoints are set to higher values than needed to guarantee water quality.
 Some of the processes involved in WWT plants consume a lot of power, thus
@@ -75,8 +75,8 @@ is used, instead of the real model. The simplified model (with not
 the real equations) is developed in **Open Modelica
 (Test_DTCONEDAR.mo)**. The FMU is generated from the Open Modelica interface
 to obtain the needed binaries to run the FMU. It is possible to run an FMU
-previously generated, however, to ensure that we are using the right binaries
-it is recommended to install Open Modelica Compiler and run `script.mos`
+previously generated, however, to ensure that the right binaries
+are being used, it is recommended to install Open Modelica Compiler and run `script.mos`
 to build the FMU from the Modelica file `Test_DTCONEDAR.mo`.
 
 The FMU model description file (`modelDescription.xml` file inside
@@ -98,13 +98,13 @@ The client python script (`client-opcua.py`) does the following actions:
   the compartment model (based on CFD)
 
   - Obtain results.
-  - Send by OPC UA protocol the result values to the PLC, to visualize them
+  - Send by OPC UA protocol the result values to the PLC, to visualise them
     in the SCADA and with the aim to improve the decision-making process of
     the plant operator.
 
 ### Input Data Variables
 
-The _configuration_freeopcua.ods_ date file is used for customizing
+The _configuration_freeopcua.ods_ date file is used for customising
 the initial input data values used by the server.
 
 ![Configuration parameters](images/conf-parameters.png)
@@ -122,14 +122,13 @@ Optional parameters can be modified:
 
 - stop_time
 - step_size
-- record = True, if we want to save the results of the simulation
+- record = True, to save the results of the simulation
 - record_interval. Sometimes the simulation step_size is small and
   a the size of the results file can be too big. For instance,
-  if the simulation step_size is 0.01 seconds, we can increase
-  the record_interval so as to reduce the result file size.
-- record_variables: we can specify the list of variables that we
-  want to record.
-- enable_send = True, if we want to send results to the OPC UA Server.
+  if the simulation step_size is 0.01 seconds, the record_interval
+  can be increased so as to reduce the result file size.
+- record_variables: the list of variables to record can be specified.
+- enable_send = True, to send results to the OPC UA Server.
 
 ## Lifecycle Phases
 
@@ -144,7 +143,7 @@ The lifecycles that are covered include:
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, change the present directory.
 
 ```bash
 cd /workspace/examples/digital twins/opc-ua-waterplant

@@ -2,16 +2,16 @@
 
 [DevOps](https://en.wikipedia.org/wiki/DevOps) has been
 a well established software development practice.
-We are bringing out an experimental feature of integration DevOps
-in the DTaaS.
+An experimental feature integrating DevOps
+is being introduced in the DTaaS.
 
 This feature requires specific installation setup.
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
-1. A valid GitLab repository for the logged in user. Please see
-   an [example repository](https://gitlab.com/dtaas/user1). You can clone
-   this repository and customize to your needs.
-1. [A linked GitLab Runner](../../../admin/gitlab/runner.md)
+1. A valid GitLab repository for the logged in user. See
+   an [example repository](https://gitlab.com/dtaas/user1). This repository
+   can be cloned and customised as needed.
+1. [A linked GitLab Runner](../../../admin/gitlab/runner-linux.md)
    to the user gitlab repository.
 
 ## DT Lifecycle
@@ -71,8 +71,8 @@ The manage tab allows for different operations on a digital twin:
 * Modify / Reconfigure (**Reconfigure** button)
 
 A digital twin placed in the DTaaS has a certain recommended
-structure. Please see the
-[assets pag](../../servers/lib/assets.md) for an explanation
+structure. See the
+[assets page](../../servers/lib/assets.md) for an explanation
 and
 [this example](https://github.com/INTO-CPS-Association/DTaaS-examples/tree/main/digital_twins/mass-spring-damper).
 
@@ -96,7 +96,7 @@ correspond to three categories.
 ![Digital Twin Execute](images/concurrent-execution.png)
 
 The execute tabs shows the possibility of executing multiple digital twins.
-Once an execution of digital twin is complete, you can see the execution
-log as well.
+Once an execution of digital twin is complete, the execution
+log is also available.
 
 ![Digital Twin Execution Log](images/dt_execute_log.png)

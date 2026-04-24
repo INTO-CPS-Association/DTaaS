@@ -2,10 +2,10 @@
 
 ## Supported Versions
 
-We are currently providing security updates for:
+Security updates are currently provided for the following versions:
 
-| Version | Supported         |
-|---------|------------------|
+| Version | Supported          |
+| :------ | :----------------- |
 | 0.8.0   | :white_check_mark: |
 | 0.7.0   | :x:                |
 | 0.6.0   | :x:                |
@@ -17,6 +17,9 @@ We are currently providing security updates for:
 
 ## Reporting a Vulnerability
 
-Please open an
+Security vulnerabilities should be reported by opening an
 [issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose)
-to report any security vulnerabilities in the codebase.
+in this repository.
+
+Reports should include sufficient technical detail to support triage,
+reproduction, and remediation.

@@ -2,7 +2,7 @@
 ![DTaaS logo](dtaas.png)
 
 ℹ️ The instructions in this document help update the username and
-password for your localhost version of the **DTaaS** installation.
+password for the localhost version of the **DTaaS** installation.
 
 ## ⚙️ Update Configuration
 
@@ -11,7 +11,7 @@ Duplicate `config/dex-config.yaml.example` to
 Update these fields in `config/dex-config.yaml`:
 
 - `email`
-- `hash` (bcrypt hash of your chosen password)
+- `hash` (bcrypt hash of the chosen password)
 - `username`, `name`, `preferredUsername`
 
 Dex configuration details are documented in [`config/DEX.md`](config/DEX.md).
@@ -24,7 +24,7 @@ Edit `.env`.
 
 ⚠️ Important alignment for local/passwordDB mode:
 
-- In `.env`, choose `DEFAULT_USER=<your-user>`.
+- In `.env`, set `DEFAULT_USER=<desired-user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 

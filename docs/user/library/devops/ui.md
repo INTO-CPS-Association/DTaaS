@@ -2,16 +2,16 @@
 
 [DevOps](https://en.wikipedia.org/wiki/DevOps) has been
 a well established software development practice.
-We are bringing out an experimental feature of integration DevOps
-in the DTaaS platform.
+An experimental feature integrating DevOps
+is being introduced in the DTaaS platform.
 
 This feature requires specific installation setup.
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
-1. A valid GitLab repository for the logged in user. Please see
-   an [example repository](https://gitlab.com/dtaas/user1). You can clone
-   this repository and customize to your needs.
-1. [A linked GitLab Runner](../../../admin/gitlab/runner.md)
+1. A valid GitLab repository for the logged in user. See
+   an [example repository](https://gitlab.com/dtaas/user1). This repository
+   can be cloned and customised as needed.
+1. [A linked GitLab Runner](../../../admin/gitlab/runner-linux.md)
    to the user GitLab repository.
 
 Once these requirements are satisfied, the **Library** page shows all
@@ -27,5 +27,5 @@ are shown in the following figure.
 
 Any existing DT asset can be selected and it gets added to
 the **Selection** pane on the right. After selecting all the required
-assets, you can click on _Proceed_ button to transition to
+assets, clicking on the _Proceed_ button transitions to
 [DT create stage](../../digital-twins/devops/ui.md)

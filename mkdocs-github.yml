@@ -16,6 +16,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Playlist: playlist.md
   - User:
       - Motivation: user/motivation.md
       - Features: user/features.md
@@ -25,11 +26,11 @@ nav:
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
-          - DevOps Preview: user/library/devops/ui.md
+          - DevOps: user/library/devops/ui.md
       - Digital Twins:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
-          - DevOps Preview:
+          - DevOps:
               - Digital Twin Structure:
                   user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md
@@ -63,71 +64,87 @@ nav:
               user/examples/incubator-NuRV-fmu-monitor-service/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
   - Admin:
-      - Install:
-          - Installation Scenarios: admin/overview.md
-          - Installation Steps: admin/steps.md
-          - Requirements: admin/requirements.md
-          - Authorization:
-              - Client: admin/client/auth.md
-              - Servers: admin/servers/auth.md
-          - Configuration:
-              - Client: admin/client/config.md
-              - Library: admin/servers/lib/config.md
-          - Docker:
-              - Localhost: admin/localhost.md
-              - Secure Localhost: admin/localhost-secure.md
-              - Production: admin/server.md
-          - Vagrant:
-              - Base Box: admin/vagrant/base-box.md
-              - Single Machine: admin/vagrant/single-machine.md
-              - Two Machines: admin/vagrant/two-machines.md
-          - Platform Services:
-              - CLI: admin/services/cli.md
-              - Manual Install: admin/services/terminal-install.md
-      - Integrated Gitlab:
-          - Installation: admin/gitlab/index.md
+      - Installation Scenarios:
+          - Overview: admin/overview.md
+          - Steps: admin/steps.md
+      - DTaaS:
+          - Localhost:
+              - Install: admin/dtaas/localhost/install.md
+              - Config: admin/dtaas/localhost/config.md
+          - Secure Server:
+              - Install: admin/dtaas/secure-server/install.md
+              - Config: admin/dtaas/secure-server/config.md
+          - Secure Server and GitLab:
+              - Install: admin/dtaas/secure-server-gitlab/install.md
+              - Config: admin/dtaas/secure-server-gitlab/config.md
+          - CLI: admin/cli.md
+      - Workspace:
+          - Localhost:
+              - Install: admin/workspace/localhost/install.md
+              - Dex: admin/workspace/localhost/dex.md
+              - Custom User: admin/workspace/localhost/custom-user.md
+              - Developer: admin/workspace/localhost/developer.md
+          - Secure Server:
+              - Install: admin/workspace/secure-server/install.md
+              - Configuration: admin/workspace/secure-server/configuration.md
+              - Keycloak Setup: admin/workspace/secure-server/keycloak-setup.md
+              - Design: admin/workspace/secure-server/design.md
+      - Platform Services: admin/services/cli.md
+      - GitLab:
+          - Server: admin/gitlab/index.md
           - Integration: admin/gitlab/integration.md
-          - Gitlab Runner:
-              - Linux: admin/gitlab/runner.md
+          - Runner:
+              - Linux: admin/gitlab/runner-linux.md
               - Windows: admin/gitlab/runner-windows.md
-      - CLI: admin/cli.md
       - Independent Packages:
           - Listing: admin/packages.md
+          - Workspace Packages: admin/workspace/index.md
           - Library Microservice:
               - NPM: admin/servers/lib/npm.md
               - Docker: admin/servers/lib/docker.md
       - Guides:
-          - GUI Installation: admin/guides/localhost_portainer.md
+          - Localhost on Portainer:
+              admin/guides/localhost-on-portainer/install.md
           - Check Config: admin/guides/check_config.md
           - Add user: admin/guides/add_user.md
           - Remove user: admin/guides/remove_user.md
-          - Link services: admin/guides/link_service.md
           - Common Assets: admin/guides/common_workspace_readonly.md
           - Renew Certificates: admin/guides/renew_certs.md
   - FAQ: FAQ.md
   - Developer:
-      - Developer Guide: developer/index.md
-      - Code of Conduct: developer/conduct.md
-      - GitHub Actions: developer/github-actions.md
+      - Guide:
+          - Contributors: developer/index.md
       - System:
           - Architecture: developer/system/architecture.md
           - Current Status: developer/system/current-status.md
-      - OAuth2 Authorization:
-          - Concepts: developer/oauth/oauth2.0.md
-          - System Design: developer/oauth/design.md
-          - Microservice: developer/oauth/authms.md
-      - Testing: developer/testing/intro.md
-      - Docker: developer/docker/docker.md
-      - NPM Packages: developer/npm-packages.md
-      - DTaaS CLI: developer/cli.md
-      - Client: developer/client/client.md
-      - Library Microservice: developer/servers/lib/lib-ms.md
-      - Runner Microservice: developer/servers/execution/runner/runner.md
-      - DevOps Framework:
-          - Overview: developer/devops/overview.md
-          - GitLab CI/CD Infrastructure: developer/devops/gitlab-ci-cd.md
-          - Triggering Pipelines via API: developer/devops/api.md
-          - Implemented Classes: developer/devops/implementation.md
+          - Research Overview: developer/system/research-overview.md
+      - Technical Concepts:
+          - OAuth 2.0 and Keycloak:
+              developer/technical-concepts/oauth-keycloak.md
+          - OAuth 2.0 Concepts:
+              developer/technical-concepts/oauth/oauth2.0.md
+          - Auth System Design: developer/technical-concepts/oauth/design.md
+          - Auth Microservice: developer/technical-concepts/oauth/authms.md
+          - DevOps: developer/technical-concepts/gitlab.md
+          - Testing: developer/technical-concepts/testing.md
+      - Codebase:
+          - Client: developer/codebase/client.md
+          - DevOps Framework: developer/codebase/devops.md
+          - Client DevOps Integration: developer/codebase/client-devops.md
+          - Library Microservice: developer/codebase/lib-ms.md
+          - Runner Microservice: developer/codebase/runner.md
+          - DTaaS CLI: developer/codebase/cli.md
+          - DTaaS Services: developer/codebase/dtaas-services.md
+          - Publish Packages: developer/codebase/publish-packages.md
+      - Contributions:
+          - Code of Conduct: developer/contributions/conduct.md
+          - Copilot Instructions:
+              developer/contributions/copilot-instructions.md
+          - Local Testing: developer/contributions/local-testing.md
+          - Docker Check: developer/contributions/docker.md
+          - GitHub Actions: developer/contributions/github-actions.md
+          - Publish NPM Packages: developer/contributions/npm-packages.md
+          - Vagrant: developer/vagrant.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:
@@ -140,6 +157,7 @@ extra_css:
   - assets/css/extra.css
 
 extra_javascript:
+  # yamllint disable-line rule:line-length
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
