@@ -68,7 +68,9 @@ def _add_mongodb_user(username: str, password: str) -> tuple[bool, str]:
     success, output = execute_docker_command(
         "mongodb", cmd, DockerRunOptions(max_attempts=3)
     )
-    if success or "already exists" in output:
+    if success:
+        if "already exists" in output:
+            print(f"User {username} already exists, skipped")
         return True, ""
     return False, f"Failed to add MongoDB user {username}: {output}"
 

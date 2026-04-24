@@ -107,7 +107,14 @@ def _attempt_docker_exec(docker: DockerClient, params: _ExecParams) -> tuple[boo
         result = docker.execute(params.container, params.cmd, envs=params.envs)
         return True, str(result) if result is not None else ""
     except DockerException as e:
-        return False, _format_docker_error(params.container, str(e))
+        error_str = str(e)
+        if "stdout is '" in error_str:
+            parts = error_str.split("stdout is '", 1)
+            if len(parts) > 1:
+                stdout = parts[1].split("'")[0]
+                if stdout:
+                    return False, stdout
+        return False, _format_docker_error(params.container, error_str)
 
 
 def _sleep_before_retry(attempt: int, opts: DockerRunOptions) -> None:
@@ -134,12 +141,15 @@ def _run_with_retry(
     Returns:
         Tuple of (success, output or error message)
     """
+    last_output = ""
     for attempt in range(opts.max_attempts):
         success, output = _attempt_docker_exec(docker, params)
         if success:
             return True, output
+        if output:
+            last_output = output
         _sleep_before_retry(attempt, opts)
-    return False, output
+    return False, last_output
 
 
 def execute_docker_command(
