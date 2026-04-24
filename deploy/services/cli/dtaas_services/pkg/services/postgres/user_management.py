@@ -1,7 +1,6 @@
 """PostgreSQL user management."""
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine
+import psycopg
 from psycopg import errors as pg_errors
 from psycopg.sql import SQL, Composable, Identifier, Literal
 
@@ -14,63 +13,55 @@ from ...utils import (
 _ALREADY_EXISTS = (pg_errors.DuplicateObject, pg_errors.DuplicateDatabase)
 
 
-def _get_engine() -> Engine:
-    """Create a SQLAlchemy engine backed by the psycopg3 driver."""
+def _get_conninfo() -> str:
+    """Build a psycopg3 connection info string from config."""
     config = Config()
     host = config.get_value("HOSTNAME")
     port = config.get_value("POSTGRES_PORT")
     user = config.get_value("POSTGRES_USER")
     password = config.get_value("POSTGRES_PASSWORD")
-    return create_engine(
-        f"postgresql+psycopg://{user}:{password}@{host}:{port}/postgres"
-    )
+    return f"host={host} port={port} user={user} password={password} dbname=postgres"
 
 
-def _execute_ddl(engine: Engine, composed: Composable) -> tuple[bool, str]:
-    """Execute a single DDL statement via the raw psycopg3 connection.
+def _execute_ddl(conninfo: str, composed: Composable) -> tuple[bool, str]:
+    """Execute a single DDL statement via psycopg3 in autocommit mode.
 
-    Uses psycopg3 so identifiers and literals are always driver-escaped, preventing injection.
-    Autocommit is enabled because CREATE DATABASE cannot run inside a transaction block.
+    Uses psycopg3 so identifiers and literals are always driver-escaped,
+    preventing injection. Autocommit is required because CREATE DATABASE
+    cannot run inside a transaction block.
     """
-    raw = engine.raw_connection()
-    raw.autocommit = True
-    cur = raw.cursor()
     try:
-        cur.execute(composed)
+        with psycopg.connect(conninfo, autocommit=True) as conn:
+            conn.execute(composed)
         return True, ""
     except _ALREADY_EXISTS:
         return True, ""
     except Exception as exc:
         return False, str(exc)
-    finally:
-        cur.close()
-        raw.close()
 
 
 def _add_postgres_user(username: str, password: str) -> tuple[bool, str]:
     """Add a PostgreSQL role and a matching database owned by that role."""
-    engine = _get_engine()
-    try:
-        ok, err = _execute_ddl(
-            engine,
-            SQL("CREATE USER {u} WITH PASSWORD {p}").format(
-                u=Identifier(username), p=Literal(password)
-            ),
-        )
-        if not ok:
-            return False, f"Failed to create user {username}: {err}"
+    conninfo = _get_conninfo()
 
-        ok, err = _execute_ddl(
-            engine,
-            SQL("CREATE DATABASE {db} OWNER {u}").format(
-                db=Identifier(username), u=Identifier(username)
-            ),
-        )
-        if not ok:
-            return False, f"Failed to create database {username}: {err}"
-        return True, ""
-    finally:
-        engine.dispose()
+    ok, err = _execute_ddl(
+        conninfo,
+        SQL("CREATE USER {u} WITH PASSWORD {p}").format(
+            u=Identifier(username), p=Literal(password)
+        ),
+    )
+    if not ok:
+        return False, f"Failed to create user {username}: {err}"
+
+    ok, err = _execute_ddl(
+        conninfo,
+        SQL("CREATE DATABASE {db} OWNER {u}").format(
+            db=Identifier(username), u=Identifier(username)
+        ),
+    )
+    if not ok:
+        return False, f"Failed to create database {username}: {err}"
+    return True, ""
 
 
 def setup_postgres_users() -> tuple[bool, str]:

@@ -243,7 +243,7 @@ The package uses a modular, three-layer architecture:
 * **`postgres/`**: PostgreSQL service module
   * `postgres.py`: Certificate setup and readiness waiting
   * `status.py`: Container health and state checking
-  * `user_management.py`: User and database creation via a direct SQLAlchemy/psycopg3
+  * `user_management.py`: User and database creation via a direct psycopg3
     connection; uses `psycopg.sql.Identifier` and `psycopg.sql.Literal` for
     driver-level escaping of all user input, preventing SQL injection
 
@@ -358,7 +358,7 @@ Stops and removes Docker containers:
 #### PostgreSQL Users
 
 * **Direct Connection**: User and database creation connects directly to PostgreSQL
-  over TCP via SQLAlchemy (`postgresql+psycopg://`) — no `docker exec` or shell
+  over TCP via `psycopg.connect()` — no `docker exec` or shell
   subprocess is involved, eliminating shell injection as an attack surface.
 * **Driver-level Escaping**: All usernames are wrapped in `psycopg.sql.Identifier`
   and passwords in `psycopg.sql.Literal`. The psycopg3 driver escapes these at the
