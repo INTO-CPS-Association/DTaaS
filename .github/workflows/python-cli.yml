@@ -18,6 +18,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
       actions: write  # Required for uploading artifacts
+      id-token: write  # Required for OIDC trusted publisher
     uses: ./.github/workflows/python-reusable.yml
     with:
       working-directory: cli
@@ -25,3 +26,4 @@ jobs:
       tests-directory: tests
       coverage-file: cli/coverage.xml
       artifact-name: dtaas-cli
+      run-pyright: true

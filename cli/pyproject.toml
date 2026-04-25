@@ -10,16 +10,17 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 PyYAML = "^6.0.3"
-click = "^8.3.1"
-tomlkit = "^0.13.3"
+click = "^8.3.2"
+tomlkit = "^0.14.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.0.2"
-pylint = "^4.0.4"
-pytest-cov = "^7.0.0"
-setuptools = "^80.9.0"
-zipp = "^3.23.0"
+pytest = "^9.0.3"
+pylint = "^4.0.5"
+pytest-cov = "^7.1.0"
+setuptools = "^82.0.1"
+zipp = "^3.23.1"
 safety = "^3.7.0"
+pyright = "^1.1.408"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=80.0.0"]
@@ -27,3 +28,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 dtaas = "src.cmd:dtaas"
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
