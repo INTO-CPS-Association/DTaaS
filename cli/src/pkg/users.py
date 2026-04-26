@@ -5,6 +5,7 @@ import shutil
 from src.pkg import utils
 from src.pkg.constants import COMPOSE_USERS_YML
 
+
 def _build_config_mapping(user_config, resources):
     """Build the mapping for config substitution.
 
@@ -21,7 +22,7 @@ def _build_config_mapping(user_config, resources):
         "${shm_size}": str(resources["shm_size"]),
         "${cpus}": str(resources["cpus"]),
         "${mem_limit}": str(resources["mem_limit"]),
-        "${pids_limit}": str(resources["pids_limit"])
+        "${pids_limit}": str(resources["pids_limit"]),
     }
     if user_config.get("server") is not None:
         mapping["${SERVER_DNS}"] = user_config["server"]
@@ -51,7 +52,9 @@ def get_compose_config(username, config):
         user_config = {
             "username": username,
             "path": config["path"],
-            "server": config["server"] if config["server"] != utils.LOCALHOST_SERVER else None
+            "server": config["server"]
+            if config["server"] != utils.LOCALHOST_SERVER
+            else None,
         }
         mapping = _build_config_mapping(user_config, config["resources"])
         result, err = utils.replace_all(template, mapping)

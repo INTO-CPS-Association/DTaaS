@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.0"
+version = "0.2.2"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -13,7 +13,7 @@ server-dns = "localhost"
 path = "/home/Desktop/DTaaS"
 # Windows example
 #path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get 
+# Note: You have to either use / or \\ when specifying path, else you would get
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
 [common.resources]
