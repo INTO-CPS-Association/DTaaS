@@ -21,6 +21,9 @@ setuptools = "^82.0.1"
 zipp = "^3.23.1"
 safety = "^3.7.0"
 pyright = "^1.1.408"
+nltk = "^3.9.4"
+authlib = "^1.7.0"
+cryptography = "^47.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=80.0.0"]
