@@ -28,4 +28,4 @@ jobs:
       artifact-name: dtaas-cli
       run-pyright: true
       # yamllint disable-line rule:line-length
-      publish: ${{ github.event_name == 'push' && github.ref == 'refs/heads/distributed-demo' }}
+      publish: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/distributed-demo' }}
