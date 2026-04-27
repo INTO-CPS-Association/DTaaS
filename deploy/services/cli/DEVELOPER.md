@@ -313,6 +313,38 @@ default: `https`)
 * **`GITLAB_ROOT_NEW_PASSWORD`**: Strong password to apply to the GitLab `root`
   admin account during post-install setup
 
+#### GitLab OAuth Application Configuration
+
+The following OAuth 2.0 application settings are configurable for each GitLab
+client registration. These are used during `dtaas-services install -s gitlab`
+to create OAuth applications automatically.
+
+**Server Authorization App (for Traefik Forward-Auth):**
+
+* **`OAUTH_SERVER_APP_NAME`**: Display name for the server OAuth app
+  (default: `DTaaS Server Authorization`)
+* **`OAUTH_SERVER_REDIRECT_URI`**: Redirect path relative to `HOSTNAME`
+  (default: `_oauth`). Full redirect URI becomes `https://{HOSTNAME}/_oauth`
+* **`OAUTH_SERVER_CONFIDENTIAL`**: Whether the app is confidential
+  (default: `true`). Set to `true` for server-side apps
+* **`OAUTH_SERVER_SCOPES`**: OAuth scopes required by the server app
+  (default: `read_user`)
+* **`OAUTH_SERVER_TRUSTED_APP`**: Skip user authorization dialogs
+  (default: `false`)
+
+**Client Authorization App (for React Client):**
+
+* **`OAUTH_CLIENT_APP_NAME`**: Display name for the client OAuth app
+  (default: `DTaaS Client Authorization`)
+* **`OAUTH_CLIENT_REDIRECT_URI`**: Redirect path relative to `HOSTNAME`
+  (default: `Library`). Full redirect URI becomes `https://{HOSTNAME}/Library`
+* **`OAUTH_CLIENT_CONFIDENTIAL`**: Whether the app is confidential
+  (default: `false`). Set to `false` for public/browser-based clients
+* **`OAUTH_CLIENT_SCOPES`**: OAuth scopes required by the client app
+  (default: `api openid profile read_repository read_user`)
+* **`OAUTH_CLIENT_TRUSTED_APP`**: Skip user authorization dialogs
+  (default: `true`)
+
 #### ThingsBoard SSL Configuration
 
 ThingsBoard API calls use the `SSL_VERIFY` setting from `config/services.env`:

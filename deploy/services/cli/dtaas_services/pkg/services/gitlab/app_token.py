@@ -13,9 +13,6 @@ from ._api import get_gitlab_client
 
 logger = logging.getLogger(__name__)
 
-SERVER_OAUTH_SCOPES = "read_user"
-CLIENT_OAUTH_SCOPES = "api openid profile read_repository read_user"
-
 
 @dataclass
 class OAuthAppConfig:
@@ -25,6 +22,7 @@ class OAuthAppConfig:
     redirect_uri: str
     confidential: bool
     scopes: str
+    trusted: bool = False
 
 
 @dataclass
@@ -54,21 +52,37 @@ def _get_server_dns() -> str:
 
 def _build_server_app_config(server_dns: str) -> OAuthAppConfig:
     """Build the OAuth config for the DTaaS Server Authorization app."""
+    app_name = os.getenv("OAUTH_SERVER_APP_NAME", "DTaaS Server Authorization")
+    redirect_path = os.getenv("OAUTH_SERVER_REDIRECT_URI", "_oauth")
+    confidential = os.getenv("OAUTH_SERVER_CONFIDENTIAL", "true").lower() == "true"
+    scopes = os.getenv("OAUTH_SERVER_SCOPES", "read_user")
+    trusted = os.getenv("OAUTH_SERVER_TRUSTED_APP", "false").lower() == "true"
+
     return OAuthAppConfig(
-        name="DTaaS Server Authorization",
-        redirect_uri=f"https://{server_dns}/_oauth",
-        confidential=True,
-        scopes=SERVER_OAUTH_SCOPES,
+        name=app_name,
+        redirect_uri=f"https://{server_dns}/{redirect_path}",
+        confidential=confidential,
+        scopes=scopes,
+        trusted=trusted,
     )
 
 
 def _build_client_app_config(server_dns: str) -> OAuthAppConfig:
     """Build the OAuth config for the DTaaS Client Authorization app."""
+    app_name = os.getenv("OAUTH_CLIENT_APP_NAME", "DTaaS Client Authorization")
+    redirect_path = os.getenv("OAUTH_CLIENT_REDIRECT_URI", "Library")
+    confidential = os.getenv("OAUTH_CLIENT_CONFIDENTIAL", "false").lower() == "true"
+    scopes = os.getenv(
+        "OAUTH_CLIENT_SCOPES", "api openid profile read_repository read_user"
+    )
+    trusted = os.getenv("OAUTH_CLIENT_TRUSTED_APP", "true").lower() == "true"
+
     return OAuthAppConfig(
-        name="DTaaS Client Authorization",
-        redirect_uri=f"https://{server_dns}/Library",
-        confidential=False,
-        scopes=CLIENT_OAUTH_SCOPES,
+        name=app_name,
+        redirect_uri=f"https://{server_dns}/{redirect_path}",
+        confidential=confidential,
+        scopes=scopes,
+        trusted=trusted,
     )
 
 
@@ -102,6 +116,7 @@ def create_application(
                 "redirect_uri": config.redirect_uri,
                 "confidential": config.confidential,
                 "scopes": config.scopes,
+                "trusted": config.trusted,
             }
         )
         return True, _to_result(app), ""

@@ -28,11 +28,6 @@ name: Python Reusable Workflow
         required: false
         type: boolean
         default: false
-      publish:
-        description: 'Whether to publish the package to PyPI'
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   python-tests:
@@ -86,6 +81,7 @@ jobs:
           # Docker is pre-installed on Ubuntu runners
           # Just ensure the service is running
           docker --version
+
       - name: Install Docker on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -139,6 +135,7 @@ jobs:
         run: |
           poetry run pytest --cov=${{ inputs.src-directory }} --cov-report=xml \
             --cov-report=term-missing
+
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
         # v5
@@ -190,34 +187,9 @@ jobs:
           poetry build --format sdist
 
       - name: Upload dist artefacts
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v4.6.2 it needs to match the download-artifact (major) version
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.working-directory }}/dist
           retention-days: 1
-
-  publish-pypi:
-    name: Publish to PyPI
-    needs: [build-python-package]
-    if: inputs.publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write  # Required for OIDC trusted publisher
-
-    steps:
-      - name: Download dist artefacts
-        # v4.1.8
-        uses: actions/download-artifact@fa0a91b85d4f404e444306234a0672c20cc434ce
-        with:
-          name: ${{ inputs.artifact-name }}
-          path: ${{ inputs.working-directory }}/dist
-
-      - name: Publish to PyPI
-        # v1.10.0
-        # yamllint disable-line rule:line-length
-        uses: pypa/gh-action-pypi-publish@76f52fcd0d1af15e46fe0b1a4d9d0c24ecbcbf2e
-        with:
-          packages-dir: >-
-            ${{ inputs.working-directory }}/dist

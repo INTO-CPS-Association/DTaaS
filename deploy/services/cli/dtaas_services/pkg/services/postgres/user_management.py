@@ -32,7 +32,7 @@ def _execute_ddl(conninfo: str, composed: Composable) -> tuple[bool, str]:
     """
     try:
         with psycopg.connect(conninfo, autocommit=True) as conn:
-            conn.execute(composed)
+            conn.execute(str(composed))  # type: ignore[arg-type]
         return True, ""
     except _ALREADY_EXISTS:
         return True, ""
