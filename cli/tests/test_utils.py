@@ -6,7 +6,7 @@ from src.pkg import utils
 def test_import_yaml_users():
     """Test importing YAML user configuration template"""
     expected = {
-        "image": "intocps/workspace:latest",
+        "image": "intocps/workspace:main-967bc10",
         "restart": "unless-stopped",
         "volumes": [
             "${DTAAS_DIR}/files/common:/workspace/common",
@@ -20,13 +20,13 @@ def test_import_yaml_users():
         "labels": [
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
-            "traefik.http.routers.${username}.rule=PathPrefix(`/${username}`)",
+            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS:-localhost}`)\n&& PathPrefix(`/${username}`)",
             "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
         ],
         "networks": ["users"],
     }
 
-    template, err = utils.import_yaml("users.local.yml")
+    template, err = utils.import_yaml("users.server.yml")
     if err is not None:
         raise AssertionError(err)
 
