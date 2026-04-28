@@ -12,7 +12,7 @@ mem_limit: ${mem_limit}
 pids_limit: ${pids_limit}
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`)&&PathPrefix(`/${username}`)"
+  - "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${username}`)"
   - "traefik.http.routers.${username}.tls=true"
   - "traefik.http.routers.${username}.middlewares=traefik-forward-auth"
 networks:
