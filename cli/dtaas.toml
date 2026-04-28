@@ -16,6 +16,10 @@ path = "/home/Desktop/DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
+[common.security]
+# Enable HTTPS/TLS for secure server deployment
+tls = true
+
 [common.resources]
 # These are the default resource limits for user containers.
 cpus = 4 # Virtual CPU

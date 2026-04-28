@@ -20,6 +20,7 @@ def mock_config():
         {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
         None,
     )
+    mock.get_tls.return_value = (False, None)
     return mock
 
 
@@ -91,12 +92,18 @@ def test_add_users_to_compose_config_error():
 
 
 @pytest.mark.parametrize(
-    "server,file", [("localhost", "users.local.yml"), ("foo.com", "users.server.yml")]
+    "server,tls,file",
+    [
+        ("localhost", False, "users.local.yml"),
+        ("localhost", True, "users.local.yml"),
+        ("foo.com", False, "users.server.yml"),
+        ("foo.com", True, "users.server.secure.yml"),
+    ],
 )
-def test_get_compose_config(mock_utils, server, file):
-    """Test getComposeConfig with resources parameter"""
+def test_get_compose_config(mock_utils, server, tls, file):
+    """Test getComposeConfig with resources parameter and TLS flag"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
-    config = {"server": server, "path": "/test", "resources": resources}
+    config = {"server": server, "path": "/test", "resources": resources, "tls": tls}
     _, _ = users.get_compose_config("testuser", config)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)

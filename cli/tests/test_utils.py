@@ -64,6 +64,7 @@ def test_import_toml():
             # absolute path to the DTaaS application directory
             "server-dns": "localhost",
             "path": "/home/Desktop/DTaaS",
+            "security": {"tls": False},
         },
         "users": {
             # matching user info must present in this config file
@@ -167,7 +168,7 @@ def test_import_toml_error():
     assert isinstance(err, Exception)
 
 
-def test_export_yaml_error(tmp_path):
+def test_export_yaml_error():
     """Test error handling when exporting to invalid path"""
     data = {"test": "data"}
     invalid_path = "/invalid/nonexistent/path/file.yml"

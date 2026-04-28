@@ -59,6 +59,12 @@ path = "/Users/username/DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
+[common.security]
+# Enable HTTPS/TLS for secure server deployment
+# Set the tls flag to false to use the insecure user.server.yml, it is True by default
+# so the 'user.server.secure.yml' will be used
+tls = true
+
 [common.resources]
 # Default resource limits applied when creating user workspace containers.
 # Keys:
@@ -80,7 +86,7 @@ shm_size = "512m"
 
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"] 
+add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 ...
 ```
