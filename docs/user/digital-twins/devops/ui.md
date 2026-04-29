@@ -5,6 +5,11 @@ a well established software development practice.
 An experimental feature integrating DevOps
 is being introduced in the DTaaS.
 
+The latest workflow recordings are available here:
+
+- [DTaaS DevOps workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
+- [Automation layer demo](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20260417_Automation-Layer-Demo.mp4)
+
 This feature requires specific installation setup.
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
@@ -44,16 +49,16 @@ appears on the left menu. Its configuration can be updated as well.
 
 These files on the left menu correspond to three categories.
 
-* **Description**: contains _README.md_ providing comprehensive
+- **Description**: contains _README.md_ providing comprehensive
   description of DT and _description.md_ providing a brief
   description. The brief description is shown in the DT tabs and
   clicking on the _Details_ button shows the complete README.md
   The _Details_ button is available only on the Manage page.
-* **Configuration**: Contains a _.gitlab-ci.yaml_ for running
+- **Configuration**: Contains a _.gitlab-ci.yaml_ for running
   the required lifecycle scripts and operations of the DT.
   Additional json and yaml files can be added to create configuration
   for a new DT.
-* **Lifecycle**: These are the DT lifecycle scripts.
+- **Lifecycle**: These are the DT lifecycle scripts.
 
 The _Add New File_ button can be used to add new files in all the three
 categories. Finally, click on _SAVE_ button to save the new DT.
@@ -66,9 +71,9 @@ Newly created DTs become immediately available on the **Manage** and
 
 The manage tab allows for different operations on a digital twin:
 
-* Checking the details (**Details** button)
-* Delete (**Delete** button)
-* Modify / Reconfigure (**Reconfigure** button)
+- Checking the details (**Details** button)
+- Delete (**Delete** button)
+- Modify / Reconfigure (**Reconfigure** button)
 
 A digital twin placed in the DTaaS has a certain recommended
 structure. See the
@@ -85,9 +90,9 @@ A reconfigure button opens an editor and shows all the files corresponding
 to a digital twin. All of these files can be updated. These files
 correspond to three categories.
 
-* **Description**
-* **Configuration**
-* **Lifecycle**
+- **Description**
+- **Configuration**
+- **Lifecycle**
 
 ![Digital Twin Reconfigure](images/dt_manage_reconfigure.png)
 

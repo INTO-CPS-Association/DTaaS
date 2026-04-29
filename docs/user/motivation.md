@@ -11,8 +11,9 @@ installation scenario.
 The following user-specific
 [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
 and
-[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
-provide the conceptual framework behind composable digital twins in the DTaaS platform.
+[conceptual presentation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
+provide the conceptual framework behind composable digital twins in the
+DTaaS platform.
 
 ## Motivation
 

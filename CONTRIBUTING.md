@@ -27,7 +27,7 @@ Docker-based development environment.
 
 Recommended toolchain versions:
 
-- Node.js 22
+- Node.js 24
 - Python 3.12
 
 ## Workflow
@@ -58,6 +58,36 @@ Coding agents are routinely used in this repository for activities such as:
 
 Repository-specific guidance for GitHub Copilot is provided in
 [.github/copilot-instructions.md](.github/copilot-instructions.md).
+
+Specialized reusable modes live in `.github/agents/*.agent.md`. Use these
+files for task-specific agent behavior, not for repository-wide defaults.
+Keep the always-on project guidance in `.github/copilot-instructions.md`.
+
+Each agent markdown file should:
+
+- declare `name` and `description` in YAML frontmatter,
+- include the trigger phrases in `description`,
+- stay focused on one workflow or domain.
+
+Examples in this repository include:
+
+- `.github/agents/plan.agent.md` for planning and architecture work,
+- `.github/agents/playwright-tester.agent.md` for browser exploration and
+  Playwright tests,
+- `.github/agents/expert-react-frontend-engineer.agent.md` for React client tasks.
+
+Minimal example:
+
+```md
+---
+name: "Playwright Tester"
+description: "Testing mode for Playwright tests"
+tools: ["search/codebase", "execute/runInTerminal"]
+---
+
+# Core Responsibilities
+Describe the testing workflow and boundaries for this mode.
+```
 
 When generated code contributes substantial logic, disclosure in the pull
 request description is expected.
