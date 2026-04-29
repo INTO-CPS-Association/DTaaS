@@ -78,7 +78,7 @@ def _load_oauth_apps_config() -> list[dict[str, Any]]:
         return json.load(f)
 
 
-def _build_apps_config(server_dns: str) -> list[OAuthAppConfig]:
+def _build_apps_config() -> list[OAuthAppConfig]:
     """Build OAuth app configurations from JSON config file.
 
     Args:
@@ -101,11 +101,10 @@ def _build_apps_config(server_dns: str) -> list[OAuthAppConfig]:
             raise KeyError(
                 f"Missing or empty 'redirect_uri' in OAuth app config entry: {app_data}"
             )
-        full_redirect_uri = f"https://{server_dns}/{redirect_uri}"
 
         config = OAuthAppConfig(
             name=app_data.get("name", ""),
-            redirect_uri=full_redirect_uri,
+            redirect_uri=redirect_uri,
             confidential=app_data.get("confidential", False),
             scopes=app_data.get("scopes", ""),
             trusted=app_data.get("trusted", False),
@@ -116,7 +115,6 @@ def _build_apps_config(server_dns: str) -> list[OAuthAppConfig]:
 
 
 def _build_server_and_client_app_configs(
-    server_dns: str,
 ) -> tuple[OAuthAppConfig, OAuthAppConfig]:
     """Build OAuth configs for both Server and Client Authorization apps.
 
@@ -131,7 +129,7 @@ def _build_server_and_client_app_configs(
     Raises:
         ValueError: If either app is not found in the config
     """
-    apps = _build_apps_config(server_dns)
+    apps = _build_apps_config()
     server_config = next((a for a in apps if "server" in a.name.lower()), None)
     client_config = next((a for a in apps if "client" in a.name.lower()), None)
 
@@ -187,8 +185,7 @@ def create_server_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Server Authorization OAuth application."""
-    server_dns = _get_server_dns()
-    server_config, _ = _build_server_and_client_app_configs(server_dns)
+    server_config, _ = _build_server_and_client_app_configs()
     logger.info("Creating '%s'...", server_config.name)
     return create_application(private_token, server_config)
 
@@ -197,8 +194,7 @@ def create_client_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Client Authorization OAuth application."""
-    server_dns = _get_server_dns()
-    _, client_config = _build_server_and_client_app_configs(server_dns)
+    _, client_config = _build_server_and_client_app_configs()
     logger.info("Creating '%s'...", client_config.name)
     return create_application(private_token, client_config)
 

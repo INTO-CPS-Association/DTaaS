@@ -64,7 +64,7 @@ def test_build_apps_config_missing_redirect_uri(mocker):
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=bad_data)
 
     with pytest.raises(KeyError, match="redirect_uri"):
-        app_token._build_apps_config(TEST_SERVER_DNS)
+        app_token._build_apps_config()
 
 
 def test_build_server_and_client_app_configs_missing_server(mocker):
@@ -73,7 +73,7 @@ def test_build_server_and_client_app_configs_missing_server(mocker):
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=client_only)
 
     with pytest.raises(ValueError, match="Server Authorization"):
-        app_token._build_server_and_client_app_configs(TEST_SERVER_DNS)
+        app_token._build_server_and_client_app_configs()
 
 
 def test_build_server_and_client_app_configs_missing_client(mocker):
@@ -82,7 +82,7 @@ def test_build_server_and_client_app_configs_missing_client(mocker):
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=server_only)
 
     with pytest.raises(ValueError, match="Client Authorization"):
-        app_token._build_server_and_client_app_configs(TEST_SERVER_DNS)
+        app_token._build_server_and_client_app_configs()
 
 
 def test_create_application_request_failure(mocker):
