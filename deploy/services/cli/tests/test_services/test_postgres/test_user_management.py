@@ -13,13 +13,15 @@ from dtaas_services.pkg.services.postgres.user_management import (
 USER_MODULE = "dtaas_services.pkg.services.postgres.user_management"
 # pylint: disable=W0621
 
-TEST_CONNINFO = [
-    "host=test.example.com",
-    "port=5432",
-    "user=dtaas_user",
-    "password=dtaas_secret", # noqa: S105 # NOSONAR
+_SECRET = "dtaas_secret"  # noqa: S105 # NOSONAR
+
+TEST_CONNINFO = (
+    "host=test.example.com "
+    "port=5432 "
+    "user=dtaas_user "
+    f"password={_SECRET} "
     "dbname=postgres"
-]
+)
 
 def test_get_conninfo_contains_config_values():
     """Connection info string contains values from config."""
