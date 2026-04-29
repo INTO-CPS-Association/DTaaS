@@ -5,6 +5,11 @@ a well established software development practice.
 An experimental feature integrating DevOps
 is being introduced in the DTaaS.
 
+The latest workflow recordings are available here:
+
+- [DTaaS DevOps workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
+- [Automation layer demo](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20260417_Automation-Layer-Demo.mp4)
+
 This feature requires specific installation setup.
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
