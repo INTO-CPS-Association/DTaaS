@@ -13,7 +13,7 @@ The following services can be installed:
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
 * **ThingsBoard** IoT device management and data visualization platform
-(with PostgreSQL backend)
+  (with PostgreSQL backend)
 * **GitLab** OAuth2 identity provider and Git repository service
 
 ## DTaaS Services CLI
@@ -23,11 +23,12 @@ InfluxDB, RabbitMQ, Grafana, ThingsBoard, and GitLab.
 
 ## Features
 
-* **Project Initialisation:** Generate project structure with config and data directories
+* **Project Initialisation:** Generate project structure with config
+  and data directories
 * **Automated Setup:** One command setup of TLS certificates and permissions
 * **Service Management:** Start, stop, and check status of all services
 * **User Management:** Easy creation of user accounts in InfluxDB,
-RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab
+  RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab
 * **Cross platform:** Works on Linux, macOS, and Windows
 * **Configuration-driven:** Reads settings from `config/services.env`
 
@@ -56,7 +57,7 @@ dtaas-services --help
 ## Quick Start
 
 1. Navigate to the desired setup location and generate the project
-structure:
+   structure:
 
    ```bash
    dtaas-services generate-project
@@ -290,9 +291,9 @@ automatically:
 After generating a services project, services may be operated manually with
 compose files:
 
-- `compose.services.yml`
-- `compose.thingsboard.yml`
-- `compose.gitlab.yml`
+* `compose.services.yml`
+* `compose.thingsboard.yml`
+* `compose.gitlab.yml`
 
 Start manually:
 

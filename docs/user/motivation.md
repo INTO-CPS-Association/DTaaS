@@ -12,7 +12,7 @@ The following user-specific
 [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
 and
 [conceptual presentation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
-provides the conceptual framework behind composable digital twins in the
+provide the conceptual framework behind composable digital twins in the
 DTaaS platform.
 
 ## Motivation

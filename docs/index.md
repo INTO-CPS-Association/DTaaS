@@ -19,6 +19,7 @@ and a short
 [introduction video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250603_DTaaS-short-intro_recorded_web.mp4).
 
 For the current DTaaS v1.0 interface and workflow, see
+<!-- markdownlint-disable MD013 -->
 ![DTaaS v1.0 user walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif){ width="960" }
 
 The full-resolution recording is also available as
