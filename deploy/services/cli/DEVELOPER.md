@@ -315,6 +315,28 @@ default: `https`)
 
 #### GitLab OAuth Application Configuration
 
+OAuth 2.0 application settings are loaded from a JSON config file at
+`config/gitlab_oauth.json`. This file is generated automatically by
+`dtaas-services generate-project` and can be edited to customise app
+registrations before running `dtaas-services install -s gitlab`.
+
+The filename can be overridden by setting the `OAUTH_APPS` environment
+variable to a different filename (looked up in `config/`).
+
+Each entry's `redirect_uri` is a **path relative to `HOSTNAME`** — the full
+URI becomes `https://{HOSTNAME}/{redirect_uri}`.
+
+The app named with `"server"` in its name is registered as the Traefik
+Forward-Auth app; the one with `"client"` is registered for the React client.
+
+| Field | Description |
+| --- | --- |
+| `name` | Display name shown in GitLab |
+| `redirect_uri` | Path relative to `HOSTNAME` |
+| `confidential` | `true` for server-side apps, `false` for browser clients |
+| `scopes` | Space-separated OAuth scopes |
+| `trusted` | `true` to skip user authorisation dialogs |
+
 The following OAuth 2.0 application settings are configurable for each GitLab
 client registration. These are used during `dtaas-services install -s gitlab`
 to create OAuth applications automatically.

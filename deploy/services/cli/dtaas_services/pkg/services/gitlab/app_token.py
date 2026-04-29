@@ -1,8 +1,10 @@
 """Create, list, and delete GitLab OAuth Application tokens."""
 
+import json
 import logging
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import gitlab
@@ -50,40 +52,95 @@ def _get_server_dns() -> str:
     return server_dns
 
 
-def _build_server_app_config(server_dns: str) -> OAuthAppConfig:
-    """Build the OAuth config for the DTaaS Server Authorization app."""
-    app_name = os.getenv("OAUTH_SERVER_APP_NAME", "DTaaS Server Authorization")
-    redirect_path = os.getenv("OAUTH_SERVER_REDIRECT_URI", "_oauth")
-    confidential = os.getenv("OAUTH_SERVER_CONFIDENTIAL", "true").lower() == "true"
-    scopes = os.getenv("OAUTH_SERVER_SCOPES", "read_user")
-    trusted = os.getenv("OAUTH_SERVER_TRUSTED_APP", "false").lower() == "true"
+def _load_oauth_apps_config() -> list[dict[str, Any]]:
+    """Load OAuth applications configuration from JSON file.
 
-    return OAuthAppConfig(
-        name=app_name,
-        redirect_uri=f"https://{server_dns}/{redirect_path}",
-        confidential=confidential,
-        scopes=scopes,
-        trusted=trusted,
-    )
+    Looks for the config file in the config/ directory.
+    The filename can be overridden via the OAUTH_APPS environment variable.
+
+    Returns:
+        List of OAuth application configurations
+
+    Raises:
+        FileNotFoundError: If config file is not found in config/
+        json.JSONDecodeError: If config file is invalid JSON
+    """
+    config_filename = os.getenv("OAUTH_APPS", "gitlab_oauth.json")
+    config_path = Path.cwd() / "config" / config_filename
+
+    if not config_path.exists():
+        raise FileNotFoundError(
+            f"OAuth config file not found: {config_path}\n"
+            "Please ensure the config file exists in the config/ directory."
+        )
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-def _build_client_app_config(server_dns: str) -> OAuthAppConfig:
-    """Build the OAuth config for the DTaaS Client Authorization app."""
-    app_name = os.getenv("OAUTH_CLIENT_APP_NAME", "DTaaS Client Authorization")
-    redirect_path = os.getenv("OAUTH_CLIENT_REDIRECT_URI", "Library")
-    confidential = os.getenv("OAUTH_CLIENT_CONFIDENTIAL", "false").lower() == "true"
-    scopes = os.getenv(
-        "OAUTH_CLIENT_SCOPES", "api openid profile read_repository read_user"
-    )
-    trusted = os.getenv("OAUTH_CLIENT_TRUSTED_APP", "true").lower() == "true"
+def _build_apps_config(server_dns: str) -> list[OAuthAppConfig]:
+    """Build OAuth app configurations from JSON config file.
 
-    return OAuthAppConfig(
-        name=app_name,
-        redirect_uri=f"https://{server_dns}/{redirect_path}",
-        confidential=confidential,
-        scopes=scopes,
-        trusted=trusted,
-    )
+    Args:
+        server_dns: Server hostname/DNS for constructing full redirect URIs
+
+    Returns:
+        List of OAuthAppConfig objects
+
+    Raises:
+        FileNotFoundError: If config file not found
+        json.JSONDecodeError: If config is invalid JSON
+        KeyError: If required fields missing in config
+    """
+    apps_data = _load_oauth_apps_config()
+    apps = []
+
+    for app_data in apps_data:
+        redirect_uri = app_data.get("redirect_uri")
+        if not redirect_uri:
+            raise KeyError(
+                f"Missing or empty 'redirect_uri' in OAuth app config entry: {app_data}"
+            )
+        full_redirect_uri = f"https://{server_dns}/{redirect_uri}"
+
+        config = OAuthAppConfig(
+            name=app_data.get("name", ""),
+            redirect_uri=full_redirect_uri,
+            confidential=app_data.get("confidential", False),
+            scopes=app_data.get("scopes", ""),
+            trusted=app_data.get("trusted", False),
+        )
+        apps.append(config)
+
+    return apps
+
+
+def _build_server_and_client_app_configs(
+    server_dns: str,
+) -> tuple[OAuthAppConfig, OAuthAppConfig]:
+    """Build OAuth configs for both Server and Client Authorization apps.
+
+    Reads gitlab_oauth.json once and returns both configs.
+
+    Args:
+        server_dns: Server hostname/DNS for constructing full redirect URIs
+
+    Returns:
+        Tuple of (server_config, client_config)
+
+    Raises:
+        ValueError: If either app is not found in the config
+    """
+    apps = _build_apps_config(server_dns)
+    server_config = next((a for a in apps if "server" in a.name.lower()), None)
+    client_config = next((a for a in apps if "client" in a.name.lower()), None)
+
+    if server_config is None:
+        raise ValueError("Server Authorization app not found in OAuth config")
+    if client_config is None:
+        raise ValueError("Client Authorization app not found in OAuth config")
+
+    return server_config, client_config
 
 
 def _to_result(app) -> OAuthAppResult:
@@ -131,9 +188,9 @@ def create_server_application(
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Server Authorization OAuth application."""
     server_dns = _get_server_dns()
-    config = _build_server_app_config(server_dns)
-    logger.info("Creating '%s'...", config.name)
-    return create_application(private_token, config)
+    server_config, _ = _build_server_and_client_app_configs(server_dns)
+    logger.info("Creating '%s'...", server_config.name)
+    return create_application(private_token, server_config)
 
 
 def create_client_application(
@@ -141,9 +198,9 @@ def create_client_application(
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Client Authorization OAuth application."""
     server_dns = _get_server_dns()
-    config = _build_client_app_config(server_dns)
-    logger.info("Creating '%s'...", config.name)
-    return create_application(private_token, config)
+    _, client_config = _build_server_and_client_app_configs(server_dns)
+    logger.info("Creating '%s'...", client_config.name)
+    return create_application(private_token, client_config)
 
 
 def list_all_applications(

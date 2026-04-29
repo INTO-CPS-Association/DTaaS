@@ -13,10 +13,13 @@ from dtaas_services.pkg.services.postgres.user_management import (
 USER_MODULE = "dtaas_services.pkg.services.postgres.user_management"
 # pylint: disable=W0621
 
-TEST_CONNINFO = (
-    "host=test.example.com port=5432 user=dtaas_user password=dtaas_secret dbname=postgres" # noqa: S105 # NOSONAR
-)
-
+TEST_CONNINFO = [
+    "host=test.example.com",
+    "port=5432",
+    "user=dtaas_user",
+    "password=dtaas_secret", # noqa: S105 # NOSONAR
+    "dbname=postgres"
+]
 
 def test_get_conninfo_contains_config_values():
     """Connection info string contains values from config."""
@@ -29,7 +32,9 @@ def test_get_conninfo_contains_config_values():
 def test_execute_ddl_success(mocker):
     """Successful DDL execution returns (True, '')."""
     mock_conn = MagicMock()
-    mocker.patch(f"{USER_MODULE}.psycopg.connect", return_value=mock_conn.__enter__.return_value)
+    mocker.patch(
+        f"{USER_MODULE}.psycopg.connect", return_value=mock_conn.__enter__.return_value
+    )
     with patch(f"{USER_MODULE}.psycopg.connect") as mock_connect:
         mock_connect.return_value.__enter__.return_value = mock_conn
         ok, err = _execute_ddl(TEST_CONNINFO, MagicMock())
@@ -38,7 +43,7 @@ def test_execute_ddl_success(mocker):
     mock_connect.assert_called_once_with(TEST_CONNINFO, autocommit=True)
 
 
-def test_execute_ddl_duplicate_role_is_ok(mocker):
+def test_execute_ddl_duplicate_role_is_ok():
     """DuplicateObject (role already exists) is treated as success."""
     with patch(f"{USER_MODULE}.psycopg.connect") as mock_connect:
         mock_conn = MagicMock()
@@ -48,7 +53,7 @@ def test_execute_ddl_duplicate_role_is_ok(mocker):
     assert ok is True
 
 
-def test_execute_ddl_duplicate_db_is_ok(mocker):
+def test_execute_ddl_duplicate_db_is_ok():
     """DuplicateDatabase (database already exists) is treated as success."""
     with patch(f"{USER_MODULE}.psycopg.connect") as mock_connect:
         mock_conn = MagicMock()
@@ -58,7 +63,7 @@ def test_execute_ddl_duplicate_db_is_ok(mocker):
     assert ok is True
 
 
-def test_execute_ddl_connection_error(mocker):
+def test_execute_ddl_connection_error():
     """Unexpected exception returns (False, message)."""
     with patch(f"{USER_MODULE}.psycopg.connect") as mock_connect:
         mock_connect.side_effect = Exception("connection refused")

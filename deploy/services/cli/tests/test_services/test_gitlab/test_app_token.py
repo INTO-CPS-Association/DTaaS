@@ -1,5 +1,6 @@
 """Tests for GitLab OAuth application token management (app_token.py)."""
 
+import json
 from unittest.mock import Mock, MagicMock
 import pytest
 from gitlab.exceptions import GitlabError
@@ -9,12 +10,79 @@ from dtaas_services.pkg.services.gitlab import app_token
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
 TEST_SERVER_DNS = "intocps.org"
 
+MOCK_OAUTH_JSON = [
+    {
+        "name": "DTaaS Server Authorization",
+        "redirect_uri": "_oauth",
+        "confidential": True,
+        "scopes": "read_user",
+        "trusted": False,
+    },
+    {
+        "name": "DTaaS Client Authorization",
+        "redirect_uri": "Library",
+        "confidential": False,
+        "scopes": "api openid profile read_repository read_user",
+        "trusted": True,
+    },
+]
+
 
 def test_get_server_dns_missing(monkeypatch):
     """Test RuntimeError when HOSTNAME is not set."""
     monkeypatch.delenv("HOSTNAME", raising=False)
     with pytest.raises(RuntimeError, match="HOSTNAME"):
         app_token._get_server_dns()
+
+
+def test_load_oauth_apps_config_success(tmp_path, monkeypatch):
+    """Test loading config from the default filename."""
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / "gitlab_oauth.json").write_text(json.dumps(MOCK_OAUTH_JSON))
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("OAUTH_APPS", raising=False)
+
+    result = app_token._load_oauth_apps_config()
+    assert len(result) == 2
+    assert result[0]["name"] == "DTaaS Server Authorization"
+
+
+def test_load_oauth_apps_config_missing_file(tmp_path, monkeypatch):
+    """Test FileNotFoundError when config file is absent."""
+    (tmp_path / "config").mkdir()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("OAUTH_APPS", raising=False)
+
+    with pytest.raises(FileNotFoundError, match="gitlab_oauth.json"):
+        app_token._load_oauth_apps_config()
+
+
+def test_build_apps_config_missing_redirect_uri(mocker):
+    """Test KeyError when redirect_uri is missing from an entry."""
+    bad_data = [{"name": "Broken App", "confidential": False, "scopes": "api"}]
+    mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=bad_data)
+
+    with pytest.raises(KeyError, match="redirect_uri"):
+        app_token._build_apps_config(TEST_SERVER_DNS)
+
+
+def test_build_server_and_client_app_configs_missing_server(mocker):
+    """Test ValueError when no server app is in the config."""
+    client_only = [MOCK_OAUTH_JSON[1]]
+    mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=client_only)
+
+    with pytest.raises(ValueError, match="Server Authorization"):
+        app_token._build_server_and_client_app_configs(TEST_SERVER_DNS)
+
+
+def test_build_server_and_client_app_configs_missing_client(mocker):
+    """Test ValueError when no client app is in the config."""
+    server_only = [MOCK_OAUTH_JSON[0]]
+    mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=server_only)
+
+    with pytest.raises(ValueError, match="Client Authorization"):
+        app_token._build_server_and_client_app_configs(TEST_SERVER_DNS)
 
 
 def test_create_application_request_failure(mocker):
@@ -34,20 +102,31 @@ def test_create_application_request_failure(mocker):
     assert "connection refused" in error
 
 
+def _mock_gitlab_app(app_id, name, client_id, secret):
+    mock_app = Mock()
+    mock_app.id = app_id
+    mock_app.application_name = name
+    mock_app.application_id = client_id
+    mock_app.secret = secret
+    return mock_app
+
+
 def test_create_server_application_success(monkeypatch, mocker):
     """Test creating the server OAuth app."""
     monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
+    mocker.patch.object(
+        app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
+    )
+
     mock_gl = MagicMock()
-    mock_app = Mock()
-    mock_app.id = 1
-    mock_app.application_name = "DTaaS Server Authorization"
-    mock_app.application_id = "s-cid"
-    mock_app.secret = "s-sec"
-    mock_gl.applications.create.return_value = mock_app
+    mock_gl.applications.create.return_value = _mock_gitlab_app(
+        1, "DTaaS Server Authorization", "s-cid", "s-sec"
+    )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
         return_value=mock_gl,
     )
+
     success, result, _ = app_token.create_server_application(TEST_TOKEN)
     assert success is True
     assert result is not None
@@ -57,17 +136,19 @@ def test_create_server_application_success(monkeypatch, mocker):
 def test_create_client_application_success(monkeypatch, mocker):
     """Test creating the client OAuth app."""
     monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
+    mocker.patch.object(
+        app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
+    )
+
     mock_gl = MagicMock()
-    mock_app = Mock()
-    mock_app.id = 2
-    mock_app.application_name = "DTaaS Client Authorization"
-    mock_app.application_id = "c-cid"
-    mock_app.secret = "c-sec"
-    mock_gl.applications.create.return_value = mock_app
+    mock_gl.applications.create.return_value = _mock_gitlab_app(
+        2, "DTaaS Client Authorization", "c-cid", "c-sec"
+    )
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
         return_value=mock_gl,
     )
+
     success, result, _ = app_token.create_client_application(TEST_TOKEN)
     assert success is True
     assert result is not None
