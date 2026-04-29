@@ -8,19 +8,18 @@ from dtaas_services.pkg.services.gitlab import app_token
 # pylint: disable=W0212
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-TEST_SERVER_DNS = "intocps.org"
 
 MOCK_OAUTH_JSON = [
     {
         "name": "DTaaS Server Authorization",
-        "redirect_uri": "_oauth",
+        "redirect_uri": "https://services.intocps.org/_oauth",
         "confidential": True,
         "scopes": "read_user",
         "trusted": False,
     },
     {
         "name": "DTaaS Client Authorization",
-        "redirect_uri": "Library",
+        "redirect_uri": "https://services.intocps.org/Library",
         "confidential": False,
         "scopes": "api openid profile read_repository read_user",
         "trusted": True,
@@ -94,7 +93,10 @@ def test_create_application_request_failure(mocker):
         return_value=mock_gl,
     )
     config = app_token.OAuthAppConfig(
-        name="MyApp", redirect_uri="https://x", confidential=True, scopes="api"
+        name="MyApp",
+        redirect_uri="https://services.intocps.org/callback",
+        confidential=True,
+        scopes="api",
     )
     success, result, error = app_token.create_application(TEST_TOKEN, config)
     assert success is False
@@ -111,9 +113,8 @@ def _mock_gitlab_app(app_id, name, client_id, secret):
     return mock_app
 
 
-def test_create_server_application_success(monkeypatch, mocker):
+def test_create_server_application_success(mocker):
     """Test creating the server OAuth app."""
-    monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
     mocker.patch.object(
         app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
     )
@@ -133,9 +134,8 @@ def test_create_server_application_success(monkeypatch, mocker):
     assert result.client_id == "s-cid"
 
 
-def test_create_client_application_success(monkeypatch, mocker):
+def test_create_client_application_success(mocker):
     """Test creating the client OAuth app."""
-    monkeypatch.setenv("HOSTNAME", TEST_SERVER_DNS)
     mocker.patch.object(
         app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
     )

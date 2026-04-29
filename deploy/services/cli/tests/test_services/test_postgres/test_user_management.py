@@ -23,6 +23,7 @@ TEST_CONNINFO = (
     "dbname=postgres"
 )
 
+
 def test_get_conninfo_contains_config_values():
     """Connection info string contains values from config."""
     conninfo = _get_conninfo()

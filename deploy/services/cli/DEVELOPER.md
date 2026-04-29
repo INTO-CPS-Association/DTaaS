@@ -323,20 +323,16 @@ registrations before running `dtaas-services install -s gitlab`.
 The filename can be overridden by setting the `OAUTH_APPS` environment
 variable to a different filename (looked up in `config/`).
 
-Each entry's `redirect_uri` is a **path relative to `HOSTNAME`** — the full
-URI becomes `https://{HOSTNAME}/{redirect_uri}`.
-
-The app named with `"server"` in its name is registered as the Traefik
-Forward-Auth app; the one with `"client"` is registered for the React client.
+Each entry's `redirect_uri` is the **full callback URL** registered with GitLab
 
 | Field | Description |
+
 | --- | --- |
 | `name` | Display name shown in GitLab |
-| `redirect_uri` | Path relative to `HOSTNAME` |
+| `redirect_uri` | Full callback URL (e.g. `https://into-cps.org/_oauth`) |
 | `confidential` | `true` for server-side apps, `false` for browser clients |
 | `scopes` | Space-separated OAuth scopes |
 | `trusted` | `true` to skip user authorisation dialogs |
-
 The following OAuth 2.0 application settings are configurable for each GitLab
 client registration. These are used during `dtaas-services install -s gitlab`
 to create OAuth applications automatically.
