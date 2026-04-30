@@ -88,8 +88,8 @@ def create_user_files(users, file_path):
                     shutil.chown(os.path.join(root, d), user=1000, group=100)
                 for f in files:
                     shutil.chown(os.path.join(root, f), user=1000, group=100)
-        except AttributeError:
-            # os.chown not available on Windows, skip in tests
+        except (AttributeError, PermissionError):
+            # Skip os.chown in tests
             pass
     return None
 
