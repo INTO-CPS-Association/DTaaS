@@ -128,6 +128,7 @@ nav:
           - DevOps: developer/technical-concepts/gitlab.md
           - Testing: developer/technical-concepts/testing.md
       - Codebase:
+          - Overview: developer/codebase/index.md
           - Client: developer/codebase/client.md
           - DevOps Framework: developer/codebase/devops.md
           - Client DevOps Integration: developer/codebase/client-devops.md

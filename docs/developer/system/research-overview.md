@@ -116,6 +116,11 @@ details. The platform supports two execution modes: continuous
 (long-running services) and one-off (batch analysis jobs), both
 managed through GitLab CI/CD pipelines.
 
+Related recordings:
+
+- [DTaaS DevOps workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
+- [DTaaS and DevOps](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_DTaaS-and-DevOps.mp4)
+
 ![Federated DTaaS](research-overview/federated-dtaas.png)
 
 The federation extension enables multiple DTaaS instances to
@@ -123,6 +128,10 @@ collaborate by discovering and reusing assets across organisational
 boundaries. Federated digital twins can be organised as composites
 (assembled from assets on different instances), fleets (coordinated
 groups), or hierarchies (parent-child relationships).
+
+Related recording:
+
+- [Federated DTaaS video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_Federated-DTaaS.mp4)
 
 ![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS.png)
 
