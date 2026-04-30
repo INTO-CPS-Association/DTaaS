@@ -42,7 +42,7 @@ configuration file is given here.
 # This is the config for DTaaS CLI
 
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.1"
+version = "0.2.2"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 

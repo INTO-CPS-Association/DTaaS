@@ -1,5 +1,6 @@
 """This file has functions that handle the user cli commands"""
 
+import os
 import subprocess
 import shutil
 from src.pkg import utils
@@ -58,7 +59,7 @@ def get_compose_config(username, config):
         Tuple of (user config dict, error if any)
     """
     try:
-        template, err = _load_template(config["server"], config.get("tls", False))
+        template, err = _load_template(config["server"], config.get("tls"))
         utils.check_error(err)
         user_config = {
             "username": username,
@@ -78,9 +79,19 @@ def get_compose_config(username, config):
 def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
-        shutil.copytree(
-            file_path + "/template", file_path + "/" + username, dirs_exist_ok=True
-        )
+        user_dir = file_path + "/" + username
+        shutil.copytree(file_path + "/template", user_dir, dirs_exist_ok=True)
+        try:
+            shutil.chown(user_dir, user=1000, group=100)
+            for root, dirs, files in os.walk(user_dir):
+                for d in dirs:
+                    shutil.chown(os.path.join(root, d), user=1000, group=100)
+                for f in files:
+                    shutil.chown(os.path.join(root, f), user=1000, group=100)
+        except AttributeError:
+            # os.chown not available on Windows, skip in tests
+            pass
+    return None
 
 
 def add_users_to_compose(users, compose, config):
