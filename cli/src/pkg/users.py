@@ -4,6 +4,7 @@ import os
 import subprocess
 import shutil
 from src.pkg import utils
+from pathlib import Path
 from src.pkg.constants import COMPOSE_USERS_YML
 
 
@@ -78,17 +79,14 @@ def get_compose_config(username, config):
 def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
-        user_dir = file_path + "/" + username
+        user_dir = Path(file_path) / username
         shutil.copytree(file_path + "/template", user_dir, dirs_exist_ok=True)
         try:
             shutil.chown(user_dir, user=1000, group=100)
-            for root, dirs, files in os.walk(user_dir):
-                for d in dirs:
-                    shutil.chown(os.path.join(root, d), user=1000, group=100)
-                for f in files:
-                    shutil.chown(os.path.join(root, f), user=1000, group=100)
+            for item in user_dir.rglob("*"):
+                shutil.chown(item, user=1000, group=100)
         except (AttributeError, PermissionError):
-            # Skip os.chown in tests
+            # Skip os.chown in tests to avoid PermissionError
             pass
     return None
 
