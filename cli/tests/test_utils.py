@@ -12,7 +12,7 @@ def test_import_yaml_users():
             "${DTAAS_DIR}/files/common:/workspace/common",
             "${DTAAS_DIR}/files/${username}:/workspace",
         ],
-        "environment": ["AUTHENTICATE_VIA_JUPYTER=", "WORKSPACE_BASE_URL=${username}"],
+        "environment": ["MAIN_USER=${username}"],
         "shm_size": "${shm_size}",
         "cpus": "${cpus}",
         "mem_limit": "${mem_limit}",
@@ -20,8 +20,8 @@ def test_import_yaml_users():
         "labels": [
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
-            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS:-localhost}`)\n&& PathPrefix(`/${username}`)",
             "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
+            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS:-localhost}`)\n&& PathPrefix(`/${username}`)",  # 👈 moved down
         ],
         "networks": ["users"],
     }
