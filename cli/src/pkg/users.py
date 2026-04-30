@@ -34,15 +34,14 @@ def _load_template(server, tls):
     """Load the appropriate template based on server type and TLS.
 
     Args:
-        server: Server DNS name or 'localhost'
+        server: Server DNS name (not 'localhost')
         tls: Whether to use TLS/secure template
 
     Returns:
         Tuple of (template dict, error if any)
     """
     if server == utils.LOCALHOST_SERVER:
-        return utils.import_yaml("users.local.yml")
-    # For server deployments, choose based on TLS flag
+        return None, Exception("user add is not supported for localhost installations")
     if tls:
         return utils.import_yaml("users.server.secure.yml")
     return utils.import_yaml("users.server.yml")

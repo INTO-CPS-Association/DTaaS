@@ -21,7 +21,7 @@ def test_import_yaml_users():
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
             "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
-            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS:-localhost}`)\n&& PathPrefix(`/${username}`)",  # 👈 moved down
+            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`) && PathPrefix(`/${username}`)",
         ],
         "networks": ["users"],
     }

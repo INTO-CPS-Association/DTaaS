@@ -14,7 +14,7 @@ def mock_config():
     mock = MagicMock()
     mock.get_add_users_list.return_value = (["user1"], None)
     mock.get_delete_users_list.return_value = (["user1"], None)
-    mock.get_server_dns.return_value = ("localhost", None)
+    mock.get_server_dns.return_value = ("foo.example.com", None)
     mock.get_path.return_value = ("/test/path", None)
     mock.get_resource_limits.return_value = (
         {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
@@ -73,7 +73,12 @@ def test_create_user_files_already_exists(temp_dir_with_template):
 def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
-    config = {"server": "localhost", "path": "/test", "resources": resources}
+    config = {
+        "server": "foo.com",
+        "path": "/test",
+        "resources": resources,
+        "tls": False,
+    }
 
     users.add_users_to_compose(["user1", "user2", "user3"], {"services": {}}, config)
     assert mock_utils["replace"].call_count == 3
@@ -94,8 +99,6 @@ def test_add_users_to_compose_config_error():
 @pytest.mark.parametrize(
     "server,tls,file",
     [
-        ("localhost", False, "users.local.yml"),
-        ("localhost", True, "users.local.yml"),
         ("foo.com", False, "users.server.yml"),
         ("foo.com", True, "users.server.secure.yml"),
     ],
