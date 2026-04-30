@@ -81,17 +81,19 @@ def _load_oauth_apps_config() -> list[dict[str, Any]]:
 def _build_apps_config() -> list[OAuthAppConfig]:
     """Build OAuth app configurations from JSON config file.
 
-    Args:
-        server_dns: Server hostname/DNS for constructing full redirect URIs
+    Reads the config and expands the ``${HOSTNAME}`` placeholder in each
+    ``redirect_uri`` using the value of the ``HOSTNAME`` environment variable.
 
     Returns:
         List of OAuthAppConfig objects
 
     Raises:
+        RuntimeError: If HOSTNAME is not set
         FileNotFoundError: If config file not found
         json.JSONDecodeError: If config is invalid JSON
         KeyError: If required fields missing in config
     """
+    server_dns = _get_server_dns()
     apps_data = _load_oauth_apps_config()
     apps = []
 
@@ -104,7 +106,7 @@ def _build_apps_config() -> list[OAuthAppConfig]:
 
         config = OAuthAppConfig(
             name=app_data.get("name", ""),
-            redirect_uri=redirect_uri,
+            redirect_uri=redirect_uri.replace("${HOSTNAME}", server_dns),
             confidential=app_data.get("confidential", False),
             scopes=app_data.get("scopes", ""),
             trusted=app_data.get("trusted", False),
@@ -119,9 +121,6 @@ def _build_server_and_client_app_configs(
     """Build OAuth configs for both Server and Client Authorization apps.
 
     Reads gitlab_oauth.json once and returns both configs.
-
-    Args:
-        server_dns: Server hostname/DNS for constructing full redirect URIs
 
     Returns:
         Tuple of (server_config, client_config)

@@ -9,17 +9,19 @@ from dtaas_services.pkg.services.gitlab import app_token
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
 
+TEST_HOSTNAME = "test.example.com"
+
 MOCK_OAUTH_JSON = [
     {
         "name": "DTaaS Server Authorization",
-        "redirect_uri": "https://services.intocps.org/_oauth",
+        "redirect_uri": "https://${HOSTNAME}/_oauth",
         "confidential": True,
         "scopes": "read_user",
         "trusted": False,
     },
     {
         "name": "DTaaS Client Authorization",
-        "redirect_uri": "https://services.intocps.org/Library",
+        "redirect_uri": "https://${HOSTNAME}/Library",
         "confidential": False,
         "scopes": "api openid profile read_repository read_user",
         "trusted": True,
@@ -57,8 +59,9 @@ def test_load_oauth_apps_config_missing_file(tmp_path, monkeypatch):
         app_token._load_oauth_apps_config()
 
 
-def test_build_apps_config_missing_redirect_uri(mocker):
+def test_build_apps_config_missing_redirect_uri(mocker, monkeypatch):
     """Test KeyError when redirect_uri is missing from an entry."""
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     bad_data = [{"name": "Broken App", "confidential": False, "scopes": "api"}]
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=bad_data)
 
@@ -66,8 +69,9 @@ def test_build_apps_config_missing_redirect_uri(mocker):
         app_token._build_apps_config()
 
 
-def test_build_server_and_client_app_configs_missing_server(mocker):
+def test_build_server_and_client_app_configs_missing_server(mocker, monkeypatch):
     """Test ValueError when no server app is in the config."""
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     client_only = [MOCK_OAUTH_JSON[1]]
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=client_only)
 
@@ -75,8 +79,9 @@ def test_build_server_and_client_app_configs_missing_server(mocker):
         app_token._build_server_and_client_app_configs()
 
 
-def test_build_server_and_client_app_configs_missing_client(mocker):
+def test_build_server_and_client_app_configs_missing_client(mocker, monkeypatch):
     """Test ValueError when no client app is in the config."""
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     server_only = [MOCK_OAUTH_JSON[0]]
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=server_only)
 
@@ -113,8 +118,9 @@ def _mock_gitlab_app(app_id, name, client_id, secret):
     return mock_app
 
 
-def test_create_server_application_success(mocker):
+def test_create_server_application_success(mocker, monkeypatch):
     """Test creating the server OAuth app."""
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     mocker.patch.object(
         app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
     )
@@ -134,8 +140,9 @@ def test_create_server_application_success(mocker):
     assert result.client_id == "s-cid"
 
 
-def test_create_client_application_success(mocker):
+def test_create_client_application_success(mocker, monkeypatch):
     """Test creating the client OAuth app."""
+    monkeypatch.setenv("HOSTNAME", TEST_HOSTNAME)
     mocker.patch.object(
         app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
     )

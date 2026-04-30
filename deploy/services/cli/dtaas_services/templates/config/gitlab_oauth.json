@@ -1,14 +1,14 @@
 [
   {
     "name": "DTaaS Server Authorization",
-    "redirect_uri": "https://services.intocps.org/_oauth",
+    "redirect_uri": "https://${HOSTNAME}/_oauth",
     "confidential": true,
     "scopes": "read_user",
-    "trusted": false
+    "trusted": true
   },
   {
     "name": "DTaaS Client Authorization",
-    "redirect_uri": "https://services.intocps.org/Library",
+    "redirect_uri": "https://${HOSTNAME}/Library",
     "confidential": false,
     "scopes": "api openid profile read_repository read_user",
     "trusted": true
