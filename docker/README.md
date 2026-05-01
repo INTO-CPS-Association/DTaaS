@@ -52,6 +52,8 @@ to build the required images locally on their computers for use during
 development. The images can be built using
 
 ```sh
+cp .env.example .env
+cp conf.dev.example conf.dev
 docker compose build
 ```
 
