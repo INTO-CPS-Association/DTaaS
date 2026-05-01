@@ -11,6 +11,7 @@ execution, and sharing of digital twins (DTs).
 
 ![DTaaS demonstration video showing the platform interface](docs/user/dtaas-user_4x.gif)
 
+Watch the walkthrough as [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.mp4).
 See demos in [playlist](docs/playlist.md).
 
 ## Installation and Use

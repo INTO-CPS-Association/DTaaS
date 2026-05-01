@@ -10,8 +10,8 @@ The following steps should be performed:
 
 **2. Remove backend authorisation for the user:**
 
-- Navigate to the installation directory. For example, if the user need
-  to be added in secure server installation,
+- Navigate to the installation directory. For example, if the user needs
+  to be removed from a secure-server installation,
 
   ```bash
   cd <DTaaS>/deploy/dtaas/docker/secure-server

@@ -26,7 +26,7 @@ should run behind Traefik at `https://<SERVER_DNS>/gitlab`.
 
 ## Option B: Services CLI GitLab Workflow
 
-![Integrated GitLab Install](gitlab-independent-install.png)
+![Services CLI GitLab Install](gitlab-independent-install.png)
 
 Use `deploy/services/cli` if GitLab is managed as part of the platform
 services project.
