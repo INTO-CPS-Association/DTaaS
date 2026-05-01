@@ -48,7 +48,7 @@ def format_unresolved_files(unresolved_files: list[Path], docs_dir: Path) -> str
     return "\n".join(lines)
 
 
-def on_pre_build(config, **unused_kwargs) -> None:
+def on_pre_build(config) -> None:
     """Abort builds that would copy unresolved Git LFS pointers into the site."""
     docs_dir = Path(config.docs_dir)
     docs_dir_pattern = f"{docs_dir.name}/**"
