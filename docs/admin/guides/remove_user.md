@@ -10,10 +10,11 @@ The following steps should be performed:
 
 **2. Remove backend authorisation for the user:**
 
-- Navigate to the secure server package directory
+- Navigate to the installation directory. For example, if the user need
+  to be added in secure server installation,
 
   ```bash
-  cd <DTaaS>/deploy/dtaas/docker/server
+  cd <DTaaS>/deploy/dtaas/docker/secure-server
   ```
 
 - Remove these three lines from `config/conf.server`

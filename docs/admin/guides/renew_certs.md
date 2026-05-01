@@ -18,13 +18,13 @@ sudo certbot renew
 
 ## Step 2: Deploy to DTaaS server package
 
-For the server package (`deploy/dtaas/docker/server`):
+For the secure server package (`deploy/dtaas/docker/secure-server`):
 
 ```bash
 sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem \
-  /path/to/DTaaS/deploy/dtaas/docker/server/certs/fullchain.pem
+  /path/to/DTaaS/deploy/dtaas/docker/secure-server/certs/fullchain.pem
 sudo cp /etc/letsencrypt/live/your-domain.com/privkey.pem \
-  /path/to/DTaaS/deploy/dtaas/docker/server/certs/privkey.pem
+  /path/to/DTaaS/deploy/dtaas/docker/secure-server/certs/privkey.pem
 ```
 
 For the integrated package (`deploy/dtaas/docker/secure-server_with_integrated-gitlab`):
@@ -41,11 +41,11 @@ sudo cp /etc/letsencrypt/live/your-domain.com/privkey.pem \
 Server package:
 
 ```bash
-cd /path/to/DTaaS/deploy/dtaas/docker/server
+cd /path/to/DTaaS/deploy/dtaas/docker/secure-server
 docker compose --env-file config/.env up -d --force-recreate traefik
 ```
 
-Integrated package:
+Integrated GitLab package:
 
 ```bash
 cd /path/to/DTaaS/deploy/dtaas/docker/secure-server_with_integrated-gitlab

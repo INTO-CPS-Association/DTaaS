@@ -110,7 +110,7 @@ sudo chown -R 1000:100 files/*
 
 ### 1.6 Create the Portainer Stack
 
-![Portainer Stacks](./portainer_stacks.png)
+![Portainer Stacks](dtaas-stack-create.png)
 
 1. Navigate to **Stacks** and click **Add Stack**.
 1. Name the stack, for example `dtaas-localhost`.
@@ -123,9 +123,10 @@ sudo chown -R 1000:100 files/*
     If the `.env` file is not visible, select **All Files** in the
     file explorer dialog.
 
-![Portainer ENV Editor](./portainer_env.PNG)
+Click **Deploy the stack**. A new stack with this name gets created.
+It has the following view.
 
-Click **Deploy the stack**.
+![Portainer DTaaS Stack](portainer-dtaas-stack.png)
 
 ### 1.7 Use
 

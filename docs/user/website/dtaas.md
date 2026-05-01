@@ -2,8 +2,13 @@
 
 This page provides a screenshot-driven preview of the website serving
 the DTaaS software platform.
+The `https://intocps.org` is used in this tutorial as an illustration
+for base URL of the installation. Do replace it with
+the correct URL of the installation.
 
 ## Visit the DTaaS Installation
+
+> **URL**: `https://intocps.org` (specified in `config/client.js` file)
 
 Navigation begins by visiting the website
 of the DTaaS instance for which the user is registered.
@@ -11,6 +16,8 @@ of the DTaaS instance for which the user is registered.
 ![Visit the URL](images/visit-dtaas-1.png)
 
 ## Redirected to Authorization Provider
+
+> **URL**: `https://gitlab.com/xxxx` (specified in `config/.env` file)
 
 The browser redirects to the GitLab
 Authorization page for the DTaaS.
@@ -26,6 +33,8 @@ Application page.
 
 ## Permit DTaaS Server to Use GitLab
 
+> **URL**: `https://gitlab.com/xxxx`
+
 ![Server Auth Permission](images/gitlab-auth-2.png)
 
 Clicking on Authorize permits the OAuth 2.0
@@ -35,6 +44,8 @@ is a required step.
 
 After successful authentication, redirection to the login page
 of the DTaaS website occurs.
+
+> **URL**: `https://intocps.org`
 
 The DTaaS website employs
 an additional layer of security -
@@ -54,6 +65,8 @@ has occurred.
 
 ## Permit DTaaS Website to Use GitLab
 
+> **URL**: `https://gitlab.com/xxxx`
+
 The DTaaS website requires permission to use the GitLab account for
 authorization. The **Authorize** button must be clicked.
 
@@ -62,9 +75,13 @@ authorization. The **Authorize** button must be clicked.
 After successful authorization, redirection to the **Library**
 page of the DTaaS website occurs.
 
-Two icons are located on the top-right of the webpage. The hyperlink on
-the **question mark icon** redirects to the help page, while the hyperlink on
+> **URL**: `https://intocps.org/library/xxxx`
+
+Three icons are located on the top-right of the webpage. The hyperlink on
+the :question: icon redirects to the help page, while the hyperlink on
 the **github icon** redirects to the GitHub code repository.
+The **Account** using the top-right purple 🅰️ icon provides options to
+[change settings](settings.md) and logout.
 
 ## Check Website Access
 
@@ -77,7 +94,7 @@ indicates a correctly configured application.
 ## Menu Items
 
 The menu is hidden by default. Only the icons of menu items are visible.
-Clicking on the :octicons-three-bars-16: icon in the top-left corner
+Clicking on the **three horizontal bars** icon in the top-left corner
 of the page reveals the menu.
 
 ![Menu](images/menu.png)
@@ -168,6 +185,8 @@ performed here.
 
 ## Digital Twins Page
 
+> **URL**: `https://intocps.org/digitaltwins`
+
 ![Menu](images/digital_twins.png)
 
 The digital twins page contains three tabs, and the central pane opens Jupyter Lab.
@@ -211,17 +230,20 @@ files with external git repositories.
 
 ## Workbench
 
-The **workbench** page provides links to four integrated tools:
+> **URL**: `https://intocps.org/workbench`
+
+The **workbench** page provides links to six integrated tools:
 
 * Desktop
 * VS Code
 * Jupyter Lab
 * Jupyter Notebook
+* Library page preview
+* Digital Twins page preview
 
 ![Workbench](images/workbench.png)
 
-Screenshots of the pages opened
-in new browsers are shown:
+Screenshots of the pages opened by clicking on first four icons are shown:
 
 ![Workbench Tools](images/workbench_tools.png)
 
@@ -234,6 +256,8 @@ composable digital twins.
 * Digital Twins Page Preview
 
 ### Library Preview Page
+
+> **URL**: `https://intocps.org/preview/library`
 
 This page has the same philosophy of [Library page](#library-page) and provides
 similar user interface.
@@ -249,6 +273,8 @@ the required library assets.
 Upon clicking **Proceed** button, the digital twins create tab is opened.
 
 ## Digital Twins Preview Page
+
+> **URL**: `https://intocps.org/preview/digitaltwins`
 
 The **Digital Twins Preview Page** provides means of managing digital twins
 using the DevOps methodology. This page has three tabs, namely **Create**,

@@ -7,6 +7,8 @@ DTaaS currently supports local GitLab installation using either:
 
 ## Option A: Integrated DTaaS Package
 
+![Integrated GitLab Install](gitlab-integrated-install.png)
+
 Use `deploy/dtaas/docker/secure-server_with_integrated-gitlab` when GitLab
 should run behind Traefik at `https://<SERVER_DNS>/gitlab`.
 
@@ -23,6 +25,8 @@ should run behind Traefik at `https://<SERVER_DNS>/gitlab`.
 5. Continue with [integration guide](integration.md).
 
 ## Option B: Services CLI GitLab Workflow
+
+![Integrated GitLab Install](gitlab-independent-install.png)
 
 Use `deploy/services/cli` if GitLab is managed as part of the platform
 services project.

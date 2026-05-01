@@ -18,10 +18,11 @@ This brings up the containers without backend authorisation.
 
 **3. Add backend authorisation for the user:**
 
-- Navigate to the secure server package directory
+- Navigate to the installation directory. For example, if the user need
+  to be added in secure server installation,
 
   ```bash
-  cd <DTaaS>/deploy/dtaas/docker/server
+  cd <DTaaS>/deploy/dtaas/docker/secure-server
   ```
 
 - Add three lines to `config/conf.server`

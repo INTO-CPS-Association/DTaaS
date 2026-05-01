@@ -6,8 +6,8 @@ tooling.
 
 ![Current development status](current-status-developer.png)
 
-A C4 representation is also available at
-[current-status-developer-c4.png](current-status-developer-c4.png).
+A more detailed C4 architectural representation is
+![current-status-developer-c4.png](current-status-developer-c4.png).
 
 ## Platform Snapshot
 

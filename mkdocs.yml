@@ -21,7 +21,7 @@ nav:
       - Motivation: user/motivation.md
       - Features: user/features.md
       - Website:
-          - Overview: user/website/index.md
+          - Overview: user/website/dtaas.md
           - Settings: user/website/settings.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
