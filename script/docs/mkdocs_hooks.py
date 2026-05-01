@@ -9,19 +9,28 @@ LFS_MEDIA_SUFFIXES = {".gif", ".jpeg", ".jpg", ".mov", ".mp4", ".png"}
 MAX_DISPLAYED_FILES = 10
 
 
+def is_lfs_media_file(file_path: Path) -> bool:
+    """Return whether the path points to a media file tracked via Git LFS."""
+    return file_path.is_file() and file_path.suffix.lower() in LFS_MEDIA_SUFFIXES
+
+
+def is_unresolved_lfs_pointer(file_path: Path) -> bool:
+    """Return whether the file still contains a Git LFS pointer."""
+    with file_path.open("rb") as asset_file:
+        return asset_file.read(len(LFS_POINTER_PREFIX)) == LFS_POINTER_PREFIX
+
+
 def find_unresolved_lfs_files(docs_dir: Path) -> list[Path]:
     """Return LFS-managed media files that are still checked out as pointers."""
-    unresolved_files: list[Path] = []
-
-    for file_path in docs_dir.rglob("*"):
-        if not file_path.is_file() or file_path.suffix.lower() not in LFS_MEDIA_SUFFIXES:
-            continue
-        with open(file_path, "rb") as asset_file:
-            if not asset_file.read(len(LFS_POINTER_PREFIX)).startswith(LFS_POINTER_PREFIX):
-                continue
-            unresolved_files.append(file_path)
-
-    return unresolved_files
+    unresolved_files = [
+        file_path
+        for file_path in docs_dir.rglob("*")
+        if is_lfs_media_file(file_path) and is_unresolved_lfs_pointer(file_path)
+    ]
+    return sorted(
+        unresolved_files,
+        key=lambda file_path: file_path.relative_to(docs_dir).as_posix(),
+    )
 
 
 def format_unresolved_files(unresolved_files: list[Path], docs_dir: Path) -> str:
