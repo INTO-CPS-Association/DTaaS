@@ -50,7 +50,8 @@ scripts of this example. All lifecycle scripts are placed in a single
 stage named `build_and_run`.
 
 Co-simulation outputs are saved as artifacts in the GitLab pipeline and
-can be accessed at `https://gitlab.foo.com/dtaas/username/-/artifacts`.
+can be accessed at
+`https://<gitlab-host>/<group>/<username>/-/artifacts`.
 
 ## Run the Example
 

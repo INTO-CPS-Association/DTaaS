@@ -26,6 +26,12 @@ docker compose up -d
 This command brings up the client docker container and makes
 the website available at <http://localhost:4000>.
 
+Before starting the container, configure the application endpoints
+by providing an `env.js` file. See the
+[client configuration guide](../docs/admin/client/config.md) for details.
+If you are using the pre-built Docker image, refer to
+[DOCKER.md](DOCKER.md) for the volume mount instructions.
+
 ```bash
 docker compose down
 docker compose up -d

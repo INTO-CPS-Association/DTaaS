@@ -20,7 +20,6 @@ x509: certificate signed by unknown authority"
 
 ## Prerequisites
 
-- `mkcert` installed on the server host
 - Administrative access to the host
 - A DTaaS installation using the secure server package
 
@@ -39,12 +38,33 @@ nameserver 10.20.25.125
 
 ## Step 2: Create Local TLS Certificates with mkcert
 
-Install `mkcert` and create a local root CA and server certificates:
+Install `mkcert` if it is not already present. The preferred approach is
+to use your OS package manager:
+
+```bash
+# Debian / Ubuntu 22.04+
+sudo apt install mkcert
+
+# macOS (via Homebrew)
+brew install mkcert
+```
+
+Alternatively, download the binary from the
+[mkcert releases page](https://github.com/FiloSottile/mkcert/releases)
+and verify its SHA-256 checksum against the value published on that page
+before installing:
 
 ```bash
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+# Verify the checksum from https://github.com/FiloSottile/mkcert/releases/tag/v1.4.4
+sha256sum mkcert-v1.4.4-linux-amd64
 sudo mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
 sudo chmod +x /usr/local/bin/mkcert
+```
+
+Create a local root CA and server certificates:
+
+```bash
 mkcert -install
 mkcert "foo.com" "*.foo.com" "localhost" "127.0.0.1" "::1"
 cp ~/.local/share/mkcert/rootCA.pem rootCA.crt

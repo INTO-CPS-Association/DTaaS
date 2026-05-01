@@ -42,7 +42,7 @@ Each user's workspace container mounts two directories:
 ├── models/
 └── tools/
 
-/workspace/common/    # Shared library assets (read-only)
+/workspace/common/    # Shared library assets (mounted read-write by default)
 ├── data/
 ├── digital_twins/
 ├── functions/
@@ -51,7 +51,9 @@ Each user's workspace container mounts two directories:
 ```
 
 Files in `/workspace/` are private to each user.
-Files in `/workspace/common/` are read-only and shared across all users.
+Files in `/workspace/common/` are shared across all users.
+Administrators can optionally mount `/workspace/common` as read-only via the
+compose configuration.
 
 ## Installing Software
 
@@ -67,7 +69,7 @@ across sessions.
 
 ## Running Digital Twins
 
-Digital twins stored in `/workspace/username/digital_twins/` can be
+Digital twins stored in `/workspace/digital_twins/` can be
 executed by running their lifecycle scripts directly in the terminal:
 
 ```bash
