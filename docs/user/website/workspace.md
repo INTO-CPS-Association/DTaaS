@@ -32,27 +32,26 @@ The **Workbench** page provides links to six integrated tools:
 
 ## Workspace File System
 
-Each user has a private workspace directory at `/workspace`.
-The directory structure follows the DTaaS convention:
+Each user's workspace container mounts two directories:
 
 ```text
-/workspace/
-├── common/           # Read-only shared library assets
-│   ├── data/
-│   ├── digital_twins/
-│   ├── functions/
-│   ├── models/
-│   └── tools/
-└── username/         # Private user directory
-    ├── data/
-    ├── digital_twins/
-    ├── functions/
-    ├── models/
-    └── tools/
+/workspace/           # Private user files (read-write)
+├── data/
+├── digital_twins/
+├── functions/
+├── models/
+└── tools/
+
+/workspace/common/    # Shared library assets (read-only)
+├── data/
+├── digital_twins/
+├── functions/
+├── models/
+└── tools/
 ```
 
-Files placed in the private directory are accessible only to that user.
-Files in `common/` are read-only and shared across all users.
+Files in `/workspace/` are private to each user.
+Files in `/workspace/common/` are read-only and shared across all users.
 
 ## Installing Software
 
@@ -72,7 +71,7 @@ Digital twins stored in `/workspace/username/digital_twins/` can be
 executed by running their lifecycle scripts directly in the terminal:
 
 ```bash
-cd /workspace/username/digital_twins/<dt-name>
+cd /workspace/digital_twins/<dt-name>
 lifecycle/create
 lifecycle/execute
 ```

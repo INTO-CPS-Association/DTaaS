@@ -26,20 +26,15 @@ x509: certificate signed by unknown authority"
 
 ## Step 1: Update the DNS Configuration
 
-The `deploy/docker/resolv.conf` file controls DNS name resolution for
-Docker containers. By default it contains:
+Containers in the secure-server package use the host's DNS configuration.
+If your GitLab instance uses an internal DNS name that is not resolvable from
+the public Internet, make sure the Docker host can resolve it by adding the
+correct nameserver to `/etc/resolv.conf` on the host. Obtain the correct
+values from your IT department. For example:
 
 ```text
-nameserver 8.8.8.8
-```
-
-This works only for servers with DNS names resolvable from the Internet.
-For internal servers, obtain the correct values from your IT department
-and update the file. For example:
-
-```text
-search domain: client.foo.com
-nameserver: 10.20.25.125
+search client.foo.com
+nameserver 10.20.25.125
 ```
 
 ## Step 2: Create Local TLS Certificates with mkcert
@@ -49,7 +44,7 @@ Install `mkcert` and create a local root CA and server certificates:
 ```bash
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
 sudo mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
-chmod +x /usr/local/bin/mkcert
+sudo chmod +x /usr/local/bin/mkcert
 mkcert -install
 mkcert "foo.com" "*.foo.com" "localhost" "127.0.0.1" "::1"
 cp ~/.local/share/mkcert/rootCA.pem rootCA.crt
@@ -79,13 +74,13 @@ CMD ["traefik-forward-auth"]
 Build the image:
 
 ```bash
-docker buildx build -t traefik-forward-auth-local:latest .
+docker build -t traefik-forward-auth-local:latest .
 ```
 
 ## Step 4: Use the Custom Image
 
-In `compose.server.secure.yml`, replace the existing
-`thomseddon/traefik-forward-auth:latest` image reference with:
+In `deploy/dtaas/docker/secure-server/docker-compose.yml`, replace the
+existing `thomseddon/traefik-forward-auth:latest` image reference with:
 
 ```yaml
 image: traefik-forward-auth-local:latest
@@ -94,7 +89,7 @@ image: traefik-forward-auth-local:latest
 ## Step 5: Recreate the forward-auth Container
 
 ```bash
-docker compose -f compose.server.secure.yml --env-file .env.server \
+docker compose --env-file config/.env \
   up -d --force-recreate traefik-forward-auth
 ```
 

@@ -19,7 +19,7 @@ The commands to start and stop the application are:
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd client
+cd DTaaS/client
 docker compose up -d
 ```
 
