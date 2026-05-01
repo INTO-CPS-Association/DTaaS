@@ -9,7 +9,7 @@ execution, and sharing of digital twins (DTs).
 - **Operate**: DTs are executed through the DTaaS platform.
 - **Share**: DTs and DT-provided services can be made available to other users.
 
-![DTaaS demonstration video showing the platform interface](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif)
+![DTaaS demonstration video showing the platform interface](docs/user/dtaas-user_4x.gif)
 
 See other demos in [playlist](docs/playlist.md).
 
