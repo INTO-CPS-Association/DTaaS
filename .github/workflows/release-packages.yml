@@ -1,0 +1,105 @@
+name: Release Packages
+
+'on':
+  push:
+    paths:
+      - 'deploy/dtaas/**'
+      - 'deploy/workspace/**'
+      - '.github/workflows/release-packages.yml'
+  pull_request:
+    paths:
+      - 'deploy/dtaas/**'
+      - 'deploy/workspace/**'
+      - '.github/workflows/release-packages.yml'
+  workflow_dispatch:
+
+
+jobs:
+  release-packages:
+    name: Build and Upload Release Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+
+    steps:
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          lfs: true
+
+      - name: Create zip archives
+        run: |
+          set -euo pipefail
+          mkdir -p release-zips
+
+          # DTaaS docker packages (four variants)
+          zip -r release-zips/dtaas-localhost.zip \
+            deploy/dtaas/docker/localhost
+          zip -r release-zips/dtaas-server.zip \
+            deploy/dtaas/docker/server
+          zip -r release-zips/dtaas-secure-server.zip \
+            deploy/dtaas/docker/secure-server
+          zip -r release-zips/dtaas-secure-server-integrated-gitlab.zip \
+            deploy/dtaas/docker/secure-server_with_integrated-gitlab
+
+          # Workspace packages (two variants)
+          zip -r release-zips/workspace-dex-localhost.zip \
+            deploy/workspace/dex/localhost
+          zip -r release-zips/workspace-keycloak-production.zip \
+            deploy/workspace/keycloak/production
+
+      - name: Upload dtaas-localhost
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: dtaas-localhost
+          path: release-zips/dtaas-localhost.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload dtaas-server
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: dtaas-server
+          path: release-zips/dtaas-server.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload dtaas-secure-server
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: dtaas-secure-server
+          path: release-zips/dtaas-secure-server.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload dtaas-secure-server-integrated-gitlab
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: dtaas-secure-server-integrated-gitlab
+          path: release-zips/dtaas-secure-server-integrated-gitlab.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload workspace-dex-localhost
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: workspace-dex-localhost
+          path: release-zips/workspace-dex-localhost.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload workspace-keycloak-production
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: workspace-keycloak-production
+          path: release-zips/workspace-keycloak-production.zip
+          if-no-files-found: error
+          retention-days: 7
