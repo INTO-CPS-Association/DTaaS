@@ -43,7 +43,7 @@ The following steps are required to build the client web application.
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd client
+cd DTaaS/client
 yarn install --production   # install dependencies without Playwright and devDependencies
 yarn build      #build the react app into build/ directory
 ```
