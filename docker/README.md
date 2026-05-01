@@ -32,7 +32,7 @@ There are four dockerfiles for building the containers:
 
 In addition, there are docker compose and configuration files.
 
-- **compose.dev.yml:** Docker Compose configuration for
+- **docker-compose.yml:** Docker Compose configuration for
   development environment.
 - **.env**: environment variables for docker compose file
 - **conf.dev** OAuth 2.0 configuration required by
@@ -52,7 +52,7 @@ to build the required images locally on their computers for use during
 development. The images can be built using
 
 ```sh
-docker compose -f compose.dev.yml build
+docker compose build
 ```
 
 ## Running Docker Containers
@@ -87,8 +87,8 @@ The docker commands need to be executed from this directory (`docker`).
 The relevant docker commands are:
 
 ```bash
-docker compose -f compose.dev.yml up -d #start the application
-docker compose -f compose.dev.yml down  #terminate the application
+docker compose up -d #start the application
+docker compose down  #terminate the application
 ```
 
 ### Access the Application
