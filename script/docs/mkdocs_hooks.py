@@ -36,7 +36,10 @@ def find_unresolved_lfs_files(docs_dir: Path) -> list[Path]:
 def format_unresolved_files(unresolved_files: list[Path], docs_dir: Path) -> str:
     """Format unresolved file paths for MkDocs error output."""
     displayed_files = unresolved_files[:MAX_DISPLAYED_FILES]
-    lines = [f"  - {file_path.relative_to(docs_dir).as_posix()}" for file_path in displayed_files]
+    lines = [
+        f"  - {file_path.relative_to(docs_dir).as_posix()}"
+        for file_path in displayed_files
+    ]
 
     if len(unresolved_files) > MAX_DISPLAYED_FILES:
         remaining = len(unresolved_files) - MAX_DISPLAYED_FILES
@@ -45,7 +48,7 @@ def format_unresolved_files(unresolved_files: list[Path], docs_dir: Path) -> str
     return "\n".join(lines)
 
 
-def on_pre_build(config, **kwargs) -> None:
+def on_pre_build(config, **unused_kwargs) -> None:
     """Abort builds that would copy unresolved Git LFS pointers into the site."""
     docs_dir = Path(config.docs_dir)
     docs_dir_pattern = f"{docs_dir.name}/**"
