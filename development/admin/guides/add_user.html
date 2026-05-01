@@ -561,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user/website/index.html" class="md-nav__link">
+      <a href="../../user/website/dtaas.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3166,6 +3166,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../developer/codebase/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../developer/codebase/client.html" class="md-nav__link">
         
   
@@ -3711,9 +3732,10 @@ The username and email of the new account should be noted.</p>
 This brings up the containers without backend authorisation.</p>
 <p><strong>3. Add backend authorisation for the user:</strong></p>
 <ul>
-<li>Navigate to the secure server package directory</li>
+<li>Navigate to the installation directory. For example, if the user needs
+  to be added to a secure-server installation,</li>
 </ul>
-<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>&lt;DTaaS&gt;/deploy/dtaas/docker/server
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>&lt;DTaaS&gt;/deploy/dtaas/docker/secure-server
 </span></code></pre></div></td></tr></table></div>
 <ul>
 <li>Add three lines to <code>config/conf.server</code></li>

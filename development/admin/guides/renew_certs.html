@@ -561,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user/website/index.html" class="md-nav__link">
+      <a href="../../user/website/dtaas.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3259,6 +3259,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../developer/codebase/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../developer/codebase/client.html" class="md-nav__link">
         
   
@@ -3877,14 +3898,14 @@ This guide covers renewal for current DTaaS package layouts.</p>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>sudo<span class="w"> </span>certbot<span class="w"> </span>renew
 </span></code></pre></div></td></tr></table></div>
 <h2 id="step-2-deploy-to-dtaas-server-package">Step 2: Deploy to DTaaS server package</h2>
-<p>For the server package (<code>deploy/dtaas/docker/server</code>):</p>
+<p>For the secure server package (<code>deploy/dtaas/docker/secure-server</code>):</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
 <span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>sudo<span class="w"> </span>cp<span class="w"> </span>/etc/letsencrypt/live/your-domain.com/fullchain.pem<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span>/path/to/DTaaS/deploy/dtaas/docker/server/certs/fullchain.pem
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span>/path/to/DTaaS/deploy/dtaas/docker/secure-server/certs/fullchain.pem
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>sudo<span class="w"> </span>cp<span class="w"> </span>/etc/letsencrypt/live/your-domain.com/privkey.pem<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">  </span>/path/to/DTaaS/deploy/dtaas/docker/server/certs/privkey.pem
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">  </span>/path/to/DTaaS/deploy/dtaas/docker/secure-server/certs/privkey.pem
 </span></code></pre></div></td></tr></table></div>
 <p>For the integrated package (<code>deploy/dtaas/docker/secure-server_with_integrated-gitlab</code>):</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
@@ -3898,10 +3919,10 @@ This guide covers renewal for current DTaaS package layouts.</p>
 <h2 id="step-3-restart-traefik-in-dtaas-package">Step 3: Restart Traefik in DTaaS package</h2>
 <p>Server package:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>/path/to/DTaaS/deploy/dtaas/docker/server
+<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>/path/to/DTaaS/deploy/dtaas/docker/secure-server
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>--env-file<span class="w"> </span>config/.env<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>traefik
 </span></code></pre></div></td></tr></table></div>
-<p>Integrated package:</p>
+<p>Integrated GitLab package:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
 <span class="normal"><a href="#__codelineno-4-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>/path/to/DTaaS/deploy/dtaas/docker/secure-server_with_integrated-gitlab
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>--env-file<span class="w"> </span>config/.env<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>traefik
