@@ -74,6 +74,8 @@ poetry run pytest
 Run from repository root:
 
 ```bash
+git lfs install
+git lfs pull --include="docs/**"
 mkdocs build -f mkdocs-github.yml
 ```
 
