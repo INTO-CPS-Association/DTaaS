@@ -40,11 +40,7 @@
 ??? Question "What can not be done inside the DTaaS platform?"
 
     1. DTaaS as such does not help install DTs obtained from external sources.
-    1. The current user interface of the DTaaS web application is heavily reliant
-       on the use of Jupyter Lab and Notebook.
-       The **Digital Twins** page has Create / Execute / Analyze sections, but
-       all point to Jupyter Lab web interface. The functionality of these pages
-       is still under development.
+    1. Windows-only tools cannot run inside DTaaS workspaces.
 
 ??? Question "Is there any fundamental difference between commercial solutions like Ansys Twin Builder and the DTaaS platform?"
 

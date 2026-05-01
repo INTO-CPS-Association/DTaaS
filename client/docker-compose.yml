@@ -2,7 +2,5 @@ services:
   client:
     image: intocps/dtaas-web:latest
     restart: unless-stopped
-    volumes:
-      - ./config/test.js:/dtaas/client/build/env.js
     ports:
       - '4000:4000'

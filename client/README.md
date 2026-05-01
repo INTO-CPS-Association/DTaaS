@@ -13,36 +13,22 @@ the client application.
 
 ## Use in Docker Environment
 
-### Adjust Configuration (Optional)
-
-The client application requires configuration.
-See the [config page](../docs/admin/client/config.md)
-for an explanation of client configuration.
-
-The docker version of client application uses configuration
-file available in `config/test.js`. This default configuration
-works well if you have an account on <https://gitlab.com>.
-If you would like to adjust the configuration, please change this file.
-
 ### Use
 
-The commands to start and stop the appliation are:
+The commands to start and stop the application are:
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd client
-docker compose -f compose.client.yml up -d
+docker compose up -d
 ```
 
 This command brings up the client docker container and makes
 the website available at <http://localhost:4000>.
-The `config/test.js` file is used as client configuration.
-If you wish to adjust the client configuration, please change
-configuration values in this file and restart the container.
 
 ```bash
-docker compose -f compose.client.yml down
-docker compose -f compose.client.yml up -d
+docker compose down
+docker compose up -d
 ```
 
 ## Use in Nodejs Environment

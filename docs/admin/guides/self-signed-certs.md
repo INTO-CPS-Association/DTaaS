@@ -1,0 +1,121 @@
+# Self-Signed Certificates
+
+This guide explains how to configure DTaaS to work with self-signed TLS
+certificates. This is needed for internal servers that are not reachable
+from the public Internet and therefore cannot use certificates from
+public certificate authorities such as Let's Encrypt.
+
+## Background
+
+When DTaaS is installed with a self-signed certificate, the
+`traefik-forward-auth` service must trust that certificate in order to
+complete the OAuth 2.0 token exchange with the GitLab instance.
+Without this, authentication fails with a certificate error:
+
+```text
+level=error msg="Code exchange failed with provider"
+error="Post https://foo.com/gitlab/oauth/token:
+x509: certificate signed by unknown authority"
+```
+
+## Prerequisites
+
+- `mkcert` installed on the server host
+- Administrative access to the host
+- A DTaaS installation using the secure server package
+
+## Step 1: Update the DNS Configuration
+
+The `deploy/docker/resolv.conf` file controls DNS name resolution for
+Docker containers. By default it contains:
+
+```text
+nameserver 8.8.8.8
+```
+
+This works only for servers with DNS names resolvable from the Internet.
+For internal servers, obtain the correct values from your IT department
+and update the file. For example:
+
+```text
+search domain: client.foo.com
+nameserver: 10.20.25.125
+```
+
+## Step 2: Create Local TLS Certificates with mkcert
+
+Install `mkcert` and create a local root CA and server certificates:
+
+```bash
+wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+sudo mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
+chmod +x /usr/local/bin/mkcert
+mkcert -install
+mkcert "foo.com" "*.foo.com" "localhost" "127.0.0.1" "::1"
+cp ~/.local/share/mkcert/rootCA.pem rootCA.crt
+```
+
+Replace `foo.com` with the actual hostname of your DTaaS installation.
+
+## Step 3: Build a Custom traefik-forward-auth Image
+
+The `traefik-forward-auth` container must trust the local root CA.
+Create a `Dockerfile` in the same directory as `rootCA.crt`:
+
+```docker
+# Stage 1: prepare the root CA certificate
+FROM alpine:latest AS cert-builder
+RUN apk add --no-cache ca-certificates
+COPY rootCA.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+# Stage 2: copy the updated certificate bundle into the final image
+FROM thomseddon/traefik-forward-auth:latest
+COPY --from=cert-builder /etc/ssl/certs/ca-certificates.crt \
+     /etc/ssl/certs/ca-certificates.crt
+CMD ["traefik-forward-auth"]
+```
+
+Build the image:
+
+```bash
+docker buildx build -t traefik-forward-auth-local:latest .
+```
+
+## Step 4: Use the Custom Image
+
+In `compose.server.secure.yml`, replace the existing
+`thomseddon/traefik-forward-auth:latest` image reference with:
+
+```yaml
+image: traefik-forward-auth-local:latest
+```
+
+## Step 5: Recreate the forward-auth Container
+
+```bash
+docker compose -f compose.server.secure.yml --env-file .env.server \
+  up -d --force-recreate traefik-forward-auth
+```
+
+## External GitLab with Self-Signed Certificates
+
+If the GitLab OAuth provider is hosted on a separate server
+(for example, `gitlab.foo.com`) and also uses a self-signed certificate,
+generate that certificate using the same `mkcert` root CA:
+
+```bash
+mkcert "gitlab.foo.com" "localhost" "127.0.0.1" "::1"
+```
+
+Because the custom `traefik-forward-auth` image already trusts the
+`mkcert` root CA, the OAuth token exchange will succeed.
+
+## Notes
+
+- Certificates created with `mkcert` are trusted only on the machine
+  where `mkcert -install` was run. Other clients that access the DTaaS
+  installation must also import the `rootCA.crt` into their trust store.
+- If your server has a valid public TLS certificate, this guide is not
+  needed. Use the standard
+  [Let's Encrypt renewal guide](renew_certs.md) instead.
