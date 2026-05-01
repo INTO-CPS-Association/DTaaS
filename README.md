@@ -11,7 +11,7 @@ execution, and sharing of digital twins (DTs).
 
 ![DTaaS demonstration video showing the platform interface](docs/user/dtaas-user_4x.gif)
 
-See other demos in [playlist](docs/playlist.md).
+See demos in [playlist](docs/playlist.md).
 
 ## Installation and Use
 
