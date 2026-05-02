@@ -9,7 +9,7 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web.forwardedHeaders.insecure=true"
       - "--entrypoints.web.proxyProtocol.insecure=true"
-      - "--log.level=INFO"
+      - "--log.level=DEBUG"
     labels:
       - "traefik.http.middlewares.cors.headers.accessControlAllowOriginList=http://localhost,http://host.docker.internal"
       - "traefik.http.middlewares.cors.headers.accessControlAllowMethods=GET,OPTIONS,POST"
@@ -28,7 +28,7 @@ services:
       dockerfile: ${DTAAS_DIR}/docker/client.dockerfile
     restart: unless-stopped
     volumes:
-      - "${DTAAS_DIR}/client/config/local.js:/dtaas/client/build/env.js"
+      - "./config/local.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
@@ -44,8 +44,8 @@ services:
       dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/files:/dtaas/libms/files
-      - ${DTAAS_DIR}/servers/lib/config/libms.dev.yaml:/dtaas/libms/config/libms.yaml
+      - "./files:/dtaas/libms/files"
+      - "./config/libms.dev.yaml:/dtaas/libms/config/libms.yaml"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.libms.entryPoints=web"
@@ -59,12 +59,10 @@ services:
     image: intocps/workspace:main-967bc10
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common
-      - ${DTAAS_DIR}/files/${USERNAME1}:/workspace
+      - "./files/common:/workspace/common"
+      - "./files/${USERNAME1}:/workspace"
     environment:
       - MAIN_USER=${USERNAME1}
-      - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=${USERNAME1}
     shm_size: 512m
     labels:
       - "traefik.enable=true"
@@ -78,12 +76,10 @@ services:
     image: intocps/workspace:main-967bc10
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/files/common:/workspace/common
-      - ${DTAAS_DIR}/files/${USERNAME2}:/workspace
+      - "./files/common:/workspace/common"
+      - "./files/${USERNAME2}:/workspace"
     environment:
       - MAIN_USER=${USERNAME2}
-      - AUTHENTICATE_VIA_JUPYTER=
-      - WORKSPACE_BASE_URL=${USERNAME2}
     shm_size: 512m
     labels:
       - "traefik.enable=true"
@@ -97,7 +93,7 @@ services:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
-      - ${DTAAS_DIR}/docker/conf.dev:/conf
+      - "./conf.dev:/conf"
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize
@@ -110,7 +106,7 @@ services:
       # INSECURE_COOKIE is required if not using a https entrypoint
       - INSECURE_COOKIE=true
       - CONFIG=/conf
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
     labels:
       - "traefik.enable=true"
 
