@@ -30,6 +30,9 @@ jobs:
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
+          # lfs: false is a temporary workaround for the fork's exhausted
+          # LFS monthly bandwidth budget. Restore to lfs: true once the
+          # budget is replenished or the PR is merged into the upstream repo.
           lfs: false
 
       - name: Set up Python
