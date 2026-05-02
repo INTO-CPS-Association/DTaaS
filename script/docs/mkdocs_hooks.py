@@ -1,8 +1,12 @@
 """MkDocs hooks for validating documentation assets."""
 
+import logging
+import os
 from pathlib import Path
 
 from mkdocs.exceptions import Abort
+
+log = logging.getLogger("mkdocs")
 
 LFS_POINTER_PREFIX = b"version https://git-lfs.github.com/spec/v1\n"
 LFS_MEDIA_SUFFIXES = {".gif", ".jpeg", ".jpg", ".mov", ".mp4", ".png"}
@@ -49,7 +53,13 @@ def format_unresolved_files(unresolved_files: list[Path], docs_dir: Path) -> str
 
 
 def on_pre_build(config) -> None:
-    """Abort builds that would copy unresolved Git LFS pointers into the site."""
+    """Abort builds that would copy unresolved Git LFS pointers into the site.
+
+    Set MKDOCS_LFS_STRICT=false to demote the error to a warning.  This is
+    intended only as a temporary escape hatch when LFS bandwidth is unavailable
+    (e.g. an exhausted monthly budget on a fork).  The generated site will
+    contain broken images until LFS objects are fetched properly.
+    """
     docs_dir = Path(config.docs_dir)
     docs_dir_pattern = f"{docs_dir.name}/**"
     unresolved_files = find_unresolved_lfs_files(docs_dir)
@@ -58,12 +68,21 @@ def on_pre_build(config) -> None:
         return
 
     unresolved_paths = format_unresolved_files(unresolved_files, docs_dir)
-    raise Abort(
-        "Documentation build aborted because Git LFS assets were not fetched.\n"
-        "MkDocs would otherwise copy Git LFS pointer files into the generated site.\n"
+    message = (
+        "Git LFS assets were not fetched — the generated site will contain"
+        " broken images.\n"
         f"Unresolved files in {docs_dir.as_posix()}:\n"
         f"{unresolved_paths}\n\n"
         "Fetch the documentation assets and rerun the build:\n"
         "  git lfs install\n"
         f'  git lfs pull --include="{docs_dir_pattern}"'
     )
+
+    if os.environ.get("MKDOCS_LFS_STRICT", "true").lower() == "false":
+        log.warning(message)
+    else:
+        raise Abort(
+            "Documentation build aborted because Git LFS assets were not fetched.\n"
+            "MkDocs would otherwise copy Git LFS pointer files into the generated site.\n"
+            + message
+        )

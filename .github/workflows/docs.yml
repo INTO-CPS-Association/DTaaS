@@ -44,6 +44,11 @@ jobs:
         run: pip install -r script/docs/mkdocs-requirements-github.txt
 
       - name: build docs
+        # MKDOCS_LFS_STRICT=false demotes the LFS check from an abort to a
+        # warning so CI can still build docs when lfs: false is set above.
+        # Remove this env var once lfs: true is restored.
+        env:
+          MKDOCS_LFS_STRICT: 'false'
         run: mkdocs build --config-file mkdocs-github.yml
 
       - name: show contents of compiled docs
