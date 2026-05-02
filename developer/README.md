@@ -54,7 +54,10 @@ development. The images can be built using
 ```sh
 cd developer
 cp config/.env.example config/.env
+cp config/client.js.example config/client.js
 cp config/conf.dev.example config/conf.dev
+cp config/libms.dev.yaml.example config/libms.dev.yml
+sudo chown -R 1000:100 files/*
 docker compose --env-file config/.env build
 ```
 
@@ -79,7 +82,7 @@ The following configuration files require updating:
   Refer to the [Docker installation
   documentation](../../admin/dtaas/server/install.md) for
    guidance on updating this configuration file.
-1. **developer/config/local.js** :
+1. **developer/config/client.js** :
    Refer to the [client configuration documentation](../../admin/client/config.md)
    for guidance on updating this configuration file.
 1. **developer/config/libms.dev.yaml** :
@@ -155,7 +158,7 @@ To test the react website container on localhost, please use
 
 ```bash
 docker run -d \
-  -v ${PWD}/client/config/local.js:/dtaas/client/build/env.js \
+  -v ${PWD}/client/config/client.js:/dtaas/client/build/env.js \
   -p 4000:4000 intocps/dtaas-web:latest
 ```
 

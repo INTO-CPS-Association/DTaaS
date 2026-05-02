@@ -28,7 +28,7 @@ services:
       dockerfile: developer/client.dockerfile
     restart: unless-stopped
     volumes:
-      - "./config/local.js:/dtaas/client/build/env.js"
+      - "./config/client.js:/dtaas/client/build/env.js"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"

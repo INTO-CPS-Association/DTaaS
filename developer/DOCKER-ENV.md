@@ -6,7 +6,7 @@ Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
-  | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
+  | OAUTH_URL | <http>_gitlab.intocps.org_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
   | OAUTH_CLIENT_ID | 'xx' | The ID of your server OAuth application |
   | OAUTH_CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
   | OAUTH_SECRET | 'random-secret-string' | Any private random string. This is a password you choose for local installation. |

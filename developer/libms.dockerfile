@@ -22,7 +22,7 @@ COPY --from=build /dtaas/libms/package.json /dtaas/libms/package.json
 COPY --from=build /dtaas/libms/config /dtaas/libms/config
 
 WORKDIR /dtaas/libms
-COPY ./deploy/config/libms.yaml libms.yaml
+COPY ./developer/config/libms.dev.yaml.example libms.yaml
 
 # Define the command to run your app
 CMD ["yarn", "start", "--config", "libms.yaml", "-H", "config/http.json"]
