@@ -62,41 +62,16 @@ Please see the following demos illustrating the use the DTaaS in two projects:
   </tbody>
 </table>
 
-## Copy Examples
+## Workspace Examples
 
-The first step is to copy all example code into the
-user workspace within a user workspace.
-The provided shell script copies all examples
-into the `/workspace/examples` directory.
+These examples run interactively inside the DTaaS user workspace.
+See the [workspace examples overview](./workspace/index.md) for the full list
+and instructions on downloading and running them.
 
-```bash
-wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/getExamples.sh
-bash getExamples.sh
-```
+## Automation Examples
 
-## Example List
-
-The digital twins provided in examples vary in complexity. It is recommended
-to use the examples in the following order.
-
-1. [Mass Spring Damper](./mass-spring-damper/README.md)
-1. [Water Tank Fault Injection](./water_tank_FI/README.md)
-1. [Water Tank Model Swap](./water_tank_swap/README.md)
-1. [Desktop Robotti and RabbitMQ](./drobotti-rmqfmu/README.md)
-1. [Water Treatment Plant and OPC-UA](./opc-ua-waterplant/README.md)
-1. [Three Water Tanks with DT Manager Framework](./three-tank/README.md)
-1. [Flex Cell with Two Industrial Robots](./flex-cell/README.md)
-1. [Incubator](./incubator/README.md)
-1. [Firefighters in Emergency Environments](./o5g/README.md)
-1. [Mass Spring Damper with NuRV Runtime Monitor FMU](
-   ./mass-spring-damper-monitor/README.md)
-1. [Water Tank Fault Injection with NuRV Runtime Monitor FMU](
-   ./water_tank_FI_monitor/README.md)
-1. [Incubator Co-Simulation with NuRV Runtime Monitor FMU](
-   ./incubator-NuRV-monitor-validation/README.md)
-1. [Incubator with NuRV Runtime Monitor as Service](
-   ./incubator-NuRV-monitor-service/README.md)
-1. [Incubator with NuRV Runtime Monitor FMU as Service](
-   ./incubator-NuRV-fmu-monitor-service/README.md)
+These examples demonstrate the use of GitLab DevOps pipelines to automate
+the execution of digital twin lifecycle scripts within the DTaaS platform.
+See the [automation examples overview](./automation/index.md) for details.
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

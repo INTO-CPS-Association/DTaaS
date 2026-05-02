@@ -3,12 +3,11 @@
 ## Overview
 
 The mass spring damper digital twin (DT) comprises two mass spring dampers
-and demonstrates how a co-simulation based DT can be used within the DTaaS
-with full DevOps automation.
+and demonstrates how a co-simulation based DT can be used within DTaaS.
 
 ## Example Diagram
 
-![Mass Spring Damper System](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/devops/digital_twins/mass-spring-damper/mass-spring-damper_multibody_system.png)
+![Mass Spring Damper System](mass-spring-damper_multibody_system.png)
 
 ## Example Structure
 
@@ -19,55 +18,61 @@ The second simulator calculates force $F_k$ given a displacement and speed of
 mass $m_1$. By coupling these simulators, the evolution of the position of
 the two masses is computed.
 
-![Mass Spring Damper Structure](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/devops/digital_twins/mass-spring-damper/dt-structure.png)
+![Mass Spring Damper Structure](dt-structure.png)
 
 ## Digital Twin Configuration
 
 This example uses two models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-| :--------- | :-------------------------------------- | :--------- | :---------------------- |
+|:---|:---|:---|:---|
 | Models | MassSpringDamper1.fmu | Private | Yes |
-| | MassSpringDamper2.fmu | Private | Yes |
+|  | MassSpringDamper2.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
-The `co-sim.json` and `time.json` are two DT configuration files
-used for executing the digital twin.
-These two files can be modified to customise the DT for specific requirements.
+The `co-sim.json` and `time.json`
+are two DT configuration files used for executing the digital twin.
+You can change these two files to customize the DT to your needs.
 
 ## Lifecycle Phases
 
 | Lifecycle Phase | Completed Tasks |
-| --------------- | --------------------------------------------------------------- |
+| -------- | ------- |
 | Create | Installs Java Development Kit for Maestro tool |
 | Execute | Produces and stores output in data/mass-spring-damper/output directory |
 | Clean | Clears run logs and outputs |
 
 ## DevOps Automation
 
-The `.gitlab-ci.yml` file controls the sequence of executing the lifecycle
-scripts of this example. All lifecycle scripts are placed in a single
-stage named `build_and_run`.
+This example demonstrates the use of DevOps features of the DTaaS platform.
+The GitLab DevOps pipelines are used for providing this feature in the DTaaS.
 
-Co-simulation outputs are saved as artifacts in the GitLab pipeline and
-can be accessed at
+The `.gitlab-ci.yml` file controls the sequence of executing the lifecycle
+scripts of the example. The configuration format of `.gitlab-ci.yml`
+permits specifying stages for execution of a program.
+In this first example, all the lifecycle scripts are put in single stage,
+namely _build_and_run_.
+
+This example produces co-simulation outputs which are then saved in
+the artifacts repository of the GitLab. You can access them at
 `https://<gitlab-host>/<group>/<username>/-/artifacts`.
 
-## Run the Example
+## Run the example
 
-To run the example, change your present directory:
+To run the example, change your present directory.
 
 ```bash
 cd /workspace/examples/digital_twins/mass-spring-damper
 ```
 
-If required, change the execute permission of lifecycle scripts:
+If required, change the execute permission of lifecycle scripts
+you need to execute, for example:
 
 ```bash
 chmod +x lifecycle/create
-chmod +x lifecycle/execute
-chmod +x lifecycle/terminate
 ```
+
+Now, run the following scripts:
 
 ### Create
 
@@ -79,18 +84,25 @@ lifecycle/create
 
 ### Execute
 
-Runs the co-simulation using the Maestro tool with the two FMU models.
+Run the Digital Twin. Since this is a co-simulation based
+digital twin, the Maestro co-simulation tool executes co-simulation
+using the two FMU models.
 
 ```bash
 lifecycle/execute
 ```
 
+#### Examine the results
+
 The results can be found in the
-`/workspace/examples/data/mass-spring-damper/output` directory.
+_/workspace/examples/data/mass-spring-damper/output_ directory.
 
-### Terminate
+You can also view run logs in the
+_/workspace/examples/digital_twins/mass-spring-damper_.
 
-Cleans up debug files and co-simulation output files.
+### Terminate phase
+
+Terminate to clean up the debug files and co-simulation output files.
 
 ```bash
 lifecycle/terminate
@@ -98,7 +110,7 @@ lifecycle/terminate
 
 ## References
 
-More information about co-simulation techniques and the mass spring damper
+More information about co-simulation techniques and mass spring damper
 case study are available in:
 
 ```txt
@@ -106,6 +118,6 @@ Gomes, Cláudio, et al. "Co-simulation: State of the art."
 arXiv preprint arXiv:1702.00686 (2017).
 ```
 
-The source code for the models used in this DT are available in the
+The source code for the models used in this DT are available in
 [mass spring damper](https://github.com/INTO-CPS-Association/example-mass_spring_damper)
-GitHub repository.
+github repository.
