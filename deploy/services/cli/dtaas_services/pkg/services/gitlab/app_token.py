@@ -37,21 +37,6 @@ class OAuthAppResult:
     client_secret: str
 
 
-def _get_server_dns() -> str:
-    """Read HOSTNAME from environment.
-
-    Returns:
-        Server DNS value
-
-    Raises:
-        RuntimeError: If HOSTNAME is not configured
-    """
-    server_dns = os.getenv("HOSTNAME")
-    if not server_dns:
-        raise RuntimeError("HOSTNAME is not set in config/services.env.")
-    return server_dns
-
-
 def _load_oauth_apps_config() -> list[dict[str, Any]]:
     """Load OAuth applications configuration from JSON file.
 
@@ -81,19 +66,14 @@ def _load_oauth_apps_config() -> list[dict[str, Any]]:
 def _build_apps_config() -> list[OAuthAppConfig]:
     """Build OAuth app configurations from JSON config file.
 
-    Reads the config and expands the ``${HOSTNAME}`` placeholder in each
-    ``redirect_uri`` using the value of the ``HOSTNAME`` environment variable.
-
     Returns:
         List of OAuthAppConfig objects
 
     Raises:
-        RuntimeError: If HOSTNAME is not set
         FileNotFoundError: If config file not found
         json.JSONDecodeError: If config is invalid JSON
         KeyError: If required fields missing in config
     """
-    server_dns = _get_server_dns()
     apps_data = _load_oauth_apps_config()
     apps = []
 
@@ -106,7 +86,7 @@ def _build_apps_config() -> list[OAuthAppConfig]:
 
         config = OAuthAppConfig(
             name=app_data.get("name", ""),
-            redirect_uri=redirect_uri.replace("${HOSTNAME}", server_dns),
+            redirect_uri=redirect_uri,
             confidential=app_data.get("confidential", False),
             scopes=app_data.get("scopes", ""),
             trusted=app_data.get("trusted", False),
