@@ -1,6 +1,7 @@
 # Introduction
 
-This container image provides the client application for Digital Twin as a Service (DTaaS).
+This container image provides the client application for
+Digital Twin as a Service (DTaaS).
 It delivers a React single-page web application for DTaaS.
 
 ## Authorization

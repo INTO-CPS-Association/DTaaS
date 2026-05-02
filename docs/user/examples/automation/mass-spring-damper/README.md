@@ -25,9 +25,9 @@ the two masses is computed.
 This example uses two models and one tool. The specific assets used are:
 
 | Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Models | MassSpringDamper1.fmu | Private | Yes |
-|  | MassSpringDamper2.fmu | Private | Yes |
+| | MassSpringDamper2.fmu | Private | Yes |
 | Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
 
 The `co-sim.json` and `time.json`

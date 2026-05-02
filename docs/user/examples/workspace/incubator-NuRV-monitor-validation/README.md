@@ -144,4 +144,5 @@ lifecycle/terminate
 
 ## References
 
-1. More information about NuRV is available [here](https://es-static.fbk.eu/tools/nurv/).
+1. More information about NuRV is available on the
+   [NuRV tool page](https://es-static.fbk.eu/tools/nurv/).

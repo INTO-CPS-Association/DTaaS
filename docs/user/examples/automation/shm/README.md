@@ -2,23 +2,29 @@
 
 ## Overview
 
-This example demonstrates the use of digital twin methodology for structural health monitoring (SHM). A digital twin workflow shown below has been developed for the SHM use cases.
+This example demonstrates the use of digital twin methodology for structural
+health monitoring (SHM). A digital twin workflow shown below has been developed
+for the SHM use cases.
 
 ![DT workflow](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/devops/digital_twins/shm/dt-workflow.png)
 
-The complete source code for this example is [available online](https://github.com/INTO-CPS-Association/example-shm).
+The complete source code for this example is [available
+online](https://github.com/INTO-CPS-Association/example-shm).
 
 ## Example Structure
 
 This digital twin consists of
 
-- **SHM package**: package implementing the digital twin workflow. This package also contains the recorded data from physical twin and replay functions that stream data into the digital twin workflow.
+- **SHM package**: package implementing the digital twin workflow. This package
+  also contains the recorded data from physical twin and replay functions that
+  stream data into the digital twin workflow.
 - **replay.json**: MQTT configuration file for replaying the recorded data
 
 The package can demonstrate these experimental scenarios.
 
 - **replay** replays the recorded readings from cantilever beam setup.
-- **acceleration_readings** demonstrates the use of `Accelerometer` class to extract
+- **acceleration_readings** demonstrates the use of `Accelerometer` class to
+  extract
   accelerometer measurements from MQTT data stream.
 - **aligning_readings** demonstrates the use of `Aligner` class to collect and
   align accelerometer measurements from multiple MQTT data streams.
@@ -26,8 +32,10 @@ The package can demonstrate these experimental scenarios.
 - **sysid** demonstrates the use of `sysid` with four cases:
     1. **sysid-and-plot**: plots natural frequencies.
     2. **sysid-and-print**: prints sysid output to console.
-    3. **sysid-and-publish**: publishes one set of sysid output via MQTT to the config given under [sysid] config.
-    4. **live-sysid-and-publish**: Continuously publishes sysid output via MQTT to the config given under [sysid] config.
+    3. **sysid-and-publish**: publishes one set of sysid output via MQTT
+       to the config given under [sysid] config.
+    4. **live-sysid-and-publish**: Continuously publishes sysid output via
+       MQTT to the config given under [sysid] config.
 
 - **Clustering** demonstrates the use of `clustering` with three cases:
     1. **clustering-with-local-sysid**: gets the sysid output by runing sysid
@@ -36,8 +44,9 @@ The package can demonstrate these experimental scenarios.
        then runs the mode clustering. This is a one time operation.
     3. **live-clustering-with-remote-sysid**: gets sysid output by subscribing,
        then runs the mode clustering. This operation runs in loop.
-    4. **live-clustering-with-remote-sysid-and-publish**: gets sysid output by subscribing,
-       then runs the mode clustering. The cluster results are published. This operation runs in loop.
+    4. **live-clustering-with-remote-sysid-and-publish**: gets sysid output
+       by subscribing, then runs the mode clustering. The cluster results
+       are published. This operation runs in loop.
 
 - **mode-tracking** demonstrates the use of `mode_tracking` with three cases:
     1. **mode-tracking-with-local-sysid**: gets the sysid output by runing sysid
@@ -50,30 +59,39 @@ The package can demonstrate these experimental scenarios.
 - **model-update** demonstrates the use of `model_update` with two cases:
     1. **model-update-local-sysid**: gets the sysid output, then uses it to
       run update model and get updated system parameters.
-    2. **live-model-update-with-remote-sysid**: gets the sysid output by subscribing to
-      MQTT topic, then runs mode clustering to run update model and get updated system parameters.
-    3. **live-model-update-with-remote-clustering**: gets the mode clustering output by subscribing to
-      MQTT topic, then uses the mode clustering output to run update model and get updated system parameters.
+    2. **live-model-update-with-remote-sysid**: gets the sysid output by
+       subscribing to MQTT topic, then runs mode clustering to run update
+       model and get updated system parameters.
+    3. **live-model-update-with-remote-clustering**: gets the mode clustering
+       output by subscribing to MQTT topic, then uses the mode clustering
+       output to run update model and get updated system parameters.
 
-Of the above mentioned experimental scenarios, the following can be placed in the automated execution mode.
+Of the above mentioned experimental scenarios, the following can be placed in
+the automated execution mode.
 
-- **acceleration_readings** demonstrates the use of `Accelerometer` class to extract
+- **acceleration_readings** demonstrates the use of `Accelerometer` class to
+  extract
   accelerometer measurements from MQTT data stream.
 
 - **aligning_readings** demonstrates the use of `Aligner` class to collect and
   align accelerometer measurements from multiple MQTT data streams.
 
-- **sysid** demonstrates the use of `sysid` with four cases. It prints sysid output to console.
+- **sysid** demonstrates the use of `sysid` with four cases. It prints sysid
+  output to console.
 
 - **Clustering** demonstrates the use of `sysid` and `clustering`.
 
 - **mode-tracking** demonstrates the use of `sysid` and `mode_tracking`.
 
-- **model-update** demonstrates the use of the digital twin workflow upto `model_update`.
+- **model-update** demonstrates the use of the digital twin workflow upto
+  `model_update`.
 
 ## Configuration
 
-This example uses MQTT broker for replaying the recorded data from physical twin. The format of the configuration file is in `replay.json`. MQTT credentials need to be updated in the file. In case a local MQTT broker is not available, [test server](https://test.mosquitto.org/) can also be used.
+This example uses MQTT broker for replaying the recorded data from physical
+twin. The format of the configuration file is in `replay.json`. MQTT credentials
+need to be updated in the file. In case a local MQTT broker is not available,
+[test server](https://test.mosquitto.org/) can also be used.
 
 ## Use
 
@@ -116,7 +134,9 @@ Usage: example-shm --config replay.json accelerometers
 
 ### Automated Execution
 
-The current configuration of this example demonstrates system identification and model update. A truncated sample output can be seen here. The execution timestamps have been removed from this log to show the main content.
+The current configuration of this example demonstrates system identification and
+model update. A truncated sample output can be seen here. The execution
+timestamps have been removed from this log to show the main content.
 
 ```log
 Using docker image sha256:16f554efe9f9e182e2ec6b86ad37360138407a456a69982ed1b8261716ce5163 for python:3.12 with digest
@@ -164,5 +184,13 @@ Model frequencies: [  4.13819299  26.68572155  80.22633861 164.67016633 180.3796
 
 ## References
 
-1. This example corresponds to [commit ce47244](https://github.com/INTO-CPS-Association/example-shm/tree/ce4724457b9c11f2513026d4009ca41b2bba489a) of the [example-shm repository](https://github.com/INTO-CPS-Association/example-shm).
-2. Talasila, P., Tcherniak, D., Jensen, A. M. D., Mahato, S., Schörghofer-Queiroz, A., Ulriksen, M. D., ... & Damkilde, L. (2025, July). Structural Health Monitoring of Engineering Structures Using Digital Twins: A Digital Twin Platform Approach. In International Conference on Experimental Vibration Analysis for Civil Engineering Structures (pp. 986-996). Cham: Springer Nature Switzerland.)
+1. This example corresponds to
+   [commit ce47244](https://github.com/INTO-CPS-Association/example-shm/tree/ce4724457b9c11f2513026d4009ca41b2bba489a)
+   of the
+   [example-shm repository](https://github.com/INTO-CPS-Association/example-shm).
+2. Talasila, P., Tcherniak, D., Jensen, A. M. D., Mahato, S.,
+   Schörghofer-Queiroz, A., Ulriksen, M. D., ... & Damkilde, L. (2025,
+   July). Structural Health Monitoring of Engineering Structures Using
+   Digital Twins: A Digital Twin Platform Approach. In International
+   Conference on Experimental Vibration Analysis for Civil Engineering
+   Structures (pp. 986-996). Cham: Springer Nature Switzerland.)
