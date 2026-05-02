@@ -13,12 +13,12 @@ test-output
 dist
 
 # User workspaces (exclude personal directories, keep templates)
-developer/files/*/
-!developer/files/template/
-!developer/files/user1/
-!developer/files/user2/
-!developer/files/common/
-!developer/files/README.md
+**/files/*/
+!**/files/template/
+!**/files/user1/
+!**/files/user2/
+!**/files/common/
+!**/files/README.md
 
 # compiled output
 /dist
