@@ -1,0 +1,8 @@
+# Override root .gitattributes: store images as regular git objects (not LFS) in examples/
+*.png -filter -diff -merge -text
+*.PNG -filter -diff -merge -text
+*.jpg -filter -diff -merge -text
+*.JPG -filter -diff -merge -text
+*.jpeg -filter -diff -merge -text
+*.JPEG -filter -diff -merge -text
+*.gif -filter -diff -merge -text
