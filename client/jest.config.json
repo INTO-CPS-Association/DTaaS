@@ -39,7 +39,9 @@
   "modulePaths": ["<rootDir>/src/"],
   "moduleNameMapper": {
     "^test/(.*)$": "<rootDir>/test/$1",
-    "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts"
+    "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
+    "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts"
   },
-  "maxWorkers": 3
+  "maxWorkers": 3,
+  "setupFiles": ["<rootDir>/test/setupTests.ts"]
 }

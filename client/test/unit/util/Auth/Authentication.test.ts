@@ -24,8 +24,7 @@ describe('useSignOut', () => {
   });
 
   Object.defineProperty(globalThis, 'fetch', {
-    value: jest.fn(async (URL, signal) => {
-      signal();
+    value: jest.fn(async (URL) => {
       switch (URL) {
         case 'https://foo.com/_oauth/logout':
           return {

@@ -1,7 +1,6 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
-import CustomSnackbar from 'components/route/Snackbar';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 
@@ -11,19 +10,17 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
-  const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
   let returnJSX;
 
   useEffect(() => {
-    if (auth.isAuthenticated && !isInitialFetchDone) {
+    if (auth.isAuthenticated) {
       if (auth.user !== null && auth.user !== undefined) {
         sessionStorage.setItem('access_token', auth.user.access_token);
-        setIsInitialFetchDone(true);
       } else {
         throw new Error('Access token was not available...');
       }
     }
-  }, [auth.user, auth.isAuthenticated, isInitialFetchDone]);
+  }, [auth.isAuthenticated, auth.user]);
 
   if (auth.isLoading) {
     returnJSX = <div>Loading...</div>;
@@ -42,7 +39,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
       <>
         {children}
         <ExecutionHistoryLoader />
-        <CustomSnackbar />
       </>
     );
   } else {

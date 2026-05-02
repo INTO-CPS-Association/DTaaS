@@ -2,14 +2,14 @@
 
 This page lists the slide decks and videos linked directly from the DTaaS
 documentation. GIF previews are embedded where preview files are available.
-When both standard and `4x` assets exist, the `4x` variant is used.
+When both standard and `4x` assets exist, the `4x` variant is shown here.
 
 ## Current GIF previews
 
 ### DTaaS v1.0 feature walkthrough
 
 <!-- markdownlint-disable MD013 -->
-![DTaaS v1.0 user walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif){ width="960" }
+![DTaaS v1.0 user walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif)
 
 Also see
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.mp4)
@@ -19,7 +19,7 @@ version. Referenced from [index.md](index.md) and
 ### DTaaS on localhost: installation and walkthrough
 
 <!-- markdownlint-disable MD013 -->
-![DTaaS localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_dtaas-localhost_4x.gif){ width="960" }
+![DTaaS localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_dtaas-localhost_4x.gif)
 
 Also see
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_dtaas-localhost_4x.mp4)
@@ -28,7 +28,7 @@ version. Referenced from [admin/overview.md](admin/overview.md).
 ### Multi-user DTaaS on secure server: installation and walkthrough
 
 <!-- markdownlint-disable MD013 -->
-![Multi-user DTaaS on secure server walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_multi-user-dtaas-on-secure-server_4x.gif){ width="960" }
+![Multi-user DTaaS on secure server walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_multi-user-dtaas-on-secure-server_4x.gif)
 
 Also see
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_multi-user-dtaas-on-secure-server_4x.mp4)
@@ -37,7 +37,7 @@ version. Referenced from [admin/overview.md](admin/overview.md).
 ### Workspace on localhost: installation and walkthrough
 
 <!-- markdownlint-disable MD013 -->
-![Workspace on localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Workspace_on_Localhost_web.gif){ width="960" }
+![Workspace on localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Workspace_on_Localhost_web.gif)
 
 Also see
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Workspace_on_Localhost_web.mp4)
@@ -46,7 +46,7 @@ version. Referenced from [admin/overview.md](admin/overview.md).
 ### Multi-user workspace
 
 <!-- markdownlint-disable MD013 -->
-![Multi-user workspace walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.gif){ width="960" }
+![Multi-user workspace walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.gif)
 
 Also see
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.mp4).

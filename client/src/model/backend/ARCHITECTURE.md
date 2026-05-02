@@ -44,8 +44,9 @@ the backends are connected to key objects:
 
 The Instance is responsible for linking the DTaaS application to the selected backend.
 This entails keeping track of logs, project ids and keeping associated backend API
-instances for further operations as described below. The interface is described in
-`./backendInterfaces.ts` with a concrete implementation being `./instance.ts`. It is
+instances for further operations as described below. The interface is described
+in `./backendInterfaces.ts` with a concrete implementation being
+`./instance.ts`. It is
 either created on an instance basis or passed from instance to instance when
 creating other instances. These then use the enriched project information to
 execute API commands, as demonstrated above. Detailed Logs are kept for any
@@ -55,7 +56,8 @@ Digital Twin executions, describing the success and job processing.
 
 The Backend communicates directly with the backend server for pipeline execution,
 log retrieval, and or file management. The interface is described in
-`./backendInterfaces.ts` with a concrete implementation being `./backend.ts`. It is
+`./backendInterfaces.ts` with a concrete implementation being
+`./backend.ts`. It is
 created before the Instance to be injected and may be initialized there. After
 this, it may be called through the Instance directly (e.g.
 `myInstance.api.cancelPipeline(...)`). It may contain a client field from a

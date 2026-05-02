@@ -15,15 +15,15 @@ adjustable parameters:
 
 ![Settings Overview](images/settings-overview.png)
 
-1. Group Name
-1. DT Directory
-1. Common Library Project name
-1. Runner Tag
-1. Branch Name
+There are two categories of settings - **Application Settings**,
+and **Measurement Settings**. Application settings are used for DevOps features
+while measurement settings are used for benchmarking the DevOps features.
 
 Following is a description of what each parameter does.
 
-### Group Name
+### Application Settings
+
+#### Group Name
 
 The Group Name denotes the highest level of organizational abstraction
 concerned with on the storage service, namely Groups. A
@@ -34,7 +34,7 @@ This parameter must be set to the case-insensitive name of the group.
 
 **Default**: DTaaS
 
-### Common Library Project name
+#### Common Library Project name
 
 One project within the group serves as the Digital Twins *Library*.
 Through the DTaaS, the files inside the Library are accessible to all users and
@@ -43,7 +43,7 @@ the project name of the Library, and must match that name.
 
 **Default**: common
 
-### DT Directory
+#### DT Directory
 
 Within the common library and user projects, files related to Digital
 Twins are stored within a designated folder.
@@ -51,7 +51,7 @@ This is the name chosen for that folder.
 
 **Default**: Digital_Twins
 
-### Branch Name
+#### Branch Name
 
 This parameter determines which branch to search for data (Twins,
 Functions, etc.) within user and library projects. This parameter also determines
@@ -59,7 +59,7 @@ which branch's Digital Twins are executed.
 
 **Default**: master
 
-### Runner Tag
+#### Runner Tag
 
 The (GitLab) runners responsible for executing Digital Twin code must be
 associated with a tag. Only one tag can be specified, and it **cannot** be
@@ -67,6 +67,36 @@ left blank, or the job of running the twin will not be processed.
 This is a limitation of the DTaaS.
 
 **Default**: linux
+
+### Measurement Settings
+
+#### Trial Number
+
+The number of times a test is run during benchmark runs.
+
+**Default**: 3
+
+#### Measurement Secondary Runner Tag
+
+Some benchmark runs require two GitLab runners.
+The *Runner Tag* in **Application Settings** points to first runner,
+while *Measurement Secondary Runner Tag* points to the second runner.
+
+**Default**: windows
+
+#### Primary Digital Twin
+
+The drop-down menu lists all the available digital twins from which
+the first digital twin is to be selected.
+
+**Default**: `first digital twin in alphabetical order`
+
+#### Secondary Digital Twin
+
+The drop-down menu lists all the available digital twins from which
+the second digital twin is to be selected.
+
+**Default**: `second digital twin in alphabetical order`
 
 ## 💾 Saving and Resetting Changes
 

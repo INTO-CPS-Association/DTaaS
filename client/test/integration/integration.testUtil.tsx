@@ -132,6 +132,8 @@ export async function itShowsTheTooltipWhenHoveringButton(toolTipText: string) {
       screen.queryByRole('tooltip', { name: toolTipText }),
     ).not.toBeInTheDocument();
   });
+  // Flush any pending Tooltip transition/animation state updates
+  await act(async () => {});
 }
 
 export async function itShowsTheParagraphOfToTheSelectedTab(

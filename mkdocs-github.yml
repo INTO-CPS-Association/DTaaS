@@ -21,7 +21,7 @@ nav:
       - Motivation: user/motivation.md
       - Features: user/features.md
       - Website:
-          - Overview: user/website/index.md
+          - Overview: user/website/dtaas.md
           - Settings: user/website/settings.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
@@ -187,6 +187,9 @@ markdown_extensions:
       alternate_style: true
   - mdx_math:
       enable_dollar_delimiter: True
+
+hooks:
+  - script/docs/mkdocs_hooks.py
 
 plugins:
   - open-in-new-tab

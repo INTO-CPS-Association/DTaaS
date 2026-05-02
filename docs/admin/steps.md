@@ -1,6 +1,6 @@
 # Installation Steps
 
-## Complete the DTaaS Platform
+## Complete DTaaS Platform
 
 Current DTaaS deployments are package-driven.
 Start by selecting one of these package roots:

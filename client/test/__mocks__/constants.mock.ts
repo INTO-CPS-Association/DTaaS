@@ -20,6 +20,7 @@ const createSettingsUtilityMock = (overrides = {}) => {
   const mockValues = { ...DEFAULT_MOCK_VALUES, ...overrides };
 
   return {
+    setSettingsStore: jest.fn(),
     getGroupName: jest.fn().mockReturnValue(mockValues.GROUP_NAME),
     getDTDirectory: jest.fn().mockReturnValue(mockValues.DT_DIRECTORY),
     getCommonLibraryProjectName: jest

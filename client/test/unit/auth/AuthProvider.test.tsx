@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import AuthProvider from 'route/auth/AuthProvider';
@@ -28,20 +29,19 @@ describe('AuthProvider', () => {
     (useOidcConfig as jest.Mock).mockReturnValue(oidcConfig);
   });
 
-  it('renders a loading message while waiting for OIDC config', () => {
-    (useOidcConfig as jest.Mock).mockReturnValue(undefined);
+  it('renders OIDCAuthProvider when OIDC config is available', () => {
+    const { getByText } = renderAuthProvider(<DummyComponent />);
 
+    expect(getByText('Dummy Component')).toBeInTheDocument();
+  });
+
+  it('renders fallback when OIDC config is not available', () => {
+    (useOidcConfig as jest.Mock).mockReturnValue(null);
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
     expect(
       getByText('Authentication service unavailable...try again later'),
     ).toBeInTheDocument();
-  });
-
-  it('renders OIDCAuthProvider when OIDC config is available', () => {
-    const { getByText } = renderAuthProvider(<DummyComponent />);
-
-    expect(getByText('Dummy Component')).toBeInTheDocument();
   });
 
   it('renders the children passed to AuthProvider', () => {

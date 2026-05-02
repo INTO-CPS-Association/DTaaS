@@ -270,6 +270,6 @@ export const resetIndexedDBServiceMocks = () => {
 jest.mock('model/backend/util/init', () => ({
   ...jest.requireActual('model/backend/util/init'),
   initDigitalTwin: createAsyncMock(mockDigitalTwin),
-  fetchLibraryAssets: jest.fn(),
-  fetchDigitalTwins: jest.fn(),
+  fetchLibraryAssets: jest.fn().mockResolvedValue(undefined),
+  fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
 }));

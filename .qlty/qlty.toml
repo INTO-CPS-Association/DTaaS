@@ -40,6 +40,8 @@ exclude_patterns = [
   "**/vendor/**",
   "**/assets/**",
   "docs/publish/**",
+  # Workaround: qlty mangles TypeScript types in this file during staging
+  "**/measurement.envSetup.ts",
 ]
 
 test_patterns = [

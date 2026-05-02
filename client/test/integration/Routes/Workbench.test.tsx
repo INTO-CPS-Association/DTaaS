@@ -1,4 +1,4 @@
-import { screen, within, waitFor } from '@testing-library/react';
+import { screen, within, waitFor, act } from '@testing-library/react';
 import {
   itShowsTheTooltipWhenHoveringButton,
   setupIntegrationTest,
@@ -64,8 +64,10 @@ describe('Workbench', () => {
     await setup();
   });
 
-  afterEach(() => {
-    store.dispatch(resetWorkbench());
+  afterEach(async () => {
+    await act(async () => {
+      store.dispatch(resetWorkbench());
+    });
   });
 
   it('renders the Workbench and Layout correctly', async () => {

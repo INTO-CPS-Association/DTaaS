@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useState, useCallback } from 'react';
 import { Button, CircularProgress, Box } from '@mui/material';
 import { handleStart } from 'route/digitaltwins/execution';
 import { useSelector, useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/snackbar.slice';
+import { formatName } from 'model/backend/digitalTwin';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import { selectExecutionHistoryByDTName } from 'model/backend/state/executionHistory.selectors';
 import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
@@ -56,6 +58,14 @@ function StartButton({
     if (isDebouncing || !digitalTwin) return;
 
     setIsDebouncing(true);
+
+    dispatch(
+      showSnackbar({
+        message: `Starting execution for ${formatName(assetName)}...`,
+        severity: 'success',
+        icon: 'PlayArrowIcon',
+      }),
+    );
 
     try {
       const digitalTwinInstance = await createDigitalTwinFromData(

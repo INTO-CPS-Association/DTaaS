@@ -18,10 +18,14 @@ export const createMockStorageService =
     deleteByDTName: jest.fn().mockResolvedValue(undefined),
   });
 
+const digitalTwinInitialState = { digitalTwin: {} };
+const digitalTwinReducer = (state = digitalTwinInitialState) => state;
+
 export const createTestStore = () =>
   configureStore({
     reducer: {
       executionHistory: executionHistoryReducer,
+      digitalTwin: digitalTwinReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -42,7 +46,7 @@ export const createTestStore = () =>
 
 export type TestStore = ReturnType<typeof createTestStore>;
 
-export const createMockEntry = (
+export const createMockDTExecutionResult = (
   id: string,
   dtName: string,
   pipelineId: number,

@@ -116,8 +116,12 @@ class DigitalTwin implements DigitalTwinInterface {
    * Execute a Digital Twin and create an execution history entry
    * @returns Promise that resolves with the pipeline ID or null if execution failed
    */
-  async execute(): Promise<number | null> {
-    return executeDT(this);
+  async execute(
+    skipHistorySave: boolean = false,
+    runnerTag?: string,
+    branchName?: string,
+  ): Promise<number | null> {
+    return executeDT(this, skipHistorySave, runnerTag, branchName);
   }
 
   /**

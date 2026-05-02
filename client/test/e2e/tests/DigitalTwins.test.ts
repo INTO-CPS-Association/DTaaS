@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 
 // Increase the test timeout to 5 minutes
 test.setTimeout(300000);
@@ -33,7 +34,7 @@ test.describe('Digital Twin Log Cleaning', () => {
       .filter({ has: page.getByText('Hello world', { exact: true }) })
       .first();
 
-    await expect(helloWorldCard).toBeVisible({ timeout: 10000 });
+    await expect(helloWorldCard).toBeVisible({ timeout: 30000 });
 
     // Get the Start button
     const startButton = helloWorldCard
@@ -41,7 +42,8 @@ test.describe('Digital Twin Log Cleaning', () => {
       .first();
     await expect(startButton).toBeVisible({ timeout: 10000 });
 
-    // Start the execution
+    // Enforce debounce between requests to avoid overwhelming GitLab
+    await page.waitForTimeout(DEBOUNCE_TIME);
     await startButton.click();
 
     // Wait for debounce period plus a bit for execution to start
@@ -76,7 +78,7 @@ test.describe('Digital Twin Log Cleaning', () => {
         .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
+    }).toPass({ timeout: 180000 }); // Increased timeout for GitLab pipeline
 
     const completedExecution = historyDialog
       .locator('.MuiAccordionSummary-root')

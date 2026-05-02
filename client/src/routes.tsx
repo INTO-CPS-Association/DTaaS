@@ -8,6 +8,7 @@ import DigitalTwinsPreview from 'route/digitaltwins/DigitalTwinsPreview';
 import SignIn from 'route/auth/Signin';
 import Account from 'route/account/Account';
 import Config from 'route/config/Config';
+import Measurement from 'route/measurement/Measurement';
 
 export const routes = [
   {
@@ -79,6 +80,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <LibraryPreview />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'insight/measure',
+    element: (
+      <PrivateRoute>
+        <Measurement />
       </PrivateRoute>
     ),
   },

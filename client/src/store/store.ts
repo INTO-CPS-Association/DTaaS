@@ -1,40 +1,22 @@
-import { combineReducers, Middleware } from 'redux';
+import { Middleware } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
-import executionHistorySlice, {
-  setStorageService,
-} from 'model/backend/state/executionHistory.slice';
-import digitalTwinSlice from 'model/backend/state/digitalTwin.slice';
-import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
-import snackbarSlice from 'store/snackbar.slice';
-import assetsSlice from 'model/store/assets.slice';
-import fileSlice from 'model/store/file.slice';
-import cartSlice from 'model/store/cart.slice';
-import menuSlice from 'store/menu.slice';
-import authSlice from 'store/auth.slice';
-import settingsSlice from 'store/settings.slice';
-import workbenchSlice from 'store/workbench.slice';
+import { setStorageService } from 'model/backend/state/executionHistory.slice';
 import indexedDBService from 'database/executionHistoryDB';
+import measurementDBService from 'database/measurementHistoryDB';
+import { rootReducer } from 'store/storeTypes';
+import {
+  setRunnerTag,
+  setBranchName,
+  setSecondaryRunnerTag,
+} from 'store/settings.slice';
+import { showSnackbar } from 'store/snackbar.slice';
+import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import { setMeasurementStore } from 'model/backend/gitlab/measure/measurement.execution';
+import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
+import { setPipelineExecutionDB } from 'model/backend/util/digitalTwinPipelineExecution';
+import { setMeasurementDB } from 'model/backend/gitlab/measure/measurement.runner';
 
 setStorageService(indexedDBService);
-
-const loadSettings = () => {
-  const serializedSettings = localStorage.getItem('settings');
-  return serializedSettings ? JSON.parse(serializedSettings) : undefined;
-};
-
-const rootReducer = combineReducers({
-  menu: menuSlice,
-  auth: authSlice,
-  assets: assetsSlice,
-  digitalTwin: digitalTwinSlice,
-  snackbar: snackbarSlice,
-  files: fileSlice,
-  cart: cartSlice,
-  libraryConfigFiles: libraryConfigFilesSlice,
-  settings: settingsSlice,
-  executionHistory: executionHistorySlice,
-  workbench: workbenchSlice,
-});
 
 const settingsPersistMiddleware: Middleware = (store) => (next) => (action) => {
   const result = next(action);
@@ -55,7 +37,6 @@ const settingsPersistMiddleware: Middleware = (store) => (next) => (action) => {
 
 const store = configureStore({
   reducer: rootReducer,
-  preloadedState: { settings: loadSettings() },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -69,7 +50,21 @@ const store = configureStore({
     }).concat(settingsPersistMiddleware),
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+// Dependency injection: wire store and services into model modules
+setSettingsStore(store);
+setMeasurementStore({
+  getState: store.getState,
+  restoreRunnerTag: (v) => store.dispatch(setRunnerTag(v)),
+  restoreBranchName: (v) => store.dispatch(setBranchName(v)),
+  restoreSecondaryRunnerTag: (v) => store.dispatch(setSecondaryRunnerTag(v)),
+  showSnackbar: (message, severity) =>
+    store.dispatch(showSnackbar({ message, severity })),
+});
+setExecutionHistoryDB(indexedDBService);
+setPipelineExecutionDB(indexedDBService);
+setMeasurementDB(measurementDBService);
+
+export type { RootState } from 'store/storeTypes';
 export type AppDispatch = typeof store.dispatch;
 
 export default store;

@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from 'store/store';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'store/storeTypes';
 import LibraryAsset from 'model/backend/libraryAsset';
-import { createSelector } from 'reselect';
 
 interface AssetsState {
   items: LibraryAsset[];

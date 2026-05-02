@@ -49,15 +49,14 @@ function LogDialog({ showLog, setShowLog, name }: LogDialogProps) {
 
   const handleClearAllClick = useCallback(() => {
     if (executions.length === 0) {
-      dispatch(
-        dispatch({
-          type: 'snackbar/showSnackbar',
-          payload: {
-            message: 'Execution history is already empty',
-            severity: 'info',
-          } as ShowNotificationPayload,
-        }),
-      );
+      dispatch({
+        type: 'snackbar/showSnackbar',
+        payload: {
+          message:
+            'Execution history is already empty or only has active entries',
+          severity: 'info',
+        } as ShowNotificationPayload,
+      });
       return;
     }
     setDeleteAllDialogOpen(true);

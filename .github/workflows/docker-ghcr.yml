@@ -101,6 +101,7 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
+          # yamllint disable rule:line-length
           tags: |
             ${{ env.IMAGE_REPO }}:${{ inputs.version }}
             ${{ env.IMAGE_REPO }}:latest

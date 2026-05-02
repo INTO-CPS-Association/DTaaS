@@ -106,6 +106,7 @@ jobs:
             $env:Path = "$machinePath;$userPath"
           # Start Docker service
           Start-Service docker
+      # yamllint enable rule:line-length
 
       - name: Install Docker on macOS
         if: runner.os == 'macOS'

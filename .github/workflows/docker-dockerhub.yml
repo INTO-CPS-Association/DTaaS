@@ -115,13 +115,16 @@ jobs:
           context: .
           file: ./docker/${{ inputs.dockerfile }}
           push: true
+          # yamllint disable rule:line-length
           tags: |
             ${{ env.IMAGE_REPO }}:${{ inputs.version }}
             ${{ env.IMAGE_REPO }}:latest
+          # yamllint enable rule:line-length
       - name: Docker Hub Description
         # v5.0.0
         # yamllint disable rule:line-length
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa
+        # yamllint enable rule:line-length
         with:
           username: ${{ env.username }}
           password: ${{ env.password }}

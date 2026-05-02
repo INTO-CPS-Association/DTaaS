@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { ExecutionHistoryEntry } from 'model/backend/gitlab/types/executionHistory';
 import indexedDBService from 'database/executionHistoryDB';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { createMockDTExecutionResult } from 'test/unit/store/executionHistory/testSetup';
 
 if (typeof globalThis.structuredClone !== 'function') {
   globalThis.structuredClone = <T>(obj: T): T =>
@@ -30,14 +31,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should add an execution history entry and retrieve it by ID', async () => {
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-id-123',
-      dtName: 'test-dt',
-      pipelineId: 456,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-id-123',
+      'test-dt',
+      456,
+      ExecutionStatus.RUNNING,
+    );
 
     const resultId = await indexedDBService.add(entry);
     expect(resultId).toBe(entry.id);
@@ -53,14 +52,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should update an existing execution history entry', async () => {
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-id-456',
-      dtName: 'test-dt',
-      pipelineId: 456,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-id-456',
+      'test-dt',
+      456,
+      ExecutionStatus.RUNNING,
+    );
     await indexedDBService.add(entry);
 
     const updatedEntry = {
@@ -155,15 +152,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should delete an execution history entry by ID', async () => {
-    // First, add an entry
-    const entry: ExecutionHistoryEntry = {
-      id: 'delete-id',
-      dtName: 'test-dt',
-      pipelineId: 456,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'delete-id',
+      'test-dt',
+      456,
+      ExecutionStatus.RUNNING,
+    );
     await indexedDBService.add(entry);
 
     // Verify it exists
@@ -237,10 +231,7 @@ describe('IndexedDBService (Real Implementation)', () => {
 
     indexedDB.open = jest.fn().mockImplementation(mockOpenImplementation);
 
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
-    const newService = Object.create(Object.getPrototypeOf(IndexedDBService));
+    const newService = Object.create(Object.getPrototypeOf(indexedDBService));
     newService.db = null;
     newService.dbName = 'test-db';
     newService.dbVersion = 1;
@@ -257,14 +248,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should handle add operation errors', async () => {
-    const entry: ExecutionHistoryEntry = {
-      id: 'error-test',
-      dtName: 'test-dt',
-      pipelineId: 456,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'error-test',
+      'test-dt',
+      456,
+      ExecutionStatus.RUNNING,
+    );
 
     await indexedDBService.add(entry);
 
@@ -311,14 +300,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should handle concurrent read/write operations', async () => {
-    const entry: ExecutionHistoryEntry = {
-      id: 'rw-test',
-      dtName: 'rw-dt',
-      pipelineId: 999,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'rw-test',
+      'rw-dt',
+      999,
+      ExecutionStatus.RUNNING,
+    );
 
     const operations = [
       indexedDBService.add(entry),
@@ -384,11 +371,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject add operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -397,14 +381,12 @@ describe('IndexedDBService (Real Implementation)', () => {
 
     uninitializedService.init = jest.fn().mockResolvedValue(undefined);
 
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-uninit',
-      dtName: 'test-dt',
-      pipelineId: 123,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-uninit',
+      'test-dt',
+      123,
+      ExecutionStatus.RUNNING,
+    );
 
     await expect(uninitializedService.add(entry)).rejects.toThrow(
       'Database not initialized - init() must be called first',
@@ -414,14 +396,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   it('should call init before adding entry', async () => {
     const initSpy = jest.spyOn(indexedDBService, 'init');
 
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-init-call',
-      dtName: 'test-dt',
-      pipelineId: 456,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-init-call',
+      'test-dt',
+      456,
+      ExecutionStatus.RUNNING,
+    );
 
     await indexedDBService.add(entry);
 
@@ -433,14 +413,12 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should successfully return entry ID after add', async () => {
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-return-id',
-      dtName: 'test-dt',
-      pipelineId: 789,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-return-id',
+      'test-dt',
+      789,
+      ExecutionStatus.RUNNING,
+    );
 
     const resultId = await indexedDBService.add(entry);
 
@@ -455,11 +433,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject update operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -467,14 +442,12 @@ describe('IndexedDBService (Real Implementation)', () => {
     uninitializedService.initPromise = undefined;
     uninitializedService.init = jest.fn().mockResolvedValue(undefined);
 
-    const entry: ExecutionHistoryEntry = {
-      id: 'test-update-uninit',
-      dtName: 'test-dt',
-      pipelineId: 123,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    const entry = createMockDTExecutionResult(
+      'test-update-uninit',
+      'test-dt',
+      123,
+      ExecutionStatus.RUNNING,
+    );
 
     await expect(uninitializedService.update(entry)).rejects.toThrow(
       'Database not initialized',
@@ -482,11 +455,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject getById operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -500,11 +470,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject getByDTName operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -518,11 +485,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject getAll operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -536,11 +500,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject delete operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';
@@ -554,11 +515,8 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should reject deleteByDTName operation when database is not initialized', async () => {
-    const { default: IndexedDBService } = await import(
-      'database/executionHistoryDB'
-    );
     const uninitializedService = Object.create(
-      Object.getPrototypeOf(IndexedDBService),
+      Object.getPrototypeOf(indexedDBService),
     );
     uninitializedService.db = undefined;
     uninitializedService.dbName = 'test-db';

@@ -208,7 +208,8 @@ describe('LogDialog', () => {
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'snackbar/showSnackbar',
       payload: {
-        message: 'Execution history is already empty',
+        message:
+          'Execution history is already empty or only has active entries',
         severity: 'info',
       },
     });

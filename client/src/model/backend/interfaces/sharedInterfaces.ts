@@ -128,7 +128,7 @@ export interface DigitalTwinCreator {
 }
 
 export interface DigitalTwinExecutor {
-  execute(): Promise<number | null>;
+  execute(skipHistorySave?: boolean): Promise<number | null>;
   stop(projectId: ProjectId, pipeline: string): Promise<void>;
 }
 
@@ -408,6 +408,7 @@ export type NotificationSeverity = 'success' | 'info' | 'warning' | 'error';
 export interface ShowNotificationPayload {
   message: string;
   severity: NotificationSeverity;
+  icon?: string;
 }
 
 // indexedDBService interface

@@ -1,7 +1,16 @@
-import { screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+
+jest.mock('routes', () => {
+  const MockSignin = () => <div>Signin</div>;
+  return {
+    __esModule: true,
+    default: [{ path: '/', element: <MockSignin /> }],
+  };
+});
 
 jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
@@ -62,14 +71,7 @@ describe('PrivateRoute', () => {
       isAuthenticated: false,
     });
 
-    await waitFor(
-      () => {
-        expect(screen.getByText('Signin')).toBeInTheDocument();
-      },
-      {
-        timeout: 60000,
-      },
-    );
+    expect(screen.getByText('Signin')).toBeInTheDocument();
 
     setupTest({
       isLoading: true,
@@ -87,7 +89,6 @@ describe('PrivateRoute', () => {
 
     expect(screen.getByText('Test Component')).toBeInTheDocument();
     expect(screen.getByText(/ExecutionHistoryLoader/i)).toBeInTheDocument();
-    expect(screen.getByText(/CustomSnackbar/i)).toBeInTheDocument();
   });
 
   test('renders error', () => {
@@ -99,5 +100,29 @@ describe('PrivateRoute', () => {
 
     expect(screen.getByText('Oops... Test error')).toBeInTheDocument();
     expect(screen.getByText('Mock WaitNavigateAndReload')).toBeInTheDocument();
+  });
+
+  test('stores access_token in sessionStorage when authenticated', () => {
+    setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+    expect(sessionStorage.getItem('access_token')).toBe('example_token');
+  });
+
+  test('throws when authenticated but user is null', () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      isLoading: false,
+      error: null,
+      isAuthenticated: true,
+      user: null,
+    });
+
+    expect(() =>
+      renderWithRouter(
+        <PrivateRoute>
+          <TestComponent />
+        </PrivateRoute>,
+        { route: '/private' },
+      ),
+    ).toThrow('Access token was not available...');
   });
 });

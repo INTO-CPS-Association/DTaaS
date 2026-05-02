@@ -8,7 +8,13 @@ import {
   checkRunningExecutions,
 } from 'model/backend/state/executionHistory.slice';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import ExecutionStatusService from 'model/backend/state/ExecutionStatusService';
 import { setupStore } from './testSetup';
+
+jest.mock('model/backend/state/ExecutionStatusService', () => ({
+  __esModule: true,
+  default: { checkRunningExecutions: jest.fn() },
+}));
 
 describe('executionHistory slice - error handling', () => {
   let store: ReturnType<typeof setupStore>['store'];
@@ -96,9 +102,7 @@ describe('executionHistory slice - error handling', () => {
     store.dispatch(setExecutionHistoryEntries(entries));
 
     const errorMessage = 'Delete failed';
-    mockStorageService.deleteByDTName.mockRejectedValue(
-      new Error(errorMessage),
-    );
+    mockStorageService.delete.mockRejectedValue(new Error(errorMessage));
 
     await (store.dispatch as (action: unknown) => Promise<void>)(
       clearExecutionHistoryForDT('test-dt'),
@@ -125,9 +129,9 @@ describe('executionHistory slice - error handling', () => {
     store.dispatch(setExecutionHistoryEntries(entries));
 
     const errorMessage = 'Check status failed';
-    jest.mock('model/backend/state/ExecutionStatusService', () => {
-      throw new Error(errorMessage);
-    });
+    jest
+      .spyOn(ExecutionStatusService, 'checkRunningExecutions')
+      .mockRejectedValue(new Error(errorMessage));
 
     await (store.dispatch as (action: unknown) => Promise<void>)(
       checkRunningExecutions(),

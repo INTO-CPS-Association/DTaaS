@@ -27,7 +27,6 @@ export {
 export {
   selectExecutionHistoryEntries,
   selectExecutionHistoryByDTName,
-  _selectExecutionHistoryByDTName,
   selectExecutionHistoryById,
   selectSelectedExecutionId,
   selectSelectedExecution,

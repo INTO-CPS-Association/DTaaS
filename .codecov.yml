@@ -1,6 +1,5 @@
 comment:
   layout: "header, diff, files, components"
-
 coverage:
   status:
     project:

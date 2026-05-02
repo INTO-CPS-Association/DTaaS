@@ -83,8 +83,9 @@ The microservices responsible for satisfying the user requirements are:
    It also directs _DT Execution Manager_ to perform execute, save and
    terminate operations on DTs.
 
-For a more detailed view, refer to
-the [C4 architectural diagram](C4-L2_diagram.png).
+Here is a more detailed architecture of the DTaaS platform drawn using
+C4 architectural notation.
+![C4 architectural diagram](research-overview/system-architecture-c4.png).
 
 A mapping of the architectural components to related pages in
 the documentation is available in the table.

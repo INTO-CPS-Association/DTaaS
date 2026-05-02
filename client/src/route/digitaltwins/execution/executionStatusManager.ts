@@ -15,7 +15,10 @@ import {
 import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
 import { PIPELINE_POLL_INTERVAL } from 'model/backend/gitlab/digitalTwinConfig/constants';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { updatePipelineStateOnCompletion } from 'route/digitaltwins/execution/executionStatusHandlers';
+import {
+  updatePipelineStateOnCompletion,
+  fetchLogsAndUpdateExecution,
+} from 'route/digitaltwins/execution/executionStatusHandlers';
 
 export interface PipelineStatusParams {
   setButtonText: Dispatch<SetStateAction<string>>;
@@ -156,10 +159,6 @@ export const handlePipelineCompletion = async (
       : ExecutionStatus.FAILED;
 
   if (executionId) {
-    const { fetchLogsAndUpdateExecution } = await import(
-      'route/digitaltwins/execution/executionStatusHandlers'
-    );
-
     const logsUpdated = await fetchLogsAndUpdateExecution(
       digitalTwin,
       pipelineId,

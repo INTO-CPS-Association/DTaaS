@@ -179,8 +179,7 @@ Common anti-patterns to avoid:
 
 ## :page_facing_up: References
 
-The research behind DTaaS is documented in the following papers,
-located in the `.research-papers/latex/` directory of this repository:
+The research behind DTaaS is documented in the following papers.
 
 1. **Composable Digital Twins on Digital Twin as a Service Platform**
   — Defines the core platform architecture,

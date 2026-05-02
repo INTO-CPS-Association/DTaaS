@@ -1,4 +1,4 @@
-import store from 'store/store';
+import type { RootState } from 'store/storeTypes';
 
 /**
  * Non-hook getters for settings stored in the Redux store.
@@ -7,11 +7,30 @@ import store from 'store/store';
  * - Hook variants are in util/settingsUseHooks.ts
  * - Settings can be overridden by the user in the Settings tab
  */
-export const getGroupName = (): string => store.getState().settings.GROUP_NAME;
+
+type StoreReader = { getState: () => RootState };
+
+let _store: StoreReader | null = null;
+
+export function setSettingsStore(store: StoreReader): void {
+  _store = store;
+}
+
+function getStore(): StoreReader {
+  if (!_store)
+    throw new Error(
+      'Settings store not initialized. Call setSettingsStore() first.',
+    );
+  return _store;
+}
+
+export const getGroupName = (): string =>
+  getStore().getState().settings.GROUP_NAME;
 export const getDTDirectory = (): string =>
-  store.getState().settings.DT_DIRECTORY;
+  getStore().getState().settings.DT_DIRECTORY;
 export const getCommonLibraryProjectName = (): string =>
-  store.getState().settings.COMMON_LIBRARY_PROJECT_NAME;
-export const getRunnerTag = (): string => store.getState().settings.RUNNER_TAG;
+  getStore().getState().settings.COMMON_LIBRARY_PROJECT_NAME;
+export const getRunnerTag = (): string =>
+  getStore().getState().settings.RUNNER_TAG;
 export const getBranchName = (): string =>
-  store.getState().settings.BRANCH_NAME;
+  getStore().getState().settings.BRANCH_NAME;

@@ -90,7 +90,7 @@ describe('ExecutionHistoryList - rendering', () => {
     expect(screen.getByText(/Running/i)).toBeInTheDocument();
     expect(screen.getByText(/Canceled/i)).toBeInTheDocument();
     expect(screen.getByText(/Timed out/i)).toBeInTheDocument();
-    expect(screen.getAllByLabelText(/delete/i).length).toBe(5);
+    expect(screen.getAllByLabelText(/delete/i).length).toBe(4);
     expect(screen.getByLabelText(/stop/i)).toBeInTheDocument();
   });
 
@@ -131,7 +131,7 @@ describe('ExecutionHistoryList - rendering', () => {
     );
 
     expect(screen.getByLabelText('stop')).toBeInTheDocument();
-    expect(screen.getByLabelText('delete')).toBeInTheDocument();
+    expect(screen.queryByLabelText('delete')).not.toBeInTheDocument();
     const runningElements = screen.getAllByText(
       (_content, element) => element?.textContent?.includes('Running') || false,
     );

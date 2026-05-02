@@ -7,7 +7,7 @@ import {
   clearEntries,
 } from 'model/backend/state/executionHistory.slice';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { setupStore, createMockEntry } from './testSetup';
+import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 describe('executionHistory slice - reducers (advanced)', () => {
   let store: ReturnType<typeof setupStore>['store'];
@@ -17,13 +17,13 @@ describe('executionHistory slice - reducers (advanced)', () => {
   });
 
   it('should handle removeExecutionHistoryEntry', () => {
-    const entry1 = createMockEntry(
+    const entry1 = createMockDTExecutionResult(
       '1',
       'test-dt',
       123,
       ExecutionStatus.COMPLETED,
     );
-    const entry2 = createMockEntry(
+    const entry2 = createMockDTExecutionResult(
       '2',
       'test-dt',
       456,
@@ -38,9 +38,9 @@ describe('executionHistory slice - reducers (advanced)', () => {
 
   it('should handle removeEntriesForDT', () => {
     const entries = [
-      createMockEntry('1', 'dt1', 123, ExecutionStatus.COMPLETED),
-      createMockEntry('2', 'dt2', 456, ExecutionStatus.RUNNING),
-      createMockEntry('3', 'dt1', 789, ExecutionStatus.FAILED),
+      createMockDTExecutionResult('1', 'dt1', 123, ExecutionStatus.COMPLETED),
+      createMockDTExecutionResult('2', 'dt2', 456, ExecutionStatus.RUNNING),
+      createMockDTExecutionResult('3', 'dt1', 789, ExecutionStatus.FAILED),
     ];
 
     store.dispatch(setExecutionHistoryEntries(entries));
@@ -62,7 +62,12 @@ describe('executionHistory slice - reducers (advanced)', () => {
 
   it('should handle clearEntries', () => {
     const entries = [
-      createMockEntry('1', 'test-dt', 123, ExecutionStatus.COMPLETED),
+      createMockDTExecutionResult(
+        '1',
+        'test-dt',
+        123,
+        ExecutionStatus.COMPLETED,
+      ),
     ];
 
     store.dispatch(setExecutionHistoryEntries(entries));
@@ -73,7 +78,7 @@ describe('executionHistory slice - reducers (advanced)', () => {
   });
 
   it('should not remove entries when id does not match in removeExecutionHistoryEntry', () => {
-    const entry1 = createMockEntry(
+    const entry1 = createMockDTExecutionResult(
       '1',
       'test-dt',
       123,

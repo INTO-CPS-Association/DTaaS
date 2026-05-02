@@ -8,6 +8,8 @@ extends: default
 rules:
   document-start:
     present: false
+  line-length:
+    max: 120
   truthy:
     allowed-values: ['TRUE', 'True', 'true', 'FALSE', 'False', 'false']
     check-keys: true

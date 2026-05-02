@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import {
   getClientID,
   getAuthority,
@@ -19,16 +19,20 @@ export interface OidcConfig {
 }
 
 export const useOidcConfig = (): OidcConfig | null => {
-  const [oidcConfig, setOidcConfig] = useState<OidcConfig | null>(null);
+  const oidcConfig = useMemo<OidcConfig | null>(() => {
+    const CLIENT_ID = getClientID();
+    const AUTH_AUTHORITY = getAuthority();
 
-  useEffect(() => {
-    const CLIENT_ID = getClientID() ?? '';
-    const AUTH_AUTHORITY = getAuthority() ?? '';
+    const hasRequiredConfig = CLIENT_ID && AUTH_AUTHORITY;
+    if (!hasRequiredConfig) {
+      return null;
+    }
+
     const LOGOUT_URL = getLogoutRedirectURI() ?? '';
     const GITLAB_SCOPES = getGitLabScopes() ?? '';
     const REDIRECT_URI = getRedirectURI() ?? '';
 
-    const config: OidcConfig = {
+    return {
       authority: AUTH_AUTHORITY.toString(),
       client_id: CLIENT_ID.toString(),
       redirect_uri: REDIRECT_URI.toString(),
@@ -38,7 +42,6 @@ export const useOidcConfig = (): OidcConfig | null => {
       automaticSilentRenew: false,
       loadUserInfo: true,
     };
-    setOidcConfig(config);
   }, []);
 
   return oidcConfig;
