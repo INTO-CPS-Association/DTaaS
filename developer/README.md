@@ -55,7 +55,7 @@ development. The images can be built using
 cd developer
 cp config/.env.example config/.env
 cp config/conf.dev.example config/conf.dev
-docker compose build
+docker compose --env-file config/.env build
 ```
 
 ## Running Docker Containers
@@ -90,8 +90,8 @@ The docker commands need to be executed from the `developer` directory.
 The relevant docker commands are:
 
 ```bash
-docker compose up -d #start the application
-docker compose down  #terminate the application
+docker compose --env-file config/.env up -d #start the application
+docker compose --env-file config/.env down  #terminate the application
 ```
 
 ### Access the Application

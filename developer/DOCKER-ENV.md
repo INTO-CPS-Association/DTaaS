@@ -6,7 +6,6 @@ Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
-  | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
   | OAUTH_CLIENT_ID | 'xx' | The ID of your server OAuth application |
   | OAUTH_CLIENT_SECRET | 'xx' | The Secret of your server OAuth application |
@@ -18,7 +17,3 @@ Edit all the fields according to your specific case.
 
 1. The path examples given here are for Linux OS.
    These paths can be Windows OS compatible paths as well.
-1. The Server DNS can also be an IP address.
-   However, for proper working it is neccessary to use the same
-   convention (IP/DNS) in the client configuration file
-   (`developer/config/local.js`) as well.
