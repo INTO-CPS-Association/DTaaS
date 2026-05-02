@@ -24,8 +24,8 @@ services:
 
   client:
     build:
-      context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/client.dockerfile
+      context: ../
+      dockerfile: developer/client.dockerfile
     restart: unless-stopped
     volumes:
       - "./config/local.js:/dtaas/client/build/env.js"
@@ -40,8 +40,8 @@ services:
 
   libms:
     build:
-      context: ${DTAAS_DIR}/
-      dockerfile: ${DTAAS_DIR}/docker/libms.dockerfile
+      context: ../
+      dockerfile: developer/libms.dockerfile
     restart: unless-stopped
     volumes:
       - "./files:/dtaas/libms/files"
@@ -93,7 +93,7 @@ services:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped
     volumes:
-      - "./conf.dev:/conf"
+      - "./config/conf.dev:/conf"
     environment:
       - DEFAULT_PROVIDER=generic-oauth
       - PROVIDERS_GENERIC_OAUTH_AUTH_URL=${OAUTH_URL}/oauth/authorize

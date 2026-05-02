@@ -6,7 +6,6 @@ Edit all the fields according to your specific case.
 
   | URL Path | Example Value | Explanation |
   | :------------ | :--------------- | :--------------- |
-  | DTAAS_DIR | '/Users/username/DTaaS' | Full path to the DTaaS directory. This is an absolute path with no trailing slash. |
   | SERVER_DNS | <http>_foo.com_</http> | The server DNS, if you are deploying with a dedicated server. Remember not use  <http:>http(s)</http:> at the beginning of the DNS string |
   | OAUTH_URL | <http>_gitlab.foo.com_<http/> | The URL of your Gitlab instance. It can be <http>_gitlab.com_<http/> if you are planning to use it for authorization. |
   | OAUTH_CLIENT_ID | 'xx' | The ID of your server OAuth application |
@@ -22,4 +21,4 @@ Edit all the fields according to your specific case.
 1. The Server DNS can also be an IP address.
    However, for proper working it is neccessary to use the same
    convention (IP/DNS) in the client configuration file
-   (`deploy/config/client/env.js`) as well.
+   (`developer/config/local.js`) as well.

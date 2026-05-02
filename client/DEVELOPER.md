@@ -110,7 +110,7 @@ The purpose of different configuration files are given in the table below.
 | Configuration File Name | Usage Scenario                                                                                                                                                        |
 | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dev.js`                | Check functionality of the client application without using any other parts of the DTaaS software                                                                     |
-| `local.js`              | Used by the `docker/docker-compose.yml` to setup a check the complete DTaaS application on the developer computer                                                        |
+| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                        |
 | `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
 | `test.js`               | Used by all the tests                                                                                                                                                 |
 
@@ -186,7 +186,7 @@ This error is expected.
 
 ## Quality Check
 
-A docker compose-based [development environment](../docker/README.md)
+A docker compose-based [development environment](../developer/README.md)
 is available to test the DTaaS application on a local machine.
 
 Testing different port and basename options is currently difficult in the
@@ -195,5 +195,5 @@ Docker-based development environment.
 ## Publish Docker Images
 
 Each new release of the client web application is published as a Docker
-container image. See the [publishing](../docker/README.md) page for
+container image. See the [publishing](../developer/README.md) page for
 information about publishing Docker images.
