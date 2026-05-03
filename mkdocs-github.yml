@@ -188,9 +188,6 @@ markdown_extensions:
   - mdx_math:
       enable_dollar_delimiter: True
 
-hooks:
-  - script/docs/mkdocs_hooks.py
-
 plugins:
   - open-in-new-tab
   - search
