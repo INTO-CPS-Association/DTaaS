@@ -14,7 +14,8 @@ provides details on setting up OAuth authorization for the client application.
 
 ### Create Docker Compose File
 
-Create an empty file named `compose.client.yml` and copy the following content into it:
+Create an empty file named `compose.client.yml` and copy the following content
+into it:
 
 ```yml
 services:
@@ -34,7 +35,8 @@ See the
 [config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
 for an explanation of client configuration.
 
-The Docker-based client application uses configuration saved in a `config.js` file.
+The Docker-based client application uses configuration saved in
+a `config.js` file.
 Create this file in the same filesystem location as `compose.client.yml`.
 
 Create a file `config.js` with the following contents:
@@ -60,8 +62,9 @@ if (typeof window !== 'undefined') {
 }
 ```
 
-This default configuration works when an account is available on <https://gitlab.com>.
-Modify this file as needed for environment-specific values.
+This default configuration works when an account is available on
+<https://gitlab.com>. Modify this file as needed for
+environment-specific values.
 
 ### Run
 
@@ -90,4 +93,3 @@ The error is expected.
 
 To run the complete DTaaS application, see the localhost installation documentation:
 [docs](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).
-

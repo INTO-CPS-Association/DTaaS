@@ -197,9 +197,9 @@ test.svg
 # certs
 *.pem
 
-#ignore developer files
-docker/.env
-docker/conf.dev
+# developer config files (tracked via .example counterparts only)
+developer/config/*
+!developer/config/*.example
 
 # execution runner
 servers/execution/runner/lifecycle*

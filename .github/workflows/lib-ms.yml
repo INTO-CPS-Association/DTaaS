@@ -34,7 +34,7 @@ jobs:
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup node
         # v6.1.0
@@ -75,7 +75,7 @@ jobs:
 
       - name: Update configuration
         env:
-          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
           node test/update-config.js
@@ -116,7 +116,7 @@ jobs:
       - name: Run http test
         env:
           PORT: ${{ env.HTTP_PORT }}
-          LOCAL_PATH: ${{ github.workspace }}/files
+          LOCAL_PATH: ${{ github.workspace }}/developer/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib

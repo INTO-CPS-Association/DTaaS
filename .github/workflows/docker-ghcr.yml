@@ -99,7 +99,7 @@ jobs:
             inputs.image-name) }}
         with:
           context: .
-          file: ./docker/${{ inputs.dockerfile }}
+          file: ./developer/${{ inputs.dockerfile }}
           push: true
           # yamllint disable rule:line-length
           tags: |
