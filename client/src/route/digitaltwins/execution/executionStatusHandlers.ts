@@ -51,6 +51,7 @@ export const startPipeline = async (
     payload: {
       message: executionStatusMessage,
       severity: 'success',
+      icon: 'PlayArrowIcon',
     } as ShowNotificationPayload,
   });
 

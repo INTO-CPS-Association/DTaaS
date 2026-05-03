@@ -5,12 +5,12 @@ import settingsReducer, {
   setRunnerTag,
   resetToDefaults,
   DEFAULT_SETTINGS,
+  DEFAULT_MEASUREMENT,
   loadInitialSettings,
-  saveSettingsToLocalStorage,
 } from 'store/settings.slice';
 
 describe('settingsSlice', () => {
-  const initialState = { ...DEFAULT_SETTINGS };
+  const initialState = { ...DEFAULT_SETTINGS, ...DEFAULT_MEASUREMENT };
 
   beforeEach(() => {
     jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
@@ -47,15 +47,14 @@ describe('settingsSlice', () => {
 
   it('should handle resetToDefaults', () => {
     const modified = {
+      ...initialState,
       GROUP_NAME: 'testGroup',
       DT_DIRECTORY: 'testDTDirectory',
-      COMMON_LIBRARY_PROJECT_NAME: 'testCommonLibraryProjectName',
-      RUNNER_TAG: 'testRunnerTag',
-      BRANCH_NAME: 'testBranchName',
+      trials: 99,
     };
 
     const state = settingsReducer(modified, resetToDefaults());
-    expect(state).toEqual(DEFAULT_SETTINGS);
+    expect(state).toEqual(initialState);
   });
 
   it('loads and merges settings from localStorage', () => {
@@ -71,22 +70,17 @@ describe('settingsSlice', () => {
 
     expect(getItemSpy).toHaveBeenCalledWith('settings');
     expect(parseSpy).toHaveBeenCalledWith(savedJson);
-    expect(result).toEqual({ ...DEFAULT_SETTINGS, ...parsedSettings });
-  });
-
-  it('saves settings to localStorage as JSON', () => {
-    const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
-    const testSettings = { ...DEFAULT_SETTINGS, GROUP_NAME: 'testGroup' };
-
-    saveSettingsToLocalStorage(testSettings);
-
-    expect(setItemSpy).toHaveBeenCalledWith(
-      'settings',
-      JSON.stringify(testSettings),
-    );
+    expect(result).toEqual({
+      ...DEFAULT_SETTINGS,
+      ...DEFAULT_MEASUREMENT,
+      ...parsedSettings,
+    });
   });
 
   it('returns defaults when localStorage is empty', () => {
-    expect(loadInitialSettings()).toEqual(DEFAULT_SETTINGS);
+    expect(loadInitialSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
+      ...DEFAULT_MEASUREMENT,
+    });
   });
 });

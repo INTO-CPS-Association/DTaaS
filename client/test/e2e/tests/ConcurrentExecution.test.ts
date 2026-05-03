@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 
 // Increase the test timeout to 5 minutes
 test.setTimeout(300000);
@@ -41,17 +42,18 @@ test.describe('Concurrent Execution', () => {
       .first();
     await expect(startButton).toBeVisible();
 
-    // Start the first execution
+    // Enforce debounce between requests to avoid overwhelming GitLab
+    await page.waitForTimeout(DEBOUNCE_TIME);
     await startButton.click();
 
-    // Wait for debounce period (250ms) plus a bit for execution to start
-    await page.waitForTimeout(500);
+    // Wait for debounce period plus a bit for execution to start
+    await page.waitForTimeout(DEBOUNCE_TIME * 2);
 
     // Start a second execution
     await startButton.click();
 
     // Wait for debounce period plus a bit for second execution to start
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(DEBOUNCE_TIME * 2);
 
     // Click the History button
     const historyButton = helloWorldCard
@@ -89,7 +91,7 @@ test.describe('Concurrent Execution', () => {
         .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
+    }).toPass({ timeout: 180000 }); // Increased timeout for GitLab pipeline
 
     // For the first completed execution, expand the accordion to view the logs
     const firstCompletedExecution = historyDialog
@@ -187,14 +189,15 @@ test.describe('Concurrent Execution', () => {
       .locator('.MuiPaper-root')
       .filter({ has: page.getByText('Hello world', { exact: true }) })
       .first();
-    await expect(helloWorldCard).toBeVisible({ timeout: 10000 });
+    await expect(helloWorldCard).toBeVisible({ timeout: 30000 });
 
     // Get the Start button
     const startButton = helloWorldCard
       .getByRole('button', { name: 'Start' })
       .first();
 
-    // Start an execution
+    // Enforce debounce between requests to avoid overwhelming GitLab
+    await page.waitForTimeout(DEBOUNCE_TIME);
     await startButton.click();
 
     // Wait for debounce period plus a bit for execution to start
@@ -214,7 +217,7 @@ test.describe('Concurrent Execution', () => {
       .locator('.MuiPaper-root')
       .filter({ has: page.getByText('Hello world', { exact: true }) })
       .first();
-    await expect(helloWorldCard).toBeVisible({ timeout: 10000 });
+    await expect(helloWorldCard).toBeVisible({ timeout: 30000 });
 
     // Click the History button
     const postReloadHistoryButton = helloWorldCard
@@ -249,7 +252,7 @@ test.describe('Concurrent Execution', () => {
         .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 60000 }); // Increased timeout for GitLab pipeline
+    }).toPass({ timeout: 180000 }); // Increased timeout for GitLab pipeline
 
     const completedSelector = postReloadHistoryDialog
       .locator('.MuiAccordionSummary-root')

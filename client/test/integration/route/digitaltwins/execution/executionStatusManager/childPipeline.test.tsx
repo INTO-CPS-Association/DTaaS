@@ -69,9 +69,14 @@ describe('PipelineChecks - childPipeline', () => {
     const snackbarState = store.getState().snackbar;
 
     const expectedSnackbarState = {
-      open: true,
-      message: 'Execution failed for MockedDTName',
-      severity: 'error',
+      items: [
+        {
+          id: 0,
+          message: 'Execution failed for MockedDTName',
+          severity: 'error',
+        },
+      ],
+      nextId: 1,
     };
 
     expect(snackbarState).toEqual(expectedSnackbarState);

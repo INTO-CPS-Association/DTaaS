@@ -162,4 +162,4 @@ docker compose --env-file config/.env down
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),
-[gitlab](https://gitlab.com)
+[GitLab](https://gitlab.com)

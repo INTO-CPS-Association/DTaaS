@@ -1,6 +1,7 @@
 # Introduction
 
-This document provides developer guidance for the React single-page web application.
+This document provides developer guidance for the React single-page
+web application.
 
 ## Setup the Environment and Build
 
@@ -81,7 +82,8 @@ A <https://gitlab.com> account is required to use this OAuth application.
 
 An `env.js` file is required in the root directory of `build` during runtime.
 This file configures the application endpoints.
-See the [config page](../docs/admin/client/config.md) for an explanation of client configuration.
+See the [config page](../docs/admin/client/config.md) for an explanation of
+client configuration.
 
 ### Multiple configurations
 
@@ -108,14 +110,14 @@ The purpose of different configuration files are given in the table below.
 | Configuration File Name | Usage Scenario                                                                                                                                                        |
 | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dev.js`                | Check functionality of the client application without using any other parts of the DTaaS software                                                                     |
-| `gitlab.js`             | Used for testing the gitlab code written in `src/utils/gitlab.ts`. These credentials are not used by the client application                                           |
-| `local.js`              | Used by the `docker/compose.dev.yml` to setup a check the complete DTaaS application on the developer computer                                                        |
+| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                        |
 | `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
 | `test.js`               | Used by all the tests                                                                                                                                                 |
 
 ## Example configuration for developers
 
-Collect the GitLab OAuth provider URL and client application ID to create a configuration file.
+Collect the GitLab OAuth provider URL and client application ID to create
+a configuration file.
 
 An example configuration for developers is available in `config/test.js`:
 
@@ -184,7 +186,7 @@ This error is expected.
 
 ## Quality Check
 
-A docker compose-based [development environment](../docker/README.md)
+A docker compose-based [development environment](../developer/README.md)
 is available to test the DTaaS application on a local machine.
 
 Testing different port and basename options is currently difficult in the
@@ -193,39 +195,5 @@ Docker-based development environment.
 ## Publish Docker Images
 
 Each new release of the client web application is published as a Docker
-container image. See the [publishing](../docker/README.md) page for
+container image. See the [publishing](../developer/README.md) page for
 information about publishing Docker images.
-
-## Gitlab Integration
-
-The client codebase currently uses GitLab for OAuth2 only. An ongoing effort
-is integrating GitLab CI/CD capabilities to automate Digital Twin execution.
-This code is in an alpha stage and is
-available in `src/util/gitlab*.ts`.
-
-The GitLab code requires a
-[GitLab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
-for a GitLab account. All scopes should be selected for the access token.
-Specifically, select the following scopes.
-
-```txt
-api, read_api, read_user, create_runner, k8s_proxy, read_repository, write_repository, ai_features
-```
-
-The token information needs to be updated in `config/gitlab.json`.
-
-In addition to the personal access token, a
-[pipeline trigger token](https://archives.docs.gitlab.com/16.4/ee/ci/triggers/index.html)
-is required to trigger pipelines using the API.
-This token can be created in a GitLab project's CI/CD settings under the
-_Pipeline trigger tokens_ section.
-
-Once token configuration is in place, the GitLab integration can be developed
-and tested using the following yarn commands.
-
-```bash
-yarn test:preview:int
-yarn test:preview:unit
-yarn test:coverage:int-unit
-```
-

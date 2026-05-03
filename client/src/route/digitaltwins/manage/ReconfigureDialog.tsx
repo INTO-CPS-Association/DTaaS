@@ -62,8 +62,9 @@ function ReconfigureDialog({
 
   const handleConfirmSave = async () => {
     if (digitalTwinData) {
-      const { saveChanges } =
-        await import('route/digitaltwins/manage/reconfigureDialogHandlers');
+      const { saveChanges } = await import(
+        'route/digitaltwins/manage/reconfigureDialogHandlers'
+      );
       const digitalTwinInstance = await createDigitalTwinFromData(
         digitalTwinData,
         name,
@@ -164,7 +165,7 @@ const ReconfigureMainDialog = ({
   <Dialog
     open={showDialog}
     onClose={() => handleCloseReconfigureDialog(setShowDialog)}
-    fullWidth={true}
+    fullWidth
     maxWidth="lg"
     sx={{
       '& .MuiDialog-paper': {

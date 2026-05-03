@@ -2,8 +2,11 @@
 
 One of the common errors is the incorrect configuration of
 the react website. There is now a helpful checklist to verify
-the client configuration. A correct configuration shows
-the following result.
+the client configuration.
+
+**Visit**: `https://<SERVER_DNS>/config/developer`
+
+A correct configuration shows the following result.
 
 ![Correct client configuration](client-config-valid.png)
 

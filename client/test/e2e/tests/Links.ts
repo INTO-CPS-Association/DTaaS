@@ -20,7 +20,7 @@ const links: LinkType[] = [
 export const workbenchLinks: LinkType[] = [
   {
     text: 'Desktop-btn',
-    url: `./${testUsername}/tools/vnc/?password=vncpassword`,
+    url: `./${testUsername}/tools/vnc?path=${testUsername}%2Ftools%2Fvnc%2Fwebsockify`,
   },
   { text: 'VSCode-btn', url: `./${testUsername}/tools/vscode` },
   { text: 'JupyterLab-btn', url: `./${testUsername}/lab` },

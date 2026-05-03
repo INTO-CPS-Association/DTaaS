@@ -16,7 +16,6 @@ import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { createMockDigitalTwinData } from 'test/__mocks__/global_mocks';
 import '@testing-library/jest-dom';
 
-// Mock the dependencies
 jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));

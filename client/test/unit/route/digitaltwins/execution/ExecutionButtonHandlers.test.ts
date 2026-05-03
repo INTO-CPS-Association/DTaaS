@@ -6,6 +6,10 @@ import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { PipelineHandlerDispatch } from 'route/digitaltwins/execution/executionButtonHandlers';
 import { fetchExecutionHistory } from 'model/backend/state/executionHistory.slice';
 
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'test-uuid-1234'),
+}));
+
 jest.mock('route/digitaltwins/execution/executionStatusManager', () => ({
   startPipelineStatusCheck: jest.fn(),
 }));
@@ -20,6 +24,7 @@ jest.mock('model/backend/state/executionHistory.slice', () => ({
   fetchExecutionHistory: jest.fn(),
   setStorageService: jest.fn(),
   updateExecutionStatus: jest.fn(),
+  setSelectedExecutionId: jest.fn(),
 }));
 
 describe('ExecutionButtonHandlers', () => {
@@ -180,7 +185,7 @@ describe('ExecutionButtonHandlers', () => {
       type: 'snackbar/showSnackbar',
       payload: {
         message: expect.stringContaining('stopped successfully'),
-        severity: 'success',
+        severity: 'warning',
       },
     });
     expect(updatePipelineStateOnStop).toHaveBeenCalled();

@@ -69,9 +69,14 @@ describe('PipelineChecks - parentPipeline', () => {
     const snackbarState = store.getState().snackbar;
 
     const expectedSnackbarState = {
-      open: true,
-      message: 'Execution timed out for MockedDTName',
-      severity: 'error',
+      items: [
+        {
+          id: 0,
+          message: 'Execution timed out for MockedDTName',
+          severity: 'error',
+        },
+      ],
+      nextId: 1,
     };
 
     expect(snackbarState).toEqual(expectedSnackbarState);

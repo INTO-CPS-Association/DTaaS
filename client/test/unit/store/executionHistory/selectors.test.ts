@@ -15,7 +15,7 @@ import {
 } from 'model/backend/state/executionHistory.selectors';
 import { RootState } from 'store/store';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { setupStore, createMockEntry } from './testSetup';
+import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 describe('executionHistory slice - selectors', () => {
   let store: ReturnType<typeof setupStore>['store'];
@@ -24,9 +24,9 @@ describe('executionHistory slice - selectors', () => {
     ({ store } = setupStore());
 
     const entries = [
-      createMockEntry('1', 'dt1', 123, ExecutionStatus.COMPLETED),
-      createMockEntry('2', 'dt2', 456, ExecutionStatus.RUNNING),
-      createMockEntry('3', 'dt1', 789, ExecutionStatus.FAILED),
+      createMockDTExecutionResult('1', 'dt1', 123, ExecutionStatus.COMPLETED),
+      createMockDTExecutionResult('2', 'dt2', 456, ExecutionStatus.RUNNING),
+      createMockDTExecutionResult('3', 'dt1', 789, ExecutionStatus.FAILED),
     ];
     store.dispatch(setExecutionHistoryEntries(entries));
     store.dispatch(setSelectedExecutionId('2'));

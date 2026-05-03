@@ -1,13 +1,14 @@
+import '@testing-library/jest-dom';
 import {
   screen,
   fireEvent,
   act,
   waitFor,
   within,
+  cleanup,
 } from '@testing-library/react';
 import SettingsForm from 'route/account/SettingsForm';
 import {
-  DEFAULT_SETTINGS,
   setGroupName,
   resetToDefaults,
   setCommonLibraryProjectName,
@@ -15,28 +16,29 @@ import {
   setRunnerTag,
   setBranchName,
 } from 'store/settings.slice';
-import { useSelector, useDispatch } from 'react-redux';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import setupSettingsFormTest from './settingsForm.testSetup';
+
+jest.mock('routes', () => ({ __esModule: true, default: [] }));
+
+jest.mock('model/backend/util/init', () => ({
+  fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
   useDispatch: jest.fn(),
 }));
-
 jest.useFakeTimers();
 
-const mockedUseSelector = useSelector as unknown as jest.Mock;
-const mockedUseDispatch = useDispatch as unknown as jest.Mock;
-
 describe('SettingsForm', () => {
-  const mockDispatch = jest.fn();
+  let mockDispatch: jest.Mock;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
-    mockedUseSelector.mockImplementation((selector) =>
-      selector({ settings: DEFAULT_SETTINGS }),
-    );
-    mockedUseDispatch.mockReturnValue(mockDispatch);
+    ({ mockDispatch } = setupSettingsFormTest());
     renderWithRouter(<SettingsForm />, { route: '/private' });
   });
 
@@ -44,7 +46,7 @@ describe('SettingsForm', () => {
     expect(screen.getByLabelText(/group name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/dt directory/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/common library/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/runner tag/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^runner tag$/i)).toBeInTheDocument();
   });
 
   it('updates local state on input change', () => {
@@ -61,7 +63,7 @@ describe('SettingsForm', () => {
     fireEvent.change(input, { target: { value: 'new-common-library' } });
     input = screen.getByLabelText(/dt directory/i);
     fireEvent.change(input, { target: { value: 'new-dt-directory' } });
-    input = screen.getByLabelText(/runner tag/i);
+    input = screen.getByLabelText(/^runner tag$/i);
     fireEvent.change(input, { target: { value: 'new-runner-tag' } });
     input = screen.getByLabelText(/branch name/i);
     fireEvent.change(input, { target: { value: 'new-branch-name' } });
@@ -131,5 +133,41 @@ describe('SettingsForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /reset to defaults/i }));
 
     expect(mockDispatch).toHaveBeenCalledWith(resetToDefaults());
+  });
+
+  it('shows "Settings reset to defaults" message when reset is clicked', async () => {
+    fireEvent.click(screen.getByRole('button', { name: /reset to defaults/i }));
+
+    expect(
+      await screen.findByText(/settings reset to defaults/i),
+    ).toBeInTheDocument();
+  });
+
+  it('shows error when required field is empty', () => {
+    const input = screen.getByLabelText(/group name/i);
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+
+    expect(screen.getByText('Group name is required')).toBeInTheDocument();
+  });
+
+  it('shows error when required field is whitespace only', () => {
+    const input = screen.getByLabelText(/group name/i);
+    fireEvent.change(input, { target: { value: '   ' } });
+    fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+
+    expect(screen.getByText('Group name is required')).toBeInTheDocument();
+  });
+
+  it('clears field error when user starts retyping', () => {
+    const input = screen.getByLabelText(/group name/i);
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    expect(screen.getByText('Group name is required')).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: 'x' } });
+    expect(
+      screen.queryByText('Group name is required'),
+    ).not.toBeInTheDocument();
   });
 });

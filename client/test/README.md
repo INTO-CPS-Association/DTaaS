@@ -125,10 +125,15 @@ the developer computer (`localhost`) is shown below:
 REACT_APP_TEST_USERNAME=your_username
 REACT_APP_TEST_PASSWORD=your_password
 REACT_APP_URL='http://localhost:4000'
+PRIMARY_RUNNER=your_primary_gitlab_runner_tag
+SECONDARY_RUNNER=your_secondary_gitlab_runner_tag
 ```
 
 Replace _your_username_ and _your_password_ with the actual username and password
 for the selected on-premise GitLab account (`gitlab.foo.com`) or test account.
+If you do not have a secondary gitlab runner, you can use the same one for both.
+They will be the ones used in the e2e tests for executing twins and taking
+measurements.
 
 The following is an example `test/.env` for a setup where tests run on
 the developer machine and the DTaaS client application runs on a remote
@@ -138,6 +143,8 @@ integration server:
 REACT_APP_TEST_USERNAME=TestUsername
 REACT_APP_TEST_PASSWORD=TestPassword123
 REACT_APP_URL='https://foo.com'
+PRIMARY_RUNNER=linux
+SECONDARY_RUNNER=windows
 ```
 
 Here, `https://foo.com` is the application URL.

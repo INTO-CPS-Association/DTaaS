@@ -2,16 +2,23 @@ import { AlertColor } from '@mui/material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
 
-export interface SnackbarState {
-  open: boolean;
+const MAX_SNACKBARS = 3;
+
+export interface SnackbarItem {
+  id: number;
   message: string;
   severity: AlertColor;
+  icon?: string;
+}
+
+export interface SnackbarState {
+  items: SnackbarItem[];
+  nextId: number;
 }
 
 const initialState: SnackbarState = {
-  open: false,
-  message: '',
-  severity: 'info',
+  items: [],
+  nextId: 0,
 };
 
 const snackbarSlice = createSlice({
@@ -19,12 +26,24 @@ const snackbarSlice = createSlice({
   initialState,
   reducers: {
     showSnackbar(state, action: PayloadAction<ShowNotificationPayload>) {
-      state.open = true;
-      state.message = action.payload.message;
-      state.severity = action.payload.severity as AlertColor;
+      const item: SnackbarItem = {
+        id: state.nextId,
+        message: action.payload.message,
+        severity: action.payload.severity as AlertColor,
+        icon: action.payload.icon,
+      };
+      state.nextId += 1;
+      state.items.push(item);
+      if (state.items.length > MAX_SNACKBARS) {
+        state.items.shift();
+      }
     },
-    hideSnackbar(state) {
-      state.open = false;
+    hideSnackbar(state, action: PayloadAction<number | undefined>) {
+      if (action.payload === undefined) {
+        state.items = [];
+      } else {
+        state.items = state.items.filter((item) => item.id !== action.payload);
+      }
     },
   },
 });

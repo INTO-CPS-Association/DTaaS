@@ -4,7 +4,7 @@ import { PipelineStatusParams } from 'route/digitaltwins/execution/executionStat
 import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 
-export const createMockEntry = (
+export const createMockDTExecutionResult = (
   id: string,
   dtName: string,
   pipelineId: number,

@@ -88,6 +88,8 @@ jobs:
           # Docker is pre-installed on Ubuntu runners
           # Just ensure the service is running
           docker --version
+
+      # yamllint disable rule:line-length
       - name: Install Docker on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -110,6 +112,7 @@ jobs:
             $env:Path = "$machinePath;$userPath"
           # Start Docker service
           Start-Service docker
+      # yamllint enable rule:line-length
 
       - name: Install Docker on macOS
         if: runner.os == 'macOS'
@@ -125,10 +128,13 @@ jobs:
       - name: Run pylint (min score 9.0)
         if: matrix.os == 'ubuntu-latest'
         shell: bash
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
+          TESTS_DIR: ${{ inputs.tests-directory }}
         run: |
           poetry run pylint \
-            ${{ inputs.src-directory }} \
-            ${{ inputs.tests-directory }} \
+            "$SRC_DIR" \
+            "$TESTS_DIR" \
             --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
 
@@ -138,8 +144,10 @@ jobs:
 
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
         run: |
-          poetry run pytest --cov=${{ inputs.src-directory }} --cov-report=xml \
+          poetry run pytest --cov="$SRC_DIR" --cov-report=xml \
             --cov-report=term-missing
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'

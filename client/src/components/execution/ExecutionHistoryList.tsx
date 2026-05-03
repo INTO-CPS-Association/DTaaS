@@ -43,6 +43,8 @@ import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter
 import { ThunkDispatch, Action } from '@reduxjs/toolkit';
 import { RootState } from 'store/store';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { showSnackbar } from 'store/snackbar.slice';
+import { formatName } from 'model/backend/digitalTwin';
 
 interface ExecutionHistoryListProps {
   dtName: string;
@@ -195,6 +197,13 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
       event.stopPropagation();
     }
     if (digitalTwin) {
+      dispatch(
+        showSnackbar({
+          message: `Stopping execution for ${formatName(digitalTwin.DTName)}...`,
+          severity: 'warning',
+        }),
+      );
+
       const digitalTwinInstance = await createDigitalTwinFromData(
         digitalTwin,
         digitalTwin.DTName,
@@ -295,17 +304,19 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                       </IconButton>
                     </Tooltip>
                   )}
-                  <Tooltip title="Delete">
-                    <IconButton
-                      component="div"
-                      edge="end"
-                      aria-label="delete"
-                      onClick={(e) => handleDeleteClick(execution.id, e)}
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {execution.status !== ExecutionStatus.RUNNING && (
+                    <Tooltip title="Delete">
+                      <IconButton
+                        component="div"
+                        edge="end"
+                        aria-label="delete"
+                        onClick={(e) => handleDeleteClick(execution.id, e)}
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </Box>
               </AccordionSummary>
               <AccordionDetails>

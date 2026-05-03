@@ -3,10 +3,12 @@ import {
   getRunnerTag,
   getBranchName,
 } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import {
+  ExecutionStatus,
+  type IExecutionHistory,
+} from 'model/backend/interfaces/execution';
 import { ProjectId } from 'model/backend/interfaces/backendInterfaces';
 import { v4 as uuidv4 } from 'uuid';
-import indexedDBService from 'database/executionHistoryDB';
 import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
 import {
   isValidInstance,
@@ -14,8 +16,27 @@ import {
   logSuccess,
 } from 'model/backend/util/digitalTwinUtils';
 
-export async function executeDT(self: DigitalTwin): Promise<number | null> {
-  const runnerTag = getRunnerTag();
+let dbService: IExecutionHistory | null = null;
+
+export function setPipelineExecutionDB(service: IExecutionHistory): void {
+  dbService = service;
+}
+
+function getDB(): IExecutionHistory {
+  if (!dbService)
+    throw new Error(
+      'Pipeline execution DB not initialized. Call setPipelineExecutionDB() first.',
+    );
+  return dbService;
+}
+
+export async function executeDT(
+  self: DigitalTwin,
+  skipHistorySave: boolean = false,
+  runnerTagOverride?: string,
+  branchNameOverride?: string,
+): Promise<number | null> {
+  const runnerTag = runnerTagOverride ?? getRunnerTag();
   if (!isValidInstance(self)) {
     logError(self, runnerTag, 'Missing projectId or triggerToken');
     return null;
@@ -25,7 +46,7 @@ export async function executeDT(self: DigitalTwin): Promise<number | null> {
     const variables = { DTName: self.DTName, RunnerTag: runnerTag };
     const response = await self.backend.startPipeline(
       self.backend.getProjectId(),
-      getBranchName(),
+      branchNameOverride ?? getBranchName(),
       variables,
     );
     logSuccess(self, runnerTag);
@@ -35,16 +56,18 @@ export async function executeDT(self: DigitalTwin): Promise<number | null> {
     const executionId = uuidv4();
     self.currentExecutionId = executionId;
 
-    const executionEntry: DTExecutionResult = {
-      id: executionId,
-      dtName: self.DTName,
-      pipelineId: response.id,
-      timestamp: Date.now(),
-      status: ExecutionStatus.RUNNING,
-      jobLogs: [],
-    };
+    if (!skipHistorySave) {
+      const executionEntry: DTExecutionResult = {
+        id: executionId,
+        dtName: self.DTName,
+        pipelineId: response.id,
+        timestamp: Date.now(),
+        status: ExecutionStatus.RUNNING,
+        jobLogs: [],
+      };
 
-    await indexedDBService.add(executionEntry);
+      await getDB().add(executionEntry);
+    }
 
     return response.id;
   } catch (error) {
@@ -62,7 +85,7 @@ export async function resolvePipelineIdFn(
   executionId?: string,
 ): Promise<number | null> {
   if (executionId) {
-    const execution = await indexedDBService.getById(executionId);
+    const execution = await getDB().getById(executionId);
     return execution ? calcPipelineId(pipeline, execution.pipelineId) : null;
   }
   return calcPipelineId(pipeline, self.pipelineId!);

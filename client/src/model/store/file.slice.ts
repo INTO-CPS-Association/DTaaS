@@ -1,6 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileState } from 'model/backend/interfaces/sharedInterfaces';
-import { RootState } from 'store/store';
+import { RootState } from 'store/storeTypes';
 import { getFileTypeFromExtension } from 'util/fileUtils';
 
 const initialState: FileState[] = [];

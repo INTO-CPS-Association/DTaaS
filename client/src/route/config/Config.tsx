@@ -106,8 +106,7 @@ const useValidationResults = () => {
     fetchValidationResults().catch((error: unknown) => {
       throw new Error(`Failed to fetch validation results: ${error}`);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.env]);
+  }, []);
 
   return { validationResults, isLoading };
 };

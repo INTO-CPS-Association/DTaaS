@@ -8,7 +8,7 @@ for using Docker workflows.
 
 ## Run
 
-Follow the instructions in `docker/README.md` to spawn a localhost development
+Follow the instructions in `developer/README.md` to spawn a localhost development
 instance of DTaaS. It is an end-to-end testing of the current codebase
 as it exists in the local git directory.
 

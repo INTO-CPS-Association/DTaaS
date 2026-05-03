@@ -24,6 +24,17 @@ pip install -r script/docs/mkdocs-requirements.txt
 pip install -r script/docs/mkdocs-requirements-github.txt
 ```
 
+Fetch Git LFS-managed documentation assets before previewing or building the
+site:
+
+```bash
+git lfs install
+git lfs pull --include="docs/**"
+```
+
+If Git LFS assets are not fetched, MkDocs now aborts the build instead of
+copying pointer files into `site/`.
+
 ## Run Markdown Linting
 
 The repository uses markdown linting to enforce formatting consistency.

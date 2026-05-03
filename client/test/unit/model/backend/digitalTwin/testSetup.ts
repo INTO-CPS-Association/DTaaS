@@ -2,6 +2,8 @@ import GitlabInstance from 'model/backend/gitlab/instance';
 import DigitalTwin from 'model/backend/digitalTwin';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 import indexedDBService from 'database/executionHistoryDB';
+import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
+import { setPipelineExecutionDB } from 'model/backend/util/digitalTwinPipelineExecution';
 
 jest.mock('database/executionHistoryDB');
 
@@ -57,6 +59,9 @@ export const setupBeforeEach = (_dt: ReturnType<typeof createDigitalTwin>) => {
     },
     writable: true,
   });
+
+  setExecutionHistoryDB(mockedIndexedDBService);
+  setPipelineExecutionDB(mockedIndexedDBService);
 
   mockedIndexedDBService.add.mockResolvedValue('mock-id');
   mockedIndexedDBService.getByDTName.mockResolvedValue([]);

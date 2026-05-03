@@ -84,13 +84,13 @@ describe('fetchAssets', () => {
     const assetType = 'models';
     await fetchLibraryAssets(dispatch, setError, assetType, true);
 
-    expect(createGitlabInstance).toHaveBeenCalledTimes(2);
+    expect(createGitlabInstance).toHaveBeenCalledTimes(1);
     expect(getLibrarySubfolders).toHaveBeenCalledWith(
       1,
       assetType,
       mockBackendInstance,
     );
-    expect(mockBackendInstance.init).toHaveBeenCalledTimes(3);
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(1);
     expect(mockLibraryGetDescription).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledTimes(2);
 
@@ -108,8 +108,8 @@ describe('fetchAssets', () => {
       mockBackendInstance,
     );
 
-    expect(createGitlabInstance).toHaveBeenCalledTimes(4);
-    expect(mockBackendInstance.init).toHaveBeenCalledTimes(6);
+    expect(createGitlabInstance).toHaveBeenCalledTimes(3);
+    expect(mockBackendInstance.init).toHaveBeenCalledTimes(3);
     expect(mockDTGetDescription).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledTimes(4);
 

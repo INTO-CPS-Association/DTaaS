@@ -9,6 +9,8 @@ import '@testing-library/jest-dom';
 import ExecutionHistoryList from 'components/execution/ExecutionHistoryList';
 import { Provider, useDispatch } from 'react-redux';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
+import { PipelineHandlerDispatch } from 'route/digitaltwins/execution/executionButtonHandlers';
 import {
   createTestStore,
   createExecutionHistoryListContext,
@@ -56,11 +58,9 @@ describe('ExecutionHistoryList - stop execution', () => {
   it('handles stop execution correctly', async () => {
     mockDispatch.mockClear();
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const adapter = require('model/backend/util/digitalTwinAdapter');
+    const adapter = jest.requireMock('model/backend/util/digitalTwinAdapter');
     adapter.createDigitalTwinFromData.mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (digitalTwinData: any, name: any) => ({
+      async (digitalTwinData: DigitalTwinData, name: string) => ({
         DTName: name || digitalTwinData.DTName || 'test-dt',
         delete: jest.fn().mockResolvedValue('Deleted successfully'),
         execute: jest.fn().mockResolvedValue(123),
@@ -72,14 +72,17 @@ describe('ExecutionHistoryList - stop execution', () => {
       }),
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pipelineHandler = require('route/digitaltwins/execution/executionButtonHandlers');
+    const pipelineHandler = jest.requireMock(
+      'route/digitaltwins/execution/executionButtonHandlers',
+    );
     const handleStopSpy = jest
       .spyOn(pipelineHandler, 'handleStop')
       .mockImplementation(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (_digitalTwin, _setButtonText, dispatch: any, executionId) => {
-          dispatch({ type: 'mock/stopExecution', payload: executionId });
+        (_digitalTwin, _setButtonText, dispatch, executionId) => {
+          (dispatch as PipelineHandlerDispatch)({
+            type: 'mock/stopExecution',
+            payload: executionId,
+          });
           return Promise.resolve();
         },
       );

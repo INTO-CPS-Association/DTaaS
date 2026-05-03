@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from 'store/store';
+import { RootState } from 'store/storeTypes';
 
 export const selectExecutionHistoryEntries = (state: RootState) =>
   state.executionHistory.entries;
@@ -9,10 +9,6 @@ export const selectExecutionHistoryByDTName = (dtName: string) =>
     [(state: RootState) => state.executionHistory.entries],
     (entries) => entries.filter((entry) => entry.dtName === dtName),
   );
-
-export const _selectExecutionHistoryByDTName =
-  (dtName: string) => (state: RootState) =>
-    state.executionHistory.entries.filter((entry) => entry.dtName === dtName);
 
 export const selectExecutionHistoryById = (id: string) =>
   createSelector(
