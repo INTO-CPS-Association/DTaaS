@@ -15,11 +15,6 @@ TEST_USERNAME = "testuser"
 BASE_URL = "https://example.com:8090/gitlab"
 
 
-# ---------------------------------------------------------------------------
-# _get_oauth_token
-# ---------------------------------------------------------------------------
-
-
 def test_get_oauth_token_success(mocker):
     """Test successful OAuth ROPC token retrieval."""
     mock_resp = Mock()
@@ -84,11 +79,6 @@ def test_get_oauth_token_network_error(mocker):
     assert "OAuth request failed" in msg
 
 
-# ---------------------------------------------------------------------------
-# _revoke_existing_pats
-# ---------------------------------------------------------------------------
-
-
 def test_revoke_existing_pats_revokes_matching():
     """Test that only PATs with the matching name are deleted."""
     keep_pat = Mock()
@@ -116,12 +106,6 @@ def test_revoke_existing_pats_no_match():
 
     pt._revoke_existing_pats(mock_gl, "dtaas-services")
 
-    pat.delete.assert_not_called()
-
-
-# ---------------------------------------------------------------------------
-# _create_pat_via_api
-# ---------------------------------------------------------------------------
 
 
 def test_create_pat_via_api_success(mocker):
@@ -211,11 +195,6 @@ def test_create_pat_via_api_gitlab_error(mocker):
     assert "Failed to create PAT via API" in msg
 
 
-# ---------------------------------------------------------------------------
-# create_personal_access_token
-# ---------------------------------------------------------------------------
-
-
 def test_create_personal_access_token_success(mocker):
     """Test full PAT creation flow succeeds end-to-end."""
     mocker.patch(
@@ -262,11 +241,6 @@ def test_create_personal_access_token_oauth_failure(mocker):
     assert "Failed to obtain OAuth token" in msg
 
 
-# ---------------------------------------------------------------------------
-# _read_tokens_file / _load_pat_from_tokens
-# ---------------------------------------------------------------------------
-
-
 def test_read_tokens_file_empty_pat(tmp_path):
     """Test reading tokens file with empty PAT."""
     tokens_file = tmp_path / "tokens.json"
@@ -299,11 +273,6 @@ def test_load_pat_from_tokens_success(mocker, tmp_path):
     success, pat = pt._load_pat_from_tokens()
     assert success is True
     assert pat == TEST_TOKEN
-
-
-# ---------------------------------------------------------------------------
-# create_user_pat
-# ---------------------------------------------------------------------------
 
 
 def test_create_user_pat_success():

@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
@@ -125,6 +126,15 @@ def create_personal_access_token(root_password: str) -> tuple[bool, str]:
         return False, str(exc)
 
     success, oauth_token = _get_oauth_token(base_url, root_password, verify)
+    if not success:
+        # On a re-run the initial password has been rotated; try the configured new password.
+        new_password = os.getenv("GITLAB_ROOT_NEW_PASSWORD", "")
+        if new_password and new_password != root_password:
+            logger.info(
+                "Initial root password rejected; retrying with GITLAB_ROOT_NEW_PASSWORD."
+            )
+            success, oauth_token = _get_oauth_token(base_url, new_password, verify)
+
     if not success:
         return False, f"Failed to obtain OAuth token: {oauth_token}"
 
