@@ -1,152 +1,134 @@
-"""Create GitLab Personal Access Tokens via the Rails console and admin API."""
+"""Create GitLab Personal Access Tokens via the admin API."""
 
 import json
 import logging
-import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
 
 import gitlab
 import gitlab.exceptions
+import httpx
 
 from ...config import Config
-from ...docker_utils import execute_docker_command, DockerRunOptions
-from ...sanitize import escape_js_string
+from ._api import build_base_url, get_ssl_verify
 
 logger = logging.getLogger(__name__)
 
-GITLAB_CONTAINER_NAME = "gitlab"
 PAT_NAME = "dtaas-services"
 TOKENS_FILENAME = "gitlab_tokens.json"
 USER_PAT_NAME = "dtaas"
 USER_PAT_SCOPES = ["api", "read_repository", "write_repository"]
-TOKEN_NAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,100}$")
-TOKEN_VALUE_PATTERN = re.compile(r"^[A-Za-z0-9_-]{10,255}$")
+ROOT_USER_ID = 1
 
 
-def _escape_ruby_single_quoted(value: str) -> str:
-    """Escape a string for safe embedding in a Ruby single-quoted literal."""
-    return escape_js_string(value)
-
-
-def _validate_token_name(token_name: str) -> tuple[bool, str]:
-    """Validate token names used in the root Rails runner script."""
-    if not TOKEN_NAME_PATTERN.fullmatch(token_name):
-        return False, (
-            "Invalid token name. Allowed characters are letters, digits, dot, "
-            "underscore, and hyphen (max length: 100)."
-        )
-    return True, ""
-
-
-def _build_rails_script(token_name: str) -> str:
-    """Build the Ruby script that creates a Personal Access Token.
-
-    The script:
-    1. Finds the root user (admin, User ID 1)
-    2. Revokes any existing token with the same name
-    3. Creates a new PersonalAccessToken with ``api`` scope
-    4. Prints ONLY the token value to stdout
+def _get_oauth_token(base_url: str, password: str, verify: bool) -> tuple[bool, str]:
+    """Get an OAuth access token using root credentials via ROPC grant.
 
     Args:
-        token_name: Display name for the token
+        base_url: GitLab instance base URL
+        password: Root user password
+        verify: Whether to verify SSL certificates
 
     Returns:
-        Ruby script as a string
-    """
-    is_valid, error_message = _validate_token_name(token_name)
-    if not is_valid:
-        raise ValueError(error_message)
-
-    escaped_token_name = _escape_ruby_single_quoted(token_name)
-
-    return (
-        "user = User.find(1); "
-        "user.personal_access_tokens.where(name: "
-        f"'{escaped_token_name}').each(&:revoke!); "
-        "token = user.personal_access_tokens.create!("
-        f"name: '{escaped_token_name}', "
-        "scopes: ['api'], "
-        "expires_at: 365.days.from_now"
-        "); "
-        "puts token.token"
-    )
-
-
-def _parse_token_from_output(output: str) -> str | None:
-    """Extract the token string from rails runner output.
-
-    Args:
-        output: Raw stdout from gitlab-rails runner
-
-    Returns:
-        Token string or None if parsing fails
-    """
-    lines = [line.strip() for line in output.strip().splitlines() if line.strip()]
-    if not lines:
-        return None
-
-    token = lines[-1]
-
-    if not TOKEN_VALUE_PATTERN.fullmatch(token):
-        logger.warning("Token parsing warning: extracted token has an invalid format.")
-        return None
-
-    return token
-
-
-def _execute_rails_command() -> tuple[bool, str]:
-    """Execute the gitlab-rails runner command.
-
-    Returns:
-        Tuple of (success, output_or_error)
+        Tuple of (success, access_token_or_error)
     """
     try:
-        script = _build_rails_script(PAT_NAME)
-    except ValueError as exc:
-        return False, str(exc)
+        resp = httpx.post(
+            f"{base_url}/oauth/token",
+            data={
+                "grant_type": "password",
+                "username": "root",
+                "password": password,
+            },
+            verify=verify,
+            timeout=30,
+        )
+    except httpx.RequestError as exc:
+        return False, f"OAuth request failed: {exc}"
 
-    cmd = ["gitlab-rails", "runner", script]
+    if resp.status_code != 200:
+        return False, (
+            f"OAuth token request failed ({resp.status_code}): {resp.text[:200]}"
+        )
 
-    logger.info("Creating Personal Access Token via gitlab-rails runner...")
+    token = resp.json().get("access_token", "")
+    if not token:
+        return False, "No access_token in OAuth response"
+    return True, token
 
-    return execute_docker_command(
-        GITLAB_CONTAINER_NAME, cmd, DockerRunOptions(verbose=False)
-    )
 
+def _revoke_existing_pats(gl: gitlab.Gitlab, token_name: str) -> None:
+    """Revoke all active PATs with the given name for the root user.
 
-def _extract_and_validate_token(output: str) -> tuple[bool, str]:
-    """Extract and validate the token from command output.
+    Uses the admin-level personal_access_tokens manager which supports
+    listing, unlike the user-scoped manager.
 
     Args:
-        output: Raw output from the rails command
+        gl: Authenticated gitlab.Gitlab client
+        token_name: Name of tokens to revoke
+    """
+    for pat in gl.personal_access_tokens.list(
+        user_id=ROOT_USER_ID, state="active", all=True
+    ):
+        if pat.name == token_name:
+            pat.delete()
+            logger.info("Revoked existing PAT: %s", token_name)
+
+
+def _create_pat_via_api(oauth_token: str) -> tuple[bool, str]:
+    """Create a root admin PAT using a temporary OAuth access token.
+
+    Args:
+        oauth_token: OAuth access token for the root user
 
     Returns:
         Tuple of (success, token_or_error)
     """
-    token = _parse_token_from_output(output)
-    if token is None:
-        return False, (
-            "Could not parse token from gitlab-rails output. "
-            f"Raw output: {output[:200]}"
+    expires_at = (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d")
+    try:
+        url = build_base_url()
+        verify = get_ssl_verify()
+        gl = gitlab.Gitlab(url, oauth_token=oauth_token, ssl_verify=verify)
+        _revoke_existing_pats(gl, PAT_NAME)
+        user = gl.users.get(ROOT_USER_ID)
+        pat = user.personal_access_tokens.create(
+            {"name": PAT_NAME, "scopes": ["api"], "expires_at": expires_at}
         )
-    logger.info("Personal Access Token created successfully.")
-    return True, token
+        token = pat.token
+        if not token:
+            return False, "Empty token in PAT API response"
+        logger.info("Personal Access Token created successfully.")
+        return True, token
+    except gitlab.exceptions.GitlabError as exc:
+        return False, f"Failed to create PAT via API: {exc}"
+    except RuntimeError as exc:
+        return False, str(exc)
 
 
-def create_personal_access_token() -> tuple[bool, str]:
-    """Create a Personal Access Token for the GitLab root user.
+def create_personal_access_token(root_password: str) -> tuple[bool, str]:
+    """Create a Personal Access Token for the GitLab root user via the admin API.
+
+    Uses the supplied root password to obtain a temporary OAuth token, then calls
+    the GitLab admin API to create a PAT with ``api`` scope.
+
+    Args:
+        root_password: GitLab initial root password
 
     Returns:
         Tuple of (success, token_or_error_message)
     """
-    success, output = _execute_rails_command()
+    try:
+        base_url = build_base_url()
+        verify = get_ssl_verify()
+    except RuntimeError as exc:
+        return False, str(exc)
 
+    success, oauth_token = _get_oauth_token(base_url, root_password, verify)
     if not success:
-        return False, f"Failed to create Personal Access Token: {output}"
+        return False, f"Failed to obtain OAuth token: {oauth_token}"
 
-    return _extract_and_validate_token(output)
+    return _create_pat_via_api(oauth_token)
 
 
 def _get_tokens_path() -> Path:

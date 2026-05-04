@@ -96,8 +96,7 @@ def _build_apps_config() -> list[OAuthAppConfig]:
     return apps
 
 
-def _build_server_and_client_app_configs(
-) -> tuple[OAuthAppConfig, OAuthAppConfig]:
+def _build_server_and_client_app_configs() -> tuple[OAuthAppConfig, OAuthAppConfig]:
     """Build OAuth configs for both Server and Client Authorization apps.
 
     Reads gitlab_oauth.json once and returns both configs.
