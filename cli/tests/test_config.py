@@ -181,3 +181,39 @@ def test_get_resource_limits_missing():
         assert result is None
         assert err is not None
         assert "Missing default resources limits" in str(err)
+
+
+def test_get_tls_success_true():
+    """Test getTLS retrieves tls flag when set to true"""
+    with patch("src.pkg.config.utils.import_toml") as mock_import:
+        mock_import.return_value = (
+            {"common": {"security": {"tls": True}}},
+            None,
+        )
+        cfg = Config()
+        tls, err = cfg.get_tls()
+        assert err is None
+        assert tls is True
+
+
+def test_get_tls_success_false():
+    """Test getTLS retrieves tls flag when set to false"""
+    with patch("src.pkg.config.utils.import_toml") as mock_import:
+        mock_import.return_value = (
+            {"common": {"security": {"tls": False}}},
+            None,
+        )
+        cfg = Config()
+        tls, err = cfg.get_tls()
+        assert err is None
+        assert tls is False
+
+
+def test_get_tls_default_false():
+    """Test getTLS defaults to false when security section is missing"""
+    with patch("src.pkg.config.utils.import_toml") as mock_import:
+        mock_import.return_value = ({"common": {}}, None)
+        cfg = Config()
+        tls, err = cfg.get_tls()
+        assert err is None
+        assert tls is False

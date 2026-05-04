@@ -42,7 +42,7 @@ configuration file is given here.
 # This is the config for DTaaS CLI
 
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.1"
+version = "0.2.2"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -58,6 +58,12 @@ path = "/Users/username/DTaaS"
 #path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get
 # "Error while getting toml file: dtaas.toml, Invalid unicode value"
+
+[common.security]
+# Enable HTTPS/TLS for secure server deployment
+# Set the tls flag to false to use the insecure user.server.yml, it is True by default
+# so the 'user.server.secure.yml' will be used
+tls = true
 
 [common.resources]
 # Default resource limits applied when creating user workspace containers.
@@ -80,7 +86,7 @@ shm_size = "512m"
 
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"] 
+add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 ...
 ```

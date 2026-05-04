@@ -6,13 +6,13 @@ from src.pkg import utils
 def test_import_yaml_users():
     """Test importing YAML user configuration template"""
     expected = {
-        "image": "intocps/workspace:latest",
+        "image": "intocps/workspace:main-967bc10",
         "restart": "unless-stopped",
         "volumes": [
             "${DTAAS_DIR}/files/common:/workspace/common",
             "${DTAAS_DIR}/files/${username}:/workspace",
         ],
-        "environment": ["AUTHENTICATE_VIA_JUPYTER=", "WORKSPACE_BASE_URL=${username}"],
+        "environment": ["MAIN_USER=${username}"],
         "shm_size": "${shm_size}",
         "cpus": "${cpus}",
         "mem_limit": "${mem_limit}",
@@ -20,13 +20,13 @@ def test_import_yaml_users():
         "labels": [
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
-            "traefik.http.routers.${username}.rule=PathPrefix(`/${username}`)",
             "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
+            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`) && PathPrefix(`/${username}`)",
         ],
         "networks": ["users"],
     }
 
-    template, err = utils.import_yaml("users.local.yml")
+    template, err = utils.import_yaml("users.server.yml")
     if err is not None:
         raise AssertionError(err)
 
@@ -64,6 +64,7 @@ def test_import_toml():
             # absolute path to the DTaaS application directory
             "server-dns": "localhost",
             "path": "/home/Desktop/DTaaS",
+            "security": {"tls": False},
         },
         "users": {
             # matching user info must present in this config file
@@ -167,7 +168,7 @@ def test_import_toml_error():
     assert isinstance(err, Exception)
 
 
-def test_export_yaml_error(tmp_path):
+def test_export_yaml_error():
     """Test error handling when exporting to invalid path"""
     data = {"test": "data"}
     invalid_path = "/invalid/nonexistent/path/file.yml"

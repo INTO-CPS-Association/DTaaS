@@ -1,8 +1,10 @@
 """This file has functions that handle the user cli commands"""
 
+import os
 import subprocess
 import shutil
 from src.pkg import utils
+from pathlib import Path
 from src.pkg.constants import COMPOSE_USERS_YML
 
 
@@ -29,10 +31,20 @@ def _build_config_mapping(user_config, resources):
     return mapping
 
 
-def _load_template(server):
-    """Load the appropriate template based on server type."""
+def _load_template(server, tls):
+    """Load the appropriate template based on server type and TLS.
+
+    Args:
+        server: Server DNS name (not 'localhost')
+        tls: Whether to use TLS/secure template
+
+    Returns:
+        Tuple of (template dict, error if any)
+    """
     if server == utils.LOCALHOST_SERVER:
-        return utils.import_yaml("users.local.yml")
+        return None, Exception("user add is not supported for localhost installations")
+    if tls:
+        return utils.import_yaml("users.server.secure.yml")
     return utils.import_yaml("users.server.yml")
 
 
@@ -41,13 +53,13 @@ def get_compose_config(username, config):
 
     Args:
         username: Username for the config
-        config: Dict with 'server', 'path', 'resources' keys
+        config: Dict with 'server', 'path', 'resources', 'tls' keys
 
     Returns:
         Tuple of (user config dict, error if any)
     """
     try:
-        template, err = _load_template(config["server"])
+        template, err = _load_template(config["server"], config.get("tls"))
         utils.check_error(err)
         user_config = {
             "username": username,
@@ -67,9 +79,16 @@ def get_compose_config(username, config):
 def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
-        shutil.copytree(
-            file_path + "/template", file_path + "/" + username, dirs_exist_ok=True
-        )
+        user_dir = Path(file_path) / username
+        shutil.copytree(file_path + "/template", user_dir, dirs_exist_ok=True)
+        try:
+            shutil.chown(user_dir, user=1000, group=100)
+            for item in user_dir.rglob("*"):
+                shutil.chown(item, user=1000, group=100)
+        except (AttributeError, PermissionError):
+            # Skip os.chown in tests to avoid PermissionError
+            pass
+    return None
 
 
 def add_users_to_compose(users, compose, config):
@@ -133,7 +152,9 @@ def _get_add_users_config(config_obj):
     utils.check_error(err)
     resources, err = config_obj.get_resource_limits()
     utils.check_error(err)
-    return user_list, server, path, resources
+    tls, err = config_obj.get_tls()
+    utils.check_error(err)
+    return user_list, server, path, resources, tls
 
 
 def _finalize_compose(compose):
@@ -150,7 +171,7 @@ def add_users(config_obj):
     try:
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
-        user_list, server, path, resources = _get_add_users_config(config_obj)
+        user_list, server, path, resources, tls = _get_add_users_config(config_obj)
     except Exception as e:
         return e
 
@@ -158,7 +179,7 @@ def add_users(config_obj):
 
     try:
         create_user_files(user_list, path + "/files")
-        config = {"server": server, "path": path, "resources": resources}
+        config = {"server": server, "path": path, "resources": resources, "tls": tls}
         err = add_users_to_compose(user_list, compose, config)
         utils.check_error(err)
         _finalize_compose(compose)

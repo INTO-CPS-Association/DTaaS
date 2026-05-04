@@ -94,6 +94,17 @@ deploy instance. In the case of server deploy,
 it is used to define the routes of the server type
 docker compose services appropriately.
 
+- Tls
+
+Set the tls flag to false to use the insecure user.server.yml, it is True by default
+so the 'user.server.secure.yml' will be used
+
+```toml
+[common.security]
+# Enable HTTPS/TLS for secure server deployment
+tls = true
+```
+
 - Users variables
 
 ```toml

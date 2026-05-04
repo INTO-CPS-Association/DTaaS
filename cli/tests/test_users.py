@@ -14,12 +14,13 @@ def mock_config():
     mock = MagicMock()
     mock.get_add_users_list.return_value = (["user1"], None)
     mock.get_delete_users_list.return_value = (["user1"], None)
-    mock.get_server_dns.return_value = ("localhost", None)
+    mock.get_server_dns.return_value = ("foo.example.com", None)
     mock.get_path.return_value = ("/test/path", None)
     mock.get_resource_limits.return_value = (
         {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
         None,
     )
+    mock.get_tls.return_value = (False, None)
     return mock
 
 
@@ -72,7 +73,12 @@ def test_create_user_files_already_exists(temp_dir_with_template):
 def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
-    config = {"server": "localhost", "path": "/test", "resources": resources}
+    config = {
+        "server": "foo.com",
+        "path": "/test",
+        "resources": resources,
+        "tls": False,
+    }
 
     users.add_users_to_compose(["user1", "user2", "user3"], {"services": {}}, config)
     assert mock_utils["replace"].call_count == 3
@@ -91,12 +97,16 @@ def test_add_users_to_compose_config_error():
 
 
 @pytest.mark.parametrize(
-    "server,file", [("localhost", "users.local.yml"), ("foo.com", "users.server.yml")]
+    "server,tls,file",
+    [
+        ("foo.com", False, "users.server.yml"),
+        ("foo.com", True, "users.server.secure.yml"),
+    ],
 )
-def test_get_compose_config(mock_utils, server, file):
-    """Test getComposeConfig with resources parameter"""
+def test_get_compose_config(mock_utils, server, tls, file):
+    """Test getComposeConfig with resources parameter and TLS flag"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
-    config = {"server": server, "path": "/test", "resources": resources}
+    config = {"server": server, "path": "/test", "resources": resources, "tls": tls}
     _, _ = users.get_compose_config("testuser", config)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)

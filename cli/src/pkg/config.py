@@ -103,3 +103,14 @@ class Config:
             err = Exception("Config file error: Missing default resources limits")
             return None, err
         return resources, None
+
+    def get_tls(self):
+        """Gets the TLS flag from config.common.security"""
+        conf_common, err = self.get_common()
+        if err is not None or not isinstance(conf_common, dict):
+            return False, err
+        security = conf_common.get("security", {})
+        if not isinstance(security, dict):
+            return False, Exception("Config file error: security section is not a dict")
+        tls = security.get("tls", False)
+        return bool(tls), None
