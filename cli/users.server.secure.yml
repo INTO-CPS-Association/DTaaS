@@ -1,3 +1,4 @@
+container_name: ${username}
 image: intocps/workspace:main-967bc10
 restart: unless-stopped
 volumes:

@@ -6,6 +6,7 @@ from src.pkg import utils
 def test_import_yaml_users():
     """Test importing YAML user configuration template"""
     expected = {
+        "container_name": "${username}",
         "image": "intocps/workspace:main-967bc10",
         "restart": "unless-stopped",
         "volumes": [

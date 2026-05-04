@@ -189,6 +189,35 @@ def add_users(config_obj):
     return None
 
 
+def _categorize_users(user_list, existing_services):
+    """Categorize users into existing and missing.
+
+    Args:
+        user_list: List of usernames to categorize
+        existing_services: Dict of existing services
+
+    Returns:
+        Tuple of (existing list, missing list)
+    """
+    existing, missing = [], []
+    for username in user_list:
+        if username in existing_services:
+            existing.append(username)
+        else:
+            missing.append(username)
+    return existing, missing
+
+
+def _report_missing_users(missing):
+    """Report users that don't exist.
+
+    Args:
+        missing: List of usernames that don't exist
+    """
+    for username in missing:
+        print(f"'{username}' does not exist, skipping deletion")
+
+
 def _remove_users_from_compose(compose, user_list):
     """Remove users from compose configuration."""
     for username in user_list:
@@ -201,11 +230,17 @@ def delete_user(config_obj):
     try:
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
+        if compose is None:
+            return Exception("Failed to load compose configuration")
         user_list, err = config_obj.get_delete_users_list()
         utils.check_error(err)
-        err = stop_user_containers(user_list)
-        utils.check_error(err)
-        _remove_users_from_compose(compose, user_list)
+        existing_services = compose.get("services", {})
+        existing, missing = _categorize_users(user_list, existing_services)
+        _report_missing_users(missing)
+        if existing:
+            err = stop_user_containers(existing)
+            utils.check_error(err)
+        _remove_users_from_compose(compose, existing)
         err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
     except Exception as e:

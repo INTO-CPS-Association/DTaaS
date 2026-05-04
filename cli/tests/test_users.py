@@ -172,3 +172,18 @@ def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error
 
     err = users.delete_user(mock_config)
     assert (err is not None) if export_error else err is None
+
+
+def test_delete_user_skips_nonexistent(mock_config, mock_utils, mock_user_operations, capsys):
+    """Test delete_user skips users not present in compose services"""
+    compose = {"version": "3", "services": {"user1": {}}}
+    mock_config.get_delete_users_list.return_value = (["user1", "ghost"], None)
+    mock_utils["import"].return_value = (compose, None)
+    mock_utils["export"].return_value = None
+
+    err = users.delete_user(mock_config)
+
+    assert err is None
+    captured = capsys.readouterr()
+    assert "'ghost' does not exist, skipping deletion" in captured.out
+    mock_user_operations["stop"].assert_called_once_with(["user1"])
