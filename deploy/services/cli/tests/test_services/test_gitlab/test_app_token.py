@@ -59,22 +59,26 @@ def test_build_apps_config_missing_redirect_uri(mocker):
         app_token._build_apps_config()
 
 
-def test_build_server_and_client_app_configs_missing_server(mocker):
-    """Test ValueError when no server app is in the config."""
+def test_create_server_application_missing_server(mocker):
+    """Test error returned when no server app is found in the config."""
     client_only = [MOCK_OAUTH_JSON[1]]
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=client_only)
 
-    with pytest.raises(ValueError, match="Server Authorization"):
-        app_token._build_server_and_client_app_configs()
+    success, result, error = app_token.create_server_application("tok")
+    assert success is False
+    assert result is None
+    assert "Server Authorization" in error
 
 
-def test_build_server_and_client_app_configs_missing_client(mocker):
-    """Test ValueError when no client app is in the config."""
+def test_create_client_application_missing_client(mocker):
+    """Test error returned when no client app is found in the config."""
     server_only = [MOCK_OAUTH_JSON[0]]
     mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=server_only)
 
-    with pytest.raises(ValueError, match="Client Authorization"):
-        app_token._build_server_and_client_app_configs()
+    success, result, error = app_token.create_client_application("tok")
+    assert success is False
+    assert result is None
+    assert "Client Authorization" in error
 
 
 def test_create_application_request_failure(mocker):

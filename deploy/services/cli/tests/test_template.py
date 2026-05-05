@@ -15,6 +15,7 @@ def test_generate_project_structure_success(tmp_path):
     (templates_root / "config").mkdir(parents=True)
     (templates_root / "config" / "services.env.template").write_text("ENV=value")
     (templates_root / "config" / "credentials.csv.template").write_text("user,pass")
+    (templates_root / "config" / "gitlab_oauth.json.template").write_text("[]")
     (templates_root / "data").mkdir()
     (templates_root / "compose.services.yml").write_text("version: '3'")
     success, message = generate_project_structure(target_dir, package_root)
@@ -26,6 +27,7 @@ def test_generate_project_structure_success(tmp_path):
     assert (target_dir / "compose.services.yml").exists()
     assert (target_dir / "config" / "services.env").exists()
     assert (target_dir / "config" / "credentials.csv").exists()
+    assert (target_dir / "config" / "gitlab_oauth.json").exists()
     # Check data subdirectories
     for subdir in ["grafana", "gitlab", "influxdb", "mongodb", "rabbitmq"]:
         assert (target_dir / "data" / subdir).exists()

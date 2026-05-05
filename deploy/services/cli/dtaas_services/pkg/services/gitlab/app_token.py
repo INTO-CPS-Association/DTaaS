@@ -96,29 +96,6 @@ def _build_apps_config() -> list[OAuthAppConfig]:
     return apps
 
 
-def _build_server_and_client_app_configs() -> tuple[OAuthAppConfig, OAuthAppConfig]:
-    """Build OAuth configs for both Server and Client Authorization apps.
-
-    Reads gitlab_oauth.json once and returns both configs.
-
-    Returns:
-        Tuple of (server_config, client_config)
-
-    Raises:
-        ValueError: If either app is not found in the config
-    """
-    apps = _build_apps_config()
-    server_config = next((a for a in apps if "server" in a.name.lower()), None)
-    client_config = next((a for a in apps if "client" in a.name.lower()), None)
-
-    if server_config is None:
-        raise ValueError("Server Authorization app not found in OAuth config")
-    if client_config is None:
-        raise ValueError("Client Authorization app not found in OAuth config")
-
-    return server_config, client_config
-
-
 def _to_result(app) -> OAuthAppResult:
     """Convert a python-gitlab Application object to OAuthAppResult."""
     return OAuthAppResult(
@@ -163,7 +140,10 @@ def create_server_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Server Authorization OAuth application."""
-    server_config, _ = _build_server_and_client_app_configs()
+    apps = _build_apps_config()
+    server_config = next((a for a in apps if "server" in a.name.lower()), None)
+    if server_config is None:
+        return False, None, "Server Authorization app not found in OAuth config"
     logger.info("Creating '%s'...", server_config.name)
     return create_application(private_token, server_config)
 
@@ -172,7 +152,10 @@ def create_client_application(
     private_token: str,
 ) -> tuple[bool, OAuthAppResult | None, str]:
     """Create the DTaaS Client Authorization OAuth application."""
-    _, client_config = _build_server_and_client_app_configs()
+    apps = _build_apps_config()
+    client_config = next((a for a in apps if "client" in a.name.lower()), None)
+    if client_config is None:
+        return False, None, "Client Authorization app not found in OAuth config"
     logger.info("Creating '%s'...", client_config.name)
     return create_application(private_token, client_config)
 

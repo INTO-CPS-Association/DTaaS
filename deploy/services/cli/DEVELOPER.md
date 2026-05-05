@@ -47,6 +47,7 @@ cli/
 │   ├── config/
 │   │   ├── services.env.template
 │   │   ├── credentials.csv.template
+│   │   ├── gitlab_oauth.json.template
 │   │   ├── mongod.conf.secure
 │   │   ├── influxdb/
 │   │   ├── rabbitmq/           # rabbitmq.conf + rabbitmq.enabled_plugins
@@ -316,9 +317,10 @@ default: `https`)
 #### GitLab OAuth Application Configuration
 
 OAuth 2.0 application settings are loaded from a JSON config file at
-`config/gitlab_oauth.json`. This file is generated automatically by
-`dtaas-services generate-project` and can be edited to customise app
-registrations before running `dtaas-services install -s gitlab`.
+`config/gitlab_oauth.json`. This file is generated automatically from
+`config/gitlab_oauth.json.template` by `dtaas-services generate-project`
+and can be edited to customise app registrations before running
+`dtaas-services install -s gitlab`.
 
 The filename can be overridden by setting the `OAUTH_APPS` environment
 variable to a different filename (looked up in `config/`).

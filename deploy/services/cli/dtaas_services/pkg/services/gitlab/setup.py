@@ -12,7 +12,7 @@ from ...config import Config
 from ...utils import write_secret_file
 from .health import is_gitlab_healthy
 from .password import get_initial_root_password, reset_gitlab_password
-from .personal_token import create_personal_access_token
+from .personal_token import create_pat
 from .app_token import (
     OAuthAppResult,
     create_server_application,
@@ -78,9 +78,9 @@ def _step_get_password(console: Console) -> Tuple[bool, str]:
 
 
 def _step_create_pat(console: Console, root_password: str) -> Tuple[bool, str]:
-    """Create a Personal Access Token."""
+    """Create a Personal Access Token (PAT)."""
     console.print("[cyan]Creating Personal Access Token...[/cyan]")
-    success, token = create_personal_access_token(root_password)
+    success, token = create_pat(root_password)
     if not success:
         return False, token
     console.print("[green]✅ Personal Access Token created.[/green]")

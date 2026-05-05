@@ -107,7 +107,6 @@ def test_revoke_existing_pats_no_match():
     pt._revoke_existing_pats(mock_gl, "dtaas-services")
 
 
-
 def test_create_pat_via_api_success(mocker):
     """Test PAT creation via API succeeds."""
     mock_pat = Mock()
@@ -195,7 +194,7 @@ def test_create_pat_via_api_gitlab_error(mocker):
     assert "Failed to create PAT via API" in msg
 
 
-def test_create_personal_access_token_success(mocker):
+def test_create_pat_success(mocker):
     """Test full PAT creation flow succeeds end-to-end."""
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
@@ -214,13 +213,13 @@ def test_create_personal_access_token_success(mocker):
         return_value=(True, TEST_TOKEN),
     )
 
-    success, token = pt.create_personal_access_token("rootpassword")
+    success, token = pt.create_pat("rootpassword")
 
     assert success is True
     assert token == TEST_TOKEN
 
 
-def test_create_personal_access_token_oauth_failure(mocker):
+def test_create_pat_oauth_failure(mocker):
     """Test PAT creation fails when OAuth token request fails."""
     mocker.patch(
         "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
@@ -235,7 +234,7 @@ def test_create_personal_access_token_oauth_failure(mocker):
         return_value=(False, "connection refused"),
     )
 
-    success, msg = pt.create_personal_access_token("rootpassword")
+    success, msg = pt.create_pat("rootpassword")
 
     assert success is False
     assert "Failed to obtain OAuth token" in msg

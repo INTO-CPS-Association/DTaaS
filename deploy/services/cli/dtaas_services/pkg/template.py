@@ -76,6 +76,7 @@ def _copy_template_configs(target_dir: Path, messages: list) -> None:
     template_mappings = [
         ("services.env.template", "services.env"),
         ("credentials.csv.template", "credentials.csv"),
+        ("gitlab_oauth.json.template", "gitlab_oauth.json"),
     ]
     for template_name, actual_name in template_mappings:
         msg = copy_template_to_config(config_dir, template_name, actual_name)

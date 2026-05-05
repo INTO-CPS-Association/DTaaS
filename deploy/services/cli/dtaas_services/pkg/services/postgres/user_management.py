@@ -2,7 +2,7 @@
 
 import psycopg
 from psycopg import errors as pg_errors
-from psycopg.sql import SQL, Composable, Identifier, Literal
+from psycopg.sql import SQL, Composed, Identifier, Literal
 
 from ...config import Config
 from ...utils import (
@@ -23,7 +23,7 @@ def _get_conninfo() -> str:
     return f"host={host} port={port} user={user} password={password} dbname=postgres"
 
 
-def _execute_ddl(conninfo: str, composed: Composable) -> tuple[bool, str]:
+def _execute_ddl(conninfo: str, composed: Composed) -> tuple[bool, str]:
     """Execute a single DDL statement via psycopg3 in autocommit mode.
 
     Uses psycopg3 so identifiers and literals are always driver-escaped,
@@ -32,7 +32,7 @@ def _execute_ddl(conninfo: str, composed: Composable) -> tuple[bool, str]:
     """
     try:
         with psycopg.connect(conninfo, autocommit=True) as conn:
-            conn.execute(str(composed))  # type: ignore[arg-type]
+            conn.execute(composed)
         return True, ""
     except _ALREADY_EXISTS:
         return True, ""

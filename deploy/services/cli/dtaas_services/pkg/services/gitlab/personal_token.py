@@ -107,18 +107,8 @@ def _create_pat_via_api(oauth_token: str) -> tuple[bool, str]:
         return False, str(exc)
 
 
-def create_personal_access_token(root_password: str) -> tuple[bool, str]:
-    """Create a Personal Access Token for the GitLab root user via the admin API.
-
-    Uses the supplied root password to obtain a temporary OAuth token, then calls
-    the GitLab admin API to create a PAT with ``api`` scope.
-
-    Args:
-        root_password: GitLab initial root password
-
-    Returns:
-        Tuple of (success, token_or_error_message)
-    """
+def create_pat(root_password: str) -> tuple[bool, str]:
+    """Create a root admin Personal Access Token via the admin API."""
     try:
         base_url = build_base_url()
         verify = get_ssl_verify()
