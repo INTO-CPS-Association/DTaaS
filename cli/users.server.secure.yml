@@ -1,4 +1,4 @@
-container_name: ${username}
+container_name: dtaas-cli-${username}
 image: intocps/workspace:main-967bc10
 restart: unless-stopped
 volumes:

@@ -1,6 +1,5 @@
 """This file has functions that handle the user cli commands"""
 
-import os
 import subprocess
 import shutil
 from src.pkg import utils
