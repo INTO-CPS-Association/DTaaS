@@ -53,7 +53,13 @@ def _get_oauth_token(base_url: str, password: str, verify: bool) -> tuple[bool, 
             f"OAuth token request failed ({resp.status_code}): {resp.text[:200]}"
         )
 
-    token = resp.json().get("access_token", "")
+    try:
+        payload = resp.json()
+    except ValueError as exc:
+        return False, f"Invalid JSON in OAuth response: {exc}"
+
+    token = payload.get("access_token", "")
+
     if not token:
         return False, "No access_token in OAuth response"
     return True, token
@@ -107,6 +113,33 @@ def _create_pat_via_api(oauth_token: str) -> tuple[bool, str]:
         return False, str(exc)
 
 
+def _get_oauth_token_with_retry(
+    base_url: str, password: str, verify: bool
+) -> tuple[bool, str]:
+    """Get OAuth token, retrying with new password if initial fails.
+
+    Args:
+        base_url: GitLab instance base URL
+        password: Initial password to try
+        verify: Whether to verify SSL certificates
+
+    Returns:
+        Tuple of (success, access_token_or_error)
+    """
+    success, oauth_token = _get_oauth_token(base_url, password, verify)
+    if success:
+        return success, oauth_token
+
+    new_password = os.getenv("GITLAB_ROOT_NEW_PASSWORD", "")
+    if new_password and new_password != password:
+        logger.info(
+            "Initial root password rejected; retrying with GITLAB_ROOT_NEW_PASSWORD."
+        )
+        return _get_oauth_token(base_url, new_password, verify)
+
+    return success, oauth_token
+
+
 def create_pat(root_password: str) -> tuple[bool, str]:
     """Create a root admin Personal Access Token via the admin API."""
     try:
@@ -115,16 +148,7 @@ def create_pat(root_password: str) -> tuple[bool, str]:
     except RuntimeError as exc:
         return False, str(exc)
 
-    success, oauth_token = _get_oauth_token(base_url, root_password, verify)
-    if not success:
-        # On a re-run the initial password has been rotated; try the configured new password.
-        new_password = os.getenv("GITLAB_ROOT_NEW_PASSWORD", "")
-        if new_password and new_password != root_password:
-            logger.info(
-                "Initial root password rejected; retrying with GITLAB_ROOT_NEW_PASSWORD."
-            )
-            success, oauth_token = _get_oauth_token(base_url, new_password, verify)
-
+    success, oauth_token = _get_oauth_token_with_retry(base_url, root_password, verify)
     if not success:
         return False, f"Failed to obtain OAuth token: {oauth_token}"
 

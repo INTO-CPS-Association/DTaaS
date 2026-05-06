@@ -114,6 +114,18 @@ def _process_user_row(
     return True, ""
 
 
+def _collect_user_creation_errors(errors: list[str], row: dict, error_msg: str) -> None:
+    """Collect an error with the associated username for reporting.
+
+    Args:
+        errors: List to append the error to
+        row: CSV row dict
+        error_msg: Error message from processing
+    """
+    username = (row.get("username") or "").strip() or "<unknown>"
+    errors.append(f"{username}: {error_msg}")
+
+
 def _create_users_from_rows(
     gl: gitlab.Gitlab, reader
 ) -> Tuple[bool, str, dict[str, str]]:
@@ -135,11 +147,8 @@ def _create_users_from_rows(
     for row in reader:
         success, error_msg = _process_user_row(gl, row, tokens)
         if not success:
-            username = (row.get("username") or "").strip() or "<unknown>"
-            errors.append(f"{username}: {error_msg}")
-    if errors:
-        return False, "\n".join(errors), tokens
-    return True, "", tokens
+            _collect_user_creation_errors(errors, row, error_msg)
+    return (False, "\n".join(errors), tokens) if errors else (True, "", tokens)
 
 
 def _get_user_tokens_path() -> Path:
