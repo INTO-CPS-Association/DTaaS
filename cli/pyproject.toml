@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "dtaas"
-version = "0.2.4"
+version = "0.3.0"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
 readme = "README.md"
 packages = [{include = "src"}]
+include = ["src/templates/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"

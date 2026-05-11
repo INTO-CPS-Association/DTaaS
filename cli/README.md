@@ -30,6 +30,28 @@ pip install dtaas
 
 ## 📖 Usage
 
+### Generate Project Files
+
+Before configuring the CLI, generate the required project files in your
+working directory:
+
+```bash
+dtaas generate-project
+```
+
+This creates three configuration files and the workspace directory structure:
+
+| Item | Purpose |
+|------|---------|
+| `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
+| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
+| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
+| `files/template/` | Template directory for user workspace initialization |
+
+If any configuration files already exist they are left untouched and a message is
+printed for each skipped file. The `files/template/` directory is created if it
+does not exist.
+
 ### Configure
 
 The CLI uses _dtaas.toml_ as configuration file. A sample

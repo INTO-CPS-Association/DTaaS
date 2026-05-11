@@ -1,4 +1,4 @@
-"""Tests for admin user commands in the CLI."""
+"""Tests for CLI commands."""
 
 from unittest.mock import patch
 import pytest
@@ -58,3 +58,26 @@ def test_delete_user_error(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["admin", "user", "delete"])
     assert result.exit_code != 0
     assert "Error while deleting users" in result.output
+
+
+def test_generate_project_success(runner):
+    """Test successful project file generation"""
+    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
+        mock_gen.return_value = None
+
+        result = runner.invoke(dtaas, ["generate-project"])
+
+        assert result.exit_code == 0
+        assert "Project files generated successfully" in result.output
+        mock_gen.assert_called_once()
+
+
+def test_generate_project_error(runner):
+    """Test project generation propagates errors"""
+    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
+        mock_gen.return_value = Exception("Copy failed")
+
+        result = runner.invoke(dtaas, ["generate-project"])
+
+        assert result.exit_code != 0
+        assert "Error while generating project" in result.output
