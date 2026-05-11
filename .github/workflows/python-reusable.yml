@@ -132,17 +132,22 @@ jobs:
       - name: Run pylint (min score 9.0)
         if: matrix.os == 'ubuntu-latest'
         shell: bash
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
+          TESTS_DIR: ${{ inputs.tests-directory }}
         run: |
           poetry run pylint \
-            ${{ inputs.src-directory }} \
-            ${{ inputs.tests-directory }} \
+            "$SRC_DIR" \
+            "$TESTS_DIR" \
             --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
 
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
         run: |
-          poetry run pytest --cov=${{ inputs.src-directory }} --cov-report=xml \
+          poetry run pytest --cov="$SRC_DIR" --cov-report=xml \
             --cov-report=term-missing
 
       - name: Upload coverage to Codecov
@@ -150,7 +155,7 @@ jobs:
         # v5
         uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
         with:
-          files: ${{ inputs.coverage-file }}
+          files: coverage.xml
           flags: cli-tests
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
