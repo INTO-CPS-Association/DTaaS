@@ -3,6 +3,7 @@
 import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
+from .pkg import project as projectPkg
 
 
 ### Groups
@@ -10,6 +11,19 @@ from .pkg import users as userPkg
 def dtaas():
     """all commands to help with Digital Twins as a Service"""
     return
+
+
+@dtaas.command(name="generate-project")
+def generate_project():
+    """
+    generate project configuration files\n
+    Creates dtaas.toml, users.server.yml, and users.server.secure.yml\n
+    in the current directory. Existing files are left untouched.\n
+    """
+    err = projectPkg.generate_project()
+    if err is not None:
+        raise click.ClickException("Error while generating project: " + str(err))
+    click.echo("Project files generated successfully")
 
 
 @dtaas.group()
