@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
     "baseUrl": "./",
     "declaration": true, //generate declaration '.d.ts' files
