@@ -44,15 +44,23 @@ permissions:
       DOCKERHUB_TOKEN:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   registry: docker.io
   username: ${{ secrets.DOCKERHUB_USERNAME }}
-  dockerhub-scope: ${{ secrets.DOCKERHUB_SCOPE }}
+  dockerhub_scope: ${{ secrets.DOCKERHUB_SCOPE }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
+  IMAGE_REPOSITORY: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
+  IMAGE_BASE: "${{ env.IMAGE_REPOSITORY }}/${{ inputs.image-name }}"
+  IMAGE_TAG: "${{ env.IMAGE_BASE }}:${{ inputs.version }}"
 
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       contents: read  # Required for checking out the code
@@ -61,8 +69,6 @@ jobs:
       - name: Checkout Repository
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          lfs: false
 
       - name: Setup node
         if: ${{ inputs.image-name == 'dtaas-web' }}
@@ -90,43 +96,33 @@ jobs:
 
       - name: Check if version exists
         id: check_version
-        env:
-          IMAGE_TAG: >
-            ${{ env.registry }}/${{ env.dockerhub-scope }}/
-            ${{ inputs.image-name }}:${{ inputs.version }}
         run: |
           if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
-            echo "exists=true" >> $GITHUB_ENV
+            echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "Version ${{ inputs.version }} does not exist."
-            echo "exists=false" >> $GITHUB_ENV
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push Docker image
-        if: env.exists == 'false'
+        if: steps.check_version.outputs.exists == 'false'
         # v6.18.0
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
-        env:
-          IMAGE_REPO: >-
-            ${{ format('{0}/{1}/{2}', env.registry, env.dockerhub-scope,
-            inputs.image-name) }}
         with:
           context: .
-          file: ./developer/${{ inputs.dockerfile }}
+          file: ./docker/${{ inputs.dockerfile }}
           push: true
-          # yamllint disable rule:line-length
           tags: |
-            ${{ env.IMAGE_REPO }}:${{ inputs.version }}
-            ${{ env.IMAGE_REPO }}:latest
-          # yamllint enable rule:line-length
+            ${{ env.IMAGE_BASE }}:${{ inputs.version }}
+            ${{ env.IMAGE_BASE }}:latest
+
       - name: Docker Hub Description
         # v5.0.0
-        # yamllint disable rule:line-length
-        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa
-        # yamllint enable rule:line-length
+        uses: >-
+          peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa
         with:
           username: ${{ env.username }}
           password: ${{ env.password }}
-          repository: ${{ env.dockerhub-scope }}/${{ inputs.image-name }}
+          repository: ${{ env.dockerhub_scope }}/${{ inputs.image-name }}
           readme-filepath: ${{ inputs.readme-file }}

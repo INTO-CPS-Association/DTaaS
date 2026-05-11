@@ -20,11 +20,16 @@ name: Lint Miscellaneous Scripts
       - '.yamllint'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 
 jobs:
   shellcheck:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
+    timeout-minutes: &job_timeout 30
     permissions:
       contents: read
     steps:
@@ -42,6 +47,7 @@ jobs:
   python-lint:
     name: Lint Python Scripts
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     permissions:
       contents: read
     steps:
@@ -80,6 +86,7 @@ jobs:
   yaml-lint:
     name: Lint YAML Files
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     permissions:
       contents: read
     steps:

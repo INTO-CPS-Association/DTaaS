@@ -14,6 +14,10 @@ name: Platform Services CLI
       - '.github/workflows/platform-services-cli.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-services-cli:
     name: Test and Build Platform Services CLI

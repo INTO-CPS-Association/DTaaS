@@ -19,9 +19,14 @@ name: Test and Publish
       NPM_TOKEN:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish-package:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       packages: write  # Push to github package registry
       contents: read   # Required for checking out the code
@@ -33,8 +38,6 @@ jobs:
       - name: Checkout
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          lfs: false
 
       - name: Setup node
         # v6.1.0

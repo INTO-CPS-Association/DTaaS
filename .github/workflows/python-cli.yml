@@ -13,6 +13,10 @@ name: CLI for DTaaS
       - '.github/workflows/python-cli.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-cli:
     name: Test and Build DTaaS CLI

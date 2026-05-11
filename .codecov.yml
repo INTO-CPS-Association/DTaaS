@@ -1,5 +1,7 @@
 comment:
+  # show component info in the PR comment
   layout: "header, diff, files, components"
+
 coverage:
   status:
     project:
@@ -9,7 +11,6 @@ coverage:
     patch:
       default:
         informational: true
-
 codecov:
   require_ci_to_pass: false
   notify:
@@ -29,11 +30,3 @@ component_management:
       name: Lib Microservice
       paths:
         - servers/lib/**
-    - component_id: dtaas_services
-      name: dtaas-Services
-      paths:
-        - deploy/services/cli/**
-    - component_id: dtaas_cli
-      name: dtaas-CLI
-      paths:
-        - cli/**

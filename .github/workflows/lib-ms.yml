@@ -11,6 +11,10 @@ name: Library microservice
       - '.github/workflows/lib-ms.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 24
   HTTP_PORT: 4002
@@ -25,6 +29,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: servers/lib
@@ -33,8 +38,6 @@ jobs:
       - name: Checkout
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          lfs: false
 
       - name: Setup node
         # v6.1.0
@@ -75,7 +78,7 @@ jobs:
 
       - name: Update configuration
         env:
-          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
           node test/update-config.js
@@ -116,7 +119,7 @@ jobs:
       - name: Run http test
         env:
           PORT: ${{ env.HTTP_PORT }}
-          LOCAL_PATH: ${{ github.workspace }}/developer/files
+          LOCAL_PATH: ${{ github.workspace }}/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
@@ -132,6 +135,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     steps:
       - name: Checkout Repository
         # v6.0.1
