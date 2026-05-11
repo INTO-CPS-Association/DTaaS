@@ -89,7 +89,8 @@ jobs:
       - name: Check if version exists
         id: check_version
         run: |
-          if docker manifest inspect "${{ steps.image_vars.outputs.image_tag }}" > /dev/null 2>&1; then
+          IMAGE_TAG="${{ steps.image_vars.outputs.image_tag }}"
+          if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else

@@ -54,8 +54,8 @@ env:
   dockerhub_scope: ${{ secrets.DOCKERHUB_SCOPE }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
   IMAGE_REPOSITORY: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
-  IMAGE_BASE: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}"
-  IMAGE_TAG: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}:${{ inputs.version }}"
+  IMAGE_BASE: "${{ env.IMAGE_REPOSITORY }}/${{ inputs.image-name }}"
+  IMAGE_TAG: "${{ env.IMAGE_BASE }}:${{ inputs.version }}"
 
 jobs:
   build-and-push-image:
