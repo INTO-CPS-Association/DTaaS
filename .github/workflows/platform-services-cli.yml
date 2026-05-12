@@ -31,7 +31,6 @@ jobs:
       tests-directory: tests
       coverage-file: deploy/services/cli/coverage.xml
       artifact-name: dtaas-services-cli
-      artifact-path: dist
       run-pyright: true
 
   publish-pypi:

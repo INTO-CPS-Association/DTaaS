@@ -43,7 +43,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -99,6 +98,10 @@ jobs:
             --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
 
+      - name: Run pyright type checking
+        if: inputs.run-pyright && matrix.os == 'ubuntu-latest'
+        run: poetry run pyright
+
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         env:
@@ -112,7 +115,7 @@ jobs:
         # v5
         uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
         with:
-          files: coverage.xml
+          files: ${{ inputs.coverage-file }}
           flags: cli-tests
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -124,7 +127,6 @@ jobs:
       contents: read  # Required for checking out the code
       actions: write  # Required for uploading artifacts
     runs-on: ubuntu-latest
-    timeout-minutes: *job_timeout
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}

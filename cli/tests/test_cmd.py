@@ -61,21 +61,37 @@ def test_delete_user_error(runner, mock_user_pkg):
 
 
 def test_generate_project_success(runner):
-    """Test successful project file generation"""
+    """Test successful project file generation with defaults"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
-        mock_gen.return_value = None
-
         result = runner.invoke(dtaas, ["generate-project"])
 
         assert result.exit_code == 0
         assert "Project files generated successfully" in result.output
-        mock_gen.assert_called_once()
+        mock_gen.assert_called_once_with(".", False)
+
+
+def test_generate_project_output_dir(runner):
+    """--output-dir is forwarded to generate_project"""
+    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
+        result = runner.invoke(dtaas, ["generate-project", "--output-dir", "/tmp/out"])
+
+        assert result.exit_code == 0
+        mock_gen.assert_called_once_with("/tmp/out", False)
+
+
+def test_generate_project_force(runner):
+    """--force flag is forwarded to generate_project"""
+    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
+        result = runner.invoke(dtaas, ["generate-project", "--force"])
+
+        assert result.exit_code == 0
+        mock_gen.assert_called_once_with(".", True)
 
 
 def test_generate_project_error(runner):
     """Test project generation propagates errors"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
-        mock_gen.return_value = Exception("Copy failed")
+        mock_gen.side_effect = OSError("Copy failed")
 
         result = runner.invoke(dtaas, ["generate-project"])
 
