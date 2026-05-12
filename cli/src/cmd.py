@@ -14,15 +14,23 @@ def dtaas():
 
 
 @dtaas.command(name="generate-project")
-def generate_project():
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Target directory for generated files.",
+)
+@click.option("--force", is_flag=True, help="Overwrite existing files.")
+def generate_project(output_dir, force):
     """
     generate project configuration files\n
     Creates dtaas.toml, users.server.yml, and users.server.secure.yml\n
-    in the current directory. Existing files are left untouched.\n
+    in the target directory. Existing files are left untouched unless --force is set.\n
     """
-    err = projectPkg.generate_project()
-    if err is not None:
-        raise click.ClickException("Error while generating project: " + str(err))
+    try:
+        projectPkg.generate_project(output_dir, force)
+    except OSError as exc:
+        raise click.ClickException(f"Error while generating project: {exc}") from exc
     click.echo("Project files generated successfully")
 
 

@@ -42,6 +42,24 @@ working directory:
 dtaas generate-project
 ```
 
+By default, this creates files in the current directory and skips any that already exist.
+You can customize this behaviour with the following options:
+
+```bash
+# Generate files in a specific directory
+dtaas generate-project --output-dir /path/to/target/dir
+
+# Overwrite existing files
+dtaas generate-project --force
+
+# Combine options
+dtaas generate-project --output-dir /path/to/target/dir --force
+```
+
+**Options:**
+- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
+
 This creates three configuration files and the workspace directory structure:
 
 | Item | Purpose |
@@ -51,9 +69,19 @@ This creates three configuration files and the workspace directory structure:
 | `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
 | `files/template/` | Template directory for user workspace initialization |
 
-If any configuration files already exist they are left untouched and a message is
-printed for each skipped file. The `files/template/` directory is created if it
-does not exist.
+The `files/template/` directory is created if it does not exist.
+
+#### Important: Verify Docker Image Tag
+
+The generated `users.server.yml` and `users.server.secure.yml` files contain a
+pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
+This tag is baked into the templates at generation time and may become stale as the
+project evolves.
+
+**You should verify and update the Docker image tag** in these templates to use a current,
+stable version before deploying user workspaces. Check the available tags in the
+[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
+Docker registry to ensure you are using an up-to-date image version.
 
 ### Configure
 
