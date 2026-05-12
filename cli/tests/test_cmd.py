@@ -72,11 +72,12 @@ def test_generate_project_success(runner):
 
 def test_generate_project_output_dir(runner):
     """--output-dir is forwarded to generate_project"""
-    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
-        result = runner.invoke(dtaas, ["generate-project", "--output-dir", "/tmp/out"])
+    with runner.isolated_filesystem():
+        with patch("src.cmd.projectPkg.generate_project") as mock_gen:
+            result = runner.invoke(dtaas, ["generate-project", "--output-dir", "."])
 
-        assert result.exit_code == 0
-        mock_gen.assert_called_once_with("/tmp/out", False)
+            assert result.exit_code == 0
+            mock_gen.assert_called_once_with(".", False)
 
 
 def test_generate_project_force(runner):
