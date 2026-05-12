@@ -30,3 +30,21 @@ component_management:
       name: Lib Microservice
       paths:
         - servers/lib/**
+    # this is an identifier that should not be changed
+    - component_id: runner
+      # this is a display name, and can be changed freely
+      name: Execution Runner
+      paths:
+        - servers/execution/**
+    # this is an identifier that should not be changed
+    - component_id: dtaas_cli
+      # this is a display name, and can be changed freely
+      name: DTaaS CLI
+      paths:
+        - cli/**
+    # this is an identifier that should not be changed
+    - component_id: dtaas_services_cli
+      # this is a display name, and can be changed freely
+      name: DTaaS Services CLI
+      paths:
+        - deploy/services/cli/**

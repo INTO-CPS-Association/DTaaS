@@ -32,6 +32,7 @@ name: Python Reusable Workflow
         description: 'Path for artifact upload'
         required: true
         type: string
+        default: 'dist'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -55,6 +56,8 @@ jobs:
       - name: Checkout Repository
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          lfs: false
 
       - name: Setup Python
         # v6.1.0
@@ -176,6 +179,8 @@ jobs:
       - name: Checkout Repository
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          lfs: false
 
       - name: Setup Python
         # v6.1.0
