@@ -6,7 +6,7 @@ from src.pkg import utils
 def test_import_yaml_users():
     """Test importing YAML user configuration template"""
     expected = {
-        "container_name": "${username}",
+        "container_name": "dtaas-cli-${username}",
         "image": "intocps/workspace:main-967bc10",
         "restart": "unless-stopped",
         "volumes": [
@@ -22,7 +22,10 @@ def test_import_yaml_users():
             "traefik.enable=true",
             "traefik.http.routers.${username}.entryPoints=web",
             "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
-            "traefik.http.routers.${username}.rule=Host(`${SERVER_DNS}`) && PathPrefix(`/${username}`)",
+            (
+                "traefik.http.routers.${username}.rule="
+                "Host(`${SERVER_DNS}`) && PathPrefix(`/${username}`)"
+            ),
         ],
         "networks": ["users"],
     }
@@ -222,7 +225,7 @@ def test_check_error_with_exception():
     try:
         utils.check_error(err)
         assert False, "Expected exception to be raised"
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         assert str(e) == "Test error"
 
 
