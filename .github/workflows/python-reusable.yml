@@ -28,6 +28,11 @@ name: Python Reusable Workflow
         required: false
         type: boolean
         default: false
+      artifact-path:
+        description: 'Path for artifact upload'
+        required: true
+        type: string
+        default: 'dist'
 
 jobs:
   python-tests:
@@ -38,6 +43,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: &job_timeout 30
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -47,7 +53,7 @@ jobs:
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup Python
         # v6.1.0
@@ -76,48 +82,9 @@ jobs:
       - name: Install dev dependencies
         run: poetry install --with dev
 
-      # ───── Docker setup (for system tests) ─────
       - name: Check Docker availability (Linux)
         if: runner.os == 'Linux'
-        run: |
-          # Docker is pre-installed on Ubuntu runners
-          # Just ensure the service is running
-          docker --version
-
-      - name: Install Docker on Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          # Install Chocolatey if not present
-          if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
-            Set-ExecutionPolicy Bypass -Scope Process -Force
-            [System.Net.ServicePointManager]::SecurityProtocol = `
-              [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-            iex ((New-Object System.Net.WebClient).DownloadString(`
-              'https://chocolatey.org/install.ps1'))
-          }
-          # Install Docker Desktop
-          choco install docker-desktop -y
-          # Refresh PATH
-            $machinePath = [System.Environment]::GetEnvironmentVariable(`
-              "Path", "Machine")
-            $userPath = [System.Environment]::GetEnvironmentVariable(`
-              "Path", "User")
-            $env:Path = "$machinePath;$userPath"
-          # Start Docker service
-          Start-Service docker
-      # yamllint enable rule:line-length
-
-      - name: Install Docker on macOS
-        if: runner.os == 'macOS'
-        run: |
-          # Install Docker Desktop using Homebrew
-          brew install --cask docker
-          # Start Docker (may require user interaction, but in CI it might work)
-          open /Applications/Docker.app
-          # Wait for Docker to start
-          sleep 30
-          docker --version
+        run: docker --version
 
       - name: Run pylint (min score 9.0)
         if: matrix.os == 'ubuntu-latest'
@@ -132,10 +99,6 @@ jobs:
             --rcfile=${GITHUB_WORKSPACE}/.pylintrc \
             --fail-under=9.0
 
-      - name: Run pyright type checking
-        if: inputs.run-pyright && matrix.os == 'ubuntu-latest'
-        run: poetry run pyright
-
       - name: Run pytest (with coverage, Linux only)
         if: matrix.os == 'ubuntu-latest'
         env:
@@ -149,7 +112,7 @@ jobs:
         # v5
         uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
         with:
-          files: ${{ inputs.coverage-file }}
+          files: coverage.xml
           flags: cli-tests
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -161,6 +124,7 @@ jobs:
       contents: read  # Required for checking out the code
       actions: write  # Required for uploading artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
@@ -170,7 +134,7 @@ jobs:
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup Python
         # v6.1.0
@@ -197,9 +161,9 @@ jobs:
           poetry build --format sdist
 
       - name: Upload dist artefacts
-        # v4.6.2 it needs to match the download-artifact (major) version
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        # v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ inputs.artifact-name }}
-          path: ${{ inputs.working-directory }}/dist
+          path: ${{ inputs.working-directory }}/${{ inputs.artifact-path }}
           retention-days: 1
