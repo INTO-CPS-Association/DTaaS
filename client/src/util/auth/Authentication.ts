@@ -56,7 +56,6 @@ export function useSignOut() {
     try {
       await performSignOutFlow(auth, APP_URL);
     } catch (e) {
-       
       throw new Error(`Error occurred during logout: ${e}`);
     }
   };

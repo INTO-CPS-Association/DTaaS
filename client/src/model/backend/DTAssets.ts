@@ -154,7 +154,6 @@ class DTAssets implements DTAssetsInterface {
       const files = await Promise.all(filePromises);
       return files;
     } catch (error) {
-       
       throw new Error(
         `Error fetching files from asset at ${assetPath}: ${error}`,
       );
