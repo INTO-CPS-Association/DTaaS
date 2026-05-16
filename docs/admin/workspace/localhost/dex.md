@@ -94,8 +94,8 @@ DTaaS routes and workspace paths use `.env` value `DEFAULT_USER`.
 
 For local/passwordDB mode, keep these aligned:
 
-- `.env`: `DEFAULT_USER=<the-user>`
+- `.env`: `DEFAULT_USER=<user>`
 - `config/dex-config.yaml`: set static user `username`
-  and `preferredUsername` to the same `<the-user>`
+  and `preferredUsername` to the same `<user>`
 
 ✅ This prevents path mismatches in user-scoped URLs.

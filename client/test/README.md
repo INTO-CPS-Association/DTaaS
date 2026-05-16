@@ -17,7 +17,7 @@ Two test setups are supported.
    The DTaaS client application runs at `http://localhost:4000`.
 1. Host the website on the integration server and run tests from the
    integration server.
-   The DTaaS client application runs at `https://foo.com`.
+   The DTaaS client application runs at `https://intocps.org`.
 
 The following sections describe the configuration and `yarn` test commands
 for both scenarios.
@@ -45,7 +45,7 @@ following callback URLs.
 | Location of client application | URL                     |
 | :----------------------------- | :---------------------- |
 | Localhost                      | `http://localhost:4000` |
-| External / Integration server  | `https://foo.com`       |
+| External / Integration server  | `https://intocps.org`       |
 
 GitLab still runs on a remote machine.
 Running both GitLab and the React client website on localhost is not supported.
@@ -82,7 +82,7 @@ window.env = {
 
   REACT_APP_CLIENT_ID:
     '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.intocps.org/',
   REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
@@ -90,12 +90,12 @@ window.env = {
 ```
 
 The corresponding values for running the DTaaS client application on an integration
-server hosted at `https://foo.com` are:
+server hosted at `https://intocps.org` are:
 
 ```js
 window.env = {
   REACT_APP_ENVIRONMENT: 'dev',
-  REACT_APP_URL: 'https://foo.com/',
+  REACT_APP_URL: 'https://intocps.org/',
   REACT_APP_URL_BASENAME: '',
   REACT_APP_URL_DTLINK: '/lab',
   REACT_APP_URL_LIBLINK: '',
@@ -104,9 +104,9 @@ window.env = {
 
   REACT_APP_CLIENT_ID:
     '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
-  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.foo.com/',
-  REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
-  REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.intocps.org/',
+  REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
+  REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
   REACT_APP_GitLab_SCOPES: 'openid profile read_user read_repository api',
 };
 ```
@@ -130,7 +130,7 @@ SECONDARY_RUNNER=your_secondary_gitlab_runner_tag
 ```
 
 Replace _your_username_ and _your_password_ with the actual username and password
-for the selected on-premise GitLab account (`gitlab.foo.com`) or test account.
+for the selected on-premise GitLab account (`gitlab.intocps.org`) or test account.
 If you do not have a secondary gitlab runner, you can use the same one for both.
 They will be the ones used in the e2e tests for executing twins and taking
 measurements.
@@ -142,13 +142,13 @@ integration server:
 ```env
 REACT_APP_TEST_USERNAME=TestUsername
 REACT_APP_TEST_PASSWORD=TestPassword123
-REACT_APP_URL='https://foo.com'
+REACT_APP_URL='https://intocps.org'
 PRIMARY_RUNNER=linux
 SECONDARY_RUNNER=windows
 ```
 
-Here, `https://foo.com` is the application URL.
-Replace _foo.com_ with the actual application URL.
+Here, `https://intocps.org` is the application URL.
+Replace _intocps.org_ with the actual application URL.
 
 ## Run Tests
 
@@ -169,8 +169,8 @@ The client application is terminated at the end of end-to-end tests.
 
 ## Testing on the integration server
 
-In this setup, the DTaaS application runs at `https://foo.com` and
-the GitLab instance runs at `https://gitlab.foo.com`.
+In this setup, the DTaaS application runs at `https://intocps.org` and
+the GitLab instance runs at `https://gitlab.intocps.org`.
 The E2E tests are executed from the developer computer.
 The same codebase commit should be used on both the developer computer
 and integration server.

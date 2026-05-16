@@ -74,9 +74,9 @@ def test_import_toml():
             # matching user info must present in this config file
             "add": ["username1", "username2", "username3"],
             "delete": ["username2", "username3"],
-            "username1": {"email": "username1@gitlab.foo.com"},
-            "username2": {"email": "username2@gitlab.foo.com"},
-            "username3": {"email": "username3@gitlab.foo.com"},
+            "username1": {"email": "username1@gitlab.intocps.org"},
+            "username2": {"email": "username2@gitlab.intocps.org"},
+            "username3": {"email": "username3@gitlab.intocps.org"},
         },
         "client": {"web": {"config": "/home/Desktop/DTaaS/env.local.js"}},
     }

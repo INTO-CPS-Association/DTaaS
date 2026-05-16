@@ -10,11 +10,12 @@ public certificate authorities such as Let's Encrypt.
 When DTaaS is installed with a self-signed certificate, the
 `traefik-forward-auth` service must trust that certificate in order to
 complete the OAuth 2.0 token exchange with the GitLab instance.
-Without this, authentication fails with a certificate error:
+Without this, authentication fails with a certificate error,
+and logs of `traefik-forward-auth` service contains this error:
 
 ```text
 level=error msg="Code exchange failed with provider"
-error="Post https://foo.com/gitlab/oauth/token:
+error="Post https://intocps.org/gitlab/oauth/token:
 x509: certificate signed by unknown authority"
 ```
 
@@ -32,7 +33,7 @@ correct nameserver to `/etc/resolv.conf` on the host. Obtain the correct
 values from the IT department. For example:
 
 ```text
-search client.foo.com
+search client.intocps.org
 nameserver 10.20.25.125
 ```
 
@@ -66,11 +67,11 @@ Create a local root CA and server certificates:
 
 ```bash
 mkcert -install
-mkcert "foo.com" "*.foo.com" "localhost" "127.0.0.1" "::1"
+mkcert "intocps.org" "*.intocps.org" "localhost" "127.0.0.1" "::1"
 cp ~/.local/share/mkcert/rootCA.pem rootCA.crt
 ```
 
-Replace `foo.com` with the actual hostname of the DTaaS installation.
+Replace `intocps.org` with the actual hostname of the DTaaS installation.
 
 ## Step 3: Build a Custom traefik-forward-auth Image
 
@@ -100,7 +101,7 @@ docker build -t traefik-forward-auth-local:latest .
 ## Step 4: Use the Custom Image
 
 In `deploy/dtaas/docker/secure-server/docker-compose.yml`, replace the
-existing `thomseddon/traefik-forward-auth:latest` image reference with:
+existing `image: thomseddon/traefik-forward-auth:latest` image reference with:
 
 ```yaml
 image: traefik-forward-auth-local:latest
@@ -116,11 +117,11 @@ docker compose --env-file config/.env \
 ## External GitLab with Self-Signed Certificates
 
 If the GitLab OAuth provider is hosted on a separate server
-(for example, `gitlab.foo.com`) and also uses a self-signed certificate,
+(for example, `gitlab.intocps.org`) and also uses a self-signed certificate,
 generate that certificate using the same `mkcert` root CA:
 
 ```bash
-mkcert "gitlab.foo.com" "localhost" "127.0.0.1" "::1"
+mkcert "gitlab.intocps.org" "localhost" "127.0.0.1" "::1"
 ```
 
 Because the custom `traefik-forward-auth` image already trusts the

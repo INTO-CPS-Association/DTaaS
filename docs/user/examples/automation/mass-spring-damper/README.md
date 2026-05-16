@@ -56,6 +56,8 @@ namely _build_and_run_.
 This example produces co-simulation outputs which are then saved in
 the artefacts repository of the GitLab. These can be accessed at
 `https://<gitlab-host>/<group>/<username>/-/artifacts`.
+Replace `<gitlab-host>`, `<group>`, and `<username>` with the values for
+your GitLab instance and project.
 
 ## Run the example
 

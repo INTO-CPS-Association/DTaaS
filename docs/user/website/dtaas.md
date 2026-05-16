@@ -2,6 +2,10 @@
 
 This page provides a screenshot-driven preview of the website serving
 the DTaaS software platform.
+A quick screen recording is available as well.
+
+![DTaaS user view](../dtaas-user_4x.gif)
+
 The `https://intocps.org` is used in this tutorial as an illustration
 for base URL of the installation. Do replace it with
 the correct URL of the installation.

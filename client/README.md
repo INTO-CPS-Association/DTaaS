@@ -11,31 +11,10 @@ The [authorization page](../docs/admin/client/auth.md)
 provides details on setting up oauth authorization for
 the client application.
 
-## Use in Docker Environment
-
 ### Use
 
-Before starting the container, create an `env.js` file in the `client/`
-directory to configure the application endpoints.
-See the [client configuration guide](../docs/admin/client/config.md) for
-the required settings. For a minimal working example, refer to
-[DOCKER.md](DOCKER.md).
-
-Once `env.js` is in place, start and stop the application with:
-
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd DTaaS/client
-docker compose up -d
-```
-
-This command brings up the client docker container and makes
-the website available at <http://localhost:4000>.
-
-```bash
-docker compose down
-docker compose up -d
-```
+Refer to [DOCKER.md](DOCKER.md) for containerized deployment of
+the client service.
 
 ## Use in Nodejs Environment
 

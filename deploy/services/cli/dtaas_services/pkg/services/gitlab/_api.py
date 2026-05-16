@@ -48,7 +48,7 @@ def build_base_url() -> str:
     ``/gitlab`` as a path prefix.
 
     Returns:
-        Base URL string, e.g. "https://foo.com:8090/gitlab"
+        Base URL string, e.g. "https://intocps.org:8090/gitlab"
 
     Raises:
         RuntimeError: If GITLAB_PORT or HOSTNAME is not set

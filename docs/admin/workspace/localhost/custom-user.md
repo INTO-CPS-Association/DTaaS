@@ -24,7 +24,7 @@ Edit `.env`.
 
 ⚠️ Important alignment for local/passwordDB mode:
 
-- In `.env`, choose `DEFAULT_USER=<the-user>`.
+- In `.env`, choose `DEFAULT_USER=<user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 

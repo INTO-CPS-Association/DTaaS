@@ -11,7 +11,7 @@ export function cleanURL(url: string): string {
 
 /**
  * Injects the `username` into the `baseURL` and `endpoint` to create a link.
- * @param baseURL Example `https://foo.com` Any leading or trailing slashes will be removed.
+ * @param baseURL Example `https://intocps.org` Any leading or trailing slashes will be removed.
  * @param endpoint (optional). Example `bar` Any leading or trailing slashes will be removed.
  * @returns a complete URL: `baseUrl` / `username` / `endpoint`
  */

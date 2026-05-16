@@ -7,7 +7,7 @@ future optimization.
 
 ## Accessing the Measurement Page
 
-Navigate to `http://localhost:4000/insight/measure` or `https://foo.com/insight/measure`
+Navigate to `http://localhost:4000/insight/measure` or `https://intocps.org/insight/measure`
 to access the measurement page. This page is only accessible to authenticated users.
 
 ![Measurement page](./images/measurement-page.png)

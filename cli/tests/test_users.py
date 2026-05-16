@@ -74,7 +74,7 @@ def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
     config = {
-        "server": "foo.com",
+        "server": "intocps.org",
         "path": "/test",
         "resources": resources,
         "tls": False,
@@ -99,8 +99,8 @@ def test_add_users_to_compose_config_error():
 @pytest.mark.parametrize(
     "server,tls,file",
     [
-        ("foo.com", False, "users.server.yml"),
-        ("foo.com", True, "users.server.secure.yml"),
+        ("intocps.org", False, "users.server.yml"),
+        ("intocps.org", True, "users.server.secure.yml"),
     ],
 )
 def test_get_compose_config(mock_utils, server, tls, file):

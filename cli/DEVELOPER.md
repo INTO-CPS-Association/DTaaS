@@ -74,7 +74,7 @@ of documentation and reference.
 [common]
 # absolute path to the DTaaS application directory
 # TODO : Update, we are now reusing hostname for this
-server-dns = "foo.com"
+server-dns = "intocps.org"
 # Specify the directory of DTaaS installation
 # Linux example
 path = "/Users/username/DTaaS"
@@ -114,7 +114,7 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.foo.com"
+email = "username1@gitlab.intocps.org"
 ```
 
 This section firstly has two important lists, add and delete.

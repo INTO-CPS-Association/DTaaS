@@ -8,7 +8,7 @@ It delivers a React single-page web application for DTaaS.
 
 The React client website uses OAuth authorization.
 The
-[authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
+[authorization page](../docs/admin/client/auth.md)
 provides details on setting up OAuth authorization for the client application.
 
 ## Use in Docker Environment
@@ -18,7 +18,7 @@ provides details on setting up OAuth authorization for the client application.
 The client application requires an `env.js` configuration file before
 starting the container.
 See the
-[config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+[config page](../docs/admin/client/config.md)
 for an explanation of client configuration.
 
 Create `env.js` in the `client/` directory with the following contents:

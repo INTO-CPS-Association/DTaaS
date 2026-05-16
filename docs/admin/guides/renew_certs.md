@@ -87,8 +87,4 @@ for the same external GitLab server layout.
 curl -I https://your-domain.com
 ```
 
-Check logs if needed:
-
-```bash
-docker logs traefik
-```
+Check logs of `traefik` service if needed.

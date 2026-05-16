@@ -26,7 +26,7 @@ describe('useSignOut', () => {
   Object.defineProperty(globalThis, 'fetch', {
     value: jest.fn(async (URL) => {
       switch (URL) {
-        case 'https://foo.com/_oauth/logout':
+        case 'https://intocps.org/_oauth/logout':
           return {
             ok: true,
             status: 401,
@@ -62,8 +62,8 @@ describe('useSignOut', () => {
     (getLogoutRedirectURI as jest.Mock).mockReturnValue(
       'https://logoutredirecturi.com/',
     );
-    (useAppURL as jest.Mock).mockReturnValue('https://foo.com/');
-    (cleanURL as jest.Mock).mockReturnValue('https://foo.com');
+    (useAppURL as jest.Mock).mockReturnValue('https://intocps.org/');
+    (cleanURL as jest.Mock).mockReturnValue('https://intocps.org');
 
     // Reset document.cookie using descriptor
     Object.defineProperty(document, 'cookie', {
@@ -116,7 +116,7 @@ describe('useSignOut', () => {
     const fetchBody = { signal: AbortSignal.timeout(30000) };
     await signOut(auth);
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://foo.com/_oauth/logout',
+      'https://intocps.org/_oauth/logout',
       fetchBody,
     );
   });

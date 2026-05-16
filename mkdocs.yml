@@ -39,6 +39,7 @@ nav:
               - Capabilities: user/digital-twins/devops/capabilities.md
               - Concurrent Execution:
                   user/digital-twins/devops/concurrent-execution.md
+              - Performance: user/digital-twins/devops/measurement.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
       - Runner: user/servers/execution/runner/readme.md
       - Examples:

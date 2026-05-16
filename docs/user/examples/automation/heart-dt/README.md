@@ -21,7 +21,7 @@ The Heart Digital Twin consists of several key components working together:
 - **Web Interface**: Flask-based web application for real-time monitoring and
   control
 
-![Heart Digital Twin Web Interface](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/devops/digital_twins/heart_dt/heart-dt.png)
+![Heart Digital Twin Web Interface](heart-dt.png)
 
 ## MIT-BIH Arrhythmia Database
 

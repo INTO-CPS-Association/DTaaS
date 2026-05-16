@@ -47,7 +47,7 @@ owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 [common]
-# Server hostname either localhost or a valid hostname, ex: foo.com
+# Server hostname either localhost or a valid hostname, ex: intocps.org
 # TODO : Update, we are now reusing hostname for this
 server-dns = "localhost"
 # absolute path to the DTaaS application directory
