@@ -95,7 +95,7 @@ need to be updated in the file. In case a local MQTT broker is not available,
 
 ## Use
 
-You can find the available experimental scenarios by running the program
+The available experimental scenarios can be found by running the program
 
 ```bash
 $example-shm

@@ -26,10 +26,10 @@ x509: certificate signed by unknown authority"
 ## Step 1: Update the DNS Configuration
 
 Containers in the secure-server package use the host's DNS configuration.
-If your GitLab instance uses an internal DNS name that is not resolvable from
-the public Internet, make sure the Docker host can resolve it by adding the
+If the GitLab instance uses an internal DNS name that is not resolvable from
+the public Internet, the Docker host must be able to resolve it by adding the
 correct nameserver to `/etc/resolv.conf` on the host. Obtain the correct
-values from your IT department. For example:
+values from the IT department. For example:
 
 ```text
 search client.foo.com
@@ -39,7 +39,7 @@ nameserver 10.20.25.125
 ## Step 2: Create Local TLS Certificates with mkcert
 
 Install `mkcert` if it is not already present. The preferred approach is
-to use your OS package manager:
+to use the OS package manager:
 
 ```bash
 # Debian / Ubuntu 22.04+
@@ -70,7 +70,7 @@ mkcert "foo.com" "*.foo.com" "localhost" "127.0.0.1" "::1"
 cp ~/.local/share/mkcert/rootCA.pem rootCA.crt
 ```
 
-Replace `foo.com` with the actual hostname of your DTaaS installation.
+Replace `foo.com` with the actual hostname of the DTaaS installation.
 
 ## Step 3: Build a Custom traefik-forward-auth Image
 
@@ -131,6 +131,6 @@ Because the custom `traefik-forward-auth` image already trusts the
 - Certificates created with `mkcert` are trusted only on the machine
   where `mkcert -install` was run. Other clients that access the DTaaS
   installation must also import the `rootCA.crt` into their trust store.
-- If your server has a valid public TLS certificate, this guide is not
+- If the server has a valid public TLS certificate, this guide is not
   needed. Use the standard
   [Let's Encrypt renewal guide](renew_certs.md) instead.

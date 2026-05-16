@@ -80,7 +80,7 @@ To stop and remove volumes:
 docker compose down -v
 ```
 
-## 🔧 Customization
+## 🔧 Customisation
 
 ### Adding More Users
 

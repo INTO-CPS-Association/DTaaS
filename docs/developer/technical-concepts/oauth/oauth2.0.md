@@ -39,11 +39,11 @@ the User, the OAuth 2.0 Client, and the GitLab instance.
 
 ### The OAuth 2.0 Client
 
-Many platforms allow the initialization of an OAuth 2.0 client. For the DTaaS
+Many platforms allow the initialisation of an OAuth 2.0 client. For the DTaaS
 implementation, GitLab is used by creating an "application" within GitLab.
-However, it is not necessary to initialize a client using the same platform
+However, it is not necessary to initialise a client using the same platform
 as the identity provider; these are separate concerns. The DTaaS OAuth 2.0
-client is initialized by creating and configuring a GitLab instance-wide
+client is initialised by creating and configuring a GitLab instance-wide
 application. There are two main elements in this configuration:
 
 - **Redirect URI**: This is the URI to which users are redirected after

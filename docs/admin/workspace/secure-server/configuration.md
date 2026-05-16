@@ -35,7 +35,7 @@ cp .env.example .env
 
 Decide whether the deployment is local or remote.
 
-From now on whenever `<DOMAIN_NAME>` or `intocps.org` appears
+Wherever `<DOMAIN_NAME>` or `intocps.org` appears
 in this guide, replace it with the domain name of the remote machine.
 Ensure that the remote machine has a domain name and that it is
 accessible from the internet.
@@ -45,7 +45,7 @@ the `SERVER_DNS` variable with the domain name:
 
 ```bash
 # Server Configuration
-# Replace with your domain name
+# Replace with the actual domain name
 SERVER_DNS=<DOMAIN_NAME>
 ```
 

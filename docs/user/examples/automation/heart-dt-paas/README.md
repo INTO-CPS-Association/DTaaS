@@ -13,10 +13,10 @@ strategies including Render.com and GitLab CI/CD with GitHub mirroring.
 
 1. **Connect GitHub Repository to Render.com**:
    - Sign up for a Render.com account
-   - Connect your GitHub repository
+   - Connect the GitHub repository
 
 2. **Automatic Deployment**:
-   - Render.com automatically deploys on detecting changes in your GitHub
+   - Render.com automatically deploys on detecting changes in the GitHub
      repository
 
 The `.gitlab-ci.yml` file provides a mirror-to-GitHub pipeline that:

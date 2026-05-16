@@ -31,7 +31,7 @@ documents.
 Workspace scenarios focus on user workbench access, identity-provider setup,
 and route-level protection. Choose localhost for rapid onboarding with Dex, or
 secure server for production-style Keycloak/OIDC deployment. Scenario pages are
-organized by Install, Configuration, and identity-provider setup to make
+organised by Install, Configuration, and identity-provider setup to make
 operations and troubleshooting predictable.
 
 | Scenario | Purpose | Source Directory |

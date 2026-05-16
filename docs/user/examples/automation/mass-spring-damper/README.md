@@ -32,7 +32,7 @@ This example uses two models and one tool. The specific assets used are:
 
 The `co-sim.json` and `time.json`
 are two DT configuration files used for executing the digital twin.
-You can change these two files to customize the DT to your needs.
+These two files can be modified to customise the DT as required.
 
 ## Lifecycle Phases
 
@@ -54,19 +54,19 @@ In this first example, all the lifecycle scripts are put in single stage,
 namely _build_and_run_.
 
 This example produces co-simulation outputs which are then saved in
-the artifacts repository of the GitLab. You can access them at
+the artefacts repository of the GitLab. These can be accessed at
 `https://<gitlab-host>/<group>/<username>/-/artifacts`.
 
 ## Run the example
 
-To run the example, change your present directory.
+To run the example, navigate to the following directory.
 
 ```bash
 cd /workspace/examples/digital_twins/mass-spring-damper
 ```
 
-If required, change the execute permission of lifecycle scripts
-you need to execute, for example:
+If required, change the execute permission of the lifecycle scripts
+to be executed, for example:
 
 ```bash
 chmod +x lifecycle/create

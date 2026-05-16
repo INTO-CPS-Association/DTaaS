@@ -195,7 +195,7 @@
     and digital twin can utilise these protocols for communication.
     The IoT (time-series) data can be collected using InfluxDB and MQTT
     broker services. There is a user interface for InfluxDB which can be
-    used to analyze the data collected.
+    used to analyse the data collected.
     Users can also manually upload their data files into the DTaaS.
 
 ??? Question "Is the DTaaS platform able to transmit data to cloud in real time?"
@@ -216,7 +216,7 @@
 ??? Question "Which kinds of visualisation technologies can the DTaaS platform support (e.g. graphical, geometry, image, VR/AR representation)?"
 
     Graphical, geometric and images. If specific licensed software
-    is needed for the visualisation, the license for it must be provided.
+    is needed for the visualisation, the licence for it must be provided.
     DTaaS does not support AR/VR.
 
 ## Platform Native Services on the DTaaS Platform

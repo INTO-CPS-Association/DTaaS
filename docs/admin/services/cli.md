@@ -223,7 +223,7 @@ This command:
    platform services are running. Start them first with
    `dtaas-services start` before installing GitLab.
 * Set `REACT_APP_AUTH_AUTHORITY` in the client config file to match
-   the local GitLab authority URL used by your DTaaS deployment.
+   the local GitLab authority URL used by the DTaaS deployment.
 
 > **Note:** The DTaaS client uses `react-oidc-context`, which forces
 > redirects to use HTTPS. GitLab must therefore be served over HTTPS

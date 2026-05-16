@@ -5,7 +5,7 @@ from [docker hub](https://hub.docker.com):
 
 | Secret Name          | Explanation                                                                              |
 | :------------------- | :--------------------------------------------------------------------------------------- |
-| `DOCKERHUB_SCOPE`    | Username or organization name on docker hub                                              |
+| `DOCKERHUB_SCOPE`    | Username or organisation name on Docker Hub                                              |
 | `DOCKERHUB_USERNAME` | Username on docker hub                                                                   |
 | `DOCKERHUB_TOKEN`    | API token to publish images to docker hub, with `Read`, `Write` and `Delete` permissions |
 | `PACKAGE_NAME`       | The name with which libms npm package must be published                                  |

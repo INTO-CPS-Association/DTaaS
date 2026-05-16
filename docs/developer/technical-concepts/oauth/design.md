@@ -55,7 +55,7 @@ as the external authentication
 server for ForwardAuth middlewares. These
 middlewares can be added on
 whichever routes/requests require authentication.
-For our specific purpose,
+For this specific purpose,
 this will be added to all routes since the platform imposes
 at least identity verification
 of users for any request through the gateway

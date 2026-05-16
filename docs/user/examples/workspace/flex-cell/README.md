@@ -111,7 +111,7 @@ The lifecycles that are covered include:
 1. Execution of the experiment in the execution phase.
 1. Saving experiments in the save phase.
 1. Plotting the results of the co-simulation and the real data coming
-   from the robots in the analyze phase.
+   from the robots in the analyse phase.
 1. Terminating the background processes and cleaning up the outputs in
    the termination phase.
 

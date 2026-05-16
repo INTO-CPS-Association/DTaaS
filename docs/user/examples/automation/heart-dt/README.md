@@ -112,14 +112,14 @@ digital twin.
 
 ### Alternative Execution Mode: Docker
 
-You also have the option to use **Docker-based execution** for the heart digital
+There is also an option to use **Docker-based execution** for the heart digital
 twin — while still using a **shell-based GitLab runner**.
 
 The corresponding GitLab CI file for this approach is `gitlab-ci-docker.yml`
 
-To enable this alternative execution path, you'll need to modify the root
-`.gitlab-ci.yml` to reference this Docker-based pipeline (`gitlab-ci-
-docker.yml`) instead of the default one.
+To enable this alternative execution path, the root `.gitlab-ci.yml` must be
+modified to reference this Docker-based pipeline (`gitlab-ci-docker.yml`)
+instead of the default one.
 
 ### Artifacts and Outputs
 
@@ -128,20 +128,20 @@ This example produces:
 - Heart simulation outputs
 - Web application logs
 
-These are saved as artifacts in the GitLab pipeline. The virtual environment
-created in the `create` stage is also preserved as an artifact for reuse in the
+These are saved as artefacts in the GitLab pipeline. The virtual environment
+created in the `create` stage is also preserved as an artefact for reuse in the
 `execute` stage.
 
 ## Run the example
 
-To run the example, change your present directory:
+To run the example, navigate to the following directory:
 
 ```bash
 cd /workspace/examples/digital_twins/heart_dt
 ```
 
-If required, change the execute permission of lifecycle scripts you need to
-execute:
+If required, change the execute permission of the lifecycle scripts to be
+executed:
 
 ```bash
 chmod +x lifecycle/create

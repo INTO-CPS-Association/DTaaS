@@ -7,7 +7,7 @@ DTaaS uses OAuth 2.0/OIDC patterns at two levels:
 
 ## Two Deployment Patterns
 
-### 1. GitLab-Centered OAuth
+### 1. GitLab-Centred OAuth
 
 This pattern is common in DTaaS package scenarios that use GitLab as identity provider.
 
@@ -15,7 +15,7 @@ This pattern is common in DTaaS package scenarios that use GitLab as identity pr
 - Gateway authorization is handled by `traefik-forward-auth`.
 - GitLab applications provide client ID and client secret values used by DTaaS components.
 
-### 2. Keycloak-Centered OIDC
+### 2. Keycloak-Centred OIDC
 
 This pattern is used in workspace secure-server deployments.
 

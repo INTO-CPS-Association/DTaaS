@@ -168,7 +168,7 @@ Users can also bring DT assets into user workspaces from external sources
 using any of the above-mentioned services. Developers using _git_
 repositories can clone from and push to remote git servers. Users can
 also use widely-used file transfer protocols such as FTP and SCP to
-bring the required DT assets into their workspaces.
+bring the required DT assets into the user workspaces.
 
 ## References
 

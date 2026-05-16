@@ -37,7 +37,7 @@ yarn build
 yarn test:all
 ```
 
-If you need API-level checks for cloudcmd integration, use `yarn test:http`.
+For API-level checks for cloudcmd integration, use `yarn test:http`.
 
 ## Runner Microservice (NestJS)
 

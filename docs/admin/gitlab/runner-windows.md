@@ -39,7 +39,7 @@ To obtain the GitLab token, first navigate to the project page
 
 The runner token is now available.
 
-### 3. Register Your Runner for DTaaS
+### 3. Register the Runner for DTaaS
 
 For the DTaaS project, register the runner using
 the specific GitLab instance URL and token:
@@ -59,11 +59,11 @@ This configuration is designed for the DTaaS digital twins which require
 a Linux environment to run properly. The pipelines use shell scripts with
 commands like `chmod +x`, which need a Linux-compatible environment.
 
-### 4. Configure Your config.toml
+### 4. Configure the config.toml
 
 The most important part is properly configuring the `config.toml` file, which
 is typically located at `C:\Users\YourUsername\.gitlab-runner\config.toml` or
-in the directory where the gitlab-runner executable was downloaded and run.
+in the directory where the gitlab-runner executable was installed and run.
 
 #### DTaaS Configuration for Windows Hosts
 
@@ -117,7 +117,7 @@ After making these configuration changes, restart the runner:
 .\gitlab-runner.exe start
 ```
 
-## Verifying Your Setup
+## Verifying the Setup
 
 Run a verification check to ensure the runner is properly configured:
 

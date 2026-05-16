@@ -37,8 +37,8 @@ DTaaS/
 
 ## Codebase entry points
 
-Use the pages in this section based on the part of the monorepo you need to
-change:
+The pages in this section are organised by the part of the monorepo that
+requires changes:
 
 - [Client](client.md) for the React frontend structure and test commands.
 - [DevOps Framework](devops.md) and [Client DevOps Integration](client-devops.md)

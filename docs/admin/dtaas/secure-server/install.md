@@ -32,7 +32,7 @@ The `docker-compose.yml` starts the following services:
 | :--- | :--- |
 | Docker Engine | v28 or later with Compose plugin |
 | Domain name | Public DNS name or server IP |
-| TLS certificates | `fullchain.pem` and `privkey.pem` for your domain |
+| TLS certificates | `fullchain.pem` and `privkey.pem` for the target domain |
 | OAuth provider | External GitLab (`gitlab.com` or self-hosted GitLab) |
 
 ## Quick Start

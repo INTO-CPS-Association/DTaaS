@@ -12,7 +12,7 @@ icon ![icon](images/developer-icon.png) in the sidebar on the left hand side and
 locating *Digital Twins Preview* among the other links. Click to open the *Digital
 Twin Preview page* in a new tab.
 
-In the newly opened tab you will see a series of cards with a name, short
+In the newly opened tab, a series of cards is displayed with a name, short
 description of the Digital Twins and **START** and **HISTORY** buttons.
 The **START** button sends a *job* to the backend, telling it to run the simulation
 associated with that Digital Twin, which is defined by its [Life Cycle files](../lifecycle.md).
