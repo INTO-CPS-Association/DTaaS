@@ -221,11 +221,6 @@ the [lifecycle phases of digital twin](../digital-twins/lifecycle.md).
     back in the data directory. These scripts can either be
     executed from VSCode and graphical results or can be
     executed from VNC GUI.
-    The analysis of digital twins requires running of digital twin script
-    from user workspace. The execution results placed within data directory
-    are processed by analysis scripts and results are placed back in
-    the data directory. These scripts can either be executed from VSCode
-    and graphical results or can be executed from VNC GUI.
 
 :fontawesome-solid-circle-info: The reusable assets (files) displayed in
 the file manager are also available in Jupyter Lab. Additionally, a

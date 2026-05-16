@@ -250,9 +250,7 @@ This command:
   (`platform-services`), which is created automatically when the other
   platform services are running. Start them first with
   `dtaas-services start` before installing GitLab.
-* Set `REACT_APP_AUTH_AUTHORITY` in the client config file
-  (`deploy/config/client/env.js` for server deployments, or
-  `deploy/config/client/env.local.js` for localhost) to
+* Set `REACT_APP_AUTH_AUTHORITY` in the client config file to
   `https://<hostname>:<GITLAB_PORT>/gitlab`.
 
 > **Note:** The DTaaS client uses `react-oidc-context`, which forces
@@ -274,7 +272,7 @@ The install command checks GitLab’s readiness and returns immediately:
 * **If GitLab is still starting**: the command prints a status hint
   and exits. Check progress with `dtaas-services status -s gitlab`
   and re-run `dtaas-services install -s gitlab` once the status
-  shows "healthy".
+  shows `healthy`.
 
 > **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
 > up to `config/backup_gitlab_tokens.json` and the `root_password` entry is

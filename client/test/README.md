@@ -1,11 +1,11 @@
 # End-to-End (E2E) Tests
 
-The E2E tests require the Playwright test runner and an on-premise
-GitLab OAuth setup.
+The E2E tests require the Playwright test runner and an on-premise GitLab
+OAuth setup.
 The <https://gitlab.com> service uses CAPTCHA protection, which blocks
 automated end-to-end tests.
-An on-premise or third-party GitLab instance without CAPTCHA
-protection is therefore required.
+An on-premise or third-party GitLab instance without CAPTCHA protection is
+therefore required.
 
 An active internet connection is required while these tests run because they simulate
 real user interactions with a GitLab account.
@@ -45,7 +45,7 @@ following callback URLs.
 | Location of client application | URL                     |
 | :----------------------------- | :---------------------- |
 | Localhost                      | `http://localhost:4000` |
-| External / Integration server  | `https://intocps.org`       |
+| External / Integration server  | `https://intocps.org`   |
 
 GitLab still runs on a remote machine.
 Running both GitLab and the React client website on localhost is not supported.
@@ -184,8 +184,8 @@ Notes:
 1. Tests from the developer computer to the integration server work only
    with a null basename.
    Tests fail if a basename (for example, `au`) is specified.
-   This appears to be caused by interaction between the developer computer, Traefik
-   gateway, and the client website hosted behind Traefik.
+   This appears to be caused by interaction between the developer computer,
+   Traefik gateway, and the client website hosted behind Traefik.
 
 Run end-to-end tests as follows:
 

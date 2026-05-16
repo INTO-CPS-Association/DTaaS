@@ -105,16 +105,6 @@ new user workspaces. The available templates are:
 1. _User.server.yml_: multi-user web application over HTTP
 1. _user.server.secure.yml_: multi-user web application over HTTPS
 
-It should be noted that the _cli_ is not capable of detecting the difference between
-HTTP and HTTPS modes of the web application. When serving
-the web application over HTTPS, an additional step is required.
-
-```bash
-cp user.server.secure.yml user.server.yml
-```
-
-This will change the user template from insecure to secure.
-
 ### Add Users
 
 To add new users using the CLI, the
@@ -149,15 +139,11 @@ This process brings up the containers, without the AuthMS authentication.
 - Currently the _email_ fields for each user in
   _dtaas.toml_ are not in use, and are not necessary
   to complete. These emails must be configured manually
-  for each user in the
-  `deploy/dtaas/docker/server/config/conf.server` file and the _traefik-forward-auth_
+  for each user in the config file of
+  the _traefik-forward-auth_ service and its
   container must be restarted. This is accomplished as follows:
 
-- Navigate to the secure server package directory
-
-```bash
-cd <DTaaS>/deploy/dtaas/docker/server
-```
+- Navigate to the directory into which the installation zip is extracted.
 
 - Add three lines to `config/conf.server`
 

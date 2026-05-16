@@ -164,21 +164,21 @@ The three tabs provide helpful instructions on suggested tasks for the
 a digital twin. More explanation is available on
 the [lifecycle phases of digital twin](../digital-twins/lifecycle.md).
 
-??? Create tip
+??? tip Create
     Create digital twins from tools provided within user workspaces.
     Each digital twin will have one directory. It is suggested that user
     provide one bash shell script to run their digital twin. Users can
     create the required scripts and other files from tools provided in
     Workbench page.
 
-??? Execute tip
+???  tip Execute
     Digital twins are executed from within user workspaces. The given
     bash script gets executed from digital twin directory. Terminal-based
     digital twins can be executed from VSCode and graphical digital twins
     can be executed from VNC GUI. The results of execution can be placed
     in the data directory.
 
-??? Analyze tip
+??? tip Analyze
     The analysis of digital twins requires running
     of digital twin script from user workspace.
     The execution results placed within data directory
@@ -186,11 +186,6 @@ the [lifecycle phases of digital twin](../digital-twins/lifecycle.md).
     back in the data directory. These scripts can either be
     executed from VSCode and graphical results or can be
     executed from VNC GUI.
-    The analysis of digital twins requires running of digital twin script
-    from user workspace. The execution results placed within data directory
-    are processed by analysis scripts and results are placed back in
-    the data directory. These scripts can either be executed from VSCode
-    and graphical results or can be executed from VNC GUI.
 
 :fontawesome-solid-circle-info: The reusable assets (files) displayed in
 the file manager are also available in Jupyter Lab. Additionally, a

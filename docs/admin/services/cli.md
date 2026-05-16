@@ -79,6 +79,12 @@ dtaas-services --help
    * `TB_TENANT_ADMIN_PASSWORD`: New password for the tenant admin
    * `SERVICES_UID`: User ID for service file ownership
    * `SERVICES_GID`: Group ID for service file ownership
+   * **OAuth Configuration** (optional: customise GitLab OAuth app registrations):
+        Edit `config/gitlab_oauth.json` to adjust app names, redirect URIs, scopes,
+        or confidentiality settings before running `dtaas-services install -s gitlab`.
+        The file is created automatically by `dtaas-services generate-project`.
+        To use a different filename, set `OAUTH_APPS=<filename>` in `config/services.env`
+        (the file is still looked up in `config/`).
 
 3. Update `config/credentials.csv` with user accounts (format: `username,password,email`)
 
@@ -222,8 +228,8 @@ This command:
    (`platform-services`), which is created automatically when the other
    platform services are running. Start them first with
    `dtaas-services start` before installing GitLab.
-* Set `REACT_APP_AUTH_AUTHORITY` in the client config file to match
-   the local GitLab authority URL used by the DTaaS deployment.
+* Set `REACT_APP_AUTH_AUTHORITY` in the client config file to
+  `https://<hostname>:<GITLAB_PORT>/gitlab`.
 
 > **Note:** The DTaaS client uses `react-oidc-context`, which forces
 > redirects to use HTTPS. GitLab must therefore be served over HTTPS

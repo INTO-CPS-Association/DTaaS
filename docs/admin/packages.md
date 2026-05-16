@@ -27,13 +27,3 @@ A brief explanation of the packages is given below.
 | runner                                                                                    | REST API wrapper for multiple scripts/programs | [npm package](../user/servers/execution/runner/readme.md)                                            | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner)                       |
 | workspace                                                                                 | User workspace container image                 | [workspace localhost](workspace/localhost/install.md) and [workspace secure server](workspace/secure-server/install.md) | [docker hub](https://hub.docker.com/r/intocps/workspace) and `intocps/workspace:*` images referenced by deployment packages |
 <!-- markdownlint-enable MD060 -->
-
-## Workspace Packages
-
-The workspace deployments are maintained as package directories in:
-
-- `deploy/workspace/dex/localhost`
-- `deploy/workspace/keycloak/production`
-
-These package directories include deployment templates, runtime configuration
-examples, and compose definitions for workspace-focused installations.

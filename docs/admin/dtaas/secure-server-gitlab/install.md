@@ -3,7 +3,16 @@
 
 🎉 Thank you for downloading **Digital Twin as a Service**.
 
-This README provides a quick-start installation guide. For detailed
+This README provides a quick-start installation guide
+for
+a **secure, multi-user DTaaS deployment** that uses
+an **integrated GitLab instance** for OAuth 2.0 authorisation.
+
+Download **dtaas-secure-server-integrated-gitlab.zip** from the latest
+[release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
+page.
+
+For detailed
 configuration reference, see [config.md](config.md).
 
 > [!IMPORTANT]

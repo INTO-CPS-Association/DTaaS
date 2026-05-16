@@ -74,9 +74,13 @@ mkdocs build -f mkdocs-github.yml
 For full configuration validation (including optional PDF plugin wiring), run:
 
 ```bash
-# Works only on Linux
+# On Linux
 export MKDOCS_ENABLE_PDF_EXPORT=0
 mkdocs build -f mkdocs.yml
+
+# On Windows
+set MKDOCS_ENABLE_PDF_EXPORT=0
+mkdocs build -f mkdocs-github.yml
 ```
 
 ## Prepare Documentation for a Release
