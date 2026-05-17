@@ -92,7 +92,7 @@ jobs:
           yarn build
           yarn start:pm2
           sleep 2
-          pm2 logs --lines 50
+          pm2 logs --lines 50 --nostream
 
       - name: Check server is running (Windows)
         if: runner.os == 'Windows'
