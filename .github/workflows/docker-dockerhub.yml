@@ -53,9 +53,6 @@ env:
   username: ${{ secrets.DOCKERHUB_USERNAME }}
   dockerhub_scope: ${{ secrets.DOCKERHUB_SCOPE }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
-  IMAGE_REPOSITORY: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
-  IMAGE_BASE: "${{ env.IMAGE_REPOSITORY }}/${{ inputs.image-name }}"
-  IMAGE_TAG: "${{ env.IMAGE_BASE }}:${{ inputs.version }}"
 
 jobs:
   build-and-push-image:
@@ -66,6 +63,15 @@ jobs:
       contents: read  # Required for checking out the code
       packages: write  # Required for publishing to github package registry
     steps:
+      - name: Resolve image variables
+        run: |
+          IMAGE_REPOSITORY="docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
+          IMAGE_BASE="${IMAGE_REPOSITORY}/${{ inputs.image-name }}"
+          IMAGE_TAG="${IMAGE_BASE}:${{ inputs.version }}"
+          echo "IMAGE_REPOSITORY=$IMAGE_REPOSITORY" >> "$GITHUB_ENV"
+          echo "IMAGE_BASE=$IMAGE_BASE" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+
       - name: Checkout Repository
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
@@ -99,7 +105,7 @@ jobs:
       - name: Check if version exists
         id: check_version
         run: |
-          if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
+          if docker manifest inspect "${{ env.IMAGE_TAG }}" > /dev/null 2>&1; then
             echo "Version ${{ inputs.version }} already exists."
             echo "exists=true" >> $GITHUB_OUTPUT
           else
