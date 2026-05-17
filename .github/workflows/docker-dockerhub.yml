@@ -64,10 +64,12 @@ jobs:
       packages: write  # Required for publishing to github package registry
     steps:
       - name: Resolve image variables
+        env:
+          DOCKERHUB_SCOPE: ${{ secrets.DOCKERHUB_SCOPE }}
         run: |
-          echo "IMAGE_REPOSITORY=docker.io/${{ secrets.DOCKERHUB_SCOPE }}" >> "$GITHUB_ENV"
-          echo "IMAGE_BASE=docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}:${{ inputs.version }}" >> "$GITHUB_ENV"
+          echo "IMAGE_REPOSITORY=docker.io/${DOCKERHUB_SCOPE}" >> "$GITHUB_ENV"
+          echo "IMAGE_BASE=docker.io/${DOCKERHUB_SCOPE}/${{ inputs.image-name }}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=docker.io/${DOCKERHUB_SCOPE}/${{ inputs.image-name }}:${{ inputs.version }}" >> "$GITHUB_ENV"
 
       - name: Checkout Repository
         # v6.0.1
