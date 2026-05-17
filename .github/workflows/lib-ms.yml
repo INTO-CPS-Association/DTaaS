@@ -8,6 +8,7 @@ name: Library microservice
     paths:
       - 'servers/lib/**'
       - 'developer/libms.dockerfile'
+      - 'developer/config/libms.dev.yaml.example'
       - '.github/workflows/lib-ms.yml'
       - '.github/workflows/docker-build.yml'
   workflow_dispatch:
@@ -30,7 +31,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: &job_timeout 30
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: servers/lib
@@ -147,7 +148,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
-    timeout-minutes: *job_timeout
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         # v6.0.1

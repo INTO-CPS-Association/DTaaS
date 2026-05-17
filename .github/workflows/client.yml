@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: &job_timeout 30
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: client/
@@ -126,7 +126,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
-    timeout-minutes: *job_timeout
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         # v6.0.1

@@ -43,17 +43,20 @@ jobs:
 
       - name: Install dependencies
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
         run: |
           yarn install --network-timeout 1000000
           yarn playwright install --with-deps
 
       - name: Run the linting checks
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
         run: |
           yarn syntax
 
       - name: Build the React SPA website and setup env
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
         run: |
           yarn build
           yarn config:test
