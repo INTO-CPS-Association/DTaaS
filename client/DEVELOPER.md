@@ -197,3 +197,4 @@ Docker-based development environment.
 Each new release of the client web application is published as a Docker
 container image. See the [publishing](../developer/README.md) page for
 information about publishing Docker images.
+
