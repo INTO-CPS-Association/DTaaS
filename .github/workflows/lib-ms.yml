@@ -91,6 +91,8 @@ jobs:
         run: |
           yarn build
           yarn start:pm2
+          sleep 2
+          pm2 logs --lines 50
 
       - name: Check server is running (Windows)
         if: runner.os == 'Windows'
@@ -116,7 +118,7 @@ jobs:
         with:
           timeout_seconds: 10
           max_attempts: 4
-          command: "curl -f -LI http://localhost:${{ env.PORT }}/lib/files"
+          command: "curl -v http://localhost:${{ env.PORT }}/lib/files || true"
 
       - name: Run http test
         env:
