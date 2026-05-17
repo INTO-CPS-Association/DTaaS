@@ -82,10 +82,9 @@ jobs:
 
       - name: Update configuration
         env:
-          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
-          node -e "require('fs').mkdirSync(process.env.LIBMS_LOCAL_PATH, {recursive: true})"
           node test/update-config.js
 
       - name: Start http mode
@@ -124,7 +123,7 @@ jobs:
       - name: Run http test
         env:
           PORT: ${{ env.HTTP_PORT }}
-          LOCAL_PATH: ${{ github.workspace }}/files
+          LOCAL_PATH: ${{ github.workspace }}/developer/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
