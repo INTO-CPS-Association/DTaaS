@@ -65,12 +65,9 @@ jobs:
     steps:
       - name: Resolve image variables
         run: |
-          IMAGE_REPOSITORY="docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
-          IMAGE_BASE="${IMAGE_REPOSITORY}/${{ inputs.image-name }}"
-          IMAGE_TAG="${IMAGE_BASE}:${{ inputs.version }}"
-          echo "IMAGE_REPOSITORY=$IMAGE_REPOSITORY" >> "$GITHUB_ENV"
-          echo "IMAGE_BASE=$IMAGE_BASE" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE_REPOSITORY=docker.io/${{ secrets.DOCKERHUB_SCOPE }}" >> "$GITHUB_ENV"
+          echo "IMAGE_BASE=docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}:${{ inputs.version }}" >> "$GITHUB_ENV"
 
       - name: Checkout Repository
         # v6.0.1
