@@ -18,9 +18,9 @@ Dex configuration details are documented in [`dex.md`](dex.md).
 
 Edit `.env`.
 
-  | URL Path     | Example Value | Explanation                           |
-  | :----------- | :------------ | :------------------------------------ |
-  | DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
+| URL Path     | Example Value | Explanation                           |
+| :----------- | :------------ | :------------------------------------ |
+| DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
 
 ⚠️ Important alignment for local/passwordDB mode:
 

@@ -36,7 +36,7 @@ yarn playwright install --with-deps
 ### OAuth Setup
 
 Follow the instructions on the
-[authorization page](../../docs/admin/client/auth.md) to configure OAuth for
+[authorisation page](../../docs/admin/client/auth.md) to configure OAuth for
 the React client website.
 The correct callback URL must be added to the OAuth application.
 Depending on the location of the client website, register one of the
@@ -64,7 +64,7 @@ For example, adjust:
 
 to reflect the selected test setup.
 Additional information on environment settings is available in the
-[authorization](../../docs/admin/client/auth.md) and
+[authorisation](../../docs/admin/client/auth.md) and
 [client configuration](../../docs/admin/client/config.md) pages.
 
 The following example values are suitable for testing on the developer
@@ -177,7 +177,7 @@ and integration server.
 
 Notes:
 
-1. To run tests on the integration server, disable HTTPS authorization
+1. To run tests on the integration server, disable HTTPS authorisation
    (if configured) on the Traefik server and make the website
    accessible without authentication by the
    [Traefik forward auth](../../docs/admin/servers/auth.md) service.

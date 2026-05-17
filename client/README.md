@@ -1,26 +1,24 @@
-# Introduction
+# Client Application
 
-Client (frontend) for Digital Twin as a Service (DTaaS) software.
-This software shall be used for providing a React single page web
-application for the Digital Twin support platform.
+React single-page web application for the Digital Twin as a Service (DTaaS)
+platform.
 
-## Authorization
+## 🔐 Authorisation
 
-The react client website uses OAuth authorization.
-The [authorization page](../docs/admin/client/auth.md)
-provides details on setting up oauth authorization for
+The React client website uses OAuth authorisation.
+The [authorisation page](../docs/admin/client/auth.md)
+provides details on setting up OAuth authorisation for
 the client application.
 
 ### Use
 
-Refer to [DOCKER.md](DOCKER.md) for containerized deployment of
+Refer to [DOCKER.md](DOCKER.md) for containerised deployment of
 the client service.
 
-## Use in Nodejs Environment
+## 📦 Use in Node.js Environment
 
-The following steps are needed only if you are interested
-in building the client application from source code.
-The use of docker images is highly recommended.
+The following steps are required only when building the client application
+from source code. Docker images are the recommended deployment approach.
 
 ### Build
 
@@ -62,9 +60,8 @@ Unexpected Application Error!
 404 Not Found
 ```
 
-This error can be seen on the **Library** and **Digital Twins** pages.
-This error is expected.
+This error appears on the **Library** and **Digital Twins** pages and is
+expected in a development environment.
 
-If you would like to try the complete DTaaS application, please see
-localhost installation in
-[docs](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).
+To run the complete DTaaS application, refer to the localhost installation
+in the [project documentation](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).

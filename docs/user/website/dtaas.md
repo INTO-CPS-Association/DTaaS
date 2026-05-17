@@ -134,7 +134,7 @@ Each tab provides help text to guide users on the asset type.
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
-    Typical examples of data sinks are visualization software, external users
+    Typical examples of data sinks are visualisation software, external users
     and data storage services. There exist special outputs
     such as events, and
     commands which are akin to control outputs from a Digital Twin.

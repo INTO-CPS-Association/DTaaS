@@ -9,13 +9,13 @@ is to have a high degree of flexibility.
 
 ## Core Architecture Patterns
 
-We apply interfaces, the builder pattern, and dependency injection to realize this
-abstraction - essentially implementing the Strategy pattern. Hence, each
-`DigitalTwinAsset`, `DigitalTwin`,etc. has a core backend and its associated
-backend APIs (for e.g. REST execution with GitLab) that is chosen upon creation
-through the use of a builder. This allows any backend or backend API to be used
-interchangeably and swapped at runtime, supporting CI. Here is an example of how
-the backends are connected to key objects:
+The architecture applies interfaces, the builder pattern, and dependency
+injection to realise this abstraction — essentially implementing the Strategy
+pattern. Each `DigitalTwinAsset`, `DigitalTwin`, etc. has a core backend and
+its associated backend APIs (e.g. REST execution with GitLab) that are chosen
+upon creation through a builder. This allows any backend or backend API to be
+used interchangeably and swapped at runtime, supporting CI. The following
+example illustrates how backends are connected to key objects:
 
 ```typescript
   // Constructor with backend injected
@@ -58,7 +58,7 @@ The Backend communicates directly with the backend server for pipeline execution
 log retrieval, and or file management. The interface is described in
 `./backendInterfaces.ts` with a concrete implementation being
 `./backend.ts`. It is
-created before the Instance to be injected and may be initialized there. After
+created before the Instance to be injected and may be initialised there. After
 this, it may be called through the Instance directly (e.g.
 `myInstance.api.cancelPipeline(...)`). It may contain a client field from a
 library such as GitBeaker to manage communication with REST-API.

@@ -5,16 +5,11 @@
 Current DTaaS deployments are package-driven.
 Start by selecting one of these package roots:
 
-- `deploy/dtaas/docker/localhost`
-  (DTaaS localhost package over HTTP)
-- `deploy/dtaas/docker/secure-server`
-  (DTaaS secure server compatibility package)
-- `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
-  (DTaaS secure server package with integrated GitLab)
-- `deploy/workspace/dex/localhost`
-  (workspace localhost deployment using Dex)
-- `deploy/workspace/keycloak/production`
-  (workspace secure server deployment using Keycloak)
+- [DTaaS localhost package over HTTP](dtaas/localhost/install.md)
+- [DTaaS secure server compatibility package](dtaas/secure-server/install.md)
+- [DTaaS secure server with integrated GitLab](dtaas/secure-server-gitlab/install.md)
+- [workspace localhost deployment using Dex](workspace/localhost/install.md)
+- [workspace secure server deployment using Keycloak](workspace/secure-server/install.md)
 
 ## Recommended Sequence
 
@@ -32,8 +27,9 @@ Use [installation scenarios](overview.md) to select the right package and guide.
   - Configure `.env` and `config/dex-config.yaml`
 - Workspace Keycloak secure server:
   - Follow package guides in
-    `deploy/workspace/keycloak/production/CONFIGURATION.md` and
-    `deploy/workspace/keycloak/production/KEYCLOAK_SETUP.md`
+    [workspace config](workspace/secure-server/configuration.md)
+    and
+    [Keycloak config](workspace/secure-server/keycloak-setup.md)
 
 ### 3. Configure Filesystem and Certificates
 
@@ -41,25 +37,25 @@ For DTaaS or workspace server deployments:
 
 - Create user workspaces under `files/`
 - Provide TLS certs under `certs/`
-
-For workspace Dex localhost deployment:
-
-- Create `.env` and Dex config from examples
+- Create `config/.env` from example and update the same
+- Create `config/client.js` from example and update the same
+- Create `config/dex-config.yaml` from example (no changes needed)
 
 ### 4. Start Services
 
-Run compose commands from the selected package directory.
+Run docker compose commands:
 
-- DTaaS localhost package (HTTP):
-  `deploy/dtaas/docker/localhost`
-- DTaaS secure server package:
-  `deploy/dtaas/docker/secure-server`
-- DTaaS secure server with integrated GitLab package:
-  `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
-- Workspace secure server:
-  `deploy/workspace/keycloak/production`
-- Workspace localhost (HTTP):
-  `deploy/workspace/dex/localhost`
+For DTaaS packagges,
+
+```bash
+docker compose --env-file config/.env up -d
+```
+
+For workspace packages,
+
+```bash
+docker compose up -d
+```
 
 ### 5. Validate and Iterate
 
@@ -70,7 +66,7 @@ Run compose commands from the selected package directory.
 ## Platform Services (Optional)
 
 To install additional data/infrastructure services, use the
-[Platform Services CLI](services/cli.md) rooted in `deploy/services/cli`.
+[Platform Services CLI](services/cli.md).
 
 ## Independent Packages
 

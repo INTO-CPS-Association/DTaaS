@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
+
 
 This README provides a quick-start installation guide for
 a **secure, multi-user DTaaS deployment** that uses
@@ -22,22 +22,22 @@ multiple user workspaces.
 
 The `docker-compose.yml` starts the following services:
 
-| Service | Purpose |
-| :--- | :--- |
-| **traefik** | Reverse proxy with TLS termination |
-| **client** | DTaaS React frontend |
-| **user1 / user2** | JupyterLab user workspaces |
-| **libms** | Library management microservice |
+| Service                  | Purpose                            |
+| :----------------------- | :--------------------------------- |
+| **traefik**              | Reverse proxy with TLS termination |
+| **client**               | DTaaS React frontend               |
+| **user1 / user2**        | JupyterLab user workspaces         |
+| **libms**                | Library management microservice    |
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 
 ## Prerequisites
 
-| Requirement | Details |
-| :--- | :--- |
-| Docker Engine | v28 or later with Compose plugin |
-| Domain name | Public DNS name or server IP |
+| Requirement      | Details                                                 |
+| :--------------- | :------------------------------------------------------ |
+| Docker Engine    | v28 or later with Compose plugin                        |
+| Domain name      | Public DNS name or server IP                            |
 | TLS certificates | `fullchain.pem` and `privkey.pem` for the target domain |
-| OAuth provider | External GitLab (`gitlab.com` or self-hosted GitLab) |
+| OAuth provider   | External GitLab (`gitlab.com` or self-hosted GitLab)    |
 
 ## Quick Start
 
@@ -118,12 +118,12 @@ docker compose --env-file config/.env up -d
 
 ### 6. Verify
 
-| URL | Expected result |
-| :--- | :--- |
-| `https://<SERVER_DNS>` | DTaaS web interface |
+| URL                          | Expected result                |
+| :--------------------------- | :----------------------------- |
+| `https://<SERVER_DNS>`       | DTaaS web interface            |
 | `https://<SERVER_DNS>/user1` | User 1 workspace after sign-in |
 | `https://<SERVER_DNS>/user2` | User 2 workspace after sign-in |
-| `https://<SERVER_DNS>/lib` | Library service |
+| `https://<SERVER_DNS>/lib`   | Library service                |
 
 ## Stop
 
@@ -135,19 +135,19 @@ docker compose --env-file config/.env down
 
 ```text
 .
-|- certs/                 # TLS certificates (fullchain.pem, privkey.pem)
-|- config/
-|  |- .env                # Docker Compose environment variables
-|  |- conf.server         # Traefik forward-auth authorization rules
-|  |- client.js           # DTaaS React client configuration
-|  |- .env.example
-|  |- conf.server.example
-|  |- client.js.example
-|  \- tls.yml            # Traefik TLS provider configuration
-|- files/
-|  |- common/             # Shared files across all workspaces
-|  \- template/           # sample user workspace files
-|- docker-compose.yml     # Service definitions
-|- CONFIG.md              # Detailed configuration reference
+| - certs/                 # TLS certificates (fullchain.pem, privkey.pem) |
+| - config/                                                                |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+| \- tls.yml            # Traefik TLS provider configuration               |
+| - files/                                                                 |
+|                                                                          |
+| \- template/           # sample user workspace files                     |
+| - docker-compose.yml     # Service definitions                           |
+| - CONFIG.md              # Detailed configuration reference              |
 \- README.md              # This file
 ```

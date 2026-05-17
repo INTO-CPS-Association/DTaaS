@@ -14,14 +14,14 @@ execution, and sharing of digital twins (DTs).
 Watch the walkthrough as [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.mp4).
 See demos in [playlist](docs/playlist.md).
 
-## Installation and Use
+## 🚀 Installation and Use
 
 The recommended installation source is the latest release published on the
 [releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
 Operational guidance is available in the
 [project documentation](https://into-cps-association.github.io/DTaaS/).
 
-## Independent Packages
+## 📦 Independent Packages
 
 Reusable DTaaS packages are published for independent use and can be
 combined to form a complete DTaaS installation.
@@ -38,7 +38,7 @@ deployments.
 Improvement proposals and defect reports may be submitted via
 [GitHub issues](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
 
-## Research Citation
+## 📖 Research Citation
 
 When DTaaS is cited in academic work, the following reference may be used:
 
@@ -54,7 +54,7 @@ publisher = {SAGE Publications Sage UK: London, England}
 }
 ```
 
-## Development
+## 🏗️ Development
 
 This repository is a monorepo containing implementation and support material
 for:
@@ -70,7 +70,7 @@ Published packages are also available via the
 Detailed development guidance is available in the
 [developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html).
 
-## Licence
+## ⚖️ Licence
 
 DTaaS is owned by [The INTO-CPS Association](https://into-cps.org/) and is
 distributed under the terms documented in [LICENSE.md](LICENSE.md).

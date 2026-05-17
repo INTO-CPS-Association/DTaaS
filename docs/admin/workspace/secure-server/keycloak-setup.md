@@ -36,14 +36,14 @@ placeholders for server hostname of the installation.
 
 Keycloak-specific environment variables are:
 
-| Variable | Purpose | Example |
-| :--- | :--- | :--- |
-| `KEYCLOAK_ADMIN` | Admin username | `admin` |
-| `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `changeme` |
-| `KEYCLOAK_REALM` | Realm name | `dtaas` |
-| `KEYCLOAK_CLIENT_ID` | OIDC client ID | `dtaas-workspace` |
-| `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
-| `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://intocps.org/auth/realms/dtaas` |
+| Variable                  | Purpose            | Example                                 |
+| :------------------------ | :----------------- | :-------------------------------------- |
+| `KEYCLOAK_ADMIN`          | Admin username     | `admin`                                 |
+| `KEYCLOAK_ADMIN_PASSWORD` | Admin password     | `changeme`                              |
+| `KEYCLOAK_REALM`          | Realm name         | `dtaas`                                 |
+| `KEYCLOAK_CLIENT_ID`      | OIDC client ID     | `dtaas-workspace`                       |
+| `KEYCLOAK_CLIENT_SECRET`  | OIDC client secret | `<from-Keycloak>`                       |
+| `KEYCLOAK_ISSUER_URL`     | OIDC issuer URL    | `https://intocps.org/auth/realms/dtaas` |
 
 Edit Keycloak-configuration in `.env`:
 

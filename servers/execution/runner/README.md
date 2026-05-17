@@ -1,14 +1,14 @@
 # :runner: Runner
 
-A utility service to manage safe execution of remote scripts / commands.
-User launches this from commandline and let the utility
-manage the commands to be executed.
+A utility service for the safe execution of remote scripts and commands.
+Users launch this from the command line and the utility manages
+command execution.
 
-The runner utility runs as a service and provides
-REST API interface to safely execute remote commands.
-Multiple runners can be active simultaneously on one computer.
-The commands are sent via the REST API and are executed on the computer
-with active runner.
+The runner runs as a service and provides a
+REST API for safe remote command execution.
+Multiple runner instances can be active simultaneously on one machine.
+Commands are submitted via the REST API and executed on the host
+running the runner.
 
 :warning: Thanks for trying out this software.
 This software is in early stages of development and is not
@@ -74,8 +74,8 @@ the `location`. The path to _runner.yaml_ can either be relative or
 absolute path. However, the `location` path is always relative path
 with respect to the path of _runner.yaml_ file.
 
-:warning: The commands must be executable. Please make sure that
-the commands have execute permission on Linux platforms.
+:warning: Ensure that the commands have execute permission
+on Linux platforms.
 
 ## :pen: Create Commands
 

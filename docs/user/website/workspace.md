@@ -99,7 +99,7 @@ Each tab provides help text to guide users on the asset type.
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
-    Typical examples of data sinks are visualization software, external users
+    Typical examples of data sinks are visualisation software, external users
     and data storage services. There exist special outputs
     such as events, and
     commands which are akin to control outputs from a Digital Twin.
@@ -198,12 +198,12 @@ files with external git repositories.
 
 The **Workbench** page provides links to four integrated tools:
 
-| Tool | Description |
-| :--- | :--- |
-| Desktop | XFCE-based Linux desktop environment in the browser |
-| VS Code | Browser-based VS Code editor (code-server) |
-| Jupyter Lab | Interactive notebook environment |
-| Jupyter Notebook | Classic Jupyter interface |
+| Tool             | Description                                         |
+| :--------------- | :-------------------------------------------------- |
+| Desktop          | XFCE-based Linux desktop environment in the browser |
+| VS Code          | Browser-based VS Code editor (code-server)          |
+| Jupyter Lab      | Interactive notebook environment                    |
+| Jupyter Notebook | Classic Jupyter interface                           |
 
 ![Workbench](images/workspace-workbench.png)
 

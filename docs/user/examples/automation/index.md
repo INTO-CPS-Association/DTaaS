@@ -6,12 +6,12 @@ enabling create, execute, and clean phases to run without manual intervention.
 
 ## Available Examples
 
-| Example | Description |
-| :--- | :--- |
-| [Mass Spring Damper](mass-spring-damper/README.md) | Co-simulation DT with automated lifecycle via GitLab CI/CD |
-| [Structural Health Monitoring](shm/README.md) | SHM DT with automated system identification and model update |
-| [Heart Digital Twin](heart-dt/README.md) | Real-time cardiovascular monitoring with web interface |
-| [Heart Digital Twin (PaaS)](heart-dt-paas/README.md) | Cloud deployment of Heart DT using PaaS strategies |
+| Example                                              | Description                                                  |
+| :--------------------------------------------------- | :----------------------------------------------------------- |
+| [Mass Spring Damper](mass-spring-damper/README.md)   | Co-simulation DT with automated lifecycle via GitLab CI/CD   |
+| [Structural Health Monitoring](shm/README.md)        | SHM DT with automated system identification and model update |
+| [Heart Digital Twin](heart-dt/README.md)             | Real-time cardiovascular monitoring with web interface       |
+| [Heart Digital Twin (PaaS)](heart-dt-paas/README.md) | Cloud deployment of Heart DT using PaaS strategies           |
 
 ## Codebase
 

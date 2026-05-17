@@ -12,12 +12,12 @@ target environment, security needs, and GitLab topology. Each scenario now
 provides dedicated Install and Config pages, plus scenario-specific operational
 documents.
 
-| Scenario | Purpose |
-| :--- | :--- |
-| [localhost](dtaas/localhost/install.md) | Single-user DTaaS package over HTTP |
+| Scenario                                                           | Purpose                                                        |
+| :----------------------------------------------------------------- | :------------------------------------------------------------- |
+| [localhost](dtaas/localhost/install.md)                            | Single-user DTaaS package over HTTP                            |
 | [localhost on portainer](guides/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users |
-| [secure server](dtaas/secure-server/install.md) | Compatibility package for secure server installs |
-| [secure server and GitLab](dtaas/secure-server-gitlab/install.md) | Multi-user DTaaS package with integrated GitLab |
+| [secure server](dtaas/secure-server/install.md)                    | Compatibility package for secure server installs               |
+| [secure server and GitLab](dtaas/secure-server-gitlab/install.md)  | Multi-user DTaaS package with integrated GitLab                |
 
 ### Workspace
 
@@ -27,9 +27,9 @@ secure server for production-style Keycloak/OIDC deployment. Scenario pages are
 organised by Install, Configuration, and identity-provider setup to make
 operations and troubleshooting predictable.
 
-| Scenario | Purpose |
-| :--- | :--- |
-| [localhost](workspace/localhost/install.md) | Single-user workspace deployment with Dex |
+| Scenario                                            | Purpose                                       |
+| :-------------------------------------------------- | :-------------------------------------------- |
+| [localhost](workspace/localhost/install.md)         | Single-user workspace deployment with Dex     |
 | [secure server](workspace/secure-server/install.md) | Multi-user workspace deployment with Keycloak |
 
 ### Other

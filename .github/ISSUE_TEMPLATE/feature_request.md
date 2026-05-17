@@ -1,48 +1,45 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest an improvement or new capability for this project
 title: "[FEATURE]"
 labels: enhancement
 assignees: ''
 
 ---
 
-## Describe the feature
+## Describe the Feature
 
 A clear and concise description of the new feature using
-"As a [...] I want to [...] So That [...]" idiom (see
+the "As a [...] I want to [...] So That [...]" idiom (see
 [explanation](https://www.agilealliance.org/glossary/user-story-template/).
 
-Ex. As a **user**, I want to **access git repos via lib microservice**
-so that **I can access git repos as directories on server**
+Ex. As a **user**, I want to **access git repos via the lib microservice**
+so that **git repositories are available as directories on the server**.
 
-## Describe the problems your feature request solves
+## Problem Statement
 
-A clear and concise description of what the problem is.
-Ex. I'm always frustrated when [...]
+A clear and concise description of the problem this feature request addresses.
+Reference an existing issue where applicable.
 
-Remember to reference an existing issue this feature request
-proposes to solve.
+## Proposed Solution
 
-## Describe the solution you'd like
+A clear and concise description of the desired outcome.
 
-A clear and concise description of what you want to happen.
-
-## Describe alternatives you've considered
+## Alternatives Considered
 
 A clear and concise description of any alternative solutions or
-features you've considered.
+features that were considered.
 
-## Additional context
+## Additional Context
 
-Add any other context or screenshots about the feature request here.
+Any other context or screenshots about the feature request.
 
 ## Success Criterion
 
-Describe the final result with the help of a checklist if needed.
+Describe the expected outcome, using a checklist where appropriate.
 
 Checklist:
 
-- [ ] Feature is accessible (provide more detail or more checkpoints here)
+- [ ] Feature is accessible (provide more detail or additional checkpoints here)
 - [ ] Test coverage is improved
 - [ ] No qlty issues

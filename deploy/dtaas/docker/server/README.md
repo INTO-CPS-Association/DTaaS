@@ -1,4 +1,4 @@
-# DTaaS - Secure Server (External GitLab)
+# DTaaS — Server Deployment (External GitLab)
 
 ![DTaaS logo](dtaas.png)
 

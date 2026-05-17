@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
+
 
 ## 🛠️ Install
 

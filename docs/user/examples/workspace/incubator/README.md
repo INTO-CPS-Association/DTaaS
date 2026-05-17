@@ -36,7 +36,7 @@ This trimmed version of the codebase does not have the following:
 The original repository contains the complete documentation of
 the example, including the full system architecture, instructions for
 running with a physical twin, and instructions for running
-a 3D visualization of the incubator.
+a 3D visualisation of the incubator.
 
 ## Digital Twin Structure
 
@@ -131,9 +131,9 @@ time           execution_interval  elapsed  heater_on  fan_on   room   box_air_t
 An InfluxDB dashboard can be setup based on
 `incubator/digital_twin/data_access/influxdbserver/dashboards/incubator_data.json`.
 If the dashboard on the InfluxDB is setup properly,
-the following visualization can be seen:
+the following visualisation can be seen:
 
-![Influx Dashboard](figures/visualization.png)
+![Influx Dashboard](figures/visualisation.png)
 
 ## References
 

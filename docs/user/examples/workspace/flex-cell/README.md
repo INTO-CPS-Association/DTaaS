@@ -26,7 +26,7 @@ manipulated to get a different result.
 
 The `/workspace/examples/models/flex-cell/` folder contains
 the `.fmu` files for the kinematic models of the robotic arms,
-the `.urdf` files for visualization (including the grippers), and
+the `.urdf` files for visualisation (including the grippers), and
 the `.aasx` files for the schema representation with
 Asset Administration Shell.
 

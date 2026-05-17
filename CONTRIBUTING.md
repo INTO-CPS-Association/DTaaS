@@ -6,7 +6,7 @@ a Service (DTaaS) repository.
 All participation must comply with the
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## Purpose
+## 🎯 Purpose
 
 The contribution process is intended to ensure that changes are traceable,
 reviewable, and aligned with project quality standards.
@@ -17,7 +17,7 @@ Background material for contributors is available in the following resources:
 - [Developer video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605_Developer-recorded_web.mp4)
 - [Research paper](https://arxiv.org/abs/2305.07244)
 
-## Development Environment
+## 🛠️ Development Environment
 
 The repository includes a devcontainer definition at
 `.devcontainer/devcontainer.json`.
@@ -30,7 +30,7 @@ Recommended toolchain versions:
 - Node.js 24
 - Python 3.12
 
-## Workflow
+## 🔄 Workflow
 
 1. Create a fork of the repository in a personal GitHub account.
 2. Configure
@@ -48,7 +48,7 @@ Recommended toolchain versions:
 Each pull request should represent a coherent user story, bug fix, or
 quality improvement.
 
-## Coding Agents and Editors
+## 🤖 Coding Agents and Editors
 
 Coding agents are routinely used in this repository for activities such as:
 
@@ -59,8 +59,8 @@ Coding agents are routinely used in this repository for activities such as:
 Repository-specific guidance for GitHub Copilot is provided in
 [.github/copilot-instructions.md](.github/copilot-instructions.md).
 
-Specialized reusable modes live in `.github/agents/*.agent.md`. Use these
-files for task-specific agent behavior, not for repository-wide defaults.
+Specialised reusable modes live in `.github/agents/*.agent.md`. Use these
+files for task-specific agent behaviour, not for repository-wide defaults.
 Keep the always-on project guidance in `.github/copilot-instructions.md`.
 
 Each agent markdown file should:
@@ -95,7 +95,7 @@ request description is expected.
 Contributions should not include code that has not been reviewed and
 understood by the contributor.
 
-## Quality Gates
+## ✅ Quality Gates
 
 Quality is evaluated through the following systems:
 

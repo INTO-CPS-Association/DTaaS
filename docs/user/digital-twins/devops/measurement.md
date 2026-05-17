@@ -19,13 +19,13 @@ to access the measurement page. This page is only accessible to authenticated us
 The measurement suite includes the following tasks that measure different
 aspects of Digital Twin execution:
 
-| Task | Description |
-| ------ | ------------- |
-| Valid Setup Digital Twin Execution | Runs the primary Digital Twin with current setup |
-| Multiple Identical Digital Twins Simultaneously | Runs the primary Digital Twin twice at once |
-| Multiple different Digital Twins Simultaneously | Runs the primary and secondary Digital Twins at once |
-| Different Runners same Digital Twin | Runs the primary Digital Twin twice with 2 different runners |
-| Different Runners different Digital Twins | Runs the primary and secondary Digital Twins with 2 different runners |
+| Task                                            | Description                                                           |
+| ----------------------------------------------- | --------------------------------------------------------------------- |
+| Valid Setup Digital Twin Execution              | Runs the primary Digital Twin with current setup                      |
+| Multiple Identical Digital Twins Simultaneously | Runs the primary Digital Twin twice at once                           |
+| Multiple different Digital Twins Simultaneously | Runs the primary and secondary Digital Twins at once                  |
+| Different Runners same Digital Twin             | Runs the primary Digital Twin twice with 2 different runners          |
+| Different Runners different Digital Twins       | Runs the primary and secondary Digital Twins with 2 different runners |
 
 By default, the primary Digital Twin is `hello-world` and the secondary
 is `mass-spring-damper`. Both can be changed in the measurement settings.
@@ -66,13 +66,13 @@ session. They will appear disabled until loading completes.
 
 ### Status Values
 
-| Status | Meaning |
-| -------- | --------- |
-| PENDING | Task has not started yet |
-| RUNNING | Task is currently executing |
-| SUCCESS | All trials completed successfully |
-| FAILURE | One or more trials failed |
-| STOPPED | Task was interrupted by user |
+| Status   | Meaning                           |
+| -------- | --------------------------------- |
+| PENDING  | Task has not started yet          |
+| RUNNING  | Task is currently executing       |
+| SUCCESS  | All trials completed successfully |
+| FAILURE  | One or more trials failed         |
+| STOPPED  | Task was interrupted by user      |
 
 ### Metrics
 
@@ -83,13 +83,13 @@ session. They will appear disabled until loading completes.
 
 The measurement results table displays the following columns:
 
-| Column | Description |
-| ------ | ----------- |
-| Task | Task number, name, and description |
-| Status | Current execution status (NOT_STARTED, PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED) |
-| Average Duration | Mean execution time across all completed trials, displayed in seconds |
-| Trials | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
-| Data | Download button to export individual task results as JSON |
+| Column           | Description                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| Task             | Task number, name, and description                                                                              |
+| Status           | Current execution status (NOT_STARTED, PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED)                          |
+| Average Duration | Mean execution time across all completed trials, displayed in seconds                                           |
+| Trials           | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
+| Data             | Download button to export individual task results as JSON                                                       |
 
 Each row can be clicked to expand it and show a toggle alongside the
 task description. Disabling a task skips it during execution.
@@ -194,10 +194,10 @@ starts after its delay.
 
 ## Troubleshooting
 
-| Issue | Solution |
-| ------- | ---------- |
-| Task appears stuck, old pipelines appears | Reauthenticate the app by refreshing the tab |
-| Tasks time out | Verify runners are online, uses the tag and are accessible |
+| Issue                                     | Solution                                                   |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| Task appears stuck, old pipelines appears | Reauthenticate the app by refreshing the tab               |
+| Tasks time out                            | Verify runners are online, uses the tag and are accessible |
 
 ## Related Documentation
 

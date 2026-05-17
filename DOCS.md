@@ -1,4 +1,4 @@
-# Documentation Workflow
+# 📚 Documentation Workflow
 
 This file defines the process for building, validating, and publishing project
 documentation.
@@ -12,7 +12,7 @@ Two MkDocs configuration files are maintained:
 
 All commands below are intended to be executed from the repository root.
 
-## Install Documentation Dependencies
+## 📦 Install Documentation Dependencies
 
 Install documentation dependencies in the project virtual environment:
 
@@ -35,7 +35,7 @@ git lfs pull --include="docs/**"
 If Git LFS assets are not fetched, MkDocs now aborts the build instead of
 copying pointer files into `site/`.
 
-## Run Markdown Linting
+## 🔍 Run Markdown Linting
 
 The repository uses markdown linting to enforce formatting consistency.
 
@@ -45,7 +45,7 @@ npx markdownlint-cli docs/**/*.md
 
 Any lint findings should be resolved prior to committing documentation changes.
 
-## Format Markdown Tables
+## 📊 Format Markdown Tables
 
 Uneven table formatting can cause quality gate failures. The table formatter can
 be run as follows:
@@ -54,7 +54,7 @@ be run as follows:
 python script/docs/format_tables.py
 ```
 
-## Build and Preview Documentation
+## 🏗️ Build and Preview Documentation
 
 ### Local Preview
 
@@ -83,7 +83,7 @@ set MKDOCS_ENABLE_PDF_EXPORT=0
 mkdocs build -f mkdocs-github.yml
 ```
 
-## Prepare Documentation for a Release
+## 📦 Prepare Documentation for a Release
 
 When a release is prepared, clone instructions should be replaced with
 versioned download links for release artefacts.
@@ -119,7 +119,7 @@ The substitution script performs the following actions:
 
 All resulting changes should be reviewed before publication.
 
-## Publish Documentation
+## 🚀 Publish Documentation
 
 MkDocs can produce HTML and, where enabled, PDF output. The PDF output
 generation is supported only on Linux.

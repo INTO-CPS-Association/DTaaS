@@ -8,15 +8,11 @@ secure multi-user deployments.
 
 ## ❓ Prerequisites
 
-✅ Docker Engine v27 or later
-
-✅ Sufficient system resources (at least 2GB RAM per workspace instance)
-
-✅ Port 80 and 443 are available on the host
-
-✅ Valid TLS certificates
-
-✅ Domain name pointing to the server
+- Docker Engine v27 or later
+- At least 2 GB RAM per workspace instance
+- Ports 80 and 443 available on the host
+- Valid TLS certificates
+- Domain name pointing to the server
 
 ## 🗒️ Design
 
@@ -40,8 +36,8 @@ sudo chown -R 1000:100 files
 
 ## ⚙️ Configuration
 
-Please follow the pre-installation steps in
-[`CONFIGURATION.md`](CONFIGURATION.md) for creating valid configuration.
+Follow the pre-installation steps in
+[`CONFIGURATION.md`](CONFIGURATION.md) to create valid configuration.
 
 ▶️ Start the application:
 
@@ -51,8 +47,8 @@ docker compose up -d
 
 ### 🌵 Temporary Issues
 
-The following issues in application startup are expected behaviour.
-This problem will be resolved during post-installation.
+The following issues during application startup are expected behaviour
+and will be resolved during post-installation.
 
 👉 `traefik-forward-auth` service will be restarting at this stage.
 👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.

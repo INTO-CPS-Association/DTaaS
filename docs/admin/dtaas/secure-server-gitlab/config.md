@@ -54,12 +54,12 @@ cp config/.env.example config/.env
 
 ### :desktop_computer: Server Settings
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `SERVER_DNS` | `intocps.org` | Domain name or IP address of the server. Do **not** include `https://`. |
-| `USERNAME1` | `user1` | Path prefix and workspace name for the first user |
-| `USERNAME2` | `user2` | Path prefix and workspace name for the second user |
-| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name (rarely needs changing) |
+| Variable               | Example       | Description                                                             |
+| :--------------------- | :------------ | :---------------------------------------------------------------------- |
+| `SERVER_DNS`           | `intocps.org` | Domain name or IP address of the server. Do **not** include `https://`. |
+| `USERNAME1`            | `user1`       | Path prefix and workspace name for the first user                       |
+| `USERNAME2`            | `user2`       | Path prefix and workspace name for the second user                      |
+| `COMPOSE_PROJECT_NAME` | `dtaas`       | Docker Compose project name (rarely needs changing)                     |
 
 ### :key: OAuth 2.0 Settings
 
@@ -67,22 +67,22 @@ These are populated after the GitLab instance is running and
 OAuth 2.0 applications have been created (see
 [OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)).
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `OAUTH_URL` | `https://intocps.org/gitlab` | GitLab instance URL used for browser-side authorisation redirects. No trailing slash. |
-| `OAUTH_CLIENT_ID` | _(from GitLab)_ | Application ID from the **DTaaS Server Authorization** OAuth 2.0 application |
-| `OAUTH_CLIENT_SECRET` | _(from GitLab)_ | Secret from the **DTaaS Server Authorization** OAuth 2.0 application |
-| `OAUTH_SECRET` | _(random string)_ | Encryption key for OAuth session cookies. Generate with: `openssl rand -base64 32` |
+| Variable              | Example                      | Description                                                                           |
+| :-------------------- | :--------------------------- | :------------------------------------------------------------------------------------ |
+| `OAUTH_URL`           | `https://intocps.org/gitlab` | GitLab instance URL used for browser-side authorisation redirects. No trailing slash. |
+| `OAUTH_CLIENT_ID`     | _(from GitLab)_              | Application ID from the **DTaaS Server Authorization** OAuth 2.0 application          |
+| `OAUTH_CLIENT_SECRET` | _(from GitLab)_              | Secret from the **DTaaS Server Authorization** OAuth 2.0 application                  |
+| `OAUTH_SECRET`        | _(random string)_            | Encryption key for OAuth session cookies. Generate with: `openssl rand -base64 32`    |
 
 ### :link: How Variables Map to Services
 
-| Variable | Used by |
-| :--- | :--- |
-| `SERVER_DNS` | traefik, client, user1, user2, libms, traefik-forward-auth, gitlab |
-| `USERNAME1` / `USERNAME2` | user1, user2 (routing and workspace volumes) |
-| `OAUTH_URL` | traefik-forward-auth (browser redirect URL) |
-| `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth |
-| `OAUTH_SECRET` | traefik-forward-auth |
+| Variable                                  | Used by                                                            |
+| :---------------------------------------- | :----------------------------------------------------------------- |
+| `SERVER_DNS`                              | traefik, client, user1, user2, libms, traefik-forward-auth, gitlab |
+| `USERNAME1` / `USERNAME2`                 | user1, user2 (routing and workspace volumes)                       |
+| `OAUTH_URL`                               | traefik-forward-auth (browser redirect URL)                        |
+| `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth                                               |
+| `OAUTH_SECRET`                            | traefik-forward-auth                                               |
 
 ---
 
@@ -99,20 +99,20 @@ cp config/client.js.example config/client.js
 
 ### :bookmark_tabs: Variable Reference
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `REACT_APP_ENVIRONMENT` | `prod` | Environment name. Use `prod` for production. |
-| `REACT_APP_URL` | `https://intocps.org` | Base URL of the DTaaS web application |
-| `REACT_APP_URL_BASENAME` | `''` | Optional URL base path (leave empty for root hosting) |
-| `REACT_APP_URL_DTLINK` | `/lab` | URL path for the Digital Twin workbench |
-| `REACT_APP_URL_LIBLINK` | `''` | URL path for the Library |
-| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library` | Library preview page |
-| `REACT_APP_WORKBENCHLINK_DT_PREVIEW` | `/preview/digitaltwins` | Digital Twins preview page |
-| `REACT_APP_CLIENT_ID` | _(from GitLab)_ | Application ID from the **DTaaS Client Authorization** OAuth 2.0 application |
-| `REACT_APP_AUTH_AUTHORITY` | `https://intocps.org/gitlab` | URL of the GitLab instance (OAuth 2.0 issuer) |
-| `REACT_APP_REDIRECT_URI` | `https://intocps.org/Library` | Where GitLab sends users after sign-in |
-| `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Where users land after sign-out |
-| `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | OAuth 2.0 scopes requested during sign-in |
+| Variable                                  | Example                                        | Description                                                                  |
+| :---------------------------------------- | :--------------------------------------------- | :--------------------------------------------------------------------------- |
+| `REACT_APP_ENVIRONMENT`                   | `prod`                                         | Environment name. Use `prod` for production.                                 |
+| `REACT_APP_URL`                           | `https://intocps.org`                          | Base URL of the DTaaS web application                                        |
+| `REACT_APP_URL_BASENAME`                  | `''`                                           | Optional URL base path (leave empty for root hosting)                        |
+| `REACT_APP_URL_DTLINK`                    | `/lab`                                         | URL path for the Digital Twin workbench                                      |
+| `REACT_APP_URL_LIBLINK`                   | `''`                                           | URL path for the Library                                                     |
+| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library`                             | Library preview page                                                         |
+| `REACT_APP_WORKBENCHLINK_DT_PREVIEW`      | `/preview/digitaltwins`                        | Digital Twins preview page                                                   |
+| `REACT_APP_CLIENT_ID`                     | _(from GitLab)_                                | Application ID from the **DTaaS Client Authorization** OAuth 2.0 application |
+| `REACT_APP_AUTH_AUTHORITY`                | `https://intocps.org/gitlab`                   | URL of the GitLab instance (OAuth 2.0 issuer)                                |
+| `REACT_APP_REDIRECT_URI`                  | `https://intocps.org/Library`                  | Where GitLab sends users after sign-in                                       |
+| `REACT_APP_LOGOUT_REDIRECT_URI`           | `https://intocps.org/`                         | Where users land after sign-out                                              |
+| `REACT_APP_GITLAB_SCOPES`                 | `openid profile read_user read_repository api` | OAuth 2.0 scopes requested during sign-in                                    |
 
 ### :bulb: Example
 
@@ -183,11 +183,11 @@ GitLab accounts.
 > `config/conf.server`. Mismatches cause routing or authorisation
 > failures.
 
-| Scenario | Behaviour |
-| :--- | :--- |
+| Scenario                                                         | Behaviour                                                                |
+| :--------------------------------------------------------------- | :----------------------------------------------------------------------- |
 | Route in `config/.env` but **missing** from `config/conf.server` | Any signed-in user can access the route (default forward-auth behaviour) |
-| Route in `config/conf.server` but **missing** from `config/.env` | Traefik returns **404** (route not served) |
-| The `/lib` rule has **no whitelist** | Any signed-in user can access the library service |
+| Route in `config/conf.server` but **missing** from `config/.env` | Traefik returns **404** (route not served)                               |
+| The `/lib` rule has **no whitelist**                             | Any signed-in user can access the library service                        |
 
 ---
 

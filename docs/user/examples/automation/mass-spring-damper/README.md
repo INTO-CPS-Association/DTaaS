@@ -24,11 +24,11 @@ the two masses is computed.
 
 This example uses two models and one tool. The specific assets used are:
 
-| Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-| :--- | :--- | :--- | :--- |
-| Models | MassSpringDamper1.fmu | Private | Yes |
-| | MassSpringDamper2.fmu | Private | Yes |
-| Tool | maestro-2.3.0-jar-with-dependencies.jar | Common | Yes |
+| Asset Type | Names of Assets                         | Visibility | Reuse in Other Examples |
+| :--------- | :-------------------------------------- | :--------- | :---------------------- |
+| Models     | MassSpringDamper1.fmu                   | Private    | Yes                     |
+|            | MassSpringDamper2.fmu                   | Private    | Yes                     |
+| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The `co-sim.json` and `time.json`
 are two DT configuration files used for executing the digital twin.
@@ -36,11 +36,11 @@ These two files can be modified to customise the DT as required.
 
 ## Lifecycle Phases
 
-| Lifecycle Phase | Completed Tasks |
-| -------- | ------- |
-| Create | Installs Java Development Kit for Maestro tool |
-| Execute | Produces and stores output in data/mass-spring-damper/output directory |
-| Clean | Clears run logs and outputs |
+| Lifecycle Phase | Completed Tasks                                                        |
+| --------------- | ---------------------------------------------------------------------- |
+| Create          | Installs Java Development Kit for Maestro tool                         |
+| Execute         | Produces and stores output in data/mass-spring-damper/output directory |
+| Clean           | Clears run logs and outputs                                            |
 
 ## DevOps Automation
 

@@ -1,9 +1,9 @@
-# Developer Instructions
+# 📖 Developer Instructions
 
 ## Prerequisites
 
-The **pm2** package needs to be available for tests.
-You can install the same by executing
+The **pm2** package is required for tests.
+Install it with:
 
 ```bash
 npm install -g pm2
@@ -61,11 +61,11 @@ need to be done with the following `LOCAL_PATH` values.
 
 ### PM2
 
-the pm2 might not close spawned processes correctly,
-therefore please use the following command to kill a process.
+pm2 may not close spawned processes correctly.
+To kill a process, use:
 `pm2 del <id>`.
 
-**NOTE:** to see the processes spawned by pm2 use `pm2 list`
+**NOTE:** To list processes spawned by pm2, use `pm2 list`.
 
 ## :package: :ship: Packages
 

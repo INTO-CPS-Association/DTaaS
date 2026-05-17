@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
+
 
 This guide explains how to deploy the workspace application for
 **secure multi-user deployments with Keycloak** for authentication.

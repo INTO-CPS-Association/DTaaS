@@ -40,33 +40,33 @@ cp config/.env.example config/.env
 
 ### Server Settings
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `SERVER_DNS` | `intocps.org` | Domain name or IP address of the server. Do not include `https://`. |
-| `USERNAME1` | `user1` | Path prefix and workspace name for the first user |
-| `USERNAME2` | `user2` | Path prefix and workspace name for the second user |
-| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
+| Variable               | Example       | Description                                                         |
+| :--------------------- | :------------ | :------------------------------------------------------------------ |
+| `SERVER_DNS`           | `intocps.org` | Domain name or IP address of the server. Do not include `https://`. |
+| `USERNAME1`            | `user1`       | Path prefix and workspace name for the first user                   |
+| `USERNAME2`            | `user2`       | Path prefix and workspace name for the second user                  |
+| `COMPOSE_PROJECT_NAME` | `dtaas`       | Docker Compose project name                                         |
 
 ### OAuth 2.0 Settings
 
 These are set from the external GitLab OAuth 2.0 applications.
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `OAUTH_URL` | `https://gitlab.com` | GitLab base URL used by traefik-forward-auth |
-| `OAUTH_CLIENT_ID` | _(from GitLab)_ | Application ID from the **DTaaS Server Authorization** OAuth app |
-| `OAUTH_CLIENT_SECRET` | _(from GitLab)_ | Secret from the **DTaaS Server Authorization** OAuth app |
-| `OAUTH_SECRET` | _(random string)_ | Encryption key for OAuth session cookies. Example generation: `openssl rand -base64 32` |
+| Variable              | Example              | Description                                                                             |
+| :-------------------- | :------------------- | :-------------------------------------------------------------------------------------- |
+| `OAUTH_URL`           | `https://gitlab.com` | GitLab base URL used by traefik-forward-auth                                            |
+| `OAUTH_CLIENT_ID`     | _(from GitLab)_      | Application ID from the **DTaaS Server Authorization** OAuth app                        |
+| `OAUTH_CLIENT_SECRET` | _(from GitLab)_      | Secret from the **DTaaS Server Authorization** OAuth app                                |
+| `OAUTH_SECRET`        | _(random string)_    | Encryption key for OAuth session cookies. Example generation: `openssl rand -base64 32` |
 
 ### How Variables Map to Services
 
-| Variable | Used by |
-| :--- | :--- |
-| `SERVER_DNS` | traefik, client, user1, user2, libms, traefik-forward-auth |
-| `USERNAME1` / `USERNAME2` | user1, user2 (routing and workspace volumes) |
-| `OAUTH_URL` | traefik-forward-auth (authorize, token, userinfo endpoints) |
-| `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth |
-| `OAUTH_SECRET` | traefik-forward-auth |
+| Variable                                  | Used by                                                     |
+| :---------------------------------------- | :---------------------------------------------------------- |
+| `SERVER_DNS`                              | traefik, client, user1, user2, libms, traefik-forward-auth  |
+| `USERNAME1` / `USERNAME2`                 | user1, user2 (routing and workspace volumes)                |
+| `OAUTH_URL`                               | traefik-forward-auth (authorize, token, userinfo endpoints) |
+| `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth                                        |
+| `OAUTH_SECRET`                            | traefik-forward-auth                                        |
 
 ## config/client.js - DTaaS Web Client
 
@@ -81,20 +81,20 @@ cp config/client.js.example config/client.js
 
 ### Variable Reference
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `REACT_APP_ENVIRONMENT` | `prod` | Environment name |
-| `REACT_APP_URL` | `https://intocps.org` | Base URL of the DTaaS web application |
-| `REACT_APP_URL_BASENAME` | `''` | Optional URL base path |
-| `REACT_APP_URL_DTLINK` | `/lab` | URL path for the Digital Twin workbench |
-| `REACT_APP_URL_LIBLINK` | `''` | URL path for the Library |
-| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library` | Library preview page |
-| `REACT_APP_WORKBENCHLINK_DT_PREVIEW` | `/preview/digitaltwins` | Digital Twins preview page |
-| `REACT_APP_CLIENT_ID` | _(from GitLab)_ | Application ID from **DTaaS Client Authorization** OAuth app |
-| `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com` | OAuth issuer URL |
-| `REACT_APP_REDIRECT_URI` | `https://intocps.org/Library` | Redirect URI after sign-in |
-| `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Redirect URI after sign-out |
-| `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | Requested OAuth scopes |
+| Variable                                  | Example                                        | Description                                                  |
+| :---------------------------------------- | :--------------------------------------------- | :----------------------------------------------------------- |
+| `REACT_APP_ENVIRONMENT`                   | `prod`                                         | Environment name                                             |
+| `REACT_APP_URL`                           | `https://intocps.org`                          | Base URL of the DTaaS web application                        |
+| `REACT_APP_URL_BASENAME`                  | `''`                                           | Optional URL base path                                       |
+| `REACT_APP_URL_DTLINK`                    | `/lab`                                         | URL path for the Digital Twin workbench                      |
+| `REACT_APP_URL_LIBLINK`                   | `''`                                           | URL path for the Library                                     |
+| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library`                             | Library preview page                                         |
+| `REACT_APP_WORKBENCHLINK_DT_PREVIEW`      | `/preview/digitaltwins`                        | Digital Twins preview page                                   |
+| `REACT_APP_CLIENT_ID`                     | _(from GitLab)_                                | Application ID from **DTaaS Client Authorization** OAuth app |
+| `REACT_APP_AUTH_AUTHORITY`                | `https://gitlab.com`                           | OAuth issuer URL                                             |
+| `REACT_APP_REDIRECT_URI`                  | `https://intocps.org/Library`                  | Redirect URI after sign-in                                   |
+| `REACT_APP_LOGOUT_REDIRECT_URI`           | `https://intocps.org/`                         | Redirect URI after sign-out                                  |
+| `REACT_APP_GITLAB_SCOPES`                 | `openid profile read_user read_repository api` | Requested OAuth scopes                                       |
 
 ## config/conf.server - Traefik Forward-Auth Rules
 
@@ -147,7 +147,7 @@ Place these TLS certificate files in `certs/`:
 
 ```text
 certs/
-|- fullchain.pem   # Public certificate or certificate chain
+| - fullchain.pem   # Public certificate or certificate chain |
 \- privkey.pem     # Private key
 ```
 
@@ -160,8 +160,8 @@ its `/workspace` volume. `files/common/` is shared across all workspaces.
 
 ```text
 files/
-|- common/    # Shared files (mounted to /workspace/common)
-|- user1/     # User 1 workspace files
+| - common/    # Shared files (mounted to /workspace/common) |
+| - user1/     # User 1 workspace files                      |
 \- user2/     # User 2 workspace files
 ```
 

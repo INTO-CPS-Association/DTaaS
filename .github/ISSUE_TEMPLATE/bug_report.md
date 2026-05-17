@@ -1,41 +1,41 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a defect to help improve the software
 title: "[BUG]"
 labels: bug
 assignees: ''
 
 ---
 
-## Describe the bug
+## Describe the Bug
 
 A clear and concise description of what the bug is.
 
-## To Reproduce
+## Steps to Reproduce
 
-Steps to reproduce the behavior:
+Steps to reproduce the behaviour:
 
 1. Go to '...'
 1. Click on '....'
 1. Scroll down to '....'
 1. See error
 
-## Expected behavior
+## Expected Behaviour
 
-A clear and concise description of what you expected to happen.
+A clear and concise description of what was expected to happen.
 
 ## Screenshots
 
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain the problem.
 
 ## Application Environment
 
 Please provide the following information:
 
 - OS: [e.g. Ubuntu 24.04]
-- Browser [e.g. chrome, safari]
-- DTaaS Release [e.g. 0.5.0]
+- Browser [e.g. Chrome, Safari]
+- DTaaS Release [e.g. 1.0.0]
 
-## Additional context
+## Additional Context
 
-Add any other context about the problem here.
+Any other context about the problem.

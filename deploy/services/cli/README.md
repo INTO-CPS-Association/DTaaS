@@ -7,12 +7,12 @@ _These services can only be installed in secure (TLS) mode._
 The following services can be installed:
 
 * **Influx** time-series database and dashboard service
-* **Grafana** visualization and dashboard service
+* **Grafana** visualisation and dashboard service
 * **RabbitMQ** AMQP broker and its management interface
   The **MQTT plugin** of this broker has been enabled.
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
-* **ThingsBoard** IoT device management and data visualization platform
+* **ThingsBoard** IoT device management and data visualisation platform
 (with PostgreSQL backend)
 * **GitLab** OAuth2 identity provider and Git repository service
 
@@ -137,7 +137,8 @@ dtaas-services clean
 
 ### Managing Services
 
-Now services can be managed by simple commands (Start, Stop, Remove and Restart)
+Now services can be managed with the following commands
+(Start, Stop, Remove, and Restart).
 
 Example:
 
@@ -191,7 +192,7 @@ This service can only be installed in secure (TLS) mode.
 
 The steps given above install two services:
 
-* **ThingsBoard** is an IoT device management and data visualization platform
+* **ThingsBoard** is an IoT device management and data visualisation platform
 * **PostgreSQL** is a database server for ThingsBoard
 
 ### ThingsBoard Directory Structure

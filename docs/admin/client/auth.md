@@ -52,12 +52,12 @@ authorisation flow. The following steps describe the setup process:
 - The following information from the OAuth 2.0 application
   registered on GitLab is required:
 
-| GitLab Variable Name | Variable Name in Client env.js | Default Value                                      |
-| -------------------- | ------------------------------ | -------------------------------------------------- |
+| GitLab Variable Name | Variable Name in Client env.js | Default Value                                              |
+| -------------------- | ------------------------------ | ---------------------------------------------------------- |
 | OAuth 2.0 Provider   | REACT_APP_AUTH_AUTHORITY       | [https://gitlab.intocps.org/](https://gitlab.intocps.org/) |
-| Application ID       | REACT_APP_CLIENT_ID            |                                                    |
+| Application ID       | REACT_APP_CLIENT_ID            |                                                            |
 | Callback URL         | REACT_APP_REDIRECT_URI         | [https://intocps.org/Library](https://intocps.org/Library) |
-| Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api   |
+| Scopes               | REACT_APP_GITLAB_SCOPES        | openid, profile, read_user, read_repository, api           |
 
   ![Summary for Client OAuth 2.0 Application](client-oauth-id.png)
 

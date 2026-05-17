@@ -1,8 +1,8 @@
-# Overview
+# 📖 API Reference
 
-## GraphQL API Calls
+## GraphQL API
 
-The lib microservice takes two distinct GraphQL queries.
+The lib microservice accepts two distinct GraphQL queries.
 
 ### Directory Listing
 

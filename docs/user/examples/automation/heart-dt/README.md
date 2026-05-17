@@ -4,17 +4,17 @@
 
 The Heart Digital Twin demonstrates a real-time cardiovascular monitoring system
 using ECG data from the MIT-BIH Arrhythmia Database. This digital twin provides
-live ECG visualization with anomaly detection and features an interactive 3D
-heart model that synchronizes with the cardiac rhythm, creating an immersive
+live ECG visualisation with anomaly detection and features an interactive 3D
+heart model that synchronises with the cardiac rhythm, creating an immersive
 healthcare monitoring experience within the DTaaS platform.
 
 ## Example Structure
 
 The Heart Digital Twin consists of several key components working together:
 
-- **ECG Data Processing**: Real-time processing and visualization of
+- **ECG Data Processing**: Real-time processing and visualisation of
   electrocardiogram signals from the MIT-BIH database
-- **3D Heart Visualization**: Interactive 3D heart model with synchronized
+- **3D Heart visualisation**: Interactive 3D heart model with synchronised
   pumping animation
 - **Anomaly Detection**: Real-time identification and highlighting of cardiac
   anomalies
@@ -25,7 +25,7 @@ The Heart Digital Twin consists of several key components working together:
 
 ## MIT-BIH Arrhythmia Database
 
-This digital twin utilizes the renowned **MIT-BIH Arrhythmia Database**, which
+This digital twin utilises the renowned **MIT-BIH Arrhythmia Database**, which
 contains 48 half-hour excerpts of two-channel ambulatory ECG recordings. The
 database includes:
 
@@ -41,14 +41,14 @@ cardiac rhythms and anomalies for comprehensive testing and demonstration.
 
 This example uses the following assets:
 
-| Asset Type | Names of Assets | Visibility | Reuse in Other Examples |
-| :--- | :--- | :--- | :--- |
-| Data | MIT-BIH Arrhythmia Database Records (100-109) | Public | Yes |
-| Models | 3D Heart Model (Beating heart.glb) | Public | Yes |
-| Functions | ECG Processing & Anomaly Detection | Public | Yes |
-| Tools | Flask Web Server & UI Components | Public | Yes |
+| Asset Type | Names of Assets                               | Visibility | Reuse in Other Examples |
+| :--------- | :-------------------------------------------- | :--------- | :---------------------- |
+| Data       | MIT-BIH Arrhythmia Database Records (100-109) | Public     | Yes                     |
+| Models     | 3D Heart Model (Beating heart.glb)            | Public     | Yes                     |
+| Functions  | ECG Processing & Anomaly Detection            | Public     | Yes                     |
+| Tools      | Flask Web Server & UI Components              | Public     | Yes                     |
 
-The heart digital twin can be customized through various parameters:
+The heart digital twin can be customised through various parameters:
 
 - **Record Selection**: Choose from records 100-109
 - **Channel Selection**: Switch between available ECG channels
@@ -57,10 +57,10 @@ The heart digital twin can be customized through various parameters:
 
 ## 3D Heart Animation
 
-The digital twin features a **synchronized 3D heart pumping animation** that
+The digital twin features a **synchronised 3D heart pumping animation** that
 enhances the monitoring experience:
 
-- **Real-time Synchronization**: Heart model animation matches the ECG rhythm
+- **Real-time Synchronisation**: Heart model animation matches the ECG rhythm
 - **Interactive Controls**:
   - Camera controls for 360° viewing
   - Auto-rotate functionality
@@ -68,7 +68,7 @@ enhances the monitoring experience:
 - **Animation Features**:
   - Realistic beating heart model
   - Smooth cardiac cycle animation
-  - Pause/resume functionality synchronized with ECG simulation
+  - Pause/resume functionality synchronised with ECG simulation
 - **Model Format**: High-quality GLB (GL Transmission Format Binary) 3D model
 - **Rendering**: WebGL-based rendering using model-viewer component
 
@@ -78,11 +78,11 @@ between electrical signals and mechanical heart function.
 
 ## Lifecycle Phases
 
-| Lifecycle Phase | Completed Tasks |
-| -------- | ------- |
-| Create | Sets up Python virtual environment and installs required dependencies (NumPy, Pandas, Matplotlib, WFDB, Flask) |
-| Execute | Starts the Flask web server and launches the heart monitoring interface accessible via web browser |
-| Clean | Terminates the running application and removes the virtual environment |
+| Lifecycle Phase | Completed Tasks                                                                                                |
+| --------------- | -------------------------------------------------------------------------------------------------------------- |
+| Create          | Sets up Python virtual environment and installs required dependencies (NumPy, Pandas, Matplotlib, WFDB, Flask) |
+| Execute         | Starts the Flask web server and launches the heart monitoring interface accessible via web browser             |
+| Clean           | Terminates the running application and removes the virtual environment                                         |
 
 ## DevOps Automation
 
@@ -165,7 +165,7 @@ lifecycle/create
 
 Launches the Heart Digital Twin web application. The server will start and be
 accessible via web browser for real-time ECG monitoring and 3D heart
-visualization.
+visualisation.
 
 ```bash
 lifecycle/execute
@@ -175,9 +175,9 @@ The application will be available at `http://localhost:5001` and will
 automatically:
 
 - Load required MIT-BIH records
-- Initialize the ECG data processing
-- Start real-time visualization
-- Enable 3D heart model synchronization
+- Initialise the ECG data processing
+- Start real-time visualisation
+- Enable 3D heart model Synchronisation
 
 #### Examine the results
 

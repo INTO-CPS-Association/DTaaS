@@ -238,14 +238,14 @@
     and low performance (**L**)
 
 | DT Platforms               | License                | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualisation | Modelling and Simulation |
-| :------------------------- | :--------------------- | :--------------------- | :----------- | :------- | :-------------------------------------------- | :----------- | :------------ | :---------------------- |
-| Microsoft Azure DT         | Commercial Cloud       | H                      | H            | H        | M                                             | H            | H             | H                       |
-| AWS IOT Greengrass         | Open source commercial | H                      | H            | H        | M                                             | H            | H             | H                       |
-| Eclipse Ditto              | Open source            | M                      | H            | M        | H                                             | H            | L             | L                       |
-| Asset Administration Shell | Open source            | H                      | H            | L        | H                                             | M            | L             | M                       |
-| PTC Thingworx              | Commercial             | H                      | H            | H        | H                                             | H            | M             | M                       |
-| GE Predix                  | Commercial             | M                      | H            | H        | M                                             | L            | M             | L                       |
-| The DTaaS Platform         | Open source            | H                      | H            | L        | L                                             | M            | M             | M                       |
+| :------------------------- | :--------------------- | :--------------------- | :----------- | :------- | :-------------------------------------------- | :----------- | :------------ | :----------------------- |
+| Microsoft Azure DT         | Commercial Cloud       | H                      | H            | H        | M                                             | H            | H             | H                        |
+| AWS IOT Greengrass         | Open source commercial | H                      | H            | H        | M                                             | H            | H             | H                        |
+| Eclipse Ditto              | Open source            | M                      | H            | M        | H                                             | H            | L             | L                        |
+| Asset Administration Shell | Open source            | H                      | H            | L        | H                                             | M            | L             | M                        |
+| PTC Thingworx              | Commercial             | H                      | H            | H        | H                                             | H            | M             | M                        |
+| GE Predix                  | Commercial             | M                      | H            | H        | M                                             | L            | M             | L                        |
+| The DTaaS Platform         | Open source            | H                      | H            | L        | L                                             | M            | M             | M                        |
 
     Adopted by Tanusree Roy from Table 4 and 5 of the following paper.
 

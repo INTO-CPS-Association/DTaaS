@@ -1,11 +1,11 @@
-# Install
+# 🚀 Installation
 
 These are installation instructions for the DTaaS application.
-The setup requires a machine which can spare 16GB
-RAM, 8 vCPUs and 50GB Hard Disk space.
+The setup requires a machine with at least 16 GB RAM, 8 vCPUs,
+and 50 GB of hard disk space.
 
-The DTaaS can be installed in different ways.
-Each version serves a different purpose.
+DTaaS can be installed in several configurations.
+Each configuration serves a different purpose.
 
 | Installation Setup | Purpose |
 | :----- | :----- |

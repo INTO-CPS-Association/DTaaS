@@ -5,15 +5,16 @@ identity providers.
 
 ## Available Workspace Scenarios
 
-| Scenario | Purpose | Source Directory |
-| :--- | :--- | :--- |
-| [Dex localhost](localhost/install.md) | Single-user local workspace deployment | `deploy/workspace/dex/localhost` |
-| [Keycloak secure server](secure-server/install.md) | Multi-user secure server deployment with OIDC | `deploy/workspace/keycloak/production` |
+| Scenario                                           | Purpose                                       |
+| :------------------------------------------------- | :-------------------------------------------- |
+| [Dex localhost](localhost/install.md)              | Single-user local workspace deployment        |
+| [Keycloak secure server](secure-server/install.md) | Multi-user secure server deployment with OIDC |
 
 ## Notes
 
 - Use workspace scenarios when the primary focus is workspace auth and
   per-user route access.
-- For DTaaS package deployments that include the full DTaaS web platform,
-  use `../dtaas/localhost/install.md`, `../dtaas/server/install.md`, or
-  `../dtaas/secure-server-gitlab/install.md`.
+- Also see DTaaS package deployments that include the full DTaaS web platform for
+  [localhost](../dtaas/localhost/install.md),
+  [secure multi-user](../dtaas/secure-server/install.md), and
+  [secure multi-user with integrated GitLab](../dtaas/secure-server-gitlab/install.md)
