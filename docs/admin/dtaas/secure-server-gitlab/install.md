@@ -6,7 +6,7 @@ for
 a **secure, multi-user DTaaS deployment** that uses
 an **integrated GitLab instance** for OAuth 2.0 authorisation.
 
-Download **dtaas-secure-server-integrated-gitlab.zip** from the latest
+Download **dtaas-secure-server-integrated-gitlab-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 

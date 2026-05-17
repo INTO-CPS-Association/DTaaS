@@ -83,42 +83,6 @@ set MKDOCS_ENABLE_PDF_EXPORT=0
 mkdocs build -f mkdocs-github.yml
 ```
 
-## 📦 Prepare Documentation for a Release
-
-When a release is prepared, clone instructions should be replaced with
-versioned download links for release artefacts.
-
-Update `docs.ini` in the `docs.substitute` section, for example:
-
-```ini
-[docs.substitute]
-VERSION=DTaaS-vX.Y.Z
-URL=https://github.com/INTO-CPS-Association/DTaaS/releases/download/vX.Y.Z/DTaaS-vX.Y.Z.zip
-FILES=docs/admin/dtaas/localhost/install.md,
-    docs/admin/dtaas/secure-localhost-github/install.md,
-    docs/admin/dtaas/server/install.md,
-    docs/admin/services/cli.md,
-    docs/admin/gitlab/index.md,
-    docs/admin/guides/localhost_portainer.md
-```
-
-Run the substitution pipeline:
-
-```bash
-pip install -r script/docs/requirements.txt
-python script/docs/main.py
-```
-
-The substitution script performs the following actions:
-
-- Reads `docs/publish/clone.md` as the cloning-content template.
-- Reads `docs/publish/release.md` as the release-content template.
-- Replaces `VERSION` and `URL` placeholders.
-- Applies replacements to files listed in `FILES`.
-- Preserves fenced code blocks via markdown-aware parsing.
-
-All resulting changes should be reviewed before publication.
-
 ## 🚀 Publish Documentation
 
 MkDocs can produce HTML and, where enabled, PDF output. The PDF output

@@ -4,7 +4,7 @@
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 
-Download **dtaas-localhost.zip** from the
+Download **dtaas-localhost-xx.zip** from the
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 

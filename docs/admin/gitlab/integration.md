@@ -23,7 +23,7 @@ Traefik Forward Auth backend authorisation.
 There are two primary integration paths:
 
 1. **Integrated package**: See
-   [installation page](../dtaas/secure-server-gitlab/install.md) `secure-server-integrated-gitlab.zip`
+   [installation page](../dtaas/secure-server-gitlab/install.md) `secure-server-integrated-gitlab-xx.zip`
    A functioning GitLab instance will be accessible over HTTPS
    at `https://intocps.org/gitlab`.
 2. **Platform Services CLI**: See [CLI docs](../services/cli.md).

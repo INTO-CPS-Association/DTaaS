@@ -16,7 +16,7 @@ This guide explains how to deploy the workspace application for
 
 ✅ Domain name pointing to the server
 
-Download **workspace-keycloak-production.zip** from the latest
+Download **workspace-keycloak-production-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 

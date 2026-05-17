@@ -22,8 +22,8 @@ Two installation scenarios are available:
 
 Download the required packages:
 
-1. **dtaas-localhost.zip** for DTaaS localhost installation, or
-1. **workspace-dex-localhost.zip** for Workspace localhost installation
+1. **dtaas-localhost-xx.zip** for DTaaS localhost installation, or
+1. **workspace-dex-localhost-xx.zip** for Workspace localhost installation
 
 !!! tip
     The guide uses Linux-style paths such as `/Users/username/DTaaS`.
@@ -58,7 +58,7 @@ to create an administrator account.
 
 ## 1. :globe_with_meridians: DTaaS Localhost
 
-Unzip **dtaas-localhost.zip** package. It contains required
+Unzip **dtaas-localhost-xx.zip** package. It contains required
 installation files.
 This installation scenario uses **GitLab OAuth** for authentication.
 A GitLab account on <https://gitlab.com> is required.
@@ -146,7 +146,7 @@ backend forward-auth are not included in this scenario.
 
 ## 2. :shield: Workspace Localhost
 
-Unzip **workspace-dex-localhost.zip** package.
+Unzip **workspace-dex-localhost-xx.zip** package.
 It contains required installation files.
 
 This scenario uses **Dex** as a local identity provider.

@@ -9,7 +9,7 @@ ideal for running the **DTaaS on localhost served over HTTP connection**.
 ✅ This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
-Download **workspace-dex-localhost.zip** from the latest
+Download **workspace-dex-localhost-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 
