@@ -1,8 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-
-
 This guide explains how to deploy the workspace application for
 **secure multi-user deployments with Keycloak** for authentication.
 

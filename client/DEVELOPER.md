@@ -110,7 +110,7 @@ The purpose of different configuration files are given in the table below.
 | Configuration File Name | Usage Scenario                                                                                                                                                        |
 | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dev.js`                | Check functionality of the client application without using any other parts of the DTaaS software                                                                     |
-| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                        |
+| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                 |
 | `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
 | `test.js`               | Used by all the tests                                                                                                                                                 |
 

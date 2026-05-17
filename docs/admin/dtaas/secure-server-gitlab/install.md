@@ -1,8 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-
-
 This README provides a quick-start installation guide
 for
 a **secure, multi-user DTaaS deployment** that uses

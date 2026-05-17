@@ -1,8 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-
-
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 
