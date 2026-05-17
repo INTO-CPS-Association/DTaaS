@@ -4,10 +4,6 @@ name: React website
   push:
     paths:
       - 'client/**'
-      - 'developer/client.dockerfile'
-      - 'developer/client.built.dockerfile'
-      - '.github/workflows/client.yml'
-      - '.github/workflows/docker-build.yml'
   pull_request:
     paths:
       - 'client/**'

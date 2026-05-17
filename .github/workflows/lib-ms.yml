@@ -4,9 +4,6 @@ name: Library microservice
   push:
     paths:
       - 'servers/lib/**'
-      - 'developer/libms.dockerfile'
-      - '.github/workflows/lib-ms.yml'
-      - '.github/workflows/docker-build.yml'
   pull_request:
     paths:
       - 'servers/lib/**'
@@ -135,6 +132,15 @@ jobs:
       - name: Stop http mode
         run: |
           yarn stop:pm2
+
+  build-docker-image:
+    name: Build Docker image
+    permissions:
+      contents: read
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: dtaas-web
+      dockerfile: libms.dockerfile
 
   get-version:
     permissions:
