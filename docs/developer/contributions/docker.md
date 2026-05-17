@@ -26,7 +26,11 @@ the existing test jobs to avoid increasing build time.
 | `.github/workflows/client.yml` | `developer/client.built.dockerfile` | Validates the publish image Dockerfile |
 | `.github/workflows/lib-ms.yml` | `developer/libms.dockerfile` | Full multi-stage build inside Docker |
 
-The Docker build checks run on pull requests only.
+The Docker build checks run on pull requests and also on pushes when
+`.github/workflows/client.yml` or `.github/workflows/lib-ms.yml` is
+triggered by changes to the source code directories (`client/**` or
+`servers/lib/**`).
+
 On pushes to `feature/*` or `release-v*` branches, the publish jobs
 are triggered by changes to the source code directories (`client/**`,
 `servers/lib/**`) to avoid inadvertently re-publishing an already
@@ -68,7 +72,7 @@ A brief explanation of the packages is given below.
 ### React Website
 
 ```sh
-docker build -t intocps/dtaas-web:latest -f ./docker/client.built.dockerfile .
+docker build -t intocps/dtaas-web:latest -f ./developer/client.built.dockerfile .
 docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
 docker push intocps/dtaas-web:latest
 docker push intocps/dtaas-web:<version>
@@ -95,10 +99,10 @@ This argument helps pick the right package version from <http://npmjs.com>.
 
 ```sh
 docker login -u <username> -p <password>
-docker build -t intocps/libms:latest -f ./docker/libms.npm.dockerfile .
+docker build -t intocps/libms:latest -f ./developer/libms.npm.dockerfile .
 docker push intocps/libms:latest
 docker build --build-arg="VERSION=<version>" \
-  -t intocps/libms:<version> -f ./docker/libms.npm.dockerfile .
+  -t intocps/libms:<version> -f ./developer/libms.npm.dockerfile .
 docker push intocps/libms:<version>
 ```
 
@@ -106,7 +110,7 @@ To tag version 0.3.1 for example, use
 
 ```sh
 docker build --build-arg="VERSION=0.3.1" \
-  -t intocps/libms:0.3.1 -f ./docker/libms.npm.dockerfile .
+  -t intocps/libms:0.3.1 -f ./developer/libms.npm.dockerfile .
 ```
 
 To test the library microservice on localhost, please use

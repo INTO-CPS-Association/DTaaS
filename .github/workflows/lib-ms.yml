@@ -139,7 +139,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/docker-build.yml
     with:
-      image-name: dtaas-web
+      image-name: libms
       dockerfile: libms.dockerfile
 
   get-version:
