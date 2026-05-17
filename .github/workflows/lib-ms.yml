@@ -83,6 +83,7 @@ jobs:
           LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
+          mkdir -p "$LIBMS_LOCAL_PATH"
           node test/update-config.js
 
       - name: Start http mode
