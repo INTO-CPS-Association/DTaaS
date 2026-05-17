@@ -12,6 +12,26 @@ Follow the instructions in `developer/README.md` to spawn a localhost developmen
 instance of DTaaS. It is an end-to-end testing of the current codebase
 as it exists in the local git directory.
 
+## CI Dockerfile Validation
+
+Each pull request that modifies `client/**`, `servers/lib/**`, or
+the relevant Dockerfiles triggers an automated Docker build check.
+The check uses the reusable workflow
+`.github/workflows/docker-build.yml` and runs in parallel with
+the existing test jobs to avoid increasing build time.
+
+| Workflow | Dockerfile validated | Notes |
+| :--- | :--- | :--- |
+| `.github/workflows/client.yml` | `developer/client.dockerfile` | Full multi-stage build inside Docker |
+| `.github/workflows/client.yml` | `developer/client.built.dockerfile` | Validates the publish image Dockerfile |
+| `.github/workflows/lib-ms.yml` | `developer/libms.dockerfile` | Full multi-stage build inside Docker |
+
+The Docker build checks run on pull requests only.
+On pushes to `feature/*` or `release-v*` branches, the publish jobs
+are triggered by changes to the source code directories (`client/**`,
+`servers/lib/**`) to avoid inadvertently re-publishing an already
+published package version when only a Dockerfile is updated.
+
 ## Publish Docker Images
 
 Build and publish the docker images. This step is required only for

@@ -4,11 +4,15 @@ name: Library microservice
   push:
     paths:
       - 'servers/lib/**'
+      - 'developer/libms.dockerfile'
       - '.github/workflows/lib-ms.yml'
+      - '.github/workflows/docker-build.yml'
   pull_request:
     paths:
       - 'servers/lib/**'
+      - 'developer/libms.dockerfile'
       - '.github/workflows/lib-ms.yml'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 concurrency:

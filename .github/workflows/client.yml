@@ -4,11 +4,17 @@ name: React website
   push:
     paths:
       - 'client/**'
+      - 'developer/client.dockerfile'
+      - 'developer/client.built.dockerfile'
       - '.github/workflows/client.yml'
+      - '.github/workflows/docker-build.yml'
   pull_request:
     paths:
       - 'client/**'
+      - 'developer/client.dockerfile'
+      - 'developer/client.built.dockerfile'
       - '.github/workflows/client.yml'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 concurrency:
@@ -102,6 +108,22 @@ jobs:
         with:
           files: client/coverage/e2e/codecov.json
           flags: client-e2e-tests
+
+  build-docker-image:
+    name: Build Docker image (${{ matrix.image-name }})
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - image-name: dtaas-web
+            dockerfile: client.dockerfile
+          - image-name: dtaas-web-built
+            dockerfile: client.built.dockerfile
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: ${{ matrix.image-name }}
+      dockerfile: ${{ matrix.dockerfile }}
 
   get-version:
     name: Get version
