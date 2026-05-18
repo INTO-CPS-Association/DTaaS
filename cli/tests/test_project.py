@@ -61,14 +61,14 @@ def test_copy_template_creates_file(tmp_path, template_name):
     assert (tmp_path / template_name).exists()
 
 
-def test_copy_template_skips_existing_file(tmp_path, capsys):
-    """Copying to an existing destination skips without error."""
+def test_copy_template_skips_existing_file(tmp_path):
+    """Copying to an existing destination returns True and leaves the file unchanged."""
     (tmp_path / "dtaas.toml").write_text("keep me")
 
-    _copy_template("dtaas.toml", str(tmp_path))
+    skipped = _copy_template("dtaas.toml", str(tmp_path))
 
     assert (tmp_path / "dtaas.toml").read_text() == "keep me"
-    assert "already exists" in capsys.readouterr().out
+    assert skipped is True
 
 
 def test_copy_template_force_overwrites_existing_file(tmp_path):

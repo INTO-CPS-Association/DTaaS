@@ -2,7 +2,6 @@
 
 from unittest.mock import patch
 import pytest
-import click
 from src.pkg import config
 from src.pkg.config import Config
 # pylint: disable=redefined-outer-name
@@ -52,9 +51,9 @@ def mock_config():
 
 
 def test_config_init_error(mock_utils):
-    """Test Config initialization with error"""
+    """Test Config initialization with error raises RuntimeError"""
     mock_utils.return_value = (None, Exception("File not found"))
-    with pytest.raises(click.ClickException):
+    with pytest.raises(RuntimeError):
         config.Config()
 
 

@@ -1,7 +1,6 @@
 """This file supports the DTaaS config class"""
 
-import click
-from src.pkg import utils
+from . import utils
 from typing import cast, Any
 
 
@@ -11,7 +10,7 @@ class Config:
     def __init__(self):
         config, err = utils.import_toml("dtaas.toml")
         if err is not None:
-            raise click.ClickException("config initialisation failed: " + str(err))
+            raise RuntimeError("config initialisation failed: " + str(err))
         self.data = config
 
     def get_config(self):

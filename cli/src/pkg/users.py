@@ -2,9 +2,10 @@
 
 import subprocess
 import shutil
-from src.pkg import utils
+import click
 from pathlib import Path
-from src.pkg.constants import COMPOSE_USERS_YML
+from . import utils
+from .constants import COMPOSE_USERS_YML
 
 
 def _build_config_mapping(user_config, resources):
@@ -79,7 +80,7 @@ def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
         user_dir = Path(file_path) / username
-        shutil.copytree(file_path + "/template", user_dir, dirs_exist_ok=True)
+        shutil.copytree(Path(file_path) / "template", user_dir, dirs_exist_ok=True)
         try:
             shutil.chown(user_dir, user=1000, group=100)
             for item in user_dir.rglob("*"):
@@ -214,7 +215,7 @@ def _report_missing_users(missing):
         missing: List of usernames that don't exist
     """
     for username in missing:
-        print(f"'{username}' does not exist, skipping deletion")
+        click.echo(f"'{username}' does not exist, skipping deletion")
 
 
 def _remove_users_from_compose(compose, user_list):

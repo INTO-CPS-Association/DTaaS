@@ -54,7 +54,10 @@ def add():
     Specify the list in dtaas.toml [users].add\n
     """
 
-    config_obj = configPkg.Config()
+    try:
+        config_obj = configPkg.Config()
+    except RuntimeError as exc:
+        raise click.ClickException(str(exc)) from exc
 
     err = userPkg.add_users(config_obj)
     if err is not None:
@@ -69,7 +72,10 @@ def delete():
     Specify the users in dtaas.toml [users].delete\n
     """
 
-    config_obj = configPkg.Config()
+    try:
+        config_obj = configPkg.Config()
+    except RuntimeError as exc:
+        raise click.ClickException(str(exc)) from exc
 
     err = userPkg.delete_user(config_obj)
     if err is not None:
