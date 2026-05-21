@@ -53,9 +53,9 @@ env:
   username: ${{ secrets.DOCKERHUB_USERNAME }}
   dockerhub_scope: ${{ secrets.DOCKERHUB_SCOPE }}
   password: ${{ secrets.DOCKERHUB_TOKEN }}
-  IMAGE_REPOSITORY: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}"
-  IMAGE_BASE: "${{ env.IMAGE_REPOSITORY }}/${{ inputs.image-name }}"
-  IMAGE_TAG: "${{ env.IMAGE_BASE }}:${{ inputs.version }}"
+  IMAGE_BASE: docker.io/${{ secrets.DOCKERHUB_SCOPE }}/${{ inputs.image-name }}
+  IMAGE_TAG: "docker.io/${{ secrets.DOCKERHUB_SCOPE }}/\
+    ${{ inputs.image-name }}:${{ inputs.version }}"
 
 jobs:
   build-and-push-image:
@@ -113,7 +113,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           context: .
-          file: ./docker/${{ inputs.dockerfile }}
+          file: ./developer/${{ inputs.dockerfile }}
           push: true
           tags: |
             ${{ env.IMAGE_BASE }}:${{ inputs.version }}

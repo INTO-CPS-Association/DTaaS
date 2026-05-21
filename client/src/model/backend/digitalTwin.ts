@@ -1,4 +1,4 @@
-import { getAuthority } from 'util/envUtil';
+import getAuthority from 'model/backend/util/env';
 import {
   getGroupName,
   getDTDirectory,

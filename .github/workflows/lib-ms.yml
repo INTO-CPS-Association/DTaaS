@@ -4,11 +4,13 @@ name: Library microservice
   push:
     paths:
       - 'servers/lib/**'
-      - '.github/workflows/lib-ms.yml'
   pull_request:
     paths:
       - 'servers/lib/**'
+      - 'developer/libms.dockerfile'
+      - 'developer/config/libms.dev.yaml.example'
       - '.github/workflows/lib-ms.yml'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 concurrency:
@@ -29,7 +31,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: &job_timeout 30
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: servers/lib
@@ -80,7 +82,7 @@ jobs:
 
       - name: Update configuration
         env:
-          LIBMS_LOCAL_PATH: ${{ github.workspace }}/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
           node test/update-config.js
@@ -121,7 +123,7 @@ jobs:
       - name: Run http test
         env:
           PORT: ${{ env.HTTP_PORT }}
-          LOCAL_PATH: ${{ github.workspace }}/files
+          LOCAL_PATH: ${{ github.workspace }}/developer/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib
@@ -132,12 +134,21 @@ jobs:
         run: |
           yarn stop:pm2
 
+  build-docker-image:
+    name: Build Docker image
+    permissions:
+      contents: read
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: libms
+      dockerfile: libms.dockerfile
+
   get-version:
     permissions:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
-    timeout-minutes: *job_timeout
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         # v6.0.1

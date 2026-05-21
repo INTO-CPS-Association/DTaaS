@@ -11,7 +11,7 @@ export function cleanURL(url: string): string {
 
 /**
  * Injects the `username` into the `baseURL` and `endpoint` to create a link.
- * @param baseURL Example `https://foo.com` Any leading or trailing slashes will be removed.
+ * @param baseURL Example `https://intocps.org` Any leading or trailing slashes will be removed.
  * @param endpoint (optional). Example `bar` Any leading or trailing slashes will be removed.
  * @returns a complete URL: `baseUrl` / `username` / `endpoint`
  */
@@ -23,19 +23,19 @@ const useUserLink = (baseURL: string, endpoint?: string): string => {
 };
 
 export function useURLforDT(): string {
-  return useUserLink(useAppURL(), window.env.REACT_APP_URL_DTLINK);
+  return useUserLink(useAppURL(), globalThis.env.REACT_APP_URL_DTLINK);
 }
 
 export function useURLbasename(): string {
-  return cleanURL(window.env.REACT_APP_URL_BASENAME);
+  return cleanURL(globalThis.env.REACT_APP_URL_BASENAME);
 }
 
 export function useURLforLIB(): string {
-  return useUserLink(useAppURL(), window.env.REACT_APP_URL_LIBLINK);
+  return useUserLink(useAppURL(), globalThis.env.REACT_APP_URL_LIBLINK);
 }
 
 export function useAppURL(): string {
-  return `${cleanURL(window.env.REACT_APP_URL)}/${useURLbasename()}`;
+  return `${cleanURL(globalThis.env.REACT_APP_URL)}/${useURLbasename()}`;
 }
 
 export interface KeyLinkPair {
@@ -89,10 +89,10 @@ export function useWorkbenchLinkValues(): KeyLinkPair[] {
   });
 
   const prefix = 'REACT_APP_WORKBENCHLINK_';
-  Object.keys(window.env)
+  Object.keys(globalThis.env)
     .filter((key) => key.startsWith(prefix))
     .forEach((key) => {
-      const value = window.env[key];
+      const value = globalThis.env[key];
       if (value !== undefined) {
         const keyWithoutPrefix = key.slice(prefix.length);
         if (
@@ -115,21 +115,19 @@ export function useGetDTPagePreviewLink(): string {
 }
 
 export function getClientID(): string {
-  return window.env.REACT_APP_CLIENT_ID;
+  return globalThis.env.REACT_APP_CLIENT_ID;
 }
 
-export function getAuthority(): string {
-  return window.env.REACT_APP_AUTH_AUTHORITY;
-}
+export { default as getAuthority } from 'model/backend/util/env';
 
 export function getRedirectURI(): string {
-  return window.env.REACT_APP_REDIRECT_URI;
+  return globalThis.env.REACT_APP_REDIRECT_URI;
 }
 
 export function getLogoutRedirectURI(): string {
-  return window.env.REACT_APP_LOGOUT_REDIRECT_URI;
+  return globalThis.env.REACT_APP_LOGOUT_REDIRECT_URI;
 }
 
 export function getGitLabScopes(): string {
-  return window.env.REACT_APP_GITLAB_SCOPES;
+  return globalThis.env.REACT_APP_GITLAB_SCOPES;
 }

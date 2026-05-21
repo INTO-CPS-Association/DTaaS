@@ -20,8 +20,8 @@ A more detailed C4 architectural representation is
 
 Two complementary authorization patterns are in active use:
 
-- GitLab-centered OAuth flows for DTaaS package scenarios.
-- Keycloak-centered OIDC flows for secure workspace scenarios.
+- GitLab-centred OAuth flows for DTaaS package scenarios.
+- Keycloak-centred OIDC flows for secure workspace scenarios.
 
 Route protection and gateway mediation are managed through Traefik and
 forward-auth patterns.

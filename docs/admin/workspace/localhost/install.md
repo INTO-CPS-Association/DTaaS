@@ -1,8 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
-
 ## 🛠️ Install
 
 The installation instructions provided in this README are
@@ -10,6 +8,10 @@ ideal for running the **DTaaS on localhost served over HTTP connection**.
 
 ✅ This installation is ideal for single users intending to use
 DTaaS on their own computers.
+
+Download **workspace-dex-localhost-xx.zip** from the latest
+[release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
+page.
 
 ## 🏗️ Design
 

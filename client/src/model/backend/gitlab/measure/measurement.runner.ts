@@ -52,7 +52,7 @@ function createTaskUpdater(
 async function persistTaskResult(task: TimedTask): Promise<void> {
   if (!measurementDB) return;
   try {
-    await measurementDB.add({
+    const record: TimedTask = {
       'Task Name': task['Task Name'],
       Description: task.Description,
       Trials: task.Trials,
@@ -61,7 +61,8 @@ async function persistTaskResult(task: TimedTask): Promise<void> {
       'Average Time (s)': task['Average Time (s)'],
       Status: task.Status,
       ExpectedTrials: task.ExpectedTrials,
-    } as TimedTask);
+    };
+    await measurementDB.add(record);
   } catch {
     // ignore
   }
@@ -138,7 +139,7 @@ function markPendingTasks(
   proxy.setResults((previous) =>
     previous.map((task) =>
       task.Status === 'NOT_STARTED' && !disabledNames.has(task['Task Name'])
-        ? { ...task, Status: 'PENDING' as Status }
+        ? { ...task, Status: 'PENDING' satisfies Status }
         : task,
     ),
   );
@@ -203,7 +204,7 @@ export async function stopAllPipelines(): Promise<void> {
   proxy.setResults((previous) =>
     previous.map((task) =>
       task.Status === 'PENDING' || task.Status === 'RUNNING'
-        ? { ...task, Status: 'STOPPED' as Status }
+        ? { ...task, Status: 'STOPPED' satisfies Status }
         : task,
     ),
   );

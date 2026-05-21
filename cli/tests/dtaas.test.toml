@@ -20,13 +20,13 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.foo.com"
+email = "username1@gitlab.intocps.org"
 
 [users.username2]
-email = "username2@gitlab.foo.com"
+email = "username2@gitlab.intocps.org"
 
 [users.username3]
-email = "username3@gitlab.foo.com"
+email = "username3@gitlab.intocps.org"
 
 [client.web]
 config = "/home/Desktop/DTaaS/env.local.js"

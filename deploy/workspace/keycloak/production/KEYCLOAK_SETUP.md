@@ -181,6 +181,7 @@ docker compose up -d
 To use an external Keycloak instance (recommended for production):
 
 1. Update `KEYCLOAK_ISSUER_URL` in `.env`:
+
    ```bash
    KEYCLOAK_ISSUER_URL=https://keycloak.intocps.org/auth/realms/dtaas
    ```

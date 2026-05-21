@@ -56,7 +56,7 @@ chosen runner scope, follow the steps given below:
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Instance Runner   | 1. On the __Admin__ dashboard, navigate to __CI/CD > Runners__.<br>2. Select __New instance runner__.                                                                                                                                                           |
 | Group Runner      | 1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__. |
-| Project Runner    | 1. On the __DTaaS__ group page, select the project named after the GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.                                                                                     |
+| Project Runner    | 1. On the __DTaaS__ group page, select the project named after the GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.                                                                                      |
 
 For any chosen scope, a page to create a runner will be displayed:
 

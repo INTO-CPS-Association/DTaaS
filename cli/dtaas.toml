@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.4"
+version = "0.3.0"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -10,7 +10,8 @@ git-repo = "https://github.com/into-cps-association/DTaaS.git"
 server-dns = "localhost"
 # Specify the directory of DTaaS installation
 # Linux example
-path = "/home/Desktop/DTaaS"
+# "REPLACE_WITH_ABSOLUTE_PATH_TO_DTAAS"
+path = "/home/XXX/DTaaS"
 # Windows example
 #path = "C:\\Users\\XXX\\DTaaS"
 # Note: You have to either use / or \\ when specifying path, else you would get
@@ -34,13 +35,13 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.foo.com"
+email = "username1@gitlab.intocps.org"
 
 [users.username2]
-email = "username2@gitlab.foo.com"
+email = "username2@gitlab.intocps.org"
 
 [users.username3]
-email = "username3@gitlab.foo.com"
+email = "username3@gitlab.intocps.org"
 
 [client.web]
-config = "/home/Desktop/DTaaS/env.local.js"
+config = "/home/XXX/DTaaS/env.local.js"

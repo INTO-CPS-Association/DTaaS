@@ -74,7 +74,7 @@ def test_add_users_to_compose(mock_utils):
     """Test addUsersToCompose with resources"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
     config = {
-        "server": "foo.com",
+        "server": "intocps.org",
         "path": "/test",
         "resources": resources,
         "tls": False,
@@ -99,8 +99,8 @@ def test_add_users_to_compose_config_error():
 @pytest.mark.parametrize(
     "server,tls,file",
     [
-        ("foo.com", False, "users.server.yml"),
-        ("foo.com", True, "users.server.secure.yml"),
+        ("intocps.org", False, "users.server.yml"),
+        ("intocps.org", True, "users.server.secure.yml"),
     ],
 )
 def test_get_compose_config(mock_utils, server, tls, file):
@@ -174,7 +174,9 @@ def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error
     assert (err is not None) if export_error else err is None
 
 
-def test_delete_user_skips_nonexistent(mock_config, mock_utils, mock_user_operations, capsys):
+def test_delete_user_skips_nonexistent(
+    mock_config, mock_utils, mock_user_operations, capsys
+):
     """Test delete_user skips users not present in compose services"""
     compose = {"version": "3", "services": {"user1": {}}}
     mock_config.get_delete_users_list.return_value = (["user1", "ghost"], None)

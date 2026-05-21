@@ -10,6 +10,7 @@ import {
   setSecondaryRunnerTag,
 } from 'store/settings.slice';
 import { showSnackbar } from 'store/snackbar.slice';
+import { setEnvironmentStore } from 'model/backend/util/env';
 import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 import { setMeasurementStore } from 'model/backend/gitlab/measure/measurement.execution';
 import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
@@ -51,6 +52,7 @@ const store = configureStore({
 });
 
 // Dependency injection: wire store and services into model modules
+setEnvironmentStore(store);
 setSettingsStore(store);
 setMeasurementStore({
   getState: store.getState,

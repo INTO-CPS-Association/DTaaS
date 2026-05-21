@@ -99,7 +99,7 @@ Files in `dtaas_services/pkg/` provide reusable logic:
 
 ### Service Modules Layer
 
-`dtaas_services/pkg/services/` implements service-specific behavior:
+`dtaas_services/pkg/services/` implements service-specific behaviour:
 
 - `gitlab/`: health checks, root password setup, PAT creation, OAuth app setup,
   and GitLab user provisioning.
@@ -111,7 +111,7 @@ Files in `dtaas_services/pkg/` provide reusable logic:
 
 Generated projects are driven by:
 
-- `config/services.env`: ports, hostnames, SSL behavior, service credentials.
+- `config/services.env`: ports, hostnames, SSL behaviour, service credentials.
 - `config/credentials.csv`: user list (`username,password,email`).
 - TLS certificates copied into generated `certs/` layout.
 
@@ -151,7 +151,7 @@ poetry run pytest
 ## Contributor Notes
 
 - Keep command modules thin and push business logic into `pkg/`.
-- Add service-specific behavior in `pkg/services/<service>/` or peer modules,
+- Add service-specific behaviour in `pkg/services/<service>/` or peer modules,
   not in generic command handlers.
 - Preserve CLI ergonomics: commands should return actionable messages and avoid
   partial side effects without clear status output.

@@ -8,28 +8,28 @@ DTaaS on their own computers.
 
 Two installation scenarios are available:
 
-| Scenario | Auth Provider | External Account Required |
-| :------- | :------------ | :------------------------ |
-| [DTaaS Localhost](#1-globe_with_meridians-dtaas-localhost) | GitLab OAuth | Yes (gitlab.com) |
-| [Workspace Localhost](#2-shield-workspace-localhost) | Dex (local) | No |
+| Scenario                                                   | Auth Provider | External Account Required |
+| :--------------------------------------------------------- | :------------ | :------------------------ |
+| [DTaaS Localhost](#1-globe_with_meridians-dtaas-localhost) | GitLab OAuth  | Yes (gitlab.com)          |
+| [Workspace Localhost](#2-shield-workspace-localhost)       | Dex (local)   | No                        |
 
 ## :clipboard: Requirements
 
 - Docker Desktop or Docker Engine with Compose plugin
 - [Portainer Community Edition](https://portainer.io) (setup below)
 
-## :file_folder: Clone Codebase
+## :file_folder: Download Packages
 
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd DTaaS
-```
+Download the required packages:
+
+1. **dtaas-localhost-xx.zip** for DTaaS localhost installation, or
+1. **workspace-dex-localhost-xx.zip** for Workspace localhost installation
 
 !!! tip
     The guide uses Linux-style paths such as `/Users/username/DTaaS`.
     On Windows use an equivalent path, for example `C:\DTaaS`.
 
-## :whale: Starting Portainer
+## :whale: Start Portainer
 
 [Portainer Community Edition](https://portainer.io) provides a graphical
 interface for managing Docker containers at `https://localhost:9443`.
@@ -58,7 +58,9 @@ to create an administrator account.
 
 ## 1. :globe_with_meridians: DTaaS Localhost
 
-This scenario uses **GitLab OAuth** for authentication.
+Unzip **dtaas-localhost-xx.zip** package. It contains required
+installation files.
+This installation scenario uses **GitLab OAuth** for authentication.
 A GitLab account on <https://gitlab.com> is required.
 
 ![DTaaS Localhost](localhost.png)
@@ -67,7 +69,7 @@ A GitLab account on <https://gitlab.com> is required.
 
 #### 1.2 Create Configuration Files
 
-Navigate to `deploy/dtaas/docker/localhost` and copy the example files:
+Copy the example files:
 
 ```bash
 cp config/.env.example config/.env
@@ -78,20 +80,23 @@ cp config/client.js.example config/client.js
 
 Edit `config/.env`:
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `USERNAME` | `user1` | Workspace path prefix and folder name |
-| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
+| Variable               | Example | Description                           |
+| :--------------------- | :------ | :------------------------------------ |
+| `USERNAME`             | `user1` | Workspace path prefix and folder name |
+| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name           |
 
 #### 1.4 Client Configuration
 
-Edit `config/client.js` and set the OAuth application credentials
-from the GitLab account:
+This is an optional step. If a dedicated OAuth 2.0 application
+is required for the localhost installation, follow these
+[steps](../../client/auth.md). Upon successful creation of the OAuth
+application, edit `config/client.js` and set the OAuth application
+credentials from the GitLab account:
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `REACT_APP_CLIENT_ID` | _(OAuth app id)_ | GitLab OAuth application ID |
-| `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com/` | OAuth authority URL |
+| Variable                   | Example               | Description                 |
+| :------------------------- | :-------------------- | :-------------------------- |
+| `REACT_APP_CLIENT_ID`      | _(OAuth app id)_      | GitLab OAuth application ID |
+| `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com/` | OAuth authority URL         |
 
 <!-- markdownlint-disable MD046 -->
 !!! tip
@@ -115,9 +120,8 @@ sudo chown -R 1000:100 files/*
 1. Navigate to **Stacks** and click **Add Stack**.
 1. Name the stack, for example `dtaas-localhost`.
 1. Select the **Upload** build method.
-1. Upload the compose file at
-   `deploy/dtaas/docker/localhost/docker-compose.yml`.
-1. Load the environment file `deploy/dtaas/docker/localhost/config/.env`.
+1. Upload the compose file (`docker-compose.yml`).
+1. Load the environment file (`config/.env`).
 
 !!! tip
     If the `.env` file is not visible, select **All Files** in the
@@ -142,6 +146,9 @@ backend forward-auth are not included in this scenario.
 
 ## 2. :shield: Workspace Localhost
 
+Unzip **workspace-dex-localhost-xx.zip** package.
+It contains required installation files.
+
 This scenario uses **Dex** as a local identity provider.
 No external account is required; default credentials are provided.
 
@@ -149,8 +156,7 @@ No external account is required; default credentials are provided.
 
 ### 2.1 Configuration
 
-Navigate to `deploy/workspace/dex/localhost` and copy the
-example files:
+Copy the example files:
 
 ```bash
 cp .env.example .env
@@ -161,10 +167,10 @@ cp config/dex-config.yaml.example config/dex-config.yaml
 
 Edit `.env`:
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
-| `DEFAULT_USER` | `user` | Default user login profile for Dex |
+| Variable               | Example | Description                        |
+| :--------------------- | :------ | :--------------------------------- |
+| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name        |
+| `DEFAULT_USER`         | `user`  | Default user login profile for Dex |
 
 <!-- markdownlint-disable MD046 -->
 !!! tip
@@ -177,9 +183,8 @@ Edit `.env`:
 1. Navigate to **Stacks** and click **Add Stack**.
 1. Name the stack, for example `workspace-localhost`.
 1. Select the **Upload** build method.
-1. Upload the compose file at
-   `deploy/workspace/dex/localhost/docker-compose.yml`.
-1. Load the environment file `deploy/workspace/dex/localhost/.env`.
+1. Upload the compose file (`docker-compose.yml`).
+1. Load the environment file (`.env`).
 
 Click **Deploy the stack**.
 
@@ -195,7 +200,8 @@ Sign in using the default Dex credentials:
 
 - The [library microservice](../../servers/lib/docker.md) is not
   included in this scenario.
-- DevOps features are not available.
+- [DevOps features](../../../user/digital-twins/devops/capabilities.md)
+  are not available.
 - See [custom user instructions](../../workspace/localhost/custom-user.md)
   for changing the default credentials.
 

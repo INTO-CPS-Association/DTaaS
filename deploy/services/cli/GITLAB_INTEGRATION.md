@@ -14,8 +14,8 @@ Traefik Forward Auth backend authorisation.
 > scheme. This is a
 > [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
 > and forces us to use `HTTPS` for the DTaaS server. This means the server
-> should be set up to use either <https://localhost> or <https://foo.com>. This
-> guide will henceforth use `foo.com` to represent either localhost or a custom
+> should be set up to use <https://intocps.org>. This
+> guide will henceforth use `intocps.org` to represent either localhost or a custom
 > domain.
 
 ## Integration Steps
@@ -23,8 +23,8 @@ Traefik Forward Auth backend authorisation.
 ### 1. Set up the DTaaS server over HTTPS
 
 Follow the [existing guide](../../docker/README.md)
-to set up the DTaaS web application over HTTPS connection on either
-localhost (<https://localhost>) or a custom domain (<https://foo.com>).
+to set up the DTaaS web application over HTTPS connection on
+a custom domain (<https://intocps.org>).
 
 > [!NOTE]
 > Steps related to configuring OAuth application tokens
@@ -37,10 +37,10 @@ localhost (<https://localhost>) or a custom domain (<https://foo.com>).
 Follow the guide to set up a GitLab instance -
 [README](./README.md).
 
-After this step, and once `gitlab-ctl reconfigure` has been run, a
-functioning GitLab instance will be accessible over HTTPS on the configured port,
-at `https://localhost:${GITLAB_PORT}/gitlab` (localhost) or
-`https://foo.com:${GITLAB_PORT}/gitlab` (custom domain, default port 8090).
+A functioning GitLab instance will be accessible over HTTPS on
+the configured port, at
+`https://localhost:${GITLAB_PORT}/gitlab` (localhost) or
+`https://intocps.org:${GITLAB_PORT}/gitlab` (custom domain, default port 8090).
 GitLab is served directly from its own container — it is **not** proxied
 through Traefik. Login credentials of the root user.
 
@@ -53,8 +53,8 @@ Follow these guides to create OAuth Application Tokens for -
 for <https://localhost> installation.
 
 After this step the credentials for the application tokens titled
-"DTaaS Server Authorization" and "DTaaS Client Authorization" will be available,
-for use in the next step.
+**DTaaS Server Authorization** and **DTaaS Client Authorization**
+will be available, for use in the next step.
 
 ### 4. Use Valid Oauth Application Tokens
 
@@ -65,52 +65,20 @@ If the DTaaS application is hosted at <https://localhost>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in
-   _deploy/config/client/env.local.js_.
-1. _deploy/docker/.env.local_ Add localpath and username.
 
-If the DTaaS application is hosted at <https://foo.com/>, then configure
+If the DTaaS application is hosted at <https://intocps.org/>, then configure
 the following files:
 
 1. **DTaaS Client Authorization** token in
-   _deploy/config/client/env.js_.
-1. _deploy/docker/.env.server_ - Add  localpath and username,
+   _deploy/dtaas/docker/<installation-type/config/client.js_.
+1. _deploy/dtaas/docker/<installation-type/config/.env_ - Add usernames,
    OAuth client ID and client secret from the
    **DTaaS Server Authorization** token
 
 ## Restart Services
 
-### Localhost Installation
-
-The updated OAuth application configuration needs to be loaded into
-the **client website** service.
-
-```sh
-cd deploy/docker
-docker compose -f compose.local.yml --env-file .env.local up -d --force-recreate client
-```
-
-### Production Server Installation
-
-The updated OAuth application configuration needs to be loaded into
-the **client website** and the **forward-auth** services.
-
-The production server can be installed with either **http**
-or **https** option.
-If it is installed with **http** option, run the following commands.
-
-```sh
-cd deploy/docker
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate client
-docker compose -f compose.server.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
-```
-
-If the production server is installed with **https** option,
-run the following commands.
-
-```sh
-cd deploy/docker
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate client
-docker compose -f compose.server.secure.yml --env-file .env.server up -d --force-recreate traefik-forward-auth
+```bash
+docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
 ```
 
 ## Post Setup Usage
@@ -118,7 +86,7 @@ docker compose -f compose.server.secure.yml --env-file .env.server up -d --force
 If everything has been set up correctly:
 
 1. A functioning GitLab instance will be available at
-   `https://foo.com:${GITLAB_PORT}/gitlab` (default port `8090`) that you
+   `https://intocps.org:${GITLAB_PORT}/gitlab` (default port `8090`) that you
    may use in a similar manner to [https://gitlab.com](https://gitlab.com).
    GitLab is served directly via its own HTTPS port — it is not routed
    through Traefik.
@@ -127,6 +95,6 @@ If everything has been set up correctly:
    _deploy/services/cli/data/gitlab_, _deploy/services/cli/config/gitlab_,
    and _deploy/services/cli/log/gitlab_.
 1. Traefik Forward Auth can be configured to use this GitLab instance
-   for authorisation on the multi-user installation scenario (`foo.com`)
-   by pointing it at `https://foo.com:${GITLAB_PORT}/gitlab`
+   for authorisation on the multi-user installation scenario (`intocps.org`)
+   by pointing it at `https://intocps.org:${GITLAB_PORT}/gitlab`
    (not applicable for `localhost`).

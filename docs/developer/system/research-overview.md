@@ -162,7 +162,7 @@ When implementing or reviewing DTaaS changes:
 1. Map the change to one of the concern areas above (architecture,
    lifecycle, DevOps/federation, domain application, monitoring).
 1. Verify the change preserves intended lifecycle and composability
-   behavior.
+   behaviour.
 1. Check whether the change shifts architecture boundaries
    (gateway/auth, execution manager, reusable-asset layer,
    workspace isolation).
@@ -174,7 +174,7 @@ Common anti-patterns to avoid:
   expects heterogeneity.
 - Collapsing layered responsibilities into UI code for short-term
   convenience.
-- Treating DevOps and federation behavior as optional integration
+- Treating DevOps and federation behaviour as optional integration
   noise.
 
 ## :page_facing_up: References

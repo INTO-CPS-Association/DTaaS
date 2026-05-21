@@ -13,10 +13,10 @@ Source: `config/.env.example`
 cp config/.env.example config/.env
 ```
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `DEFAULT_USER` | `user1` | Workspace path prefix and workspace folder name |
-| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
+| Variable               | Example | Description                                     |
+| :--------------------- | :------ | :---------------------------------------------- |
+| `DEFAULT_USER`         | `user1` | Workspace path prefix and workspace folder name |
+| `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name                     |
 
 The `DEFAULT_USER` value is used in:
 
@@ -32,13 +32,13 @@ Source: `config/client.js.example`
 cp config/client.js.example config/client.js
 ```
 
-| Variable | Example | Description |
-| :--- | :--- | :--- |
-| `REACT_APP_URL` | `http://localhost` | Base URL of DTaaS |
-| `REACT_APP_CLIENT_ID` | _(OAuth client id)_ | Client OAuth application ID |
-| `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com/` | OAuth authority URL |
-| `REACT_APP_REDIRECT_URI` | `http://localhost/Library` | Redirect URI after sign-in |
-| `REACT_APP_LOGOUT_REDIRECT_URI` | `http://localhost/` | Redirect URI after sign-out |
+| Variable                        | Example                    | Description                 |
+| :------------------------------ | :------------------------- | :-------------------------- |
+| `REACT_APP_URL`                 | `http://localhost`         | Base URL of DTaaS           |
+| `REACT_APP_CLIENT_ID`           | _(OAuth client id)_        | Client OAuth application ID |
+| `REACT_APP_AUTH_AUTHORITY`      | `https://gitlab.com/`      | OAuth authority URL         |
+| `REACT_APP_REDIRECT_URI`        | `http://localhost/Library` | Redirect URI after sign-in  |
+| `REACT_APP_LOGOUT_REDIRECT_URI` | `http://localhost/`        | Redirect URI after sign-out |
 
 ## files/
 

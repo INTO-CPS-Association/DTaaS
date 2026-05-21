@@ -43,6 +43,15 @@ export const createResultTask = (
   Status: status,
 });
 
+export const createRunnerStubs = () => ({
+  startMeasurement: jest.fn(),
+  stopAllPipelines: jest.fn(),
+  restartMeasurement: jest.fn(),
+  handleBeforeUnload: jest.fn(),
+  handleUnload: jest.fn(),
+  purgeMeasurementData: jest.fn(),
+});
+
 export function setupMeasurementComponentTest() {
   const mockDispatch = jest.fn();
 

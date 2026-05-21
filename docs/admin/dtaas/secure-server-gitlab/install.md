@@ -1,9 +1,16 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
+This README provides a quick-start installation guide
+for
+a **secure, multi-user DTaaS deployment** that uses
+an **integrated GitLab instance** for OAuth 2.0 authorisation.
 
-This README provides a quick-start installation guide. For detailed
+Download **dtaas-secure-server-integrated-gitlab-xx.zip** from the latest
+[release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
+page.
+
+For detailed
 configuration reference, see [config.md](config.md).
 
 > [!IMPORTANT]
@@ -21,21 +28,21 @@ authorisation provider and the DevOps backend for digital twin projects.
 
 The `docker-compose.yml` starts the following services:
 
-| Service | Purpose |
-| :--- | :--- |
-| **traefik** | Reverse proxy with TLS termination |
-| **client** | DTaaS React frontend |
-| **user1 / user2** | JupyterLab user workspaces |
-| **libms** | Library management microservice |
-| **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
-| **gitlab** | Integrated GitLab CE (OAuth 2.0 provider) |
+| Service                  | Purpose                                   |
+| :----------------------- | :---------------------------------------- |
+| **traefik**              | Reverse proxy with TLS termination        |
+| **client**               | DTaaS React frontend                      |
+| **user1 / user2**        | JupyterLab user workspaces                |
+| **libms**                | Library management microservice           |
+| **traefik-forward-auth** | OAuth 2.0 authorisation middleware        |
+| **gitlab**               | Integrated GitLab CE (OAuth 2.0 provider) |
 
 ## :clipboard: Prerequisites
 
-| Requirement | Details |
-| :--- | :--- |
-| **Docker Engine** | v28 or later with Compose plugin |
-| **Domain name** | A domain name (e.g. `intocps.org`) or IP address |
+| Requirement         | Details                                                                                                                    |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------- |
+| **Docker Engine**   | v28 or later with Compose plugin                                                                                           |
+| **Domain name**     | A domain name (e.g. `intocps.org`) or IP address                                                                           |
 | **TLS certificate** | `fullchain.pem` and `privkey.pem` for the domain. Obtain via [certbot](https://certbot.eff.org/) or a certificate provider |
 
 ## :rocket: Quick Start
@@ -124,12 +131,12 @@ Once the GitLab container shows as `healthy`:
 
 ### 6. Verify :white_check_mark:
 
-| URL | Expected result |
-| :--- | :--- |
-| `https://intocps.org` | DTaaS web interface (redirects to GitLab sign-in) |
-| `https://intocps.org/gitlab` | Integrated GitLab instance |
-| `https://intocps.org/user1` | User 1 workspace (after sign-in) |
-| `https://intocps.org/user2` | User 2 workspace (after sign-in) |
+| URL                          | Expected result                                   |
+| :--------------------------- | :------------------------------------------------ |
+| `https://intocps.org`        | DTaaS web interface (redirects to GitLab sign-in) |
+| `https://intocps.org/gitlab` | Integrated GitLab instance                        |
+| `https://intocps.org/user1`  | User 1 workspace (after sign-in)                  |
+| `https://intocps.org/user2`  | User 2 workspace (after sign-in)                  |
 
 ## :stop_sign: Stop
 
@@ -151,7 +158,7 @@ docker compose --env-file config/.env down
 ├── data/                  # GitLab persistent data (/var/opt/gitlab)
 ├── files/
 │   ├── common/            # Shared files across all workspaces
-|  \- template/           # sample user workspace files
+| \- template/           # sample user workspace files |
 ├── logs/                  # GitLab logs (/var/log/gitlab)
 ├── docker-compose.yml     # Service definitions
 ├── CONFIG.md              # Detailed configuration reference

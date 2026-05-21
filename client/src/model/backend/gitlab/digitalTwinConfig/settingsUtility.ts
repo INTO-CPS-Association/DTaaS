@@ -1,5 +1,3 @@
-import type { RootState } from 'store/storeTypes';
-
 /**
  * Non-hook getters for settings stored in the Redux store.
  *
@@ -8,7 +6,15 @@ import type { RootState } from 'store/storeTypes';
  * - Settings can be overridden by the user in the Settings tab
  */
 
-type StoreReader = { getState: () => RootState };
+type SettingsState = {
+  GROUP_NAME: string;
+  DT_DIRECTORY: string;
+  COMMON_LIBRARY_PROJECT_NAME: string;
+  RUNNER_TAG: string;
+  BRANCH_NAME: string;
+};
+
+type StoreReader = { getState: () => { settings: SettingsState } };
 
 let _store: StoreReader | null = null;
 

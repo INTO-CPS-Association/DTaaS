@@ -79,6 +79,9 @@ const digitalTwinSlice = createSlice({
         digitalTwin.description = action.payload.description;
       }
     },
+    clearDigitalTwins: (state) => {
+      state.digitalTwin = {};
+    },
     setShouldFetchDigitalTwins: (state, action: PayloadAction<boolean>) => {
       state.shouldFetchDigitalTwins = action.payload;
     },
@@ -91,6 +94,7 @@ export const {
   setPipelineCompleted,
   setPipelineLoading,
   updateDescription,
+  clearDigitalTwins,
   setShouldFetchDigitalTwins,
 } = digitalTwinSlice.actions;
 

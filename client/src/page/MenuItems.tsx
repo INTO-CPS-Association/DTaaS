@@ -42,7 +42,7 @@ function MenuItems() {
         <Link to={item.link} style={tolinkStyle} key={item.index}>
           <ListItemButton
             style={
-              window.location.pathname === item.link
+              globalThis.location.pathname === item.link
                 ? { backgroundColor: 'lightgray' }
                 : undefined
             }

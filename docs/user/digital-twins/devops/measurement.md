@@ -7,7 +7,7 @@ future optimization.
 
 ## Accessing the Measurement Page
 
-Navigate to `http://localhost:4000/insight/measure` or `https://foo.com/insight/measure`
+Navigate to `http://localhost:4000/insight/measure` or `https://intocps.org/insight/measure`
 to access the measurement page. This page is only accessible to authenticated users.
 
 ![Measurement page](./images/measurement-page.png)
@@ -19,13 +19,13 @@ to access the measurement page. This page is only accessible to authenticated us
 The measurement suite includes the following tasks that measure different
 aspects of Digital Twin execution:
 
-| Task | Description |
-| ------ | ------------- |
-| Valid Setup Digital Twin Execution | Runs the primary Digital Twin with current setup |
-| Multiple Identical Digital Twins Simultaneously | Runs the primary Digital Twin twice at once |
-| Multiple different Digital Twins Simultaneously | Runs the primary and secondary Digital Twins at once |
-| Different Runners same Digital Twin | Runs the primary Digital Twin twice with 2 different runners |
-| Different Runners different Digital Twins | Runs the primary and secondary Digital Twins with 2 different runners |
+| Task                                            | Description                                                           |
+| ----------------------------------------------- | --------------------------------------------------------------------- |
+| Valid Setup Digital Twin Execution              | Runs the primary Digital Twin with current setup                      |
+| Multiple Identical Digital Twins Simultaneously | Runs the primary Digital Twin twice at once                           |
+| Multiple different Digital Twins Simultaneously | Runs the primary and secondary Digital Twins at once                  |
+| Different Runners same Digital Twin             | Runs the primary Digital Twin twice with 2 different runners          |
+| Different Runners different Digital Twins       | Runs the primary and secondary Digital Twins with 2 different runners |
 
 By default, the primary Digital Twin is `hello-world` and the secondary
 is `mass-spring-damper`. Both can be changed in the measurement settings.
@@ -35,12 +35,12 @@ is `mass-spring-damper`. Both can be changed in the measurement settings.
 ### Configuration Options
 
 Configuration is managed in the **Measurement Settings** section of
-your account settings page.
+the account settings page.
 
 - **Trial Number**: Number of times each task is repeated to calculate average
   execution time (default: 3). Adjust this for more or fewer data points.
 - **Measurement Secondary Runner Tag**: The runner tag used for multi-runner
-  measurement tests. The primary runner tag is configured separately in your
+  measurement tests. The primary runner tag is configured separately in the
   account settings.
 - **Primary Digital Twin Name**: The Digital Twin used in single-DT and
   same-DT measurement tasks (default: `hello-world`).
@@ -48,7 +48,7 @@ your account settings page.
   in multi-DT measurement tasks (default: `mass-spring-damper`).
 
 Note: the Primary and Secondary Digital Twin dropdowns need to load the
-available Digital Twins the first time you visit the settings page in a
+available Digital Twins the first time the settings page is visited in a
 session. They will appear disabled until loading completes.
 
   ![Showcase of the measurement specific settings](./images/measurement-settings.png)
@@ -66,13 +66,13 @@ session. They will appear disabled until loading completes.
 
 ### Status Values
 
-| Status | Meaning |
-| -------- | --------- |
-| PENDING | Task has not started yet |
-| RUNNING | Task is currently executing |
-| SUCCESS | All trials completed successfully |
-| FAILURE | One or more trials failed |
-| STOPPED | Task was interrupted by user |
+| Status   | Meaning                           |
+| -------- | --------------------------------- |
+| PENDING  | Task has not started yet          |
+| RUNNING  | Task is currently executing       |
+| SUCCESS  | All trials completed successfully |
+| FAILURE  | One or more trials failed         |
+| STOPPED  | Task was interrupted by user      |
 
 ### Metrics
 
@@ -83,13 +83,13 @@ session. They will appear disabled until loading completes.
 
 The measurement results table displays the following columns:
 
-| Column | Description |
-| ------ | ----------- |
-| Task | Task number, name, and description |
-| Status | Current execution status (NOT_STARTED, PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED) |
-| Average Duration | Mean execution time across all completed trials, displayed in seconds |
-| Trials | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
-| Data | Download button to export individual task results as JSON |
+| Column           | Description                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| Task             | Task number, name, and description                                                                              |
+| Status           | Current execution status (NOT_STARTED, PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED)                          |
+| Average Duration | Mean execution time across all completed trials, displayed in seconds                                           |
+| Trials           | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
+| Data             | Download button to export individual task results as JSON                                                       |
 
 Each row can be clicked to expand it and show a toggle alongside the
 task description. Disabling a task skips it during execution.
@@ -97,7 +97,7 @@ task description. Disabling a task skips it during execution.
 ## Data Storage
 
 Measurement data is stored separately from regular execution history
-in your browser's IndexedDB. This allows you to:
+in the browser's IndexedDB. This enables the following:
 
 - Keep measurements separate from normal DT execution logs
 - Purge measurement data without affecting execution history
@@ -163,7 +163,7 @@ The exported JSON follows the structure below:
 }
 ```
 
-## Timing Behavior
+## Timing Behaviour
 
 The measurement system uses deliberate delays of 750ms to avoid
 overloading the GitLab instance with simultaneous requests:
@@ -186,17 +186,18 @@ starts after its delay.
 1. **Run measurements during low-usage periods** to get consistent results
 2. **Use multiple iterations** (3-5) for more reliable averages
 3. **Ensure runners are available** before starting the measurement
-4. **You can navigate away** from the measurement page while it is running —
-   execution continues in the background. However, **changing the URL,
-   refreshing, or closing the tab will stop the measurement**. Notifications
-   will let you know when the measurement completes or is stopped.
+4. **Navigating away** from the measurement page while it is running is
+   permitted — execution continues in the background. However,
+   **changing the URL, refreshing, or closing the tab will stop the
+   measurement**. Notifications indicate when the measurement completes
+   or is stopped.
 
 ## Troubleshooting
 
-| Issue | Solution |
-| ------- | ---------- |
-| Task appears stuck, old pipelines appears | Reauthenticate the app by refreshing the tab |
-| Tasks time out | Verify runners are online, uses the tag and are accessible |
+| Issue                                     | Solution                                                   |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| Task appears stuck, old pipelines appears | Reauthenticate the app by refreshing the tab               |
+| Tasks time out                            | Verify runners are online, uses the tag and are accessible |
 
 ## Related Documentation
 

@@ -12,6 +12,30 @@ Follow the instructions in `developer/README.md` to spawn a localhost developmen
 instance of DTaaS. It is an end-to-end testing of the current codebase
 as it exists in the local git directory.
 
+## CI Dockerfile Validation
+
+Each pull request that modifies `client/**`, `servers/lib/**`, or
+the relevant Dockerfiles triggers an automated Docker build check.
+The check uses the reusable workflow
+`.github/workflows/docker-build.yml` and runs in parallel with
+the existing test jobs to avoid increasing build time.
+
+| Workflow | Dockerfile validated | Notes |
+| :--- | :--- | :--- |
+| `.github/workflows/client.yml` | `developer/client.dockerfile` | Full multi-stage build inside Docker |
+| `.github/workflows/client.yml` | `developer/client.built.dockerfile` | Validates the publish image Dockerfile |
+| `.github/workflows/lib-ms.yml` | `developer/libms.dockerfile` | Full multi-stage build inside Docker |
+
+The Docker build checks run on pull requests and also on pushes when
+`.github/workflows/client.yml` or `.github/workflows/lib-ms.yml` is
+triggered by changes to the source code directories (`client/**` or
+`servers/lib/**`).
+
+On pushes to `feature/*` or `release-v*` branches, the publish jobs
+are triggered by changes to the source code directories (`client/**`,
+`servers/lib/**`) to avoid inadvertently re-publishing an already
+published package version when only a Dockerfile is updated.
+
 ## Publish Docker Images
 
 Build and publish the docker images. This step is required only for
@@ -38,17 +62,17 @@ The regular users are encouraged to use the packages from npm and docker.
 
 A brief explanation of the packages is given below.
 
-| Package Name | Description | Availability |
-| :---- | :---- | :---- |
-| dtaas-web | React web application | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
-| libms |Library microservice | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
-| | | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |
-| runner | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |
+| Package Name | Description                                    | Availability                                                                                                                                    |
+| :----------- | :--------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| dtaas-web    | React web application                          | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web)   |
+| libms        | Library microservice                           | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms)   |
+|              |                                                | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms)           |
+| runner       | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |
 
 ### React Website
 
 ```sh
-docker build -t intocps/dtaas-web:latest -f ./docker/client.built.dockerfile .
+docker build -t intocps/dtaas-web:latest -f ./developer/client.built.dockerfile .
 docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
 docker push intocps/dtaas-web:latest
 docker push intocps/dtaas-web:<version>
@@ -75,10 +99,10 @@ This argument helps pick the right package version from <http://npmjs.com>.
 
 ```sh
 docker login -u <username> -p <password>
-docker build -t intocps/libms:latest -f ./docker/libms.npm.dockerfile .
+docker build -t intocps/libms:latest -f ./developer/libms.npm.dockerfile .
 docker push intocps/libms:latest
 docker build --build-arg="VERSION=<version>" \
-  -t intocps/libms:<version> -f ./docker/libms.npm.dockerfile .
+  -t intocps/libms:<version> -f ./developer/libms.npm.dockerfile .
 docker push intocps/libms:<version>
 ```
 
@@ -86,7 +110,7 @@ To tag version 0.3.1 for example, use
 
 ```sh
 docker build --build-arg="VERSION=0.3.1" \
-  -t intocps/libms:0.3.1 -f ./docker/libms.npm.dockerfile .
+  -t intocps/libms:0.3.1 -f ./developer/libms.npm.dockerfile .
 ```
 
 To test the library microservice on localhost, please use

@@ -29,7 +29,7 @@ Primary implementation lives in `client/src/model/backend/`:
 ## Architectural Roles
 
 The implementation keeps a clear split between context, API access, and DT
-domain behavior.
+domain behaviour.
 
 - `GitlabAPI` handles direct GitLab REST operations via `@gitbeaker/rest`
   (files, pipelines, groups/projects, jobs, logs, multi-action commits).
@@ -71,7 +71,7 @@ The `BackendAPI` contract includes:
 - group/project discovery,
 - multi-action commit support (`commitMultipleActions`).
 
-When extending DevOps behavior, update interface contracts first, then concrete
+When extending DevOps behaviour, update interface contracts first, then concrete
 GitLab implementation and call sites.
 
 ## Contributor Guidance

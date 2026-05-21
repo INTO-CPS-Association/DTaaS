@@ -29,7 +29,7 @@ The Group Name denotes the highest level of organizational abstraction
 concerned with on the storage service, namely Groups. A
 GitLab group is required to use the DTaaS. Within the group, projects
 reside, which must match the usernames of system users. More information about
-the [file organization](../digital-twins/devops/file-structure.md) is available.
+the [file organisation](../digital-twins/devops/file-structure.md) is available.
 This parameter must be set to the case-insensitive name of the group.
 
 **Default**: DTaaS

@@ -82,7 +82,7 @@ has the following template:
 ```toml
 [[runners]]
   name = "dtaas-runner-1"
-  url = "https://foo.com/gitlab/" # Edit this
+  url = "https://intocps.org/gitlab/" # Edit this
   token = "xxx" # Edit this
   executor = "docker"
   [runners.docker]

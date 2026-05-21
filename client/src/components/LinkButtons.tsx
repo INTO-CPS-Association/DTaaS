@@ -68,7 +68,7 @@ interface LinkButtonProps {
             <IconLabel>
               <IconButton
                 onClick={() => {
-                  window.open(button.link, '_blank');
+                  globalThis.open(button.link, '_blank');
                 }}
                 role="link"
                 {...(button.name !== 'ToolbarIcon' && {

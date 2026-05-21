@@ -17,6 +17,7 @@ import {
   setBranchName,
 } from 'store/settings.slice';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import { clearDigitalTwins } from 'model/backend/state/digitalTwin.slice';
 import setupSettingsFormTest from './settingsForm.testSetup';
 
 jest.mock('routes', () => ({ __esModule: true, default: [] }));
@@ -55,7 +56,7 @@ describe('SettingsForm', () => {
     expect(input).toHaveValue('new-group');
   });
 
-  it('saves settings when save button clicked', () => {
+  it('saves settings when save button clicked', async () => {
     // Change form fields
     let input = screen.getByLabelText(/group name/i);
     fireEvent.change(input, { target: { value: 'new-group' } });
@@ -69,7 +70,9 @@ describe('SettingsForm', () => {
     fireEvent.change(input, { target: { value: 'new-branch-name' } });
 
     // Click the save settings button
-    fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    });
 
     // Dispatch has been called with the new values
     expect(mockDispatch).toHaveBeenCalledWith(setGroupName('new-group'));
@@ -112,12 +115,14 @@ describe('SettingsForm', () => {
     );
   });
 
-  it('only dispatches actions for changed fields', () => {
+  it('only dispatches actions for changed fields', async () => {
     fireEvent.change(screen.getByLabelText(/group name/i), {
       target: { value: 'new-group' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    });
 
     expect(mockDispatch).toHaveBeenCalledWith(setGroupName('new-group'));
     expect(mockDispatch).not.toHaveBeenCalledWith(
@@ -141,6 +146,76 @@ describe('SettingsForm', () => {
     expect(
       await screen.findByText(/settings reset to defaults/i),
     ).toBeInTheDocument();
+  });
+
+  describe('digital twin refresh on save', () => {
+    let fetchDigitalTwinsMock: jest.Mock;
+
+    beforeEach(() => {
+      fetchDigitalTwinsMock = jest.requireMock(
+        'model/backend/util/init',
+      ).fetchDigitalTwins;
+      fetchDigitalTwinsMock.mockClear();
+      mockDispatch.mockClear();
+    });
+
+    it('clears and re-fetches when group name changes', async () => {
+      fireEvent.change(screen.getByLabelText(/group name/i), {
+        target: { value: 'new-group' },
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(clearDigitalTwins());
+      expect(fetchDigitalTwinsMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears and re-fetches when DT directory changes', async () => {
+      fireEvent.change(screen.getByLabelText(/dt directory/i), {
+        target: { value: 'new-dir' },
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(clearDigitalTwins());
+      expect(fetchDigitalTwinsMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears and re-fetches when common library project name changes', async () => {
+      fireEvent.change(screen.getByLabelText(/common library project name/i), {
+        target: { value: 'new-lib' },
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(clearDigitalTwins());
+      expect(fetchDigitalTwinsMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears and re-fetches when branch name changes', async () => {
+      fireEvent.change(screen.getByLabelText(/branch name/i), {
+        target: { value: 'new-branch' },
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(clearDigitalTwins());
+      expect(fetchDigitalTwinsMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not clear or re-fetch when only runner tag changes', () => {
+      fireEvent.change(screen.getByLabelText(/^runner tag$/i), {
+        target: { value: 'new-tag' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+
+      expect(mockDispatch).not.toHaveBeenCalledWith(clearDigitalTwins());
+      expect(fetchDigitalTwinsMock).not.toHaveBeenCalled();
+    });
   });
 
   it('shows error when required field is empty', () => {

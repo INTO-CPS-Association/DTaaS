@@ -40,11 +40,7 @@
 ??? Question "What can not be done inside the DTaaS platform?"
 
     1. DTaaS as such does not help install DTs obtained from external sources.
-    1. The current user interface of the DTaaS web application is heavily reliant
-       on the use of Jupyter Lab and Notebook.
-       The **Digital Twins** page has Create / Execute / Analyze sections, but
-       all point to Jupyter Lab web interface. The functionality of these pages
-       is still under development.
+    1. Windows-only tools cannot run inside DTaaS workspaces.
 
 ??? Question "Is there any fundamental difference between commercial solutions like Ansys Twin Builder and the DTaaS platform?"
 
@@ -199,7 +195,7 @@
     and digital twin can utilise these protocols for communication.
     The IoT (time-series) data can be collected using InfluxDB and MQTT
     broker services. There is a user interface for InfluxDB which can be
-    used to analyze the data collected.
+    used to analyse the data collected.
     Users can also manually upload their data files into the DTaaS.
 
 ??? Question "Is the DTaaS platform able to transmit data to cloud in real time?"
@@ -220,7 +216,7 @@
 ??? Question "Which kinds of visualisation technologies can the DTaaS platform support (e.g. graphical, geometry, image, VR/AR representation)?"
 
     Graphical, geometric and images. If specific licensed software
-    is needed for the visualisation, the license for it must be provided.
+    is needed for the visualisation, the licence for it must be provided.
     DTaaS does not support AR/VR.
 
 ## Platform Native Services on the DTaaS Platform
@@ -242,14 +238,14 @@
     and low performance (**L**)
 
 | DT Platforms               | License                | DT Development Process | Connectivity | Security | Processing power, performance and Scalability | Data Storage | Visualisation | Modelling and Simulation |
-| :------------------------- | :--------------------- | :--------------------- | :----------- | :------- | :-------------------------------------------- | :----------- | :------------ | :---------------------- |
-| Microsoft Azure DT         | Commercial Cloud       | H                      | H            | H        | M                                             | H            | H             | H                       |
-| AWS IOT Greengrass         | Open source commercial | H                      | H            | H        | M                                             | H            | H             | H                       |
-| Eclipse Ditto              | Open source            | M                      | H            | M        | H                                             | H            | L             | L                       |
-| Asset Administration Shell | Open source            | H                      | H            | L        | H                                             | M            | L             | M                       |
-| PTC Thingworx              | Commercial             | H                      | H            | H        | H                                             | H            | M             | M                       |
-| GE Predix                  | Commercial             | M                      | H            | H        | M                                             | L            | M             | L                       |
-| The DTaaS Platform         | Open source            | H                      | H            | L        | L                                             | M            | M             | M                       |
+| :------------------------- | :--------------------- | :--------------------- | :----------- | :------- | :-------------------------------------------- | :----------- | :------------ | :----------------------- |
+| Microsoft Azure DT         | Commercial Cloud       | H                      | H            | H        | M                                             | H            | H             | H                        |
+| AWS IOT Greengrass         | Open source commercial | H                      | H            | H        | M                                             | H            | H             | H                        |
+| Eclipse Ditto              | Open source            | M                      | H            | M        | H                                             | H            | L             | L                        |
+| Asset Administration Shell | Open source            | H                      | H            | L        | H                                             | M            | L             | M                        |
+| PTC Thingworx              | Commercial             | H                      | H            | H        | H                                             | H            | M             | M                        |
+| GE Predix                  | Commercial             | M                      | H            | H        | M                                             | L            | M             | L                        |
+| The DTaaS Platform         | Open source            | H                      | H            | L        | L                                             | M            | M             | M                        |
 
     Adopted by Tanusree Roy from Table 4 and 5 of the following paper.
 

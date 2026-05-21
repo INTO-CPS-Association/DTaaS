@@ -1,6 +1,6 @@
 // GitLab pipeline lifecycle (trigger, poll, cancel, collect results)
 /* eslint-disable no-await-in-loop */
-import { getAuthority } from 'util/envUtil';
+import getAuthority from 'model/backend/util/env';
 import DigitalTwin from 'model/backend/digitalTwin';
 import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
 import createGitlabInstance from 'model/backend/gitlab/gitlabFactory';
@@ -8,7 +8,7 @@ import {
   delay,
   getChildPipelineId,
 } from 'model/backend/gitlab/execution/pipelineCore';
-import { pollPipelineStatus } from 'model/backend/gitlab/execution/pipelinePolling';
+import pollPipelineStatus from 'model/backend/gitlab/execution/pipelinePolling';
 import { isFailureStatus } from 'model/backend/gitlab/execution/statusChecking';
 import { BETWEEN_TRIAL_DELAY } from 'model/backend/gitlab/measure/constants';
 import {
@@ -59,7 +59,8 @@ async function initializeBackend(): Promise<BackendInterface> {
     throw new Error('Not authenticated. Missing access_token or username.');
   }
 
-  const backend = createGitlabInstance(username, oauthToken, getAuthority());
+  const authority = getAuthority();
+  const backend = createGitlabInstance(username, oauthToken, authority);
   await backend.init();
   return backend;
 }

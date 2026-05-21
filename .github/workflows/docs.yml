@@ -32,13 +32,21 @@ jobs:
         with:
           lfs: false
 
-      - name: build docs
-        # v0.24.0
-        uses: Tiryoh/actions-mkdocs@14d3fd544b7a2bcffcdd86b05d558f20c244c9fc
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
         with:
-          mkdocs_version: 'latest'
-          requirements: 'script/docs/mkdocs-requirements-github.txt'
-          configfile: 'mkdocs-github.yml'
+          python-version: '3.x'
+
+      - name: Install MkDocs dependencies
+        run: pip install -r script/docs/mkdocs-requirements-github.txt
+
+      - name: build docs
+        # MKDOCS_LFS_STRICT=false demotes the LFS check from an abort to a
+        # warning so CI can still build docs when lfs: false is set above.
+        # Remove this env var once lfs: true is restored.
+        env:
+          MKDOCS_LFS_STRICT: 'false'
+        run: mkdocs build --config-file mkdocs-github.yml
 
       - name: show contents of compiled docs
         run: |

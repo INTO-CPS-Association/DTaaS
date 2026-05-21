@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import type { Dispatch as ReduxDispatch } from '@reduxjs/toolkit';
 import { AssetTypes } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { getAuthority } from 'util/envUtil';
+import getAuthority from 'model/backend/util/env';
 import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
 import { setDigitalTwin } from 'model/backend/state/digitalTwin.slice';
 import DigitalTwin from 'model/backend/digitalTwin';

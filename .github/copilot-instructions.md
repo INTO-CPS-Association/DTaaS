@@ -111,7 +111,7 @@ DTaaS/
 ### Documentation (`docs/`)
 
 - Use MkDocs with Material theme
-- Keep both `mkdocs.yml` and `mkdocs-github.yml` synchronized
+- Keep both `mkdocs.yml` and `mkdocs-github.yml` synchronised
 - Use proper Markdown formatting
 - Write clear, concise documentation
 - Include code examples and diagrams

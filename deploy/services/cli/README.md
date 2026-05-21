@@ -7,12 +7,12 @@ _These services can only be installed in secure (TLS) mode._
 The following services can be installed:
 
 * **Influx** time-series database and dashboard service
-* **Grafana** visualization and dashboard service
+* **Grafana** visualisation and dashboard service
 * **RabbitMQ** AMQP broker and its management interface
   The **MQTT plugin** of this broker has been enabled.
   So, it can also be used as **MQTT** broker.
 * **MongoDB** database server
-* **ThingsBoard** IoT device management and data visualization platform
+* **ThingsBoard** IoT device management and data visualisation platform
 (with PostgreSQL backend)
 * **GitLab** OAuth2 identity provider and Git repository service
 
@@ -137,7 +137,8 @@ dtaas-services clean
 
 ### Managing Services
 
-Now services can be managed by simple commands (Start, Stop, Remove and Restart)
+Now services can be managed with the following commands
+(Start, Stop, Remove, and Restart).
 
 Example:
 
@@ -191,7 +192,7 @@ This service can only be installed in secure (TLS) mode.
 
 The steps given above install two services:
 
-* **ThingsBoard** is an IoT device management and data visualization platform
+* **ThingsBoard** is an IoT device management and data visualisation platform
 * **PostgreSQL** is a database server for ThingsBoard
 
 ### ThingsBoard Directory Structure
@@ -250,9 +251,7 @@ This command:
   (`platform-services`), which is created automatically when the other
   platform services are running. Start them first with
   `dtaas-services start` before installing GitLab.
-* Set `REACT_APP_AUTH_AUTHORITY` in the client config file
-  (`deploy/config/client/env.js` for server deployments, or
-  `deploy/config/client/env.local.js` for localhost) to
+* Set `REACT_APP_AUTH_AUTHORITY` in the client config file to
   `https://<hostname>:<GITLAB_PORT>/gitlab`.
 
 > **Note:** The DTaaS client uses `react-oidc-context`, which forces
@@ -274,7 +273,7 @@ The install command checks GitLab’s readiness and returns immediately:
 * **If GitLab is still starting**: the command prints a status hint
   and exits. Check progress with `dtaas-services status -s gitlab`
   and re-run `dtaas-services install -s gitlab` once the status
-  shows "healthy".
+  shows `healthy`.
 
 > **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
 > up to `config/backup_gitlab_tokens.json` and the `root_password` entry is

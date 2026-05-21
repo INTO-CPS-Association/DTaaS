@@ -7,7 +7,8 @@ export const createGitlabInstance = (
   accessToken: string,
   authority: string,
 ): BackendInterface => {
-  const GitlabAPIInstance = new GitlabAPI(authority, accessToken);
+  const cleanedAuthority = authority.replace(/\/+$/, ''); // NOSONAR
+  const GitlabAPIInstance = new GitlabAPI(cleanedAuthority, accessToken);
   return new GitlabInstance(projectName, GitlabAPIInstance);
 };
 

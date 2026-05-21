@@ -1,13 +1,12 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
-
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 
-For HTTP localhost deployment, use
-`deploy/dtaas/docker/localhost`.
+Download **dtaas-localhost-xx.zip** from the
+[release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
+page.
 
 For detailed configuration reference, see [config.md](config.md).
 

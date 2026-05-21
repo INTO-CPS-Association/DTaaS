@@ -29,21 +29,21 @@ are automated via github actions.
 
 The GitHub actions of the project publish
 [packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
-The only limitation is that the users need an
-[access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-from GitHub.
+The only limitation is that a
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+from GitHub is required.
 
 ## Private Registry
 
 ### Setup private npm registry
 
 Since publishing to [npmjs](https://www.npmjs.com/) is
-irrevocable and public, developers are encouraged to setup their own private
+irrevocable and public, developers are encouraged to set up a private
 npm registry for local development.
 A private npm registry will help with local publish and unpublish steps.
 
-We recommend using [verdaccio](https://verdaccio.org) for this task.
-The following commands help you create a working private npm registry
+It is recommended to use [verdaccio](https://verdaccio.org) for this task.
+The following commands create a working private npm registry
 for development.
 
 ```bash
@@ -55,8 +55,8 @@ yarn login --registry "http://localhost:4873" #login with the credentials for ya
 npm login #login with the credentials for npm utility
 ```
 
-You can open `http://localhost:4873` in the browser, login with
-the user credentials to see the packages published.
+The registry can be accessed at `http://localhost:4873` in the browser;
+login with the user credentials to see the packages published.
 
 #### Publish to private npm registry
 
@@ -69,9 +69,9 @@ yarn publish --no-git-tag-version #increments version in package.json, publishes
 yarn publish #increments version in package.json, publishes to registry and adds a git tag
 ```
 
-The package version in package.json gets updated as well. You can
-open `http://localhost:4873` in the browser, login with the user credentials
-to see the packages published. Please see
+The package version in package.json is updated accordingly.
+The registry can be accessed at `http://localhost:4873` in the browser;
+login with the user credentials to see the packages published. Please see
 [verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
 for more information.
 
@@ -82,7 +82,7 @@ npm unpublish --registry http://localhost:4873/ \
   @dtaas/runner@0.0.2
 ```
 
-To install / uninstall this utility for all users, do:
+To install or uninstall this utility for all users, run:
 
 ```bash
 sudo npm install --registry http://localhost:4873 \

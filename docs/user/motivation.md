@@ -43,7 +43,7 @@ these challenges. Notable approaches include:
 * Scaling DT execution and ensemble management of related DTs
 * Support for PT product lifecycle
 
-## Our Approach
+## The DTaaS Approach
 
 The DTaaS platform adopts the following principles[1]:
 

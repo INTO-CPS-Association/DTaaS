@@ -4,11 +4,13 @@ name: React website
   push:
     paths:
       - 'client/**'
-      - '.github/workflows/client.yml'
   pull_request:
     paths:
       - 'client/**'
+      - 'developer/client.dockerfile'
+      - 'developer/client.built.dockerfile'
       - '.github/workflows/client.yml'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 concurrency:
@@ -25,7 +27,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: &job_timeout 30
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: client/
@@ -103,16 +105,35 @@ jobs:
           files: client/coverage/e2e/codecov.json
           flags: client-e2e-tests
 
+  build-docker-image:
+    name: Build Docker image (${{ matrix.image-name }})
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - image-name: dtaas-web
+            dockerfile: client.dockerfile
+          - image-name: dtaas-web-built
+            dockerfile: client.built.dockerfile
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: ${{ matrix.image-name }}
+      dockerfile: ${{ matrix.dockerfile }}
+
   get-version:
     name: Get version
     permissions:
       contents: read  # Required for checking out the code
     runs-on: ubuntu-latest
-    timeout-minutes: *job_timeout
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         # v6.0.1
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          lfs: false
+
       - name: Install jq
         run: sudo apt-get install -y jq
       - name: get version

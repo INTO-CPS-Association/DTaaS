@@ -6,7 +6,7 @@ provisioning and deprovisioning of user accounts.
 
 ## Package Structure
 
-The CLI package is organized as follows:
+The CLI package is organised as follows:
 
 ```text
 cli/

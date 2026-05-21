@@ -55,13 +55,13 @@ The currently available services are:
 
 | Service     | Advantage                                                                                                                                                                                                   |
 | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| InfluxDB    | Internet of Things (IoT) device management and data visualization platform. This service stores data for digital twins and provides alerting capabilities.                                                  |
+| InfluxDB    | Internet of Things (IoT) device management and data visualisation platform. This service stores data for digital twins and provides alerting capabilities.                                                  |
 | RabbitMQ    | Communication broker facilitating message exchange between physical and digital twins.                                                                                                                      |
-| Grafana     | Visualization dashboard service for digital twin data presentation.                                                                                                                                         |
+| Grafana     | visualisation dashboard service for digital twin data presentation.                                                                                                                                         |
 | MQTT        | Lightweight data transfer broker for IoT devices and physical twins providing data to digital twins.                                                                                                        |
 | MongoDB     | NoSQL document database for storing metadata from physical twins.                                                                                                                                           |
 | PostgreSQL  | SQL database server for storing historical and time-series data.                                                                                                                                            |
-| ThingsBoard | an Internet of Things (IoT) device management and data visualization platform                                                                                                                               |
+| ThingsBoard | an Internet of Things (IoT) device management and data visualisation platform                                                                                                                               |
 
 Users can publish and reuse digital twin assets
 available on the platform. Additionally, digital twins can be executed

@@ -4,6 +4,7 @@ import {
   FileType,
 } from 'model/backend/interfaces/sharedInterfaces';
 import { Dispatch, SetStateAction } from 'react';
+import getFileTypeFromExtension from 'model/backend/interfaces/fileTypeUtils';
 
 export const isFileModifiable = (fileName: string) =>
   !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
@@ -73,20 +74,7 @@ export const validateFiles = (
   return false;
 };
 
-// File type mapping for efficient lookup
-const FILE_TYPE_MAP: Record<string, FileType> = {
-  md: FileType.DESCRIPTION,
-  json: FileType.CONFIGURATION,
-  yaml: FileType.CONFIGURATION,
-  yml: FileType.CONFIGURATION,
-};
-
-export const getFileTypeFromExtension = (fileName: string): FileType => {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-  return extension && FILE_TYPE_MAP[extension]
-    ? FILE_TYPE_MAP[extension]
-    : FileType.LIFECYCLE;
-};
+export { getFileTypeFromExtension };
 
 export const getFilteredFileNames = (type: FileType, files: FileState[]) =>
   files

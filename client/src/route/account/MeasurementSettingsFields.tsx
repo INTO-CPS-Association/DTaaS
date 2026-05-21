@@ -1,10 +1,20 @@
-import { TextField, Typography, Grid, Divider } from '@mui/material';
+import {
+  TextField,
+  Typography,
+  Grid,
+  Divider,
+  IconButton,
+  Tooltip,
+  Box,
+} from '@mui/material';
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
 import { SettingsFieldProps } from 'route/account/SettingsForm';
 
 interface MeasurementSettingsFieldsProps extends SettingsFieldProps {
   twinsLoading: boolean;
+  onRefreshTwins: () => void;
 }
 
 function dtHelperText(
@@ -27,6 +37,7 @@ interface DTSelectFieldProps {
   onChange: SettingsFieldProps['handleInputChange'];
   loading: boolean;
   twinNames: string[];
+  onRefresh?: () => void;
 }
 
 function DTSelectField({
@@ -39,32 +50,57 @@ function DTSelectField({
   onChange,
   loading,
   twinNames,
+  onRefresh,
 }: Readonly<DTSelectFieldProps>) {
+  const field = (
+    <TextField
+      select
+      SelectProps={{ native: true }}
+      fullWidth
+      id={id}
+      label={label}
+      variant="outlined"
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      error={hasError}
+      helperText={helperText}
+      InputLabelProps={{ shrink: true }}
+      sx={onRefresh ? { flex: 1 } : undefined}
+    >
+      {loading ? (
+        <option value={value}>{value}</option>
+      ) : (
+        twinNames.map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))
+      )}
+    </TextField>
+  );
+
   return (
     <Grid size={{ xs: 12, md: 6 }}>
-      <TextField
-        select
-        SelectProps={{ native: true }}
-        fullWidth
-        id={id}
-        label={label}
-        variant="outlined"
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        error={hasError}
-        helperText={helperText}
-      >
-        {loading ? (
-          <option value={value}>{value}</option>
-        ) : (
-          twinNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))
-        )}
-      </TextField>
+      {onRefresh ? (
+        <Box display="flex" alignItems="flex-start" gap={1}>
+          {field}
+          <Tooltip title="Refresh digital twins">
+            <span>
+              <IconButton
+                onClick={onRefresh}
+                disabled={loading}
+                size="small"
+                sx={{ mt: 1 }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
+      ) : (
+        field
+      )}
     </Grid>
   );
 }
@@ -74,6 +110,7 @@ const MeasurementSettingsFields: React.FC<MeasurementSettingsFieldsProps> = ({
   fieldErrors,
   handleInputChange,
   twinsLoading,
+  onRefreshTwins,
 }) => {
   const digitalTwins = useSelector(
     (state: RootState) => state.digitalTwin.digitalTwin,
@@ -156,6 +193,7 @@ const MeasurementSettingsFields: React.FC<MeasurementSettingsFieldsProps> = ({
           onChange={handleInputChange}
           loading={twinsLoading}
           twinNames={twinNames}
+          onRefresh={onRefreshTwins}
         />
       </Grid>
     </>

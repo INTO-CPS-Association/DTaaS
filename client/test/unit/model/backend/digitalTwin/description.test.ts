@@ -4,7 +4,7 @@ import {
   getGroupName,
 } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import { getAuthority } from 'util/envUtil';
+import getAuthority from 'model/backend/util/env';
 import {
   mockGitlabInstance,
   setupBeforeEach,

@@ -1,45 +1,27 @@
-# Introduction
+# Client Application — Docker Deployment
 
-This container image provides the client application for Digital Twin as a Service (DTaaS).
+This container image provides the client application for
+Digital Twin as a Service (DTaaS).
 It delivers a React single-page web application for DTaaS.
 
-## Authorization
+## 🔐 Authorisation
 
-The React client website uses OAuth authorization.
+The React client website uses OAuth authorisation.
 The
-[authorization page](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html)
-provides details on setting up OAuth authorization for the client application.
+[authorisation page](../docs/admin/client/auth.md)
+provides details on setting up OAuth authorisation for the client application.
 
-## Use in Docker Environment
-
-### Create Docker Compose File
-
-Create an empty file named `compose.client.yml` and copy the following content
-into it:
-
-```yml
-services:
-  client:
-    image: intocps/dtaas-web:latest
-    restart: unless-stopped
-    volumes:
-      - ./config.js:/dtaas/client/build/env.js
-    ports:
-      - '4000:4000'
-```
+## 🐳 Use in Docker Environment
 
 ### Create Configuration
 
-The client application requires configuration.
+The client application requires an `env.js` configuration file before
+starting the container.
 See the
-[config page](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html)
+[config page](../docs/admin/client/config.md)
 for an explanation of client configuration.
 
-The Docker-based client application uses configuration saved in
-a `config.js` file.
-Create this file in the same filesystem location as `compose.client.yml`.
-
-Create a file `config.js` with the following contents:
+Create `env.js` in the `client/` directory with the following contents:
 
 ```js
 if (typeof window !== 'undefined') {
@@ -71,8 +53,8 @@ environment-specific values.
 Use the following commands to start and stop the container:
 
 ```bash
-docker compose -f compose.client.yml up -d
-docker compose -f compose.client.yml down
+docker compose up -d
+docker compose down
 ```
 
 The website is available at <http://localhost:4000>.

@@ -1,67 +1,62 @@
 # GitLab Integration Guide
 
-This guide summarizes how to integrate GitLab OAuth with DTaaS in current
-package layouts.
+This guide covers integration of a local GitLab instance with
+a DTaaS server installation, and integrating the OAuth authorisation feature
+with the DTaaS installation.
+
+After following this guide, the GitLab instance will be integrated
+as OAuth provider for both the DTaaS client application and
+Traefik Forward Auth backend authorisation.
+
+> [!IMPORTANT]
+> The DTaaS client uses the `react-oidc-context` node package,
+> which incorrectly causes authorisation redirects to use the `HTTPS` URL
+> scheme. This is a
+> [known issue with the package](https://github.com/authts/react-oidc-context/issues/1288),
+> and forces us to use `HTTPS` for the DTaaS server. This means the server
+> should be set up to use either <https://localhost> or <https://intocps.org>. This
+> guide will henceforth use `intocps.org` to represent either localhost or a custom
+> domain.
 
 ## Integration Paths
 
 There are two primary integration paths:
 
-1. **Integrated package**:
-   `deploy/dtaas/docker/secure-server_with_integrated-gitlab`
-2. **Services CLI path**:
-   `deploy/services/cli` + `deploy/services/cli/GITLAB_INTEGRATION.md`
+1. **Integrated package**: See
+   [installation page](../dtaas/secure-server-gitlab/install.md) `secure-server-integrated-gitlab-xx.zip`
+   A functioning GitLab instance will be accessible over HTTPS
+   at `https://intocps.org/gitlab`.
+2. **Platform Services CLI**: See [CLI docs](../services/cli.md).
+   A functioning GitLab instance will be accessible over HTTPS on
+   the configured port, at `https://intocps.org:${GITLAB_PORT}/gitlab`
+   (custom domain, default port 8090).
 
-## A. Integrated Package (`secure-server_with_integrated-gitlab`)
+## Integration Steps
 
-1. Start DTaaS + GitLab:
+### 1. Create OAuth Tokens in GitLab
 
-   ```bash
-   cd deploy/dtaas/docker/secure-server_with_integrated-gitlab
-   docker compose --env-file config/.env up -d
-   ```
+Follow these guides to create OAuth Application Tokens for -
+[backend](../servers/auth.md) and
+[client](../client/auth.md).
 
-2. Wait until GitLab is healthy.
+After this step the credentials for the application tokens titled
+**DTaaS Server Authorization** and **DTaaS Client Authorization** will be available,
+for use in the next step.
 
-3. Create users in GitLab matching `USERNAME1` / `USERNAME2`.
+### 2. Use Valid Oauth Application Tokens
 
-4. Create OAuth applications in GitLab:
+The OAuth tokens generated on the GitLab instance can now be used to enable
+authorisation. Update the `config/client.js`
+with **DTaaS Client Authorization** application details.
+Update the `config/.env` with **DTaaS Server Authorization**
+application details.
 
-   - DTaaS Client Authorization
-   - DTaaS Server Authorization
+### 3. Create Users
 
-5. Update:
+Create users in GitLab matching `USERNAME1` / `USERNAME2` set in `config/.env`.
 
-   - `config/client.js`
-   - `config/.env`
+### 4. Restart Services
 
-6. Reload services:
-
-   ```bash
-   docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
-   ```
-
-## B. Services CLI GitLab Integration
-
-Use the services project and follow the authoritative guide:
-
-- `deploy/services/cli/GITLAB_INTEGRATION.md`
-
-Typical flow:
-
-1. Generate services project: `dtaas-services generate-project`
-2. Configure `config/services.env`
-3. Install GitLab: `dtaas-services install -s gitlab`
-4. Apply OAuth values to DTaaS package config
-5. Restart DTaaS `client` and `traefik-forward-auth`
-
-## Post-Setup Checks
-
-- `https://<host>/gitlab` is reachable (integrated package)
-- DTaaS login redirects to expected OAuth provider
-- Workspace routes (`/user1`, `/user2`) are protected
-
-## Related Guides
-
-- [DTaaS integrated package config](../dtaas/secure-server-gitlab/config.md)
-- [Workspace secure server config](../workspace/secure-server/configuration.md)
+```bash
+docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
+```

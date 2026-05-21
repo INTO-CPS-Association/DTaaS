@@ -16,7 +16,7 @@ six categories:
 The data sources and sinks available to a digital twins.
 Typical examples of data sources are sensor measurements from
 Physical Twins, and test data provided by manufacturers for
-calibration of models. Typical examples of data sinks are visualization
+calibration of models. Typical examples of data sinks are visualisation
 software, external users and data storage services. There exist special
 outputs such as events, and commands which are akin to control outputs
 from a Digital Twin. These control outputs usually go to Physical Twins,
@@ -168,7 +168,7 @@ Users can also bring DT assets into user workspaces from external sources
 using any of the above-mentioned services. Developers using _git_
 repositories can clone from and push to remote git servers. Users can
 also use widely-used file transfer protocols such as FTP and SCP to
-bring the required DT assets into their workspaces.
+bring the required DT assets into the user workspaces.
 
 ## References
 

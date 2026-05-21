@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
+import { PollOptions } from 'model/backend/interfaces/execution';
 import {
   isPipelineCompleted,
   delay,
@@ -9,10 +10,6 @@ import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
 } from 'model/backend/gitlab/digitalTwinConfig/constants';
-
-export interface PollOptions {
-  shouldAbort?: () => boolean;
-}
 
 function checkAbortConditions(
   pipelineId: number,
@@ -27,7 +24,7 @@ function checkAbortConditions(
   }
 }
 
-export async function* pollPipelineStatus(
+async function* pollPipelineStatus(
   backend: BackendInterface,
   pipelineId: number,
   startTime: number,
@@ -54,3 +51,5 @@ export async function* pollPipelineStatus(
   }
   return status;
 }
+
+export default pollPipelineStatus;

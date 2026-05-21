@@ -10,7 +10,7 @@ import {
   runTrials,
 } from 'model/backend/gitlab/measure/measurement.pipeline';
 import type { Trial } from 'model/backend/gitlab/measure/measurement.execution';
-import { getAuthority } from 'util/envUtil';
+import getAuthority from 'model/backend/util/env';
 import createGitlabInstance from 'model/backend/gitlab/gitlabFactory';
 import DigitalTwin from 'model/backend/digitalTwin';
 import {
@@ -30,8 +30,9 @@ import {
   setupSessionStorageAuth,
 } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
 
-jest.mock('util/envUtil', () => ({
-  getAuthority: jest.fn(),
+jest.mock('model/backend/util/env', () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 jest.mock('model/backend/gitlab/gitlabFactory', () => ({
   __esModule: true,

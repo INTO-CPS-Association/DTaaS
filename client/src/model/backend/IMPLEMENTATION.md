@@ -7,7 +7,7 @@ getting pipelines, job traces, execution logs (and their maintenance), private
 and common project IDs. It further provides access to an API instance.
 
 It depends on @gitbeaker/rest and acts as a concrete implementation of the `Backend`
-and `BackendAPI` interfaces..
+and `BackendAPI` interfaces.
 
 ## Architecture Components
 
@@ -43,9 +43,9 @@ The Backend class implements the BackendAPI interface. Its responsibilities
 consist of direct communication with the Gitlab REST API through `gitbeaker`
 while conforming to the aforementioned generalized interface. It also features
 `triggerTokens` and a method for retrieving them, which is specific to this API.
-It depends on `gitbeaker/rest`. Once initialized with a `triggerToken` retrieved
-using the project ID provided by its backend (which also initializes this class
-during its own initialization), it may be used to manage pipelines, manage and
+It depends on `gitbeaker/rest`. Once initialised with a `triggerToken` retrieved
+using the project ID provided by its backend (which also initialises this class
+during its own initialisation), it may be used to manage pipelines, manage and
 receive repository files, obtain job logs (mainly for the `Backend`) and
 `triggerTokens`. It contains a `client` field holding a `Gitlab` instance from
 `@gitbeaker/rest`.

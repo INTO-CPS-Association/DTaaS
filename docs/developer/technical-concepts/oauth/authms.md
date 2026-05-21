@@ -57,7 +57,7 @@ type, which is fixed as ”code”,
 meaning that an Authorization code is expected.
 Other query parameters are the client id, the redirect uri,
 the scope which is set to read user
-for our purpose, and the state (the
+for this purpose, and the state (the
 random string to identify the specific request).
 
 - The OAuth 2.0 provider redirects the user to the login page. Here the

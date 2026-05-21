@@ -49,6 +49,14 @@ describe('DigitalTwin - execute and lifecycle', () => {
     );
   });
 
+  it('should execute pipeline without saving history when requested', async () => {
+    const pipelineId = await dt.execute(true);
+
+    expect(pipelineId).toBe(123);
+    expect(mockedIndexedDBService.add).not.toHaveBeenCalled();
+    expect(dt.currentExecutionId).toBe('test-uuid-1234');
+  });
+
   it('should log error and return null when projectId or triggerToken is missing', async () => {
     (dt.backend.getProjectId as jest.Mock).mockReturnValue(null);
     jest.spyOn(dtUtils, 'isValidInstance').mockReturnValue(false);

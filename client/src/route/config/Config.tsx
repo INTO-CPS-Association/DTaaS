@@ -35,7 +35,7 @@ const DeveloperConfig = (
       {'Config verification'}
     </Typography>
     <div id="config-items">
-      {Object.entries(window.env).map(([key, value]) => (
+      {Object.entries(globalThis.env).map(([key, value]) => (
         <ConfigItem
           key={key}
           label={key}
@@ -112,7 +112,7 @@ const useValidationResults = () => {
 };
 
 const useConfigErrors = (validationResults: Record<string, ValidationType>) =>
-  Object.keys(window.env).some((key) => {
+  Object.keys(globalThis.env).some((key) => {
     const result = validationResults[key];
     return result && 'error' in result && result.error !== undefined;
   });

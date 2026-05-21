@@ -44,9 +44,10 @@ export async function executeDT(
 
   try {
     const variables = { DTName: self.DTName, RunnerTag: runnerTag };
+    const branch = branchNameOverride ?? getBranchName();
     const response = await self.backend.startPipeline(
       self.backend.getProjectId(),
-      branchNameOverride ?? getBranchName(),
+      branch,
       variables,
     );
     logSuccess(self, runnerTag);

@@ -1,7 +1,7 @@
 if (typeof window !== 'undefined') {
   window.env = {
     REACT_APP_ENVIRONMENT: 'prod',
-    REACT_APP_URL: 'https://foo.com/',
+    REACT_APP_URL: 'https://intocps.org/',
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
@@ -10,8 +10,8 @@ if (typeof window !== 'undefined') {
 
     REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
-    REACT_APP_REDIRECT_URI: 'https://foo.com/Library',
-    REACT_APP_LOGOUT_REDIRECT_URI: 'https://foo.com/',
+    REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
+    REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
   };
 };

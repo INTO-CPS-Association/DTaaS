@@ -1,9 +1,9 @@
-# Introduction
+# Client Application — Developer Notes
 
 This document provides developer guidance for the React single-page
 web application.
 
-## Setup the Environment and Build
+## 🛠️ Setup and Build
 
 The following steps are required to configure the environment and build the application.
 
@@ -60,12 +60,12 @@ yarn test:e2e:ext  #run end-to-end tests against application
 yarn test:all   #run all tests including preview tests
 ```
 
-## Authorization
+## 🔐 Authorisation
 
-The React client website uses OAuth authorization.
+The React client website uses OAuth authorisation.
 The
-[authorization page](../docs/admin/client/auth.md) provides details for configuring
-OAuth authorization for the client application.
+[authorisation page](../docs/admin/client/auth.md) provides details for configuring
+OAuth authorisation for the client application.
 
 A
 [user-owned OAuth application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
@@ -78,7 +78,7 @@ The application uses client ID:
 It can be used for development purposes.
 A <https://gitlab.com> account is required to use this OAuth application.
 
-## Custom configuration
+## 📦 Custom Configuration
 
 An `env.js` file is required in the root directory of `build` during runtime.
 This file configures the application endpoints.
@@ -98,7 +98,7 @@ a configuration file from `client/config/` to the `build` directory.
 yarn config:<config-name>
 ```
 
-> Whichever `env.js` file is present in the `public` directory during
+> The `env.js` file present in the `public` directory at the time of
 > `yarn build` is used in the build.
 
 It is therefore recommended to keep configurations in the
@@ -110,7 +110,7 @@ The purpose of different configuration files are given in the table below.
 | Configuration File Name | Usage Scenario                                                                                                                                                        |
 | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dev.js`                | Check functionality of the client application without using any other parts of the DTaaS software                                                                     |
-| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                        |
+| `local.js`              | Used by the `developer/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                                 |
 | `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
 | `test.js`               | Used by all the tests                                                                                                                                                 |
 

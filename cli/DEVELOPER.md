@@ -1,12 +1,11 @@
-# DTaaS Command Line Interface - Developer Notes
+# DTaaS Command Line Interface — Developer Notes
 
-This document outlines the development progress, strategy
-and methods to contribute for developers.
-The source code for the CLI is present in _cli/src_ directory.
+This document outlines the development strategy and contribution guidelines.
+The source code for the CLI is located in the _cli/src_ directory.
 
-## Dependencies
+## 📦 Dependencies
 
-The CLI is coded in python, and uses the following important modules:
+The CLI is written in Python and uses the following libraries:
 
 - [Click](https://click.palletsprojects.com/en/8.1.x/) : Used for
   development of the CLI commands.
@@ -19,7 +18,7 @@ The CLI is coded in python, and uses the following important modules:
 
 - [TomlKit](https://readthedocs.org/projects/tomlkit/) : Used for
   handling toml files across the CLI. Usage of reading toml files
-  has been wrapped in a funciton in _cli/src/pkg/utils.py_ file.
+  has been wrapped in a function in _cli/src/pkg/utils.py_ file.
   This function should be used directly to read toml files.
 
 - [Poetry Package](https://python-poetry.org/docs/) to manage
@@ -29,7 +28,7 @@ The CLI is coded in python, and uses the following important modules:
 
 - [Pyright](https://github.com/microsoft/pyright) : Used for static type checking.
 
-## Code Structure
+## 🏗️ Code Structure
 
 The CLI has two layers of code:
 
@@ -74,7 +73,7 @@ of documentation and reference.
 [common]
 # absolute path to the DTaaS application directory
 # TODO : Update, we are now reusing hostname for this
-server-dns = "foo.com"
+server-dns = "intocps.org"
 # Specify the directory of DTaaS installation
 # Linux example
 path = "/Users/username/DTaaS"
@@ -114,7 +113,7 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.foo.com"
+email = "username1@gitlab.intocps.org"
 ```
 
 This section firstly has two important lists, add and delete.
@@ -136,41 +135,36 @@ config = "/Users/username/DTaaS/env.local.js"
 These variables are currently not in use, and will be incorporated
 in future work.
 
-## Setup
+## ⚙️ Setup
 
 ```bash
-pip install poetry               #Specifically install poetry to your system
-poetry shell                     #Switch to the poetry virtual environment
-cd cli                           #Switch to the cli directory
-poetry install                   #Install all required python packages
+pip install poetry               # install poetry to the system
+poetry shell                     # activate the poetry virtual environment
+cd cli                           # switch to the cli directory
+poetry install                   # install all required python packages
 ```
 
-## Development
+## 🔧 Development
 
-.
-Work on the development by making changes to _cli/src_.
-To test these changes:
+Make changes to _cli/src_.
+To test changes locally:
 
 ```bash
-poetry shell   #Make sure you are in the poetry virtual environment
-poetry build   #Build the python package
+poetry shell   # activate the poetry virtual environment
+poetry build   # build the python package
 ```
 
-You can now run the dtaas cli commands.
+## 🔍 Linting
 
-## Linting checks
-
-Make sure you are in the _cli_ directory.
-To perform linting checks on the code:
+From the _cli_ directory, run:
 
 ```bash
 pylint src --rcfile=../.pylintrc
 ```
 
-## Type Checking
+## 🔬 Type Checking
 
-Make sure you are in the _cli_ directory.
-To perform static type checking on the code:
+From the _cli_ directory, run:
 
 ```bash
 pyright src
@@ -179,11 +173,11 @@ pyright src
 Pyright is configured in `pyproject.toml` under `[tool.pyright]`.
 Pyright errors should be resolved before submitting a pull request.
 
-## Testing
+## 🧪 Testing
 
-Write automation tests for the new code written in the
-_cli/tests_ directory. Be sure to name any new files as
-_test_*_.py_. To run all tests, with coverage:
+Test files are placed in the _cli/tests_ directory and must follow the
+_test_*.py_ naming convention.
+To run all tests with coverage:
 
 ```bash
 pytest --cov=src --cov-report=xml --cov-report=term-missing
@@ -191,16 +185,12 @@ pytest --cov=src --cov-report=xml --cov-report=term-missing
 
 ### Caveat
 
-Before running all tests, remember to set the appropriate
-_path_ in _dtaas.toml_. Also set this same path in the
-dictionary in test_utils.py, in the test_import_toml
-function.
+Before running all tests, set the appropriate _path_ in _dtaas.toml_
+and the same path in the `test_import_toml` function in _test_utils.py_.
+The integration tests in _test_cli.py_ run CLI commands directly and will
+fail if the DTaaS path is not set correctly.
 
-This is to be done because the integration tests in test_cli.py
-directly run cli commands for add, delete which will fail
-if the DTaaS path directly isn't set correctly.
-
-## Security Check
+## 🔒 Security Check
 
 To scan for known security vulnerabilities in dependencies, use the `safety` tool.
 
@@ -213,31 +203,25 @@ This command checks all installed packages against a database of
 known vulnerabilities and provides detailed information about any
 security issues found.
 
-## Publishing
+## 📤 Publishing
 
 The CLI is published to [PyPI](https://pypi.org/).
-Once new changes to the CLI are merged to the DTaaS
-repository, the CLI is also published to the official
-DTaaS PyPI account.
+Once new changes are merged into the DTaaS
+repository, the CLI is published to the official DTaaS PyPI account.
 
-Additionally, to test your changes as they would be
-in a published package, you can create your own PyPI
-account, create and add an [API token](https://pypi.org/help/#apitoken),
-and publish your package to PyPI using poetry:
+To test changes as they would appear in a published package,
+create a personal PyPI account, generate an
+[API token](https://pypi.org/help/#apitoken), and publish using Poetry:
 
 ```bash
 poetry publish
 ```
 
-## Future work
+## 🗺️ Future Work
 
-The final aim for the CLI is to be the standard way that
-admins setup, manage, and interact with the DTaaS instance.
-Although the base structure for the CLI is set up and
-the commands to manage users have been incorporated, we are
-a long way from our final aim.
-
-The following are the next steps for the CLI:
+The long-term objective for the CLI is to serve as the standard tool for
+administrators to set up, manage, and interact with a DTaaS instance.
+The following are the planned next steps:
 
 - Incorporating the AuthMS _conf_ file rules
   in the user management commands.

@@ -79,11 +79,11 @@ the OAuth 2.0 application registered on GitLab:
 <!-- markdownlint-disable MD060 -->
 | GitLab Variable Name | Variable Name in .env of docker compose file               | Default Value                                                                               |
 | :------------------- | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
-| OAuth 2.0 Provider   | OAUTH_URL                                                  | [https://gitlab.intocps.org/](https://gitlab.intocps.org/)                                          |
+| OAuth 2.0 Provider   | OAUTH_URL                                                  | [https://gitlab.intocps.org/](https://gitlab.intocps.org/)                                  |
 | Application ID       | OAUTH_CLIENT_ID                                            | _xx_                                                                                        |
 | Application Secret   | OAUTH_CLIENT_SECRET                                        | _xx_                                                                                        |
 | Callback URL         | (to be directly entered in GitLab OAuth  2.0 registration) |                                                                                             |
-| Forward-auth secret  | OAUTH_SECRET                                               | _random-secret-string_ (password for forward-auth, can be changed to a preferred string) |
+| Forward-auth secret  | OAUTH_SECRET                                               | _random-secret-string_ (password for forward-auth, can be changed to a preferred string)    |
 | Scopes               | read_user                                                  |                                                                                             |
 <!-- markdownlint-enable MD013 -->
 <!-- markdownlint-enable MD060 -->
@@ -93,14 +93,14 @@ the OAuth 2.0 application registered on GitLab:
 The development environment and server installation scenarios
 requires traefik forward-auth.
 
-## Configure Authorization Rules for Traefik Forward-Auth
+## Configure Authorisation Rules for Traefik Forward-Auth
 
-The Traefik forward-auth microservices requires configuration rules to manage
+The Traefik forward-auth microservice requires configuration rules to manage
 authorisation for different URL paths.
 The _conf.server_ file can be used to configure the specific rules.
 There are broadly three kinds of URLs:
 
-### Public Path Without Authorization
+### Public Path Without Authorisation
 
 To setup a public page, an example is shown below.
 
@@ -164,22 +164,3 @@ Any change in the _conf_ file requires
 restart of **traefik-forward-auth** for the changes to take effect.
 All the existing user sessions get invalidated when
 the **traefik-forward-auth** restarts.
-
-Use a simple command on the terminal.
-
-- For the secure server package with external GitLab:
-
-```bash
-docker compose -f deploy/dtaas/docker/server/docker-compose.yml \
-  --env-file deploy/dtaas/docker/server/config/.env \
-  up -d --force-recreate traefik-forward-auth
-```
-
-- For the secure server package with integrated GitLab:
-
-```bash
-docker compose \
-  -f deploy/dtaas/docker/secure-server_with_integrated-gitlab/docker-compose.yml \
-  --env-file deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env \
-  up -d --force-recreate traefik-forward-auth
-```

@@ -3,6 +3,7 @@ import digitalTwinReducer, {
   setPipelineCompleted,
   setPipelineLoading,
   updateDescription,
+  clearDigitalTwins,
 } from 'model/backend/state/digitalTwin.slice';
 import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
 import DigitalTwin from 'model/backend/digitalTwin';
@@ -86,6 +87,17 @@ describe('digitalTwin reducer', () => {
     );
 
     expect(newState.digitalTwin.asset1.pipelineLoading).toBe(true);
+  });
+
+  it('should handle clearDigitalTwins', () => {
+    const stateWithTwins = {
+      digitalTwin: { asset1: {} as never, asset2: {} as never },
+      shouldFetchDigitalTwins: true,
+    };
+
+    const newState = digitalTwinReducer(stateWithTwins, clearDigitalTwins());
+
+    expect(newState.digitalTwin).toEqual({});
   });
 
   it('should handle updateDescription', () => {

@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
 import MiniDrawer from 'page/Menu';
 import { MemoryRouter } from 'react-router-dom';

@@ -24,21 +24,21 @@ DTaaS/
 
 ## Directory roles
 
-| Directory | Purpose |
-| :--- | :--- |
-| `cli/` | Python package for administrative user and workspace operations. |
-| `client/` | Main DTaaS web application with route, store, model, and test layers. |
-| `servers/` | NestJS and service code for the execution and library backends. |
-| `deploy/` | Installable DTaaS, workspace, runner, and platform-services packages. |
-| `docker/` | Local development Dockerfiles and compose templates. |
-| `docs/` | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`. |
-| `script/` | Helper scripts for docs publishing, environment setup, and release tasks. |
+| Directory  | Purpose                                                                                |
+| :--------- | :------------------------------------------------------------------------------------- |
+| `cli/`     | Python package for administrative user and workspace operations.                       |
+| `client/`  | Main DTaaS web application with route, store, model, and test layers.                  |
+| `servers/` | NestJS and service code for the execution and library backends.                        |
+| `deploy/`  | Installable DTaaS, workspace, runner, and platform-services packages.                  |
+| `docker/`  | Local development Dockerfiles and compose templates.                                   |
+| `docs/`    | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`.                     |
+| `script/`  | Helper scripts for docs publishing, environment setup, and release tasks.              |
 | `.github/` | CI workflows, repository templates, copilot instructions, and specialized agent modes. |
 
 ## Codebase entry points
 
-Use the pages in this section based on the part of the monorepo you need to
-change:
+The pages in this section are organised by the part of the monorepo that
+requires changes:
 
 - [Client](client.md) for the React frontend structure and test commands.
 - [DevOps Framework](devops.md) and [Client DevOps Integration](client-devops.md)

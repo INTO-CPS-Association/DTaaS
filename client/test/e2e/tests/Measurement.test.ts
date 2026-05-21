@@ -119,10 +119,10 @@ test.describe('Measurement Page', () => {
     const stopButton = page.getByRole('button', { name: 'Stop', exact: true });
     if (await stopButton.isEnabled()) {
       await stopButton.click();
-      await page
-        .getByRole('dialog')
-        .getByRole('button', { name: 'Stop' })
-        .click();
+      const dialog = page.getByRole('dialog');
+      if (await dialog.isVisible()) {
+        await dialog.getByRole('button', { name: 'Stop' }).click();
+      }
     }
     await expect(stopButton).toBeDisabled();
   });

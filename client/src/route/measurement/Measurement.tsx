@@ -7,6 +7,7 @@
  */
 import Layout from 'page/Layout';
 import {
+  Alert,
   Box,
   Button,
   Collapse,
@@ -214,11 +215,11 @@ function Measurement() {
       handleBeforeUnload(event, measurementState.isRunningRef);
     const onUnload = () => handleUnload(measurementState.isRunningRef);
 
-    window.addEventListener('beforeunload', onBeforeUnload);
-    window.addEventListener('unload', onUnload);
+    globalThis.addEventListener('beforeunload', onBeforeUnload);
+    globalThis.addEventListener('unload', onUnload);
     return () => {
-      window.removeEventListener('beforeunload', onBeforeUnload);
-      window.removeEventListener('unload', onUnload);
+      globalThis.removeEventListener('beforeunload', onBeforeUnload);
+      globalThis.removeEventListener('unload', onUnload);
     };
   }, []);
 
@@ -296,6 +297,9 @@ function Measurement() {
         </Dialog>
         <MeasurementPageHeader />
         <Paper sx={{ p: 3 }}>
+          <Alert severity="info" variant="outlined" sx={{ mb: 2 }}>
+            A minimum of one Digital Twin is required for measurements to work.
+          </Alert>
           <MeasurementControls
             isRunning={isRunning}
             hasStarted={hasStarted}

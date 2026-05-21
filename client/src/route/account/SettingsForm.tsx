@@ -28,6 +28,7 @@ import { Save as SaveIcon, RestartAlt as ResetIcon } from '@mui/icons-material';
 import ApplicationSettingsFields from 'route/account/ApplicationSettingsFields';
 import MeasurementSettingsFields from 'route/account/MeasurementSettingsFields';
 import { fetchDigitalTwins } from 'model/backend/util/init';
+import { clearDigitalTwins } from 'model/backend/state/digitalTwin.slice';
 import { updateFrozenSettings } from 'model/backend/gitlab/measure/measurement.settings';
 
 export interface SettingsFieldProps {
@@ -90,7 +91,33 @@ const SettingsForm: React.FC = () => {
         setTwinsLoading(false),
       );
     }
-  }, [dispatch, digitalTwins]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (twinsLoading) return;
+    const names = Object.keys(digitalTwins);
+    if (names.length === 0) return;
+    if (!names.includes(MEASUREMENT_PRIMARY_DT_NAME)) {
+      dispatch(setPrimaryDTName(names[0]));
+    }
+    if (!names.includes(MEASUREMENT_SECONDARY_DT_NAME)) {
+      dispatch(setSecondaryDTName(names[0]));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [twinsLoading]);
+
+  const handleRefreshTwins = () => {
+    if (formValues.branchName !== BRANCH_NAME) {
+      dispatch(setBranchName(formValues.branchName));
+    }
+    if (formValues.dtDirectory !== DT_DIRECTORY) {
+      dispatch(setDTDirectory(formValues.dtDirectory));
+    }
+    dispatch(clearDigitalTwins());
+    setTwinsLoading(true);
+    fetchDigitalTwins(dispatch, () => {}).finally(() => setTwinsLoading(false));
+  };
 
   // Sync local form state when Redux state changes (e.g. external reset)
   const reduxKey = `${GROUP_NAME}|${DT_DIRECTORY}|${COMMON_LIBRARY_PROJECT_NAME}|${RUNNER_TAG}|${BRANCH_NAME}|${MEASUREMENT_TRIALS}|${MEASUREMENT_SECONDARY_RUNNER_TAG}|${MEASUREMENT_PRIMARY_DT_NAME}|${MEASUREMENT_SECONDARY_DT_NAME}`;
@@ -177,6 +204,12 @@ const SettingsForm: React.FC = () => {
       return;
     }
 
+    const branchChanged = formValues.branchName !== BRANCH_NAME;
+    const directoryChanged = formValues.dtDirectory !== DT_DIRECTORY;
+    const groupChanged = formValues.groupName !== GROUP_NAME;
+    const commonLibraryChanged =
+      formValues.commonLibraryProjectName !== COMMON_LIBRARY_PROJECT_NAME;
+
     if (formValues.groupName !== GROUP_NAME) {
       dispatch(setGroupName(formValues.groupName));
     }
@@ -195,7 +228,7 @@ const SettingsForm: React.FC = () => {
       dispatch(setRunnerTag(formValues.runnerTag));
     }
 
-    if (formValues.branchName !== BRANCH_NAME) {
+    if (branchChanged) {
       dispatch(setBranchName(formValues.branchName));
     }
 
@@ -225,6 +258,19 @@ const SettingsForm: React.FC = () => {
     setNotificationMessage('Settings saved successfully!');
     setNotificationSeverity('success');
     setShowNotification(true);
+
+    if (
+      branchChanged ||
+      directoryChanged ||
+      groupChanged ||
+      commonLibraryChanged
+    ) {
+      dispatch(clearDigitalTwins());
+      setTwinsLoading(true);
+      fetchDigitalTwins(dispatch, () => {}).finally(() =>
+        setTwinsLoading(false),
+      );
+    }
   };
 
   const fieldProps: SettingsFieldProps = {
@@ -240,6 +286,7 @@ const SettingsForm: React.FC = () => {
         <MeasurementSettingsFields
           {...fieldProps}
           twinsLoading={twinsLoading}
+          onRefreshTwins={handleRefreshTwins}
         />
 
         <Grid container>

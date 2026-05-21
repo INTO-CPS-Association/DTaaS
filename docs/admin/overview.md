@@ -2,14 +2,7 @@
 
 ## Installation Scenarios :package:
 
-The DTaaS repository provides installation assets in the following locations:
-
-- `deploy/dtaas/docker/` for DTaaS application deployments
-- `deploy/workspace/` for workspace-centred deployments
-- `deploy/services/` for optional platform services
-- `deploy/vagrant/` for virtual-machine-based deployment
-
-Use the scenario pages listed below to select the most appropriate setup.
+The DTaaS project provides installation assets for the following scenarios.
 
 ### DTaaS
 
@@ -19,25 +12,25 @@ target environment, security needs, and GitLab topology. Each scenario now
 provides dedicated Install and Config pages, plus scenario-specific operational
 documents.
 
-| Scenario | Purpose | Source Directory |
-| :--- | :--- | :--- |
-| [localhost](dtaas/localhost/install.md) | Single-user DTaaS package over HTTP | `deploy/dtaas/docker/localhost` |
-| [localhost on portainer](guides/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users | `deploy/dtaas/docker/localhost` and `deploy/workspace/dex/localhost` |
-| [secure server](dtaas/secure-server/install.md) | Compatibility package for secure server installs | `deploy/dtaas/docker/secure-server` |
-| [secure server and GitLab](dtaas/secure-server-gitlab/install.md) | Multi-user DTaaS package with integrated GitLab | `deploy/dtaas/docker/secure-server_with_integrated-gitlab` |
+| Scenario                                                           | Purpose                                                        |
+| :----------------------------------------------------------------- | :------------------------------------------------------------- |
+| [localhost](dtaas/localhost/install.md)                            | Single-user DTaaS package over HTTP                            |
+| [localhost on portainer](guides/localhost-on-portainer/install.md) | GUI-based localhost deployment with Portainer for single-users |
+| [secure server](dtaas/secure-server/install.md)                    | Compatibility package for secure server installs               |
+| [secure server and GitLab](dtaas/secure-server-gitlab/install.md)  | Multi-user DTaaS package with integrated GitLab                |
 
 ### Workspace
 
 Workspace scenarios focus on user workbench access, identity-provider setup,
 and route-level protection. Choose localhost for rapid onboarding with Dex, or
 secure server for production-style Keycloak/OIDC deployment. Scenario pages are
-organized by Install, Configuration, and identity-provider setup to make
+organised by Install, Configuration, and identity-provider setup to make
 operations and troubleshooting predictable.
 
-| Scenario | Purpose | Source Directory |
-| :--- | :--- | :--- |
-| [localhost](workspace/localhost/install.md) | Single-user workspace deployment with Dex | `deploy/workspace/dex/localhost` |
-| [secure server](workspace/secure-server/install.md) | Multi-user workspace deployment with Keycloak | `deploy/workspace/keycloak/production` |
+| Scenario                                            | Purpose                                       |
+| :-------------------------------------------------- | :-------------------------------------------- |
+| [localhost](workspace/localhost/install.md)         | Single-user workspace deployment with Dex     |
+| [secure server](workspace/secure-server/install.md) | Multi-user workspace deployment with Keycloak |
 
 ### Other
 

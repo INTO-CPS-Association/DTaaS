@@ -32,19 +32,19 @@ const urlKeys = [
 function getValidationPromises(): Record<string, Promise<ValidationType>> {
   return {
     REACT_APP_ENVIRONMENT: Promise.resolve(
-      parseField(EnvironmentEnum, window.env.REACT_APP_ENVIRONMENT),
+      parseField(EnvironmentEnum, globalThis.env.REACT_APP_ENVIRONMENT),
     ),
     REACT_APP_GITLAB_SCOPES: Promise.resolve(
-      parseField(ScopesString, window.env.REACT_APP_GITLAB_SCOPES),
+      parseField(ScopesString, globalThis.env.REACT_APP_GITLAB_SCOPES),
     ),
     ...Object.fromEntries(
       pathKeys.map((key) => [
         key,
-        parseField(PathString, window.env[key] ?? ''),
+        parseField(PathString, globalThis.env[key] ?? ''),
       ]),
     ),
     ...Object.fromEntries(
-      urlKeys.map((key) => [key, urlIsReachable(window.env[key] ?? '')]),
+      urlKeys.map((key) => [key, urlIsReachable(globalThis.env[key] ?? '')]),
     ),
   };
 }
@@ -94,7 +94,7 @@ async function corsRequest(url: string): Promise<ValidationType | null> {
       signal: AbortSignal.timeout(2000),
       headers: {
         Accept: '*/*',
-        Origin: window.location.origin,
+        Origin: globalThis.location.origin,
       },
       redirect: 'manual',
     });

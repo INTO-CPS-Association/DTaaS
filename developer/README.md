@@ -1,10 +1,9 @@
-# Docker workflow for DTaaS
+# 🐳 Docker Workflow for DTaaS
 
-Use of docker images is handy for developers. It is suggested
-that developers build the required images locally on their computer and
-use them for development purposes.
+Docker images are useful for development. Developers are advised
+to build the required images locally and use them during development.
 
-This readme will explain the building and use of different docker files
+This document describes the building and use of Docker images
 for development purposes.
 
 ## Design
@@ -13,9 +12,9 @@ The docker compose environment creates the following development scenario.
 
 ![developer](developer-docker.png)
 
-## Folder Structure
+## 📁 Folder Structure
 
-There are four dockerfiles for building the containers:
+There are four Dockerfiles for building the containers:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
@@ -38,18 +37,19 @@ In addition, there are docker compose and configuration files.
 - **conf.dev** OAuth 2.0 configuration required by
   the Traefik forward-auth service
 
-## Build and Publish Docker Images
+## 🛠️ Build and Publish Docker Images
 
-The github workflows publish docker images of client website and libms to
-[github](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
+The GitHub Actions workflows publish Docker images of the client website
+and libms to
+[GitHub](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
 and
-[docker hub](https://hub.docker.com/u/intocps).
+[Docker Hub](https://hub.docker.com/u/intocps).
 
 ### Developer Usage
 
-Docker images are useful for development purposes. Developers are advised
-to build the required images locally on their computers for use during
-development. The images can be built using
+Docker images are useful for development. Developers are advised
+to build the required images locally for use during development.
+The images can be built using:
 
 ```sh
 cd developer
@@ -61,7 +61,7 @@ sudo chown -R 1000:100 files/*
 docker compose --env-file config/.env build
 ```
 
-## Running Docker Containers
+## 📦 Running Docker Containers
 
 The following steps describe how to use the application with Docker.
 

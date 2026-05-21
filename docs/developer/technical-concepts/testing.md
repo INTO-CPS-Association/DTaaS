@@ -35,12 +35,12 @@ or design before writing functional code.
 
 Behaviour Driven Development (BDD) is a software development process that
 emerged from TDD. It includes the practice of writing tests first, but
-focuses on tests that describe behavior rather than tests that verify a
+focuses on tests that describe behaviour rather than tests that verify a
 unit of implementation. This approach provides software development and
 management teams with shared tools and a shared process for collaborating
 on software development. BDD is largely facilitated through the use of a
 simple domain-specific language (DSL) employing natural language constructs
-(e.g., English-like sentences) that can express behavior and expected
+(e.g., English-like sentences) that can express behaviour and expected
 outcomes. Mocha and Cucumber testing libraries are built around the
 concepts of BDD.
 

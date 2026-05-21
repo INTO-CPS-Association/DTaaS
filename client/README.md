@@ -1,55 +1,24 @@
-# Introduction
+# Client Application
 
-Client (frontend) for Digital Twin as a Service (DTaaS) software.
-This software shall be used for providing a React single page web
-application for the Digital Twin support platform.
+React single-page web application for the Digital Twin as a Service (DTaaS)
+platform.
 
-## Authorization
+## 🔐 Authorisation
 
-The react client website uses OAuth authorization.
-The [authorization page](../docs/admin/client/auth.md)
-provides details on setting up oauth authorization for
+The React client website uses OAuth authorisation.
+The [authorisation page](../docs/admin/client/auth.md)
+provides details on setting up OAuth authorisation for
 the client application.
-
-## Use in Docker Environment
-
-### Adjust Configuration (Optional)
-
-The client application requires configuration.
-See the [config page](../docs/admin/client/config.md)
-for an explanation of client configuration.
-
-The docker version of client application uses configuration
-file available in `config/test.js`. This default configuration
-works well if you have an account on <https://gitlab.com>.
-If you would like to adjust the configuration, please change this file.
 
 ### Use
 
-The commands to start and stop the appliation are:
+Refer to [DOCKER.md](DOCKER.md) for containerised deployment of
+the client service.
 
-```bash
-git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd client
-docker compose -f compose.client.yml up -d
-```
+## 📦 Use in Node.js Environment
 
-This command brings up the client docker container and makes
-the website available at <http://localhost:4000>.
-The `config/test.js` file is used as client configuration.
-If you wish to adjust the client configuration, please change
-configuration values in this file and restart the container.
-
-```bash
-docker compose -f compose.client.yml down
-docker compose -f compose.client.yml up -d
-```
-
-## Use in Nodejs Environment
-
-The following steps are needed only if you are interested
-in building the client application from source code.
-The use of docker images is highly recommended.
+The following steps are required only when building the client application
+from source code. Docker images are the recommended deployment approach.
 
 ### Build
 
@@ -57,7 +26,7 @@ The following steps are required to build the client web application.
 
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
-cd client
+cd DTaaS/client
 yarn install --production   # install dependencies without Playwright and devDependencies
 yarn build      #build the react app into build/ directory
 ```
@@ -91,9 +60,8 @@ Unexpected Application Error!
 404 Not Found
 ```
 
-This error can be seen on the **Library** and **Digital Twins** pages.
-This error is expected.
+This error appears on the **Library** and **Digital Twins** pages and is
+expected in a development environment.
 
-If you would like to try the complete DTaaS application, please see
-localhost installation in
-[docs](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).
+To run the complete DTaaS application, refer to the localhost installation
+in the [project documentation](https://into-cps-association.github.io/DTaaS/development/admin/localhost.html).

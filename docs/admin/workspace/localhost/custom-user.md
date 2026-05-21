@@ -18,13 +18,13 @@ Dex configuration details are documented in [`dex.md`](dex.md).
 
 Edit `.env`.
 
-  | URL Path     | Example Value | Explanation                           |
-  | :----------- | :------------ | :------------------------------------ |
-  | DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
+| URL Path     | Example Value | Explanation                           |
+| :----------- | :------------ | :------------------------------------ |
+| DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
 
 ⚠️ Important alignment for local/passwordDB mode:
 
-- In `.env`, choose `DEFAULT_USER=<your-user>`.
+- In `.env`, choose `DEFAULT_USER=<user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 

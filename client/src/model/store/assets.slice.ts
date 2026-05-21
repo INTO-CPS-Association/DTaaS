@@ -1,8 +1,8 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from 'store/storeTypes';
 import LibraryAsset from 'model/backend/libraryAsset';
+import type { AssetsStoreSlice } from 'model/store/modelRootState';
 
-interface AssetsState {
+export interface AssetsState {
   items: LibraryAsset[];
 }
 
@@ -40,7 +40,7 @@ export const selectAssetsByTypeAndPrivacy = (
   isPrivate: boolean,
 ) =>
   createSelector(
-    (state: RootState) => state.assets.items,
+    (state: AssetsStoreSlice) => state.assets.items,
     (items: LibraryAsset[]) =>
       items.filter(
         (item) => item.type === type && item.isPrivate === isPrivate,
@@ -48,7 +48,7 @@ export const selectAssetsByTypeAndPrivacy = (
   );
 
 export const selectAssetByPathAndPrivacy =
-  (path: string, isPrivate: boolean) => (state: RootState) =>
+  (path: string, isPrivate: boolean) => (state: AssetsStoreSlice) =>
     state.assets.items.find(
       (asset) => asset.path === path && asset.isPrivate === isPrivate,
     );

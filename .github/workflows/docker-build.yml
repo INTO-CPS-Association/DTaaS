@@ -1,0 +1,71 @@
+# Reusable workflow for building a Docker image without pushing.
+# Used to validate Dockerfiles on pull requests.
+
+name: Build Docker Image
+
+'on':
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      dockerfile:
+        required: true
+        type: string
+
+jobs:
+  build-docker-image:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          lfs: false
+          sparse-checkout: |
+            client
+            developer
+            servers/lib
+
+      - name: Setup node
+        if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        # v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        with:
+          node-version: 24
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+
+      - name: Install dependencies
+        if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
+        run: |
+          yarn install --network-timeout 1000000
+          yarn playwright install --with-deps
+
+      - name: Run the linting checks
+        if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
+        run: |
+          yarn syntax
+
+      - name: Build the React SPA website and setup env
+        if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
+        working-directory: client/
+        run: |
+          yarn build
+          yarn config:test
+
+      - name: Build Docker image
+        # v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        with:
+          context: .
+          file: ./developer/${{ inputs.dockerfile }}
+          push: false
+          tags: ${{ inputs.image-name }}:test

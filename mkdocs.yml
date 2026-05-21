@@ -22,6 +22,7 @@ nav:
       - Features: user/features.md
       - Website:
           - Overview: user/website/dtaas.md
+          - Workspace: user/website/workspace.md
           - Settings: user/website/settings.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
@@ -38,31 +39,44 @@ nav:
               - Capabilities: user/digital-twins/devops/capabilities.md
               - Concurrent Execution:
                   user/digital-twins/devops/concurrent-execution.md
+              - Performance: user/digital-twins/devops/measurement.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
       - Runner: user/servers/execution/runner/readme.md
       - Examples:
           - Overview: user/examples/index.md
-          - Mass Spring Damper: user/examples/mass-spring-damper/README.md
-          - Water Tank Fault Injection: user/examples/water_tank_FI/README.md
-          - Water Tank Model Swap: user/examples/water_tank_swap/README.md
-          - Desktop Robotti and RabbitMQ:
-              user/examples/drobotti-rmqfmu/README.md
-          - Water Plant and OPC-UA: user/examples/opc-ua-waterplant/README.md
-          - Three Water Tanks: user/examples/three-tank/README.md
-          - Flex Cell: user/examples/flex-cell/README.md
-          - Incubator: user/examples/incubator/README.md
-          - Firefighters: user/examples/o5g/README.md
-          - Mass Spring Damper with NuRV:
-              user/examples/mass-spring-damper-monitor/README.md
-          - Water Tank Fault Injection with NuRV:
-              user/examples/water_tank_FI_monitor/README.md
-          - Incubator Co-Sim with NuRV:
-              user/examples/incubator-NuRV-monitor-validation/README.md
-          - Incubator with NuRV Service:
-              user/examples/incubator-NuRV-monitor-service/README.md
-          - Incubator with NuRV FMU Service:
-              user/examples/incubator-NuRV-fmu-monitor-service/README.md
+          - Workspace:
+              - Overview: user/examples/workspace/index.md
+              - Mass Spring Damper: user/examples/workspace/mass-spring-damper/README.md
+              - Water Tank Fault Injection: user/examples/workspace/water_tank_FI/README.md
+              - Water Tank Model Swap: user/examples/workspace/water_tank_swap/README.md
+              - Desktop Robotti and RabbitMQ:
+                  user/examples/workspace/drobotti-rmqfmu/README.md
+              - Water Plant and OPC-UA: user/examples/workspace/opc-ua-waterplant/README.md
+              - Three Water Tanks: user/examples/workspace/three-tank/README.md
+              - Flex Cell: user/examples/workspace/flex-cell/README.md
+              - Incubator: user/examples/workspace/incubator/README.md
+              - Firefighters: user/examples/workspace/o5g/README.md
+              - Mass Spring Damper with NuRV:
+                  user/examples/workspace/mass-spring-damper-monitor/README.md
+              - Water Tank Fault Injection with NuRV:
+                  user/examples/workspace/water_tank_FI_monitor/README.md
+              - Incubator Co-Sim with NuRV:
+                  user/examples/workspace/incubator-NuRV-monitor-validation/README.md
+              - Incubator with NuRV Service:
+                  user/examples/workspace/incubator-NuRV-monitor-service/README.md
+              - Incubator with NuRV FMU Service:
+                  user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
+          - Automation:
+              - Overview: user/examples/automation/index.md
+              - Mass Spring Damper:
+                  user/examples/automation/mass-spring-damper/README.md
+              - Structural Health Monitoring:
+                  user/examples/automation/shm/README.md
+              - Heart Digital Twin:
+                  user/examples/automation/heart-dt/README.md
+              - Heart Digital Twin (PaaS):
+                  user/examples/automation/heart-dt-paas/README.md
   - Admin:
       - Installation Scenarios:
           - Overview: admin/overview.md
@@ -110,6 +124,7 @@ nav:
           - Remove user: admin/guides/remove_user.md
           - Common Assets: admin/guides/common_workspace_readonly.md
           - Renew Certificates: admin/guides/renew_certs.md
+          - Self-Signed Certificates: admin/guides/self-signed-certs.md
   - FAQ: FAQ.md
   - Developer:
       - Guide:

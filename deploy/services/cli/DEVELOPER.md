@@ -328,16 +328,16 @@ variable to a different filename (looked up in `config/`).
 Each entry's `redirect_uri` is the **full callback URL** registered with GitLab
 
 | Field | Description |
-
 | --- | --- |
 | `name` | Display name shown in GitLab |
 | `redirect_uri` | Full callback URL (e.g. `https://into-cps.org/_oauth`) |
 | `confidential` | `true` for server-side apps, `false` for browser clients |
 | `scopes` | Space-separated OAuth scopes |
 | `trusted` | `true` to skip user authorisation dialogs |
+
 OAuth 2.0 applications are configured via a JSON file. The default file is
-`config/gitlab_oauth.json`, which defines two applications: Server Authorization
-(for Traefik Forward-Auth) and Client Authorization (for the React client).
+`config/gitlab_oauth.json`, which defines two applications: Server Authorisation
+(for Traefik Forward-Auth) and Client Authorisation (for the React client).
 These are created during `dtaas-services install -s gitlab`.
 
 **To use custom OAuth settings:**
@@ -368,11 +368,12 @@ These are created during `dtaas-services install -s gitlab`.
 ```
 
 Each app requires:
+
 * **`name`**: Display name shown in GitLab
 * **`redirect_uri`**: Full callback URL for your domain
 * **`confidential`**: `true` for server-side apps, `false` for browser clients
 * **`scopes`**: Space-separated OAuth scopes
-* **`trusted`**: `true` to skip user authorization dialogs
+* **`trusted`**: `true` to skip user authorisation dialogs
 
 #### ThingsBoard SSL Configuration
 

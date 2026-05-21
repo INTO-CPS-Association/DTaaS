@@ -1,18 +1,16 @@
 # DTaaS Command Line Interface
 
-This is a command line tool for the
-INTO-CPS-Association Digital Twins as a Service.
+This is a command-line tool for the
+INTO-CPS-Association Digital Twin as a Service platform.
 
-## Prerequisite
+## 📋 Prerequisite
 
 The DTaaS application with base users and essential
-containers should be up and running before using the CLI.
+containers must be running before using the CLI.
 
-## Installation
+## 📦 Installation
 
-Simply install using:
-
-We recommend installing this in a virutal environment.
+Installation in a virtual environment is recommended.
 
 Steps to install:
 
@@ -22,16 +20,115 @@ Steps to install:
 cd <DTaaS-directory>/cli
 ```
 
-- We recommend installing this in a virtual environment.
-  Create and activate a virtual environment.
+- Create and activate a virtual environment.
 
-- To install, simply:
+- Install the package:
 
 ```bash
 pip install dtaas
 ```
 
-## Usage
+## 📖 Usage
+
+### Generate Project Files
+
+Before configuring the CLI, generate the required project files in your
+working directory:
+
+```bash
+dtaas generate-project
+```
+
+By default, this creates files in the current directory and skips any that already exist.
+You can customize this behaviour with the following options:
+
+```bash
+# Generate files in a specific directory
+dtaas generate-project --output-dir /path/to/target/dir
+
+# Overwrite existing files
+dtaas generate-project --force
+
+# Combine options
+dtaas generate-project --output-dir /path/to/target/dir --force
+```
+
+**Options:**
+- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
+
+This creates three configuration files and the workspace directory structure:
+
+| Item | Purpose |
+|------|---------|
+| `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
+| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
+| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
+| `files/template/` | Template directory for user workspace initialization |
+
+The `files/template/` directory is created if it does not exist.
+
+#### Important: Verify Docker Image Tag
+
+The generated `users.server.yml` and `users.server.secure.yml` files contain a
+pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
+This tag is baked into the templates at generation time and may become stale as the
+project evolves.
+
+**You should verify and update the Docker image tag** in these templates to use a current,
+stable version before deploying user workspaces. Check the available tags in the
+[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
+Docker registry to ensure you are using an up-to-date image version.
+
+### Generate Project Files
+
+Before configuring the CLI, generate the required project files in your
+working directory:
+
+```bash
+dtaas generate-project
+```
+
+By default, this creates files in the current directory and skips any that already exist.
+You can customize this behaviour with the following options:
+
+```bash
+# Generate files in a specific directory
+dtaas generate-project --output-dir /path/to/target/dir
+
+# Overwrite existing files
+dtaas generate-project --force
+
+# Combine options
+dtaas generate-project --output-dir /path/to/target/dir --force
+```
+
+**Options:**
+- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
+
+This creates three configuration files and the workspace directory structure:
+
+| Item | Purpose |
+|------|---------|
+| `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
+| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
+| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
+| `files/template/` | Template directory for user workspace initialization |
+
+The `files/template/` directory is created if it does not exist.
+
+#### Important: Verify Docker Image Tag
+
+The generated `users.server.yml` and `users.server.secure.yml` files contain a
+pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
+This tag is baked into the templates at generation time and may become stale as the
+project evolves.
+
+**You should verify and update the Docker image tag** in these templates to use a current,
+stable version before deploying user workspaces. Check the available tags in the
+[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
+Docker registry to ensure you are using an up-to-date image version.
 
 ### Configure
 
@@ -47,7 +144,7 @@ owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 [common]
-# Server hostname either localhost or a valid hostname, ex: foo.com
+# Server hostname either localhost or a valid hostname, ex: intocps.org
 # TODO : Update, we are now reusing hostname for this
 server-dns = "localhost"
 # absolute path to the DTaaS application directory
@@ -99,26 +196,16 @@ delete = ["username2", "username3"]
   workspace via the CLI or by restarting the container in Docker Compose).
 - Use units (`M`, `G`) for memory and shared memory values.
 
-### Select Template
+### 📁 Select Template
 
 The _cli_ uses YAML templates provided in this directory to create
-new user workspaces. The templates are:
+new user workspaces. The available templates are:
 
 1. _user.local.yml_: localhost installation
-1. _User.server.yml_: multi-user web application application over HTTP
-1. _user.server.secure.yml_: multi-user web application application over HTTPS
+1. _User.server.yml_: multi-user web application over HTTP
+1. _user.server.secure.yml_: multi-user web application over HTTPS
 
-Please note that the _cli_ is not capable of detecting the difference between
-HTTP and HTTPS modes of web application. Thus if you are serving
-web application over HTTPS, please do one extra step.
-
-```bash
-cp user.server.secure.yml user.server.yml
-```
-
-This will change the user template from insecure to secure.
-
-### Add users
+### ➕ Add Users
 
 To add new users using the CLI, fill in the
 _users.add_ list in
@@ -131,9 +218,9 @@ usernames of the users to be added
 add = ["username1","username2", "username3"]
 ```
 
-Make sure you are in the _cli_ directory.
+Ensure the working directory is _cli_.
 
-Then simply:
+Then run:
 
 ```bash
 dtaas admin user add
@@ -179,7 +266,7 @@ docker compose -f compose.server.yml --env-file .env up -d --force-recreate trae
 The new users are now added to the DTaaS
 instance, with authorization enabled.
 
-### Delete users
+### ➖ Delete Users
 
 - To delete existing users, fill in the _users.delete_ list in
   _dtaas.toml_ with the Gitlab instance
@@ -191,9 +278,9 @@ instance, with authorization enabled.
 delete = ["username1","username2", "username3"]
 ```
 
-- Make sure you are in the _cli_ directory.
+- Ensure the working directory is _cli_.
 
-Then simply:
+Then run:
 
 ```bash
 dtaas admin user delete
@@ -202,7 +289,7 @@ dtaas admin user delete
 - Remember to remove the rules for deleted users
   in _conf.server_.
 
-### Additional Points to Remember
+### 📌 Additional Points
 
 - The _user add_ CLI will add and start a
   container for a new user.

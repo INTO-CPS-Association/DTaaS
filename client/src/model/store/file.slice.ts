@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileState } from 'model/backend/interfaces/sharedInterfaces';
-import { RootState } from 'store/storeTypes';
-import { getFileTypeFromExtension } from 'util/fileUtils';
+import getFileTypeFromExtension from 'model/backend/interfaces/fileTypeUtils';
+import type { FilesStoreSlice } from 'model/store/modelRootState';
 
 const initialState: FileState[] = [];
 
@@ -94,7 +94,7 @@ const filesSlice = createSlice({
 });
 
 export const selectModifiedFiles = createSelector(
-  (state: RootState) => state.files,
+  (state: FilesStoreSlice) => state.files,
   (files) => files.filter((file) => !file.isNew),
 );
 

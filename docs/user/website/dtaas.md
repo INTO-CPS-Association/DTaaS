@@ -2,6 +2,10 @@
 
 This page provides a screenshot-driven preview of the website serving
 the DTaaS software platform.
+A quick screen recording is available as well.
+
+![DTaaS user view](../dtaas-user_4x.gif)
+
 The `https://intocps.org` is used in this tutorial as an illustration
 for base URL of the installation. Do replace it with
 the correct URL of the installation.
@@ -130,7 +134,7 @@ Each tab provides help text to guide users on the asset type.
     The data sources and sinks available to a digital twins. Typical examples
     of data sources are sensor measurements from  Physical Twins, and
     test data provided by manufacturers for calibration of models.
-    Typical examples of data sinks are visualization software, external users
+    Typical examples of data sinks are visualisation software, external users
     and data storage services. There exist special outputs
     such as events, and
     commands which are akin to control outputs from a Digital Twin.
@@ -217,11 +221,6 @@ the [lifecycle phases of digital twin](../digital-twins/lifecycle.md).
     back in the data directory. These scripts can either be
     executed from VSCode and graphical results or can be
     executed from VNC GUI.
-    The analysis of digital twins requires running of digital twin script
-    from user workspace. The execution results placed within data directory
-    are processed by analysis scripts and results are placed back in
-    the data directory. These scripts can either be executed from VSCode
-    and graphical results or can be executed from VNC GUI.
 
 :fontawesome-solid-circle-info: The reusable assets (files) displayed in
 the file manager are also available in Jupyter Lab. Additionally, a

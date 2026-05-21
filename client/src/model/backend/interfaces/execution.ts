@@ -1,5 +1,9 @@
 import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
 
+export interface PollOptions {
+  shouldAbort?: () => boolean;
+}
+
 export enum ExecutionStatus {
   RUNNING = 'running',
   COMPLETED = 'completed',

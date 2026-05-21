@@ -59,5 +59,5 @@ available runners and environments.
 
 - Prefer backend interface methods over ad-hoc API calls in UI code.
 - Use the batched commit method when updating multiple files.
-- Keep execution history updates centralized in utilities for consistent status
+- Keep execution history updates centralised in utilities for consistent status
   reporting.

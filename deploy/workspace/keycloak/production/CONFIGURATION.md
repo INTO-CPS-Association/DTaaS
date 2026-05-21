@@ -121,8 +121,8 @@ in the Traefik Forward Auth configuration file.
 
 ## 🎯 Keycloak Integration
 
-The default configuration for `docker-compose.yml` now uses **Keycloak** 
-for authentication via OIDC (OpenID Connect). Keycloak provides a robust, 
+The default configuration for `docker-compose.yml` now uses **Keycloak**
+for authentication via OIDC (OpenID Connect). Keycloak provides a robust,
 enterprise-grade identity and access management solution.
 The `traefik-forward-auth` and the DTaaS `client` docker services use
 **Keycloak** for authentication and authorisation. It is necessary to configure
