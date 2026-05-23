@@ -39,8 +39,8 @@ working directory:
 dtaas generate-project
 ```
 
-By default, this creates files in the current directory and skips any that already exist.
-You can customize this behaviour with the following options:
+By default, this creates files in the current directory and skips any that
+already exist. You can customize this behaviour with the following options:
 
 ```bash
 # Generate files in a specific directory
@@ -54,16 +54,21 @@ dtaas generate-project --output-dir /path/to/target/dir --force
 ```
 
 **Options:**
-- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
-- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
+
+- `--output-dir` (default: `.`): Target directory for generated files.
+The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag,
+existing files are left untouched and a message is printed.
 
 This creates three configuration files and the workspace directory structure:
 
 | Item | Purpose |
 |------|---------|
+
 | `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
-| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
-| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
+| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments|
+| `users.server.secure.yml` | Docker Compose user-workspace template for
+HTTPS/TLS deployments |
 | `files/template/` | Template directory for user workspace initialization |
 
 The `files/template/` directory is created if it does not exist.
@@ -72,63 +77,14 @@ The `files/template/` directory is created if it does not exist.
 
 The generated `users.server.yml` and `users.server.secure.yml` files contain a
 pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
-This tag is baked into the templates at generation time and may become stale as the
-project evolves.
+This tag is baked into the templates at generation time and may become stale as
+the project evolves.
 
-**You should verify and update the Docker image tag** in these templates to use a current,
-stable version before deploying user workspaces. Check the available tags in the
-[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
-Docker registry to ensure you are using an up-to-date image version.
-
-### Generate Project Files
-
-Before configuring the CLI, generate the required project files in your
-working directory:
-
-```bash
-dtaas generate-project
-```
-
-By default, this creates files in the current directory and skips any that already exist.
-You can customize this behaviour with the following options:
-
-```bash
-# Generate files in a specific directory
-dtaas generate-project --output-dir /path/to/target/dir
-
-# Overwrite existing files
-dtaas generate-project --force
-
-# Combine options
-dtaas generate-project --output-dir /path/to/target/dir --force
-```
-
-**Options:**
-- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
-- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
-
-This creates three configuration files and the workspace directory structure:
-
-| Item | Purpose |
-|------|---------|
-| `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
-| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
-| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
-| `files/template/` | Template directory for user workspace initialization |
-
-The `files/template/` directory is created if it does not exist.
-
-#### Important: Verify Docker Image Tag
-
-The generated `users.server.yml` and `users.server.secure.yml` files contain a
-pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
-This tag is baked into the templates at generation time and may become stale as the
-project evolves.
-
-**You should verify and update the Docker image tag** in these templates to use a current,
-stable version before deploying user workspaces. Check the available tags in the
-[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
-Docker registry to ensure you are using an up-to-date image version.
+**You should verify and update the Docker image tag** in these templates to use
+a current, stable version before deploying user workspaces.
+Check the available tags in the
+[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS)
+or your Docker registry to ensure you are using an up-to-date image version.
 
 ### Configure
 
@@ -195,6 +151,50 @@ delete = ["username2", "username3"]
   the user container(s) (for example by removing and re-adding the user
   workspace via the CLI or by restarting the container in Docker Compose).
 - Use units (`M`, `G`) for memory and shared memory values.
+
+### Generate Deployment Project
+
+To generate the full project structure for a specific deployment scenario without
+downloading separate zip packages:
+
+```bash
+dtaas admin generate-project --type <name>
+```
+
+**Available types:**
+
+| `--type` | Deployment scenario |
+|---|---|
+| `localhost` | Single-machine Docker deployment |
+| `server` | Multi-user HTTP server deployment |
+| `secure-server` | Multi-user HTTPS/TLS server deployment |
+| `secure-server-gitlab` | HTTPS/TLS server with integrated GitLab |
+| `workspace-localhost` | Workspace service with Dex on localhost |
+| `workspace-secure-server` | Workspace service with Keycloak in production |
+
+**Options:**
+
+- `--type` (required): Deployment scenario to generate.
+- `--output-dir` (default: `.`): Target directory for generated files.
+  The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag, existing files are
+  left untouched and a message is printed.
+
+**Examples:**
+
+```bash
+# Generate a localhost deployment in the current directory
+dtaas admin generate-project --type localhost
+
+# Generate a secure-server deployment in a specific directory
+dtaas admin generate-project --type secure-server --output-dir /path/to/project
+
+# Regenerate, overwriting any existing files
+dtaas admin generate-project --type server --output-dir /path/to/project --force
+```
+
+Each type copies the relevant `docker-compose.yml`, configuration examples,
+and supporting files into the target directory, ready to be customised.
 
 ### 📁 Select Template
 

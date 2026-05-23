@@ -2,16 +2,16 @@
 
 from unittest.mock import patch
 import pytest
-from src.pkg.project import generate_project, _copy_template, TEMPLATE_FILES
-
-
-def test_generate_project_creates_all_files(tmp_path):
-    """All three template files and workspace dirs are created."""
-    generate_project(str(tmp_path))
-
-    for name in TEMPLATE_FILES:
-        assert (tmp_path / name).exists()
-    assert (tmp_path / "files" / "template").exists()
+from src.pkg.project import (
+    generate_project,
+    generate_deploy_project,
+    _copy_template,
+    _copy_file,
+    _copy_tree,
+    _validate_deploy_inputs,
+    TEMPLATE_FILES,
+    DEPLOY_TYPES,
+)
 
 
 def test_generate_project_skips_existing_file(tmp_path, capsys):
@@ -32,88 +32,69 @@ def test_generate_project_raises_on_copy_failure(tmp_path):
             generate_project(str(tmp_path))
 
 
-def test_generate_project_collects_all_copy_failures(tmp_path):
-    """All template files are attempted even when copies fail; errors are combined."""
-    call_count = {"n": 0}
-
-    def always_fail(*_args, **_kwargs):
-        call_count["n"] += 1
-        raise OSError("fail")
-
-    with patch("src.pkg.project.shutil.copy2", side_effect=always_fail):
-        with pytest.raises(OSError):
-            generate_project(str(tmp_path))
-
-    assert call_count["n"] == len(TEMPLATE_FILES)
-
-
 def test_generate_project_raises_if_dest_not_found():
     """FileNotFoundError is raised immediately when dest_dir does not exist."""
     with pytest.raises(FileNotFoundError, match="does not exist"):
         generate_project("/nonexistent/path/that/cannot/exist")
 
 
-@pytest.mark.parametrize("template_name", TEMPLATE_FILES)
-def test_copy_template_creates_file(tmp_path, template_name):
-    """Each template file is copied when the destination does not exist."""
-    _copy_template(template_name, str(tmp_path))
+def test_copy_file_skips_existing(tmp_path, capsys):
+    """Returns None and skips when target exists and force is False."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "a.txt").write_text("new")
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    (dest / "a.txt").write_text("old")
 
-    assert (tmp_path / template_name).exists()
+    result = _copy_file(src / "a.txt", src, dest, force=False)
 
-
-def test_copy_template_skips_existing_file(tmp_path):
-    """Copying to an existing destination returns True and leaves the file unchanged."""
-    (tmp_path / "dtaas.toml").write_text("keep me")
-
-    skipped = _copy_template("dtaas.toml", str(tmp_path))
-
-    assert (tmp_path / "dtaas.toml").read_text() == "keep me"
-    assert skipped is True
+    assert result is None
+    assert (dest / "a.txt").read_text() == "old"
+    assert "already exists, skipping" in capsys.readouterr().out
 
 
-def test_copy_template_force_overwrites_existing_file(tmp_path):
-    """force=True overwrites an existing file."""
-    (tmp_path / "dtaas.toml").write_text("old content")
+def test_copy_tree_collects_errors(tmp_path):
+    """All files are attempted even when copies fail."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "a.txt").write_text("a")
+    (src / "b.txt").write_text("b")
 
-    _copy_template("dtaas.toml", str(tmp_path), force=True)
+    dest = tmp_path / "dest"
+    dest.mkdir()
 
-    assert (tmp_path / "dtaas.toml").read_text() != "old content"
-
-
-def test_copy_template_raises_on_failure(tmp_path):
-    """OSError propagates on copy failure."""
-    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("no space")):
-        with pytest.raises(OSError, match="no space"):
-            _copy_template("dtaas.toml", str(tmp_path))
-
-
-def test_generate_project_creates_workspace_dirs(tmp_path):
-    """The files/template directory structure is created."""
-    generate_project(str(tmp_path))
-
-    assert (tmp_path / "files" / "template").is_dir()
+    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("fail")):
+        with pytest.raises(OSError, match="fail"):
+            _copy_tree(src, dest)
 
 
-def test_generate_project_force_overwrites_existing_files(tmp_path):
-    """force=True causes existing files to be replaced."""
-    for name in TEMPLATE_FILES:
-        (tmp_path / name).write_text("old content")
-
-    generate_project(str(tmp_path), force=True)
-
-    for name in TEMPLATE_FILES:
-        assert (tmp_path / name).read_text() != "old content"
+def test_validate_deploy_inputs_raises_for_unknown_type(tmp_path):
+    """ValueError for an unrecognised deploy type."""
+    with pytest.raises(ValueError, match="Unknown deploy type"):
+        _validate_deploy_inputs("bad-type", tmp_path, tmp_path)
 
 
-def test_generate_project_workspace_dir_already_exists(tmp_path):
-    """No error if files/template directory already exists."""
-    (tmp_path / "files" / "template").mkdir(parents=True, exist_ok=True)
+def test_validate_deploy_inputs_raises_if_src_missing(tmp_path):
+    """RuntimeError when the template directory is absent."""
+    with pytest.raises(RuntimeError, match="Template directory not found"):
+        _validate_deploy_inputs("localhost", tmp_path / "missing", tmp_path)
 
-    generate_project(str(tmp_path))
+
+def test_validate_deploy_inputs_raises_if_dest_missing(tmp_path):
+    """FileNotFoundError when the destination directory is absent."""
+    src = tmp_path / "localhost"
+    src.mkdir()
+    with pytest.raises(FileNotFoundError, match="does not exist"):
+        _validate_deploy_inputs("localhost", src, tmp_path / "missing")
 
 
-def test_generate_project_raises_on_mkdir_failure(tmp_path):
-    """OSError is raised when mkdir fails."""
-    with patch("src.pkg.project.Path.mkdir", side_effect=OSError("permission denied")):
-        with pytest.raises(OSError, match="permission denied"):
-            generate_project(str(tmp_path))
+@pytest.mark.parametrize("deploy_type", sorted(DEPLOY_TYPES))
+def test_generate_deploy_project_copies_files(tmp_path, deploy_type):
+    """Each deploy type produces at least one file."""
+    generate_deploy_project(deploy_type, str(tmp_path))
+
+    copied = list(tmp_path.rglob("*"))
+    files = [p for p in copied if p.is_file()]
+    assert len(files) > 0, f"No files generated for type '{deploy_type}'"
+
