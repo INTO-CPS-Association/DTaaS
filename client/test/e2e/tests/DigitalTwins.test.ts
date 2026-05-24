@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import { saveRunnerSettings } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 
 // Increase the test timeout to 5 minutes
@@ -14,6 +15,7 @@ test.describe('Digital Twin Log Cleaning', () => {
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible({ timeout: 10000 });
+    await saveRunnerSettings(page);
 
     // Navigate directly to the Digital Twins page
     await page.goto('./preview/digitaltwins');

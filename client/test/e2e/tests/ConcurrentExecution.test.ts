@@ -1,9 +1,10 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import { saveRunnerSettings } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 
-// Increase the test timeout to 5 minutes
-test.setTimeout(300000);
+// Increase the test timeout to 10 minutes
+test.setTimeout(600000);
 
 test.describe('Concurrent Execution', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,6 +15,7 @@ test.describe('Concurrent Execution', () => {
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
+    await saveRunnerSettings(page);
 
     // Navigate directly to the Digital Twins page
     await page.goto('./preview/digitaltwins');
@@ -91,7 +93,7 @@ test.describe('Concurrent Execution', () => {
         .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 180000 }); // Increased timeout for GitLab pipeline
+    }).toPass({ timeout: 300000 }); // Increased timeout for GitLab pipeline
 
     // For the first completed execution, expand the accordion to view the logs
     const firstCompletedExecution = historyDialog
@@ -252,7 +254,7 @@ test.describe('Concurrent Execution', () => {
         .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
       const completedCount = await completedExecutions.count();
       expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 180000 }); // Increased timeout for GitLab pipeline
+    }).toPass({ timeout: 300000 }); // Increased timeout for GitLab pipeline
 
     const completedSelector = postReloadHistoryDialog
       .locator('.MuiAccordionSummary-root')

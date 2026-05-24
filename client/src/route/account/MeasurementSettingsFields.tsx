@@ -88,6 +88,7 @@ function DTSelectField({
           <Tooltip title="Refresh digital twins">
             <span>
               <IconButton
+                aria-label="Refresh digital twins"
                 onClick={onRefresh}
                 disabled={loading}
                 size="small"
