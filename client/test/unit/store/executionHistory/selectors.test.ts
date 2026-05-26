@@ -13,7 +13,7 @@ import {
   selectExecutionHistoryLoading,
   selectExecutionHistoryError,
 } from 'model/backend/state/executionHistory.selectors';
-import { RootState } from 'store/store';
+import type { RootState } from 'store/store';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 

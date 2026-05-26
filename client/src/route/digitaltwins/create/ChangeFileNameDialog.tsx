@@ -7,7 +7,7 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { handleChangeFileName } from 'util/fileActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
@@ -28,14 +28,16 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   setFileType,
 }) => {
   const [modifiedFileName, setModifiedFileName] = useState(fileName);
+  const [prevFileName, setPrevFileName] = useState(fileName);
   const [errorChangeMessage, setErrorChangeMessage] = useState('');
+
+  if (prevFileName !== fileName) {
+    setPrevFileName(fileName);
+    setModifiedFileName(fileName);
+  }
 
   const files = useSelector((state: RootState) => state.files);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setModifiedFileName(fileName);
-  }, [fileName]);
 
   const handleCloseChangeFileNameDialog = () => {
     setOpenChangeFileNameDialog(false);

@@ -97,7 +97,7 @@ const useValidationResults = () => {
         const results = await getValidationResults();
         setValidationResults(results);
       } catch (error) {
-        throw new Error(`Failed to fetch validation results: ${error}`);
+        throw new Error(`Failed to fetch validation results`, { cause: error });
       } finally {
         setIsLoading(false);
       }
