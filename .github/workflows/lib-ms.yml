@@ -17,6 +17,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   NODE_VERSION: 24
   HTTP_PORT: 4002
@@ -189,7 +192,6 @@ jobs:
 
   publish-package-npm:
     permissions:
-      packages: write  # Push to github package registry
       contents: read  # Required for checking out the code
     if: |
       github.event_name == 'push' &&
@@ -232,7 +234,6 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write  # Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (
