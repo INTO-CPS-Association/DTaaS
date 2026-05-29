@@ -46,10 +46,18 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            %USERPROFILE%\AppData\Local\ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('client/yarn.lock') }}
+
       - name: Install dependencies
         run: |
           yarn install --network-timeout 1000000
-          yarn playwright install --with-deps
+          yarn playwright install --with-deps chromium firefox
 
       - name: Run the linting checks
         run: |
