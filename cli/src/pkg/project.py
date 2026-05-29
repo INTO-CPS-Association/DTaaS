@@ -93,17 +93,41 @@ def _copy_file(item, src, dest, force):
     return None
 
 
+def _check_no_symlinks(src, entries):
+    """Raise OSError if any entry in *entries* is a symlink.
+
+    Symlinks are not permitted in template trees to prevent unintended
+    path traversal during deployment generation.
+    """
+    symlinks = [str(e.relative_to(src)) for e in entries if e.is_symlink()]
+    if symlinks:
+        raise OSError(
+            "Template contains symlinks, which are not permitted: "
+            + ", ".join(symlinks)
+        )
+
+
+def _copy_entries(entries, src, dest, force):
+    """Copy all regular files from *entries* into *dest*, preserving structure.
+
+    Raises OSError listing all failures if any copy fails.
+    """
+    files = filter(Path.is_file, entries)
+    errors = list(filter(None, (_copy_file(i, src, dest, force) for i in files)))
+    if errors:
+        raise OSError("\n".join(errors))
+
+
 def _copy_tree(src_dir, dest_dir, force=False):
     """Recursively copy *src_dir* contents into *dest_dir*.
 
     Existing files are skipped unless *force* is True.
-    Raises OSError (with all failures listed) if any copy fails.
+    Raises OSError if symlinks are found or any copy fails.
     """
     src, dest = Path(src_dir), Path(dest_dir)
-    files = filter(Path.is_file, sorted(src.rglob("*")))
-    errors = list(filter(None, (_copy_file(i, src, dest, force) for i in files)))
-    if errors:
-        raise OSError("\n".join(errors))
+    entries = sorted(src.rglob("*"))
+    _check_no_symlinks(src, entries)
+    _copy_entries(entries, src, dest, force)
 
 
 def _validate_deploy_inputs(deploy_type, src, dest):

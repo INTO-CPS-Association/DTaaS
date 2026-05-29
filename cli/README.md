@@ -158,19 +158,29 @@ To generate the full project structure for a specific deployment scenario withou
 downloading separate zip packages:
 
 ```bash
-dtaas admin generate-project --type <name>
+dtaas generate-deployment --type <name>
 ```
 
 **Available types:**
 
-| `--type` | Deployment scenario |
-|---|---|
-| `localhost` | Single-machine Docker deployment |
-| `server` | Multi-user HTTP server deployment |
-| `secure-server` | Multi-user HTTPS/TLS server deployment |
-| `secure-server-gitlab` | HTTPS/TLS server with integrated GitLab |
-| `workspace-localhost` | Workspace service with Dex on localhost |
-| `workspace-secure-server` | Workspace service with Keycloak in production |
+| `--type` | Deployment scenario | Support level |
+|---|---|---|
+| `localhost` | Single-machine Docker deployment | dev/demo only |
+| `server` | Multi-user HTTP server deployment | insecure/demo only |
+| `secure-server` | Multi-user HTTPS/TLS server deployment | production-supported |
+| `secure-server-gitlab` | HTTPS/TLS server with integrated GitLab | production-supported |
+| `workspace-localhost` | Workspace service with Dex on localhost | dev/demo only |
+| `workspace-secure-server` | Workspace service with Keycloak in production | production-supported |
+
+> [!WARNING]
+> Templates labelled **dev/demo only** or **insecure/demo only** run over plain
+> HTTP and use default or static credentials. They are **not safe for
+> internet-facing or shared deployments**. Use a **production-supported** type
+> for any environment reachable from outside your local machine.
+>
+> Production-supported types still require manual hardening steps documented
+> inside each generated project (see the `README.md` and `CONFIGURATION.md`
+> shipped with the template).
 
 **Options:**
 
@@ -184,13 +194,13 @@ dtaas admin generate-project --type <name>
 
 ```bash
 # Generate a localhost deployment in the current directory
-dtaas admin generate-project --type localhost
+dtaas generate-deployment --type localhost
 
 # Generate a secure-server deployment in a specific directory
-dtaas admin generate-project --type secure-server --output-dir /path/to/project
+dtaas generate-deployment --type secure-server --output-dir /path/to/project
 
 # Regenerate, overwriting any existing files
-dtaas admin generate-project --type server --output-dir /path/to/project --force
+dtaas generate-deployment --type server --output-dir /path/to/project --force
 ```
 
 Each type copies the relevant `docker-compose.yml`, configuration examples,

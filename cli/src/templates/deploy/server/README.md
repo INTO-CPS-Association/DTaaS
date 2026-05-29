@@ -6,8 +6,13 @@ Thank you for downloading **Digital Twin as a Service**.
 
 This README provides a quick-start installation guide for
 a multi-user DTaaS deployment that uses an **external GitLab instance**
-for OAuth 2.0 authorisation. **This is an insecure deployment.**
-A secure version is recommended for production use.
+for OAuth 2.0 authorisation.
+
+> [!WARNING]
+> **Insecure/demo only.** This deployment runs over plain HTTP. OAuth tokens
+> and session data are transmitted unencrypted. It must not be used for
+> internet-facing or shared deployments. For a production deployment use the
+> `secure-server` or `secure-server-gitlab` type instead.
 
 For a full configuration reference, see [CONFIG.md](CONFIG.md).
 

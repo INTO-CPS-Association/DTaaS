@@ -3,6 +3,13 @@
 
 Thank you for downloading **Digital Twin as a Service**.
 
+> [!WARNING]
+> **Dev/demo only.** This deployment runs over plain HTTP with no TLS and
+> no backend authorisation middleware. It is suitable for local development
+> and evaluation on a single machine only. Do not expose it to the internet
+> or any shared network. For a production deployment see the
+> `secure-server` type.
+
 This README provides a quick-start installation guide for DTaaS on
 localhost over **HTTP** with a single user workspace.
 

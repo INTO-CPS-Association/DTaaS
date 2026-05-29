@@ -138,7 +138,7 @@ see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
    ```bash
    # Keycloak Admin Credentials
    KEYCLOAK_ADMIN=admin
-   KEYCLOAK_ADMIN_PASSWORD=changeme
+   KEYCLOAK_ADMIN_PASSWORD=__SET_A_STRONG_PASSWORD__
 
    # Keycloak Realm
    KEYCLOAK_REALM=dtaas

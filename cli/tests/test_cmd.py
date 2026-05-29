@@ -81,11 +81,11 @@ def test_generate_project_error(runner):
         assert "Error while generating project" in result.output
 
 
-def test_admin_generate_project_success(runner):
-    """admin generate-project calls generate_deploy_project and prints success"""
+def test_generate_deployment_success(runner):
+    """generate-deployment calls generate_deploy_project and prints success"""
     with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
         result = runner.invoke(
-            dtaas, ["admin", "generate-project", "--type", "localhost"]
+            dtaas, ["generate-deployment", "--type", "localhost"]
         )
 
         assert result.exit_code == 0
@@ -93,13 +93,13 @@ def test_admin_generate_project_success(runner):
         mock_gen.assert_called_once_with("localhost", ".", False)
 
 
-def test_admin_generate_project_error(runner):
-    """admin generate-project converts known exceptions to ClickException"""
+def test_generate_deployment_error(runner):
+    """generate-deployment converts known exceptions to ClickException"""
     with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
         mock_gen.side_effect = RuntimeError("template missing")
 
         result = runner.invoke(
-            dtaas, ["admin", "generate-project", "--type", "server"]
+            dtaas, ["generate-deployment", "--type", "server"]
         )
 
         assert result.exit_code != 0

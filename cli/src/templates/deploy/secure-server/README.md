@@ -7,6 +7,12 @@ This README provides a quick-start installation guide for a secure,
 multi-user DTaaS deployment that uses an **external GitLab instance**
 for OAuth 2.0 authorisation.
 
+> [!NOTE]
+> **Production-supported.** This deployment uses HTTPS/TLS and OAuth 2.0
+> forward-auth. Before going live, complete all hardening steps in
+> [CONFIG.md](CONFIG.md): replace every placeholder secret, supply valid
+> TLS certificates, and restrict access to the Traefik dashboard.
+
 For a full configuration reference, see [CONFIG.md](CONFIG.md).
 
 ## Overview

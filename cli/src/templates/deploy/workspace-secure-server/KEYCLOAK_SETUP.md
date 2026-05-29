@@ -38,7 +38,7 @@ Keycloak-specific environment variables are:
 | Variable | Purpose | Example |
 |----------|---------|---------|
 | `KEYCLOAK_ADMIN` | Admin username | `admin` |
-| `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `changeme` |
+| `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `__SET_A_STRONG_PASSWORD__` |
 | `KEYCLOAK_REALM` | Realm name | `dtaas` |
 | `KEYCLOAK_CLIENT_ID` | OIDC client ID | `dtaas-workspace` |
 | `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
@@ -49,7 +49,7 @@ Edit Keycloak-configuration in `.env`:
 ```bash
 # Keycloak Admin Credentials (for initial setup)
 KEYCLOAK_ADMIN=admin
-KEYCLOAK_ADMIN_PASSWORD=changeme
+KEYCLOAK_ADMIN_PASSWORD=__SET_A_STRONG_PASSWORD__
 
 # Keycloak Realm
 KEYCLOAK_REALM=dtaas
@@ -67,7 +67,7 @@ The following instructions are part of post-install step.
 
 1. Navigate to `https://intocps.org/auth`
 2. Click **Administration Console**
-3. Login with credentials from the `.env` file (default: `admin` / `changeme`)
+3. Login with the credentials set in your `.env` file (`KEYCLOAK_ADMIN` / `KEYCLOAK_ADMIN_PASSWORD`)
 
 #### Create a Realm
 

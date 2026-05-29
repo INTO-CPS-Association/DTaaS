@@ -41,7 +41,7 @@ def admin():
     return
 
 
-@admin.command(name="generate-project")
+@dtaas.command(name="generate-deployment")
 @click.option(
     "--type",
     "deploy_type",
@@ -56,7 +56,7 @@ def admin():
     help="Target directory for generated files.",
 )
 @click.option("--force", is_flag=True, help="Overwrite existing files.")
-def admin_generate_project(deploy_type, output_dir, force):
+def generate_deployment(deploy_type, output_dir, force):
     """Generate project structure for a deployment scenario.
 
     Copies all files for the chosen --type into the target directory,

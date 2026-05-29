@@ -3,6 +3,12 @@
 
 ## 🛠️ Install
 
+> [!WARNING]
+> **Dev/demo only.** This deployment runs over plain HTTP with static Dex
+> credentials and is intended for local evaluation on a single machine.
+> Do not expose it to the internet or any shared network. For a
+> production deployment see the `workspace-secure-server` type.
+
 The installation instructions provided in this README are
 ideal for running the **DTaaS on localhost served over HTTP connection**.
 

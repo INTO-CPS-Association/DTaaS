@@ -7,6 +7,8 @@ from src.pkg.project import (
     generate_deploy_project,
     _copy_template,
     _copy_file,
+    _check_no_symlinks,
+    _copy_entries,
     _copy_tree,
     _validate_deploy_inputs,
     TEMPLATE_FILES,
@@ -54,19 +56,62 @@ def test_copy_file_skips_existing(tmp_path, capsys):
     assert "already exists, skipping" in capsys.readouterr().out
 
 
-def test_copy_tree_collects_errors(tmp_path):
-    """All files are attempted even when copies fail."""
+def test_check_no_symlinks_raises_on_symlink(tmp_path):
+    """OSError is raised when any entry in the list is a symlink."""
     src = tmp_path / "src"
     src.mkdir()
-    (src / "a.txt").write_text("a")
-    (src / "b.txt").write_text("b")
+    real = src / "real.txt"
+    real.write_text("content")
+    link = src / "link.txt"
+    try:
+        link.symlink_to(real)
+    except OSError:
+        pytest.skip("symlink creation not supported in this environment")
 
+    with pytest.raises(OSError, match="symlinks"):
+        _check_no_symlinks(src, [real, link])
+
+
+def test_check_no_symlinks_passes_for_regular_files(tmp_path):
+    """No exception is raised when all entries are regular files."""
+    src = tmp_path / "src"
+    src.mkdir()
+    entries = [src / "a.txt", src / "b.txt"]
+    for e in entries:
+        e.write_text("x")
+
+    _check_no_symlinks(src, entries)  # must not raise
+
+
+def test_copy_entries_collects_errors(tmp_path):
+    """All files are attempted even when copies fail; errors are raised together."""
+    src = tmp_path / "src"
+    src.mkdir()
+    entries = [src / "a.txt", src / "b.txt"]
+    for e in entries:
+        e.write_text("x")
     dest = tmp_path / "dest"
     dest.mkdir()
 
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("fail")):
         with pytest.raises(OSError, match="fail"):
-            _copy_tree(src, dest)
+            _copy_entries(entries, src, dest, force=False)
+
+
+def test_copy_tree_delegates_to_helpers(tmp_path):
+    """_copy_tree successfully copies a plain directory tree end-to-end."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "a.txt").write_text("a")
+    (src / "sub").mkdir()
+    (src / "sub" / "b.txt").write_text("b")
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    _copy_tree(src, dest)
+
+    assert (dest / "a.txt").read_text() == "a"
+    assert (dest / "sub" / "b.txt").read_text() == "b"
 
 
 def test_validate_deploy_inputs_raises_for_unknown_type(tmp_path):
@@ -89,12 +134,61 @@ def test_validate_deploy_inputs_raises_if_dest_missing(tmp_path):
         _validate_deploy_inputs("localhost", src, tmp_path / "missing")
 
 
+REQUIRED_FILES = {
+    "localhost": [
+        "docker-compose.yml",
+        "README.md",
+        "config/.env.example",
+        "config/client.js.example",
+    ],
+    "server": [
+        "docker-compose.yml",
+        "README.md",
+        "config/.env.example",
+        "config/client.js.example",
+        "config/conf.server.example",
+    ],
+    "secure-server": [
+        "docker-compose.yml",
+        "README.md",
+        "config/.env.example",
+        "config/client.js.example",
+        "config/conf.server.example",
+        "config/tls.yml",
+    ],
+    "secure-server-gitlab": [
+        "docker-compose.yml",
+        "README.md",
+        "config/.env.example",
+        "config/client.js.example",
+        "config/conf.server.example",
+        "config/tls.yml",
+    ],
+    "workspace-localhost": [
+        "docker-compose.yml",
+        "README.md",
+        ".env.example",
+        "config/dex-config.yaml.example",
+    ],
+    "workspace-secure-server": [
+        "docker-compose.yml",
+        "README.md",
+        ".env.example",
+        "config/forward-auth-conf.example",
+        "config/tls.yml",
+        "KEYCLOAK_SETUP.md",
+        "CONFIGURATION.md",
+    ],
+}
+
+
 @pytest.mark.parametrize("deploy_type", sorted(DEPLOY_TYPES))
-def test_generate_deploy_project_copies_files(tmp_path, deploy_type):
-    """Each deploy type produces at least one file."""
+def test_generate_deploy_project_copies_required_files(tmp_path, deploy_type):
+    """Each deploy type copies its minimal set of critical files."""
     generate_deploy_project(deploy_type, str(tmp_path))
 
-    copied = list(tmp_path.rglob("*"))
-    files = [p for p in copied if p.is_file()]
-    assert len(files) > 0, f"No files generated for type '{deploy_type}'"
+    for rel in REQUIRED_FILES[deploy_type]:
+        assert (tmp_path / rel).is_file(), (
+            f"[{deploy_type}] required file missing after generation: {rel}"
+        )
 

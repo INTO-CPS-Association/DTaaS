@@ -10,6 +10,12 @@ for OAuth 2.0 authorisation.
 This README provides a quick-start installation guide. For detailed
 configuration reference, see [CONFIG.md](CONFIG.md).
 
+> [!NOTE]
+> **Production-supported.** This deployment uses HTTPS/TLS, an integrated
+> GitLab instance, and OAuth 2.0 forward-auth. Before going live, complete
+> all hardening steps in [CONFIG.md](CONFIG.md): replace every placeholder
+> secret, supply valid TLS certificates, and restrict the Traefik dashboard.
+
 > [!IMPORTANT]
 > The hostname `intocps.org` is used for illustration throughout
 > this guide. Replace it with the actual server hostname of the

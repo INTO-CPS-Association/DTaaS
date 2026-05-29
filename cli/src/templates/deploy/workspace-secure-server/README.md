@@ -3,6 +3,14 @@
 
 🎉 Thank you for downloading **Digital Twin as a Service**.
 
+> [!NOTE]
+> **Production-supported.** This deployment uses HTTPS/TLS and Keycloak as
+> the identity provider. Before going live, complete all hardening steps
+> documented in [CONFIGURATION.md](CONFIGURATION.md) and
+> [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md): replace every placeholder secret
+> (including `KEYCLOAK_ADMIN_PASSWORD`), supply valid TLS certificates, and
+> follow the Keycloak realm and client setup instructions.
+
 This guide explains how to deploy the application for
 secure multi-user deployments.
 
