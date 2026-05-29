@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: client/
@@ -46,58 +46,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
-      - name: Cache Playwright browsers
-        # v4.3.0
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
-        with:
-          path: |
-            ~/.cache/ms-playwright
-            ~/AppData/Local/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('client/yarn.lock') }}
-
       - name: Install dependencies
-        run: yarn install --network-timeout 1000000
-
-      - name: Install Playwright browsers
-        # Playwright's downloader has no idle-socket timeout: if the CDN stops
-        # sending bytes mid-artifact the install hangs until the job times out
-        # (seen on both runners). Run it with a per-attempt timeout, kill the
-        # stalled process tree, and retry with a fresh connection.
-        shell: bash
         run: |
-          node --input-type=commonjs <<'EOF'
-          const { spawn } = require('node:child_process');
-          const ATTEMPT_TIMEOUT_MS = 5 * 60 * 1000;
-          const MAX_ATTEMPTS = 3;
-          const isWindows = process.platform === 'win32';
-          const run = () =>
-            new Promise((resolve) => {
-              const child = spawn(
-                'yarn',
-                ['playwright', 'install', '--with-deps', 'chromium', 'firefox'],
-                { stdio: 'inherit', shell: isWindows, detached: !isWindows },
-              );
-              const timer = setTimeout(() => {
-                console.error(`Download stalled; aborting after ${ATTEMPT_TIMEOUT_MS / 1000}s`);
-                if (isWindows) {
-                  spawn('taskkill', ['/pid', String(child.pid), '/t', '/f']);
-                } else {
-                  try { process.kill(-child.pid, 'SIGKILL'); } catch {}
-                }
-              }, ATTEMPT_TIMEOUT_MS);
-              child.on('exit', (code) => { clearTimeout(timer); resolve(code ?? 1); });
-              child.on('error', (err) => { clearTimeout(timer); console.error(err); resolve(1); });
-            });
-          (async () => {
-            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-              const code = await run();
-              if (code === 0) process.exit(0);
-              console.error(`Attempt ${attempt}/${MAX_ATTEMPTS} failed (exit ${code}); retrying`);
-            }
-            console.error(`Playwright browser install failed after ${MAX_ATTEMPTS} attempts`);
-            process.exit(1);
-          })();
-          EOF
+          yarn install --network-timeout 1000000
+          yarn playwright install --with-deps
 
       - name: Run the linting checks
         run: |

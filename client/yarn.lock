@@ -2250,12 +2250,12 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.2.9.tgz#d229a7b7f9dac167a156992ef23c7f023653f53b"
   integrity sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==
 
-"@playwright/test@^1.57.0":
-  version "1.59.1"
-  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.59.1.tgz#5c4d38eac84a61527af466602ae20277685a02d6"
-  integrity sha512-PG6q63nQg5c9rIi4/Z5lR5IVF7yU5MqmKaPOe0HSc0O2cX1fPi96sUQu5j7eo4gKCkB2AnNGoWt7y4/Xx3Kcqg==
+"@playwright/test@^1.60.0":
+  version "1.60.0"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.60.0.tgz#e696c31427e8882851235cd556dc2490c3206d97"
+  integrity sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==
   dependencies:
-    playwright "1.59.1"
+    playwright "1.60.0"
 
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.3":
   version "0.5.17"
@@ -4044,7 +4044,7 @@ balanced-match@^4.0.2:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-4.0.4.tgz#bfb10662feed8196a2c62e7c68e17720c274179a"
   integrity sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==
 
-baseline-browser-mapping@^2.10.0, baseline-browser-mapping@^2.10.12, baseline-browser-mapping@^2.8.25, baseline-browser-mapping@^2.9.0:
+baseline-browser-mapping@^2.10.0, baseline-browser-mapping@^2.10.12, baseline-browser-mapping@^2.9.0:
   version "2.10.20"
   resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.10.20.tgz#7c99b86d43ae9be3810cac515f4675802e1f6b87"
   integrity sha512-1AaXxEPfXT+GvTBJFuy4yXVHWJBXa4OdbIebGN/wX5DlsIkU0+wzGnd2lOzokSk51d5LUmqjgBLRLlypLUqInQ==
@@ -4159,7 +4159,7 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-browserslist@^4.0.0, browserslist@^4.18.1, browserslist@^4.21.4, browserslist@^4.24.0, browserslist@^4.28.1, browserslist@^4.28.2:
+browserslist@^4.0.0, browserslist@^4.18.1, browserslist@^4.21.4, browserslist@^4.24.0, browserslist@^4.28.2:
   version "4.28.2"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.28.2.tgz#f50b65362ef48974ca9f50b3680566d786b811d2"
   integrity sha512-48xSriZYYg+8qXna9kwqjIVzuQxi+KYWp2+5nCYnYKPTr0LvD89Jqk2Or5ogxz0NUMfIjhh2lIUX/LyX9B4oIg==
@@ -5336,15 +5336,15 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.8.5"
 
-electron-to-chromium@^1.5.328:
-  version "1.5.343"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.343.tgz#8e5fb55a61fb1053d888f964f29b65814afed847"
-  integrity sha512-YHnQ3MXI08icvL9ZKnEBy05F2EQ8ob01UaMOuMbM8l+4UcAq6MPPbBTJBbsBUg3H8JeZNt+O4fjsoWth3p6IFg==
-
 electron-to-chromium@^1.5.263:
   version "1.5.302"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.302.tgz#032a5802b31f7119269959c69fe2015d8dad5edb"
   integrity sha512-sM6HAN2LyK82IyPBpznDRqlTQAtuSaO+ShzFiWTvoMJLHyZ+Y39r8VMfHzwbU8MVBzQ4Wdn85+wlZl2TLGIlwg==
+
+electron-to-chromium@^1.5.328:
+  version "1.5.343"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.343.tgz#8e5fb55a61fb1053d888f964f29b65814afed847"
+  integrity sha512-YHnQ3MXI08icvL9ZKnEBy05F2EQ8ob01UaMOuMbM8l+4UcAq6MPPbBTJBbsBUg3H8JeZNt+O4fjsoWth3p6IFg==
 
 emittery@^0.10.2:
   version "0.10.2"
@@ -9002,6 +9002,11 @@ node-preload@^0.2.1:
   dependencies:
     process-on-spawn "^1.0.0"
 
+node-releases@^2.0.27:
+  version "2.0.46"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.46.tgz#d188a129a83f5e03a101aacb58f260f2ee8faaa1"
+  integrity sha512-GYVXHE2KnrzAfsAjl4uP++evGFCrAU1jta4ubEjIG7YWt/64Gqv66a30yKwWczVjA6j3bM4nBwH7Pk1JmDHaxQ==
+
 node-releases@^2.0.36:
   version "2.0.38"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.38.tgz#791569b9e4424a044e12c3abfad418ed83ce9947"
@@ -9493,17 +9498,17 @@ pkg-up@^3.1.0:
   dependencies:
     find-up "^3.0.0"
 
-playwright-core@1.59.1:
-  version "1.59.1"
-  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.59.1.tgz#d8a2b28bcb8f2bd08ef3df93b02ae83c813244b2"
-  integrity sha512-HBV/RJg81z5BiiZ9yPzIiClYV/QMsDCKUyogwH9p3MCP6IYjUFu/MActgYAvK0oWyV9NlwM3GLBjADyWgydVyg==
+playwright-core@1.60.0:
+  version "1.60.0"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.60.0.tgz#24e0d9cc4730713db5dffcace29b5e4696b1907a"
+  integrity sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==
 
-playwright@1.59.1:
-  version "1.59.1"
-  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.59.1.tgz#f7b0ca61637ae25264cec370df671bbe1f368a4a"
-  integrity sha512-C8oWjPR3F81yljW9o5OxcWzfh6avkVwDD2VYdwIGqTkl+OGFISgypqzfu7dOe4QNLL2aqcWBmI3PMtLIK233lw==
+playwright@1.60.0, playwright@^1.60.0:
+  version "1.60.0"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.60.0.tgz#89710863a51f21112633ef8b6b182594d3bfd7b5"
+  integrity sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==
   dependencies:
-    playwright-core "1.59.1"
+    playwright-core "1.60.0"
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -12180,15 +12185,7 @@ upath@^1.2.0:
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
   integrity sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==
 
-update-browserslist-db@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz#64d76db58713136acbeb4c49114366cc6cc2e80d"
-  integrity sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==
-  dependencies:
-    escalade "^3.2.0"
-    picocolors "^1.1.1"
-
-update-browserslist-db@^1.2.0:
+update-browserslist-db@^1.2.0, update-browserslist-db@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz#64d76db58713136acbeb4c49114366cc6cc2e80d"
   integrity sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==
