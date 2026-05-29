@@ -24,7 +24,6 @@ permissions:
       version:
         required: true
         type: string
-        default: "latest"
       dockerfile:
         required: true
         type: string

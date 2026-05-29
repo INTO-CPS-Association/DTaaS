@@ -14,7 +14,6 @@ name: Build and Push Docker Image (GHCR)
       version:
         required: true
         type: string
-        default: "latest"
       dockerfile:
         required: true
         type: string
