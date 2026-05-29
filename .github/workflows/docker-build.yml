@@ -13,6 +13,9 @@ name: Build Docker Image
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   build-docker-image:
     name: Build Docker image
