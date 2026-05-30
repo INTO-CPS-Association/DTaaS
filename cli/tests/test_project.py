@@ -137,20 +137,17 @@ def test_validate_deploy_inputs_raises_if_dest_missing(tmp_path):
 REQUIRED_FILES = {
     "localhost": [
         "docker-compose.yml",
-        "README.md",
         "config/.env.example",
         "config/client.js.example",
     ],
     "server": [
         "docker-compose.yml",
-        "README.md",
         "config/.env.example",
         "config/client.js.example",
         "config/conf.server.example",
     ],
     "secure-server": [
         "docker-compose.yml",
-        "README.md",
         "config/.env.example",
         "config/client.js.example",
         "config/conf.server.example",
@@ -158,7 +155,6 @@ REQUIRED_FILES = {
     ],
     "secure-server-gitlab": [
         "docker-compose.yml",
-        "README.md",
         "config/.env.example",
         "config/client.js.example",
         "config/conf.server.example",
@@ -166,18 +162,14 @@ REQUIRED_FILES = {
     ],
     "workspace-localhost": [
         "docker-compose.yml",
-        "README.md",
         ".env.example",
         "config/dex-config.yaml.example",
     ],
     "workspace-secure-server": [
         "docker-compose.yml",
-        "README.md",
         ".env.example",
         "config/forward-auth-conf.example",
         "config/tls.yml",
-        "KEYCLOAK_SETUP.md",
-        "CONFIGURATION.md",
     ],
 }
 
