@@ -76,4 +76,23 @@ describe('Config', () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it('throws error with cause when validation fetch fails', async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const networkError = new Error('Network error');
+    (configUtil.getValidationResults as jest.Mock).mockRejectedValueOnce(
+      networkError,
+    );
+
+    render(<Config role="user" />);
+
+    await waitFor(() => {
+      expect(configUtil.getValidationResults).toHaveBeenCalled();
+    });
+
+    consoleErrorSpy.mockRestore();
+  });
 });

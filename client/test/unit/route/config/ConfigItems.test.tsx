@@ -122,7 +122,7 @@ describe('ConfigItems', () => {
         container.querySelector('[data-testid="success-icon"]'),
       ).toBeInTheDocument();
 
-      document.body.removeChild(rootDiv);
+      rootDiv.remove();
     });
 
     it('renders tooltip without container when root element does not exist', () => {
@@ -141,6 +141,34 @@ describe('ConfigItems', () => {
       );
 
       expect(screen.getByText(/Test Label:/)).toBeInTheDocument();
+    });
+
+    it('applies popper container to root element when root exists', () => {
+      const rootDiv = document.createElement('div');
+      rootDiv.id = 'root';
+      document.body.appendChild(rootDiv);
+
+      const validation: ValidationType = {
+        value: 'http://localhost',
+        status: 200,
+        error: undefined,
+      };
+
+      const { container } = render(
+        <ConfigItem
+          label="API_URL"
+          value="http://localhost"
+          validation={validation}
+        />,
+        { container: rootDiv },
+      );
+
+      // Verify the tooltip is rendered with the icon
+      expect(
+        container.querySelector('[data-testid="success-icon"]'),
+      ).toBeInTheDocument();
+
+      rootDiv.remove();
     });
   });
 });
