@@ -17,6 +17,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   client:
     name: Test react website
@@ -167,7 +170,6 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write  # Required for publishing to github package registry
     if: |
       github.event_name == 'push' &&
       (

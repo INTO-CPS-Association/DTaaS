@@ -19,8 +19,7 @@ env:
   NODE_VERSION: 24
 
 permissions:
-  contents: read   # Required for checking out the code
-  packages: write  # Push to github package registry
+  contents: read  # Required for checking out the code
 
 jobs:
   test-runner:
@@ -121,7 +120,6 @@ jobs:
   publish-package-npm:
     permissions:
       contents: read  # Required for checking out the code
-      packages: write  # Push to github package registry
     if: |
       github.event_name == 'push' &&
       (
