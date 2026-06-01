@@ -13,6 +13,8 @@ name: Release Packages
       - '.github/workflows/release-packages.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
 
 jobs:
   release-packages:
