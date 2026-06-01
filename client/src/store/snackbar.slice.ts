@@ -29,7 +29,7 @@ const snackbarSlice = createSlice({
       const item: SnackbarItem = {
         id: state.nextId,
         message: action.payload.message,
-        severity: action.payload.severity as AlertColor,
+        severity: action.payload.severity,
         icon: action.payload.icon,
       };
       state.nextId += 1;

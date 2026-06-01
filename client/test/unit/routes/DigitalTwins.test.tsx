@@ -6,6 +6,7 @@ import {
   itHasCorrectTabNameinDTIframe,
 } from 'test/unit/unit.testUtil';
 
+// Hoisted by ts-jest above the imports, so DigitalTwins loads the real TabComponent.
 jest.unmock('components/tab/TabComponent');
 
 describe('Digital Twins', () => {

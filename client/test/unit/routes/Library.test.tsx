@@ -9,6 +9,7 @@ import {
   TabLabelURLPair,
 } from 'test/unit/unit.testUtil';
 
+// jest hoisting: this is lifted above the imports, so the real TabComponent is used.
 jest.unmock('components/tab/TabComponent');
 
 const urlsByTabs: TabLabelURLPair[] = assetType.map((tab) => ({

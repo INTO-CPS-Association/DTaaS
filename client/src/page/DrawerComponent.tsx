@@ -57,7 +57,7 @@ function DrawerComponent({
       />
       <Divider />
       <List>
-        <MenuItems />
+        <MenuItems open={open} />
       </List>
     </Drawer>
   );

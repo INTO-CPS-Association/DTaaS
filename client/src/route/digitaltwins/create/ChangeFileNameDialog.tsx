@@ -31,6 +31,7 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
   const [prevFileName, setPrevFileName] = useState(fileName);
   const [errorChangeMessage, setErrorChangeMessage] = useState('');
 
+  // Adjusting state when a prop changes (React's recommended pattern over useEffect)
   if (prevFileName !== fileName) {
     setPrevFileName(fileName);
     setModifiedFileName(fileName);

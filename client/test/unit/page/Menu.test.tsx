@@ -10,6 +10,7 @@ import userEvent from '@testing-library/user-event';
 import { mockUser } from 'test/__mocks__/global_mocks';
 import { closestDiv } from 'test/integration/integration.testUtil';
 
+// jest hoisting: ts-jest lifts this above the imports, so it overrides the global page mock.
 jest.unmock('page/Menu');
 
 jest.mock('react-redux', () => ({

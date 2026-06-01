@@ -1,5 +1,6 @@
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -35,20 +36,29 @@ const menuItems: MenuItemEntry[] = [
   },
 ];
 
-function MenuItems() {
+function MenuItems({ open }: { open: boolean }) {
   return (
     <>
       {menuItems.map((item) => (
         <Link to={item.link} style={tolinkStyle} key={item.index}>
           <ListItemButton
+            sx={{ justifyContent: open ? 'initial' : 'center', px: 2.5 }}
             style={
               globalThis.location.pathname === item.link
                 ? { backgroundColor: 'lightgray' }
                 : undefined
             }
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            {item.name}
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : 'auto',
+                justifyContent: 'center',
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.name} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
         </Link>
       ))}

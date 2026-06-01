@@ -92,10 +92,12 @@ export default function MeasurementControls({
   return (
     <Box>
       <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 3 }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 3,
+        }}
       >
         <Typography variant="body1" sx={{ color: 'primary.main' }}>
           Trials Completed: {completedTrials}/{totalTasks * iterations}

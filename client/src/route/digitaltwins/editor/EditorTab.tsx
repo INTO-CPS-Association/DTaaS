@@ -97,6 +97,7 @@ function EditorTab({
   const [prevFileContent, setPrevFileContent] = useState(fileContent);
   const dispatch = useDispatch();
 
+  // Adjusting state when a prop changes (preferred over useEffect in React docs)
   if (prevFileContent !== fileContent) {
     setPrevFileContent(fileContent);
     setEditorValue(fileContent);
