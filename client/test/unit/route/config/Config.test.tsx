@@ -19,8 +19,8 @@ describe('Config', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     globalThis.env = {
-      API_URL: 'http://localhost',
-      AUTH_URL: 'http://auth',
+      API_URL: 'http://localhost', // NOSONAR
+      AUTH_URL: 'http://auth', // NOSONAR
     };
   });
 
@@ -35,8 +35,8 @@ describe('Config', () => {
 
   it('renders user config when validation succeeds', async () => {
     (configUtil.getValidationResults as jest.Mock).mockResolvedValueOnce({
-      API_URL: { value: 'http://localhost', status: 200 },
-      AUTH_URL: { value: 'http://auth', status: 200 },
+      API_URL: { value: 'http://localhost', status: 200 }, // NOSONAR
+      AUTH_URL: { value: 'http://auth', status: 200 }, // NOSONAR
     });
 
     render(<Config role="user" />);
@@ -48,8 +48,8 @@ describe('Config', () => {
 
   it('renders developer config when role is developer', async () => {
     (configUtil.getValidationResults as jest.Mock).mockResolvedValueOnce({
-      API_URL: { value: 'http://localhost', status: 200 },
-      AUTH_URL: { value: 'http://auth', status: 200 },
+      API_URL: { value: 'http://localhost', status: 200 }, // NOSONAR
+      AUTH_URL: { value: 'http://auth', status: 200 }, // NOSONAR
     });
 
     render(<Config role="developer" />);
