@@ -36,7 +36,7 @@ const menuItems: MenuItemEntry[] = [
   },
 ];
 
-function MenuItems({ open }: { open: boolean }) {
+function MenuItems({ open }: Readonly<{ open: boolean }>) {
   return (
     <>
       {menuItems.map((item) => (

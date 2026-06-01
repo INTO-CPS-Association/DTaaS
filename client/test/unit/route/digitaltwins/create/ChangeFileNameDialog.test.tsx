@@ -50,4 +50,36 @@ describe('ChangeFileNameDialog', () => {
     });
     expect(textField).toHaveValue('newFileName');
   });
+
+  it('updates modified file name when fileName prop changes', () => {
+    const { rerender } = render(
+      <Provider store={store}>
+        <ChangeFileNameDialog
+          open={true}
+          setOpenChangeFileNameDialog={jest.fn()}
+          fileName="originalName"
+          setFileName={jest.fn()}
+          setFileType={jest.fn()}
+        />
+      </Provider>,
+    );
+
+    let textField = screen.getByRole('textbox');
+    expect(textField).toHaveValue('originalName');
+
+    rerender(
+      <Provider store={store}>
+        <ChangeFileNameDialog
+          open={true}
+          setOpenChangeFileNameDialog={jest.fn()}
+          fileName="newName"
+          setFileName={jest.fn()}
+          setFileType={jest.fn()}
+        />
+      </Provider>,
+    );
+
+    textField = screen.getByRole('textbox');
+    expect(textField).toHaveValue('newName');
+  });
 });

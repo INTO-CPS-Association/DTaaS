@@ -7,9 +7,16 @@ import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
 
 jest.mock('@monaco-editor/react', () => ({
   __esModule: true,
-  default: ({ onChange }: { onChange?: (value: string) => void }) => (
+  default: ({
+    onChange,
+    value,
+  }: {
+    onChange?: (value: string) => void;
+    value?: string;
+  }) => (
     <textarea
       data-testid="monaco-editor"
+      value={value}
       onChange={(e) => onChange?.(e.target.value)}
     />
   ),
@@ -247,5 +254,34 @@ describe('EditorTab', () => {
       screen.queryByText('Please select a file to edit.'),
     ).not.toBeInTheDocument();
     expect(screen.getByTestId('monaco-editor')).toBeInTheDocument();
+  });
+
+  it('updates editor value when fileContent prop changes', () => {
+    const { rerender } = render(
+      <EditorTab
+        tab={'reconfigure'}
+        fileName="test.md"
+        fileContent="initial content"
+        filePrivacy="private"
+        isLibraryFile={false}
+        libraryAssetPath=""
+        setFileContent={mockSetFileContent}
+      />,
+    );
+
+    rerender(
+      <EditorTab
+        tab={'reconfigure'}
+        fileName="test.md"
+        fileContent="updated content"
+        filePrivacy="private"
+        isLibraryFile={false}
+        libraryAssetPath=""
+        setFileContent={mockSetFileContent}
+      />,
+    );
+
+    const editor = screen.getByTestId('monaco-editor');
+    expect((editor as HTMLTextAreaElement).value).toBe('updated content');
   });
 });
