@@ -16,7 +16,7 @@ TEMPLATE_FILES = [
 
 DEPLOY_TYPES = {
     "localhost",
-    "server",
+    "insecure-server",
     "secure-server",
     "secure-server-gitlab",
     "workspace-localhost",

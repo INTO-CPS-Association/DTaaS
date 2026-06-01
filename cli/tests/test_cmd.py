@@ -99,7 +99,7 @@ def test_generate_deployment_error(runner):
         mock_gen.side_effect = RuntimeError("template missing")
 
         result = runner.invoke(
-            dtaas, ["generate-deployment", "--type", "server"]
+            dtaas, ["generate-deployment", "--type", "insecure-server"]
         )
 
         assert result.exit_code != 0

@@ -64,7 +64,6 @@ This creates three configuration files and the workspace directory structure:
 
 | Item | Purpose |
 |------|---------|
-
 | `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
 | `users.server.yml` | Docker Compose user-workspace template for HTTP deployments|
 | `users.server.secure.yml` | Docker Compose user-workspace template for
@@ -166,7 +165,7 @@ dtaas generate-deployment --type <name>
 | `--type` | Deployment scenario | Support level |
 |---|---|---|
 | `localhost` | Single-machine Docker deployment | dev/demo only |
-| `server` | Multi-user HTTP server deployment | insecure/demo only |
+| `insecure-server` | Multi-user HTTP server deployment | insecure/demo only |
 | `secure-server` | Multi-user HTTPS/TLS server deployment | production-supported |
 | `secure-server-gitlab` | HTTPS/TLS server with integrated GitLab | production-supported |
 | `workspace-localhost` | Workspace service with Dex on localhost | dev/demo only |
@@ -200,7 +199,7 @@ dtaas generate-deployment --type localhost
 dtaas generate-deployment --type secure-server --output-dir /path/to/project
 
 # Regenerate, overwriting any existing files
-dtaas generate-deployment --type server --output-dir /path/to/project --force
+dtaas generate-deployment --type insecure-server --output-dir /path/to/project --force
 ```
 
 Each type copies the relevant `docker-compose.yml`, configuration examples,

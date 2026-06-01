@@ -140,7 +140,7 @@ REQUIRED_FILES = {
         "config/.env.example",
         "config/client.js.example",
     ],
-    "server": [
+    "insecure-server": [
         "docker-compose.yml",
         "config/.env.example",
         "config/client.js.example",
