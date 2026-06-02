@@ -19,9 +19,9 @@ def test_build_each_dir_is_non_empty():
 
     for deploy_type in _SOURCES:
         files = list((_DEST_ROOT / deploy_type).rglob("*"))
-        assert any(f.is_file() for f in files), (
-            f"No files found in template directory for type '{deploy_type}'"
-        )
+        assert any(
+            f.is_file() for f in files
+        ), f"No files found in template directory for type '{deploy_type}'"
 
 
 def test_build_excludes_companion_from_workspace_localhost():
@@ -29,7 +29,9 @@ def test_build_excludes_companion_from_workspace_localhost():
     build()
 
     companion = _DEST_ROOT / "workspace-localhost" / "companion"
-    assert not companion.exists(), "companion/ should be excluded from workspace-localhost"
+    assert (
+        not companion.exists()
+    ), "companion/ should be excluded from workspace-localhost"
 
 
 def test_build_excludes_are_complete():
@@ -39,12 +41,14 @@ def test_build_excludes_are_complete():
     for deploy_type in _SOURCES:
         dest = _DEST_ROOT / deploy_type
         for excluded in _EXCLUDE:
-            assert not (dest / excluded).exists(), (
+            assert not (
+                dest / excluded
+            ).exists(), (
                 f"Excluded directory '{excluded}' found in '{deploy_type}' template"
             )
 
 
-def test_copy_one_raises_when_source_missing(tmp_path):
+def test_copy_one_raises_when_source_missing():
     """_copy_one raises FileNotFoundError when the source directory does not exist."""
     with pytest.raises(FileNotFoundError, match="Source not found"):
         _copy_one("localhost", "nonexistent/path/that/cannot/exist")
