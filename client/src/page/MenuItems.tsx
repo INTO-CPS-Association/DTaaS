@@ -36,31 +36,37 @@ const menuItems: MenuItemEntry[] = [
   },
 ];
 
+function MenuItem({
+  item,
+  open,
+}: Readonly<{ item: MenuItemEntry; open: boolean }>) {
+  const isActive = globalThis.location.pathname === item.link;
+  return (
+    <Link to={item.link} style={tolinkStyle}>
+      <ListItemButton
+        sx={{ justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+        style={isActive ? { backgroundColor: 'lightgray' } : undefined}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {item.icon}
+        </ListItemIcon>
+        <ListItemText primary={item.name} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </Link>
+  );
+}
+
 function MenuItems({ open }: Readonly<{ open: boolean }>) {
   return (
     <>
       {menuItems.map((item) => (
-        <Link to={item.link} style={tolinkStyle} key={item.index}>
-          <ListItemButton
-            sx={{ justifyContent: open ? 'initial' : 'center', px: 2.5 }}
-            style={
-              globalThis.location.pathname === item.link
-                ? { backgroundColor: 'lightgray' }
-                : undefined
-            }
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center',
-              }}
-            >
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.name} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </Link>
+        <MenuItem key={item.index} item={item} open={open} />
       ))}
     </>
   );

@@ -1,3 +1,4 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppDispatch } from 'store/store';
 import {
   setGroupName,
@@ -48,6 +49,11 @@ const requiredStringFields: Array<keyof Omit<FormValues, 'measurementTrials'>> =
     'measurementSecondaryDTName',
   ];
 
+function isInvalidTrials(value: string): boolean {
+  const trialsValue = Number.parseInt(value, 10);
+  return !value.trim() || Number.isNaN(trialsValue) || trialsValue < 1;
+}
+
 export function validateSettingsForm(
   formValues: FormValues,
 ): Record<string, boolean> {
@@ -59,12 +65,7 @@ export function validateSettingsForm(
     }
   }
 
-  const trialsValue = Number.parseInt(formValues.measurementTrials, 10);
-  if (
-    !formValues.measurementTrials.trim() ||
-    Number.isNaN(trialsValue) ||
-    trialsValue < 1
-  ) {
+  if (isInvalidTrials(formValues.measurementTrials)) {
     errors.measurementTrials = true;
   }
 
@@ -76,49 +77,75 @@ export function dispatchChangedSettings(
   formValues: FormValues,
   current: CurrentSettings,
 ): boolean {
-  const needsRefresh =
-    formValues.branchName !== current.BRANCH_NAME ||
-    formValues.dtDirectory !== current.DT_DIRECTORY ||
-    formValues.groupName !== current.GROUP_NAME ||
-    formValues.commonLibraryProjectName !== current.COMMON_LIBRARY_PROJECT_NAME;
+  const stringChanges: Array<{
+    value: string;
+    current: string;
+    action: (value: string) => PayloadAction<string>;
+    triggersRefresh: boolean;
+  }> = [
+    {
+      value: formValues.groupName,
+      current: current.GROUP_NAME,
+      action: setGroupName,
+      triggersRefresh: true,
+    },
+    {
+      value: formValues.dtDirectory,
+      current: current.DT_DIRECTORY,
+      action: setDTDirectory,
+      triggersRefresh: true,
+    },
+    {
+      value: formValues.commonLibraryProjectName,
+      current: current.COMMON_LIBRARY_PROJECT_NAME,
+      action: setCommonLibraryProjectName,
+      triggersRefresh: true,
+    },
+    {
+      value: formValues.runnerTag,
+      current: current.RUNNER_TAG,
+      action: setRunnerTag,
+      triggersRefresh: false,
+    },
+    {
+      value: formValues.branchName,
+      current: current.BRANCH_NAME,
+      action: setBranchName,
+      triggersRefresh: true,
+    },
+    {
+      value: formValues.measurementSecondaryRunnerTag,
+      current: current.MEASUREMENT_SECONDARY_RUNNER_TAG,
+      action: setSecondaryRunnerTag,
+      triggersRefresh: false,
+    },
+    {
+      value: formValues.measurementPrimaryDTName,
+      current: current.MEASUREMENT_PRIMARY_DT_NAME,
+      action: setPrimaryDTName,
+      triggersRefresh: false,
+    },
+    {
+      value: formValues.measurementSecondaryDTName,
+      current: current.MEASUREMENT_SECONDARY_DT_NAME,
+      action: setSecondaryDTName,
+      triggersRefresh: false,
+    },
+  ];
 
-  if (formValues.groupName !== current.GROUP_NAME) {
-    dispatch(setGroupName(formValues.groupName));
+  let needsRefresh = false;
+  for (const change of stringChanges) {
+    if (change.value !== change.current) {
+      dispatch(change.action(change.value));
+      if (change.triggersRefresh) {
+        needsRefresh = true;
+      }
+    }
   }
-  if (formValues.dtDirectory !== current.DT_DIRECTORY) {
-    dispatch(setDTDirectory(formValues.dtDirectory));
-  }
-  if (
-    formValues.commonLibraryProjectName !== current.COMMON_LIBRARY_PROJECT_NAME
-  ) {
-    dispatch(setCommonLibraryProjectName(formValues.commonLibraryProjectName));
-  }
-  if (formValues.runnerTag !== current.RUNNER_TAG) {
-    dispatch(setRunnerTag(formValues.runnerTag));
-  }
-  if (formValues.branchName !== current.BRANCH_NAME) {
-    dispatch(setBranchName(formValues.branchName));
-  }
+
   const trialsValue = Number.parseInt(formValues.measurementTrials, 10);
   if (trialsValue !== current.MEASUREMENT_TRIALS) {
     dispatch(setTrials(trialsValue));
-  }
-  if (
-    formValues.measurementSecondaryRunnerTag !==
-    current.MEASUREMENT_SECONDARY_RUNNER_TAG
-  ) {
-    dispatch(setSecondaryRunnerTag(formValues.measurementSecondaryRunnerTag));
-  }
-  if (
-    formValues.measurementPrimaryDTName !== current.MEASUREMENT_PRIMARY_DT_NAME
-  ) {
-    dispatch(setPrimaryDTName(formValues.measurementPrimaryDTName));
-  }
-  if (
-    formValues.measurementSecondaryDTName !==
-    current.MEASUREMENT_SECONDARY_DT_NAME
-  ) {
-    dispatch(setSecondaryDTName(formValues.measurementSecondaryDTName));
   }
 
   return needsRefresh;

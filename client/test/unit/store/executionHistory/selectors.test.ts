@@ -33,6 +33,7 @@ describe('executionHistory slice - selectors', () => {
     store.dispatch(setSelectedExecutionId('2'));
     store.dispatch(setLoading(true));
     store.dispatch(setError('Test error'));
+    // qlty-ignore(eslint:@typescript-eslint/no-unnecessary-type-assertion): partial test store state
     state = store.getState() as unknown as RootState;
   });
 
