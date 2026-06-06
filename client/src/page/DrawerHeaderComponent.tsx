@@ -27,7 +27,11 @@ function DrawerHeaderComponent({
 }: DrawerHeaderProps) {
   return (
     <DrawerHeader>
-      <IconButton onClick={handleDrawerClose}>
+      <IconButton
+        onClick={handleDrawerClose}
+        data-logger-element="button"
+        data-logger-label="Close Drawer"
+      >
         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
       </IconButton>
     </DrawerHeader>

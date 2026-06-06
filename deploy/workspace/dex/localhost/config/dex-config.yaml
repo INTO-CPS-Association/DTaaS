@@ -1,0 +1,26 @@
+issuer: http://localhost:5556/dex
+storage:
+  type: memory
+web:
+  http: 0.0.0.0:5556
+  allowedOrigins: ['*']
+expiry:
+  idTokens: "2h"
+oauth2:
+  skipApprovalScreen: true
+staticClients:
+  - id: mock
+    redirectURIs:
+      - 'http://localhost/Library'
+    name: 'DTaaS'
+    public: true
+enablePasswordDB: true
+staticPasswords:
+  - email: "user@intocps.org"
+    hash: "$2b$10$DBT2RcQttvmqvP02CC1qb.DIbCgfFDtBRJXpptxt84otjCORUAY9."
+    username: "user"
+    name: "user"
+    preferredUsername: "user"
+    groups:
+      - "dtaas"
+    userID: "1"

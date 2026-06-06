@@ -1,0 +1,8 @@
+hostname: 0.0.0.0
+port: 4003
+cors-allow-origin: 0.0.0.0:4003
+jwt: ""
+tls: false
+certs: ./certs
+log-file-path: ./logs/workflow-logs.jsonl
+max-payload-bytes: 65536

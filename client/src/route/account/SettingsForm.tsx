@@ -300,6 +300,8 @@ const SettingsForm: React.FC = () => {
                 color="secondary"
                 startIcon={<ResetIcon />}
                 onClick={handleResetToDefaults}
+                data-logger-element="button"
+                data-logger-label="Reset to Defaults"
               >
                 Reset to Defaults
               </Button>
@@ -308,6 +310,8 @@ const SettingsForm: React.FC = () => {
                 color="primary"
                 startIcon={<SaveIcon />}
                 onClick={handleSaveSettings}
+                data-logger-element="button"
+                data-logger-label="Save Settings"
               >
                 Save Settings
               </Button>

@@ -62,6 +62,7 @@ for:
 - [web client](client)
 - [library microservice](servers/lib)
 - [runner microservice](servers/execution/runner)
+- [logger microservice](servers/logger)
 - [dtaas-services CLI](deploy/services/cli)
 
 Published packages are also available via the

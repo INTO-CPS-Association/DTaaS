@@ -82,10 +82,20 @@ const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
         Are you sure you want to delete the inserted files and their content?
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmDeleteDialog(false)}>
+        <Button
+          onClick={() => setOpenConfirmDeleteDialog(false)}
+          data-logger-element="button"
+          data-logger-label="Confirm Delete Cancel"
+        >
           Cancel
         </Button>
-        <Button onClick={handleConfirmCancel}>Yes</Button>
+        <Button
+          onClick={handleConfirmCancel}
+          data-logger-element="button"
+          data-logger-label="Confirm Delete Yes"
+        >
+          Yes
+        </Button>
       </DialogActions>
     </Dialog>
   );

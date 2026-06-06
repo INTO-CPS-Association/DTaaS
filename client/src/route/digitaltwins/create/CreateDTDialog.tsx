@@ -207,6 +207,8 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
                 setFileType,
               })
             }
+            data-logger-element="button"
+            data-logger-label="Create DT Cancel"
           >
             Cancel
           </Button>
@@ -232,6 +234,8 @@ const CreateDTDialog: React.FC<CreateDTDialogProps> = ({
             })
           }
           disabled={isLoading}
+          data-logger-element="button"
+          data-logger-label="Create DT Confirm"
         >
           {isLoading ? 'Creating...' : 'Confirm'}
         </Button>

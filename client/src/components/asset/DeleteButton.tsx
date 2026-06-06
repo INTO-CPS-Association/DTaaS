@@ -18,6 +18,8 @@ function DeleteButton({ setShowDelete }: DeleteButtonProps) {
       size="small"
       color="primary"
       onClick={() => handleToggleDeleteDialog(setShowDelete)}
+      data-logger-element="button"
+      data-logger-label="Delete"
     >
       Delete
     </Button>

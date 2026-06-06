@@ -34,10 +34,20 @@ function UnifiedDialog({
         <ExecutionHistoryList dtName={dtName} onViewLogs={onViewLogs} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClearAll} color="error">
+        <Button
+          onClick={onClearAll}
+          color="error"
+          data-logger-element="button"
+          data-logger-label="Clear All"
+        >
           Clear All
         </Button>
-        <Button onClick={onClose} color="primary">
+        <Button
+          onClick={onClose}
+          color="primary"
+          data-logger-element="button"
+          data-logger-label="Close"
+        >
           Close
         </Button>
       </DialogActions>

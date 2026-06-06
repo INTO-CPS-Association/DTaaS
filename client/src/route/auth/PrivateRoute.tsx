@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
+import { useLogger } from 'util/logger/useLogger';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
+  useLogger();
   let returnJSX;
 
   useEffect(() => {

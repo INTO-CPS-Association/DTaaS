@@ -94,6 +94,8 @@ const Sidebar = ({
             variant="contained"
             onClick={() => handleAddFileClick(setIsFileNameDialogOpen)}
             sx={{ width: '100%', marginBottom: -1 }}
+            data-logger-element="button"
+            data-logger-label="Add new file"
           >
             Add new file
           </Button>

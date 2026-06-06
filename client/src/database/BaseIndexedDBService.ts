@@ -1,11 +1,15 @@
 import { DB_CONFIG } from 'database/types';
 
-function setupObjectStores(db: IDBDatabase): void {
+export function setupObjectStores(db: IDBDatabase): void {
   for (const [storeName, storeConfig] of Object.entries(DB_CONFIG.stores)) {
     if (!db.objectStoreNames.contains(storeName)) {
-      const store = db.createObjectStore(storeName, {
+      const options: IDBObjectStoreParameters = {
         keyPath: storeConfig.keyPath,
-      });
+      };
+      if ('autoIncrement' in storeConfig) {
+        options.autoIncrement = storeConfig.autoIncrement;
+      }
+      const store = db.createObjectStore(storeName, options);
       for (const index of storeConfig.indexes) {
         store.createIndex(index.name, index.keyPath);
       }

@@ -1,0 +1,206 @@
+name: Logger microservice
+
+on:
+  push:
+    paths:
+      - 'servers/logger/**'
+      - 'docker/logger.dockerfile'
+      - 'deploy/docker/compose.local.yml'
+      - 'deploy/docker/compose.local.secure.yml'
+      - 'deploy/docker/compose.server.yml'
+      - 'deploy/docker/compose.server.secure.yml'
+      - '.github/workflows/logger-ms.yml'
+  pull_request:
+    paths:
+      - 'servers/logger/**'
+      - 'docker/logger.dockerfile'
+      - 'deploy/docker/compose.local.yml'
+      - 'deploy/docker/compose.local.secure.yml'
+      - 'deploy/docker/compose.server.yml'
+      - 'deploy/docker/compose.server.secure.yml'
+      - '.github/workflows/logger-ms.yml'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 24
+  LOGGER_PORT: 4003
+  LOGGER_LOG_FILE_PATH: logs/workflow-logs.jsonl
+  LOGGER_TLS: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test-logger-ms:
+    permissions:
+      contents: read
+    name: Test logger microservice
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: servers/logger
+
+    steps:
+      - name: Checkout
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Setup node
+        # v6.1.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+
+      - name: Run linting and formatting checks
+        run: |
+          yarn install
+          yarn syntax
+          yarn format
+
+      - name: Build the logger microservice
+        run: |
+          yarn build
+
+      - name: Run tests
+        run: |
+          yarn test
+
+      - name: Upload test coverage to Codecov
+        # v5.5.2
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: servers/logger/coverage/clover.xml
+          flags: logger-microservice-tests
+
+      - name: Start logger microservice
+        run: |
+          yarn build
+          npx pm2 start -f --name logger-ms dist/src/main.js
+
+      - name: Check server is running
+        env:
+          PORT: ${{ env.LOGGER_PORT }}
+        # v3.0.2
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
+        with:
+          timeout_seconds: 10
+          max_attempts: 4
+          command: "curl -f -LI http://localhost:${{ env.PORT }}/logger/health"
+
+      - name: Stop logger microservice
+        run: |
+          npx pm2 delete logger-ms
+
+  get-version:
+    permissions:
+      contents: read
+    name: Get version and variables
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: get version
+        id: get-version
+        run: |
+          version=$(jq -r '.version' ./servers/logger/package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      node-version: ${{ steps.get-version.outputs.node-version }}
+
+  publish-package-github:
+    permissions:
+      contents: read
+      packages: write
+    if: |
+      github.event_name == 'push' &&
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
+
+    name: Publish to GitHub Packages
+    needs: [test-logger-ms, get-version]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get-version.outputs.node-version }}
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/logger
+      package-name: ${{ vars.NPM_LOGGER_PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-package-npm:
+    permissions:
+      contents: read
+      packages: write
+    if: |
+      github.event_name == 'push' &&
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
+
+    name: Publish to NPM
+    needs: [get-version, test-logger-ms]
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: ${{ needs.get-version.outputs.node-version }}
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/logger
+      package-name: ${{ vars.NPM_LOGGER_PACKAGE_NAME || '' }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-docker-image-ghcr:
+    permissions:
+      contents: read
+      packages: write
+    if: |
+      github.event_name == 'push' &&
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
+
+    name: Publish Docker image (GHCR)
+    needs: [get-version, test-logger-ms]
+    uses: ./.github/workflows/docker-ghcr.yml
+    with:
+      image-name: logger-ms
+      version: ${{ needs.get-version.outputs.version }}
+      dockerfile: logger.dockerfile
+    secrets: inherit
+
+  publish-docker-image-dockerhub:
+    permissions:
+      contents: read
+      packages: write
+    if: |
+      github.event_name == 'push' &&
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
+
+    name: Publish Docker image (DockerHub)
+    needs: [get-version, test-logger-ms]
+    uses: ./.github/workflows/docker-dockerhub.yml
+    with:
+      image-name: logger-ms
+      version: ${{ needs.get-version.outputs.version }}
+      dockerfile: logger.dockerfile
+      readme-file: servers/logger/DOCKER.md
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_SCOPE: ${{ secrets.DOCKERHUB_SCOPE }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

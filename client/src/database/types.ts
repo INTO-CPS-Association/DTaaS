@@ -19,6 +19,11 @@ export const DB_CONFIG = {
         { name: 'timestamp', keyPath: 'timestamp' },
       ],
     },
+    logs: {
+      keyPath: 'id',
+      autoIncrement: true,
+      indexes: [{ name: 'timestamp', keyPath: 'timestamp' }],
+    },
   },
 };
 

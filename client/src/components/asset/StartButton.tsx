@@ -110,6 +110,9 @@ function StartButton({
         color="primary"
         disabled={isDebouncing}
         onClick={handleDebouncedClick}
+        data-logger-element="button"
+        data-logger-label="Start"
+        data-logger-context={JSON.stringify({ asset: assetName })}
       >
         Start
       </Button>

@@ -28,10 +28,20 @@ const DeleteAllConfirmationDialog: React.FC<
       </Typography>
     </DialogContent>
     <DialogActions>
-      <Button onClick={onClose} color="primary">
+      <Button
+        onClick={onClose}
+        color="primary"
+        data-logger-element="button"
+        data-logger-label="Cancel"
+      >
         Cancel
       </Button>
-      <Button onClick={onConfirm} color="error">
+      <Button
+        onClick={onConfirm}
+        color="error"
+        data-logger-element="button"
+        data-logger-label="Delete All"
+      >
         Delete All
       </Button>
     </DialogActions>
