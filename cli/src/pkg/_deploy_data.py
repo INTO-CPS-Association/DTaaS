@@ -69,7 +69,7 @@ _DEPLOY_CREDS = {
         ("keycloak-admin", "KEYCLOAK_ADMIN=admin", "KEYCLOAK_ADMIN={}"),
         (
             "keycloak-admin-password",
-            "KEYCLOAK_ADMIN_PASSWORD=changeme",
+            "KEYCLOAK_ADMIN_PASSWORD=changeme",  # NOSONAR
             "KEYCLOAK_ADMIN_PASSWORD={}",
         ),
         ("keycloak-realm", "KEYCLOAK_REALM=dtaas", "KEYCLOAK_REALM={}"),

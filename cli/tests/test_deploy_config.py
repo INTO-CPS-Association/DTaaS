@@ -201,13 +201,13 @@ def test_build_mapping_includes_usernames_and_paths():
 def test_build_mapping_workspace_secure_server():
     toml = {
         "workspace-secure-server": {
-            "keycloak-admin-password": "strongpass",
+            "keycloak-admin-password": "strongpass",  # NOSONAR
             "keycloak-client-secret": "kcsecret",
             "keycloak-realm": "myrealm",
         }
     }
     mapping = build_mapping("workspace-secure-server", toml)
-    assert mapping["KEYCLOAK_ADMIN_PASSWORD=changeme"] == "KEYCLOAK_ADMIN_PASSWORD=strongpass"
+    assert mapping["KEYCLOAK_ADMIN_PASSWORD=changeme"] == "KEYCLOAK_ADMIN_PASSWORD=strongpass"  # NOSONAR
     assert mapping["your_keycloak_client_secret_here"] == "kcsecret"
     assert mapping["KEYCLOAK_REALM=dtaas"] == "KEYCLOAK_REALM=myrealm"
 
