@@ -4,6 +4,7 @@ import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
+from .pkg import deploy_config as deployConfigPkg
 from .pkg.project import DEPLOY_TYPES
 
 
@@ -66,7 +67,23 @@ def generate_deployment(deploy_type, output_dir, force):
         projectPkg.generate_deploy_project(deploy_type, output_dir, force)
     except (ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
+    _apply_deploy_config(deploy_type, output_dir)
     click.echo(f"Project files for '{deploy_type}' generated successfully")
+
+
+def _apply_deploy_config(deploy_type, output_dir):
+    """Read dtaas.toml and substitute values into generated deployment files."""
+    try:
+        config = configPkg.Config()
+        toml_data, _ = config.get_config()
+    except RuntimeError:
+        click.echo("Note: dtaas.toml not found; template values not substituted.")
+        return
+    try:
+        mapping = deployConfigPkg.build_mapping(deploy_type, toml_data)
+        deployConfigPkg.apply_config(output_dir, mapping)
+    except OSError as exc:
+        raise click.ClickException(f"Error substituting config values: {exc}") from exc
 
 
 @admin.group()

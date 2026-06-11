@@ -1,6 +1,6 @@
 """Tests for CLI commands."""
 
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
@@ -82,13 +82,40 @@ def test_generate_project_error(runner):
 
 
 def test_generate_deployment_success(runner):
-    """generate-deployment calls generate_deploy_project and prints success"""
-    with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
+    """generate-deployment copies files and prints success; skips substitution if no toml"""
+    with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen, \
+         patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
         assert result.exit_code == 0
         assert "localhost" in result.output
         mock_gen.assert_called_once_with("localhost", ".", False)
+
+
+def test_generate_deployment_applies_config(runner):
+    """generate-deployment calls build_mapping and apply_config when toml is present"""
+    mock_cfg = MagicMock()
+    mock_cfg.get_config.return_value = ({"localhost": {}}, None)
+
+    with patch("src.cmd.projectPkg.generate_deploy_project"), \
+         patch("src.cmd.configPkg.Config", return_value=mock_cfg), \
+         patch("src.cmd.deployConfigPkg.build_mapping", return_value={}) as mock_build, \
+         patch("src.cmd.deployConfigPkg.apply_config") as mock_apply:
+        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+
+    assert result.exit_code == 0
+    mock_build.assert_called_once_with("localhost", {"localhost": {}})
+    mock_apply.assert_called_once_with(".", {})
+
+
+def test_generate_deployment_without_config_prints_note(runner):
+    """generate-deployment prints a note when dtaas.toml is absent"""
+    with patch("src.cmd.projectPkg.generate_deploy_project"), \
+         patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
+        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+
+    assert result.exit_code == 0
+    assert "Note:" in result.output
 
 
 def test_generate_deployment_error(runner):

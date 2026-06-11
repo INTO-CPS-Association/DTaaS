@@ -94,13 +94,12 @@ configuration file is given here.
 # This is the config for DTaaS CLI
 
 name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.2"
+version = "0.5.0"
 owner = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 [common]
 # Server hostname either localhost or a valid hostname, ex: intocps.org
-# TODO : Update, we are now reusing hostname for this
 server-dns = "localhost"
 # absolute path to the DTaaS application directory
 # Specify the directory of DTaaS installation
@@ -140,7 +139,20 @@ shm_size = "512m"
 # matching user info must present in this config file
 add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
-...
+
+# Deployment-specific sections
+# Fill in the section that matches the --type you pass to generate-deployment.
+# Values are substituted into the generated files automatically.
+
+[localhost]
+default-user = "user1"
+auth-authority = "https://gitlab.com/"
+
+[insecure-server]
+oauth-url = "https://gitlab.com"
+..
+..
+You can see all the values in the dtaas-toml
 ```
 
 #### Notes
@@ -204,6 +216,20 @@ dtaas generate-deployment --type insecure-server --output-dir /path/to/project -
 
 Each type copies the relevant `docker-compose.yml`, configuration examples,
 and supporting files into the target directory, ready to be customised.
+
+#### Configuration substitution
+
+When `dtaas.toml` is present in the working directory, `generate-deployment`
+also reads deployment-specific values from it and substitutes them into the
+generated files, so you do not have to edit every placeholder by hand.
+
+Each `--type` reads from its matching top-level section in `dtaas.toml`.
+
+The `[common]` section (`server-dns`) and the `[users]` section (usernames,
+paths, and emails) are substituted across all types where they appear.
+
+If `dtaas.toml` is not found, a note is printed and the files keep their
+default placeholder values.
 
 ### 📁 Select Template
 
