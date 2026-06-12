@@ -113,7 +113,7 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.intocps.org"
+email = "username1@intocps.org"
 ```
 
 This section firstly has two important lists, add and delete.

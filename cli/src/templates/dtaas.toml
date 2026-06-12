@@ -35,16 +35,13 @@ add = ["username1","username2", "username3"]
 delete = ["username2", "username3"]
 
 [users.username1]
-email = "username1@gitlab.intocps.org"
+email = "username1@intocps.org"
 
 [users.username2]
-email = "username2@gitlab.intocps.org"
+email = "username2@intocps.org"
 
 [users.username3]
-email = "username3@gitlab.intocps.org"
-
-[client.web]
-config = "/home/XXX/DTaaS/env.local.js"
+email = "username3@intocps.org"
 
 # Installation-specific configuration
 # For non-localhost deployments, usernames (USERNAME1, USERNAME2, ...)

@@ -14,12 +14,6 @@ Installation in a virtual environment is recommended.
 
 Steps to install:
 
-- Change the working folder:
-
-```bash
-cd <DTaaS-directory>/cli
-```
-
 - Create and activate a virtual environment.
 
 - Install the package:
@@ -82,86 +76,8 @@ the project evolves.
 **You should verify and update the Docker image tag** in these templates to use
 a current, stable version before deploying user workspaces.
 Check the available tags in the
-[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS)
+[INTO-CPS workspace repository](https://hub.docker.com/r/intocps/workspace/tags)
 or your Docker registry to ensure you are using an up-to-date image version.
-
-### Configure
-
-The CLI uses _dtaas.toml_ as configuration file. A sample
-configuration file is given here.
-
-```toml
-# This is the config for DTaaS CLI
-
-name = "Digital Twin as a Service (DTaaS)"
-version = "0.5.0"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
-
-[common]
-# Server hostname either localhost or a valid hostname, ex: intocps.org
-server-dns = "localhost"
-# absolute path to the DTaaS application directory
-# Specify the directory of DTaaS installation
-# Linux example
-path = "/Users/username/DTaaS"
-# Windows example
-#path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
-
-[common.security]
-# Enable HTTPS/TLS for secure server deployment
-# Set the tls flag to false to use the insecure user.server.yml, it is True by default
-# so the 'user.server.secure.yml' will be used
-tls = true
-
-[common.resources]
-# Default resource limits applied when creating user workspace containers.
-# Keys:
-# - cpus: integer count of virtual CPUs to allocate to the container
-# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
-# - pids_limit: maximum number of processes the container may create
-# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
-#
-# Adjust these values to match your host capacity and tenancy policy.
-cpus = 4
-mem_limit = "4G"
-pids_limit = 4960
-shm_size = "512m"
-
-# Example: Increase memory and lower CPU for heavier-memory workloads
-# cpus = 2
-# mem_limit = "8G"
-
-
-[users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"]
-delete = ["username2", "username3"]
-
-# Deployment-specific sections
-# Fill in the section that matches the --type you pass to generate-deployment.
-# Values are substituted into the generated files automatically.
-
-[localhost]
-default-user = "user1"
-auth-authority = "https://gitlab.com/"
-
-[insecure-server]
-oauth-url = "https://gitlab.com"
-..
-..
-You can see all the values in the dtaas-toml
-```
-
-#### Notes
-
-- Edits to `dtaas.toml` affect new user containers created after the change.
-- To apply updated limits to existing containers, recreate or restart
-  the user container(s) (for example by removing and re-adding the user
-  workspace via the CLI or by restarting the container in Docker Compose).
-- Use units (`M`, `G`) for memory and shared memory values.
 
 ### Generate Deployment Project
 
@@ -278,8 +194,6 @@ This brings up the containers, without the AuthMS authentication.
   deploy/docker/conf.server files and the _traefik-forward-auth_
   container must be restarted. This is done as follows:
 
-- Go to the _docker_ directory
-
 ```bash
 cd <DTaaS>/deploy/docker
 ```
@@ -303,9 +217,8 @@ instance, with authorization enabled.
 
 ### ➖ Delete Users
 
-- To delete existing users, fill in the _users.delete_ list in
-  _dtaas.toml_ with the Gitlab instance
-  usernames of the users to be deleted.
+To delete users, add their GitLab instance usernames to the _users.delete_
+list in _dtaas.toml_ file.
 
 ```toml
 [users]
@@ -313,7 +226,7 @@ instance, with authorization enabled.
 delete = ["username1","username2", "username3"]
 ```
 
-- Ensure the working directory is _cli_.
+- Ensure you are the working directory where the _dtaas.toml_ file is.
 
 Then run:
 
@@ -341,3 +254,81 @@ dtaas admin user delete
 - '.' is a special character. Currently, usernames which have
   '.'s in them cannot be added properly through the CLI.
   This is an active issue that will be resolved in future releases.
+
+### Configure
+
+The CLI uses _dtaas.toml_ as configuration file. A sample
+configuration file is given here.
+
+```toml
+# This is the config for DTaaS CLI
+
+name = "Digital Twin as a Service (DTaaS)"
+version = "0.5.0"
+owner = "The INTO-CPS-Association"
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+
+[common]
+# Server hostname either localhost or a valid hostname, ex: intocps.org
+server-dns = "localhost"
+# absolute path to the DTaaS application directory
+# Specify the directory of DTaaS installation
+# Linux example
+path = "/Users/username/DTaaS"
+# Windows example
+#path = "C:\\Users\\XXX\\DTaaS"
+# Note: You have to either use / or \\ when specifying path, else you would get
+# "Error while getting toml file: dtaas.toml, Invalid unicode value"
+
+[common.security]
+# Enable HTTPS/TLS for secure server deployment
+# Set the tls flag to false to use the insecure user.server.yml, it is True by default
+# so the 'user.server.secure.yml' will be used
+tls = true
+
+[common.resources]
+# Default resource limits applied when creating user workspace containers.
+# Keys:
+# - cpus: integer count of virtual CPUs to allocate to the container
+# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
+# - pids_limit: maximum number of processes the container may create
+# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
+#
+# Adjust these values to match your host capacity and tenancy policy.
+cpus = 4
+mem_limit = "4G"
+pids_limit = 4960
+shm_size = "512m"
+
+# Example: Increase memory and lower CPU for heavier-memory workloads
+# cpus = 2
+# mem_limit = "8G"
+
+
+[users]
+# matching user info must present in this config file
+add = ["username1","username2", "username3"]
+delete = ["username2", "username3"]
+
+# Deployment-specific sections
+# Fill in the section that matches the --type you pass to generate-deployment.
+# Values are substituted into the generated files automatically.
+
+[localhost]
+default-user = "user1"
+auth-authority = "https://gitlab.com/"
+
+[insecure-server]
+oauth-url = "https://gitlab.com"
+..
+..
+You can see all the values in the dtaas-toml
+```
+
+#### Notes
+
+- Edits to `dtaas.toml` affect new user containers created after the change.
+- To apply updated limits to existing containers, recreate or restart
+  the user container(s) (for example by removing and re-adding the user
+  workspace via the CLI or by restarting the container in Docker Compose).
+- Use units (`M`, `G`) for memory and shared memory values.
