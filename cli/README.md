@@ -140,6 +140,16 @@ also reads deployment-specific values from it and substitutes them into the
 generated files, so you do not have to edit every placeholder by hand.
 
 Each `--type` reads from its matching top-level section in `dtaas.toml`.
+Values are written into the generated config files by key: dotenv files
+(`config/.env`, `config/conf.server`) line by line, and client website
+config files (`config/client.js`) via the object assigned to `window.env`.
+
+The `[frontend]` section holds the OAuth application for the DTaaS client
+website (React frontend): `react-app-client-id` and `react-app-oauth-url`
+are substituted as `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
+`config/client.js`. This is a separate OAuth application from the server
+one (traefik-forward-auth) configured by `oauth-client-id` and friends in
+the `[insecure-server]` and `[secure-server]` sections.
 
 The `[common]` section (`server-dns`) and the `[users]` section (usernames,
 paths, and emails) are substituted across all types where they appear.
@@ -254,81 +264,3 @@ dtaas admin user delete
 - '.' is a special character. Currently, usernames which have
   '.'s in them cannot be added properly through the CLI.
   This is an active issue that will be resolved in future releases.
-
-### Configure
-
-The CLI uses _dtaas.toml_ as configuration file. A sample
-configuration file is given here.
-
-```toml
-# This is the config for DTaaS CLI
-
-name = "Digital Twin as a Service (DTaaS)"
-version = "0.5.0"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
-
-[common]
-# Server hostname either localhost or a valid hostname, ex: intocps.org
-server-dns = "localhost"
-# absolute path to the DTaaS application directory
-# Specify the directory of DTaaS installation
-# Linux example
-path = "/Users/username/DTaaS"
-# Windows example
-#path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
-
-[common.security]
-# Enable HTTPS/TLS for secure server deployment
-# Set the tls flag to false to use the insecure user.server.yml, it is True by default
-# so the 'user.server.secure.yml' will be used
-tls = true
-
-[common.resources]
-# Default resource limits applied when creating user workspace containers.
-# Keys:
-# - cpus: integer count of virtual CPUs to allocate to the container
-# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
-# - pids_limit: maximum number of processes the container may create
-# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
-#
-# Adjust these values to match your host capacity and tenancy policy.
-cpus = 4
-mem_limit = "4G"
-pids_limit = 4960
-shm_size = "512m"
-
-# Example: Increase memory and lower CPU for heavier-memory workloads
-# cpus = 2
-# mem_limit = "8G"
-
-
-[users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"]
-delete = ["username2", "username3"]
-
-# Deployment-specific sections
-# Fill in the section that matches the --type you pass to generate-deployment.
-# Values are substituted into the generated files automatically.
-
-[localhost]
-default-user = "user1"
-auth-authority = "https://gitlab.com/"
-
-[insecure-server]
-oauth-url = "https://gitlab.com"
-..
-..
-You can see all the values in the dtaas-toml
-```
-
-#### Notes
-
-- Edits to `dtaas.toml` affect new user containers created after the change.
-- To apply updated limits to existing containers, recreate or restart
-  the user container(s) (for example by removing and re-adding the user
-  workspace via the CLI or by restarting the container in Docker Compose).
-- Use units (`M`, `G`) for memory and shared memory values.

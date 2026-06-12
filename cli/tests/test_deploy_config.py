@@ -2,223 +2,163 @@
 
 import pytest
 from src.pkg.deploy_config import (
-    _is_text_file,
-    _substitute,
-    _apply_to_file,
+    _set_yaml_value,
+    _toml_lookup,
+    _validate_value,
+    build_file_specs,
     apply_config,
-    build_mapping,
-    _add_common_entries,
-    _add_user_entries,
-    _add_email_entries,
-    _add_deploy_entries,
+    check_placeholders,
 )
 
 
-def test_is_text_file_returns_false_for_png(tmp_path):
-    png = tmp_path / "image.png"
-    png.write_bytes(b"\x89PNG\r\n")
-    assert not _is_text_file(png)
+ENV_TEXT = (
+    "# Server Configuration\n"
+    "SERVER_DNS=localhost\n"
+    "\n"
+    "# OAuth Application Client ID\n"
+    "OAUTH_CLIENT_ID=your_client_id_here\n"
+)
+
+JS_TEXT = (
+    "if (typeof window !== 'undefined') {\n"
+    "  window.env = {\n"
+    "    REACT_APP_CLIENT_ID: 'your_client_id_here',\n"
+    "    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com',\n"
+    "  };\n"
+    "};\n"
+)
+
+YAML_TEXT = (
+    "issuer: http://localhost:5556/dex\n"
+    "staticClients:\n"
+    "  - id: mock\n"
+    "    name: 'DTaaS'\n"
+)
 
 
-def test_is_text_file_returns_true_for_env(tmp_path):
-    f = tmp_path / ".env.example"
-    f.write_text("KEY=value")
-    assert _is_text_file(f)
+def test_set_yaml_value_replaces_top_level_key():
+    """yaml setter changes a top-level scalar value"""
+    result = _set_yaml_value(YAML_TEXT, "issuer", "https://auth.example.com")
+    assert "issuer: https://auth.example.com\n" in result
 
 
-def test_is_text_file_returns_false_for_directory(tmp_path):
-    assert not _is_text_file(tmp_path)
+def test_build_file_specs_insecure_server():
+    """insecure-server splits server and frontend OAuth apps per file"""
+    toml = {
+        "common": {"server-dns": "myserver.com"},
+        "users": {"add": ["alice"], "alice": {"email": "alice@example.com"}},
+        "insecure-server": {
+            "oauth-client-id": "server_id",
+            "oauth-client-secret": "server_secret",
+        },
+        "frontend": {
+            "react-app-client-id": "client_id",
+            "react-app-oauth-url": "https://gitlab.example.com",
+        },
+    }
+    specs = {
+        path: (fmt, values)
+        for path, fmt, values in build_file_specs("insecure-server", toml)
+    }
+
+    env_format, env_values = specs["config/.env.example"]
+    assert env_format == "env"
+    assert env_values["SERVER_DNS"] == "myserver.com"
+    assert env_values["USERNAME1"] == "alice"
+    assert env_values["OAUTH_CLIENT_ID"] == "server_id"
+    assert env_values["OAUTH_CLIENT_SECRET"] == "server_secret"
+    assert "OAUTH_SECRET" not in env_values
+
+    js_format, js_values = specs["config/client.js.example"]
+    assert js_format == "js"
+    assert js_values["REACT_APP_CLIENT_ID"] == "client_id"
+    assert js_values["REACT_APP_AUTH_AUTHORITY"] == "https://gitlab.example.com"
+
+    conf_format, conf_values = specs["config/conf.server.example"]
+    assert conf_format == "env"
+    assert conf_values["rule.onlyu1.rule"] == "PathPrefix(`/alice`)"
+    assert conf_values["rule.onlyu1.whitelist"] == "alice@example.com"
 
 
-def test_substitute_replaces_longer_key_first():
-    mapping = {"user1@email.com": "john@example.com", "user1": "john"}
-    result = _substitute("path=/user1 email=user1@email.com", mapping)
-    assert result == "path=/john email=john@example.com"
+def test_apply_config_edits_files_by_key(tmp_path):
+    """apply_config edits the targeted keys in each config file"""
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / ".env.example").write_text(ENV_TEXT)
+    (config_dir / "client.js.example").write_text(JS_TEXT)
+
+    apply_config(
+        str(tmp_path),
+        [
+            ("config/.env.example", "env", {"SERVER_DNS": "myserver.com"}),
+            ("config/client.js.example", "js", {"REACT_APP_CLIENT_ID": "real_id"}),
+        ],
+    )
+
+    assert "SERVER_DNS=myserver.com" in (config_dir / ".env.example").read_text()
+    client_js = (config_dir / "client.js.example").read_text()
+    assert "REACT_APP_CLIENT_ID: 'real_id'" in client_js
 
 
-def test_substitute_no_match_returns_unchanged():
-    result = _substitute("no match here", {"MISSING": "value"})
-    assert result == "no match here"
-
-
-def test_apply_to_file_replaces_content(tmp_path):
-    f = tmp_path / "config.env"
-    f.write_text("SERVER_DNS=localhost\n")
-    result = _apply_to_file(f, {"SERVER_DNS=localhost": "SERVER_DNS=myserver.com"})
-    assert result is None
-    assert f.read_text() == "SERVER_DNS=myserver.com\n"
-
-
-def test_apply_to_file_leaves_unchanged_file_unwritten(tmp_path):
-    f = tmp_path / "config.env"
-    f.write_text("unchanged content\n")
-    mtime = f.stat().st_mtime_ns
-    _apply_to_file(f, {"MISSING": "value"})
-    assert f.stat().st_mtime_ns == mtime
-
-
-def test_apply_to_file_returns_error_on_read_failure(tmp_path):
-    missing = tmp_path / "nonexistent.txt"
-    result = _apply_to_file(missing, {"x": "y"})
-    assert result is not None
-    assert isinstance(result, str)
-
-
-def test_apply_config_substitutes_text_files(tmp_path):
-    (tmp_path / "a.txt").write_text("your_client_id_here")
-    (tmp_path / "b.txt").write_text("unchanged")
-    apply_config(str(tmp_path), {"your_client_id_here": "real_id"})
-    assert (tmp_path / "a.txt").read_text() == "real_id"
-    assert (tmp_path / "b.txt").read_text() == "unchanged"
-
-
-def test_apply_config_skips_binary_files(tmp_path):
-    png = tmp_path / "image.png"
-    original = b"\x89PNG\r\n\x1a\n"
-    png.write_bytes(original)
-    apply_config(str(tmp_path), {"P": "X"})
-    assert png.read_bytes() == original
-
-
-def test_apply_config_no_op_on_empty_mapping(tmp_path):
-    f = tmp_path / "a.txt"
-    f.write_text("unchanged")
-    apply_config(str(tmp_path), {})
-    assert f.read_text() == "unchanged"
+def test_apply_config_skips_missing_files(tmp_path):
+    """specs for files absent from dest_dir are skipped silently"""
+    apply_config(str(tmp_path), [("config/.env.example", "env", {"KEY": "value"})])
 
 
 def test_apply_config_raises_on_file_error(tmp_path):
-    bad = tmp_path / "locked.txt"
-    bad.write_text("content")
+    """write failures are collected and raised as OSError"""
+    bad = tmp_path / ".env.example"
+    bad.write_text("SERVER_DNS=localhost\n")
     bad.chmod(0o444)
     try:
         with pytest.raises(OSError):
-            apply_config(str(tmp_path), {"content": "new"})
+            apply_config(
+                str(tmp_path), [(".env.example", "env", {"SERVER_DNS": "x"})]
+            )
     finally:
         bad.chmod(0o644)
 
 
-def test_add_common_entries_maps_both_server_dns_placeholders():
-    mapping = {}
-    _add_common_entries({"server-dns": "prod.example.com"}, mapping)
-    assert mapping["SERVER_DNS=localhost"] == "SERVER_DNS=prod.example.com"
-    assert mapping["SERVER_DNS=intocps.org"] == "SERVER_DNS=prod.example.com"
+def test_validate_value_rejects_newline():
+    """values containing newlines are rejected"""
+    with pytest.raises(ValueError):
+        _validate_value("value\nINJECTED=1")
 
 
-def test_add_common_entries_skips_empty_server_dns():
-    mapping = {}
-    _add_common_entries({"server-dns": ""}, mapping)
-    assert not mapping
+def test_check_placeholders_returns_warning_for_unresolved(tmp_path):
+    """check_placeholders warns when a known secret placeholder remains in a file"""
+    env = tmp_path / "config" / ".env.example"
+    env.parent.mkdir()
+    env.write_text("OAUTH_CLIENT_ID=your_client_id_here\n")
+
+    warnings = check_placeholders(
+        str(tmp_path),
+        [("config/.env.example", "env", {"OAUTH_CLIENT_ID": "real_id"})],
+    )
+    assert any("your_client_id_here" in w for w in warnings)
 
 
-def test_add_user_entries_maps_username_and_path():
-    mapping = {}
-    _add_user_entries({"add": ["alice", "bob"]}, mapping)
-    assert mapping["USERNAME1=user1"] == "USERNAME1=alice"
-    assert mapping["USERNAME2=user2"] == "USERNAME2=bob"
-    assert mapping["/user1"] == "/alice"
-    assert mapping["/user2"] == "/bob"
+def test_check_placeholders_skips_missing_files(tmp_path):
+    """check_placeholders ignores files that don't exist in dest_dir"""
+    warnings = check_placeholders(
+        str(tmp_path),
+        [("config/.env.example", "env", {})],
+    )
+    assert not warnings
 
 
-def test_add_user_entries_limited_to_two_users():
-    mapping = {}
-    _add_user_entries({"add": ["u1", "u2", "u3"]}, mapping)
-    assert "USERNAME1=user1" in mapping
-    assert "USERNAME2=user2" in mapping
-    assert all("user3" not in k for k in mapping)
+def test_apply_config_skips_binary_file(tmp_path):
+    """apply_config leaves binary files (NUL-byte detected) untouched"""
+    binary = tmp_path / ".env.example"
+    binary.write_bytes(b"SERVER_DNS=\x00value\n")
+    original = binary.read_bytes()
+    apply_config(str(tmp_path), [(".env.example", "env", {"SERVER_DNS": "x"})])
+    assert binary.read_bytes() == original
 
 
-def test_add_user_entries_includes_emails():
-    mapping = {}
-    users = {
-        "add": ["alice"],
-        "alice": {"email": "alice@example.com"},
-    }
-    _add_user_entries(users, mapping)
-    assert mapping.get("user1@emailservice.com") == "alice@example.com"
+def test_toml_lookup_user_collision_reserved_key():
+    """email lookup is safe when a username collides with the 'add' key"""
+    toml = {"users": {"add": ["add"]}}
+    assert _toml_lookup(toml, "users.email1") == ""
 
 
-def test_add_email_entries_maps_correct_index():
-    mapping = {}
-    _add_email_entries(1, "bob@example.com", mapping)
-    assert mapping.get("user2@emailservice.com") == "bob@example.com"
-    assert "user1@emailservice.com" not in mapping
-
-
-def test_add_deploy_entries_maps_credentials():
-    mapping = {}
-    section = {
-        "oauth-client-id": "my_id",
-        "oauth-client-secret": "my_secret",
-        "oauth-secret": "my_oauth_secret",
-    }
-    _add_deploy_entries("insecure-server", section, mapping)
-    assert mapping.get("your_client_id_here") == "my_id"
-    assert mapping.get("your_client_secret_here") == "my_secret"
-    assert mapping.get("your_random_secret_key_here") == "my_oauth_secret"
-
-
-def test_add_deploy_entries_skips_empty_values():
-    mapping = {}
-    _add_deploy_entries("localhost", {"default-user": ""}, mapping)
-    assert "DEFAULT_USER=user1" not in mapping
-
-
-def test_build_mapping_localhost_default_user():
-    toml = {"localhost": {"default-user": "admin"}}
-    mapping = build_mapping("localhost", toml)
-    assert mapping.get("DEFAULT_USER=user1") == "DEFAULT_USER=admin"
-
-
-def test_build_mapping_insecure_server_credentials():
-    toml = {
-        "insecure-server": {
-            "oauth-client-id": "client_abc",
-            "oauth-client-secret": "secret_xyz",
-            "oauth-secret": "random_key",
-        }
-    }
-    mapping = build_mapping("insecure-server", toml)
-    assert mapping["your_client_id_here"] == "client_abc"
-    assert mapping["your_client_secret_here"] == "secret_xyz"
-    assert mapping["your_random_secret_key_here"] == "random_key"
-
-
-def test_build_mapping_includes_server_dns():
-    toml = {"common": {"server-dns": "myserver.com"}}
-    mapping = build_mapping("secure-server", toml)
-    assert mapping.get("SERVER_DNS=localhost") == "SERVER_DNS=myserver.com"
-
-
-def test_build_mapping_includes_usernames_and_paths():
-    toml = {"users": {"add": ["alice", "bob"]}}
-    mapping = build_mapping("secure-server", toml)
-    assert mapping.get("USERNAME1=user1") == "USERNAME1=alice"
-    assert mapping.get("/user1") == "/alice"
-    assert mapping.get("USERNAME2=user2") == "USERNAME2=bob"
-
-
-def test_build_mapping_workspace_secure_server():
-    toml = {
-        "workspace-secure-server": {
-            "keycloak-admin-password": "strongpass",  # NOSONAR
-            "keycloak-client-secret": "kcsecret",
-            "keycloak-realm": "myrealm",
-        }
-    }
-    mapping = build_mapping("workspace-secure-server", toml)
-    assert mapping["KEYCLOAK_ADMIN_PASSWORD=changeme"] == "KEYCLOAK_ADMIN_PASSWORD=strongpass"  # NOSONAR
-    assert mapping["your_keycloak_client_secret_here"] == "kcsecret"
-    assert mapping["KEYCLOAK_REALM=dtaas"] == "KEYCLOAK_REALM=myrealm"
-
-
-def test_build_mapping_workspace_localhost_client_id():
-    toml = {"workspace-localhost": {"client-id": "myapp"}}
-    mapping = build_mapping("workspace-localhost", toml)
-    assert mapping.get("id: mock") == "id: myapp"
-    assert mapping.get("REACT_APP_CLIENT_ID: 'mock'") == "REACT_APP_CLIENT_ID: 'myapp'"
-
-
-def test_build_mapping_returns_empty_for_unknown_type():
-    mapping = build_mapping("unknown-type", {})
-    assert mapping == {}

@@ -84,7 +84,7 @@ def test_generate_project_error(runner):
 def test_generate_deployment_success(runner):
     """generate-deployment copies files and prints success; skips substitution if no toml"""
     with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen, \
-         patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
+         patch("src.cmd._toml_exists", return_value=False):
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
         assert result.exit_code == 0
@@ -93,29 +93,41 @@ def test_generate_deployment_success(runner):
 
 
 def test_generate_deployment_applies_config(runner):
-    """generate-deployment calls build_mapping and apply_config when toml is present"""
+    """generate-deployment calls build_file_specs and apply_config when toml is present"""
     mock_cfg = MagicMock()
     mock_cfg.get_config.return_value = ({"localhost": {}}, None)
 
     with patch("src.cmd.projectPkg.generate_deploy_project"), \
+         patch("src.cmd._toml_exists", return_value=True), \
          patch("src.cmd.configPkg.Config", return_value=mock_cfg), \
-         patch("src.cmd.deployConfigPkg.build_mapping", return_value={}) as mock_build, \
+         patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]) as mock_build, \
          patch("src.cmd.deployConfigPkg.apply_config") as mock_apply:
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
     assert result.exit_code == 0
     mock_build.assert_called_once_with("localhost", {"localhost": {}})
-    mock_apply.assert_called_once_with(".", {})
+    mock_apply.assert_called_once_with(".", [])
 
 
 def test_generate_deployment_without_config_prints_note(runner):
     """generate-deployment prints a note when dtaas.toml is absent"""
     with patch("src.cmd.projectPkg.generate_deploy_project"), \
-         patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
+         patch("src.cmd._toml_exists", return_value=False):
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
     assert result.exit_code == 0
     assert "Note:" in result.output
+
+
+def test_generate_deployment_malformed_toml_errors(runner):
+    """generate-deployment fails when dtaas.toml exists but cannot be parsed"""
+    with patch("src.cmd.projectPkg.generate_deploy_project"), \
+         patch("src.cmd._toml_exists", return_value=True), \
+         patch("src.cmd.configPkg.Config", side_effect=RuntimeError("parse error")):
+        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+
+    assert result.exit_code != 0
+    assert "Error reading dtaas.toml" in result.output
 
 
 def test_generate_deployment_error(runner):

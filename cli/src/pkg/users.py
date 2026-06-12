@@ -1,11 +1,44 @@
 """This file has functions that handle the user cli commands"""
 
+import re
 import subprocess
 import shutil
 import click
 from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
+
+CONF_SERVER_PATH = Path("config") / "conf.server"
+
+
+def _next_rule_num(text):
+    """Return the next available onlyu<N> index from existing conf.server content."""
+    nums = [int(m) for m in re.findall(r"rule\.onlyu(\d+)\.", text)]
+    return max(nums, default=0) + 1
+
+
+def _conf_server_block(username, email, rule_num):
+    """Return the 3-line conf.server block for one user."""
+    return (
+        f"\nrule.onlyu{rule_num}.action=auth\n"
+        f"rule.onlyu{rule_num}.rule=PathPrefix(`/{username}`)\n"
+        f"rule.onlyu{rule_num}.whitelist={email}\n"
+    )
+
+
+def add_conf_server_entry(username, email):
+    """Append routing and whitelist rules for username to config/conf.server.
+
+    Skipped silently when conf.server does not exist or email is empty.
+    """
+    if not CONF_SERVER_PATH.is_file() or not email:
+        return
+    text = CONF_SERVER_PATH.read_text(encoding="utf-8")
+    rule_num = _next_rule_num(text)
+    CONF_SERVER_PATH.write_text(
+        text + _conf_server_block(username, email, rule_num), encoding="utf-8"
+    )
+
 
 
 def _build_config_mapping(user_config, resources):
@@ -172,6 +205,8 @@ def add_users(config_obj):
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         user_list, server, path, resources, tls = _get_add_users_config(config_obj)
+        users_section, err = config_obj.get_users()
+        utils.check_error(err)
     except Exception as e:
         return e
 
@@ -183,6 +218,10 @@ def add_users(config_obj):
         err = add_users_to_compose(user_list, compose, config)
         utils.check_error(err)
         _finalize_compose(compose)
+        for username in user_list:
+            section = (users_section or {}).get(username, {})
+            email = str(section.get("email", "") if isinstance(section, dict) else "").strip()
+            add_conf_server_entry(username, email)
     except Exception as e:
         return e
 

@@ -6,7 +6,10 @@ authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
 readme = "README.md"
 packages = [{include = "src"}]
-include = ["src/templates/**/*"]
+include = [
+    {path = "src/templates", format = "sdist"},
+    {path = "src/templates", format = "wheel"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"

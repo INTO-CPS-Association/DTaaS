@@ -5,6 +5,11 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users
+from src.pkg.users import (
+    _next_rule_num,
+    _conf_server_block,
+    add_conf_server_entry,
+)
 # pylint: disable=redefined-outer-name,unused-argument
 
 
@@ -21,6 +26,7 @@ def mock_config():
         None,
     )
     mock.get_tls.return_value = (False, None)
+    mock.get_users.return_value = ({"add": ["user1"], "user1": {}}, None)
     return mock
 
 
@@ -189,3 +195,70 @@ def test_delete_user_skips_nonexistent(
     captured = capsys.readouterr()
     assert "'ghost' does not exist, skipping deletion" in captured.out
     mock_user_operations["stop"].assert_called_once_with(["user1"])
+
+
+# conf.server tests
+
+CONF_SERVER_CONTENT = (
+    "rule.libms.action=auth\n"
+    "rule.libms.rule=PathPrefix(`/lib`)\n"
+    "\n"
+    "rule.onlyu1.action=auth\n"
+    "rule.onlyu1.rule=PathPrefix(`/user1`)\n"
+    "rule.onlyu1.whitelist=user1@example.com\n"
+    "\n"
+    "rule.onlyu2.action=auth\n"
+    "rule.onlyu2.rule=PathPrefix(`/user2`)\n"
+    "rule.onlyu2.whitelist=user2@example.com\n"
+)
+
+
+def test_next_rule_num_increments_max():
+    """_next_rule_num returns one past the highest existing index"""
+    assert _next_rule_num(CONF_SERVER_CONTENT) == 3
+
+
+def test_next_rule_num_empty_file():
+    """_next_rule_num returns 1 when no onlyu rules exist yet"""
+    assert _next_rule_num("rule.libms.action=auth\n") == 1
+
+
+def test_conf_server_block_format():
+    """_conf_server_block produces the expected 3-line block"""
+    block = _conf_server_block("alice", "alice@example.com", 3)
+    assert "rule.onlyu3.action=auth" in block
+    assert "rule.onlyu3.rule=PathPrefix(`/alice`)" in block
+    assert "rule.onlyu3.whitelist=alice@example.com" in block
+
+
+def test_add_conf_server_entry_appends_block(tmp_path, monkeypatch):
+    """add_conf_server_entry appends rules to an existing conf.server"""
+    conf = tmp_path / "config" / "conf.server"
+    conf.parent.mkdir()
+    conf.write_text(CONF_SERVER_CONTENT, encoding="utf-8")
+    monkeypatch.setattr(users, "CONF_SERVER_PATH", conf)
+
+    add_conf_server_entry("alice", "alice@example.com")
+
+    result = conf.read_text(encoding="utf-8")
+    assert "rule.onlyu3.action=auth" in result
+    assert "rule.onlyu3.rule=PathPrefix(`/alice`)" in result
+    assert "rule.onlyu3.whitelist=alice@example.com" in result
+
+
+def test_add_conf_server_entry_skips_when_no_email(tmp_path, monkeypatch):
+    """add_conf_server_entry does nothing when email is empty"""
+    conf = tmp_path / "config" / "conf.server"
+    conf.parent.mkdir()
+    conf.write_text(CONF_SERVER_CONTENT, encoding="utf-8")
+    monkeypatch.setattr(users, "CONF_SERVER_PATH", conf)
+
+    add_conf_server_entry("alice", "")
+
+    assert conf.read_text(encoding="utf-8") == CONF_SERVER_CONTENT
+
+
+def test_add_conf_server_entry_skips_when_file_missing(tmp_path, monkeypatch):
+    """add_conf_server_entry does nothing when conf.server does not exist"""
+    monkeypatch.setattr(users, "CONF_SERVER_PATH", tmp_path / "missing" / "conf.server")
+    add_conf_server_entry("alice", "alice@example.com")  # must not raise

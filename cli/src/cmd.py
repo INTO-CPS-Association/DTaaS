@@ -1,11 +1,17 @@
 """This file defines all cli entrypoints for DTaaS"""
 
+from pathlib import Path
 import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg.project import DEPLOY_TYPES
+
+
+def _toml_exists():
+    """Return True if dtaas.toml is present in the working directory."""
+    return Path("dtaas.toml").is_file()
 
 
 ### Groups
@@ -73,17 +79,21 @@ def generate_deployment(deploy_type, output_dir, force):
 
 def _apply_deploy_config(deploy_type, output_dir):
     """Read dtaas.toml and substitute values into generated deployment files."""
-    try:
-        config = configPkg.Config()
-        toml_data, _ = config.get_config()
-    except RuntimeError:
+    if not _toml_exists():
         click.echo("Note: dtaas.toml not found; template values not substituted.")
         return
     try:
-        mapping = deployConfigPkg.build_mapping(deploy_type, toml_data)
-        deployConfigPkg.apply_config(output_dir, mapping)
-    except OSError as exc:
+        config = configPkg.Config()
+        toml_data, _ = config.get_config()
+    except RuntimeError as exc:
+        raise click.ClickException(f"Error reading dtaas.toml: {exc}") from exc
+    try:
+        specs = deployConfigPkg.build_file_specs(deploy_type, toml_data)
+        deployConfigPkg.apply_config(output_dir, specs)
+    except (OSError, ValueError, TypeError) as exc:
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
+    for warning in deployConfigPkg.check_placeholders(output_dir, specs):
+        click.echo(warning)
 
 
 @admin.group()

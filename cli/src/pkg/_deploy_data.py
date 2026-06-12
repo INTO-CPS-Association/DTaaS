@@ -1,102 +1,135 @@
-"""Template placeholder constants used by deploy_config."""
+"""Per-deployment config file substitution specs used by deploy_config.
+"""
 
-_BINARY_EXTENSIONS = frozenset(
-    {
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".gif",
-        ".ico",
-        ".pdf",
-        ".gz",
-        ".zip",
-        ".tar",
-        ".bin",
-    }
-)
+# Placeholder strings that represent unconfigured secrets in template files.
+# check_placeholders warns when any of these survive substitution.
+_SECRET_PLACEHOLDERS = frozenset({
+    "your_client_id_here",
+    "your_client_secret_here",
+    "your_random_secret_key_here",
+    "your_keycloak_client_secret_here",
+    "changeme",  # NOSONAR
+})
 
-_REACT_AUTH_FMT = "REACT_APP_AUTH_AUTHORITY: '{}'"
+_ENV_FILE = "config/.env.example"
+_CLIENT_JS_FILE = "config/client.js.example"
+_CONF_SERVER_FILE = "config/conf.server.example"
+_SRC_USERNAME1 = "users.username1"
+_SRC_USERNAME2 = "users.username2"
 
-_DEPLOY_CREDS = {
+_FRONTEND_JS = [
+    ("REACT_APP_CLIENT_ID", "frontend.react-app-client-id", "{}"),
+    ("REACT_APP_AUTH_AUTHORITY", "frontend.react-app-oauth-url", "{}"),
+]
+
+_CONF_SERVER = [
+    ("rule.onlyu1.rule", _SRC_USERNAME1, "PathPrefix(`/{}`)"),
+    ("rule.onlyu1.whitelist", "users.email1", "{}"),
+    ("rule.onlyu2.rule", _SRC_USERNAME2, "PathPrefix(`/{}`)"),
+    ("rule.onlyu2.whitelist", "users.email2", "{}"),
+]
+
+
+def _server_env(section):
+    """Entries for a server deployment's config/.env file."""
+    return [
+        ("SERVER_DNS", "common.server-dns", "{}"),
+        ("USERNAME1", _SRC_USERNAME1, "{}"),
+        ("USERNAME2", _SRC_USERNAME2, "{}"),
+        ("OAUTH_URL", f"{section}.oauth-url", "{}"),
+        ("OAUTH_CLIENT_ID", f"{section}.oauth-client-id", "{}"),
+        ("OAUTH_CLIENT_SECRET", f"{section}.oauth-client-secret", "{}"),
+        ("OAUTH_SECRET", f"{section}.oauth-secret", "{}"),
+    ]
+
+
+_DEPLOY_FILES = {
     "localhost": [
-        ("default-user", "DEFAULT_USER=user1", "DEFAULT_USER={}"),
         (
-            "auth-authority",
-            "REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/'",
-            _REACT_AUTH_FMT,
+            _ENV_FILE,
+            "env",
+            [("DEFAULT_USER", "localhost.default-user", "{}")],
+        ),
+        (
+            _CLIENT_JS_FILE,
+            "js",
+            [("REACT_APP_AUTH_AUTHORITY", "localhost.auth-authority", "{}")],
         ),
     ],
     "insecure-server": [
-        ("oauth-url", "OAUTH_URL=https://gitlab.com", "OAUTH_URL={}"),
-        ("oauth-client-id", "your_client_id_here", "{}"),
-        ("oauth-client-secret", "your_client_secret_here", "{}"),
-        ("oauth-secret", "your_random_secret_key_here", "{}"),
-        (
-            "auth-authority",
-            "REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com'",
-            _REACT_AUTH_FMT,
-        ),
+        (_ENV_FILE, "env", _server_env("insecure-server")),
+        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "secure-server": [
-        ("oauth-url", "OAUTH_URL=https://gitlab.com", "OAUTH_URL={}"),
-        ("oauth-client-id", "your_client_id_here", "{}"),
-        ("oauth-client-secret", "your_client_secret_here", "{}"),
-        ("oauth-secret", "your_random_secret_key_here", "{}"),
-        (
-            "auth-authority",
-            "REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com'",
-            _REACT_AUTH_FMT,
-        ),
+        (_ENV_FILE, "env", _server_env("secure-server")),
+        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "secure-server-gitlab": [
-        ("oauth-client-id", "your_client_id_here", "{}"),
-        ("oauth-client-secret", "your_client_secret_here", "{}"),
-        ("oauth-secret", "your_random_secret_key_here", "{}"),
+        (_ENV_FILE, "env", _server_env("secure-server-gitlab")),
+        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "workspace-localhost": [
-        ("default-user", "DEFAULT_USER=user", "DEFAULT_USER={}"),
-        ("client-id", "id: mock", "id: {}"),
-        ("client-id", "REACT_APP_CLIENT_ID: 'mock'", "REACT_APP_CLIENT_ID: '{}'"),
         (
-            "auth-authority",
-            "REACT_APP_AUTH_AUTHORITY: 'http://localhost:5556/dex'",
-            _REACT_AUTH_FMT,
+            ".env.example",
+            "env",
+            [("DEFAULT_USER", "workspace-localhost.default-user", "{}")],
         ),
-        ("auth-authority", "issuer: http://localhost:5556/dex", "issuer: {}"),
+        (
+            "config/env.local.js",
+            "js",
+            [
+                ("REACT_APP_CLIENT_ID", "workspace-localhost.client-id", "{}"),
+                (
+                    "REACT_APP_AUTH_AUTHORITY",
+                    "workspace-localhost.auth-authority",
+                    "{}",
+                ),
+            ],
+        ),
+        (
+            "config/dex-config.yaml.example",
+            "yaml",
+            [
+                ("issuer", "workspace-localhost.auth-authority", "{}"),
+                ("id", "workspace-localhost.client-id", "{}"),
+            ],
+        ),
     ],
     "workspace-secure-server": [
-        ("oauth-secret", "your_random_secret_key_here", "{}"),
-        ("keycloak-admin", "KEYCLOAK_ADMIN=admin", "KEYCLOAK_ADMIN={}"),
         (
-            "keycloak-admin-password",
-            "KEYCLOAK_ADMIN_PASSWORD=changeme",  # NOSONAR
-            "KEYCLOAK_ADMIN_PASSWORD={}",
+            ".env.example",
+            "env",
+            [
+                ("SERVER_DNS", "common.server-dns", "{}"),
+                ("USERNAME1", _SRC_USERNAME1, "{}"),
+                ("USERNAME2", _SRC_USERNAME2, "{}"),
+                ("OAUTH_SECRET", "workspace-secure-server.oauth-secret", "{}"),
+                ("KEYCLOAK_ADMIN", "workspace-secure-server.keycloak-admin", "{}"),
+                (
+                    "KEYCLOAK_ADMIN_PASSWORD",
+                    "workspace-secure-server.keycloak-admin-password",
+                    "{}",
+                ),
+                ("KEYCLOAK_REALM", "workspace-secure-server.keycloak-realm", "{}"),
+                (
+                    "KEYCLOAK_ISSUER_URL",
+                    "workspace-secure-server.keycloak-issuer-url",
+                    "{}",
+                ),
+                (
+                    "KEYCLOAK_CLIENT_ID",
+                    "workspace-secure-server.keycloak-client-id",
+                    "{}",
+                ),
+                (
+                    "KEYCLOAK_CLIENT_SECRET",
+                    "workspace-secure-server.keycloak-client-secret",
+                    "{}",
+                ),
+            ],
         ),
-        ("keycloak-realm", "KEYCLOAK_REALM=dtaas", "KEYCLOAK_REALM={}"),
-        ("keycloak-issuer-url", "https://intocps.org/auth/realms/dtaas", "{}"),
-        (
-            "keycloak-client-id",
-            "KEYCLOAK_CLIENT_ID=dtaas-workspace",
-            "KEYCLOAK_CLIENT_ID={}",
-        ),
-        ("keycloak-client-secret", "your_keycloak_client_secret_here", "{}"),
-        ("client-id", "dtaas-client", "{}"),
     ],
 }
-
-_SERVER_DNS_PLACEHOLDERS = [
-    ("SERVER_DNS=localhost", "SERVER_DNS={}"),
-    ("SERVER_DNS=intocps.org", "SERVER_DNS={}"),
-]
-
-_USER_NAME_PATTERNS = [
-    ("USERNAME1=user1", "USERNAME1={}"),
-    ("USERNAME2=user2", "USERNAME2={}"),
-]
-
-_USER_PATH_PATTERNS = ["/user1", "/user2"]
-
-_USER_EMAIL_PATTERNS = [
-    "user1@emailservice.com",
-    "user2@emailservice.com",
-]
