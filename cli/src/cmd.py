@@ -132,6 +132,17 @@ def user():
     return
 
 
+def _run_user_command(action, success_msg, error_prefix):
+    try:
+        config_obj = configPkg.Config()
+    except RuntimeError as exc:
+        raise click.ClickException(str(exc)) from exc
+    err = action(config_obj)
+    if err is not None:
+        raise click.ClickException(f"{error_prefix}: {err}")
+    click.echo(success_msg)
+
+
 #### user group commands
 @user.command()
 def add():
@@ -139,16 +150,9 @@ def add():
     add a list of users to DTaaS at once\n
     Specify the list in dtaas.toml [users].add\n
     """
-
-    try:
-        config_obj = configPkg.Config()
-    except RuntimeError as exc:
-        raise click.ClickException(str(exc)) from exc
-
-    err = userPkg.add_users(config_obj)
-    if err is not None:
-        raise click.ClickException("Error while adding users: " + str(err))
-    click.echo("Users added successfully")
+    _run_user_command(
+        userPkg.add_users, "Users added successfully", "Error while adding users"
+    )
 
 
 @user.command()
@@ -157,13 +161,6 @@ def delete():
     removes the USERNAME user from DTaaS\n
     Specify the users in dtaas.toml [users].delete\n
     """
-
-    try:
-        config_obj = configPkg.Config()
-    except RuntimeError as exc:
-        raise click.ClickException(str(exc)) from exc
-
-    err = userPkg.delete_user(config_obj)
-    if err is not None:
-        raise click.ClickException("Error while deleting users: " + str(err))
-    click.echo("User deleted successfully")
+    _run_user_command(
+        userPkg.delete_user, "User deleted successfully", "Error while deleting users"
+    )

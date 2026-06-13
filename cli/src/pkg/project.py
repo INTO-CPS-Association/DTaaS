@@ -77,12 +77,10 @@ def generate_project(dest_dir=".", force=False):
     _create_workspace_dirs(dest_dir)
 
 
-def _copy_file(item, src, dest, force):
-    """Copy one file into dest, returning an error string or None."""
-    rel = item.relative_to(src)
-    target = dest / rel
+def _copy_file(item, target, force):
+    """Copy item to target, returning an error string or None."""
     if target.exists() and not force:
-        click.echo(f"'{rel}' already exists, skipping")
+        click.echo(f"'{target}' already exists, skipping")
         return None
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -106,17 +104,6 @@ def _check_no_symlinks(src, entries):
         )
 
 
-def _copy_entries(entries, src, dest, force):
-    """Copy all regular files from *entries* into *dest*, preserving structure.
-
-    Raises OSError listing all failures if any copy fails.
-    """
-    files = filter(Path.is_file, entries)
-    errors = list(filter(None, (_copy_file(i, src, dest, force) for i in files)))
-    if errors:
-        raise OSError("\n".join(errors))
-
-
 def _copy_tree(src_dir, dest_dir, force=False):
     """Recursively copy *src_dir* contents into *dest_dir*.
 
@@ -126,7 +113,18 @@ def _copy_tree(src_dir, dest_dir, force=False):
     src, dest = Path(src_dir), Path(dest_dir)
     entries = sorted(src.rglob("*"))
     _check_no_symlinks(src, entries)
-    _copy_entries(entries, src, dest, force)
+    errors = list(
+        filter(
+            None,
+            (
+                _copy_file(item, dest / item.relative_to(src), force)
+                for item in entries
+                if item.is_file()
+            ),
+        )
+    )
+    if errors:
+        raise OSError("\n".join(errors))
 
 
 def _validate_deploy_inputs(deploy_type, src, dest):
@@ -149,18 +147,29 @@ def _validate_deploy_inputs(deploy_type, src, dest):
     dest.mkdir(parents=True, exist_ok=True)
 
 
+def _copy_example(example, force):
+    """Copy one *.example file to its non-example counterpart. Returns error or None."""
+    target = example.with_suffix("")
+    if not force and target.exists():
+        return None
+    try:
+        shutil.copy2(example, target)
+    except OSError as exc:
+        return str(exc)
+    return None
+
+
 def _copy_example_files(dest_dir, force=False):
     """Copy *.example files to their non-example counterparts."""
-    dest = Path(dest_dir)
-    errors = []
-    for example in sorted(dest.rglob("*.example")):
-        target = example.with_suffix("")
-        if not force and target.exists():
-            continue
-        try:
-            shutil.copy2(example, target)
-        except OSError as exc:
-            errors.append(str(exc))
+    errors = list(
+        filter(
+            None,
+            (
+                _copy_example(ex, force)
+                for ex in sorted(Path(dest_dir).rglob("*.example"))
+            ),
+        )
+    )
     if errors:
         raise OSError("\n".join(errors))
 

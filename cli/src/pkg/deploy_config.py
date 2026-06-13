@@ -36,9 +36,7 @@ def _user_value(users, key):
     if key.startswith("username"):
         return username
     section = users.get(username, {})
-    if not isinstance(section, dict):
-        return ""
-    return str(section.get("email", "")).strip()
+    return str(section.get("email", "")).strip() if isinstance(section, dict) else ""
 
 
 def _toml_lookup(toml_data, source):
@@ -55,19 +53,42 @@ def _validate_value(value):
         raise ValueError(f"Config value must not contain newlines: {value!r}")
 
 
+def _build_entry_values(entries, toml_data):
+    """Build the key->value substitution dict for one file's entries."""
+    values = {}
+    for file_key, source, fmt in entries:
+        value = _toml_lookup(toml_data, source)
+        if value:
+            _validate_value(value)
+            values[file_key] = fmt.format(value)
+    return values
+
+
 def build_file_specs(deploy_type, toml_data):
     """Return [(relative path, format, {file key: value})] for deploy_type."""
     specs = []
     for rel_path, file_format, entries in _DEPLOY_FILES.get(deploy_type, []):
-        values = {}
-        for file_key, source, fmt in entries:
-            value = _toml_lookup(toml_data, source)
-            if value:
-                _validate_value(value)
-                values[file_key] = fmt.format(value)
+        values = _build_entry_values(entries, toml_data)
         if values:
             specs.append((rel_path, file_format, values))
     return specs
+
+
+def _read_file_text(path):
+    """Read a file's text content, returning None on OSError."""
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+
+def _missing_placeholder_warnings(text, rel_path):
+    """Return warning strings for any secret placeholders found in text."""
+    return [
+        f"Warning: '{p}' not substituted in {rel_path}"
+        for p in _SECRET_PLACEHOLDERS
+        if p in text
+    ]
 
 
 def check_placeholders(dest_dir, specs):
@@ -77,15 +98,9 @@ def check_placeholders(dest_dir, specs):
         path = Path(dest_dir) / rel_path
         if not path.is_file():
             continue
-        try:
-            text = path.read_text(encoding="utf-8")
-        except OSError:
-            continue
-        for placeholder in _SECRET_PLACEHOLDERS:
-            if placeholder in text:
-                warnings.append(
-                    f"Warning: '{placeholder}' not substituted in {rel_path}"
-                )
+        text = _read_file_text(path)
+        if text is not None:
+            warnings.extend(_missing_placeholder_warnings(text, rel_path))
     return warnings
 
 
@@ -107,11 +122,8 @@ def _apply_to_file(path, file_format, values):
     return None
 
 
-def apply_config(dest_dir, specs):
-    """Apply substitution specs to config files under dest_dir.
-
-    Files missing from dest_dir are skipped. Raises OSError on failure.
-    """
+def _collect_apply_errors(dest_dir, specs):
+    """Apply substitution specs and return a list of error strings."""
     errors = []
     for rel_path, file_format, values in specs:
         path = Path(dest_dir) / rel_path
@@ -120,5 +132,14 @@ def apply_config(dest_dir, specs):
         err = _apply_to_file(path, file_format, values)
         if err:
             errors.append(err)
+    return errors
+
+
+def apply_config(dest_dir, specs):
+    """Apply substitution specs to config files under dest_dir.
+
+    Files missing from dest_dir are skipped. Raises OSError on failure.
+    """
+    errors = _collect_apply_errors(dest_dir, specs)
     if errors:
         raise OSError("\n".join(errors))

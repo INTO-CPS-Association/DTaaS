@@ -9,7 +9,6 @@ from src.pkg.project import (
     _copy_example_files,
     _copy_file,
     _check_no_symlinks,
-    _copy_entries,
     _copy_tree,
     _validate_deploy_inputs,
     DEPLOY_TYPES,
@@ -50,7 +49,7 @@ def test_copy_file_skips_existing(tmp_path, capsys):
     dest.mkdir()
     (dest / "a.txt").write_text("old")
 
-    result = _copy_file(src / "a.txt", src, dest, force=False)
+    result = _copy_file(src / "a.txt", dest / "a.txt", force=False)
 
     assert result is None
     assert (dest / "a.txt").read_text() == "old"
@@ -84,19 +83,18 @@ def test_check_no_symlinks_passes_for_regular_files(tmp_path):
     _check_no_symlinks(src, entries)  # must not raise
 
 
-def test_copy_entries_collects_errors(tmp_path):
+def test_copy_tree_collects_errors(tmp_path):
     """All files are attempted even when copies fail; errors are raised together."""
     src = tmp_path / "src"
     src.mkdir()
-    entries = [src / "a.txt", src / "b.txt"]
-    for e in entries:
-        e.write_text("x")
+    (src / "a.txt").write_text("x")
+    (src / "b.txt").write_text("x")
     dest = tmp_path / "dest"
     dest.mkdir()
 
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("fail")):
         with pytest.raises(OSError, match="fail"):
-            _copy_entries(entries, src, dest, force=False)
+            _copy_tree(src, dest, force=False)
 
 
 def test_copy_tree_delegates_to_helpers(tmp_path):
