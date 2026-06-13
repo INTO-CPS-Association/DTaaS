@@ -40,7 +40,6 @@ def add_conf_server_entry(username, email):
     )
 
 
-
 def _build_config_mapping(user_config, resources):
     """Build the mapping for config substitution.
 
@@ -220,7 +219,9 @@ def add_users(config_obj):
         _finalize_compose(compose)
         for username in user_list:
             section = (users_section or {}).get(username, {})
-            email = str(section.get("email", "") if isinstance(section, dict) else "").strip()
+            email = str(
+                section.get("email", "") if isinstance(section, dict) else ""
+            ).strip()
             add_conf_server_entry(username, email)
     except Exception as e:
         return e

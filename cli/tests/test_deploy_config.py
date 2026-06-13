@@ -61,7 +61,7 @@ def test_build_file_specs_insecure_server():
         for path, fmt, values in build_file_specs("insecure-server", toml)
     }
 
-    env_format, env_values = specs["config/.env.example"]
+    env_format, env_values = specs["config/.env"]
     assert env_format == "env"
     assert env_values["SERVER_DNS"] == "myserver.com"
     assert env_values["USERNAME1"] == "alice"
@@ -69,12 +69,12 @@ def test_build_file_specs_insecure_server():
     assert env_values["OAUTH_CLIENT_SECRET"] == "server_secret"
     assert "OAUTH_SECRET" not in env_values
 
-    js_format, js_values = specs["config/client.js.example"]
+    js_format, js_values = specs["config/client.js"]
     assert js_format == "js"
     assert js_values["REACT_APP_CLIENT_ID"] == "client_id"
     assert js_values["REACT_APP_AUTH_AUTHORITY"] == "https://gitlab.example.com"
 
-    conf_format, conf_values = specs["config/conf.server.example"]
+    conf_format, conf_values = specs["config/conf.server"]
     assert conf_format == "env"
     assert conf_values["rule.onlyu1.rule"] == "PathPrefix(`/alice`)"
     assert conf_values["rule.onlyu1.whitelist"] == "alice@example.com"
@@ -84,37 +84,35 @@ def test_apply_config_edits_files_by_key(tmp_path):
     """apply_config edits the targeted keys in each config file"""
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    (config_dir / ".env.example").write_text(ENV_TEXT)
-    (config_dir / "client.js.example").write_text(JS_TEXT)
+    (config_dir / ".env").write_text(ENV_TEXT)
+    (config_dir / "client.js").write_text(JS_TEXT)
 
     apply_config(
         str(tmp_path),
         [
-            ("config/.env.example", "env", {"SERVER_DNS": "myserver.com"}),
-            ("config/client.js.example", "js", {"REACT_APP_CLIENT_ID": "real_id"}),
+            ("config/.env", "env", {"SERVER_DNS": "myserver.com"}),
+            ("config/client.js", "js", {"REACT_APP_CLIENT_ID": "real_id"}),
         ],
     )
 
-    assert "SERVER_DNS=myserver.com" in (config_dir / ".env.example").read_text()
-    client_js = (config_dir / "client.js.example").read_text()
+    assert "SERVER_DNS=myserver.com" in (config_dir / ".env").read_text()
+    client_js = (config_dir / "client.js").read_text()
     assert "REACT_APP_CLIENT_ID: 'real_id'" in client_js
 
 
 def test_apply_config_skips_missing_files(tmp_path):
     """specs for files absent from dest_dir are skipped silently"""
-    apply_config(str(tmp_path), [("config/.env.example", "env", {"KEY": "value"})])
+    apply_config(str(tmp_path), [("config/.env", "env", {"KEY": "value"})])
 
 
 def test_apply_config_raises_on_file_error(tmp_path):
     """write failures are collected and raised as OSError"""
-    bad = tmp_path / ".env.example"
+    bad = tmp_path / ".env"
     bad.write_text("SERVER_DNS=localhost\n")
     bad.chmod(0o444)
     try:
         with pytest.raises(OSError):
-            apply_config(
-                str(tmp_path), [(".env.example", "env", {"SERVER_DNS": "x"})]
-            )
+            apply_config(str(tmp_path), [(".env", "env", {"SERVER_DNS": "x"})])
     finally:
         bad.chmod(0o644)
 
@@ -127,13 +125,13 @@ def test_validate_value_rejects_newline():
 
 def test_check_placeholders_returns_warning_for_unresolved(tmp_path):
     """check_placeholders warns when a known secret placeholder remains in a file"""
-    env = tmp_path / "config" / ".env.example"
+    env = tmp_path / "config" / ".env"
     env.parent.mkdir()
     env.write_text("OAUTH_CLIENT_ID=your_client_id_here\n")
 
     warnings = check_placeholders(
         str(tmp_path),
-        [("config/.env.example", "env", {"OAUTH_CLIENT_ID": "real_id"})],
+        [("config/.env", "env", {"OAUTH_CLIENT_ID": "real_id"})],
     )
     assert any("your_client_id_here" in w for w in warnings)
 
@@ -142,17 +140,17 @@ def test_check_placeholders_skips_missing_files(tmp_path):
     """check_placeholders ignores files that don't exist in dest_dir"""
     warnings = check_placeholders(
         str(tmp_path),
-        [("config/.env.example", "env", {})],
+        [("config/.env", "env", {})],
     )
     assert not warnings
 
 
 def test_apply_config_skips_binary_file(tmp_path):
     """apply_config leaves binary files (NUL-byte detected) untouched"""
-    binary = tmp_path / ".env.example"
+    binary = tmp_path / ".env"
     binary.write_bytes(b"SERVER_DNS=\x00value\n")
     original = binary.read_bytes()
-    apply_config(str(tmp_path), [(".env.example", "env", {"SERVER_DNS": "x"})])
+    apply_config(str(tmp_path), [(".env", "env", {"SERVER_DNS": "x"})])
     assert binary.read_bytes() == original
 
 
@@ -160,5 +158,3 @@ def test_toml_lookup_user_collision_reserved_key():
     """email lookup is safe when a username collides with the 'add' key"""
     toml = {"users": {"add": ["add"]}}
     assert _toml_lookup(toml, "users.email1") == ""
-
-

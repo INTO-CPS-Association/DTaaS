@@ -21,7 +21,7 @@ _DEST_ROOT = _CLI_ROOT / "src" / "templates" / "deploy"
 # Maps each deploy type to its source directory (relative to the repo root).
 _SOURCES: dict[str, str] = {
     "localhost": "deploy/dtaas/docker/localhost",
-    "server": "deploy/dtaas/docker/server",
+    "insecure-server": "deploy/dtaas/docker/server",
     "secure-server": "deploy/dtaas/docker/secure-server",
     "secure-server-gitlab": "deploy/dtaas/docker/secure-server_with_integrated-gitlab",
     "workspace-localhost": "deploy/workspace/dex/localhost",

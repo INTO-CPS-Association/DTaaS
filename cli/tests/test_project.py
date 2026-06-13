@@ -6,6 +6,7 @@ import pytest
 from src.pkg.project import (
     generate_project,
     generate_deploy_project,
+    _copy_example_files,
     _copy_file,
     _check_no_symlinks,
     _copy_entries,
@@ -33,10 +34,11 @@ def test_generate_project_raises_on_copy_failure(tmp_path):
             generate_project(str(tmp_path))
 
 
-def test_generate_project_raises_if_dest_not_found():
-    """FileNotFoundError is raised immediately when dest_dir does not exist."""
-    with pytest.raises(FileNotFoundError, match="does not exist"):
-        generate_project("/nonexistent/path/that/cannot/exist")
+def test_generate_project_creates_missing_dest(tmp_path):
+    """generate_project creates the destination directory if it does not exist."""
+    new_dir = tmp_path / "new_output"
+    generate_project(str(new_dir))
+    assert new_dir.is_dir()
 
 
 def test_copy_file_skips_existing(tmp_path, capsys):
@@ -125,49 +127,51 @@ def test_validate_deploy_inputs_raises_if_src_missing(tmp_path):
         _validate_deploy_inputs("localhost", tmp_path / "missing", tmp_path)
 
 
-def test_validate_deploy_inputs_raises_if_dest_missing(tmp_path):
-    """FileNotFoundError when the destination directory is absent."""
+def test_validate_deploy_inputs_creates_missing_dest(tmp_path):
+    """Missing destination directory is created instead of raising."""
     src = tmp_path / "localhost"
     src.mkdir()
-    with pytest.raises(FileNotFoundError, match="does not exist"):
-        _validate_deploy_inputs("localhost", src, tmp_path / "missing")
+    missing = tmp_path / "missing"
+    _validate_deploy_inputs("localhost", src, missing)
+    assert missing.is_dir()
 
 
 REQUIRED_FILES = {
     "localhost": [
         "docker-compose.yml",
-        "config/.env.example",
-        "config/client.js.example",
+        "config/.env",
+        "config/client.js",
     ],
     "insecure-server": [
         "docker-compose.yml",
-        "config/.env.example",
-        "config/client.js.example",
-        "config/conf.server.example",
+        "config/.env",
+        "config/client.js",
+        "config/conf.server",
     ],
     "secure-server": [
         "docker-compose.yml",
-        "config/.env.example",
-        "config/client.js.example",
-        "config/conf.server.example",
+        "config/.env",
+        "config/client.js",
+        "config/conf.server",
         "config/tls.yml",
     ],
     "secure-server-gitlab": [
         "docker-compose.yml",
-        "config/.env.example",
-        "config/client.js.example",
-        "config/conf.server.example",
+        "config/.env",
+        "config/client.js",
+        "config/conf.server",
         "config/tls.yml",
     ],
     "workspace-localhost": [
         "docker-compose.yml",
-        ".env.example",
-        "config/dex-config.yaml.example",
+        ".env",
+        "config/dex-config.yaml",
     ],
     "workspace-secure-server": [
         "docker-compose.yml",
-        ".env.example",
-        "config/forward-auth-conf.example",
+        ".env",
+        "config/client.js",
+        "config/forward-auth-conf",
         "config/tls.yml",
     ],
 }
@@ -186,3 +190,35 @@ def test_generate_deploy_project_copies_required_files(tmp_path, deploy_type):
         assert (
             tmp_path / rel
         ).is_file(), f"[{deploy_type}] required file missing after generation: {rel}"
+
+
+def test_copy_example_files_creates_actual_files(tmp_path):
+    """_copy_example_files creates non-example copies of all .example files."""
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / ".env.example").write_text("KEY=value")
+    (tmp_path / "config" / "app.js.example").write_text("var x = 1;")
+
+    _copy_example_files(tmp_path)
+
+    assert (tmp_path / "config" / ".env").read_text() == "KEY=value"
+    assert (tmp_path / "config" / "app.js").read_text() == "var x = 1;"
+
+
+def test_copy_example_files_skips_existing_without_force(tmp_path):
+    """_copy_example_files does not overwrite existing files when force=False."""
+    (tmp_path / "a.example").write_text("new")
+    (tmp_path / "a").write_text("old")
+
+    _copy_example_files(tmp_path, force=False)
+
+    assert (tmp_path / "a").read_text() == "old"
+
+
+def test_copy_example_files_overwrites_with_force(tmp_path):
+    """_copy_example_files overwrites existing files when force=True."""
+    (tmp_path / "a.example").write_text("new")
+    (tmp_path / "a").write_text("old")
+
+    _copy_example_files(tmp_path, force=True)
+
+    assert (tmp_path / "a").read_text() == "new"

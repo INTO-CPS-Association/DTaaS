@@ -14,10 +14,38 @@ def _toml_exists():
     return Path("dtaas.toml").is_file()
 
 
+class VerticalChoicesCommand(click.Command):
+    """Format Choice options as a vertical list in help text."""
+
+    def format_help_text(self, ctx, formatter):
+        if self.help:
+            formatter.write_paragraph()
+            with formatter.indentation():
+                formatter.write_text(self.help)
+
+    @staticmethod
+    def _make_opt_entry(param, rv):
+        if not isinstance(param.type, click.Choice):
+            return rv
+        choices_str = "\n          ".join(param.type.choices)
+        prefix = f"{rv[1]}. " if rv[1] else ""
+        return (rv[0], f"{prefix}One of:\n          {choices_str}")
+
+    def format_options(self, ctx, formatter):
+        opts = []
+        for param in self.get_params(ctx):
+            rv = param.get_help_record(ctx)
+            if rv is not None:
+                opts.append(self._make_opt_entry(param, rv))
+        if opts:
+            with formatter.section("Options"):
+                formatter.write_dl(opts)
+
+
 ### Groups
 @click.group()
 def dtaas():
-    """all commands to help with Digital Twins as a Service"""
+    """Provision, configure, and manage Digital Twin as a Service environments."""
     return
 
 
@@ -30,10 +58,11 @@ def dtaas():
 )
 @click.option("--force", is_flag=True, help="Overwrite existing files.")
 def generate_project(output_dir, force):
-    """
-    generate project configuration files\n
-    Creates dtaas.toml, users.server.yml, and users.server.secure.yml\n
-    in the target directory. Existing files are left untouched unless --force is set.\n
+    """Generate user management templates.
+
+    Creates dtaas.toml, users.server.yml, and users.server.secure.yml
+    in the target directory. Existing files are left untouched unless
+    --force is set.
     """
     try:
         projectPkg.generate_project(output_dir, force)
@@ -44,16 +73,17 @@ def generate_project(output_dir, force):
 
 @dtaas.group()
 def admin():
-    "administrative commands for DTaaS"
+    """administration commands"""
     return
 
 
-@dtaas.command(name="generate-deployment")
+@dtaas.command(name="generate-deployment", cls=VerticalChoicesCommand)
 @click.option(
     "--type",
     "deploy_type",
     required=True,
     type=click.Choice(sorted(DEPLOY_TYPES), case_sensitive=False),
+    metavar="[...]",
     help="Deployment scenario to generate.",
 )
 @click.option(

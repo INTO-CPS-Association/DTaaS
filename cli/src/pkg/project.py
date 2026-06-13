@@ -47,14 +47,13 @@ def _create_workspace_dirs(dest_dir):
 
 
 def _validate_project_inputs(dest_dir):
-    """Raise if the templates dir or dest_dir are missing."""
+    """Raise if templates dir is missing; create dest_dir if needed."""
     if not TEMPLATES_DIR.is_dir():
         raise RuntimeError(
             f"Package data missing: templates directory not found at {TEMPLATES_DIR}. "
             "The package may have been installed incorrectly."
         )
-    if not Path(dest_dir).is_dir():
-        raise FileNotFoundError(f"Destination directory does not exist: {dest_dir}")
+    Path(dest_dir).mkdir(parents=True, exist_ok=True)
 
 
 def _try_copy_template(template_name, dest_dir, force):
@@ -135,7 +134,7 @@ def _validate_deploy_inputs(deploy_type, src, dest):
 
     Raises ValueError if deploy_type is not recognised.
     Raises RuntimeError if the template directory is missing.
-    Raises FileNotFoundError if dest does not exist.
+    Creates dest if it does not exist.
     """
     if deploy_type not in DEPLOY_TYPES:
         raise ValueError(
@@ -147,8 +146,23 @@ def _validate_deploy_inputs(deploy_type, src, dest):
             f"Template directory not found at {src}. "
             "The package may have been installed incorrectly."
         )
-    if not dest.is_dir():
-        raise FileNotFoundError(f"Destination directory does not exist: {dest}")
+    dest.mkdir(parents=True, exist_ok=True)
+
+
+def _copy_example_files(dest_dir, force=False):
+    """Copy *.example files to their non-example counterparts."""
+    dest = Path(dest_dir)
+    errors = []
+    for example in sorted(dest.rglob("*.example")):
+        target = example.with_suffix("")
+        if not force and target.exists():
+            continue
+        try:
+            shutil.copy2(example, target)
+        except OSError as exc:
+            errors.append(str(exc))
+    if errors:
+        raise OSError("\n".join(errors))
 
 
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
@@ -157,3 +171,4 @@ def generate_deploy_project(deploy_type, dest_dir=".", force=False):
     dest = Path(dest_dir)
     _validate_deploy_inputs(deploy_type, src, dest)
     _copy_tree(src, dest, force)
+    _copy_example_files(dest, force)

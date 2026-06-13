@@ -1,19 +1,20 @@
-"""Per-deployment config file substitution specs used by deploy_config.
-"""
+"""Per-deployment config file substitution specs used by deploy_config."""
 
 # Placeholder strings that represent unconfigured secrets in template files.
 # check_placeholders warns when any of these survive substitution.
-_SECRET_PLACEHOLDERS = frozenset({
-    "your_client_id_here",
-    "your_client_secret_here",
-    "your_random_secret_key_here",
-    "your_keycloak_client_secret_here",
-    "changeme",  # NOSONAR
-})
+_SECRET_PLACEHOLDERS = frozenset(
+    {
+        "your_client_id_here",
+        "your_client_secret_here",
+        "your_random_secret_key_here",
+        "your_keycloak_client_secret_here",
+        "changeme",  # NOSONAR
+    }
+)
 
-_ENV_FILE = "config/.env.example"
-_CLIENT_JS_FILE = "config/client.js.example"
-_CONF_SERVER_FILE = "config/conf.server.example"
+_ENV_FILE = "config/.env"
+_CLIENT_JS_FILE = "config/client.js"
+_CONF_SERVER_FILE = "config/conf.server"
 _SRC_USERNAME1 = "users.username1"
 _SRC_USERNAME2 = "users.username2"
 
@@ -73,7 +74,7 @@ _DEPLOY_FILES = {
     ],
     "workspace-localhost": [
         (
-            ".env.example",
+            ".env",
             "env",
             [("DEFAULT_USER", "workspace-localhost.default-user", "{}")],
         ),
@@ -90,7 +91,7 @@ _DEPLOY_FILES = {
             ],
         ),
         (
-            "config/dex-config.yaml.example",
+            "config/dex-config.yaml",
             "yaml",
             [
                 ("issuer", "workspace-localhost.auth-authority", "{}"),
@@ -100,7 +101,7 @@ _DEPLOY_FILES = {
     ],
     "workspace-secure-server": [
         (
-            ".env.example",
+            ".env",
             "env",
             [
                 ("SERVER_DNS", "common.server-dns", "{}"),

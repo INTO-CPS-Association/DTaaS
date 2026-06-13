@@ -49,91 +49,79 @@ The CLI has two layers of code:
 
 ### TOML File
 
-The base configuration file used by the CLI is
-the _dtaas.toml_ file.
+The base configuration file used by the CLI is the _dtaas.toml_ file.
+It has the following sections:
 
-This is divided into 3 sections:
-
-- The Global variables:
+#### Global variables
 
 ```toml
-name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.2"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
+name="Digital Twin as a Service (DTaaS)"
+version="0.5.0"
+owner="The INTO-CPS-Association"
+git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```
 
-These define the name, version, owner and git-repo of the DTaaS instance.
-Currently, these aren't directly used in the CLI and serve the purpose
-of documentation and reference.
+These define metadata about the DTaaS instance and are not directly used
+by the CLI.
 
-- Common Instance Variables
+#### [common]
 
 ```toml
 [common]
-# absolute path to the DTaaS application directory
-# TODO : Update, we are now reusing hostname for this
-server-dns = "intocps.org"
-# Specify the directory of DTaaS installation
-# Linux example
-path = "/Users/username/DTaaS"
-# Windows example
-#path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
-```
+server-dns="intocps.org"
+path="/Users/username/DTaaS"
 
-The _path_ variable is used globally by the CLI.
-It is required while creating new workspace files,
-to run bash commands and create new docker services.
-
-The _server-dns_ variable is used to decide if
-the DTaaS instance is a localhost instance or a server
-deploy instance. In the case of server deploy,
-it is used to define the routes of the server type
-docker compose services appropriately.
-
-- Tls
-
-Set the tls flag to false to use the insecure user.server.yml, it is True by default
-so the 'user.server.secure.yml' will be used
-
-```toml
 [common.security]
-# Enable HTTPS/TLS for secure server deployment
-tls = true
+tls=true
+
+[common.resources]
+cpus=4
+mem_limit="4G"
+pids_limit=4960
+shm_size="512m"
 ```
 
-- Users variables
+- _server-dns_: determines localhost vs. server deploy; sets routes in docker
+  compose files.
+- _path_: absolute path to the DTaaS installation; required for workspace
+  creation and docker services.
+- _tls_: `false` uses `user.server.yml`; `true` (default) uses `user.server.secure.yml`.
+- Resource fields set default container limits for user workspaces.
+
+#### [users]
 
 ```toml
 [users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"]
-delete = ["username2", "username3"]
+add=["username1","username2"]
+delete=["username2"]
 
 [users.username1]
-email = "username1@intocps.org"
+email="username1@intocps.org"
 ```
 
-This section firstly has two important lists, add and delete.
-The new users to be created, or current users to be removed
-from the instance using the CLI are fetched from here in the code.
+- _add_: list of usernames to create.
+- _delete_: list of usernames to remove.
+- Per-user sub-tables provide the _email_ field, written to
+  `config/conf.server` on `dtaas admin user add`.
 
-Additionally, each unique _user_ identified by their _username_
-has an _email_ variable, which should have the email of the user
-as registered on the Gitlab instance. This is currently NOT IN USE.
-It is aimed to be incorporated in future versions.
-
-- Website Client variables
+#### [frontend]
 
 ```toml
-[client.web]
-config = "/Users/username/DTaaS/env.local.js"
+[frontend]
+react-app-client-id="your_client_id_here"
+react-app-oauth-url="https://gitlab.com"
 ```
 
-These variables are currently not in use, and will be incorporated
-in future work.
+OAuth credentials for the DTaaS React client website. This is a separate OAuth application
+from the server-side one (traefik-forward-auth). Values are substituted into `config/client.js`
+by `generate-deployment`.
+
+#### Deployment sections
+
+Each deploy type has its own section (`[localhost]`, `[insecure-server]`,
+`[secure-server]`, `[secure-server-gitlab]`, `[workspace-localhost]`,
+`[workspace-secure-server]`). These hold server-side OAuth credentials
+substituted into `.env` and `conf.server` by `generate-deployment`.
 
 ## ⚙️ Setup
 
