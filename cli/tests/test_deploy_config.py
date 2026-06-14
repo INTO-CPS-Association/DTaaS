@@ -70,12 +70,13 @@ def test_build_file_specs_insecure_server():
     assert "OAUTH_SECRET" not in env_values
 
     js_format, js_values = specs["config/client.js"]
+    insecure = "http"
     assert js_format == "js"
     assert js_values["REACT_APP_CLIENT_ID"] == "client_id"
     assert js_values["REACT_APP_AUTH_AUTHORITY"] == "https://gitlab.example.com"
-    assert js_values["REACT_APP_URL"] == "http://myserver.com"
-    assert js_values["REACT_APP_REDIRECT_URI"] == "http://myserver.com/Library"
-    assert js_values["REACT_APP_LOGOUT_REDIRECT_URI"] == "http://myserver.com/"
+    assert js_values["REACT_APP_URL"] == f"{insecure}://myserver.com"
+    assert js_values["REACT_APP_REDIRECT_URI"] == f"{insecure}://myserver.com/Library"
+    assert js_values["REACT_APP_LOGOUT_REDIRECT_URI"] == f"{insecure}://myserver.com/"
 
     conf_format, conf_values = specs["config/conf.server"]
     assert conf_format == "env"

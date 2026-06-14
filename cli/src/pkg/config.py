@@ -1,7 +1,6 @@
 """This file supports the DTaaS config class"""
 
 from . import utils
-from typing import cast, Any
 
 
 class Config:
@@ -60,7 +59,11 @@ class Config:
         if key not in conf_users:
             return None, Exception(f"Config file error: No {key} list in 'users' tag")
 
-        strings_list = [str(x) for x in cast(list[Any], conf_users[key])]
+        value = conf_users[key]
+        if not isinstance(value, list):
+            return None, Exception(f"Config file error: users.{key} must be a list")
+
+        strings_list = [str(x) for x in value]
         if not strings_list:
             return None, Exception(f"Config file error: users.{key} list is empty")
 

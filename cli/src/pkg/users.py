@@ -196,6 +196,12 @@ def add_users(config_obj):
             email = str(
                 section.get("email", "") if isinstance(section, dict) else ""
             ).strip()
+            if any(c in username for c in ("\n", "\r")) or any(
+                c in email for c in ("\n", "\r")
+            ):
+                raise ValueError(
+                    f"Invalid user config for '{username}': username/email must not contain newlines"
+                )
             add_conf_server_entry(username, email)
     except Exception as e:
         return e

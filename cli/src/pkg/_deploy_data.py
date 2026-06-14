@@ -19,6 +19,7 @@ _SRC_USERNAME1 = "users.username1"
 _SRC_USERNAME2 = "users.username2"
 _DNS = "common.server-dns"
 
+
 def _frontend_js(scheme):
     """JS substitution entries for config/client.js using the given URL scheme."""
     return [
@@ -28,6 +29,7 @@ def _frontend_js(scheme):
         ("REACT_APP_REDIRECT_URI", _DNS, f"{scheme}://{{}}/Library"),
         ("REACT_APP_LOGOUT_REDIRECT_URI", _DNS, f"{scheme}://{{}}/"),
     ]
+
 
 _CONF_SERVER = [
     ("rule.onlyu1.rule", _SRC_USERNAME1, "PathPrefix(`/{}`)"),

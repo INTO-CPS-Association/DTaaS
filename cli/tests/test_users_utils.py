@@ -69,7 +69,9 @@ def test_add_conf_server_entry_skips_when_no_email(tmp_path, monkeypatch):
 
 def test_add_conf_server_entry_skips_when_file_missing(tmp_path, monkeypatch):
     """add_conf_server_entry does nothing when conf.server does not exist"""
-    monkeypatch.setattr(users_utils, "CONF_SERVER_PATH", tmp_path / "missing" / "conf.server")
+    monkeypatch.setattr(
+        users_utils, "CONF_SERVER_PATH", tmp_path / "missing" / "conf.server"
+    )
     add_conf_server_entry("alice", "alice@example.com")  # must not raise
 
 
@@ -91,7 +93,9 @@ def test_remove_conf_server_entry_removes_block(tmp_path, monkeypatch):
 
 def test_remove_conf_server_entry_skips_when_file_missing(tmp_path, monkeypatch):
     """remove_conf_server_entry does nothing when conf.server does not exist"""
-    monkeypatch.setattr(users_utils, "CONF_SERVER_PATH", tmp_path / "missing" / "conf.server")
+    monkeypatch.setattr(
+        users_utils, "CONF_SERVER_PATH", tmp_path / "missing" / "conf.server"
+    )
     remove_conf_server_entry("user1")  # must not raise
 
 

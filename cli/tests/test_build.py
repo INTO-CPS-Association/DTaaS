@@ -1,13 +1,27 @@
 """Tests for src/pkg/build.py."""
 
+import shutil
+import stat
+from pathlib import Path
+
 import pytest
 from src.pkg.build import build, _copy_one, _SOURCES, _DEST_ROOT, _EXCLUDE
 
 
-def test_build_creates_all_deploy_type_dirs():
-    """build() produces a directory for every deploy type."""
+def _force_remove(func, path, _exc):
+    Path(path).chmod(stat.S_IWRITE)
+    func(path)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def built_templates():
+    if _DEST_ROOT.exists():
+        shutil.rmtree(_DEST_ROOT, onexc=_force_remove)
     build()
 
+
+def test_build_creates_all_deploy_type_dirs():
+    """build() produces a directory for every deploy type."""
     for deploy_type in _SOURCES:
         dest = _DEST_ROOT / deploy_type
         assert dest.is_dir(), f"Missing template directory for type '{deploy_type}'"
@@ -15,8 +29,6 @@ def test_build_creates_all_deploy_type_dirs():
 
 def test_build_each_dir_is_non_empty():
     """Every generated deploy directory contains at least one file."""
-    build()
-
     for deploy_type in _SOURCES:
         files = list((_DEST_ROOT / deploy_type).rglob("*"))
         assert any(
@@ -26,8 +38,6 @@ def test_build_each_dir_is_non_empty():
 
 def test_build_excludes_companion_from_workspace_localhost():
     """companion/ must not appear in the workspace-localhost template."""
-    build()
-
     companion = _DEST_ROOT / "workspace-localhost" / "companion"
     assert (
         not companion.exists()
@@ -36,8 +46,6 @@ def test_build_excludes_companion_from_workspace_localhost():
 
 def test_build_excludes_are_complete():
     """No excluded directory name appears at the top level of any generated template."""
-    build()
-
     for deploy_type in _SOURCES:
         dest = _DEST_ROOT / deploy_type
         for excluded in _EXCLUDE:

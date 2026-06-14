@@ -158,6 +158,9 @@ jobs:
       - name: Install runtime dependencies
         run: poetry install --only main
 
+      - name: Build deploy templates
+        run: python -m src.pkg.build
+
       - name: Build wheel and sdist
         run: |
           poetry build --format wheel

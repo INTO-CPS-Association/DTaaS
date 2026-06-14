@@ -32,7 +32,7 @@ _SOURCES: dict[str, str] = {
 _EXCLUDE: set[str] = {"companion"}
 
 
-def _ignore(names: list[str]) -> list[str]:
+def _ignore(_directory: str, names: list[str]) -> list[str]:
     return [n for n in names if n in _EXCLUDE]
 
 
@@ -43,7 +43,7 @@ def _copy_one(deploy_type: str, rel_source: str) -> None:
     dest = _DEST_ROOT / deploy_type
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src, dest, ignore=_ignore)
+    shutil.copytree(src, dest, ignore=_ignore, copy_function=shutil.copy)
 
 
 def build() -> None:
