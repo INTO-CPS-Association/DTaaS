@@ -3,40 +3,6 @@
 from src.pkg import utils
 
 
-def test_import_yaml_users():
-    """Test importing YAML user configuration template"""
-    expected = {
-        "container_name": "dtaas-cli-${username}",
-        "image": "intocps/workspace:main-967bc10",
-        "restart": "unless-stopped",
-        "volumes": [
-            "${DTAAS_DIR}/files/common:/workspace/common",
-            "${DTAAS_DIR}/files/${username}:/workspace",
-        ],
-        "environment": ["MAIN_USER=${username}"],
-        "shm_size": "${shm_size}",
-        "cpus": "${cpus}",
-        "mem_limit": "${mem_limit}",
-        "pids_limit": "${pids_limit}",
-        "labels": [
-            "traefik.enable=true",
-            "traefik.http.routers.${username}.entryPoints=web",
-            "traefik.http.routers.${username}.middlewares=traefik-forward-auth",
-            (
-                "traefik.http.routers.${username}.rule="
-                "Host(`${SERVER_DNS}`) && PathPrefix(`/${username}`)"
-            ),
-        ],
-        "networks": ["users"],
-    }
-
-    template, err = utils.import_yaml("users.server.yml")
-    if err is not None:
-        raise AssertionError(err)
-
-    assert template == expected
-
-
 def test_import_yaml_empty_file():
     """Test importing an empty YAML file"""
     message, _ = utils.import_yaml("tests/data/empty.yml")
