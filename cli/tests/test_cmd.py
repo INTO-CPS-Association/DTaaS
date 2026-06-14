@@ -15,11 +15,12 @@ def runner():
 
 @pytest.fixture
 def mock_user_pkg():
-    """Mock user package functions"""
+    """Mock user package functions and Config to avoid filesystem dependency"""
     with patch("src.cmd.userPkg.add_users") as mock_add, patch(
         "src.cmd.userPkg.delete_user"
-    ) as mock_delete:
-        yield {"add": mock_add, "delete": mock_delete}
+    ) as mock_delete, patch("src.cmd.configPkg.Config") as mock_cfg:
+        mock_cfg.return_value = MagicMock()
+        yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
 
 
 def test_add_users_success(runner, mock_user_pkg):

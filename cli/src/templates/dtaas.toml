@@ -67,8 +67,12 @@ client-id="your_client_id_here"
 auth-authority="https://gitlab.com/"
 
 # OAuth application for the server (traefik-forward-auth).
-# Create it in GitLab with Redirect URI "https://<server-dns>/_oauth"
-# and Confidential ticked.
+# This is a separate OAuth application from the client website one in [frontend].
+# Create it in your GitLab instance at:
+# Settings -> Applications (for personal) or
+# Admin Area -> Applications (for instance-wide)
+# with Redirect URI "https://<server-dns>/_oauth", Confidential ticked and
+# scopes: openid, profile, read_user.
 [insecure-server]
 oauth-url="https://gitlab.com"
 oauth-client-id="your_client_id_here"

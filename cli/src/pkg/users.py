@@ -1,43 +1,17 @@
 """This file has functions that handle the user cli commands"""
 
-import re
 import subprocess
 import shutil
-import click
 from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
-
-CONF_SERVER_PATH = Path("config") / "conf.server"
-
-
-def _next_rule_num(text):
-    """Return the next available onlyu<N> index from existing conf.server content."""
-    nums = [int(m) for m in re.findall(r"rule\.onlyu(\d+)\.", text)]
-    return max(nums, default=0) + 1
-
-
-def _conf_server_block(username, email, rule_num):
-    """Return the 3-line conf.server block for one user."""
-    return (
-        f"\nrule.onlyu{rule_num}.action=auth\n"
-        f"rule.onlyu{rule_num}.rule=PathPrefix(`/{username}`)\n"
-        f"rule.onlyu{rule_num}.whitelist={email}\n"
-    )
-
-
-def add_conf_server_entry(username, email):
-    """Append routing and whitelist rules for username to config/conf.server.
-
-    Skipped silently when conf.server does not exist or email is empty.
-    """
-    if not CONF_SERVER_PATH.is_file() or not email:
-        return
-    text = CONF_SERVER_PATH.read_text(encoding="utf-8")
-    rule_num = _next_rule_num(text)
-    CONF_SERVER_PATH.write_text(
-        text + _conf_server_block(username, email, rule_num), encoding="utf-8"
-    )
+from .users_utils import (
+    add_conf_server_entry,
+    remove_conf_server_entry,
+    categorize_users,
+    report_missing_users,
+    remove_users_from_compose,
+)
 
 
 def _build_config_mapping(user_config, resources):
@@ -229,42 +203,6 @@ def add_users(config_obj):
     return None
 
 
-def _categorize_users(user_list, existing_services):
-    """Categorize users into existing and missing.
-
-    Args:
-        user_list: List of usernames to categorize
-        existing_services: Dict of existing services
-
-    Returns:
-        Tuple of (existing list, missing list)
-    """
-    existing, missing = [], []
-    for username in user_list:
-        if username in existing_services:
-            existing.append(username)
-        else:
-            missing.append(username)
-    return existing, missing
-
-
-def _report_missing_users(missing):
-    """Report users that don't exist.
-
-    Args:
-        missing: List of usernames that don't exist
-    """
-    for username in missing:
-        click.echo(f"'{username}' does not exist, skipping deletion")
-
-
-def _remove_users_from_compose(compose, user_list):
-    """Remove users from compose configuration."""
-    for username in user_list:
-        if "services" in compose and username in compose["services"]:
-            del compose["services"][username]
-
-
 def delete_user(config_obj):
     """delete cli command handler"""
     try:
@@ -275,14 +213,16 @@ def delete_user(config_obj):
         user_list, err = config_obj.get_delete_users_list()
         utils.check_error(err)
         existing_services = compose.get("services", {})
-        existing, missing = _categorize_users(user_list, existing_services)
-        _report_missing_users(missing)
+        existing, missing = categorize_users(user_list, existing_services)
+        report_missing_users(missing)
         if existing:
             err = stop_user_containers(existing)
             utils.check_error(err)
-        _remove_users_from_compose(compose, existing)
+        remove_users_from_compose(compose, existing)
         err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
+        for username in existing:
+            remove_conf_server_entry(username)
     except Exception as e:
         return e
 
