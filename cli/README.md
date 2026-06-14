@@ -129,9 +129,11 @@ and supporting files into the target directory, ready to be customised.
 
 #### Configuration substitution
 
-When `dtaas.toml` is present in the working directory, `generate-deployment`
-also reads deployment-specific values from it and substitutes them into the
-generated files, so you do not have to edit every placeholder by hand.
+When `dtaas.toml` is present, `generate-deployment` reads deployment-specific
+values from it and substitutes them into the generated files, so you do not
+have to edit every placeholder by hand. The CLI looks for `dtaas.toml` in
+`--output-dir` first; if not found there, it falls back to the current
+working directory.
 
 Each `--type` reads from its matching top-level section in `dtaas.toml`.
 Values are written into the generated config files by key: dotenv files
@@ -148,8 +150,8 @@ the `[insecure-server]` and `[secure-server]` sections.
 The `[common]` section (`server-dns`) and the `[users]` section (usernames,
 paths, and emails) are substituted across all types where they appear.
 
-If `dtaas.toml` is not found, a note is printed and the files keep their
-default placeholder values.
+If `dtaas.toml` is not found in either location, a note is printed and the
+files keep their default placeholder values.
 
 ### 📁 Select Template
 

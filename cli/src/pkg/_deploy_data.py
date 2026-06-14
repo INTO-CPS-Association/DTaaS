@@ -62,7 +62,10 @@ _DEPLOY_FILES = {
         (
             _CLIENT_JS_FILE,
             "js",
-            [("REACT_APP_AUTH_AUTHORITY", "localhost.auth-authority", "{}")],
+            [
+                ("REACT_APP_CLIENT_ID", "localhost.client-id", "{}"),
+                ("REACT_APP_AUTH_AUTHORITY", "localhost.auth-authority", "{}"),
+            ],
         ),
     ],
     "insecure-server": [

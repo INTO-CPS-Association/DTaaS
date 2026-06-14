@@ -13,8 +13,8 @@ def _set_env_value(text, key, value):
 
 def _set_js_value(text, key, value):
     """Set the quoted value of ``key`` in a window.env object literal."""
-    pattern = re.compile(rf"({re.escape(key)}\s*:\s*')[^']*(')")
-    return pattern.sub(lambda m: m.group(1) + value + m.group(2), text)
+    pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')[^']*(')")
+    return pattern.sub(lambda m: m.group(1) + value.replace("'", "\\'") + m.group(2), text)
 
 
 def _set_yaml_value(text, key, value):
@@ -28,12 +28,15 @@ _SETTERS = {"env": _set_env_value, "js": _set_js_value, "yaml": _set_yaml_value}
 
 def _user_value(users, key):
     """Resolve a ``username<N>`` or ``email<N>`` pseudo-key from [users]."""
-    index = int(key[-1]) - 1
+    m = re.match(r"(username|email)(\d+)$", key)
+    if not m:
+        return ""
+    index = int(m.group(2)) - 1
     add = users.get("add", [])
     if index >= len(add):
         return ""
     username = str(add[index]).strip()
-    if key.startswith("username"):
+    if m.group(1) == "username":
         return username
     section = users.get(username, {})
     return str(section.get("email", "")).strip() if isinstance(section, dict) else ""

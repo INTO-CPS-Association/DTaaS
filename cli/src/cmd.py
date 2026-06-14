@@ -6,12 +6,8 @@ from .pkg import config as configPkg
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
 from .pkg import deploy_config as deployConfigPkg
+from .pkg import utils as utilsPkg
 from .pkg.project import DEPLOY_TYPES
-
-
-def _toml_exists():
-    """Return True if dtaas.toml is present in the working directory."""
-    return Path("dtaas.toml").is_file()
 
 
 class VerticalChoicesCommand(click.Command):
@@ -106,16 +102,23 @@ def generate_deployment(deploy_type, output_dir, force):
     click.echo(f"Project files for '{deploy_type}' generated successfully")
 
 
+def _find_toml(output_dir):
+    """Return path to dtaas.toml, checking output_dir first then cwd, or None."""
+    for candidate in [Path(output_dir) / "dtaas.toml", Path("dtaas.toml")]:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def _apply_deploy_config(deploy_type, output_dir):
     """Read dtaas.toml and substitute values into generated deployment files."""
-    if not _toml_exists():
+    toml_path = _find_toml(output_dir)
+    if toml_path is None:
         click.echo("Note: dtaas.toml not found; template values not substituted.")
         return
-    try:
-        config = configPkg.Config()
-        toml_data, _ = config.get_config()
-    except RuntimeError as exc:
-        raise click.ClickException(f"Error reading dtaas.toml: {exc}") from exc
+    toml_data, err = utilsPkg.import_toml(str(toml_path))
+    if err is not None:
+        raise click.ClickException(f"Error reading dtaas.toml: {err}")
     try:
         specs = deployConfigPkg.build_file_specs(deploy_type, toml_data)
         deployConfigPkg.apply_config(output_dir, specs)
