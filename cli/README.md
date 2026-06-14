@@ -212,7 +212,7 @@ list in _dtaas.toml_ file.
 delete = ["username1","username2", "username3"]
 ```
 
-- Ensure you are the working directory where the _dtaas.toml_ file is.
+- Ensure you are in the working directory where the _dtaas.toml_ file is.
 
 Then run:
 

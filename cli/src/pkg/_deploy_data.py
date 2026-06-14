@@ -17,11 +17,17 @@ _CLIENT_JS_FILE = "config/client.js"
 _CONF_SERVER_FILE = "config/conf.server"
 _SRC_USERNAME1 = "users.username1"
 _SRC_USERNAME2 = "users.username2"
+_DNS = "common.server-dns"
 
-_FRONTEND_JS = [
-    ("REACT_APP_CLIENT_ID", "frontend.react-app-client-id", "{}"),
-    ("REACT_APP_AUTH_AUTHORITY", "frontend.react-app-oauth-url", "{}"),
-]
+def _frontend_js(scheme):
+    """JS substitution entries for config/client.js using the given URL scheme."""
+    return [
+        ("REACT_APP_CLIENT_ID", "frontend.react-app-client-id", "{}"),
+        ("REACT_APP_AUTH_AUTHORITY", "frontend.react-app-oauth-url", "{}"),
+        ("REACT_APP_URL", _DNS, f"{scheme}://{{}}"),
+        ("REACT_APP_REDIRECT_URI", _DNS, f"{scheme}://{{}}/Library"),
+        ("REACT_APP_LOGOUT_REDIRECT_URI", _DNS, f"{scheme}://{{}}/"),
+    ]
 
 _CONF_SERVER = [
     ("rule.onlyu1.rule", _SRC_USERNAME1, "PathPrefix(`/{}`)"),
@@ -34,7 +40,7 @@ _CONF_SERVER = [
 def _server_env(section):
     """Entries for a server deployment's config/.env file."""
     return [
-        ("SERVER_DNS", "common.server-dns", "{}"),
+        ("SERVER_DNS", _DNS, "{}"),
         ("USERNAME1", _SRC_USERNAME1, "{}"),
         ("USERNAME2", _SRC_USERNAME2, "{}"),
         ("OAUTH_URL", f"{section}.oauth-url", "{}"),
@@ -59,17 +65,17 @@ _DEPLOY_FILES = {
     ],
     "insecure-server": [
         (_ENV_FILE, "env", _server_env("insecure-server")),
-        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CLIENT_JS_FILE, "js", _frontend_js("http")),
         (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "secure-server": [
         (_ENV_FILE, "env", _server_env("secure-server")),
-        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CLIENT_JS_FILE, "js", _frontend_js("https")),
         (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "secure-server-gitlab": [
         (_ENV_FILE, "env", _server_env("secure-server-gitlab")),
-        (_CLIENT_JS_FILE, "js", _FRONTEND_JS),
+        (_CLIENT_JS_FILE, "js", _frontend_js("https")),
         (_CONF_SERVER_FILE, "env", _CONF_SERVER),
     ],
     "workspace-localhost": [
@@ -104,7 +110,7 @@ _DEPLOY_FILES = {
             ".env",
             "env",
             [
-                ("SERVER_DNS", "common.server-dns", "{}"),
+                ("SERVER_DNS", _DNS, "{}"),
                 ("USERNAME1", _SRC_USERNAME1, "{}"),
                 ("USERNAME2", _SRC_USERNAME2, "{}"),
                 ("OAUTH_SECRET", "workspace-secure-server.oauth-secret", "{}"),

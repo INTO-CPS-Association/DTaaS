@@ -32,7 +32,7 @@ _SOURCES: dict[str, str] = {
 _EXCLUDE: set[str] = {"companion"}
 
 
-def _ignore(_directory: str, names: list[str]) -> list[str]:
+def _ignore(names: list[str]) -> list[str]:
     return [n for n in names if n in _EXCLUDE]
 
 

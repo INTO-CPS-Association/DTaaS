@@ -73,11 +73,38 @@ def test_build_file_specs_insecure_server():
     assert js_format == "js"
     assert js_values["REACT_APP_CLIENT_ID"] == "client_id"
     assert js_values["REACT_APP_AUTH_AUTHORITY"] == "https://gitlab.example.com"
+    assert js_values["REACT_APP_URL"] == "http://myserver.com"
+    assert js_values["REACT_APP_REDIRECT_URI"] == "http://myserver.com/Library"
+    assert js_values["REACT_APP_LOGOUT_REDIRECT_URI"] == "http://myserver.com/"
 
     conf_format, conf_values = specs["config/conf.server"]
     assert conf_format == "env"
     assert conf_values["rule.onlyu1.rule"] == "PathPrefix(`/alice`)"
     assert conf_values["rule.onlyu1.whitelist"] == "alice@example.com"
+
+
+def test_build_file_specs_secure_server_uses_https():
+    """secure-server uses https:// for REACT_APP_URL and friends"""
+    toml = {
+        "common": {"server-dns": "myserver.com"},
+        "users": {"add": ["alice"]},
+        "secure-server": {
+            "oauth-client-id": "id",
+            "oauth-client-secret": "secret",
+        },
+        "frontend": {
+            "react-app-client-id": "client_id",
+            "react-app-oauth-url": "https://gitlab.example.com",
+        },
+    }
+    specs = {
+        path: (fmt, values)
+        for path, fmt, values in build_file_specs("secure-server", toml)
+    }
+    js_values = specs["config/client.js"][1]
+    assert js_values["REACT_APP_URL"] == "https://myserver.com"
+    assert js_values["REACT_APP_REDIRECT_URI"] == "https://myserver.com/Library"
+    assert js_values["REACT_APP_LOGOUT_REDIRECT_URI"] == "https://myserver.com/"
 
 
 def test_apply_config_edits_files_by_key(tmp_path):

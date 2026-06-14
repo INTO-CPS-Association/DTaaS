@@ -78,7 +78,7 @@ def _read_file_text(path):
     """Read a file's text content, returning None on OSError."""
     try:
         return path.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return None
 
 

@@ -23,23 +23,22 @@ class VerticalChoicesCommand(click.Command):
             with formatter.indentation():
                 formatter.write_text(self.help)
 
-    @staticmethod
-    def _make_opt_entry(param, rv):
-        if not isinstance(param.type, click.Choice):
-            return rv
-        choices_str = "\n          ".join(param.type.choices)
-        prefix = f"{rv[1]}. " if rv[1] else ""
-        return (rv[0], f"{prefix}One of:\n          {choices_str}")
-
     def format_options(self, ctx, formatter):
-        opts = []
+        rows = []
         for param in self.get_params(ctx):
             rv = param.get_help_record(ctx)
-            if rv is not None:
-                opts.append(self._make_opt_entry(param, rv))
-        if opts:
+            if rv is None:
+                continue
+            if isinstance(param.type, click.Choice):
+                prefix = f"{rv[1]}. " if rv[1] else ""
+                rows.append((rv[0], f"{prefix}One of:"))
+                for choice in param.type.choices:
+                    rows.append(("", choice))
+            else:
+                rows.append(rv)
+        if rows:
             with formatter.section("Options"):
-                formatter.write_dl(opts)
+                formatter.write_dl(rows)
 
 
 ### Groups

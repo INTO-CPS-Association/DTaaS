@@ -55,7 +55,7 @@ def replace_all(obj, mapping):
     _handlers = {str: replace_string, list: replace_list, dict: replace_dict}
     handler = _handlers.get(type(obj))
     if handler is None:
-        return None, Exception("Config substition failed: Object format not valid")
+        return None, Exception("Config substitution failed: Object format not valid")
     return handler(obj, mapping)
 
 
