@@ -28,6 +28,11 @@ name: Python Reusable Workflow
         required: false
         type: boolean
         default: false
+      run-build-script:
+        description: 'Whether to run python -m src.pkg.build before packaging'
+        required: false
+        type: boolean
+        default: false
       artifact-path:
         description: 'Path for artifact upload'
         required: true
@@ -159,6 +164,7 @@ jobs:
         run: poetry install --only main
 
       - name: Build deploy templates
+        if: inputs.run-build-script
         run: python -m src.pkg.build
 
       - name: Build wheel and sdist

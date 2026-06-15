@@ -35,6 +35,7 @@ jobs:
       artifact-name: dtaas-cli
       artifact-path: dist
       run-pyright: true
+      run-build-script: true
 
   publish-pypi:
     name: Publish to PyPI
