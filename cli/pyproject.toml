@@ -7,8 +7,8 @@ license = "INTO-CPS-Association"
 readme = "README.md"
 packages = [{include = "src"}]
 include = [
-    {path = "src/templates", format = "sdist"},
-    {path = "src/templates", format = "wheel"},
+    {path = "src/templates/**/*", format = "sdist"},
+    {path = "src/templates/**/*", format = "wheel"},
 ]
 
 [tool.poetry.dependencies]
