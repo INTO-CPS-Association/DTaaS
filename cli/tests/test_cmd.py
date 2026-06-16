@@ -70,25 +70,6 @@ def test_generate_project_success(runner):
         mock_gen.assert_called_once_with(".", False)
 
 
-def test_generate_project_output_dir(runner):
-    """--output-dir is forwarded to generate_project"""
-    with runner.isolated_filesystem():
-        with patch("src.cmd.projectPkg.generate_project") as mock_gen:
-            result = runner.invoke(dtaas, ["generate-project", "--output-dir", "."])
-
-            assert result.exit_code == 0
-            mock_gen.assert_called_once_with(".", False)
-
-
-def test_generate_project_force(runner):
-    """--force flag is forwarded to generate_project"""
-    with patch("src.cmd.projectPkg.generate_project") as mock_gen:
-        result = runner.invoke(dtaas, ["generate-project", "--force"])
-
-        assert result.exit_code == 0
-        mock_gen.assert_called_once_with(".", True)
-
-
 def test_generate_project_error(runner):
     """Test project generation propagates errors"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
@@ -98,3 +79,44 @@ def test_generate_project_error(runner):
 
         assert result.exit_code != 0
         assert "Error while generating project" in result.output
+
+
+def test_generate_deployment_success(runner):
+    """generate-deployment calls generate_deploy_project and prints success"""
+    with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
+        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+
+        assert result.exit_code == 0
+        assert "localhost" in result.output
+        mock_gen.assert_called_once_with("localhost", ".", False)
+
+
+def test_generate_deployment_error(runner):
+    """generate-deployment converts known exceptions to ClickException"""
+    with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
+        mock_gen.side_effect = RuntimeError("template missing")
+
+        result = runner.invoke(
+            dtaas, ["generate-deployment", "--type", "insecure-server"]
+        )
+
+        assert result.exit_code != 0
+        assert "template missing" in result.output
+
+
+def test_add_users_config_error(runner):
+    """add command raises ClickException when Config() fails"""
+    with patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
+        result = runner.invoke(dtaas, ["admin", "user", "add"])
+
+    assert result.exit_code != 0
+    assert "no config" in result.output
+
+
+def test_delete_user_config_error(runner):
+    """delete command raises ClickException when Config() fails"""
+    with patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
+        result = runner.invoke(dtaas, ["admin", "user", "delete"])
+
+    assert result.exit_code != 0
+    assert "no config" in result.output

@@ -12,13 +12,13 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-click = "^8.3.2"
+click = "^8.4.1"
 python-dotenv = "^1.2.2"
 python-on-whales = "^0.81.0"
 rich = "^15.0.0"
 httpx = "^0.28.1"
-python-gitlab = "^8.2.0"
-psycopg = {version = "^3.2", extras = ["binary"]}
+python-gitlab = "^8.3.0"
+psycopg = {version = "^3.3", extras = ["binary"]}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.3"

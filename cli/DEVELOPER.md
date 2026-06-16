@@ -144,6 +144,16 @@ cd cli                           # switch to the cli directory
 poetry install                   # install all required python packages
 ```
 
+The deploy templates are not committed to the repository.
+Before running tests or building the package, copy them from their sources:
+
+```bash
+python src/pkg/build.py
+```
+
+This populates `src/templates/deploy/` from `deploy/dtaas` and
+`deploy/workspace`. Re-run it whenever those source directories change.
+
 ## 🔧 Development
 
 Make changes to _cli/src_.

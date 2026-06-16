@@ -4,6 +4,7 @@ import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
+from .pkg.project import DEPLOY_TYPES
 
 
 ### Groups
@@ -38,6 +39,34 @@ def generate_project(output_dir, force):
 def admin():
     "administrative commands for DTaaS"
     return
+
+
+@dtaas.command(name="generate-deployment")
+@click.option(
+    "--type",
+    "deploy_type",
+    required=True,
+    type=click.Choice(sorted(DEPLOY_TYPES), case_sensitive=False),
+    help="Deployment scenario to generate.",
+)
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Target directory for generated files.",
+)
+@click.option("--force", is_flag=True, help="Overwrite existing files.")
+def generate_deployment(deploy_type, output_dir, force):
+    """Generate project structure for a deployment scenario.
+
+    Copies all files for the chosen --type into the target directory,
+    removing the need to download separate zip packages.
+    """
+    try:
+        projectPkg.generate_deploy_project(deploy_type, output_dir, force)
+    except (ValueError, RuntimeError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(f"Project files for '{deploy_type}' generated successfully")
 
 
 @admin.group()
