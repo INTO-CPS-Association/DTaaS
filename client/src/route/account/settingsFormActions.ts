@@ -144,7 +144,10 @@ export function dispatchChangedSettings(
   }
 
   const trialsValue = Number.parseInt(formValues.measurementTrials, 10);
-  if (trialsValue !== current.MEASUREMENT_TRIALS) {
+  if (
+    !isInvalidTrials(formValues.measurementTrials) &&
+    trialsValue !== current.MEASUREMENT_TRIALS
+  ) {
     dispatch(setTrials(trialsValue));
   }
 

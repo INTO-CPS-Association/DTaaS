@@ -26,8 +26,6 @@ const validFormValues = (): FormValues => ({
   measurementPrimaryDTName: 'primary',
   measurementSecondaryDTName: 'secondary',
 });
-
-// Mirrors validFormValues so that, paired together, no field differs.
 const validCurrent = () => ({
   GROUP_NAME: 'group',
   DT_DIRECTORY: 'digital_twins',
@@ -190,6 +188,16 @@ describe('dispatchChangedSettings', () => {
     });
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(setTrials(10));
+  });
+
+  it('does not dispatch setTrials for invalid measurementTrials', () => {
+    ['', '   ', 'abc', '0', '-1'].forEach((measurementTrials) => {
+      const { dispatch } = runDispatch({
+        ...validFormValues(),
+        measurementTrials,
+      });
+      expect(dispatch).not.toHaveBeenCalled();
+    });
   });
 
   it('dispatches a setter for every changed field', () => {
