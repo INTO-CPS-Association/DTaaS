@@ -54,7 +54,7 @@ describe('LogViewer', () => {
       expect(screen.getByTestId('log-content')).toBeInTheDocument();
     });
 
-    const content = screen.getByTestId('log-content').textContent!;
+    const content = screen.getByTestId('log-content').textContent;
     expect(content).toContain('Functions');
     expect(content).toContain('Private');
   });

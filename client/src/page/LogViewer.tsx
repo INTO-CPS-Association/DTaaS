@@ -10,15 +10,19 @@ function LogViewer() {
   const [loading, setLoading] = useState(true);
 
   const loadLogs = useCallback(async () => {
-    setLoading(true);
     const entries = await getAllLogs().catch(() => [] as LogEvent[]);
     setLogs(entries);
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    loadLogs();
-  }, [loadLogs]);
+    getAllLogs()
+      .catch(() => [] as LogEvent[])
+      .then((entries) => {
+        setLogs(entries);
+        setLoading(false);
+      });
+  }, []);
 
   const handleClear = async () => {
     await clearLogs().catch(() => {});

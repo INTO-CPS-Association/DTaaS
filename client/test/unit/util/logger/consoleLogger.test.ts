@@ -17,7 +17,6 @@ const mockEvent: LogEvent = {
   context: {},
 };
 
-/* eslint-disable no-console */
 describe('consoleLogger', () => {
   beforeEach(() => {
     clearLogBuffer();

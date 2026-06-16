@@ -62,6 +62,9 @@ function ReconfigureDialog({
 
   const handleConfirmSave = async () => {
     if (digitalTwinData) {
+      // qlty staging drops the data-logger-* attributes and reflows this
+      // dynamic import; pin the formatting so qlty and prettier agree.
+      // prettier-ignore
       const { saveChanges } = await import(
         'route/digitaltwins/manage/reconfigureDialogHandlers'
       );
