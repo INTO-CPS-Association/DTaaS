@@ -174,6 +174,21 @@ def _copy_example_files(dest_dir, force=False):
         raise OSError("\n".join(errors))
 
 
+def create_user_dirs(dest_dir, usernames):
+    """Create files/<username>/ by copying files/template/ for each username.
+
+    Skips silently when files/template/ does not exist (e.g. workspace deploy
+    types) or when a user directory already exists.
+    """
+    template = Path(dest_dir) / "files" / "template"
+    if not template.is_dir():
+        return
+    for username in usernames:
+        user_dir = Path(dest_dir) / "files" / username
+        if not user_dir.exists():
+            shutil.copytree(template, user_dir)
+
+
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
     """Copy a deploy template directory tree to the destination."""
     src = DEPLOY_TEMPLATES_DIR / deploy_type

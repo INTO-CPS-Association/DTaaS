@@ -141,6 +141,28 @@ def test_generate_deployment_malformed_toml_errors(runner):
     assert "Error reading dtaas.toml" in result.output
 
 
+def test_generate_deployment_creates_user_dirs(runner):
+    """generate-deployment calls create_user_dirs with usernames from toml users.add"""
+    from pathlib import Path
+
+    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
+        "src.cmd._find_toml", return_value=Path("dtaas.toml")
+    ), patch(
+        "src.cmd.utilsPkg.import_toml",
+        return_value=({"users": {"add": ["alice", "bob"]}, "localhost": {}}, None),
+    ), patch(
+        "src.cmd.deployConfigPkg.build_file_specs", return_value=[]
+    ), patch(
+        "src.cmd.deployConfigPkg.apply_config"
+    ), patch(
+        "src.cmd.projectPkg.create_user_dirs"
+    ) as mock_create_dirs:
+        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+
+    assert result.exit_code == 0
+    mock_create_dirs.assert_called_once_with(".", ["alice", "bob"])
+
+
 def test_generate_deployment_error(runner):
     """generate-deployment converts known exceptions to ClickException"""
     with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:

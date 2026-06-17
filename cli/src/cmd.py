@@ -126,6 +126,13 @@ def _apply_deploy_config(deploy_type, output_dir):
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
     for warning in deployConfigPkg.check_placeholders(output_dir, specs):
         click.echo(warning)
+    users = toml_data.get("users", {}) if toml_data else {}
+    usernames = users.get("add", []) if isinstance(users, dict) else []
+    if usernames:
+        try:
+            projectPkg.create_user_dirs(output_dir, usernames)
+        except OSError as exc:
+            raise click.ClickException(f"Error creating user directories: {exc}") from exc
 
 
 @admin.group()

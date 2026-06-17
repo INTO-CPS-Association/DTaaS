@@ -6,6 +6,7 @@ import pytest
 from src.pkg.project import (
     generate_project,
     generate_deploy_project,
+    create_user_dirs,
     _copy_example_files,
     _copy_file,
     _check_no_symlinks,
@@ -188,6 +189,38 @@ def test_generate_deploy_project_copies_required_files(tmp_path, deploy_type):
         assert (
             tmp_path / rel
         ).is_file(), f"[{deploy_type}] required file missing after generation: {rel}"
+
+
+def test_create_user_dirs_copies_template(tmp_path):
+    """create_user_dirs copies files/template into files/<username> for each user."""
+    template = tmp_path / "files" / "template"
+    template.mkdir(parents=True)
+    (template / "readme.txt").write_text("hello")
+
+    create_user_dirs(str(tmp_path), ["alice", "bob"])
+
+    assert (tmp_path / "files" / "alice" / "readme.txt").read_text() == "hello"
+    assert (tmp_path / "files" / "bob" / "readme.txt").read_text() == "hello"
+
+
+def test_create_user_dirs_skips_when_no_template(tmp_path):
+    """create_user_dirs is a no-op when files/template does not exist."""
+    create_user_dirs(str(tmp_path), ["alice"])
+    assert not (tmp_path / "files" / "alice").exists()
+
+
+def test_create_user_dirs_skips_existing_user_dir(tmp_path):
+    """create_user_dirs does not overwrite an existing user directory."""
+    template = tmp_path / "files" / "template"
+    template.mkdir(parents=True)
+    (template / "readme.txt").write_text("new")
+    user_dir = tmp_path / "files" / "alice"
+    user_dir.mkdir(parents=True)
+    (user_dir / "readme.txt").write_text("old")
+
+    create_user_dirs(str(tmp_path), ["alice"])
+
+    assert (user_dir / "readme.txt").read_text() == "old"
 
 
 def test_copy_example_files_creates_actual_files(tmp_path):
