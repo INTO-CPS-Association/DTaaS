@@ -1,6 +1,8 @@
 """Tests for the deploy_config module."""
 
 import pytest
+from pathlib import Path
+from unittest.mock import patch
 from src.pkg.deploy_config import (
     _set_yaml_value,
     _toml_lookup,
@@ -137,12 +139,9 @@ def test_apply_config_raises_on_file_error(tmp_path):
     """write failures are collected and raised as OSError"""
     bad = tmp_path / ".env"
     bad.write_text("SERVER_DNS=localhost\n")
-    bad.chmod(0o444)
-    try:
+    with patch.object(Path, "write_text", side_effect=OSError("permission denied")):
         with pytest.raises(OSError):
             apply_config(str(tmp_path), [(".env", "env", {"SERVER_DNS": "x"})])
-    finally:
-        bad.chmod(0o644)
 
 
 def test_validate_value_rejects_newline():
