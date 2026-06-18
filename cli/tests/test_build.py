@@ -8,7 +8,8 @@ import pytest
 from src.pkg.build import build, _copy_one, _SOURCES, _DEST_ROOT, _EXCLUDE
 
 
-def _force_remove(func, path, _exc):
+def _force_remove(func, path, _excinfo):
+    """rmtree onerror handler: clear the read-only bit, then retry deletion."""
     Path(path).chmod(stat.S_IWRITE)
     func(path)
 
@@ -16,7 +17,7 @@ def _force_remove(func, path, _exc):
 @pytest.fixture(autouse=True, scope="session")
 def built_templates():
     if _DEST_ROOT.exists():
-        shutil.rmtree(_DEST_ROOT, onexc=_force_remove)
+        shutil.rmtree(_DEST_ROOT, onerror=_force_remove)
     build()
 
 

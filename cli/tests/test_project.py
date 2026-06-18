@@ -209,6 +209,25 @@ def test_create_user_dirs_skips_when_no_template(tmp_path):
     assert not (tmp_path / "files" / "alice").exists()
 
 
+def test_create_user_dirs_chowns_new_dir(tmp_path):
+    """create_user_dirs calls chown 1000:100 on the new directory and its contents."""
+    template = tmp_path / "files" / "template"
+    template.mkdir(parents=True)
+    (template / "readme.txt").write_text("hello")
+
+    with patch("src.pkg.project.shutil.chown") as mock_chown:
+        create_user_dirs(str(tmp_path), ["alice"])
+
+    user_dir = tmp_path / "files" / "alice"
+    chowned = {call.args[0] for call in mock_chown.call_args_list}
+    assert user_dir in chowned
+    assert user_dir / "readme.txt" in chowned
+    assert all(
+        call.kwargs == {"user": 1000, "group": 100}
+        for call in mock_chown.call_args_list
+    )
+
+
 def test_create_user_dirs_skips_existing_user_dir(tmp_path):
     """create_user_dirs does not overwrite an existing user directory."""
     template = tmp_path / "files" / "template"

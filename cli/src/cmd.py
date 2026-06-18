@@ -22,19 +22,23 @@ class VerticalChoicesCommand(click.Command):
     def format_options(self, ctx, formatter):
         rows = []
         for param in self.get_params(ctx):
-            rv = param.get_help_record(ctx)
-            if rv is None:
-                continue
-            if isinstance(param.type, click.Choice):
-                prefix = f"{rv[1]}. " if rv[1] else ""
-                rows.append((rv[0], f"{prefix}One of:"))
-                for choice in param.type.choices:
-                    rows.append(("", choice))
-            else:
-                rows.append(rv)
+            rows.extend(self._param_rows(param, ctx))
         if rows:
             with formatter.section("Options"):
                 formatter.write_dl(rows)
+
+    @staticmethod
+    def _param_rows(param, ctx):
+        """Return the help rows for a single param (empty list if hidden)."""
+        rv = param.get_help_record(ctx)
+        if rv is None:
+            return []
+        if not isinstance(param.type, click.Choice):
+            return [rv]
+        prefix = f"{rv[1]}. " if rv[1] else ""
+        rows = [(rv[0], f"{prefix}One of:")]
+        rows.extend(("", choice) for choice in param.type.choices)
+        return rows
 
 
 ### Groups
@@ -119,6 +123,12 @@ def _apply_deploy_config(deploy_type, output_dir):
     toml_data, err = utilsPkg.import_toml(str(toml_path))
     if err is not None:
         raise click.ClickException(f"Error reading dtaas.toml: {err}")
+    _substitute_config(deploy_type, output_dir, toml_data)
+    _create_user_dirs(output_dir, toml_data)
+
+
+def _substitute_config(deploy_type, output_dir, toml_data):
+    """Build file specs from toml and substitute them into the generated files."""
     try:
         specs = deployConfigPkg.build_file_specs(deploy_type, toml_data)
         deployConfigPkg.apply_config(output_dir, specs)
@@ -126,13 +136,18 @@ def _apply_deploy_config(deploy_type, output_dir):
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
     for warning in deployConfigPkg.check_placeholders(output_dir, specs):
         click.echo(warning)
+
+
+def _create_user_dirs(output_dir, toml_data):
+    """Create per-user directories from the [users].add list in dtaas.toml."""
     users = toml_data.get("users", {}) if toml_data else {}
     usernames = users.get("add", []) if isinstance(users, dict) else []
-    if usernames:
-        try:
-            projectPkg.create_user_dirs(output_dir, usernames)
-        except OSError as exc:
-            raise click.ClickException(f"Error creating user directories: {exc}") from exc
+    if not usernames:
+        return
+    try:
+        projectPkg.create_user_dirs(output_dir, usernames)
+    except OSError as exc:
+        raise click.ClickException(f"Error creating user directories: {exc}") from exc
 
 
 @admin.group()

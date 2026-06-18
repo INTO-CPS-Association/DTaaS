@@ -187,6 +187,12 @@ def create_user_dirs(dest_dir, usernames):
         user_dir = Path(dest_dir) / "files" / username
         if not user_dir.exists():
             shutil.copytree(template, user_dir)
+            try:
+                shutil.chown(user_dir, user=1000, group=100)
+                for item in user_dir.rglob("*"):
+                    shutil.chown(item, user=1000, group=100)
+            except (AttributeError, PermissionError):
+                pass
 
 
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
