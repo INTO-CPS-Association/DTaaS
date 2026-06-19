@@ -1,6 +1,7 @@
 """This file has functions that handle the generate-project cli command"""
 
 import shutil
+import subprocess
 from pathlib import Path
 
 import click
@@ -188,10 +189,11 @@ def create_user_dirs(dest_dir, usernames):
         if not user_dir.exists():
             shutil.copytree(template, user_dir)
             try:
-                shutil.chown(user_dir, user=1000, group=100)
-                for item in user_dir.rglob("*"):
-                    shutil.chown(item, user=1000, group=100)
-            except (AttributeError, PermissionError):
+                subprocess.run(
+                    ["chmod", "-R", "u+rwX,go+rwX", str(user_dir)],
+                    check=True,
+                )
+            except (FileNotFoundError, subprocess.CalledProcessError):
                 pass
 
 
