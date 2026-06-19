@@ -7,6 +7,7 @@ from src.pkg.project import (
     generate_project,
     generate_deploy_project,
     create_user_dirs,
+    set_files_permissions,
     _copy_example_files,
     _copy_file,
     _check_no_symlinks,
@@ -209,21 +210,26 @@ def test_create_user_dirs_skips_when_no_template(tmp_path):
     assert not (tmp_path / "files" / "alice").exists()
 
 
-def test_create_user_dirs_sets_permissions_on_new_dir(tmp_path):
-    """create_user_dirs runs chmod -R on the new directory so the container user
-    (1000:100) can access it."""
-    template = tmp_path / "files" / "template"
-    template.mkdir(parents=True)
-    (template / "readme.txt").write_text("hello")
+def test_set_files_permissions_chmods_files_dir(tmp_path):
+    """set_files_permissions runs sudo chmod -R on the files/ directory."""
+    files_dir = tmp_path / "files"
+    files_dir.mkdir(parents=True)
 
     with patch("src.pkg.project.subprocess.run") as mock_run:
-        create_user_dirs(str(tmp_path), ["alice"])
+        set_files_permissions(str(tmp_path))
 
-    user_dir = tmp_path / "files" / "alice"
     mock_run.assert_called_once_with(
-        ["chmod", "-R", "u+rwX,go+rwX", str(user_dir)],
+        ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
         check=True,
     )
+
+
+def test_set_files_permissions_skips_when_no_files_dir(tmp_path):
+    """set_files_permissions is a no-op when files/ does not exist."""
+    with patch("src.pkg.project.subprocess.run") as mock_run:
+        set_files_permissions(str(tmp_path))
+
+    mock_run.assert_not_called()
 
 
 def test_create_user_dirs_skips_existing_user_dir(tmp_path):

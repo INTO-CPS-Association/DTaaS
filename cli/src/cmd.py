@@ -103,6 +103,7 @@ def generate_deployment(deploy_type, output_dir, force):
     except (ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
     _apply_deploy_config(deploy_type, output_dir)
+    projectPkg.set_files_permissions(output_dir)
     click.echo(f"Project files for '{deploy_type}' generated successfully")
 
 

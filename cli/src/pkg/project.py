@@ -188,13 +188,20 @@ def create_user_dirs(dest_dir, usernames):
         user_dir = Path(dest_dir) / "files" / username
         if not user_dir.exists():
             shutil.copytree(template, user_dir)
-            try:
-                subprocess.run(
-                    ["chmod", "-R", "u+rwX,go+rwX", str(user_dir)],
-                    check=True,
-                )
-            except (FileNotFoundError, subprocess.CalledProcessError):
-                pass
+
+
+def set_files_permissions(dest_dir):
+    """Grant read/write/execute on files/."""
+    files_dir = Path(dest_dir) / "files"
+    if not files_dir.is_dir():
+        return
+    try:
+        subprocess.run(
+            ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
+            check=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass
 
 
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):

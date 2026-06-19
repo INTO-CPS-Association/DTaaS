@@ -14,7 +14,9 @@ def _set_env_value(text, key, value):
 def _set_js_value(text, key, value):
     """Set the quoted value of ``key`` in a window.env object literal."""
     pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')[^']*(')")
-    return pattern.sub(lambda m: m.group(1) + value.replace("'", "\\'") + m.group(2), text)
+    return pattern.sub(
+        lambda m: m.group(1) + value.replace("'", "\\'") + m.group(2), text
+    )
 
 
 def _set_yaml_value(text, key, value):

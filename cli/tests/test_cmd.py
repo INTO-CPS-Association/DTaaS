@@ -133,9 +133,7 @@ def test_generate_deployment_prints_placeholder_warnings(runner):
         "src.cmd._find_toml", return_value=Path("dtaas.toml")
     ), patch(
         "src.cmd.utilsPkg.import_toml", return_value=({"localhost": {}}, None)
-    ), patch(
-        "src.cmd.deployConfigPkg.build_file_specs", return_value=[]
-    ), patch(
+    ), patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]), patch(
         "src.cmd.deployConfigPkg.apply_config"
     ), patch(
         "src.cmd.deployConfigPkg.check_placeholders",
@@ -173,13 +171,9 @@ def test_generate_deployment_user_dir_error(runner):
     ), patch(
         "src.cmd.utilsPkg.import_toml",
         return_value=({"users": {"add": ["alice"]}, "localhost": {}}, None),
-    ), patch(
-        "src.cmd.deployConfigPkg.build_file_specs", return_value=[]
-    ), patch(
+    ), patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]), patch(
         "src.cmd.deployConfigPkg.apply_config"
-    ), patch(
-        "src.cmd.projectPkg.create_user_dirs", side_effect=OSError("disk full")
-    ):
+    ), patch("src.cmd.projectPkg.create_user_dirs", side_effect=OSError("disk full")):
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
     assert result.exit_code != 0
@@ -214,4 +208,3 @@ def test_add_users_config_error(runner):
 
     assert result.exit_code != 0
     assert "no config" in result.output
-
