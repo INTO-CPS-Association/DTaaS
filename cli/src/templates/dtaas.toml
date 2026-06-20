@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="0.5.0"
+version="0.6.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -20,6 +20,13 @@ path="/home/XXX/DTaaS"
 [common.security]
 # Enable HTTPS/TLS for secure server deployment
 tls=true
+# Source directory holding the TLS certificates (fullchain.pem, privkey.pem)
+# for secure deployments. generate-deployment copies the latest pair into the
+# installation's certs/ directory. Leave unset to copy certificates by hand.
+# Certs path on Linux / MacOS
+certs-src='/etc/letsencrypt/archive/intocps.org'
+# Certs path on Windows
+#certs-src='C:/Certbot/archive/intocps.org'
 
 [common.resources]
 # These are the default resource limits for user containers.
