@@ -1,7 +1,8 @@
 """Tests for the certs module (TLS certificate placement)."""
 
 import os
-from src.pkg.certs import copy_certs, _find_latest_cert
+from unittest.mock import patch
+from src.pkg.certs import copy_certs, _find_latest_cert, _secure_private_key
 
 
 def _make_cert_src(src, files):
@@ -116,3 +117,29 @@ def test_copy_certs_overwrites_with_force(tmp_path):
     copy_certs("secure-server", str(dest), str(src), force=True)
 
     assert (certs / "fullchain.pem").read_text() == "fc-new"
+
+
+def test_secure_private_key_skips_missing_file(tmp_path):
+    """_secure_private_key is a no-op when the key file does not exist."""
+    _secure_private_key(tmp_path / "privkey.pem")  # must not raise
+
+
+def test_secure_private_key_swallows_oserror(tmp_path):
+    """_secure_private_key silently ignores a chmod OSError."""
+    key = tmp_path / "privkey.pem"
+    key.write_text("pk")
+    with patch.object(type(key), "chmod", side_effect=OSError("permission denied")):
+        _secure_private_key(key)  # must not raise
+
+
+def test_copy_certs_notes_partial_source(tmp_path):
+    """A note is emitted when only one cert is found in the source directory."""
+    src = tmp_path / "archive"
+    _make_cert_src(src, {"fullchain.pem": "fc"})  # privkey.pem absent
+    dest = tmp_path / "install"
+
+    note = copy_certs("secure-server", str(dest), str(src))
+
+    assert note is not None and "privkey.pem" in note
+    assert (dest / "certs" / "fullchain.pem").exists()
+    assert not (dest / "certs" / "privkey.pem").exists()

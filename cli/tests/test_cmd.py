@@ -213,11 +213,9 @@ def test_generate_deployment_copies_certs(runner):
             {"common": {"security": {"certs-src": "/etc/certs"}}, "secure-server": {}},
             None,
         ),
-    ), patch(
-        "src.cmd.deployConfigPkg.build_file_specs", return_value=[]
-    ), patch("src.cmd.deployConfigPkg.apply_config"), patch(
-        "src.cmd.deployConfigPkg.check_placeholders", return_value=[]
-    ), patch(
+    ), patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]), patch(
+        "src.cmd.deployConfigPkg.apply_config"
+    ), patch("src.cmd.deployConfigPkg.check_placeholders", return_value=[]), patch(
         "src.cmd.certsPkg.copy_certs", return_value="certs copied"
     ) as mock_copy:
         result = runner.invoke(
