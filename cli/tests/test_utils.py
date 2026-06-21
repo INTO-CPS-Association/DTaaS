@@ -85,7 +85,7 @@ def test_import_toml():
         "workspace-secure-server": {
             "oauth-secret": "your_random_secret_key_here",
             "keycloak-admin": "admin",
-            "keycloak-admin-password": "changeme",
+            "keycloak-admin-password": "changeme", # NOSONAR
             "keycloak-realm": "dtaas",
             "keycloak-issuer-url": "https://your_server_dns/auth/realms/dtaas",
             "keycloak-client-id": "dtaas-workspace",
