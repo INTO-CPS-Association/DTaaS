@@ -147,7 +147,8 @@ def _certs_src(toml_data):
     security = common.get("security", {}) if isinstance(common, dict) else {}
     if not isinstance(security, dict):
         return ""
-    return str(security.get("certs-src", "")).strip()
+    certs_src = security.get("certs-src", "")
+    return certs_src.strip() if isinstance(certs_src, str) else ""
 
 
 def _copy_deploy_certs(deploy_type, output_dir, toml_data, force):

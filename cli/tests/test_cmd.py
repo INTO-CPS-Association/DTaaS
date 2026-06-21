@@ -202,7 +202,7 @@ def test_find_toml_returns_none_when_absent(tmp_path, monkeypatch):
 
 
 def test_generate_deployment_copies_certs(runner):
-    """The certs-src from dtaas.toml is forwarded to projectPkg.copy_certs."""
+    """The certs-src from dtaas.toml is forwarded to certsPkg.copy_certs."""
     from pathlib import Path
 
     with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
