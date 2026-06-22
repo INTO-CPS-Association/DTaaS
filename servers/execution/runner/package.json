@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/runner",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "DT Runner",
   "main": "dist/src/runner.js",
   "repository": "https://github.com/into-cps-association/DTaaS.git",
@@ -47,7 +47,7 @@
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.9.4",
     "@types/supertest": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.61.1",
@@ -85,6 +85,12 @@
     "zod": "^4.3.6"
   },
   "resolutions": {
-    "handlebars": "^4.7.9"
+    "@babel/core": "^7.29.7",
+    "@types/node": "^25.9.4",
+    "fast-uri": "^3.1.2",
+    "form-data": "^4.0.6",
+    "handlebars": "^4.7.9",
+    "piscina": "^4.9.3",
+    "qs": "^6.15.2"
   }
 }
