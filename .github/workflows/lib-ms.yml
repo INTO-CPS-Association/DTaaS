@@ -193,6 +193,7 @@ jobs:
   publish-package-npm:
     permissions:
       contents: read  # Required for checking out the code
+      packages: write  # Required by the publish-npm reusable workflow
     if: |
       github.event_name == 'push' &&
       (
