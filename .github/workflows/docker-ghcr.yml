@@ -18,10 +18,6 @@ name: Build and Push Docker Image (GHCR)
         required: true
         type: string
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   registry: ghcr.io
   password: ${{ secrets.GITHUB_TOKEN }}

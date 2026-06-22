@@ -42,10 +42,6 @@ permissions:
       DOCKERHUB_TOKEN:
         required: true
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   registry: docker.io
   username: ${{ secrets.DOCKERHUB_USERNAME }}
