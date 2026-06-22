@@ -19,6 +19,10 @@ name: Test and Publish
       NPM_TOKEN:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish-package:
     runs-on: ubuntu-latest
