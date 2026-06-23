@@ -1,45 +1,17 @@
 """This file defines all cli entrypoints for DTaaS"""
 
-from pathlib import Path
 import click
-from .pkg import config as configPkg
+from python_on_whales.exceptions import DockerException
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
-from .pkg import certs as certsPkg
-from .pkg import deploy_config as deployConfigPkg
-from .pkg import utils as utilsPkg
+from .pkg import deploy as deployPkg
 from .pkg.project import DEPLOY_TYPES
-
-
-class VerticalChoicesCommand(click.Command):
-    """Format Choice options as a vertical list in help text."""
-
-    def format_help_text(self, ctx, formatter):
-        if self.help:
-            formatter.write_paragraph()
-            with formatter.indentation():
-                formatter.write_text(self.help)
-
-    def format_options(self, ctx, formatter):
-        rows = []
-        for param in self.get_params(ctx):
-            rows.extend(self._param_rows(param, ctx))
-        if rows:
-            with formatter.section("Options"):
-                formatter.write_dl(rows)
-
-    @staticmethod
-    def _param_rows(param, ctx):
-        """Return the help rows for a single param (empty list if hidden)."""
-        rv = param.get_help_record(ctx)
-        if rv is None:
-            return []
-        if not isinstance(param.type, click.Choice):
-            return [rv]
-        prefix = f"{rv[1]}. " if rv[1] else ""
-        rows = [(rv[0], f"{prefix}One of:")]
-        rows.extend(("", choice) for choice in param.type.choices)
-        return rows
+from .cmd_utils import (
+    VerticalChoicesCommand,
+    apply_deploy_config,
+    run_user_command,
+    confirm_remove_user_files,
+)
 
 
 ### Groups
@@ -103,93 +75,15 @@ def generate_deployment(deploy_type, output_dir, force):
         projectPkg.generate_deploy_project(deploy_type, output_dir, force)
     except (ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
-    _apply_deploy_config(deploy_type, output_dir, force)
+    apply_deploy_config(deploy_type, output_dir, force)
     projectPkg.set_files_permissions(output_dir)
     click.echo(f"Project files for '{deploy_type}' generated successfully")
-
-
-def _find_toml(output_dir):
-    """Return path to dtaas.toml, checking output_dir first then cwd, or None."""
-    for candidate in [Path(output_dir) / "dtaas.toml", Path("dtaas.toml")]:
-        if candidate.is_file():
-            return candidate
-    return None
-
-
-def _apply_deploy_config(deploy_type, output_dir, force=False):
-    """Read dtaas.toml and substitute values into generated deployment files."""
-    toml_path = _find_toml(output_dir)
-    if toml_path is None:
-        click.echo("Note: dtaas.toml not found; template values not substituted.")
-        return
-    toml_data, err = utilsPkg.import_toml(str(toml_path))
-    if err is not None:
-        raise click.ClickException(f"Error reading dtaas.toml: {err}")
-    _substitute_config(deploy_type, output_dir, toml_data)
-    _create_user_dirs(output_dir, toml_data)
-    _copy_deploy_certs(deploy_type, output_dir, toml_data, force)
-
-
-def _substitute_config(deploy_type, output_dir, toml_data):
-    """Build file specs from toml and substitute them into the generated files."""
-    try:
-        specs = deployConfigPkg.build_file_specs(deploy_type, toml_data)
-        deployConfigPkg.apply_config(output_dir, specs)
-    except (OSError, ValueError, TypeError) as exc:
-        raise click.ClickException(f"Error substituting config values: {exc}") from exc
-    for warning in deployConfigPkg.check_placeholders(output_dir, specs):
-        click.echo(warning)
-
-
-def _certs_src(toml_data):
-    """Resolve [common.security].certs-src from dtaas.toml, or '' if unset."""
-    common = toml_data.get("common", {}) if toml_data else {}
-    security = common.get("security", {}) if isinstance(common, dict) else {}
-    if not isinstance(security, dict):
-        return ""
-    certs_src = security.get("certs-src", "")
-    return certs_src.strip() if isinstance(certs_src, str) else ""
-
-
-def _copy_deploy_certs(deploy_type, output_dir, toml_data, force):
-    """Copy TLS certificates into output_dir/certs for secure deployments."""
-    try:
-        note = certsPkg.copy_certs(
-            deploy_type, output_dir, _certs_src(toml_data), force
-        )
-    except OSError as exc:
-        raise click.ClickException(f"Error copying certificates: {exc}") from exc
-    if note:
-        click.echo(note)
-
-
-def _create_user_dirs(output_dir, toml_data):
-    """Create per-user directories from the [users].add list in dtaas.toml."""
-    users = toml_data.get("users", {}) if toml_data else {}
-    usernames = users.get("add", []) if isinstance(users, dict) else []
-    if not usernames:
-        return
-    try:
-        projectPkg.create_user_dirs(output_dir, usernames)
-    except OSError as exc:
-        raise click.ClickException(f"Error creating user directories: {exc}") from exc
 
 
 @admin.group()
 def user():
     """user management commands"""
     return
-
-
-def _run_user_command(action, success_msg, error_prefix):
-    try:
-        config_obj = configPkg.Config()
-    except RuntimeError as exc:
-        raise click.ClickException(str(exc)) from exc
-    err = action(config_obj)
-    if err is not None:
-        raise click.ClickException(f"{error_prefix}: {err}")
-    click.echo(success_msg)
 
 
 #### user group commands
@@ -199,7 +93,7 @@ def add():
     add a list of users to DTaaS at once\n
     Specify the list in dtaas.toml [users].add\n
     """
-    _run_user_command(
+    run_user_command(
         userPkg.add_users, "Users added successfully", "Error while adding users"
     )
 
@@ -210,6 +104,52 @@ def delete():
     removes the USERNAME user from DTaaS\n
     Specify the users in dtaas.toml [users].delete\n
     """
-    _run_user_command(
+    run_user_command(
         userPkg.delete_user, "User deleted successfully", "Error while deleting users"
     )
+
+
+@admin.command(name="install")
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Installation directory containing the generated deployment.",
+)
+def install(output_dir):
+    """Bring the generated deployment up with 'docker compose up -d'."""
+    try:
+        deployPkg.install(output_dir)
+    except (OSError, DockerException) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo("Deployment installed successfully")
+
+
+@admin.command(name="uninstall")
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Installation directory containing the generated deployment.",
+)
+@click.option(
+    "--remove-user-files",
+    is_flag=True,
+    help="Also delete per-user workspace files (destructive).",
+)
+@click.option(
+    "--yes",
+    "-y",
+    is_flag=True,
+    help="Skip the confirmation prompt for --remove-user-files.",
+)
+def uninstall(output_dir, remove_user_files, yes):
+    """Tear the deployment down with 'docker compose down'."""
+    confirm_remove_user_files(remove_user_files, yes)
+    try:
+        message = deployPkg.uninstall(output_dir, remove_user_files)
+    except (OSError, DockerException) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if message:
+        click.echo(message)
+    click.echo("Deployment uninstalled successfully")

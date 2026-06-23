@@ -27,7 +27,7 @@ def test_import_toml():
 
     expected = {
         "name": "Digital Twin as a Service (DTaaS)",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "owner": "The INTO-CPS-Association",
         "git-repo": "https://github.com/into-cps-association/DTaaS.git",
         "common": {
@@ -85,7 +85,7 @@ def test_import_toml():
         "workspace-secure-server": {
             "oauth-secret": "your_random_secret_key_here",
             "keycloak-admin": "admin",
-            "keycloak-admin-password": "changeme", # NOSONAR
+            "keycloak-admin-password": "changeme",  # NOSONAR
             "keycloak-realm": "dtaas",
             "keycloak-issuer-url": "https://your_server_dns/auth/realms/dtaas",
             "keycloak-client-id": "dtaas-workspace",

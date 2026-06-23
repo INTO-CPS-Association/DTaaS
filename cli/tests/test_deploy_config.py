@@ -1,8 +1,9 @@
 """Tests for the deploy_config module."""
 
-import pytest
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 from src.pkg.deploy_config import (
     _set_yaml_value,
     _toml_lookup,

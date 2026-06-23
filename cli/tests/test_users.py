@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users, users_utils
+from tests.conftest import CONF_SERVER_CONTENT
 # pylint: disable=redefined-outer-name,unused-argument
 
 
@@ -190,20 +191,6 @@ def test_delete_user_skips_nonexistent(
     captured = capsys.readouterr()
     assert "'ghost' does not exist, skipping deletion" in captured.out
     mock_user_operations["stop"].assert_called_once_with(["user1"])
-
-
-CONF_SERVER_CONTENT = (
-    "rule.libms.action=auth\n"
-    "rule.libms.rule=PathPrefix(`/lib`)\n"
-    "\n"
-    "rule.onlyu1.action=auth\n"
-    "rule.onlyu1.rule=PathPrefix(`/user1`)\n"
-    "rule.onlyu1.whitelist=user1@example.com\n"
-    "\n"
-    "rule.onlyu2.action=auth\n"
-    "rule.onlyu2.rule=PathPrefix(`/user2`)\n"
-    "rule.onlyu2.whitelist=user2@example.com\n"
-)
 
 
 def test_delete_user_removes_conf_server_rules(

@@ -7,19 +7,7 @@ from src.pkg.users_utils import (
     add_conf_server_entry,
     remove_conf_server_entry,
 )
-
-CONF_SERVER_CONTENT = (
-    "rule.libms.action=auth\n"
-    "rule.libms.rule=PathPrefix(`/lib`)\n"
-    "\n"
-    "rule.onlyu1.action=auth\n"
-    "rule.onlyu1.rule=PathPrefix(`/user1`)\n"
-    "rule.onlyu1.whitelist=user1@example.com\n"
-    "\n"
-    "rule.onlyu2.action=auth\n"
-    "rule.onlyu2.rule=PathPrefix(`/user2`)\n"
-    "rule.onlyu2.whitelist=user2@example.com\n"
-)
+from tests.conftest import CONF_SERVER_CONTENT
 
 
 def test_next_rule_num_increments_max():

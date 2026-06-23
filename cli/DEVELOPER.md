@@ -21,6 +21,13 @@ The CLI is written in Python and uses the following libraries:
   has been wrapped in a function in _cli/src/pkg/utils.py_ file.
   This function should be used directly to read toml files.
 
+- [python-on-whales](https://gabrieldemarmiesse.github.io/python-on-whales/) :
+  Used by the `admin install` / `admin uninstall` commands
+  (_cli/src/pkg/deploy.py_) to drive `docker compose up`/`down`. It wraps the
+  docker CLI (which must be installed on the host) and raises a
+  `python_on_whales.exceptions.DockerException` carrying the real command
+  output (return code and stderr) when a compose operation fails.
+
 - [Poetry Package](https://python-poetry.org/docs/) to manage
   dependencies and build the CLI. The configuration file for this is
   _cli/pyproject.toml_. New source packages and dependencies need to be
@@ -35,7 +42,8 @@ The CLI has two layers of code:
 - Command line definition layer: This is the _src/cmd.py_ file. It
   deals with defining the structure of the CLI, and the specific
   CLI commands itself. The CLI functions in this file call
-  the Package layer functions.
+  the Package layer functions. Non-command helpers shared by the
+  command definitions live alongside it in _src/cmd_utils.py_.
 
 - Package layer: This is the _cli/src/pkg_ directory.
   It contains the
@@ -56,7 +64,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.6.0"
+version="0.7.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```

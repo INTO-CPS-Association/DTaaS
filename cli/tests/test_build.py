@@ -5,7 +5,7 @@ import stat
 from pathlib import Path
 
 import pytest
-from src.pkg.build import build, _copy_one, _SOURCES, _DEST_ROOT, _EXCLUDE
+from src.pkg.build import build, main, _copy_one, _SOURCES, _DEST_ROOT, _EXCLUDE
 
 
 def _force_remove(func, path, _excinfo):
@@ -16,8 +16,9 @@ def _force_remove(func, path, _excinfo):
 
 @pytest.fixture(autouse=True, scope="session")
 def built_templates():
+    """Run build() once per session, wiping any stale output directory first."""
     if _DEST_ROOT.exists():
-        shutil.rmtree(_DEST_ROOT, onerror=_force_remove)
+        shutil.rmtree(_DEST_ROOT, onerror=_force_remove)  # pylint: disable=deprecated-argument
     build()
 
 
@@ -61,3 +62,19 @@ def test_copy_one_raises_when_source_missing():
     """_copy_one raises FileNotFoundError when the source directory does not exist."""
     with pytest.raises(FileNotFoundError, match="Source not found"):
         _copy_one("localhost", "nonexistent/path/that/cannot/exist")
+
+
+def test_copy_one_overwrites_existing_dest():
+    """_copy_one removes and recreates the destination when it already exists."""
+    deploy_type = next(iter(_SOURCES))
+    dest = _DEST_ROOT / deploy_type
+    assert dest.exists(), "fixture must have created the dest dir first"
+    _copy_one(deploy_type, _SOURCES[deploy_type])
+    assert dest.is_dir()
+
+
+def test_main_returns_zero(capsys):
+    """main() prints a summary line and returns 0."""
+    result = main()
+    assert result == 0
+    assert str(len(_SOURCES)) in capsys.readouterr().out
