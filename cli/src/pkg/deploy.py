@@ -25,6 +25,15 @@ def _toml_present(directory):
     return (Path(directory) / "dtaas.toml").is_file() or Path("dtaas.toml").is_file()
 
 
+def _require_compose_file(directory):
+    """Raise OSError if the generated compose file is missing from *directory*."""
+    if not (Path(directory) / COMPOSE_FILE).is_file():
+        raise OSError(
+            f"No '{COMPOSE_FILE}' found in '{directory}'. "
+            "Run 'dtaas generate-deployment' first."
+        )
+
+
 def _require_deployment(directory):
     """Raise OSError if the generated deployment files are missing.
 
@@ -32,11 +41,7 @@ def _require_deployment(directory):
     *directory* or in the current working directory, matching the lookup used
     by generate-deployment.
     """
-    if not (Path(directory) / COMPOSE_FILE).is_file():
-        raise OSError(
-            f"No '{COMPOSE_FILE}' found in '{directory}'. "
-            "Run 'dtaas generate-deployment' first."
-        )
+    _require_compose_file(directory)
     if not _toml_present(directory):
         raise OSError(
             f"No 'dtaas.toml' found in '{directory}' or the current "
@@ -55,11 +60,11 @@ def install(directory="."):
 
 
 def _check_within_base(files_dir, base):
-    """Raise OSError if *files_dir* is a symlink or resolves outside *base*."""
+    """Reject a symlinked or escaping per-user files directory."""
     if files_dir.is_symlink() or not files_dir.resolve().is_relative_to(base):
         raise OSError(
-            f"Refusing to delete '{USER_FILES_DIR}': it resolves outside "
-            "the installation directory."
+            f"Refusing to delete '{USER_FILES_DIR}': it is a symlink or "
+            "resolves outside the installation directory."
         )
 
 
@@ -88,9 +93,12 @@ def delete_user_files(directory):
 def uninstall(directory=".", remove_user_files=False):
     """Tear the deployment down with 'docker compose down'.
 
-    Returns a message about removed files when *remove_user_files* is set,
-    otherwise None. Raises DockerException if compose itself fails.
+    Requires a generated compose file in *directory* so that teardown and any
+    file removal act only on a real deployment. Returns a message about
+    removed files when *remove_user_files* is set, otherwise None. Raises
+    DockerException if compose itself fails.
     """
+    _require_compose_file(directory)
     _client(directory).compose.down()
     if remove_user_files:
         return delete_user_files(directory)

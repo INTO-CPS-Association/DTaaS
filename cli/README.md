@@ -219,9 +219,11 @@ dtaas admin uninstall --remove-user-files --yes
 
 - `--output-dir` (default: `.`): Installation directory containing the
   generated deployment.
-- `--remove-user-files`: Also delete per-user workspace files. This is opt-in
-  to avoid accidental data loss, and is guarded against deleting paths outside
-  the installation directory.
+- `--remove-user-files`: Also delete per-user workspace files. Opt-in to avoid
+  accidental data loss: it requires a generated deployment in `--output-dir`,
+  prompts for confirmation, deletes only `<output-dir>/files`, and refuses to
+  follow a symlinked `files/`. It does not protect against pointing
+  `--output-dir` at the wrong directory, so double-check the path.
 - `--yes` / `-y`: Skip the confirmation prompt for `--remove-user-files`.
 
 ### 📁 Select Template
