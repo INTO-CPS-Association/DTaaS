@@ -20,7 +20,7 @@ name: Test and Publish
         required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.registry-url }}-${{ inputs.directory }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

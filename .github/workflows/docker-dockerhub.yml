@@ -43,7 +43,7 @@ permissions:
         required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.image-name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
