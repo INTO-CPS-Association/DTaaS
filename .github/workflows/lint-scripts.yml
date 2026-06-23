@@ -36,8 +36,8 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
@@ -56,12 +56,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Set up Python
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
 
@@ -97,14 +97,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Set up Python
-        # v5.3.0
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
+        # v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
 

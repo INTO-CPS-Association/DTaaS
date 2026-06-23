@@ -41,14 +41,14 @@ jobs:
 
     steps:
       - name: Checkout
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Setup node
-        # v6.1.0
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        # v6.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
@@ -75,8 +75,8 @@ jobs:
           yarn test:all
 
       - name: Upload test coverage to Codecov
-        # v5.5.2
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+        # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -101,8 +101,8 @@ jobs:
         if: runner.os == 'Windows'
         env:
           PORT: ${{ env.HTTP_PORT }}
-        # v3.0.2
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
+        # v4.0.0
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60
         with:
           timeout_seconds: 10
           max_attempts: 4
@@ -116,8 +116,8 @@ jobs:
         if: runner.os != 'Windows'
         env:
           PORT: ${{ env.HTTP_PORT }}
-        # v3.0.2
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
+        # v4.0.0
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60
         with:
           timeout_seconds: 10
           max_attempts: 4
@@ -154,8 +154,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
       - name: Install jq
         run: sudo apt-get install -y jq
       - name: get version
@@ -173,7 +173,7 @@ jobs:
       contents: read  # Required for checking out the code
       packages: write  # Required for github package registry
     if: |
-      github.event_name == 'push' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||
         startsWith(github.ref, 'refs/heads/release-v')
@@ -195,7 +195,7 @@ jobs:
       contents: read  # Required for checking out the code
       packages: write  # Required by the publish-npm reusable workflow
     if: |
-      github.event_name == 'push' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||
         startsWith(github.ref, 'refs/heads/release-v')
@@ -217,7 +217,7 @@ jobs:
       contents: read  # Required for checking out the code
       packages: write  # Required for publishing to github package registry
     if: |
-      github.event_name == 'push' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||
         startsWith(github.ref, 'refs/heads/release-v')
@@ -236,7 +236,7 @@ jobs:
     permissions:
       contents: read  # Required for checking out the code
     if: |
-      github.event_name == 'push' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       (
         startsWith(github.ref, 'refs/heads/feature/') ||
         startsWith(github.ref, 'refs/heads/release-v')

@@ -26,8 +26,8 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
           sparse-checkout: |
@@ -37,8 +37,8 @@ jobs:
 
       - name: Setup node
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
-        # v6.1.0
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        # v6.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 24
           cache: "yarn"
@@ -65,8 +65,8 @@ jobs:
           yarn config:test
 
       - name: Build Docker image
-        # v6.18.0
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        # v7.2.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
           context: .
           file: ./developer/${{ inputs.dockerfile }}

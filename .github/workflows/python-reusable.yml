@@ -58,14 +58,14 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Setup Python
-        # v6.1.0
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        # v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12"
 
@@ -117,8 +117,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        # v5
-        uses: codecov/codecov-action@c23a129e932ebdcb56ca1565c68c6abdbf173769
+        # v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         with:
           files: coverage.xml
           flags: cli-tests
@@ -139,14 +139,14 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Setup Python
-        # v6.1.0
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        # v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12"
 
@@ -173,8 +173,8 @@ jobs:
           poetry build --format sdist
 
       - name: Upload dist artefacts
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.working-directory }}/${{ inputs.artifact-path }}
