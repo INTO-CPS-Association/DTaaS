@@ -50,6 +50,16 @@ describe('oauthUserProfile', () => {
     it('returns empty string for undefined profile', () => {
       expect(resolveOAuthUsername(undefined)).toBe('');
     });
+
+    it('returns empty string when profile URL has no path segments (bare domain)', () => {
+      expect(resolveOAuthUsername({ profile: 'https://idp.example.com/' })).toBe(
+        '',
+      );
+    });
+
+    it('returns empty string when profile claim is not a valid URL', () => {
+      expect(resolveOAuthUsername({ profile: 'not-a-valid-url' })).toBe('');
+    });
   });
 
   describe('resolveOAuthDisplayName', () => {

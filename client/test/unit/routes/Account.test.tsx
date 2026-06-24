@@ -154,7 +154,7 @@ describe('AccountTabs', () => {
       profile: { ...accountMockUser.profile, profile: undefined },
     };
     (useAuth as jest.Mock).mockReturnValue({ user: userWithoutProfileUrl });
-    render(<Account />);
+    renderWithRouter(<Account />, { route: '/private' });
 
     expect(
       screen.getByText(/Your OAuth provider did not expose a profile URL/),

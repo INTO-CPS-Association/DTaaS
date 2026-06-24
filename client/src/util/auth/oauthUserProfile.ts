@@ -36,8 +36,13 @@ function getUsernameFromProfileUrl(
   if (!profileUrl) {
     return undefined;
   }
-  const pathWithoutQuery = profileUrl.split('?')[0]?.split('#')[0] ?? '';
-  const pathSegments = pathWithoutQuery.split('/').filter(Boolean);
+  let pathname: string;
+  try {
+    pathname = new URL(profileUrl).pathname;
+  } catch {
+    return undefined;
+  }
+  const pathSegments = pathname.split('/').filter(Boolean);
   const username = pathSegments.at(-1)?.trim();
   return username && username.length > 0 ? username : undefined;
 }
