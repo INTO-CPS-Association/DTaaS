@@ -52,13 +52,19 @@ describe('oauthUserProfile', () => {
     });
 
     it('returns empty string when profile URL has no path segments (bare domain)', () => {
-      expect(resolveOAuthUsername({ profile: 'https://idp.example.com/' })).toBe(
-        '',
-      );
+      expect(
+        resolveOAuthUsername({ profile: 'https://idp.example.com/' }),
+      ).toBe('');
     });
 
-    it('returns empty string when profile claim is not a valid URL', () => {
+    it('returns empty string when profile claim is not a valid URL and contains no path separator', () => {
       expect(resolveOAuthUsername({ profile: 'not-a-valid-url' })).toBe('');
+    });
+
+    it('resolves username from relative profile path', () => {
+      expect(resolveOAuthUsername({ profile: 'example/username' })).toBe(
+        'username',
+      );
     });
   });
 

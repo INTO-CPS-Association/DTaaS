@@ -35,7 +35,7 @@ three functions:
 
 Walks a fixed priority chain and returns the first usable value:
 
-```
+```text
 1. preferred_username   ← Keycloak, Dex, most OIDC
 2. username             ← some custom providers
 3. nickname             ← OpenID standard optional claim
