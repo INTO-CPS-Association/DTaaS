@@ -27,24 +27,72 @@ def test_import_toml():
 
     expected = {
         "name": "Digital Twin as a Service (DTaaS)",
-        "version": "0.5.0",
+        "version": "0.6.0",
         "owner": "The INTO-CPS-Association",
         "git-repo": "https://github.com/into-cps-association/DTaaS.git",
         "common": {
-            # absolute path to the DTaaS application directory
             "server-dns": "localhost",
             "path": "/home/Desktop/DTaaS",
-            "security": {"tls": False},
+            "security": {
+                "tls": False,
+                "certs-src": "/etc/letsencrypt/archive/intocps.org",
+            },
+            "resources": {
+                "cpus": 4,
+                "mem_limit": "4G",
+                "pids_limit": 4960,
+                "shm_size": "512m",
+            },
         },
         "users": {
-            # matching user info must present in this config file
             "add": ["username1", "username2", "username3"],
             "delete": ["username2", "username3"],
             "username1": {"email": "username1@intocps.org"},
             "username2": {"email": "username2@intocps.org"},
             "username3": {"email": "username3@intocps.org"},
         },
-        "client": {"web": {"config": "/home/Desktop/DTaaS/env.local.js"}},
+        "frontend": {
+            "react-app-client-id": "your_client_id_here",
+            "react-app-oauth-url": "https://gitlab.com",
+        },
+        "localhost": {
+            "default-user": "user1",
+            "client-id": "your_client_id_here",
+            "auth-authority": "https://gitlab.com/",
+        },
+        "insecure-server": {
+            "oauth-url": "https://gitlab.com",
+            "oauth-client-id": "your_client_id_here",
+            "oauth-client-secret": "your_client_secret_here",
+            "oauth-secret": "your_random_secret_key_here",
+        },
+        "secure-server": {
+            "oauth-url": "https://gitlab.com",
+            "oauth-client-id": "your_client_id_here",
+            "oauth-client-secret": "your_client_secret_here",
+            "oauth-secret": "your_random_secret_key_here",
+        },
+        "secure-server-gitlab": {
+            "oauth-client-id": "your_client_id_here",
+            "oauth-client-secret": "your_client_secret_here",
+            "oauth-secret": "your_random_secret_key_here",
+        },
+        "workspace-localhost": {
+            "default-user": "user",
+            "client-id": "mock",
+            "auth-authority": "http://localhost:5556/dex",
+        },
+        "workspace-secure-server": {
+            "oauth-secret": "your_random_secret_key_here",
+            "keycloak-admin": "admin",
+            "keycloak-admin-password": "changeme", # NOSONAR
+            "keycloak-realm": "dtaas",
+            "keycloak-issuer-url": "https://your_server_dns/auth/realms/dtaas",
+            "keycloak-client-id": "dtaas-workspace",
+            "keycloak-client-secret": "your_keycloak_client_secret_here",
+            "client-id": "dtaas-client",
+            "auth-authority": "https://your_server_dns/auth/realms/dtaas",
+        },
     }
 
     assert expected == toml

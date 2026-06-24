@@ -5,6 +5,7 @@ import click
 from .pkg import config as configPkg
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
+from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import utils as utilsPkg
 from .pkg.project import DEPLOY_TYPES
@@ -102,7 +103,7 @@ def generate_deployment(deploy_type, output_dir, force):
         projectPkg.generate_deploy_project(deploy_type, output_dir, force)
     except (ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
-    _apply_deploy_config(deploy_type, output_dir)
+    _apply_deploy_config(deploy_type, output_dir, force)
     projectPkg.set_files_permissions(output_dir)
     click.echo(f"Project files for '{deploy_type}' generated successfully")
 
@@ -115,7 +116,7 @@ def _find_toml(output_dir):
     return None
 
 
-def _apply_deploy_config(deploy_type, output_dir):
+def _apply_deploy_config(deploy_type, output_dir, force=False):
     """Read dtaas.toml and substitute values into generated deployment files."""
     toml_path = _find_toml(output_dir)
     if toml_path is None:
@@ -126,6 +127,7 @@ def _apply_deploy_config(deploy_type, output_dir):
         raise click.ClickException(f"Error reading dtaas.toml: {err}")
     _substitute_config(deploy_type, output_dir, toml_data)
     _create_user_dirs(output_dir, toml_data)
+    _copy_deploy_certs(deploy_type, output_dir, toml_data, force)
 
 
 def _substitute_config(deploy_type, output_dir, toml_data):
@@ -137,6 +139,28 @@ def _substitute_config(deploy_type, output_dir, toml_data):
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
     for warning in deployConfigPkg.check_placeholders(output_dir, specs):
         click.echo(warning)
+
+
+def _certs_src(toml_data):
+    """Resolve [common.security].certs-src from dtaas.toml, or '' if unset."""
+    common = toml_data.get("common", {}) if toml_data else {}
+    security = common.get("security", {}) if isinstance(common, dict) else {}
+    if not isinstance(security, dict):
+        return ""
+    certs_src = security.get("certs-src", "")
+    return certs_src.strip() if isinstance(certs_src, str) else ""
+
+
+def _copy_deploy_certs(deploy_type, output_dir, toml_data, force):
+    """Copy TLS certificates into output_dir/certs for secure deployments."""
+    try:
+        note = certsPkg.copy_certs(
+            deploy_type, output_dir, _certs_src(toml_data), force
+        )
+    except OSError as exc:
+        raise click.ClickException(f"Error copying certificates: {exc}") from exc
+    if note:
+        click.echo(note)
 
 
 def _create_user_dirs(output_dir, toml_data):

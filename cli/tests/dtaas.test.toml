@@ -1,32 +1,114 @@
 # This is the config for DTaaS CLI
 
-name = "Digital Twin as a Service (DTaaS)"
-version = "0.5.0"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
+name="Digital Twin as a Service (DTaaS)"
+version="0.6.0"
+owner="The INTO-CPS-Association"
+git-repo="https://github.com/into-cps-association/DTaaS.git"
 
 [common]
 # absolute path to the DTaaS application directory
-server-dns = "localhost"
+server-dns="localhost"
+# Specify the directory of DTaaS installation
+# Linux example
+# "REPLACE_WITH_ABSOLUTE_PATH_TO_DTAAS"
+#path="/home/XXX/DTaaS"
+# Windows example
 path = "/home/Desktop/DTaaS"
+# Note: You have to either use / or \\ when specifying path, else you would get
+# "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
 [common.security]
 # Enable HTTPS/TLS for secure server deployment
-tls = false
+tls=false
+# Source directory holding the TLS certificates (fullchain.pem, privkey.pem)
+# for secure deployments. generate-deployment copies the latest pair into the
+# installation's certs/ directory. Leave unset to copy certificates by hand.
+# Certs path on Linux / MacOS
+certs-src='/etc/letsencrypt/archive/intocps.org'
+# Certs path on Windows
+#certs-src='C:/Certbot/archive/intocps.org'
+
+[common.resources]
+# These are the default resource limits for user containers.
+cpus=4 # Virtual CPU
+mem_limit="4G"
+pids_limit=4960 # Number of processes
+shm_size="512m" # Shared memory size
+
 
 [users]
 # matching user info must present in this config file
-add = ["username1","username2", "username3"]
-delete = ["username2", "username3"]
+add=["username1","username2", "username3"]
+delete=["username2", "username3"]
 
 [users.username1]
-email = "username1@intocps.org"
+email="username1@intocps.org"
 
 [users.username2]
-email = "username2@intocps.org"
+email="username2@intocps.org"
 
 [users.username3]
-email = "username3@intocps.org"
+email="username3@intocps.org"
 
-[client.web]
-config = "/home/Desktop/DTaaS/env.local.js"
+# Installation-specific configuration
+# For non-localhost deployments, usernames (USERNAME1, USERNAME2, ...)
+# are taken from the [users] add list above.
+
+# OAuth application for the DTaaS client website (React frontend).
+# This is a separate OAuth application from the server one used by
+# traefik-forward-auth in the [insecure-server] and [secure-server] sections.
+# Create it in your GitLab instance at:
+# Settings -> Applications (for personal) or
+# Admin Area -> Applications (for instance-wide)
+# with Redirect URI "https://<server-dns>/Library", Confidential unticked and
+# scopes: openid, profile, read_user, read_repository, api.
+[frontend]
+# Application ID of the client website OAuth application
+react-app-client-id="your_client_id_here"
+# URL of your GitLab instance (without trailing slash)
+react-app-oauth-url="https://gitlab.com"
+
+[localhost]
+default-user="user1"
+client-id="your_client_id_here"
+auth-authority="https://gitlab.com/"
+
+# OAuth application for the server (traefik-forward-auth).
+# This is a separate OAuth application from the client website one in [frontend].
+# Create it in your GitLab instance at:
+# Settings -> Applications (for personal) or
+# Admin Area -> Applications (for instance-wide)
+# with Redirect URI "https://<server-dns>/_oauth", Confidential ticked and
+# scopes: openid, profile, read_user.
+[insecure-server]
+oauth-url="https://gitlab.com"
+oauth-client-id="your_client_id_here"
+oauth-client-secret="your_client_secret_here"
+oauth-secret="your_random_secret_key_here"
+
+[secure-server]
+oauth-url="https://gitlab.com"
+oauth-client-id="your_client_id_here"
+oauth-client-secret="your_client_secret_here"
+oauth-secret="your_random_secret_key_here"
+
+[secure-server-gitlab]
+oauth-client-id="your_client_id_here"
+oauth-client-secret="your_client_secret_here"
+oauth-secret="your_random_secret_key_here"
+
+[workspace-localhost]
+default-user="user"
+client-id="mock"
+auth-authority="http://localhost:5556/dex"
+
+[workspace-secure-server]
+oauth-secret="your_random_secret_key_here"
+keycloak-admin="admin"
+keycloak-admin-password="changeme"
+keycloak-realm="dtaas"
+keycloak-issuer-url="https://your_server_dns/auth/realms/dtaas"
+keycloak-client-id="dtaas-workspace"
+keycloak-client-secret="your_keycloak_client_secret_here"
+client-id="dtaas-client"
+auth-authority="https://your_server_dns/auth/realms/dtaas"

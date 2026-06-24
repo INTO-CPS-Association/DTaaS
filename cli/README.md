@@ -153,6 +153,15 @@ paths, and emails) are substituted across all types where they appear.
 If `dtaas.toml` is not found in either location, a note is printed and the
 files keep their default placeholder values.
 
+#### TLS certificate placement
+
+For the TLS deployment types (`secure-server`, `secure-server-gitlab`,
+`workspace-secure-server`), `generate-deployment` also populates the
+generated `certs/` directory so the reverse proxy can find its certificates.
+It reads the source location from `[common.security].certs-src` in
+`dtaas.toml` and copies the latest `fullchain.pem` and `privkey.pem` into
+`<output-dir>/certs/`.
+
 ### 📁 Select Template
 
 The _cli_ uses YAML templates provided in this directory to create
@@ -259,6 +268,9 @@ are described in the command sections above.
 Set `server-dns` to your server's public hostname (`localhost` for a local
 deployment) and `path` to the absolute path of your DTaaS installation.
 Set `[common.security] tls = true` for HTTPS deployments.
+
+For TLS deployments, set `[common.security].certs-src` to the directory
+holding your `fullchain.pem` and `privkey.pem`.
 
 Adjust `[common.resources]` to match your hardware:
 

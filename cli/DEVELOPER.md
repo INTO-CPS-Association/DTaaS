@@ -56,7 +56,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.5.0"
+version="0.6.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```
@@ -73,6 +73,7 @@ path="/Users/username/DTaaS"
 
 [common.security]
 tls=true
+certs-src="/etc/letsencrypt/archive/intocps.org"
 
 [common.resources]
 cpus=4
@@ -86,6 +87,9 @@ shm_size="512m"
 - _path_: absolute path to the DTaaS installation; required for workspace
   creation and docker services.
 - _tls_: `false` uses `user.server.yml`; `true` (default) uses `user.server.secure.yml`.
+- _certs-src_: source directory of the TLS certificates. For TLS deploy types,
+  `generate-deployment` copies the latest `fullchain.pem`/`privkey.pem` from
+  here into the deployment's `certs/` directory (see `src/pkg/certs.py`).
 - Resource fields set default container limits for user workspaces.
 
 #### [users]

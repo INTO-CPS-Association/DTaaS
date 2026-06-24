@@ -204,10 +204,18 @@ def set_files_permissions(dest_dir):
         pass
 
 
+def _has_template_files(src):
+    """True if *src* holds deployment files."""
+    return any(p.is_file() and p.name != ".gitkeep" for p in src.rglob("*"))
+
+
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
     """Copy a deploy template directory tree to the destination."""
     src = DEPLOY_TEMPLATES_DIR / deploy_type
     dest = Path(dest_dir)
     _validate_deploy_inputs(deploy_type, src, dest)
+    if not _has_template_files(src):
+        click.echo(f"Warning: no deployment templates found for '{deploy_type}'")
+        return
     _copy_tree(src, dest, force)
     _copy_example_files(dest, force)

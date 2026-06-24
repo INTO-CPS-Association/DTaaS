@@ -201,6 +201,63 @@ def test_find_toml_returns_none_when_absent(tmp_path, monkeypatch):
     assert _find_toml(str(empty)) is None
 
 
+def test_generate_deployment_copies_certs(runner):
+    """The certs-src from dtaas.toml is forwarded to certsPkg.copy_certs."""
+    from pathlib import Path
+
+    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
+        "src.cmd.projectPkg.set_files_permissions"
+    ), patch("src.cmd._find_toml", return_value=Path("dtaas.toml")), patch(
+        "src.cmd.utilsPkg.import_toml",
+        return_value=(
+            {"common": {"security": {"certs-src": "/etc/certs"}}, "secure-server": {}},
+            None,
+        ),
+    ), patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]), patch(
+        "src.cmd.deployConfigPkg.apply_config"
+    ), patch("src.cmd.deployConfigPkg.check_placeholders", return_value=[]), patch(
+        "src.cmd.certsPkg.copy_certs", return_value="certs copied"
+    ) as mock_copy:
+        result = runner.invoke(
+            dtaas, ["generate-deployment", "--type", "secure-server"]
+        )
+
+    assert result.exit_code == 0
+    assert "certs copied" in result.output
+    mock_copy.assert_called_once_with("secure-server", ".", "/etc/certs", False)
+
+
+def test_generate_deployment_cert_copy_error(runner):
+    """An OSError while copying certificates surfaces as a ClickException."""
+    from pathlib import Path
+
+    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
+        "src.cmd._find_toml", return_value=Path("dtaas.toml")
+    ), patch(
+        "src.cmd.utilsPkg.import_toml",
+        return_value=({"common": {"security": {"certs-src": "/etc/certs"}}}, None),
+    ), patch("src.cmd.deployConfigPkg.build_file_specs", return_value=[]), patch(
+        "src.cmd.deployConfigPkg.apply_config"
+    ), patch("src.cmd.deployConfigPkg.check_placeholders", return_value=[]), patch(
+        "src.cmd.certsPkg.copy_certs", side_effect=OSError("permission denied")
+    ):
+        result = runner.invoke(
+            dtaas, ["generate-deployment", "--type", "secure-server"]
+        )
+
+    assert result.exit_code != 0
+    assert "Error copying certificates" in result.output
+
+
+def test_certs_src_handles_missing_section():
+    """_certs_src returns '' when common.security is absent or malformed."""
+    from src.cmd import _certs_src
+
+    assert _certs_src({}) == ""
+    assert _certs_src({"common": {"security": "oops"}}) == ""
+    assert _certs_src({"common": {"security": {"certs-src": " /x "}}}) == "/x"
+
+
 def test_add_users_config_error(runner):
     """add command raises ClickException when Config() fails"""
     with patch("src.cmd.configPkg.Config", side_effect=RuntimeError("no config")):
