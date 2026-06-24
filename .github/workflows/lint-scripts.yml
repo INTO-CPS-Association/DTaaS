@@ -17,7 +17,7 @@ name: Lint Miscellaneous Scripts
       - '**.yml'
       - '**.yaml'
       - '.shellcheckrc'
-      - '.yamllint'
+      - '.yamllint.yml'
   workflow_dispatch:
 
 concurrency:
