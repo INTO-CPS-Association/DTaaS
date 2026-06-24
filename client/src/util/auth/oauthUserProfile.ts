@@ -38,7 +38,7 @@ function getUsernameFromProfileUrl(
   }
   const pathWithoutQuery = profileUrl.split('?')[0]?.split('#')[0] ?? '';
   const pathSegments = pathWithoutQuery.split('/').filter(Boolean);
-  const username = pathSegments[pathSegments.length - 1]?.trim();
+  const username = pathSegments.at(-1)?.trim();
   return username && username.length > 0 ? username : undefined;
 }
 
