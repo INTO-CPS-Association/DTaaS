@@ -19,7 +19,7 @@ name: Build and Push Docker Image (GHCR)
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.image-name }}-${{ github.ref }}
+  group: ${{ github.workflow }}-docker-ghcr-${{ inputs.image-name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
