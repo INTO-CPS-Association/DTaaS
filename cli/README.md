@@ -226,6 +226,45 @@ dtaas admin uninstall --remove-user-files --yes
   `--output-dir` at the wrong directory, so double-check the path.
 - `--yes` / `-y`: Skip the confirmation prompt for `--remove-user-files`.
 
+### 🔁 Update TLS Certificates
+
+To rotate the TLS certificates of a running deployment in place, without
+regenerating the project or copying files by hand:
+
+```bash
+dtaas admin update --certs
+```
+
+This reads the certificate source from `[common.security].certs-src` in
+`dtaas.toml` (the same key used to seed `certs/` during
+`generate-deployment`), picks the newest `fullchain.pem` and `privkey.pem`
+there, and then:
+
+1. **Validates** the new pair before anything is replaced — it must be
+   parseable, the private key must match the certificate, and the certificate
+   must not already be expired.
+2. **Swaps** the validated files into `<output-dir>/certs/` atomically, so the
+   deployment is never left with a half-updated (mismatched) pair.
+3. **Restricts** the private key to `0600` (a no-op on Windows).
+4. **Reloads** the `traefik` service (`docker compose up -d --force-recreate
+   traefik`) so the new certificates take effect.
+
+If validation fails, the live certificates are left untouched and a clear
+error is raised. The command is safe to run repeatedly.
+
+**Options:**
+
+- `--certs`: Refresh the deployment's TLS certificates. Required; it is the
+  only update target today, and the `update` group leaves room for future ones.
+- `--output-dir` (default: `.`): Installation directory containing the
+  generated deployment (the `docker-compose.yml` and `certs/`). The CLI looks
+  for `dtaas.toml` here first, then in the current directory.
+
+The command fails with a clear error if the deployment has not been generated
+(`docker-compose.yml` missing), if `certs-src` is unset or missing, if either
+certificate is absent from `certs-src`, or if the Docker daemon is not
+reachable.
+
 ### 📁 Select Template
 
 The _cli_ uses YAML templates provided in this directory to create

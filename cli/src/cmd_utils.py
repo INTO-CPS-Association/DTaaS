@@ -5,7 +5,6 @@ formatter, the deployment-config orchestration used by generate-deployment,
 the user-command wrapper, and the destructive-action confirmation prompt.
 """
 
-from pathlib import Path
 import click
 from .pkg import config as configPkg
 from .pkg import project as projectPkg
@@ -47,10 +46,7 @@ class VerticalChoicesCommand(click.Command):
 
 def _find_toml(output_dir):
     """Return path to dtaas.toml, checking output_dir first then cwd, or None."""
-    for candidate in [Path(output_dir) / "dtaas.toml", Path("dtaas.toml")]:
-        if candidate.is_file():
-            return candidate
-    return None
+    return utilsPkg.find_toml(output_dir)
 
 
 def apply_deploy_config(deploy_type, output_dir, force=False):
@@ -80,12 +76,7 @@ def _substitute_config(deploy_type, output_dir, toml_data):
 
 def _certs_src(toml_data):
     """Resolve [common.security].certs-src from dtaas.toml, or '' if unset."""
-    common = toml_data.get("common", {}) if toml_data else {}
-    security = common.get("security", {}) if isinstance(common, dict) else {}
-    if not isinstance(security, dict):
-        return ""
-    certs_src = security.get("certs-src", "")
-    return certs_src.strip() if isinstance(certs_src, str) else ""
+    return utilsPkg.resolve_certs_src(toml_data)
 
 
 def _copy_deploy_certs(deploy_type, output_dir, toml_data, force):

@@ -122,3 +122,21 @@ def test_uninstall_removes_user_files(tmp_path):
         assert message is not None
         assert "Removed user files" in message
         assert not (tmp_path / "files").exists()
+
+
+def test_restart_service_force_recreates(tmp_path):
+    """restart_service force-recreates only the named service, detached."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        deploy.restart_service(str(tmp_path), "traefik")
+        mock_client.return_value.compose.up.assert_called_once_with(
+            services=["traefik"], force_recreate=True, detach=True
+        )
+
+
+def test_restart_service_requires_compose_file(tmp_path):
+    """restart_service refuses to act without a generated deployment."""
+    with patch("src.pkg.deploy._client") as mock_client:
+        with pytest.raises(OSError, match="docker-compose.yml"):
+            deploy.restart_service(str(tmp_path), "traefik")
+        mock_client.assert_not_called()

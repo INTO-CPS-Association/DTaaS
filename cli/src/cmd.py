@@ -5,6 +5,8 @@ from python_on_whales.exceptions import DockerException
 from .pkg import users as userPkg
 from .pkg import project as projectPkg
 from .pkg import deploy as deployPkg
+from .pkg import cert_update as certUpdatePkg
+from .pkg.cert_validate import CertValidationError
 from .pkg.project import DEPLOY_TYPES
 from .cmd_utils import (
     VerticalChoicesCommand,
@@ -153,3 +155,30 @@ def uninstall(output_dir, remove_user_files, yes):
     if message:
         click.echo(message)
     click.echo("Deployment uninstalled successfully")
+
+
+@admin.command(name="update")
+@click.option(
+    "--certs",
+    is_flag=True,
+    help="Refresh the deployment's TLS certificates in place.",
+)
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Installation directory containing the generated deployment.",
+)
+def update(certs, output_dir):
+    """Update deployment assets in place.
+
+    Currently supports --certs, which validates the newest certificate pair
+    from certs-src and atomically swaps it in before reloading traefik.
+    """
+    if not certs:
+        raise click.ClickException("Nothing to update; pass --certs.")
+    try:
+        message = certUpdatePkg.update_certs(output_dir)
+    except (CertValidationError, OSError, DockerException) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(message)

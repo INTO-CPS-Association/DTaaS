@@ -1,9 +1,31 @@
 "This file has generic helper functions and variables for dtaas cli"
 
+from pathlib import Path
 import yaml
 import tomlkit
 
 LOCALHOST_SERVER = "localhost"
+
+
+def find_toml(output_dir):
+    """Return path to dtaas.toml, checking output_dir first then cwd, or None."""
+    for candidate in [Path(output_dir) / "dtaas.toml", Path("dtaas.toml")]:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _nested_dict(data, key):
+    """Return data[key] when it is a dict, otherwise an empty dict."""
+    value = data.get(key, {}) if isinstance(data, dict) else {}
+    return value if isinstance(value, dict) else {}
+
+
+def resolve_certs_src(toml_data):
+    """Resolve [common.security].certs-src from dtaas.toml, or '' if unset."""
+    security = _nested_dict(_nested_dict(toml_data, "common"), "security")
+    certs_src = security.get("certs-src", "")
+    return certs_src.strip() if isinstance(certs_src, str) else ""
 
 
 def import_yaml(filename):

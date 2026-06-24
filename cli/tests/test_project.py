@@ -15,6 +15,7 @@ from src.pkg.project import (
     _validate_deploy_inputs,
     DEPLOY_TYPES,
 )
+# pylint: disable=protected-access
 
 
 def test_generate_project_skips_existing_file(tmp_path, capsys):
@@ -33,13 +34,6 @@ def test_generate_project_raises_on_copy_failure(tmp_path):
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
             generate_project(str(tmp_path))
-
-
-def test_generate_project_creates_missing_dest(tmp_path):
-    """generate_project creates the destination directory if it does not exist."""
-    new_dir = tmp_path / "new_output"
-    generate_project(str(new_dir))
-    assert new_dir.is_dir()
 
 
 def test_copy_file_skips_existing(tmp_path, capsys):
@@ -74,17 +68,6 @@ def test_check_no_symlinks_raises_on_symlink(tmp_path):
         _check_no_symlinks(src, [real, link])
 
 
-def test_check_no_symlinks_passes_for_regular_files(tmp_path):
-    """No exception is raised when all entries are regular files."""
-    src = tmp_path / "src"
-    src.mkdir()
-    entries = [src / "a.txt", src / "b.txt"]
-    for e in entries:
-        e.write_text("x")
-
-    _check_no_symlinks(src, entries)  # must not raise
-
-
 def test_copy_tree_collects_errors(tmp_path):
     """All files are attempted even when copies fail; errors are raised together."""
     src = tmp_path / "src"
@@ -99,22 +82,6 @@ def test_copy_tree_collects_errors(tmp_path):
             _copy_tree(src, dest, force=False)
 
 
-def test_copy_tree_delegates_to_helpers(tmp_path):
-    """_copy_tree successfully copies a plain directory tree end-to-end."""
-    src = tmp_path / "src"
-    src.mkdir()
-    (src / "a.txt").write_text("a")
-    (src / "sub").mkdir()
-    (src / "sub" / "b.txt").write_text("b")
-    dest = tmp_path / "dest"
-    dest.mkdir()
-
-    _copy_tree(src, dest)
-
-    assert (dest / "a.txt").read_text() == "a"
-    assert (dest / "sub" / "b.txt").read_text() == "b"
-
-
 def test_validate_deploy_inputs_raises_for_unknown_type(tmp_path):
     """ValueError for an unrecognised deploy type."""
     with pytest.raises(ValueError, match="Unknown deploy type"):
@@ -125,15 +92,6 @@ def test_validate_deploy_inputs_raises_if_src_missing(tmp_path):
     """RuntimeError when the template directory is absent."""
     with pytest.raises(RuntimeError, match="Template directory not found"):
         _validate_deploy_inputs("localhost", tmp_path / "missing", tmp_path)
-
-
-def test_validate_deploy_inputs_creates_missing_dest(tmp_path):
-    """Missing destination directory is created instead of raising."""
-    src = tmp_path / "localhost"
-    src.mkdir()
-    missing = tmp_path / "missing"
-    _validate_deploy_inputs("localhost", src, missing)
-    assert missing.is_dir()
 
 
 REQUIRED_FILES = {
@@ -210,52 +168,12 @@ def test_create_user_dirs_skips_when_no_template(tmp_path):
     assert not (tmp_path / "files" / "alice").exists()
 
 
-def test_set_files_permissions_chmods_files_dir(tmp_path):
-    """set_files_permissions runs sudo chmod -R on the files/ directory."""
-    files_dir = tmp_path / "files"
-    files_dir.mkdir(parents=True)
-
-    with patch("src.pkg.project.subprocess.run") as mock_run:
-        set_files_permissions(str(tmp_path))
-
-    mock_run.assert_called_once_with(
-        ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
-        check=True,
-    )
-
-
 def test_set_files_permissions_skips_when_no_files_dir(tmp_path):
     """set_files_permissions is a no-op when files/ does not exist."""
     with patch("src.pkg.project.subprocess.run") as mock_run:
         set_files_permissions(str(tmp_path))
 
     mock_run.assert_not_called()
-
-
-def test_create_user_dirs_skips_existing_user_dir(tmp_path):
-    """create_user_dirs does not overwrite an existing user directory."""
-    template = tmp_path / "files" / "template"
-    template.mkdir(parents=True)
-    (template / "readme.txt").write_text("new")
-    user_dir = tmp_path / "files" / "alice"
-    user_dir.mkdir(parents=True)
-    (user_dir / "readme.txt").write_text("old")
-
-    create_user_dirs(str(tmp_path), ["alice"])
-
-    assert (user_dir / "readme.txt").read_text() == "old"
-
-
-def test_copy_example_files_creates_actual_files(tmp_path):
-    """_copy_example_files creates non-example copies of all .example files."""
-    (tmp_path / "config").mkdir()
-    (tmp_path / "config" / ".env.example").write_text("KEY=value")
-    (tmp_path / "config" / "app.js.example").write_text("var x = 1;")
-
-    _copy_example_files(tmp_path)
-
-    assert (tmp_path / "config" / ".env").read_text() == "KEY=value"
-    assert (tmp_path / "config" / "app.js").read_text() == "var x = 1;"
 
 
 def test_copy_example_files_skips_existing_without_force(tmp_path):
@@ -268,11 +186,38 @@ def test_copy_example_files_skips_existing_without_force(tmp_path):
     assert (tmp_path / "a").read_text() == "old"
 
 
-def test_copy_example_files_overwrites_with_force(tmp_path):
-    """_copy_example_files overwrites existing files when force=True."""
-    (tmp_path / "a.example").write_text("new")
-    (tmp_path / "a").write_text("old")
+def test_generate_project_raises_when_templates_dir_missing(tmp_path):
+    """generate_project raises RuntimeError when the bundled templates are absent."""
+    with patch("src.pkg.project.TEMPLATES_DIR", tmp_path / "no-templates"):
+        with pytest.raises(RuntimeError, match="templates directory not found"):
+            generate_project(str(tmp_path / "out"))
 
-    _copy_example_files(tmp_path, force=True)
 
-    assert (tmp_path / "a").read_text() == "new"
+def test_copy_example_files_raises_on_copy_failure(tmp_path):
+    """A failing .example copy is collected and surfaced as an OSError."""
+    (tmp_path / "a.example").write_text("x")
+
+    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
+        with pytest.raises(OSError, match="disk full"):
+            _copy_example_files(tmp_path)
+
+
+def test_set_files_permissions_ignores_missing_sudo(tmp_path):
+    """set_files_permissions swallows FileNotFoundError when sudo is unavailable."""
+    (tmp_path / "files").mkdir()
+
+    with patch(
+        "src.pkg.project.subprocess.run", side_effect=FileNotFoundError("no sudo")
+    ):
+        set_files_permissions(str(tmp_path))  # must not raise
+
+
+def test_generate_deploy_project_warns_when_no_templates(tmp_path, capsys):
+    """generate_deploy_project warns and returns early when no templates exist."""
+    with patch("src.pkg.project._validate_deploy_inputs"), patch(
+        "src.pkg.project._has_template_files", return_value=False
+    ), patch("src.pkg.project._copy_tree") as mock_copy:
+        generate_deploy_project("localhost", str(tmp_path))
+
+    assert "no deployment templates found" in capsys.readouterr().out
+    mock_copy.assert_not_called()

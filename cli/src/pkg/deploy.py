@@ -1,11 +1,4 @@
-"""Handlers for the 'dtaas admin install and uninstall' commands.
-
-Installation brings the generated deployment up with 'docker compose'.
-Uninstallation tears it down and can optionally remove per-user workspace
-files. Compose is driven through python-on-whales, which wraps the docker
-CLI and raises python_on_whales.exceptions.DockerException carrying the real
-command output (return code and stderr) when a compose operation fails.
-"""
+"""Handlers for the 'dtaas admin install and uninstall' commands."""
 
 import shutil
 from pathlib import Path
@@ -25,7 +18,7 @@ def _toml_present(directory):
     return (Path(directory) / "dtaas.toml").is_file() or Path("dtaas.toml").is_file()
 
 
-def _require_compose_file(directory):
+def require_compose_file(directory):
     """Raise OSError if the generated compose file is missing from *directory*."""
     if not (Path(directory) / COMPOSE_FILE).is_file():
         raise OSError(
@@ -41,7 +34,7 @@ def _require_deployment(directory):
     *directory* or in the current working directory, matching the lookup used
     by generate-deployment.
     """
-    _require_compose_file(directory)
+    require_compose_file(directory)
     if not _toml_present(directory):
         raise OSError(
             f"No 'dtaas.toml' found in '{directory}' or the current "
@@ -98,8 +91,18 @@ def uninstall(directory=".", remove_user_files=False):
     removed files when *remove_user_files* is set, otherwise None. Raises
     DockerException if compose itself fails.
     """
-    _require_compose_file(directory)
+    require_compose_file(directory)
     _client(directory).compose.down()
     if remove_user_files:
         return delete_user_files(directory)
     return None
+
+
+def restart_service(directory, service):
+    """Recreate one compose service so it picks up new certificates or config.
+
+    Mirrors 'docker compose up -d --force-recreate <service>'. Raises OSError
+    if the deployment is missing, or DockerException if compose itself fails.
+    """
+    require_compose_file(directory)
+    _client(directory).compose.up(services=[service], force_recreate=True, detach=True)

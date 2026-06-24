@@ -16,6 +16,27 @@ sudo certbot renew --dry-run
 sudo certbot renew
 ```
 
+## CLI shortcut for generated deployments
+
+If the deployment was created with the DTaaS CLI (`dtaas generate-deployment`)
+and `[common.security].certs-src` in `dtaas.toml` points at the directory
+holding the renewed `fullchain.pem` / `privkey.pem` (e.g.
+`/etc/letsencrypt/live/your-domain.com`), you can replace the manual copy and
+restart below with a single command:
+
+```bash
+dtaas admin update --certs --output-dir /path/to/deployment
+```
+
+It validates the renewed pair (parseable, key matches certificate, not
+expired), atomically swaps it into the deployment's `certs/` directory,
+restores `0600` on the private key, and reloads `traefik`. If validation
+fails, the live certificates are left untouched. See the DTaaS CLI `README`
+(`cli/README.md`) for details.
+
+The manual steps below remain the reference for the
+`deploy/dtaas/docker/*` package layouts and the services project.
+
 ## Step 2: Deploy to DTaaS server package
 
 For the secure server package (`deploy/dtaas/docker/secure-server`):

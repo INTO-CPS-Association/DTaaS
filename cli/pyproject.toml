@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas"
-version = "0.7.0"
+version = "0.8.0"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
@@ -17,6 +17,7 @@ PyYAML = "^6.0.3"
 click = "^8.4.1"
 tomlkit = "^0.15.0"
 python-on-whales = "^0.81.0"
+cryptography = "^48.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.3"
@@ -28,7 +29,6 @@ safety = "^3.7.0"
 pyright = "^1.1.410"
 nltk = "^3.9.4"
 authlib = "^1.7.2"
-cryptography = "^48.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=80.0.0"]
