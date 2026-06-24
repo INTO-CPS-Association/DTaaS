@@ -42,6 +42,14 @@ describe('oauthUserProfile', () => {
     it('returns empty string when no usable claims are available', () => {
       expect(resolveOAuthUsername({})).toBe('');
     });
+
+    it('returns empty string for null profile', () => {
+      expect(resolveOAuthUsername(null)).toBe('');
+    });
+
+    it('returns empty string for undefined profile', () => {
+      expect(resolveOAuthUsername(undefined)).toBe('');
+    });
   });
 
   describe('resolveOAuthDisplayName', () => {
@@ -90,6 +98,14 @@ describe('oauthUserProfile', () => {
       expect(
         resolveOAuthProfileUrl({
           profile: 'data:text/plain;base64,Zm9v',
+        }),
+      ).toBeUndefined();
+    });
+
+    it('returns undefined for malformed URLs', () => {
+      expect(
+        resolveOAuthProfileUrl({
+          profile: 'not-a-valid-url',
         }),
       ).toBeUndefined();
     });

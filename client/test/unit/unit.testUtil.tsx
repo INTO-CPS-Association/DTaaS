@@ -16,7 +16,6 @@ import userEvent from '@testing-library/user-event';
 import routes from 'routes';
 import { mockUserType } from 'test/__mocks__/global_mocks';
 import {
-  resolveOAuthDisplayName,
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
@@ -230,12 +229,8 @@ export function testStaticAccountProfile(mockUser: mockUserType) {
   expect(profilePicture).toBeInTheDocument();
   expect(profilePicture).toHaveAttribute('src', mockUser.profile.picture);
 
-  const resolvedUsername = resolveOAuthUsername(mockUser.profile);
-  const displayName = resolveOAuthDisplayName(
-    mockUser.profile,
-    resolvedUsername,
-  );
-  const usernames = screen.getAllByText(`${displayName}`);
+  const expectedUsername = resolveOAuthUsername(mockUser.profile);
+  const usernames = screen.getAllByText(expectedUsername);
   expect(usernames).not.toBeNull();
   expect(usernames).toHaveLength(2);
 
