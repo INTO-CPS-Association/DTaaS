@@ -40,9 +40,12 @@ jobs:
   publish-pypi:
     name: Publish to PyPI
     needs: [test-cli]
-    if: >-
-      github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch'
+    if: |
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      (
+        startsWith(github.ref, 'refs/heads/feature/') ||
+        startsWith(github.ref, 'refs/heads/release-v')
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
