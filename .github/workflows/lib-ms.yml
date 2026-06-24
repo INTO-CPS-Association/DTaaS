@@ -174,10 +174,7 @@ jobs:
       packages: write  # Required for github package registry
     if: |
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
+      github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish to GitHub Packages
     needs: [get-version, test-lib-ms]
@@ -196,10 +193,7 @@ jobs:
       packages: write  # Required by the publish-npm reusable workflow
     if: |
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
+      github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish to NPM
     needs: [get-version, test-lib-ms]
@@ -218,10 +212,7 @@ jobs:
       packages: write  # Required for publishing to github package registry
     if: |
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
+      github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (GHCR)
     needs: [get-version, test-lib-ms]
@@ -237,10 +228,7 @@ jobs:
       contents: read  # Required for checking out the code
     if: |
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
+      github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (DockerHub)
     needs: [get-version, test-lib-ms]
