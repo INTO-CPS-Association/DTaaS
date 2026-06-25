@@ -49,7 +49,13 @@ function getUsernameFromProfileUrl(
     return undefined;
   }
   const path = pathFromProfileUrl(profileUrl);
-  const lastSegment = path?.split('/').filter(Boolean).pop()?.trim();
+  if (path === undefined) {
+    return undefined;
+  }
+  const normalizedPath = path.replace(/\/+$/, '');
+  const lastSegment = normalizedPath
+    .slice(normalizedPath.lastIndexOf('/') + 1)
+    .trim();
   return lastSegment || undefined;
 }
 
