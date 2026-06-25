@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas-services"
-version = "0.4.1"
+version = "0.4.2"
 description = "DTaaS Platform Services Management CLI"
 authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"
@@ -12,7 +12,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-click = "^8.4.1"
+click = "^8.4.2"
 python-dotenv = "^1.2.2"
 python-on-whales = "^0.81.0"
 rich = "^15.0.0"
@@ -21,11 +21,11 @@ python-gitlab = "^8.3.0"
 psycopg = {version = "^3.3", extras = ["binary"]}
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.0.3"
+pytest = "^9.1.1"
 pytest-cov = "^7.1.0"
 pytest-mock = "^3.15.1"
-pylint = "^4.0.5"
-pyright = "^1.1.409"
+pylint = "^4.0.6"
+pyright = "^1.1.411"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
