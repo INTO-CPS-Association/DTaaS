@@ -173,12 +173,12 @@ def update(certs, output_dir):
     """Update deployment assets in place.
 
     Currently supports --certs, which validates the newest certificate pair
-    from certs-src and atomically swaps it in before reloading traefik.
+    from certs-src and swaps it in before reloading traefik.
     """
     if not certs:
         raise click.ClickException("Nothing to update; pass --certs.")
     try:
         message = certUpdatePkg.update_certs(output_dir)
-    except (CertValidationError, OSError, DockerException) as exc:
+    except (CertValidationError, OSError, DockerException, RuntimeError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(message)

@@ -6,12 +6,24 @@ The real validation logic is covered by test_cert_validate.py.
 """
 
 import os
+from contextlib import contextmanager
 from unittest.mock import patch
 
 import pytest
 from src.pkg import cert_update
 from src.pkg.cert_validate import CertValidationError
 # pylint: disable=protected-access
+
+
+@contextmanager
+def _mock_docker():
+    """Patch the Traefik stop/restart/liveness calls used while activating certs."""
+    with patch("src.pkg.cert_update.deploy.stop_service") as stop, patch(
+        "src.pkg.cert_update.deploy.restart_service"
+    ) as restart, patch(
+        "src.pkg.cert_update.deploy.service_running", return_value=True
+    ) as running:
+        yield {"stop": stop, "restart": restart, "running": running}
 
 
 def _make_source(src):
@@ -51,24 +63,22 @@ def _seed_live_certs(out):
 def test_update_certs_success(tmp_path):
     """The newest pair is copied in, traefik reloaded, and no staging is left."""
     out, _ = _setup(tmp_path)
-    with patch("src.pkg.cert_update.validate_cert_pair"), patch(
-        "src.pkg.cert_update.deploy.restart_service"
-    ) as mock_restart:
+    with patch("src.pkg.cert_update.validate_cert_pair"), _mock_docker() as docker:
         message = cert_update.update_certs(str(out))
 
     assert (out / "certs" / "fullchain.pem").read_text() == "fc"
     assert (out / "certs" / "privkey.pem").read_text() == "pk"
     assert not list((out / "certs").glob("*.new"))
+    assert not list((out / "certs").glob("*.bak"))
     assert "updated" in message
-    mock_restart.assert_called_once_with(str(out), "traefik")
+    docker["stop"].assert_called_once_with(str(out), "traefik")
+    docker["restart"].assert_called_once_with(str(out), "traefik")
 
 
 def test_update_certs_sets_key_permissions(tmp_path):
     """The activated private key is restricted to 0600 (POSIX only)."""
     out, _ = _setup(tmp_path)
-    with patch("src.pkg.cert_update.validate_cert_pair"), patch(
-        "src.pkg.cert_update.deploy.restart_service"
-    ):
+    with patch("src.pkg.cert_update.validate_cert_pair"), _mock_docker():
         cert_update.update_certs(str(out))
 
     key = out / "certs" / "privkey.pem"
@@ -79,9 +89,7 @@ def test_update_certs_sets_key_permissions(tmp_path):
 def test_update_certs_is_repeatable(tmp_path):
     """Running the update twice is safe and leaves the newest certs in place."""
     out, _ = _setup(tmp_path)
-    with patch("src.pkg.cert_update.validate_cert_pair"), patch(
-        "src.pkg.cert_update.deploy.restart_service"
-    ):
+    with patch("src.pkg.cert_update.validate_cert_pair"), _mock_docker():
         cert_update.update_certs(str(out))
         cert_update.update_certs(str(out))
 
@@ -155,3 +163,41 @@ def test_stage_pair_discards_partial_on_missing(tmp_path):
         cert_update._stage_pair(src, certs_dir)
 
     assert not list(certs_dir.glob("*.new"))
+
+
+def test_update_certs_raises_when_traefik_stays_down(tmp_path):
+    """If traefik never reports running, the update raises instead of succeeding."""
+    out, _ = _setup(tmp_path)
+    with patch("src.pkg.cert_update.validate_cert_pair"), patch(
+        "src.pkg.cert_update.deploy.stop_service"
+    ), patch("src.pkg.cert_update.deploy.restart_service"), patch(
+        "src.pkg.cert_update.deploy.service_running", return_value=False
+    ), patch("src.pkg.cert_update.time.sleep"):
+        with pytest.raises(RuntimeError, match="not running"):
+            cert_update.update_certs(str(out))
+
+
+def test_update_certs_rolls_back_on_partial_swap(tmp_path):
+    """A failed second replace restores the old pair and still restarts traefik."""
+    out, _ = _setup(tmp_path)
+    live = _seed_live_certs(out)
+    real_replace = os.replace
+
+    def flaky_replace(src, dst):
+        if str(src).endswith("privkey.pem" + cert_update.STAGE_SUFFIX):
+            raise PermissionError("file is locked")
+        return real_replace(src, dst)
+
+    with patch(
+        "src.pkg.cert_update.validate_cert_pair"
+    ), _mock_docker() as docker, patch(
+        "src.pkg.cert_update.os.replace", side_effect=flaky_replace
+    ):
+        with pytest.raises(PermissionError):
+            cert_update.update_certs(str(out))
+
+    assert (live / "fullchain.pem").read_text() == "OLD"
+    assert (live / "privkey.pem").read_text() == "OLDKEY"
+    assert not list(live.glob("*.new"))
+    assert not list(live.glob("*.bak"))
+    docker["restart"].assert_called_once_with(str(out), "traefik")

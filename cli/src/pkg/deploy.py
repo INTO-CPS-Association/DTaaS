@@ -106,3 +106,24 @@ def restart_service(directory, service):
     """
     require_compose_file(directory)
     _client(directory).compose.up(services=[service], force_recreate=True, detach=True)
+
+
+def stop_service(directory, service):
+    """Stop one compose service so its files can be safely replaced.
+
+    Raises OSError if the deployment is missing, or DockerException if compose
+    itself fails.
+    """
+    require_compose_file(directory)
+    _client(directory).compose.stop(services=[service])
+
+
+def service_running(directory, service):
+    """Return True if *service*'s container is currently running.
+
+    A stopped or exited container is not listed by 'compose ps', so the absence
+    of a running container reads as False.
+    """
+    require_compose_file(directory)
+    containers = _client(directory).compose.ps(services=[service])
+    return any(container.state.running for container in containers)

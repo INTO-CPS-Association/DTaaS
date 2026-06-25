@@ -1,6 +1,6 @@
 """Tests for the deploy module (admin install / uninstall handlers)."""
 
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 from python_on_whales.exceptions import DockerException
 from src.pkg import deploy
@@ -140,3 +140,42 @@ def test_restart_service_requires_compose_file(tmp_path):
         with pytest.raises(OSError, match="docker-compose.yml"):
             deploy.restart_service(str(tmp_path), "traefik")
         mock_client.assert_not_called()
+
+
+def test_stop_service_stops_named_service(tmp_path):
+    """stop_service stops only the named compose service."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        deploy.stop_service(str(tmp_path), "traefik")
+        mock_client.return_value.compose.stop.assert_called_once_with(
+            services=["traefik"]
+        )
+
+
+def test_stop_service_requires_compose_file(tmp_path):
+    """stop_service refuses to act without a generated deployment."""
+    with patch("src.pkg.deploy._client") as mock_client:
+        with pytest.raises(OSError, match="docker-compose.yml"):
+            deploy.stop_service(str(tmp_path), "traefik")
+        mock_client.assert_not_called()
+
+
+def test_service_running_true_when_container_up(tmp_path):
+    """service_running returns True when the service's container is running."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    container = MagicMock()
+    container.state.running = True
+    with patch("src.pkg.deploy._client") as mock_client:
+        mock_client.return_value.compose.ps.return_value = [container]
+        assert deploy.service_running(str(tmp_path), "traefik") is True
+        mock_client.return_value.compose.ps.assert_called_once_with(
+            services=["traefik"]
+        )
+
+
+def test_service_running_false_when_no_container(tmp_path):
+    """service_running returns False when no running container is listed."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        mock_client.return_value.compose.ps.return_value = []
+        assert deploy.service_running(str(tmp_path), "traefik") is False

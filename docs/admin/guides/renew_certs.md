@@ -28,11 +28,14 @@ restart below with a single command:
 dtaas admin update --certs --output-dir /path/to/deployment
 ```
 
-It validates the renewed pair (parseable, key matches certificate, not
-expired), atomically swaps it into the deployment's `certs/` directory,
-restores `0600` on the private key, and reloads `traefik`. If validation
-fails, the live certificates are left untouched. See the DTaaS CLI `README`
-(`cli/README.md`) for details.
+It validates the renewed pair (parseable, key matches the certificate, and
+neither the leaf nor any intermediate has expired), stops `traefik`, swaps the
+new files into the deployment's `certs/` directory (restoring the previous pair
+if anything goes wrong), then restarts `traefik` and waits for it to come back
+up. On POSIX hosts it also restores `0600` on the private key; on Windows it
+prints a warning, because file permissions cannot be enforced there. If
+validation fails, the live certificates are left untouched. See the DTaaS CLI
+`README` (`cli/README.md`) for details.
 
 The manual steps below remain the reference for the
 `deploy/dtaas/docker/*` package layouts and the services project.

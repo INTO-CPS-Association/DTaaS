@@ -4,8 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
-from src.pkg import users, users_utils
-from tests.conftest import CONF_SERVER_CONTENT
+from src.pkg import users
 # pylint: disable=redefined-outer-name,unused-argument
 
 

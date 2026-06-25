@@ -26,11 +26,9 @@ def _self_signed(key, not_after):
     )
 
 
-def _write_pair(directory, cert, key):
-    """Write *cert* and *key* as fullchain.pem/privkey.pem, returning their paths."""
-    cert_path = directory / "fullchain.pem"
+def _write_key(directory, key):
+    """Write *key* as privkey.pem, returning its path."""
     key_path = directory / "privkey.pem"
-    cert_path.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
     key_path.write_bytes(
         key.private_bytes(
             serialization.Encoding.PEM,
@@ -38,7 +36,23 @@ def _write_pair(directory, cert, key):
             serialization.NoEncryption(),
         )
     )
-    return cert_path, key_path
+    return key_path
+
+
+def _write_pair(directory, cert, key):
+    """Write *cert* and *key* as fullchain.pem/privkey.pem, returning their paths."""
+    cert_path = directory / "fullchain.pem"
+    cert_path.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+    return cert_path, _write_key(directory, key)
+
+
+def _write_chain(directory, certs, key):
+    """Write *certs* (leaf first) as one fullchain.pem bundle plus the key."""
+    cert_path = directory / "fullchain.pem"
+    cert_path.write_bytes(
+        b"".join(c.public_bytes(serialization.Encoding.PEM) for c in certs)
+    )
+    return cert_path, _write_key(directory, key)
 
 
 def _valid_until(days):
@@ -99,3 +113,28 @@ def test_validate_rejects_unparseable_key(tmp_path):
 
     with pytest.raises(CertValidationError, match="parse private key"):
         validate_cert_pair(cert_path, bad_key)
+
+
+def test_validate_accepts_full_chain(tmp_path):
+    """A leaf plus a valid intermediate validates against the leaf's key."""
+    leaf_key = ec.generate_private_key(ec.SECP256R1())
+    leaf = _self_signed(leaf_key, _valid_until(30))
+    intermediate = _self_signed(
+        ec.generate_private_key(ec.SECP256R1()), _valid_until(60)
+    )
+    cert_path, key_path = _write_chain(tmp_path, [leaf, intermediate], leaf_key)
+
+    validate_cert_pair(cert_path, key_path)  # must not raise
+
+
+def test_validate_rejects_expired_intermediate(tmp_path):
+    """An expired intermediate is rejected even when the leaf is still valid."""
+    leaf_key = ec.generate_private_key(ec.SECP256R1())
+    leaf = _self_signed(leaf_key, _valid_until(30))
+    intermediate = _self_signed(
+        ec.generate_private_key(ec.SECP256R1()), _valid_until(-1)
+    )
+    cert_path, key_path = _write_chain(tmp_path, [leaf, intermediate], leaf_key)
+
+    with pytest.raises(CertValidationError, match="expired"):
+        validate_cert_pair(cert_path, key_path)

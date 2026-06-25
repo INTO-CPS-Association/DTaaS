@@ -1,7 +1,10 @@
 """TLS certificate placement for generated secure deployments."""
 
+import os
 import shutil
 from pathlib import Path
+
+import click
 
 # Deploy types that terminate TLS and reference certificates from certs/.
 TLS_DEPLOY_TYPES = {
@@ -11,11 +14,12 @@ TLS_DEPLOY_TYPES = {
 }
 
 # Certificate files expected by config/tls.yml.
-CERT_FILES = ("fullchain.pem", "privkey.pem")
+CERT_CHAIN_NAME = "fullchain.pem"
 PRIVATE_KEY_NAME = "privkey.pem"
+CERT_FILES = (CERT_CHAIN_NAME, PRIVATE_KEY_NAME)
 
 
-def _find_latest_cert(src_dir, prefix):
+def find_latest_cert(src_dir, prefix):
     """Return the newest '{prefix}.pem' / '{prefix}<N>.pem' file, or None.
 
     Let's Encrypt/Certbot archive directories hold numbered certificates
@@ -32,14 +36,36 @@ def _find_latest_cert(src_dir, prefix):
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
-def _secure_private_key(key_path):
-    """Set 0600 on the private key. Best-effort; POSIX modes are a no-op on Windows."""
-    if not key_path.exists():
-        return
+def _restrict_key_mode(key_path):
+    """Apply 0600 to the key, ignoring a chmod failure."""
     try:
         key_path.chmod(0o600)
     except OSError:
         pass
+
+
+def _warn_unenforceable_key():
+    """Tell the operator the key's permissions cannot be enforced here."""
+    click.echo(
+        "Warning: private-key file permissions cannot be enforced on this "
+        "platform; restrict access to the deployment directory manually.",
+        err=True,
+    )
+
+
+def secure_private_key(key_path, warn=True):
+    """Restrict the private key to 0600 on POSIX.
+
+    POSIX file modes do not protect the key on Windows, where a warning is
+    emitted instead. *warn* is set False when locking the short-lived staging
+    copy, so the operator is warned only once per update.
+    """
+    if not key_path.exists():
+        return
+    if os.name == "posix":
+        _restrict_key_mode(key_path)
+    elif warn:
+        _warn_unenforceable_key()
 
 
 def _cert_copy_message(certs_dir, copied, missing):
@@ -64,7 +90,7 @@ def _copy_cert_pair(src, certs_dir, force):
     """
     copied, missing = [], []
     for name in CERT_FILES:
-        latest = _find_latest_cert(src, name[: -len(".pem")])
+        latest = find_latest_cert(src, name[: -len(".pem")])
         if latest is None:
             missing.append(name)
             continue
@@ -73,7 +99,7 @@ def _copy_cert_pair(src, certs_dir, force):
             continue
         shutil.copy2(latest, dest)
         copied.append(name)
-    _secure_private_key(certs_dir / PRIVATE_KEY_NAME)
+    secure_private_key(certs_dir / PRIVATE_KEY_NAME)
     return _cert_copy_message(certs_dir, copied, missing)
 
 

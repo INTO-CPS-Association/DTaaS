@@ -2,7 +2,7 @@
 
 import os
 from unittest.mock import patch
-from src.pkg.certs import copy_certs, _find_latest_cert, _secure_private_key
+from src.pkg.certs import copy_certs, find_latest_cert, secure_private_key
 
 
 def _make_cert_src(src, files):
@@ -13,13 +13,13 @@ def _make_cert_src(src, files):
 
 
 def test_find_latest_cert_picks_newest_numbered(tmp_path):
-    """_find_latest_cert returns the newest fullchain<N>.pem by mtime."""
+    """find_latest_cert returns the newest fullchain<N>.pem by mtime."""
     src = tmp_path / "archive"
     _make_cert_src(src, {"fullchain1.pem": "old", "fullchain2.pem": "new"})
     os.utime(src / "fullchain1.pem", (1, 1))
     os.utime(src / "fullchain2.pem", (2, 2))
 
-    latest = _find_latest_cert(src, "fullchain")
+    latest = find_latest_cert(src, "fullchain")
 
     assert latest == src / "fullchain2.pem"
 
@@ -29,7 +29,7 @@ def test_find_latest_cert_ignores_unrelated_names(tmp_path):
     src = tmp_path / "archive"
     _make_cert_src(src, {"fullchain-service.pem": "x"})
 
-    assert _find_latest_cert(src, "fullchain") is None
+    assert find_latest_cert(src, "fullchain") is None
 
 
 def test_copy_certs_skips_non_tls_deploy(tmp_path):
@@ -120,16 +120,16 @@ def test_copy_certs_overwrites_with_force(tmp_path):
 
 
 def test_secure_private_key_skips_missing_file(tmp_path):
-    """_secure_private_key is a no-op when the key file does not exist."""
-    _secure_private_key(tmp_path / "privkey.pem")  # must not raise
+    """secure_private_key is a no-op when the key file does not exist."""
+    secure_private_key(tmp_path / "privkey.pem")  # must not raise
 
 
 def test_secure_private_key_swallows_oserror(tmp_path):
-    """_secure_private_key silently ignores a chmod OSError."""
+    """secure_private_key silently ignores a chmod OSError."""
     key = tmp_path / "privkey.pem"
     key.write_text("pk")
     with patch.object(type(key), "chmod", side_effect=OSError("permission denied")):
-        _secure_private_key(key)  # must not raise
+        secure_private_key(key)  # must not raise
 
 
 def test_copy_certs_notes_partial_source(tmp_path):

@@ -17,14 +17,21 @@ class CertValidationError(Exception):
     """Raised when a certificate/key pair fails validation."""
 
 
-def _load_cert(cert_path: Path):
-    """Parse the leaf certificate from a PEM file."""
+def _load_chain(cert_path: Path):
+    """Parse the full certificate chain (leaf first) from a PEM file.
+
+    A Let's Encrypt fullchain.pem holds the leaf plus one or more
+    intermediates; all of them are returned so each can be checked.
+    """
     try:
-        return x509.load_pem_x509_certificate(cert_path.read_bytes())
+        chain = x509.load_pem_x509_certificates(cert_path.read_bytes())
     except (OSError, ValueError) as exc:
         raise CertValidationError(
             f"Could not parse certificate '{cert_path.name}': {exc}"
         ) from exc
+    if not chain:
+        raise CertValidationError(f"No certificate found in '{cert_path.name}'.")
+    return chain
 
 
 def _load_key(key_path: Path):
@@ -51,17 +58,28 @@ def _check_key_matches_cert(cert, key) -> None:
         raise CertValidationError("Private key does not match the certificate.")
 
 
-def _check_not_expired(cert) -> None:
-    """Raise when the certificate's validity period has already ended."""
-    if cert.not_valid_after_utc < datetime.now(timezone.utc):
-        raise CertValidationError(
-            f"Certificate expired on {cert.not_valid_after_utc:%Y-%m-%d}."
-        )
+def _check_chain_not_expired(chain) -> None:
+    """Raise when the leaf or any intermediate certificate has expired.
+
+    An expired intermediate still makes Traefik present an invalid chain to
+    browsers, so the whole chain is checked, not just the leaf.
+    """
+    now = datetime.now(timezone.utc)
+    for cert in chain:
+        if cert.not_valid_after_utc < now:
+            raise CertValidationError(
+                f"A certificate in the chain expired on "
+                f"{cert.not_valid_after_utc:%Y-%m-%d}."
+            )
 
 
 def validate_cert_pair(cert_path: Path, key_path: Path) -> None:
-    """Validate a fullchain/privkey pair, raising CertValidationError on failure."""
-    cert = _load_cert(cert_path)
+    """Validate a fullchain/privkey pair, raising CertValidationError on failure.
+
+    Confirms the chain parses, the private key matches the leaf certificate,
+    and neither the leaf nor any intermediate has already expired.
+    """
+    chain = _load_chain(cert_path)
     key = _load_key(key_path)
-    _check_key_matches_cert(cert, key)
-    _check_not_expired(cert)
+    _check_key_matches_cert(chain[0], key)
+    _check_chain_not_expired(chain)
