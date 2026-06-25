@@ -251,11 +251,12 @@ export async function testAccountSettings(mockUser: mockUserType) {
       screen.getByRole('heading', { level: 2, name: 'Settings' }),
     ).toBeInTheDocument();
 
+    const profileUrl = resolveOAuthProfileUrl(mockUser.profile);
     const settingsParagraph = screen.getByText(/Edit the profile on/);
-    expect(settingsParagraph).toHaveProperty(
-      'innerHTML',
-      `Edit the profile on <b><a href="${resolveOAuthProfileUrl(mockUser.profile)}">SSO OAuth Provider.</a></b>`,
-    );
+    const expectedInnerHTML = profileUrl
+      ? `Edit the profile on <b><a href="${profileUrl}">SSO OAuth Provider.</a></b>`
+      : 'Edit the profile on your SSO OAuth Provider account page.';
+    expect(settingsParagraph).toHaveProperty('innerHTML', expectedInnerHTML);
   });
 
   expect(screen.getByLabelText(/group name/i)).toBeInTheDocument();

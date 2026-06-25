@@ -170,6 +170,10 @@ describe('useGetAndSetUsername', () => {
     mockDispatch.mockReset();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('extracts username from preferred_username for keycloak style profile', () => {
     const getAndSetUsername = useGetAndSetUsername();
     getAndSetUsername({

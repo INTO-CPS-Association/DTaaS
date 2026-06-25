@@ -29,7 +29,7 @@ display and linking purposes.
 
 The fix introduces `client/src/util/auth/oauthUserProfile.ts` — a
 single module that centralises all claim resolution logic. It exports
-three functions:
+two functions:
 
 ### `resolveOAuthUsername(profile)`
 
@@ -48,13 +48,15 @@ Walks a fixed priority chain and returns the first usable value:
 
 The chain is ordered by reliability and specificity, with GitLab's
 URL-based extraction demoted to step 7 (still present for backward
-compatibility) and `sub` as the final safety net so the function always
-returns a non-empty string if any claim exists.
+compatibility) and `sub` as the last-resort claim.
 
 Each candidate is additionally checked by `isSafeUsername()` before it is
 accepted. A candidate is only used if it matches `^[A-Za-z0-9._@+-]+$` and
 does not contain the `..` sequence; otherwise the chain falls through to
-the next claim. This guards the downstream URL-path usage described in
+the next claim. Because this check applies to every candidate (including
+`sub`), the function returns an empty string when no claim yields a
+usable, path-safe value — even if other claims are present. This guards
+the downstream URL-path usage described in
 [Downstream coupling](#downstream-coupling-username-as-gitlab-namespace).
 
 ### `resolveOAuthProfileUrl(profile)`
