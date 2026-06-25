@@ -88,6 +88,14 @@ describe('oauthUserProfile', () => {
       );
     });
 
+    it('resolves username from a profile URL with a trailing slash', () => {
+      expect(
+        resolveOAuthUsername({
+          profile: 'https://gitlab.example.com/group/gitlab-user/',
+        }),
+      ).toBe('gitlab-user');
+    });
+
     it('skips a claim containing URL path separators and falls through', () => {
       expect(
         resolveOAuthUsername({

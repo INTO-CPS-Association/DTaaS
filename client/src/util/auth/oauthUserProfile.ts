@@ -52,7 +52,7 @@ function getUsernameFromProfileUrl(
   if (path === undefined) {
     return undefined;
   }
-  const normalizedPath = path.replace(/\/+$/, '');
+  const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
   const lastSegment = normalizedPath
     .slice(normalizedPath.lastIndexOf('/') + 1)
     .trim();
