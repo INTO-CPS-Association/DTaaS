@@ -1,5 +1,4 @@
 import {
-  resolveOAuthDisplayName,
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
@@ -23,12 +22,34 @@ describe('oauthUserProfile', () => {
       ).toBe('gitlab-user');
     });
 
+    it('resolves username from the username claim', () => {
+      expect(resolveOAuthUsername({ username: 'plain-user' })).toBe(
+        'plain-user',
+      );
+    });
+
+    it('resolves username from the nickname claim', () => {
+      expect(resolveOAuthUsername({ nickname: 'nick' })).toBe('nick');
+    });
+
+    it('resolves username from the login claim for github profiles', () => {
+      expect(resolveOAuthUsername({ login: 'gh-login' })).toBe('gh-login');
+    });
+
     it('resolves username from email local part for dex profiles', () => {
       expect(
         resolveOAuthUsername({
           email: 'dex-user@example.com',
         }),
       ).toBe('dex-user');
+    });
+
+    it('resolves username from upn local part for azure profiles', () => {
+      expect(
+        resolveOAuthUsername({
+          upn: 'azure-user@corp.example.com',
+        }),
+      ).toBe('azure-user');
     });
 
     it('falls back to sub claim when no other claim is available', () => {
@@ -66,25 +87,27 @@ describe('oauthUserProfile', () => {
         'username',
       );
     });
-  });
 
-  describe('resolveOAuthDisplayName', () => {
-    it('prefers name over username-style claims', () => {
+    it('skips a claim containing URL path separators and falls through', () => {
       expect(
-        resolveOAuthDisplayName(
-          {
-            name: 'Jane Doe',
-            preferred_username: 'jane',
-          },
-          'fallback-user',
-        ),
-      ).toBe('Jane Doe');
+        resolveOAuthUsername({
+          preferred_username: 'malicious/../path',
+          sub: 'safe-sub',
+        }),
+      ).toBe('safe-sub');
     });
 
-    it('uses fallback username when no display claims are available', () => {
-      expect(resolveOAuthDisplayName({}, 'fallback-user')).toBe(
-        'fallback-user',
-      );
+    it('skips a claim that is a path traversal sequence', () => {
+      expect(
+        resolveOAuthUsername({
+          preferred_username: '..',
+          sub: 'safe-sub',
+        }),
+      ).toBe('safe-sub');
+    });
+
+    it('returns empty string when the only claim is path-unsafe', () => {
+      expect(resolveOAuthUsername({ preferred_username: 'a/b' })).toBe('');
     });
   });
 

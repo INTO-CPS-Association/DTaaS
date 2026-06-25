@@ -9,6 +9,7 @@ const USERNAME_CLAIM_PRIORITY = [
 
 const PROFILE_URL_CLAIM_PRIORITY = ['profile', 'html_url'] as const;
 const ALLOWED_PROFILE_URL_PROTOCOLS = new Set(['http:', 'https:']);
+const SAFE_USERNAME_PATTERN = /^[A-Za-z0-9._@+-]+$/;
 
 function getClaim(profile: OAuthProfile, claim: string): string | undefined {
   if (!profile) {
@@ -58,6 +59,14 @@ function firstDefinedValue(
   return values.find((value) => value !== undefined);
 }
 
+// The resolved username is consumed unencoded as a GitLab namespace in backend
+// URL paths (e.g. `${authority}/${group}/${username}/-/raw/...`). Restrict it to
+// a charset that cannot break out of a URL path segment and reject `..` to
+// prevent path traversal. Unsafe candidates fall through to the next claim.
+function isSafeUsername(value: string): boolean {
+  return SAFE_USERNAME_PATTERN.test(value) && !value.includes('..');
+}
+
 function isSafeExternalUrl(urlValue: string): boolean {
   try {
     const parsedUrl = new URL(urlValue);
@@ -71,30 +80,14 @@ export function resolveOAuthUsername(profile: OAuthProfile): string {
   const usernameClaimValues = USERNAME_CLAIM_PRIORITY.map((claim) =>
     getClaim(profile, claim),
   );
-  const username = firstDefinedValue([
+  const username = [
     ...usernameClaimValues,
     getEmailLocalPart(getClaim(profile, 'email')),
     getEmailLocalPart(getClaim(profile, 'upn')),
     getUsernameFromProfileUrl(getClaim(profile, 'profile')),
     getClaim(profile, 'sub'),
-  ]);
+  ].find((value) => value !== undefined && isSafeUsername(value));
   return username ?? '';
-}
-
-export function resolveOAuthDisplayName(
-  profile: OAuthProfile,
-  fallbackUsername: string,
-): string {
-  const trimmedFallbackUsername = fallbackUsername.trim();
-  const displayName = firstDefinedValue([
-    getClaim(profile, 'name'),
-    getClaim(profile, 'preferred_username'),
-    getClaim(profile, 'username'),
-    getClaim(profile, 'nickname'),
-    getClaim(profile, 'login'),
-    trimmedFallbackUsername.length > 0 ? trimmedFallbackUsername : undefined,
-  ]);
-  return displayName ?? '';
 }
 
 export function resolveOAuthProfileUrl(

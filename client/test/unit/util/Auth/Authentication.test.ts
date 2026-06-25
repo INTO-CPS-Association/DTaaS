@@ -1,8 +1,4 @@
-import {
-  CustomAuthContext,
-  useSignOut,
-  useGetAndSetUsername,
-} from 'util/auth/Authentication';
+import { useSignOut, useGetAndSetUsername } from 'util/auth/Authentication';
 import { useAuth } from 'react-oidc-context';
 import { getLogoutRedirectURI, useAppURL, cleanURL } from 'util/envUtil';
 import { setUserName } from 'store/auth.slice';
@@ -187,7 +183,7 @@ describe('useGetAndSetUsername', () => {
           sub: '123',
         },
       } as unknown as User,
-    } as CustomAuthContext);
+    });
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith('username', 'kc-user');
     expect(mockDispatch).toHaveBeenCalledWith(setUserName('kc-user'));
@@ -205,7 +201,7 @@ describe('useGetAndSetUsername', () => {
           profile: 'https://gitlab.example.com/example-user',
         },
       } as unknown as User,
-    } as CustomAuthContext);
+    });
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'username',
@@ -226,7 +222,7 @@ describe('useGetAndSetUsername', () => {
           email: 'dex-user@example.com',
         },
       } as unknown as User,
-    } as CustomAuthContext);
+    });
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith('username', 'dex-user');
     expect(mockDispatch).toHaveBeenCalledWith(setUserName('dex-user'));

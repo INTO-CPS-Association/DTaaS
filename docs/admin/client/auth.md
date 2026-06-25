@@ -86,3 +86,26 @@ The client checks claims in this order:
 
 This order preserves existing GitLab behavior while allowing providers
 that do not expose `profile` URLs to authenticate correctly.
+
+The resolved username is restricted to a URL-path-safe character set
+(`A-Z a-z 0-9 . _ @ + -`, and never the `..` sequence). A claim that
+does not match is skipped in favour of the next claim in the order
+above. This is a safety measure because the username is later used,
+unencoded, as a path segment in backend GitLab URLs (see below).
+
+### Provider support versus backend account requirements
+
+The sign-in steps above are written for GitLab because the rest of the
+DTaaS platform (workspaces, digital twins, libraries) is backed by a
+GitLab instance. The username-resolution logic, however, is
+provider-agnostic and works with any OIDC provider that issues one of
+the claims listed above (for example Keycloak, Dex or GitHub).
+
+Authenticating with a non-GitLab provider only signs the user into the
+website. Backend features additionally require that the **resolved
+username matches an existing account (namespace) on the configured
+GitLab instance**, because requests are constructed as
+`{gitlab}/{group}/{username}/-/raw/...`. If no GitLab account with that
+username exists, sign-in succeeds but GitLab-backed operations fail.
+Administrators using an external identity provider must therefore keep
+the provider usernames aligned with the GitLab usernames.

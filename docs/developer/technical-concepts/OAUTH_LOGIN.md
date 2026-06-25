@@ -51,6 +51,12 @@ URL-based extraction demoted to step 7 (still present for backward
 compatibility) and `sub` as the final safety net so the function always
 returns a non-empty string if any claim exists.
 
+Each candidate is additionally checked by `isSafeUsername()` before it is
+accepted. A candidate is only used if it matches `^[A-Za-z0-9._@+-]+$` and
+does not contain the `..` sequence; otherwise the chain falls through to
+the next claim. This guards the downstream URL-path usage described in
+[Downstream coupling](#downstream-coupling-username-as-gitlab-namespace).
+
 ### `resolveOAuthProfileUrl(profile)`
 
 Looks for `profile` then `html_url` (GitHub). It runs the candidate
@@ -58,12 +64,6 @@ through `isSafeExternalUrl()` before returning — a security check that
 rejects anything that is not `http:` or `https:`, preventing XSS via
 `javascript:` or `data:` URLs injected into the `href` of the profile
 link. Returns `undefined` rather than an unsafe URL.
-
-### `resolveOAuthDisplayName(profile, fallbackUsername)`
-
-Prefers the OIDC `name` claim (full name, e.g. "Jane Doe") over
-username-style claims. Used where a human-readable display name is more
-appropriate than a login handle.
 
 ## How callers changed
 
@@ -106,15 +106,45 @@ functions:
 - **`getClaim`** — safely reads a string claim from the profile, trims
   it, returns `undefined` for missing/non-string/empty values
 - **`getEmailLocalPart`** — splits on `@` and returns the local part
-- **`getUsernameFromProfileUrl`** — strips query/fragment, splits on
-  `/`, returns the last segment
+- **`getUsernameFromProfileUrl`** — parses the value with `new URL()` and
+  returns the last `pathname` segment, falling back to a relative-path
+  parse when it is not an absolute URL
 - **`isSafeExternalUrl`** — uses `new URL()` for parsing (no regex),
   allows only `http:` and `https:`
+- **`isSafeUsername`** — restricts a resolved username to a URL-path-safe
+  charset and rejects `..`, so an unsafe claim is skipped
 - **`firstDefinedValue`** — walks an array and returns the first
-  non-undefined entry; drives the priority chain in `resolveOAuthUsername`
+  non-undefined entry; used by `resolveOAuthProfileUrl`
 
-All five are unexported. The module's public surface is exactly the
-three `resolve*` functions.
+All six are unexported. The module's public surface is exactly the two
+`resolve*` functions (`resolveOAuthUsername`, `resolveOAuthProfileUrl`).
+
+## Downstream coupling: username as GitLab namespace
+
+Although the resolver is provider-agnostic, the resolved username is not
+just a display string. It is persisted to `sessionStorage` and Redux and
+then consumed by the GitLab backend layer as a **namespace**, interpolated
+unencoded into URL paths such as:
+
+```text
+${authority}/${group}/${username}/-/raw/${branch}/...
+```
+
+(`model/backend/digitalTwin.ts`, `model/backend/libraryAsset.ts`, and the
+workbench/service links in `util/envUtil.ts` and `route/workbench`).
+
+Two consequences follow:
+
+1. **Security** — because the value lands unencoded in a URL path, it is
+   validated by `isSafeUsername` at the single resolution chokepoint so a
+   crafted claim cannot inject path separators or `..` traversal. The input
+   is a signed OIDC token and GitLab enforces authorization server-side, so
+   this is defense-in-depth rather than a fix for an exploitable hole.
+2. **Operational** — for a non-GitLab provider (Keycloak, Dex, GitHub), the
+   resolved username must match an existing GitLab account, or sign-in
+   succeeds while every GitLab-backed request fails. The client is provider-
+   agnostic; the backend identity model is still GitLab. Keep provider
+   usernames aligned with GitLab usernames.
 
 ## Effect on provider-specific infrastructure
 
